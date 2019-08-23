@@ -1,32 +1,34 @@
-Start the mongoDB server for localhost only:
+MsPASS is made available through a [dockerhub repo](https://hub.docker.com/r/wangyinz/mspass) that automatically builds with the Dockerfile here. 
 
-```
-./mongodb-linux-x86_64-rhel70-4.2.0/bin/mongod --dbpath /work/06058/iwang/stampede2/learn/mongodb/data --logpath /work/06058/iwang/stampede2/learn/mongodb/log --fork
-```
+# Getting MsPASS Running with Docker
 
-Then, launch the client with:
+# Getting MsPASS Running with Singularity (on HPC)
 
-```
-./mongodb-linux-x86_64-rhel70-4.2.0/bin/mongo
-```
+On machines that have Singularity setup. Use the following command to build the image as `mspass.simg` in current directory:
 
-Assuming current hostname is c455-012, for a remote client to connect, start the server with:
+    singularity build mspass.simg docker://wangyinz/mspass
 
-```
-./mongodb-linux-x86_64-rhel70-4.2.0/bin/mongod --dbpath /work/06058/iwang/stampede2/learn/mongodb/data --logpath /work/06058/iwang/stampede2/learn/mongodb/log --fork --bind_ip localhost,c455-012
-```
+Before staring the MongoDB server, please make sure you have a dedicated directory created for the database files. Here we assume that to be `./data`. The command to start the mongoDB server for localhost only is:
+
+    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork
+
+
+Assuming current hostname is `node-1`, for a remote client to connect, start the server with:
+
+    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip localhost,node-1
 
 There should be two ports opened for TCP (one on localhost, one on current IP) with that on the default 27017 port. Use the `netstat -tulpn | grep LISTEN` command to check that.
 
+Then, launch the client locally with:
+
+    singularity exec mspass.simg mongo
+
+
 To launch the client from a different node, simply `ssh` to the node and then:
 
-```
-./mongodb-linux-x86_64-rhel70-4.2.0/bin/mongo --host c455-012:27017
-```
+    singularity exec mspass.simg mongo --host node-1:27017
 
-To stop the mongoDB server, type the following command in the mongo Shell:
+To stop the mongoDB server, type the following command in a local mongo shell:
 
-```
-use admin
-db.shutdownServer()
-```
+    use admin
+    db.shutdownServer()
