@@ -42,7 +42,7 @@ On machines that have Singularity setup. Use the following command to build the 
 
     singularity build mspass.simg docker://wangyinz/mspass
 
-Before staring the MongoDB server, please make sure you have a dedicated directory created for the database files. Here we assume that to be `./data`. The command to start the mongoDB server for localhost only is:
+Before starting the MongoDB server, please make sure you have a dedicated directory created for the database files. Here we assume that to be `./data`. The command to start the mongoDB server for localhost only is:
 
     singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork
 
@@ -67,7 +67,9 @@ There should be two 27017 ports opened for TCP (one on localhost, one on current
 
 To launch the client from `node-2`, simply `ssh node-2` to get to that node and then:
 
-    singularity exec mspass.simg mongo --host node-1:27017
+    singularity exec mspass.simg mongo --host node-1
+
+It will connect to `node-1` on port 27017 by default.
 
 To stop the mongoDB server, type the following command in mongo shell on `node-1`:
 
