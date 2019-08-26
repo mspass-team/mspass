@@ -12,7 +12,7 @@ Once you have docker setup properly, use the following command in a terminal to 
 
     docker pull wangyinz/mspass
     
-Then, `cd` to the dictory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
+Then, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
 
     docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
 
@@ -27,7 +27,7 @@ You may have to wait for a couple seconds for the MongoDB server to initialize. 
     
 It will launch the mongo shell within the `MsPASS` container created from previous command. The `-i` and `-t` specifies a interactive pseudo-TTY session. 
 
-To stop the mongoDB server, type the following command in the mongo shell:
+To stop the mongoDB server, type the following commands in the mongo shell:
 
     use admin
     db.shutdownServer()
@@ -36,7 +36,7 @@ and then remove the container with:
 
     docker rm MsPASS
 
-## Getting MongoDB Running with Singularity (on HPC)
+## Getting MongoDB Running with Singularity on a Single Node
 
 On machines that have Singularity setup. Use the following command to build the image as `mspass.simg` in current directory:
 
@@ -46,24 +46,30 @@ Before staring the MongoDB server, please make sure you have a dedicated directo
 
     singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork
 
-
-Assuming current hostname is `node-1`, for a remote client to connect, start the server with:
-FIX THIS:  what 'node-1' means is not at all clear.   This command failed at IU
-
-    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip localhost,node-1
-
-There should be two ports opened for TCP (one on localhost, one on current IP) with that on the default 27017 port. Use the `netstat -tulpn | grep LISTEN` command to check that.
-
 Then, launch the client locally with:
 
     singularity exec mspass.simg mongo
 
+To stop the mongoDB server, type the following command in the mongo shell:
 
-To launch the client from a different node, simply `ssh` to the node and then:
+    use admin
+    db.shutdownServer()
+
+## Getting MongoDB Running with Singularity on Multiple Nodes
+
+First, request a interactive session with more than one node. Below we assume the hostname (output of the `hostname` command) of the two nodes requested are `node-1` and `node-2`. Please make sure to change the names according to your system setup.
+
+Assuming we want to have the MongoDB server running on `node-1`, for a remote client to connect, start the server with:
+
+    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip localhost,node-1
+
+There should be two 27017 ports opened for TCP (one on localhost, one on current IP). 27017 is the default of MongoDB. Use the `netstat -tulpn | grep LISTEN` command to check that.
+
+To launch the client from `node-2`, simply `ssh node-2` to get to that node and then:
 
     singularity exec mspass.simg mongo --host node-1:27017
 
-To stop the mongoDB server, type the following command in a local mongo shell:
+To stop the mongoDB server, type the following command in mongo shell on `node-1`:
 
     use admin
     db.shutdownServer()
