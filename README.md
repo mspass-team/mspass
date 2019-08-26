@@ -12,7 +12,7 @@ Once you have docker setup properly, use the following command in a terminal to 
 
     docker pull wangyinz/mspass
     
-Then, `cd` to the dictory that you want to the database related files stored, and create a `data` direcotry if it does not already exist. Use this command to start the MongoDB server: 
+Then, `cd` to the dictory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
 
     docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
 
@@ -48,6 +48,7 @@ Before staring the MongoDB server, please make sure you have a dedicated directo
 
 
 Assuming current hostname is `node-1`, for a remote client to connect, start the server with:
+FIX THIS:  what 'node-1' means is not at all clear.   This command failed at IU
 
     singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip localhost,node-1
 
