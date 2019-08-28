@@ -35,3 +35,8 @@ ENV SPARK_URL ${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSIO
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark
 
+# Add startup script
+ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
+RUN chmod +x /usr/sbin/start-mspass.sh
+
+CMD ["/usr/sbin/start-mspass.sh"]
