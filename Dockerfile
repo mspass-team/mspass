@@ -6,7 +6,7 @@ FROM mongo:4.2.0
 MAINTAINER Ian Wang <yinzhi.wang.cug@gmail.com>
 
 RUN apt-get update \
-    && apt-get install -y wget python3-setuptools \
+    && apt-get install -y wget ssh python3-setuptools \
        build-essential python3-dev python3-pip openjdk-11-jdk \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
