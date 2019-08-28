@@ -13,8 +13,19 @@ RUN apt-get update \
 
 RUN pip3 --no-cache-dir install pymongo
 
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+RUN mkdir /home/data
+
 # Prepare the environment
 ENV SPARK_VERSION 2.4.3
+ENV SPARK_MASTER_PORT 7077
+
+ENV MONGO_DATA /home/data
+ENV MONGO_LOG /home/mongo_log
+
+ENV MSPASS_ROLE master
 
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV SPARK_HOME /usr/local/spark
