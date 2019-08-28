@@ -13,9 +13,6 @@ RUN apt-get update \
 
 RUN pip3 --no-cache-dir install pymongo
 
-RUN ln -s /usr/bin/pip3 /usr/bin/pip
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
 RUN mkdir /home/data
 
 # Prepare the environment
@@ -29,6 +26,7 @@ ENV MSPASS_ROLE master
 
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64
 ENV SPARK_HOME /usr/local/spark
+ENV PYSPARK_PYTHON python3
 
 ENV APACHE_MIRROR http://ftp.ps.pl/pub/apache
 ENV SPARK_URL ${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
