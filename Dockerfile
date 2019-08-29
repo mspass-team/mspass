@@ -21,6 +21,7 @@ ENV SPARK_MASTER_PORT 7077
 
 ENV MONGO_DATA /home/data
 ENV MONGO_LOG /home/mongo_log
+ENV SPARK_LOG_DIR /home
 
 ENV MSPASS_ROLE master
 
