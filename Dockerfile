@@ -42,6 +42,8 @@ RUN wget -qO - ${DOCKERIZE_URL} | tar -xz -C /usr/local/bin
 # Download & install Spark
 RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark
+RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
+
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
