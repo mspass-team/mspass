@@ -26,7 +26,7 @@ To launch the containers in a different directory, `cd` to that directory and cr
 
     docker-compose -f path_to_MsPASS/docker-compose.yml up -d
 
-Once the containers running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open http://localhost:8080 in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container setup.
+Once the containers are running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open `localhost:8080` in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container setup.
 
 To launch an interacive Python session to run Spark jobs, use the pyspark command through docker:
 
@@ -48,7 +48,7 @@ To bring down the containers, run:
     
 or
 
-    docker-compose -f ../MsPASS/docker-compose.yml down
+    docker-compose -f path_to_MsPASS//docker-compose.yml down
 
 ### Getting MongoDB Running with Docker
 
