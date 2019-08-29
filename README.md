@@ -2,7 +2,7 @@
 
 MsPASS is made available through a [dockerhub repo](https://hub.docker.com/r/wangyinz/mspass) that automatically builds with the Dockerfile here. 
 
-We have the MongoDB and Spark components working right now.
+We have the MongoDB and Spark components working for now.
 
 ## Using MsPASS with Docker
 
@@ -38,7 +38,7 @@ and then remove the container with:
 
     docker rm MsPASS
 
-### Getting Spark and MongoDB running with Docker
+### Getting Spark and MongoDB Running with Docker
 
 We will use the `docker-compose` command to launch two container instances that compose a Spark standalone cluster. One is called `mspass-master` that runs the MongoDB server and Spark master, and the other is called `mspass-worker` that runs a Spark worker. Both containers will be running on the same machine in this setup.
 
