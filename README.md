@@ -2,17 +2,57 @@
 
 MsPASS is made available through a [dockerhub repo](https://hub.docker.com/r/wangyinz/mspass) that automatically builds with the Dockerfile here. 
 
-We only have the MongoDB component working right now.
+We have the MongoDB and Spark components working right now.
 
-## Getting MongoDB Running with Docker
+## Using MsPASS with Docker
 
-To install Docker on machines that you have root access, please refer to the guide [here](https://docs.docker.com/v17.12/docker-for-mac/install/). For HPC systems, please refer to the next section and use Singularity instead.
+To install Docker on machines that you have root access, please refer to the guide [here](https://docs.docker.com/v17.12/docker-for-mac/install/). For HPC systems, please refer to the following section and use Singularity instead.
 
 Once you have docker setup properly, use the following command in a terminal to pull the docker image to your local machine:
 
     docker pull wangyinz/mspass
+
+### Getting Spark and MongoDB running with Docker
+
+We will use the `docker-compose` command to launch two container instances that compose a Spark standalone cluster. One is called `mspass-master` that runs the MongoDB server and Spark master, and the other is called `mspass-worker` that runs a Spark worker. Both containers will be running on the same machine in this setup.
+
+Fisrt, pull the docker image. Then, create a `data` directory to hold the MongoDB database files if it does not already exist. Assume you are working in the root directory of this repository, run the following command to bring up the two container instances:
+
+    docker-compose up -d
+
+* The `-d` will let the containers run as daemons so that the processes will be kept in the background.
+
+To launch the containers in a different directory, `cd` to that directory and create a `data` directory there. Then, you need to explicitly point the command to the `docker-compose.yml` file:
+
+    docker-compose -f path_to_MsPASS/docker-compose.yml up -d
+
+Once the containers running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open http://localhost:8080 in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container setup.
+
+To launch an interacive Python session to run Spark jobs, use the pyspark command through docker:
+
+    docker exec -it mspass-master pyspark \
+      --conf "spark.mongodb.input.uri=mongodb://127.0.0.1/test.myCollection?readPreference=primaryPreferred" \
+      --conf "spark.mongodb.output.uri=mongodb://127.0.0.1/test.myCollection" \
+      --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
+
+* The `docker exec` will run the command within the `mspass-master` container. 
+* The `-it` option specifies a interactive pseudo-TTY session
+* The two `--conf` options specify the input and output database collections. Please substitute `test` and `myCollection` with the database name or collections name desired. 
+* The `--packages` option will setup the MongoDB Spark connector environment in this Python session.
+
+Please refer to [this documentation](https://docs.mongodb.com/spark-connector/master/python-api/) for more details about the MongoDB Spark connector.
+
+To bring down the containers, run:
+
+    docker-compose down
     
-Then, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
+or
+
+    docker-compose -f ../MsPASS/docker-compose.yml down
+
+### Getting MongoDB Running with Docker
+
+After pulling the docker image, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
 
     docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
 
@@ -36,7 +76,9 @@ and then remove the container with:
 
     docker rm MsPASS
 
-## Getting MongoDB Running with Singularity on a Single Node
+## Using MsPASS with Singularity (on HPC)
+
+### Getting MongoDB Running with Singularity on a Single Node
 
 On machines that have Singularity setup. Use the following command to build the image as `mspass.simg` in current directory:
 
@@ -55,7 +97,7 @@ To stop the mongoDB server, type the following command in the mongo shell:
     use admin
     db.shutdownServer()
 
-## Getting MongoDB Running with Singularity on Multiple Nodes
+### Getting MongoDB Running with Singularity on Multiple Nodes
 
 First, request a interactive session with more than one node. Below we assume the hostname (output of the `hostname` command) of the two nodes requested are `node-1` and `node-2`. Please make sure to change the names according to your system setup.
 
