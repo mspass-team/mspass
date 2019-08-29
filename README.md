@@ -12,6 +12,32 @@ Once you have docker setup properly, use the following command in a terminal to 
 
     docker pull wangyinz/mspass
 
+### Getting MongoDB Running with Docker
+
+After pulling the docker image, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory with `mkdir data` if it does not already exist. Use this command to start the MongoDB server: 
+
+    docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
+
+* The `--name` option will give the launched container instance a name `MsPASS`. 
+* The `-d` will let the container run as a daemon so that the process will be kept in the background. 
+* The `-p` is used to map the host port to the container port. `27017` is the default for MongoDB. It is not necessary if all MongoDB communications will be within the container.
+* The `--mount` option will bind current directory to the `/home/` in the container, so the database files will be kept outside of the container. This directory is later used in the `mongod` options to specify the database files and logs with the `--dbpath` and `--logpath` options.
+
+You may have to wait for a couple seconds for the MongoDB server to initialize. Then, you can launch the MongoDB client with:
+
+    docker exec -it MsPASS mongo
+    
+It will launch the mongo shell within the `MsPASS` container created from previous command. The `-i` and `-t` specifies an interactive pseudo-TTY session. 
+
+To stop the mongoDB server, type the following commands in the mongo shell:
+
+    use admin
+    db.shutdownServer()
+    
+and then remove the container with:
+
+    docker rm MsPASS
+
 ### Getting Spark and MongoDB running with Docker
 
 We will use the `docker-compose` command to launch two container instances that compose a Spark standalone cluster. One is called `mspass-master` that runs the MongoDB server and Spark master, and the other is called `mspass-worker` that runs a Spark worker. Both containers will be running on the same machine in this setup.
@@ -26,18 +52,47 @@ To launch the containers in a different directory, `cd` to that directory and cr
 
     docker-compose -f path_to_MsPASS/docker-compose.yml up -d
 
-Once the containers are running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open `localhost:8080` in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container setup.
+Once the containers are running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open `localhost:8080` in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container's network setup.
 
-To launch an interacive Python session to run Spark jobs, use the pyspark command through docker:
+First, we want to make sure the Spark cluster is setup and running correctly. This can be done running the pi calculation example within the Spark distribution. To submit the example from `mspass-master`, use:
+
+    docker exec mspass-master /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
+
+to submit it from `mspass-worker`, use:
+
+    docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
+
+* The `docker exec` will run the command within the `mspass-master` or `mspass-worker` container. 
+* The `--master` option specifies the Spark master, which is `mspass-master` in our case. The `7077` is the default port of Spark master.
+
+The output of this example is very verbose, but you should see a line of `Pi is roughly 3.141...` near the end of the stdout, which is the result of the calculation. You should also see the jobs in the Running Applications or Completed Applications session at `localhost:8080`.
+
+To launch an interactive mongo shell within `mspass-master`, use: 
+
+    docker exec -it mspass-master mongo
+
+To access the MongoDB server from `mspass-worker`, use:
+
+    docker exec -it mspass-worker mongo --host mspass-master
+
+* The `-it` option opens an interactive pseudo-TTY session
+* The `--host` option will direct the client to the server running on `mspass-master`.
+
+To launch an interactive Python session to run Spark jobs, use the pyspark command through `mspass-master`:
 
     docker exec -it mspass-master pyspark \
-      --conf "spark.mongodb.input.uri=mongodb://127.0.0.1/test.myCollection?readPreference=primaryPreferred" \
-      --conf "spark.mongodb.output.uri=mongodb://127.0.0.1/test.myCollection" \
+      --conf "spark.mongodb.input.uri=mongodb://mspass-master/test.myCollection?readPreference=primaryPreferred" \
+      --conf "spark.mongodb.output.uri=mongodb://mspass-master/test.myCollection" \
+      --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
+      
+or through `mspass-worker`:
+
+    docker exec -it mspass-worker pyspark \
+      --conf "spark.mongodb.input.uri=mongodb://mspass-master/test.myCollection?readPreference=primaryPreferred" \
+      --conf "spark.mongodb.output.uri=mongodb://mspass-master/test.myCollection" \
       --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
 
-* The `docker exec` will run the command within the `mspass-master` container. 
-* The `-it` option specifies a interactive pseudo-TTY session
-* The two `--conf` options specify the input and output database collections. Please substitute `test` and `myCollection` with the database name or collections name desired. 
+* The two `--conf` options specify the input and output database collections. The MongoDB server is running on `mspass-master`, so the url should point to that on both cases. Please substitute `test` and `myCollection` with the database name or collections name desired. 
 * The `--packages` option will setup the MongoDB Spark connector environment in this Python session.
 
 Please refer to [this documentation](https://docs.mongodb.com/spark-connector/master/python-api/) for more details about the MongoDB Spark connector.
@@ -49,32 +104,6 @@ To bring down the containers, run:
 or
 
     docker-compose -f path_to_MsPASS//docker-compose.yml down
-
-### Getting MongoDB Running with Docker
-
-After pulling the docker image, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory if it does not already exist. Use this command to start the MongoDB server: 
-
-    docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
-
-* The `--name` option will give the launched container instance a name `MsPASS`. 
-* The `-d` will let the container run as a daemon so that the process will be kept in the background. 
-* The `-p` is used to map the host port to the container port. `27017` is the default for MongoDB. It is not necessary if all MongoDB communications will be within the container.
-* The `--mount` option will bind current directory to the `/home/` in the container, so the database files will be kept outside of the container. This directory is later used in the `mongod` options to specify the database files and logs with the `--dbpath` and `--logpath` options.
-
-You may have to wait for a couple seconds for the MongoDB server to initialize. Then, you can launch the MongoDB client with:
-
-    docker exec -it MsPASS mongo
-    
-It will launch the mongo shell within the `MsPASS` container created from previous command. The `-i` and `-t` specifies a interactive pseudo-TTY session. 
-
-To stop the mongoDB server, type the following commands in the mongo shell:
-
-    use admin
-    db.shutdownServer()
-    
-and then remove the container with:
-
-    docker rm MsPASS
 
 ## Using MsPASS with Singularity (on HPC)
 
