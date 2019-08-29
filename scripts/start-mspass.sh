@@ -6,4 +6,5 @@ if [ "$MSPASS_ROLE" = "master" ]; then
 fi
 if [ "$MSPASS_ROLE" = "worker" ]; then
   $SPARK_HOME/sbin/start-slave.sh spark://$SPARK_MASTER:$SPARK_MASTER_PORT
+  tail -f /dev/null
 fi

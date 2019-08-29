@@ -6,6 +6,7 @@ services:
     image: wangyinz/mspass
     container_name: mspass-master
     ports:
+      - 4040:4040
       - 7077:7077
       - 8080:8080
       - 27017:27017
@@ -15,6 +16,7 @@ services:
   mspass-worker:
     image: wangyinz/mspass
     container_name: mspass-worker
+    entrypoint: dockerize -wait tcp://mspass-master:7077 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 8081:8081
     depends_on:
