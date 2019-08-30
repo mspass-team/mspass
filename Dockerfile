@@ -19,10 +19,6 @@ RUN mkdir /home/data
 ENV SPARK_VERSION 2.4.3
 ENV SPARK_MASTER_PORT 7077
 
-ENV MONGO_DATA /home/data
-ENV MONGO_LOG /home/mongo_log
-ENV SPARK_LOG_DIR /home
-
 ENV MSPASS_ROLE master
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64

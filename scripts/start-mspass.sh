@@ -1,15 +1,28 @@
 #!/bin/bash
 
+if grep docker /proc/1/cgroup -qa; then
+  export SPARK_LOG_DIR=/home
+  MONGO_DATA=/home/data
+  MONGO_LOG=/home/mongo_log
+else
+  export SPARK_LOG_DIR=$PWD
+  MONGO_DATA=${PWD%/}/data
+  MONGO_LOG=${PWD%/}/mongo_log
+fi
+
 if [ $# -eq 0 ]; then
   if [ "$MSPASS_ROLE" = "master" ]; then
-    $SPARK_HOME/sbin/start-master.sh
-    mongod --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
-  fi
-  if [ "$MSPASS_ROLE" = "worker" ]; then
+    if [ -d "$MONGO_DATA" ]; then
+      $SPARK_HOME/sbin/start-master.sh
+      mongod --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
+    else
+      echo "Error: Directory $MONGO_DATA does not exists."
+    fi
+  elif [ "$MSPASS_ROLE" = "worker" ]; then
     $SPARK_HOME/sbin/start-slave.sh spark://$SPARK_MASTER:$SPARK_MASTER_PORT
     tail -f /dev/null
   fi
 else
-  docker-entrypoint.sh mongod
+  docker-entrypoint.sh $@
 fi
 
