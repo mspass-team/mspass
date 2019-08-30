@@ -49,4 +49,4 @@ RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 
-CMD ["/usr/sbin/start-mspass.sh"]
+ENTRYPOINT ["/usr/sbin/start-mspass.sh"]
