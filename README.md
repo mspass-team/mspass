@@ -6,7 +6,7 @@ We have the MongoDB and Spark components working for now.
 
 ## Using MsPASS with Docker
 
-To install Docker on machines that you have root access, please refer to the guide [here](https://docs.docker.com/v17.12/docker-for-mac/install/). For HPC systems, please refer to the following section and use Singularity instead.
+To install Docker on machines that you have root access, please refer to the guide [here](https://docs.docker.com/v17.12/docker-for-mac/install/). For HPC systems, please refer to the [following section](#using-mspass-with-singularity-on-hpc) and use Singularity instead.
 
 Once you have docker setup properly, use the following command in a terminal to pull the docker image to your local machine:
 
@@ -16,12 +16,11 @@ Once you have docker setup properly, use the following command in a terminal to 
 
 After pulling the docker image, `cd` to the directory that you want to hold the database related files stored, and create a `data` directory with `mkdir data` if it does not already exist. Use this command to start the MongoDB server: 
 
-    docker run --name MsPASS -d -p 27017:27017 --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass mongod --dbpath /home/data --logpath /home/log
+    docker run --name MsPASS -d --mount src="$(pwd)",target=/home,type=bind wangyinz/mspass
 
 * The `--name` option will give the launched container instance a name `MsPASS`. 
 * The `-d` will let the container run as a daemon so that the process will be kept in the background. 
-* The `-p` is used to map the host port to the container port. `27017` is the default for MongoDB. It is not necessary if all MongoDB communications will be within the container.
-* The `--mount` option will bind current directory to the `/home/` in the container, so the database files will be kept outside of the container. This directory is later used in the `mongod` options to specify the database files and logs with the `--dbpath` and `--logpath` options.
+* The `--mount` option will bind current directory to `/home` within the container, which is the default directory for database files and logs. This option keeps the files outside of the container, so they will be accessible after the container is removed. 
 
 You may have to wait for a couple seconds for the MongoDB server to initialize. Then, you can launch the MongoDB client with:
 
@@ -107,21 +106,24 @@ or
 
 ## Using MsPASS with Singularity (on HPC)
 
-### Getting MongoDB Running with Singularity on a Single Node
-
 On machines that have Singularity setup. Use the following command to build the image as `mspass.simg` in current directory:
 
     singularity build mspass.simg docker://wangyinz/mspass
+
+### Getting MongoDB Running with Singularity on a Single Node
 
 Before starting the MongoDB server, please make sure you have a dedicated directory created for the database files. Here we assume that to be `./data`. The command to start the mongoDB server for localhost only is:
 
     singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork
 
+* The `--dbpath` and `--logpath` options of `mongod` specify where to keep the database files and logs.
+* The `--fork` will let the MongoDB server process running in the background.
+
 Then, launch the client locally with:
 
     singularity exec mspass.simg mongo
 
-To stop the mongoDB server, type the following command in the mongo shell:
+To stop the MongoDB server, type the following command in the mongo shell:
 
     use admin
     db.shutdownServer()
@@ -132,17 +134,17 @@ First, request a interactive session with more than one node. Below we assume th
 
 Assuming we want to have the MongoDB server running on `node-1`, for a remote client to connect, start the server with:
 
-    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip localhost,node-1
+    singularity exec mspass.simg mongod --dbpath ./data --logpath ./log --fork --bind_ip_all
 
-There should be two 27017 ports opened for TCP (one on localhost, one on current IP). 27017 is the default of MongoDB. Use the `netstat -tulpn | grep LISTEN` command to check that.
+* `--bind_ip_all` will bind the MongoDB server to all IPv4 addresses, so it can be accessed from another node.
 
 To launch the client from `node-2`, simply `ssh node-2` to get to that node and then:
 
     singularity exec mspass.simg mongo --host node-1
 
-It will connect to `node-1` on port 27017 by default.
+It will connect to the MongoDB server running on `node-1`.
 
-To stop the mongoDB server, type the following command in mongo shell on `node-1`:
+To stop the MongoDB server, type the following command in mongo shell on `node-1`:
 
     use admin
     db.shutdownServer()
