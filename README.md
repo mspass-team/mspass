@@ -103,7 +103,7 @@ To bring down the containers, run:
     
 or
 
-    docker-compose -f path_to_MsPASS//docker-compose.yml down
+    docker-compose -f path_to_MsPASS/docker-compose.yml down
 
 ## Using MsPASS with Singularity (on HPC)
 
