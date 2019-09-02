@@ -1,0 +1,27 @@
+LIB=libMsPASSutility.a
+DLIB=$(LIB:.a=$(DSUFFIX))
+BUNDLE=$(LIB:.a=.bundle)
+INCLUDE=BasicMetadata.h \
+	Metadata.h \
+	AntelopePf.h
+
+cxxflags=-g -I$(BOOSTINCLUDE)
+#ldflags=
+#ldlibs=
+
+ANTELOPEMAKELOCAL = $(ANTELOPE)/contrib/include/antelopemake.local
+
+SUBDIR= /contrib
+
+include $(ANTELOPEMAKE)
+include $(ANTELOPEMAKELOCAL)
+
+OBJS=Metadata.o AntelopePf.o
+$(LIB) : $(OBJS)
+	$(RM) $@
+	$(CXXAR) $(CXXARFLAGS) $@ $(OBJS)
+	$(RANLIB) $@
+
+$(DLIB) : $(OBJS)
+	$(RM) $@
+	$(CXXDLD) $(CXXDLDFLAGS) -o $(DLIB) $(OBJS) $(DLDLIBS) 
