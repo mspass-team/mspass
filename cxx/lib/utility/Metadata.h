@@ -26,9 +26,12 @@ public:
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
   MetadataGetError(string key,string Texpected)
   {
+    int err;
+    char *s;
+    s=abi::__cxa_demangle(Texpected.c_str(),0,0,&err);
     ss<<"Error trying to extract Metadata with key="<<key<<endl
       << "No value associated with this key is set in Metadata object"<<endl
-      << "Expected an entry of type="<<Texpected<<endl;
+      << "Expected an entry of type="<<s<<endl;
     message=ss.str();
   };
   /*! \brief Constructor called when type requested does not match contents. 
