@@ -172,10 +172,6 @@ To test the setup with the Pi calculation example, use the following command on 
 
     singularity exec mspass.simg /usr/local/spark/bin/run-example --master spark://node-1:7077 SparkPi 10
 
-or
-
-    singularity exec mspass.simg bash -c '/usr/local/spark/bin/run-example --master spark://node-1:$SPARK_MASTER_PORT SparkPi 10'
-
 Each run will create a directory named as `app-X-X`, which contains the files such as stderr. 
 
 The MongoDB can be accessed in the same way as described above.
