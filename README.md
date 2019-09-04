@@ -51,7 +51,7 @@ To launch the containers in a different directory, `cd` to that directory and cr
 
     docker-compose -f path_to_MsPASS/docker-compose.yml up -d
 
-Once the containers are running, you will see several log files from MongoDB and Spark created in the current directory. Since we have the port mapping feature of Docker enabled, you can also open `localhost:8080` in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container's network setup.
+Once the containers are running, you will see several log files from MongoDB and Spark created in current directory. Since we have the port mapping feature of Docker enabled, you can also open `localhost:8080` in your browser to check the status of Spark through the master’s web UI, where you should see the worker is listed a ALIVE. Note that the links to the worker will not work due to the container's network setup.
 
 First, we want to make sure the Spark cluster is setup and running correctly. This can be done running the pi calculation example within the Spark distribution. To submit the example from `mspass-master`, use:
 
@@ -82,6 +82,7 @@ To launch an interactive Python session to run Spark jobs, use the pyspark comma
     docker exec -it mspass-master pyspark \
       --conf "spark.mongodb.input.uri=mongodb://mspass-master/test.myCollection?readPreference=primaryPreferred" \
       --conf "spark.mongodb.output.uri=mongodb://mspass-master/test.myCollection" \
+      --conf "spark.master=spark://mspass-master:7077" \
       --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
       
 or through `mspass-worker`:
@@ -89,9 +90,10 @@ or through `mspass-worker`:
     docker exec -it mspass-worker pyspark \
       --conf "spark.mongodb.input.uri=mongodb://mspass-master/test.myCollection?readPreference=primaryPreferred" \
       --conf "spark.mongodb.output.uri=mongodb://mspass-master/test.myCollection" \
+      --conf "spark.master=spark://mspass-master:7077" \
       --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1
 
-* The two `--conf` options specify the input and output database collections. The MongoDB server is running on `mspass-master`, so the url should point to that on both cases. Please substitute `test` and `myCollection` with the database name or collections name desired. 
+* The three `--conf` options specify the input, output database collections, and the Spark master. The Spark master and the MongoDB server are running on `mspass-master`, so the urls should point to that in both cases. Please substitute `test` and `myCollection` with the database name or collection name desired. 
 * The `--packages` option will setup the MongoDB Spark connector environment in this Python session.
 
 Please refer to [this documentation](https://docs.mongodb.com/spark-connector/master/python-api/) for more details about the MongoDB Spark connector.
@@ -148,3 +150,40 @@ To stop the MongoDB server, type the following command in mongo shell on `node-1
 
     use admin
     db.shutdownServer()
+
+### Getting Spark and MongoDB Running with Singularity on Multiple Nodes
+
+Assume the two nodes requested in a interactive session are `node-1` and `node-2`. To launch the Spark master and the MongoDB server on `node-1`, use the following command on node one:
+
+    singularity run mspass.simg &
+    
+This will require a `data` directory already created at current directory. It will also create the log files of Spark master and MongoDB in current directory. The `&` will let the servers running in the background.
+
+To launch a Spark worker on `node-2`, first `ssh node-2`, and then run
+
+    singularity exec mspass.simg bash -c 'export SPARK_MASTER=node-1; \
+        export SPARK_LOG_DIR=path_to_current_dir; \
+        export SPARK_WORKER_DIR=path_to_current_dir; \
+        $SPARK_HOME/sbin/start-slave.sh spark://$SPARK_MASTER:$SPARK_MASTER_PORT'
+
+You will need to specify three environment variables: `SPARK_MASTER`, `SPARK_LOG_DIR`, and `SPARK_WORKER_DIR` in this version. 
+
+To test the setup with the Pi calculation example, use the following command on either `node-1` or `node-2`:
+
+    singularity exec mspass.simg /usr/local/spark/bin/run-example --master spark://node-1:7077 SparkPi 10
+
+or
+
+    singularity exec mspass.simg bash -c '/usr/local/spark/bin/run-example --master spark://node-1:$SPARK_MASTER_PORT SparkPi 10'
+
+Each run will create a directory named as `app-X-X`, which contains the files such as stderr. 
+
+The MongoDB can be accessed in the same way as described above.
+
+To launch the Python shell with pyspark, use:
+
+    singularity exec mspass.simg pyspark \
+        --conf "spark.mongodb.input.uri=mongodb://node-1/test.myCollection?readPreference=primaryPreferred" \
+        --conf "spark.mongodb.output.uri=mongodb://node-1/test.myCollection" \
+        --conf "spark.master=spark://node-1:7077" \
+        --packages org.mongodb.spark:mongo-spark-connector_2.11:2.4.1 
