@@ -40,6 +40,9 @@ RUN wget -qO - ${SPARK_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local && ln -s spark-${SPARK_VERSION}-bin-hadoop2.7 spark
 RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 
+# Patch pyspark for machines don't have localhost defined in /etc/hosts
+RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
+
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
