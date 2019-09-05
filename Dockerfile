@@ -44,6 +44,9 @@ RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
 RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
 
+# Install obspy through pip
+RUN pip3 --no-cache-dir install numpy \
+    && pip3 --no-cache-dir install obspy
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
