@@ -6,7 +6,8 @@ FROM mongo:4.2.0
 MAINTAINER Ian Wang <yinzhi.wang.cug@gmail.com>
 
 RUN apt-get update \
-    && apt-get install -y wget ssh rsync python3-setuptools \
+    && apt-get install -y wget ssh rsync vim-tiny less
+       python3-setuptools \
        build-essential python3-dev python3-pip openjdk-8-jdk \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
