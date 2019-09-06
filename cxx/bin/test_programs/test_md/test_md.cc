@@ -1,6 +1,6 @@
 #include "Metadata.h"
 #include "AntelopePf.h"
-using namespace MsPASS;
+using namespace mspass;
 int main(int argc, char **argv)
 {
 	//string pfname("test_md");
@@ -74,11 +74,6 @@ int main(int argc, char **argv)
                 try{
                     double dbad=mdsum.get<double>("bad_key");
                 }catch(MetadataGetError& mdge)
-                {
-                    cout << "Properly handled.  Message posted follows:"<<endl
-                        << mdge.what()<<endl;
-                }
-                catch(MetadataGetError& mdge)
                 {
                     cout << "Properly handled.  Message posted follows:"<<endl
                         << mdge.what()<<endl;

@@ -1,12 +1,11 @@
 BIN=test_md
 ldflags=
-cxxflags=-g -std=c++17 -I$(BOOSTINCLUDE) -I../../../lib/utility
+cxxflags=-g -I$(BOOSTINCLUDE) -I../../../lib/utility
 ldlibs=-L../../../lib/utility -lMsPASSutility
 SUBDIR=/contrib
 
 include $(ANTELOPEMAKE)  	
 include $(ANTELOPEMAKELOCAL)
-CXXFLAGS += -I$(BOOSTINCLUDE)
 
 OBJS=test_md.o
 $(BIN) : $(OBJS)
