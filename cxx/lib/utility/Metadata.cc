@@ -1,6 +1,6 @@
-#include <cxxabi.h>
+#include <boost/core/demangle.hpp>
 #include "Metadata.h"
-namespace MsPASS
+namespace mspass
 {
 Metadata::Metadata(ifstream& ifs, const string form)
 {
@@ -97,7 +97,16 @@ const Metadata Metadata::operator+(const Metadata& other) const
   result += other;
   return result;
 }
-
+/* Helper returns demangled name using boost demangle.  */
+string demangled_name(boost::any a)
+{
+    try{
+        const std::type_info &ti = a.type();
+        const char *rawname=ti.name();
+        string pretty_name(boost::core::demangle(rawname));
+        return pretty_name;
+    }catch(...){throw;};
+}
 ostream& operator<<(ostream& os, Metadata& m)
 {
   try{
@@ -114,12 +123,18 @@ ostream& operator<<(ostream& os, Metadata& m)
         bool bval;
         boost::any a=mdptr->second;
         const std::type_info &ti = a.type();
-        char *s;
-        int error;
-        s=strdup(abi::__cxa_demangle(ti.name(),0,0,&error));
-        os<<mdptr->first<<" "<<s<<" ";
-        string sname(s);
-        free(s);
+        string pretty_name=demangled_name(a);
+        /*WARNING:  potential future maintance issue.
+         * Currently the demangling process is not standardized and the
+         * boost code used here does not return a name that is at all 
+         * pretty for string data.   This crude approach just tests for
+         * the keyword basic_string embedded in the long name.  This works
+         * for now, but could create problems if and when this anomaly
+         * evolves away. */
+        string sname("string");
+        if(pretty_name.find("basic_string")==std::string::npos)
+            sname=pretty_name;
+        os<<mdptr->first<<" "<<sname<<" ";
         try{
             if(sname=="int")
             {
@@ -146,6 +161,11 @@ ostream& operator<<(ostream& os, Metadata& m)
                 bval=boost::any_cast<bool>(a);
                 os<<bval<<endl;
             }
+            else if(sname=="string")
+            {
+                sval=boost::any_cast<string>(a);
+                os<<sval<<endl;
+            }
             else
             {
                 os <<"NONPRINTABLE"<<endl;
@@ -159,4 +179,4 @@ ostream& operator<<(ostream& os, Metadata& m)
   }catch(...){throw;};
 }
 
-} // End MsPASS Namespace block
+} // End mspass Namespace block

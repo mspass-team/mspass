@@ -2,7 +2,7 @@
 #define _BASICMETADATA_H_
 #include <string>
 using std::string;
-namespace MsPASS
+namespace mspass
 {
 /*! \brief Abstract base class for Metadata concept.
 
@@ -23,5 +23,5 @@ public:
   virtual void put(const string key, const string val)=0;
 };
 
-};   // End MsPASS namespace encapsulation
+};   // End mspass namespace encapsulation
 #endif

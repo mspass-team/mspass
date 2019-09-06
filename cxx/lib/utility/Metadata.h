@@ -10,9 +10,7 @@
 #include "MsPASSError.h"
 #include "BasicMetadata.h"
 
-using namespace std;
-using namespace MsPASS;
-namespace MsPASS
+namespace mspass
 {
 /*! \brief Error thrown when get operators fail.   
  *
@@ -26,12 +24,11 @@ public:
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
   MetadataGetError(string key,string Texpected)
   {
-    int err;
-    char *s;
-    s=abi::__cxa_demangle(Texpected.c_str(),0,0,&err);
+    
+    string pretty_name(boost::core::demangle(Texpected.c_str()));
     ss<<"Error trying to extract Metadata with key="<<key<<endl
       << "No value associated with this key is set in Metadata object"<<endl
-      << "Expected an entry of type="<<s<<endl;
+      << "Expected an entry of type="<<pretty_name<<endl;
     message=ss.str();
   };
   /*! \brief Constructor called when type requested does not match contents. 
@@ -45,14 +42,10 @@ public:
   {
     ss << "Error in Metadata get method.   Type mismatch in request"<<endl
       << "boost::any bad_any_cast wrote this message:  "<< boostmessage<<endl;
-    int err;
-    char *s;
-    s=abi::__cxa_demangle(Texpected.c_str(),0,0,&err);
-    ss << "Trying to convert to data of type="<<s<<endl;
-    free(s);
-    s=abi::__cxa_demangle(Texpected.c_str(),0,0,&err);
-    ss << "Actual entry has type="<<s<<endl;
-    free(s);
+    string name_e(boost::core::demangle(Texpected.c_str()));
+    ss << "Trying to convert to data of type="<<name_e<<endl;
+    string name_a(boost::core::demangle(Tactual.c_str()));
+    ss << "Actual entry has type="<<name_a<<endl;
     message=ss.str();
   };
 };

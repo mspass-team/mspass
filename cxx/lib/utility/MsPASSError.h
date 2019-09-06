@@ -2,7 +2,7 @@
 #define _MSPASS_ERROR_H_
 #include <iostream>
 #include <exception>
-namespace MsPASS {
+namespace mspass {
 using namespace std;
 /*! \brief Base class for error object thrown by MsPASS library routines.
 
@@ -51,5 +51,5 @@ void log_error(ostream& ofs)
     return message.c_str();
   }
 };
-}  // End MsPASS namespace declaration
+}  // End mspass namespace declaration
 #endif

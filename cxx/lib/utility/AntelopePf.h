@@ -4,9 +4,7 @@
 #include <list>
 #include <string>
 #include "Metadata.h"
-namespace MsPASS{
-using namespace std;
-using namespace MsPASS;
+namespace mspass{
 /*! key for accessing Tbl and Arr entries.
  *
  These are of use only when this object is converted to a Metadata
@@ -180,5 +178,5 @@ class AntelopePfError : public MsPASSError
             cerr << message<<endl;
         };
 };
-} // End SEISPP namespace declaration
+} // End mspass namespace declaration
 #endif

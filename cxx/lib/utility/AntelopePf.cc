@@ -6,9 +6,9 @@
 #include <fstream>
 #include <sstream>
 #include "AntelopePf.h"
-namespace MsPASS {
+namespace mspass {
 using namespace std;
-using namespace MsPASS;
+using namespace mspass;
 enum PfStyleInputType {PFMDSTRING, PFMDREAL, PFMDINT, PFMDBOOL, PFMDARR, PFMDTBL};
 /* this is functionally similar to antelope yesno function, but
    in a more C++ style.  int return code is the same:
@@ -404,4 +404,4 @@ Metadata AntelopePf::ConvertToMetadata()
     }catch(...){throw;};
 }
 
-} // End MsPASS Namespace declaration
+} // End mspass Namespace declaration
