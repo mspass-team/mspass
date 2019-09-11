@@ -1,5 +1,5 @@
 #include <iostream>
-#include "dmatrix.h"
+#include "mspass/dmatrix.h"
 using namespace std;
 using namespace mspass;
 dmatrix MakeA()

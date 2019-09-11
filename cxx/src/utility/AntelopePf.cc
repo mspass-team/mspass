@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "AntelopePf.h"
+#include "mspass/AntelopePf.h"
 namespace mspass {
 using namespace std;
 using namespace mspass;

@@ -1,5 +1,5 @@
 #include <boost/core/demangle.hpp>
-#include "Metadata.h"
+#include "mspass/Metadata.h"
 namespace mspass
 {
 Metadata::Metadata(ifstream& ifs, const string form)

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <math.h>
-#include "dmatrix.h"
-#include "perf.h"
+#include "cblas.h"
+#include "mspass/dmatrix.h"
 
 namespace mspass{
 dmatrix::dmatrix()
@@ -147,7 +147,7 @@ dmatrix operator*(const dmatrix& x1,const dmatrix& b)
               /* This temporary seems necessary */
               double *dptr;
               dptr=prod.get_address(i,j);
-              *dptr=ddot(x1.columns(),x1ptr,x1.rows(),bptr,1);
+              *dptr=cblas_ddot(x1.columns(),x1ptr,x1.rows(),bptr,1);
 	  }
 	return prod;
 }
@@ -264,7 +264,7 @@ dvector operator*(const dmatrix& x1,const dvector& b)
 		throw dmatrix_size_error(nrx1, ncx1, nrb, 1);
 	dvector prod(nrx1);
 	for(i=0;i<nrx1;i++)
-		prod(i)=ddot(nrb,
+		prod(i)=cblas_ddot(nrb,
 			const_cast<dmatrix&>(x1).get_address(i,0),nrx1,
 			const_cast<dvector&>(b).get_address(0,0),1);
 	return prod;

@@ -1,5 +1,5 @@
-#include "Metadata.h"
-#include "AntelopePf.h"
+#include "mspass/Metadata.h"
+#include "mspass/AntelopePf.h"
 using namespace mspass;
 int main(int argc, char **argv)
 {
