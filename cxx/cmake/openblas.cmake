@@ -9,8 +9,17 @@ macro(fetch_openblas _download_module_path _download_root)
 
     execute_process(
         COMMAND
-            make install PREFIX=${_download_root}
+            "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY
-            ${_download_root}/openblas-src
+            ${_download_root}
         )
+    execute_process(
+        COMMAND
+            "${CMAKE_COMMAND}" --build .
+        WORKING_DIRECTORY
+            ${_download_root}
+        )
+
+    set (CBLAS_ROOT ${PROJECT_BINARY_DIR}/openblas)
+#    find_package (CBLAS REQUIRED)
 endmacro()
