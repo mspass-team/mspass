@@ -1,4 +1,4 @@
-add_executable(test_md EXCLUDE_FROM_ALL test_md.cc)
+add_executable(test_md test_md.cc)
 configure_file(simple.txt simple.txt COPYONLY)
 configure_file(test_md.out test_md.out COPYONLY)
 configure_file(test_md.pf test_md.pf COPYONLY)

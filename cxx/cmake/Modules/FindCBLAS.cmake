@@ -46,18 +46,25 @@ MACRO(CHECK_ALL_LIBRARIES LIBRARIES _prefix _name _flags _list _include _search_
   FOREACH(_library ${_list})
     SET(_combined_name ${_combined_name}_${_library})
 
+    set(_library_HINTS
+      ${CBLAS_ROOT}/lib
+      $ENV{CBLAS_ROOT}/lib
+      )      
+
     # did we find all the libraries in the _list until now?
     # (we stop at the first unfound one)
     IF(_libraries_work)      
       IF(APPLE) 
         FIND_LIBRARY(${_prefix}_${_library}_LIBRARY
           NAMES ${_library}
+          HINTS ${_library_HINTS}
           PATHS /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ENV 
           DYLD_LIBRARY_PATH 
           )
       ELSE(APPLE)
         FIND_LIBRARY(${_prefix}_${_library}_LIBRARY
           NAMES ${_library}
+          HINTS ${_library_HINTS}
           PATHS /usr/local/lib /usr/lib /usr/local/lib64 /usr/lib64 ENV 
           LD_LIBRARY_PATH 
           )
@@ -93,6 +100,7 @@ MACRO(CHECK_ALL_LIBRARIES LIBRARIES _prefix _name _flags _list _include _search_
   IF(_libraries_work)
     # Test this combination of libraries.
     SET(CMAKE_REQUIRED_LIBRARIES ${_flags} ${${LIBRARIES}})
+    SET(${_prefix}${_combined_name}_WORKS "1")
     CHECK_FUNCTION_EXISTS(${_name} ${_prefix}${_combined_name}_WORKS)
     SET(CMAKE_REQUIRED_LIBRARIES)
     MARK_AS_ADVANCED(${_prefix}${_combined_name}_WORKS)
@@ -161,6 +169,19 @@ IF(NOT CBLAS_LIBRARIES)
     cblas_dgemm
     ""
     "cblas;f77blas;atlas"
+    "cblas.h"
+    TRUE
+    )
+ENDIF(NOT CBLAS_LIBRARIES)
+
+#CBLAS in openblas library?
+IF(NOT CBLAS_LIBRARIES)
+  CHECK_ALL_LIBRARIES(
+    CBLAS_LIBRARIES
+    CBLAS
+    cblas_dgemm
+    ""
+    "openblas"
     "cblas.h"
     TRUE
     )

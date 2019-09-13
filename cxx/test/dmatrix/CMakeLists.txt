@@ -1,4 +1,4 @@
-add_executable(test_dmatrix EXCLUDE_FROM_ALL test_dmatrix.cc)
+add_executable(test_dmatrix test_dmatrix.cc)
 include_directories(
   ${Boost_INCLUDE_DIRS}
   ${CBLAS_INCLUDE_DIR}

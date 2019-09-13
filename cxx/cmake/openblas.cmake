@@ -21,5 +21,5 @@ macro(fetch_openblas _download_module_path _download_root)
         )
 
     set (CBLAS_ROOT ${PROJECT_BINARY_DIR}/openblas)
-#    find_package (CBLAS REQUIRED)
+    find_package (CBLAS REQUIRED)
 endmacro()

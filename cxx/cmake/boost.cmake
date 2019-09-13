@@ -21,5 +21,5 @@ macro(fetch_boost _download_module_path _download_root)
         )
 
     set (BOOST_ROOT ${PROJECT_BINARY_DIR}/boost)
-#    find_package (Boost 1.71.0 REQUIRED)
+    find_package (Boost 1.71.0 REQUIRED)
 endmacro()
