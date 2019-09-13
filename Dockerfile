@@ -48,6 +48,20 @@ RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators
 RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install obspy
 
+# Add cxx library
+RUN apt-get update \
+    && apt-get install -y git cmake \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+ADD cxx /mspass/cxx
+ADD .git /mspass/.git
+ADD .gitmodules /mspass/.gitmodules
+RUN cd /mspass/cxx \
+    && mkdir build && cd build \
+    && cmake .. \
+    && make \
+    && make install 
+
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
