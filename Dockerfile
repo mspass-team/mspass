@@ -9,6 +9,7 @@ RUN apt-get update \
     && apt-get install -y wget ssh rsync vim-tiny less \
        build-essential python3-setuptools \
        python3-dev python3-pip openjdk-8-jdk \
+       git cmake gfortran gdb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
@@ -17,7 +18,7 @@ RUN pip3 --no-cache-dir install pymongo
 RUN mkdir /home/data
 
 # Prepare the environment
-ENV SPARK_VERSION 2.4.3
+ENV SPARK_VERSION 2.4.4
 ENV SPARK_MASTER_PORT 7077
 
 ENV MSPASS_ROLE master
@@ -49,13 +50,7 @@ RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install obspy
 
 # Add cxx library
-RUN apt-get update \
-    && apt-get install -y git cmake \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
 ADD cxx /mspass/cxx
-ADD .git /mspass/.git
-ADD .gitmodules /mspass/.gitmodules
 RUN cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake .. \
