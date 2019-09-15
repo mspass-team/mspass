@@ -60,5 +60,6 @@ RUN cd /mspass/cxx \
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
+RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
 
 ENTRYPOINT ["/usr/sbin/start-mspass.sh"]
