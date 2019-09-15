@@ -14,6 +14,7 @@ if [ $# -eq 0 ]; then
   if [ "$MSPASS_ROLE" = "master" ]; then
     if [ -d "$MONGO_DATA" ]; then
       $SPARK_HOME/sbin/start-master.sh
+      [[ -d $MONGO_DATA ]] || mkdir $MONGO_DATA
       mongod --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
     else
       echo "Error: Directory $MONGO_DATA does not exists."
