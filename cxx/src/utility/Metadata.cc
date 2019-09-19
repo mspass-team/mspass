@@ -122,7 +122,8 @@ ostream& operator<<(ostream& os, Metadata& m)
         string sval;
         bool bval;
         boost::any a=mdptr->second;
-        const std::type_info &ti = a.type();
+        /* A relic retained to help remember this construct*/
+        //const std::type_info &ti = a.type();
         string pretty_name=demangled_name(a);
         /*WARNING:  potential future maintance issue.
          * Currently the demangling process is not standardized and the

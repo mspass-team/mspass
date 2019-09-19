@@ -73,6 +73,8 @@ int main(int argc, char **argv)
                 cout << "Testing exceptions.  First a get failure:"<<endl;
                 try{
                     double dbad=mdsum.get<double>("bad_key");
+                    cout << "PROBLEM:  get did not throw error and returend"
+                        << dbad<<endl;
                 }catch(MetadataGetError& mdge)
                 {
                     cout << "Properly handled.  Message posted follows:"<<endl

@@ -131,8 +131,7 @@ dmatrix dmatrix::operator-(const dmatrix &other)
 
 dmatrix operator*(const dmatrix& x1,const dmatrix& b) 
 {
-	int i,j,k;
-	double xval,bval;
+	int i,j;
         /* The computed length in last arg to the error object is a relic*/
 	if(x1.columns()!=b.rows())
 		throw dmatrix_size_error(x1.rows(), x1.columns(), 

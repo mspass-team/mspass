@@ -50,7 +50,6 @@ PfStyleInputType arg_type(string token)
     found=token.find(tbltag);
     if(found!=string::npos) return(PFMDTBL);
     if(yesno(token)!=1) return(PFMDBOOL);
-    bool hasalpha(false);
     size_t slen=token.size();
     int i;
     bool found_an_e(false);
@@ -171,7 +170,6 @@ AntelopePf::AntelopePf(list<string> alllines) : Metadata()
     const string base_error("AntelopePf constructor:  ");
     list<string>::iterator lptr,end_block;
     list<string> block;
-    bool bval;
     string key,token2;
     try {
     for(lptr=alllines.begin();lptr!=alllines.end();++lptr)
