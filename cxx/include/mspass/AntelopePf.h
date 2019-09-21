@@ -97,7 +97,7 @@ public:
       \param key is the key for the Tbl desired.
       \exception AntelopePfError will be thrown if the key
          is not present. */
-    list<string> get_tbl(const string key);
+    list<string> get_tbl(const string key) const;
     /*! \brief used for subtrees (nested Arrs in antelope)
 
        This method is used for nested Arr constructs.
@@ -110,11 +110,11 @@ public:
 
        \exception AntelopePfError will be thrown if the key is not
             found. */
-    AntelopePf get_branch(const string key);
+    AntelopePf get_branch(const string key) const;
     /*! Return a list of keys for branches (Arrs) in the pf file. */
-    list<string> arr_keys();
+    list<string> arr_keys() const;
     /*! Return a list of keys for Tbls in the pf.*/
-    list<string> tbl_keys();
+    list<string> tbl_keys() const;
     /*! \brief Return an object with only simple name:value pairs.
      *
      The Metadata parent of this object only handles name:value pairs.
