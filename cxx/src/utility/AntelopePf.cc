@@ -348,31 +348,31 @@ AntelopePf::AntelopePf(const AntelopePf& parent)
 }
 list<string> AntelopePf::get_tbl(const string key) const
 {
-    map<string,list<string> >::iterator iptr;
+    map<string,list<string> >::const_iterator iptr;
     iptr=pftbls.find(key);
     if(iptr==pftbls.end()) throw AntelopePfError(
             "get_tbl failed trying to find data for key="+key);
-    return(pftbls[key]);
+    return(iptr->second);
 }
 AntelopePf AntelopePf::get_branch(const string key) const
 {
-    map<string,AntelopePf>::iterator iptr;
+    map<string,AntelopePf>::const_iterator iptr;
     iptr=pfbranches.find(key);
     if(iptr==pfbranches.end()) throw AntelopePfError(
             "get_branch failed trying to find data for key="+key);
-    return(pfbranches[key]);
+    return iptr->second;
 }
 list<string> AntelopePf::arr_keys() const
 {
-    map<string,AntelopePf>::iterator iptr;
+    map<string,AntelopePf>::const_iterator iptr;
     list<string> result;
     for(iptr=pfbranches.begin();iptr!=pfbranches.end();++iptr)
         result.push_back((*iptr).first);
-    return(result);
+    return result;
 }
 list<string> AntelopePf::tbl_keys() const
 {
-    map<string,list<string> >::iterator iptr;
+    map<string,list<string> >::const_iterator iptr;
     list<string> result;
     for(iptr=pftbls.begin();iptr!=pftbls.end();++iptr)
         result.push_back((*iptr).first);
