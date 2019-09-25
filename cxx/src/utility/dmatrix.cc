@@ -254,10 +254,9 @@ double &dvector::operator()(const int rowindex)
 }		
 dvector operator*(const dmatrix& x1,const dvector& b)
 {
-	int i,j,k;
-	double xval,bval;
-        int ncx1=x1.columns();
+	int i;
         int nrx1=x1.rows();
+        int ncx1=x1.columns();
         int nrb=const_cast<dvector&>(b).rows();
 	if(ncx1!=nrb)
 		throw dmatrix_size_error(nrx1, ncx1, nrb, 1);
