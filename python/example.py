@@ -24,7 +24,7 @@ dfdata = df.select("waveform").withColumn("tmpid", monotonically_increasing_id()
 from pymongo import MongoClient
 import gridfs
 import pickle
-dfdata = dfdata.rdd.map(lambda x: ([str(gridfs.GridFS(MongoClient('mongodb://mspass-master:27017/').gridfs_wf).put(pickle.dumps(x["waveform"])))], x["tmpid"])).cache().toDF(["wfid", "tmpid"])
+dfdata = dfdata.rdd.map(lambda row: (str(gridfs.GridFS(MongoClient('mongodb://mspass-master:27017/').gridfs_wf).put(pickle.dumps(row["waveform"]))), row["tmpid"])).cache().toDF(["wfid", "tmpid"])
 
 # Join metadata with the wfid of saved data
 df = dfmetadata.join(dfdata, "tmpid", "outer").drop("tmpid")
