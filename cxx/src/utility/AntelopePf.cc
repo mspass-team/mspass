@@ -50,7 +50,7 @@ PfStyleInputType arg_type(string token)
     found=token.find(tbltag);
     if(found!=string::npos) return(PFMDTBL);
     if(yesno(token)!=1) return(PFMDBOOL);
-    size_t slen=token.size();
+    int slen=token.size();
     int i;
     bool found_an_e(false);
     for(i=0;i<slen;++i)
@@ -313,6 +313,12 @@ AntelopePf::AntelopePf(string pfbase)
     if(s==NULL)
     {
       pffiles.push_back(".");
+    }
+    /* Test to see if pfbase is an absolute path - if so just use
+     * it and ignore the pfpath feature */
+    else if(pfbase[0]=='/')
+    {
+        pffiles.push_back(pfbase);
     }
     else
     {

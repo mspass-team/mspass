@@ -70,6 +70,8 @@ public:
     will follow the chain of directories defined by PFPATH.   As with
     the antelope pfread procedure the last file read takes precendence.
     Note if PFPATH is not defined the path defaults to ".".
+    Further if pfbase begins with a slash (i.e. "/") it is assumed to be
+    the actual file name to read and the PFPATH feature is disabled. 
 
       \param pfbase is a the base pf name (always adds .pf to each name in PFPATH)
 
