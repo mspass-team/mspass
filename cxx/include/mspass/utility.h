@@ -1,5 +1,6 @@
 /* This header is to contain assorted useful C and C++ procedures 
    appropriate for the tag utility.h.   */
+#include <string>
 namespace mspass{
 /*! Standard method returns a string defining the top level data directory for mspass. 
 
@@ -12,5 +13,5 @@ string datadir=mspass::data_directory();
 string mydatafile=datadir+"/pf";
 
   */
-string data_directory();
+std::string data_directory();
 }
