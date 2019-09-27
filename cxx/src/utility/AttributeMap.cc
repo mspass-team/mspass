@@ -211,8 +211,6 @@ constructor that specifies a specific schema.  What is defined as default is
 hard coded here though */
 AttributeMap::AttributeMap()
 {
-    //DEBUG
-    cerr << "Entered default constructor"<<endl;
 	const string DEFAULT_SCHEMA_NAME("css3.0");
 	try{
 		(*this)=AttributeMap(DEFAULT_SCHEMA_NAME);
