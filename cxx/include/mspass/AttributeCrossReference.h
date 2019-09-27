@@ -40,6 +40,18 @@ class AttributeCrossReference
 
           \exception MsPASSError will be thrown for parsing errors. */
         AttributeCrossReference(const std::string lines_to_parse);
+        /*! Construct from a list container.
+
+        This constructor is nearly identical to the single string with
+        newline constructor.  The list elements are expected to be 
+        the contents of each line (newline break) for the string version.
+
+        \lines list container with input lines in same format as that
+           described above for single string constructor.
+        \exception MsPASSError will be thrown if there are parsing errors.
+        */
+        AttributeCrossReference(const list<string>& lines);
+
         /*! Build for a set of STL containers.
 
           This is lower level constructor that effectively builds this

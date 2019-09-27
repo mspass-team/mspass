@@ -1,10 +1,11 @@
 #include <sstream>
-#include "AttributeCrossReference.h"
+#include "mspass/AttributeCrossReference.h"
 using namespace std;
 using namespace mspass;
 namespace mspass {
 AttributeCrossReference::AttributeCrossReference(const string lines_to_parse)
 {
+  try{
     istringstream instrm(lines_to_parse);
     do
     {
@@ -27,15 +28,55 @@ AttributeCrossReference::AttributeCrossReference(const string lines_to_parse)
             imdtypemap.insert(pair<string,MDtype>(inkey,MDstring));
         else
         {
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDinvalid));
-            cerr << "AttributeCrossReference constructor (Warning):  "
+            /* Note in seispp this condition only logs and error and
+             * sets attribute invalid.  Here we throw an exception as
+             * this would always be called on startup and should normally
+             * cause an abort */
+            stringstream sserr;
+            sserr << "AttributeCrossReference string constructor:  "
                 <<" Attribute with tag="<<inkey <<" is tagged with an "
                 << "illegal type name="<<typestr<<endl
-                <<" Set to MDinvalid.  This may cause problems downstream"
-                <<endl;
+                << "Repair input data passed to this constructor"<<endl;
+            throw MsPASSError(sserr.str());
         }
 
     }while(!instrm.eof());
+  }catch(...){throw;};
+}
+/*! This constructor was produced by a revisio of the previous to change 
+ * from a single string to a list container.   */
+AttributeCrossReference::AttributeCrossReference(const list<string>& lines)
+{
+    list<string>::const_iterator lptr;
+    for(lptr=lines.begin();lptr!=lines.end();++lptr)
+    {
+        istringstream instrm(*lptr);
+        string inkey,outkey;
+        string typestr;
+        instrm>>inkey;
+        instrm>>outkey;
+        instrm>>typestr;
+        itoe.insert(pair<string,string>(inkey,outkey));
+        etoi.insert(pair<string,string>(outkey,inkey));
+        if(typestr=="int" || typestr=="INT" || typestr=="integer")
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDint));
+        else if(typestr=="real" || typestr=="REAL" || typestr=="double")
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDreal));
+        else if(typestr=="bool" || typestr=="BOOL" || typestr=="boolean")
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDboolean));
+        else if(typestr=="string" || typestr=="STRING")
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDstring));
+        else
+        {
+            stringstream sserr;
+            sserr << "AttributeCrossReference string constructor:  "
+                <<" Attribute with tag="<<inkey <<" is tagged with an "
+                << "illegal type name="<<typestr<<endl
+                << "Repair input data passed to this constructor"<<endl;
+            throw MsPASSError(sserr.str());
+        }
+
+    }
 }
 AttributeCrossReference::AttributeCrossReference(const map<string,string> int2ext,
         const MetadataList& mdlist)
