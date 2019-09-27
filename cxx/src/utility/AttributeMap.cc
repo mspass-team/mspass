@@ -1,6 +1,7 @@
 #include <sstream>
+#include "mspass/utility.h"
 #include "mspass/Metadata.h"
-#include "AttributeMap.h"
+#include "mspass/AttributeMap.h"
 namespace mspass{
 using namespace std;
 using namespace mspass;
@@ -19,7 +20,7 @@ AttributeProperties::AttributeProperties()
 AttributeProperties::AttributeProperties(const string st)
 {
 	const string white(" \t\n");
-	int current=0,next;
+	int current=0;
 	int end_current;
 	string mdtype_word;
 	string bool_word;
@@ -110,7 +111,7 @@ string AttributeProperties::fully_qualified_name() const
 	result=db_table_name + "." + db_attribute_name;
 	return(result);
 }
-AttributeProperties& operator<<(ostream& ofs, const AttributeProperties& d)
+ostream& operator<<(ostream& ofs, const AttributeProperties& d)
 {
     ofs<<d.db_attribute_name<<" "<<d.db_table_name<<" "
         <<d.fully_qualified_name()<<" "
@@ -138,6 +139,7 @@ AttributeProperties& operator<<(ostream& ofs, const AttributeProperties& d)
                     + "MDtype of object is improperly defined.\n"
                     +"Likely memory problem as this should not happen");
     };
+    return ofs;
 }
 
 
@@ -151,10 +153,9 @@ AttributeProperties& operator<<(ostream& ofs, const AttributeProperties& d)
 AttributeMap::AttributeMap(const AntelopePf &pf,const string name)
 {
 	const string base_error("AttributeMap AntelopePf constructor:  ");
-	typedef map<string,AttributeProperties> APMAP;
 	try{
 	  AntelopePf pfnested=pf.get_branch(name);
-		list<string> attbl=pf.get_tbl("Attributes");
+		list<string> attbl=pfnested.get_tbl("Attributes");
 		if(attbl.size()<=0) throw MsPASSError(base_error
 			 + "Attributes table is empty. Is parameter file may be missing Attributes Tbl?");
 		list<string>::iterator tptr;
@@ -163,7 +164,7 @@ AttributeMap::AttributeMap(const AntelopePf &pf,const string name)
 			AttributeProperties ap(*tptr);
 			attributes[ap.internal_name]=ap;
 		}
-		list<string> alias_tbl=pf.get_tbl("aliases");
+		list<string> alias_tbl=pfnested.get_tbl("aliases");
 		/* Assume the aliasmap container is propertly initialized in the (possible)
 		condition that the aliases section is empty. */
 		for(tptr=alias_tbl.begin();tptr!=alias_tbl.end();++tptr)
@@ -187,20 +188,22 @@ AttributeMap::AttributeMap(const AntelopePf &pf,const string name)
 				aliaslist.push_back(token);
 				in>>token;
 			}
+                        aliaslist.push_back(token);
+                        aliasmap[key]=aliaslist;
 		}
 	}catch(...){throw;};
 }
-AttributeMap::AttributeMap(const string schema)
+AttributeMap::AttributeMap(const string mapname)
 {
 	const string base_error("AttributeMap constructor:");
 	const string pfname("attribute_maps.pf");
 	string datadir,pfdir,pffile;
 	try{
-                mspass::datadir=mspass::data_directory();
-		pfdir=datadir+"/pf";
+                datadir=mspass::data_directory();
+		pfdir=datadir+"/pf/";
 		pffile=pfdir+pfname;
 		AntelopePf pfall_maps(pffile);
-		*this=AttributeMap(pfall_maps,schema);
+		*this=AttributeMap(pfall_maps,mapname);
 	}catch(...){throw;};
 }
 /* The default constructor can be implemented as a special case of core
@@ -208,6 +211,8 @@ constructor that specifies a specific schema.  What is defined as default is
 hard coded here though */
 AttributeMap::AttributeMap()
 {
+    //DEBUG
+    cerr << "Entered default constructor"<<endl;
 	const string DEFAULT_SCHEMA_NAME("css3.0");
 	try{
 		(*this)=AttributeMap(DEFAULT_SCHEMA_NAME);
@@ -232,6 +237,10 @@ bool AttributeMap::is_alias(const string key) const
 	if(aliasmap.size()==0) return false;
 	if(aliasmap.find(key)==aliasmap.end()) return false;
 	return true;
+}
+bool AttributeMap::is_alias(const char *key) const
+{
+    return this->is_alias(string(key));
 }
 map<string,AttributeProperties> AttributeMap::aliases(const string key) const
 {
@@ -269,6 +278,12 @@ map<string,AttributeProperties> AttributeMap::aliases(const string key) const
 	return(result);
 
 }
+map<string,AttributeProperties> AttributeMap::aliases(const char *key) const
+{
+    try{
+        return this->aliases(string(key));
+    }catch(...){throw;};
+}
 /* This code has very strong parallels to aliases because they do similar
 things even though they return very different results. */
 list<string> AttributeMap::aliastables(const string key) const
@@ -301,6 +316,12 @@ list<string> AttributeMap::aliastables(const string key) const
 	}
 	return(result);
 }
+list<string> AttributeMap::aliastables(const char *key) const
+{
+    try{
+        return this->aliastables(string(key));
+    }catch(...){throw;};
+}
 AttributeProperties AttributeMap::operator[](const std::string key) const
 {
     map<std::string,AttributeProperties>::const_iterator amptr;
@@ -314,6 +335,12 @@ AttributeProperties AttributeMap::operator[](const std::string key) const
     {
         return amptr->second;
     }
+}
+AttributeProperties AttributeMap::operator[](const char *key) const
+{
+    try{
+        return this->operator[](string(key));
+    }catch(...){throw;};
 }
 
 

@@ -106,7 +106,7 @@ public:
 	in the form used by Antelope/datascope:  that is the string is if the form table.attribute.
 	*/
 	std::string fully_qualified_name() const;
-        friend AttributeProperties& operator<<(ostream& ofs, const AttributeProperties& d);
+        friend ostream& operator<<(ostream& ofs, const AttributeProperties& d);
 };
 /*! \brief An object to map internal and external attribute names.
 *
@@ -182,6 +182,8 @@ public:
 	\exception MsPASSError thrown if the key is not found.
 	*/
 	AttributeProperties operator[](const std::string key) const;
+        /*! Overloaded operator for C strings constants. */
+	AttributeProperties operator[](const char* key) const;
 	/*! Returns a list of aliases for a key.
 
 	A universal issue in a relational database interface is that an
@@ -208,6 +210,8 @@ public:
 		an error in the definition of the AttributeMap.
 	*/
 	map<std::string,AttributeProperties> aliases(const std::string key) const;
+        /*! Overload for literals. */
+	map<std::string,AttributeProperties> aliases(const char *key) const;
 	/*! Returns an ordered list of table names to try in extracting an alias named.
 
 	Aliases present an issue on input.  Because many attribute names appear in
@@ -225,6 +229,8 @@ public:
 	\exception MsPASSError will be thrown if there are inconsistencies
 	*/
         std::list<std::string> aliastables(const std::string key) const;
+        /*! Overload for literals*/
+        std::list<std::string> aliastables(const char *key) const;
 	/*! Check if an attribute name is an alias.
 
 	For efficiency and convience it is useful to have a simple way to
@@ -234,6 +240,8 @@ public:
 	\return true if key is an alias.  Otherwise return false.
 	*/
 	bool is_alias(const std::string key) const;
+        /*! Overloaded for string literal. */
+	bool is_alias(const char *key) const;
 private:
 	/*! Parameter file driven constructor.
 	*  Builds this object from an Antelope parameter file.  Parses the
