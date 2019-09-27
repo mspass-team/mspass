@@ -1,4 +1,5 @@
 #include "mspass/utility.h"
+#include "mspass/AntelopePf.h"
 #include "mspass/AttributeMap.h"
 #include "mspass/AttributeCrossReference.h"
 using namespace mspass;
@@ -50,6 +51,48 @@ int main(int argc,char **argv)
     cout << "Success - map returned by aliases has "<<amap.size()<<" entries"<<endl;
     cout << "Example arrival.time"<<endl;
     cout << amdef["arrival.time"]<<endl;
+    cout << "Starting tests of AttributeCrossReference - trying to read test pf file"<<endl;
+    string dir=mspass::data_directory();
+    dir=dir+"/pf";
+    string dfile=dir+"/axref_test.pf";
+    AntelopePf pf(dfile);
+    list<string> xreflist=pf.get_tbl("metadata_cross_reference");
+    cout << "Successfully read test data file"<<endl
+        << "Trying list container constructor"<<endl;
+    AttributeCrossReference axref(xreflist);
+    cout << "Success:   input map size="<<axref.size()<<endl;
+    cout << "Testing copy constructor"<<endl;
+    AttributeCrossReference *axcpy=new AttributeCrossReference(axref);
+    if(axref.size()==axcpy->size())
+        cout << "Size of copy matches original - assume success"<<endl;
+    else
+        cout << "Something is wrong.   Size of copy="<<axcpy->size()<<endl;
+    cout << "Testing destructor"<<endl;
+    delete axcpy;
+    cout << "Testing operator="<<endl;
+    AttributeCrossReference axcpy2=axref;
+    if(axref.size()==axcpy2.size())
+        cout << "Size of copy matches original - assume success"<<endl;
+    else
+        cout << "Something is wrong.   Size of copy="<<axcpy2.size()<<endl;
+    cout << "Testing internal method"<<endl;
+    const string ekey("sourceLongOrX");
+    const string ikey("sx");
+    string stest;
+    stest=axref.internal(ekey);
+    cout << "Internal method returned "<<stest;
+    if(stest==ikey) 
+        cout <<"Test passed - got result expected"<<endl;
+    else
+        cout << "ERROR:   expected result="<<ikey;
+    cout << "Testing external method"<<endl;
+    stest=axref.external(ikey);
+    cout << "Internal method returned "<<stest;
+    if(stest==ekey) 
+        cout <<"Test passed - got result expected"<<endl;
+    else
+        cout << "ERROR:   expected result="<<ekey;
+
   }catch(MsPASSError& merr)
   {
       cerr << "Error - here is the MsPASSException message:"<<endl<<merr.what()<<endl;
