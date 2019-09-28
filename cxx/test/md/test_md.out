@@ -1,3 +1,8 @@
+Test program for Metadata object, AntelopePf, and ErrorLogger
+First try creating an ErrorLogger object
+Try algorithms to set jobid and algorithm
+Success - job_id set to 10000
+Algorithm=test_md
 Trying to build Metadata objects
 Trying default constructor
 Trying put methods for int, double, string, and bool
@@ -83,6 +88,8 @@ Error trying to extract Metadata with key=bad_key
 No value associated with this key is set in Metadata object
 Expected an entry of type=double
 
+Error - severity posted was not Invalid as expected
+Trying to write log with ErrorLogger
 Trying intentional type mismatch.
 Properly handled trying to get test_double as int
 Error message posted
@@ -90,4 +97,29 @@ Error in Metadata get method.   Type mismatch in request
 boost::any bad_any_cast wrote this message:  boost::bad_any_cast: failed conversion using boost::any_cast
 Trying to convert to data of type=int
 Actual entry has type=double
+
+Error - severity posted was not Invalid as expected
+Posting that message to log
+Posting a set of fake messages to log
+Dump of error log
+Undefined
+10000 22816 test_md Error trying to extract Metadata with key=bad_key
+No value associated with this key is set in Metadata object
+Expected an entry of type=double
+
+
+Informational 10000 22816 test_md log_error method succeeded
+
+Undefined
+10000 22816 test_md Error in Metadata get method.   Type mismatch in request
+boost::any bad_any_cast wrote this message:  boost::bad_any_cast: failed conversion using boost::any_cast
+Trying to convert to data of type=int
+Actual entry has type=double
+
+
+Fatal 10000 22816 test_md Fake fatal error
+
+Debug 10000 22816 test_md Fake debug error
+
+Complaint 10000 22816 test_md Fake complain error
 

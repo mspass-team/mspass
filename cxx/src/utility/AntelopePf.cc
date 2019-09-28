@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "mspass/MsPASSError.h"
 #include "mspass/AntelopePf.h"
 namespace mspass {
 using namespace std;
@@ -100,7 +101,8 @@ AntelopePf pfread(string fname)
 {
     ifstream inp;
     inp.open(fname.c_str(),ios::in);
-    if(inp.fail()) throw MsPASSError("MsPASS::pfread: open failed for file "
+    if(inp.fail()) 
+        throw MsPASSError(string("MsPASS::pfread: open failed for file ")
             +fname);
 
     /* Eat up the whole file - this assumes not a large
@@ -342,7 +344,7 @@ AntelopePf::AntelopePf(string pfbase)
       ++nread;
     }
     if(nread==0) throw MsPASSError(string("PFPATH=")+s
-        +" had no pf files matching" + pfbase);
+        +" had no pf files matching " + pfbase,ErrorSeverity::Invalid);
   }catch(...){throw;};
 }
 

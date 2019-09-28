@@ -55,7 +55,7 @@ Metadata::Metadata(ifstream& ifs, const string form)
           << s1<<" with a value field of "<<s2<<endl
           << "type specified as "<<s3<<" is illegal.  "
           << "Must be on of the following:  real, integer, bool, or string."<<endl;
-        throw MsPASSError(sserr.str());
+        throw MsPASSError(sserr.str(),ErrorSeverity::Invalid);
       }
     }
   }catch(...){throw;};
