@@ -12,9 +12,9 @@
 
 namespace mspass
 {
-/*! \brief Error thrown when get operators fail.   
+/*! \brief Error thrown when get operators fail.
  *
- * This is a convenience class used to construct a more informative 
+ * This is a convenience class used to construct a more informative
  * set of errors when get operations fail.  */
 class MetadataGetError : public MsPASSError
 {
@@ -24,16 +24,17 @@ public:
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
   MetadataGetError(string key,string Texpected)
   {
-    
+
     string pretty_name(boost::core::demangle(Texpected.c_str()));
     ss<<"Error trying to extract Metadata with key="<<key<<endl
       << "No value associated with this key is set in Metadata object"<<endl
       << "Expected an entry of type="<<pretty_name<<endl;
     message=ss.str();
+    badness=ErrorSeverity::Suspect;
   };
-  /*! \brief Constructor called when type requested does not match contents. 
- 
-    This implementation uses a pickle style map container where the 
+  /*! \brief Constructor called when type requested does not match contents.
+
+    This implementation uses a pickle style map container where the
     contents of the map can by any type.  We use boost::any to provide
     sanity checks on types.   This is creates the error message thrown
     when the type of the return does not match the type requested. */
@@ -47,6 +48,7 @@ public:
     string name_a(boost::core::demangle(Tactual.c_str()));
     ss << "Actual entry has type="<<name_a<<endl;
     message=ss.str();
+    badness=ErrorSeverity::Suspect;
   };
 };
 

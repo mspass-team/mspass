@@ -1,12 +1,21 @@
+#include "mspass/ErrorLogger.h"
+#include "mspass/MsPASSError.h"
 #include "mspass/Metadata.h"
 #include "mspass/AntelopePf.h"
 using namespace mspass;
 int main(int argc, char **argv)
 {
-	//string pfname("test_md");
 	char *pfname=strdup("test_md");
-	int ierr;
 	try {
+            cout << "Test program for Metadata object, AntelopePf, and ErrorLogger"
+                <<endl
+            << "First try creating an ErrorLogger object"<<endl;
+            ErrorLogger elog;
+            cout << "Try algorithms to set jobid and algorithm"<<endl;
+            elog.set_job_id(10000);
+            elog.set_algorithm(string("test_md"));
+            cout << "Success - job_id set to "<<elog.get_job_id()<<endl
+                << "Algorithm="<<elog.get_algorithm()<<endl;
 		cout << "Trying to build Metadata objects" << endl;
 		cout << "Trying default constructor" << endl;
 		Metadata mdplain;
@@ -79,6 +88,14 @@ int main(int argc, char **argv)
                 {
                     cout << "Properly handled.  Message posted follows:"<<endl
                         << mdge.what()<<endl;
+                    if(mdge.severity() == ErrorSeverity::Invalid)
+                        cout << "Correct severity of Invalid was posted"<<endl;
+                    else 
+                        cout << "Error - severity posted was not Invalid as expected"
+                            <<endl;
+                    cout << "Trying to write log with ErrorLogger"<<endl;
+                    elog.log_error(mdge);
+                    elog.log_verbose(string("log_error method succeeded"));
                 }
                 cout << "Trying intentional type mismatch."<<endl;
                 try{
@@ -90,13 +107,38 @@ int main(int argc, char **argv)
                         <<endl
                         <<"Error message posted"<<endl
                         << mdge.what()<<endl;
+                    if(mdge.severity() == ErrorSeverity::Invalid)
+                        cout << "Correct severity of Invalid was posted"<<endl;
+                    else 
+                        cout << "Error - severity posted was not Invalid as expected"
+                            <<endl;
+                    cout << "Posting that message to log"<<endl;
+                    elog.log_error(mdge);
                 }
-
+                cout << "Posting a set of fake messages to log"<<endl;
+                MsPASSError efatal(string("Fake fatal error"),"Fatal");
+                elog.log_error(efatal);
+                MsPASSError edebug(string("Fake debug error"),"Debug");
+                elog.log_error(edebug);
+                MsPASSError ec(string("Fake complain error"),"Complaint");
+                elog.log_error(ec);
+                list<LogData> ldata=elog.get_error_log();
+                list<LogData>::iterator lptr;
+                cout << "Dump of error log"<<endl;
+                for(lptr=ldata.begin();lptr!=ldata.end();++lptr)
+                {
+                    cout << *lptr<<endl;
+                }
 	}
 	catch (MsPASSError& sess)
 	{
             cout << "Something threw an MsPASSError exception - message posted follows"<<endl;
 	    cout << sess.what()<<endl;
+            if(sess.severity() == ErrorSeverity::Invalid)
+                cout << "Correct severity of Invalid was posted"<<endl;
+            else 
+                cout << "Error - severity posted was not Invalid as expected"
+                    <<endl;
 	}
         catch(std::exception& stex)
         {
