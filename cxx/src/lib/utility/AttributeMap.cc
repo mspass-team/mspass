@@ -15,7 +15,7 @@ AttributeProperties::AttributeProperties()
 	db_attribute_name="none";
 	db_table_name="";
 	internal_name="NULL";
-	mdt=MDstring;
+	mdt=MDtype::String;
 }
 AttributeProperties::AttributeProperties(const string st)
 {
@@ -28,10 +28,10 @@ AttributeProperties::AttributeProperties(const string st)
 	const string emess("AttributeProperties(string) constructor failure:  failure parsing the following string:\n");
 
 	if(st.empty())
-		throw MsPASSError(string("AttributeProperties constructor failure;  Constructor was passed an empty string\n"));
+		throw MsPASSError(string("AttributeProperties constructor failure;  Constructor was passed an empty string\n"),
+                        ErrorSeverity::Invalid);
 
 	// this should find first nonwhite position
-	//INCOMPLETE needs error checking for missing values
 
 	// create a copy of st and remove any leading white
 	// space at the head of the string
@@ -41,6 +41,8 @@ AttributeProperties::AttributeProperties(const string st)
 		stmp.erase(0,current);
 		current = 0;
 	}
+        /* This series of throw statements assume the default for 
+           ErrorSeverity is Invalid which means the constructor failed.*/
 	end_current=stmp.find_first_of(white,current);
 	if(end_current<0) throw MsPASSError(string(emess+st));
 	internal_name.assign(stmp,current,end_current-current);
@@ -60,19 +62,19 @@ AttributeProperties::AttributeProperties(const string st)
 	if(end_current<0) end_current=stmp.length();
 	mdtype_word.assign(stmp,current,end_current-current);
 	if(mdtype_word=="REAL" || mdtype_word=="real")
-		mdt=MDreal;
+		mdt=MDtype::Double;
 	else if(mdtype_word=="INT" || mdtype_word=="int"
 		|| mdtype_word=="integer")
-		mdt = MDint;
+		mdt = MDtype::Integer;
 	else if(mdtype_word=="STRING" || mdtype_word=="string")
-		mdt=MDstring;
+		mdt=MDtype::String;
 	else if(mdtype_word=="BOOL" || mdtype_word=="bool"
 		|| mdtype_word=="BOOLEAN" || mdtype_word=="boolean")
-		mdt=MDboolean;
+		mdt=MDtype::Boolean;
 	else
 	{
-		mdt = MDinvalid;
-		throw MsPASSError(string("AttributeProperties(string) constructor:  Unrecognized metadata type = ")+mdtype_word);
+		mdt = MDtype::Invalid;
+		throw MsPASSError(string("AttributeProperties(string) constructor:  Unrecognized metadata type = ")+mdtype_word,ErrorSeverity::Invalid);
 	}
 	// optional is_key field.  Defaulted false
 	is_key = false;
@@ -118,19 +120,19 @@ ostream& operator<<(ostream& ofs, const AttributeProperties& d)
         <<d.internal_name<<" ";
     switch(d.mdt)
     {
-        case MDint:
+        case MDtype::Integer:
             ofs<< "integer"<<endl;
             break;
-        case MDreal:
+        case MDtype::Double:
             ofs<< "real"<<endl;
             break;
-        case MDboolean:
+        case MDtype::Boolean:
             ofs<< "boolean"<<endl;
             break;
-        case MDstring:
+        case MDtype::String:
             ofs<< "string"<<endl;
             break;
-        case MDinvalid:
+        case MDtype::Invalid:
             ofs<< "DEFINED_INVALID"<<endl;
             break;
         default:

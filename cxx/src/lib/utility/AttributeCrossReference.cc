@@ -19,13 +19,13 @@ AttributeCrossReference::AttributeCrossReference(const string lines_to_parse)
         itoe.insert(pair<string,string>(inkey,outkey));
         etoi.insert(pair<string,string>(outkey,inkey));
         if(typestr=="int" || typestr=="INT" || typestr=="integer")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDint));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Integer));
         else if(typestr=="real" || typestr=="REAL" || typestr=="double")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDreal));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Double));
         else if(typestr=="bool" || typestr=="BOOL" || typestr=="boolean")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDboolean));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Boolean));
         else if(typestr=="string" || typestr=="STRING")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDstring));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::String));
         else
         {
             /* Note in seispp this condition only logs and error and
@@ -59,13 +59,13 @@ AttributeCrossReference::AttributeCrossReference(const list<string>& lines)
         itoe.insert(pair<string,string>(inkey,outkey));
         etoi.insert(pair<string,string>(outkey,inkey));
         if(typestr=="int" || typestr=="INT" || typestr=="integer")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDint));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Integer));
         else if(typestr=="real" || typestr=="REAL" || typestr=="double")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDreal));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Double));
         else if(typestr=="bool" || typestr=="BOOL" || typestr=="boolean")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDboolean));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::Boolean));
         else if(typestr=="string" || typestr=="STRING")
-            imdtypemap.insert(pair<string,MDtype>(inkey,MDstring));
+            imdtypemap.insert(pair<string,MDtype>(inkey,MDtype::String));
         else
         {
             stringstream sserr;

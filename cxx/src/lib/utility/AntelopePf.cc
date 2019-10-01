@@ -54,7 +54,7 @@ PfStyleInputType arg_type(string token)
     int slen=token.size();
     int i;
     bool found_an_e(false);
-    for(i=0;i<slen;++i)
+    for(i=0; i<slen; ++i)
     {
         /* This will fail if one had an odd key like 0_0 but
            would at a lot of complexity to allow that.
@@ -101,9 +101,9 @@ AntelopePf pfread(string fname)
 {
     ifstream inp;
     inp.open(fname.c_str(),ios::in);
-    if(inp.fail()) 
+    if(inp.fail())
         throw MsPASSError(string("MsPASS::pfread: open failed for file ")
-            +fname);
+                          +fname);
 
     /* Eat up the whole file - this assumes not a large
        file following antelope pf model.  */
@@ -122,7 +122,9 @@ AntelopePf pfread(string fname)
         AntelopePf result(alllines);
         return(result);
     }
-    catch(...){throw;};
+    catch(...) {
+        throw;
+    };
 }
 
 /* This is a helper for the primary constructor below.   It searches
@@ -136,7 +138,7 @@ int find_end_block(list<string>& alllines,list<string>::iterator first)
         int count;
         list<string>::iterator current,lastline;
         lastline=alllines.end();
-        for(count=0,current=first;current!=lastline;++current)
+        for(count=0,current=first; current!=lastline; ++current)
         {
             ++count;
             if(current->find("{")!=string::npos) ++level;
@@ -144,25 +146,27 @@ int find_end_block(list<string>& alllines,list<string>::iterator first)
             if(level==0) break;
         }
         return(count);
-    }catch(...){throw;};
+    } catch(...) {
+        throw;
+    };
 }
 pair<string,string> split_line(string s)
 {
-  const string white(" \t");
-  const string terminators("\n#");
-  size_t is,ie;
-  is=s.find_first_not_of(white,0);
-  ie=s.find_first_of(white,is);
-  string key;
-  key.assign(s,is,ie-is);
-  is=s.find_first_not_of(white,ie);
-  ie=s.find_first_of(terminators,is);
-  string val;
-  val.assign(s,is,ie-is);
-  pair<string,string> result;
-  result.first=key;
-  result.second=val;
-  return result;
+    const string white(" \t");
+    const string terminators("\n#");
+    size_t is,ie;
+    is=s.find_first_not_of(white,0);
+    ie=s.find_first_of(white,is);
+    string key;
+    key.assign(s,is,ie-is);
+    is=s.find_first_not_of(white,ie);
+    ie=s.find_first_of(terminators,is);
+    string val;
+    val.assign(s,is,ie-is);
+    pair<string,string> result;
+    result.first=key;
+    result.second=val;
+    return result;
 }
 /* Note this constructor is recursive.  That is when there is
    a nest &Arr{ in a pf this constructor will call itself for
@@ -174,27 +178,27 @@ AntelopePf::AntelopePf(list<string> alllines) : Metadata()
     list<string> block;
     string key,token2;
     try {
-    for(lptr=alllines.begin();lptr!=alllines.end();++lptr)
-    {
-        int i,ival;
-        int lines_this_block;
-        /* This is redundant, but cost is low for long term stability*/
-        if(is_comment_line(*lptr)) continue;
-        /* Older version used a stringstream here but it would not
-           parse string attributes with embedded white space.  This 
-           revised algorithm will do that.  returned pair has the 
-           key as first and the string with the key trimmed in second. */
-        /*
-        istringstream is(*lptr);
-        is>>key;
-        is>>token2;
-        */
-        pair<string,string> sl=split_line(*lptr);
-        key=sl.first;
-        token2=sl.second;
-        PfStyleInputType type_of_this_line=arg_type(token2);
-        switch(type_of_this_line)
+        for(lptr=alllines.begin(); lptr!=alllines.end(); ++lptr)
         {
+            int i,ival;
+            int lines_this_block;
+            /* This is redundant, but cost is low for long term stability*/
+            if(is_comment_line(*lptr)) continue;
+            /* Older version used a stringstream here but it would not
+               parse string attributes with embedded white space.  This
+               revised algorithm will do that.  returned pair has the
+               key as first and the string with the key trimmed in second. */
+            /*
+            istringstream is(*lptr);
+            is>>key;
+            is>>token2;
+            */
+            pair<string,string> sl=split_line(*lptr);
+            key=sl.first;
+            token2=sl.second;
+            PfStyleInputType type_of_this_line=arg_type(token2);
+            switch(type_of_this_line)
+            {
             /* Note all simple type variables are duplicated in
                as strings.  This is a failsafe mechanism used
                because Metadata will always fall back to string
@@ -228,7 +232,7 @@ AntelopePf::AntelopePf(list<string> alllines) : Metadata()
                    if and last with termination condition.  Note this
                    will cause problem if a curly back is not alone on
                    the last line */
-                for(i=0;i<(lines_this_block-1);++i,++lptr)
+                for(i=0; i<(lines_this_block-1); ++i,++lptr)
                     if(i>0)block.push_back(*lptr);
                 if(type_of_this_line==PFMDTBL)
                     pftbls.insert(pair<string,list<string> >(key,block));
@@ -236,116 +240,122 @@ AntelopePf::AntelopePf(list<string> alllines) : Metadata()
                 {
                     AntelopePf thispfarr(block);
                     pfbranches.insert(pair<string,AntelopePf>
-                            (key,thispfarr));
+                                      (key,thispfarr));
                 }
                 break;
             default:
                 throw AntelopePfError(base_error
-                        +"Error parsing this line->"
-                        +*lptr);
+                                      +"Error parsing this line->"
+                                      +*lptr);
+            }
         }
-    }
-    }catch(...){throw;};
+    } catch(...) {
+        throw;
+    };
 }
 /* This is the private helper function for the PFPATH constructor */
 int AntelopePf::merge_pfmf(AntelopePf& m)
 {
-  try{
-    /* Downcast both the current object and m to Metadata and then we
-     * can use the += operator.  Laziness stops me from making this method
-     * the += operator as that is more or less what it does. */
-    Metadata *tptr=dynamic_cast<Metadata*>(this);
-    Metadata *mmmd=dynamic_cast<Metadata*>(&m);
-    *tptr += (*mmmd);
-    /* Now we accumulate any Arr and Tbl entries. */
-    int count(0);
-    list<string> akey,tkey;
-    akey=m.arr_keys();
-    tkey=m.tbl_keys();
-    list<string>::iterator kptr;
-    for(kptr=tkey.begin();kptr!=tkey.end();++kptr)
-    {
-      list<string> t=m.get_tbl(*kptr);
-      this->pftbls[*kptr]=t;
-      ++count;
-    }
-    for(kptr=akey.begin();kptr!=akey.end();++kptr)
-    {
-      AntelopePf pfv;
-      pfv=m.get_branch(*kptr);
-      this->pfbranches[*kptr]=pfv;
-      ++count;
-    }
-    return count;
-  }catch(...){throw;};
+    try {
+        /* Downcast both the current object and m to Metadata and then we
+         * can use the += operator.  Laziness stops me from making this method
+         * the += operator as that is more or less what it does. */
+        Metadata *tptr=dynamic_cast<Metadata*>(this);
+        Metadata *mmmd=dynamic_cast<Metadata*>(&m);
+        *tptr += (*mmmd);
+        /* Now we accumulate any Arr and Tbl entries. */
+        int count(0);
+        list<string> akey,tkey;
+        akey=m.arr_keys();
+        tkey=m.tbl_keys();
+        list<string>::iterator kptr;
+        for(kptr=tkey.begin(); kptr!=tkey.end(); ++kptr)
+        {
+            list<string> t=m.get_tbl(*kptr);
+            this->pftbls[*kptr]=t;
+            ++count;
+        }
+        for(kptr=akey.begin(); kptr!=akey.end(); ++kptr)
+        {
+            AntelopePf pfv;
+            pfv=m.get_branch(*kptr);
+            this->pfbranches[*kptr]=pfv;
+            ++count;
+        }
+        return count;
+    } catch(...) {
+        throw;
+    };
 }
 /* small helper - splits s into tokens and assures each result is
 is a pf file with the required .pf ending */
 list<string> split_pfpath(string pfbase, char *s)
 {
-  /* make sure pfbase ends in .pf.  If it doesn't, add it */
-  string pftest(".pf");
-  std::size_t found;
-  found=pfbase.find(pftest);
-  if(found==std::string::npos) pfbase+=pftest;
-  list<string> pftmp;
-  char *p;
-  p=strtok(s,":");
-  while(p!=NULL)
-  {
-    pftmp.push_back(string(p));
-    p=strtok(NULL,":");
-  }
-  list<string> pfret;
-  list<string>::iterator pfptr;
-  for(pfptr=pftmp.begin();pfptr!=pftmp.end();++pfptr)
-  {
-    string fname;
-    fname=(*pfptr)+"/"+pfbase;
-    pfret.push_back(fname);
-  }
-  return pfret;
+    /* make sure pfbase ends in .pf.  If it doesn't, add it */
+    string pftest(".pf");
+    std::size_t found;
+    found=pfbase.find(pftest);
+    if(found==std::string::npos) pfbase+=pftest;
+    list<string> pftmp;
+    char *p;
+    p=strtok(s,":");
+    while(p!=NULL)
+    {
+        pftmp.push_back(string(p));
+        p=strtok(NULL,":");
+    }
+    list<string> pfret;
+    list<string>::iterator pfptr;
+    for(pfptr=pftmp.begin(); pfptr!=pftmp.end(); ++pfptr)
+    {
+        string fname;
+        fname=(*pfptr)+"/"+pfbase;
+        pfret.push_back(fname);
+    }
+    return pfret;
 }
 AntelopePf::AntelopePf(string pfbase)
 {
-  try{
-    const string envname("PFPATH");
-    char *s=getenv(envname.c_str());
-    list<string> pffiles;
-    if(s==NULL)
-    {
-      pffiles.push_back(".");
-    }
-    /* Test to see if pfbase is an absolute path - if so just use
-     * it and ignore the pfpath feature */
-    else if(pfbase[0]=='/')
-    {
-        pffiles.push_back(pfbase);
-    }
-    else
-    {
-      pffiles=split_pfpath(pfbase,s);
-    }
-    list<string>::iterator pfptr;
-    int nread;
-    for(nread=0,pfptr=pffiles.begin();pfptr!=pffiles.end();++pfptr)
-    {
-      // Skip pf files that do not exist
-      if(access(pfptr->c_str(),R_OK)) continue;
-      if(nread==0)
-      {
-        *this=pfread(*pfptr);
-      }
-      else
-      {
-        AntelopePf pfnext=pfread(*pfptr);
-        this->merge_pfmf(pfnext);
-      }
-      ++nread;
-    }
-    if(nread==0) throw MsPASSError(string("PFPATH=")+s
-        +" had no pf files matching " + pfbase,ErrorSeverity::Invalid);
-  }catch(...){throw;};
+    try {
+        const string envname("PFPATH");
+        char *s=getenv(envname.c_str());
+        list<string> pffiles;
+        if(s==NULL)
+        {
+            pffiles.push_back(".");
+        }
+        /* Test to see if pfbase is an absolute path - if so just use
+         * it and ignore the pfpath feature */
+        else if(pfbase[0]=='/')
+        {
+            pffiles.push_back(pfbase);
+        }
+        else
+        {
+            pffiles=split_pfpath(pfbase,s);
+        }
+        list<string>::iterator pfptr;
+        int nread;
+        for(nread=0,pfptr=pffiles.begin(); pfptr!=pffiles.end(); ++pfptr)
+        {
+            // Skip pf files that do not exist
+            if(access(pfptr->c_str(),R_OK)) continue;
+            if(nread==0)
+            {
+                *this=pfread(*pfptr);
+            }
+            else
+            {
+                AntelopePf pfnext=pfread(*pfptr);
+                this->merge_pfmf(pfnext);
+            }
+            ++nread;
+        }
+        if(nread==0) throw MsPASSError(string("PFPATH=")+s
+                                           +" had no pf files matching " + pfbase,ErrorSeverity::Invalid);
+    } catch(...) {
+        throw;
+    };
 }
 
 AntelopePf::AntelopePf(const AntelopePf& parent)
@@ -374,7 +384,7 @@ list<string> AntelopePf::arr_keys() const
 {
     map<string,AntelopePf>::const_iterator iptr;
     list<string> result;
-    for(iptr=pfbranches.begin();iptr!=pfbranches.end();++iptr)
+    for(iptr=pfbranches.begin(); iptr!=pfbranches.end(); ++iptr)
         result.push_back((*iptr).first);
     return result;
 }
@@ -382,7 +392,7 @@ list<string> AntelopePf::tbl_keys() const
 {
     map<string,list<string> >::const_iterator iptr;
     list<string> result;
-    for(iptr=pftbls.begin();iptr!=pftbls.end();++iptr)
+    for(iptr=pftbls.begin(); iptr!=pftbls.end(); ++iptr)
         result.push_back((*iptr).first);
     return(result);
 }
@@ -399,7 +409,7 @@ AntelopePf& AntelopePf::operator=(const AntelopePf& parent)
 }
 Metadata AntelopePf::ConvertToMetadata()
 {
-    try{
+    try {
         Metadata result(dynamic_cast<Metadata&>(*this));
         boost::any aTbl=this->pftbls;
         //boost::any<map<string,list<string>> aTbl(this->pftbl);
@@ -407,7 +417,9 @@ Metadata AntelopePf::ConvertToMetadata()
         result.put<boost::any>(pftbl_key,aTbl);
         result.put<boost::any>(pfarr_key,aArr);
         return result;
-    }catch(...){throw;};
+    } catch(...) {
+        throw;
+    };
 }
 
 } // End mspass Namespace declaration
