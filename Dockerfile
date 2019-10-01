@@ -10,6 +10,7 @@ RUN apt-get update \
        build-essential python3-setuptools \
        python3-dev python3-pip openjdk-8-jdk \
        git cmake gfortran gdb \
+       liblapack-dev libboost-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
