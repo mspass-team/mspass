@@ -34,6 +34,13 @@ endif ()
 #endif ()
 
 find_package (BLAS)
+if (NOT BLAS_FOUND)
+  include (cmake/openblas.cmake)
+  fetch_openblas (
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/openblas
+    )
+endif ()
 
 include (FortranCInterface)
 list (APPEND FORTRAN_FUNCTIONS ddot)
