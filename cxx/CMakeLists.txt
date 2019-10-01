@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8)
 
-project (mspass)
+project (mspass Fortran C CXX)
 
 #set (default_build_type "Release")
 set (default_build_type "Debug")
@@ -24,14 +24,23 @@ if (NOT Boost_FOUND)
     )
 endif ()
 
-find_package (CBLAS)
-if (NOT CBLAS_FOUND)
-  include (cmake/openblas.cmake)
-  fetch_openblas (
-    ${PROJECT_SOURCE_DIR}/cmake
-    ${PROJECT_BINARY_DIR}/openblas
-    )
-endif ()
+#find_package (CBLAS)
+#if (NOT CBLAS_FOUND)
+#  include (cmake/openblas.cmake)
+#  fetch_openblas (
+#    ${PROJECT_SOURCE_DIR}/cmake
+#    ${PROJECT_BINARY_DIR}/openblas
+#    )
+#endif ()
+
+find_package (BLAS)
+
+include (FortranCInterface)
+list (APPEND FORTRAN_FUNCTIONS ddot)
+FortranCInterface_HEADER (include/FC.h 
+  MACRO_NAMESPACE "FC_"
+  SYMBOLS ${FORTRAN_FUNCTIONS}
+  )
 
 add_subdirectory (src)
 add_subdirectory (include)
