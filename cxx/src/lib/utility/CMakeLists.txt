@@ -5,6 +5,6 @@ include_directories(
   ${PROJECT_BINARY_DIR}/include)
 
 add_library(mspass STATIC ${sources_utility})
-target_link_libraries(mspass PUBLIC ${Boost_LIBRARIES} ${BLAS_LIBRARIES})
+target_link_libraries(mspass PRIVATE ${Boost_LIBRARIES} ${BLAS_LIBRARIES})
 
 install (TARGETS mspass DESTINATION lib)
