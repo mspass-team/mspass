@@ -1,5 +1,6 @@
 #ifndef _MSPASS_SEISMOGRAM_H_
 #define _MSPASS_SEISMOGRAM_H_
+#include <memory>
 #include <vector>
 #include "cblas.h"
 #include "mspass/Metadata.h"
@@ -326,7 +327,7 @@ std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
 \param component is the component to extract (0, 1, or 2)
 \param mdl list of metadata to copy to output from input object.
 **/
-shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component,
+std::shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component,
         mspass::MetadataList& mdl);
 /*!
  Extract one component from a Seismogram and
@@ -338,6 +339,6 @@ shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component,
 \param tcs is the Seismogram to convert.
 \param component is the component to extract (0, 1, or 2)
 **/
-shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component);
+std::shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component);
 }  //end mspass namespace enscapsulation
 #endif  // End guard
