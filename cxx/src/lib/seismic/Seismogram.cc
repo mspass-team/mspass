@@ -4,7 +4,14 @@
 #include "cblas.h"
 /* This is a temporary hack fix for mac laptop.   Had fink install
    openblas.  This is the fink default location for include files. */
-#include "/sw/include/lapacke.h"
+//#include "/sw/include/lapacke.h"
+/* These should com from lapacke.h but there are some collisions with 
+ * boost that create compile errors. Hack fix until we resolve the 
+ * issue of how we will standardize lapack version.*/
+#define LAPACK_ROW_MAJOR               101
+#define LAPACK_COL_MAJOR               102
+int LAPACKE_dgetrf(int,int,int,double*,int,int*);
+int LAPACKE_dgetri(int,int,double*,int,int *);
 #include "seismic/Seismogram.h"
 #include "mspass/MsPASSError.h"
 #include "mspass/SphericalCoordinate.h"
