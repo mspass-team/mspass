@@ -3,6 +3,7 @@
 #include <typeinfo>
 #include <map>
 #include <set>
+#include <list>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -78,6 +79,10 @@ public:
   \param mdold - parent object to be copied
   **/
   Metadata(const Metadata& mdold);
+  /*! Destructor - has to be explicitly implemented and declared virtual 
+    for reasons found in textbooks and various web forums.  A very subtle
+    feature of C++  inheritance. */
+  virtual ~Metadata(){};
   /*! Standard assignment operator.
     \param mdold - parent object to copy
   */
@@ -107,7 +112,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  double get_double(const string key){
+  double get_double(const string key) const{
     try{
       double val;
       val=get<double>(key);
@@ -120,7 +125,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  int get_int(const string key)
+  int get_int(const string key) const
   {
     try{
       int val;
@@ -134,7 +139,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  long get_long(const string key){
+  long get_long(const string key) const{
     try{
       long val;
       val=get<long>(key);
@@ -151,7 +156,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  string get_string(const string key){
+  string get_string(const string key) const{
     try{
       string val;
       val=get<string>(key);
@@ -166,7 +171,7 @@ other attributes.
 
   \param key keyword associated with requested metadata member.
   **/
-  bool get_bool(const string key){
+  bool get_bool(const string key) const{
     try{
       bool val;
       val=get<bool>(key);
@@ -188,7 +193,7 @@ other attributes.
   \exception - will throw a MetadataGetError (child of MsPASSError) for
        type mismatch or in an overflow or underflow condition.
   */
-  template <typename T> T get(const string key);
+  template <typename T> T get(const string key) const;
   /*! \brief Generic get interface for C char array.
 
           This is a generic interface most useful for template procedures
@@ -203,7 +208,7 @@ other attributes.
           \exception - will throw a MetadataGetError (child of MsPASSError) for
              type mismatch or in an overflow or underflow condition.
              */
-  template <typename T> T get(const char *key)
+  template <typename T> T get(const char *key) const
   {
     try{
       T val;
@@ -249,7 +254,7 @@ protected:
   set<string> changed_or_set;
 };
 
-template <typename T> T Metadata::get(const string key)
+template <typename T> T Metadata::get(const string key) const
 {
   T result;
   map<string,boost::any>::const_iterator iptr;
@@ -268,5 +273,67 @@ template <typename T> T Metadata::get(const string key)
   };
   return result;
 }
+/*   Start of helper procedures for Metadata. */
+/*! \brief Define standard types for Metadata.   
+
+Attributes in Metadata here can be any type that boost::any supports.  
+However, 99% of attributes one normally wants to work with can be
+cast into the stock language types defined by this enum.   This is
+derived form seispp in antelope contrib but adapted to the new form with
+boost::any.   */
+enum class MDtype{
+    Real,
+    Real32,
+    Double,
+    Real64,
+    Integer,
+    Int32,
+    Long,
+    Int64,
+    String,
+    Boolean,
+    Invalid
+};
+/*! \brief Used in Metadata to defined type of Metadata associated with
+a given tag.
+**/
+typedef struct Metadata_typedef {
+    std::string tag; /*!< Name attached to this item.*/
+    MDtype mdt; /*!< Type of this item. */
+} Metadata_typedef;
+
+/*! Container to drive selected copies.
+
+Often it is necessary to define a list of Metadata elements 
+that are to be copied or accessed sequentially.  This is common
+enough we use this typedef to reduce the ugly syntax.  */
+typedef std::list<Metadata_typedef> MetadataList;
+
+/*! \brief Procedure to copy a subset of a container of Metadata.
+
+It is often useful to do a selective copy of the contents of a Metadata 
+container.  e.g. the function ExtractComponent creates a scalar time
+series object from a three component seismogram extracting a single component. 
+It would make no sense to copy attributes related to the orientation of all
+three components in the copy.   Programs using this feature should build
+the MetadataList at startup to define the subset.   See related procedures 
+that create one of them.   (Not presently a class because the MetadataList is 
+just a simple std::list container.)
+
+\param mdin is the container to retrieve attributes from (commonly a dynamic_cast
+from a data object).
+\param mdout is the output Metadata (also commonly a dynamic_cast from a data object.)
+\param mdlist is the list that defines the subset to copy from mdin to mdout. 
+
+\return number of items copied
+
+\exception will throw an MsPASSError if the input is missing one of the attributes
+  defined in mdlist or if there is a type mismatch.  This means the copy 
+  will be incomplete and not trusted.   Handlers need to decide what to 
+  do in this condition.
+*/
+int copy_selected_metadata(const Metadata& mdin, Metadata& mdout,
+        const MetadataList& mdlist);
+
 }  //End of namespace MsPASS
 #endif
