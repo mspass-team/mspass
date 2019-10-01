@@ -3,42 +3,10 @@
 #include <string>
 #include <map>
 #include <list>
+#include "mspass/Metadata.h"
 #include "mspass/AntelopePf.h"
 namespace mspass
 {
-/*! \brief Defines type a database can handle.
-
-Lists valid types of Attributes that can be fetched from a database and
-stored internally as a Metadata object.  This may needa  different approach
-as MsPASS evolves because traditional relational databases commonly only
-handle simple types while a document db like MongoDB can handle neary any
-type subject to a smp.
-*/
-
-enum MDtype {MDreal, /*!< Attribute is a real (floating point) number */
-	MDint, /*!< Attribute is an integer. */
-	MDstring, /*!< Attribute is a character string. */
-	MDboolean, /*!< Attribute is a boolean (true/false). */
-	MDinvalid  /*!< Attribute type is not recognized (an error code). */
-};
-
-/*! \brief Convenient typedef used by Datascope interface routines.
-  
-Datascope (antelope) and conventional relational db's only accept low level
-types.  With that mechanism it was handy to use this approach for interacting with 
-that database.   This is superceded in mspass by a more generic type handler, but
-this allows reuse of some stable older code that interacts with antelope.  
-**/
-typedef struct Metadata_typedef {
-	string tag; /*!< Name attached to this item.*/
-	enum MDtype mdt; /*!< Type of this item. */
-} Metadata_typedef;
-
-/*! Convenience typedef for this simple list container. 
-**/
-typedef list<Metadata_typedef> MetadataList;
-
-
 /*! \brief  Defines properties of a database attribute and link to internal names.
 *
 * This object is used to define the relationship between a parameter stored

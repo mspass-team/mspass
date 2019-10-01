@@ -180,5 +180,21 @@ class AntelopePfError : public MsPASSError
             cerr << message<<endl;
         };
 };
+/* Procedural functions using AntelopePf object */
+
+/*! \brief Build a MetadataList using AntelopePf object.
+
+A convenient format to define a MetadataList is an Antelope Pf file.  
+This procedure creates a MetadataList from an AntelopePf object 
+(generated from a pf file) keying on tag that defines a pf Tbl& 
+section. 
+
+\param m is the PfStyleMetadata object where you expect to find the list.
+\param tag is the unique tag on the Tbl in the original Pf containing the
+  data defining the MetadataList.
+
+  */
+MetadataList get_mdlist(const mspass::AntelopePf& m, const std::string tag);
+
 } // End mspass namespace declaration
 #endif
