@@ -13,10 +13,9 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall -O0 -g")
 set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
 
-list (APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
-
 find_package (Boost 1.64.0)
 if (NOT Boost_FOUND)
+  message (STATUS "Building Boost")
   include (cmake/boost.cmake)
   fetch_boost (
     ${PROJECT_SOURCE_DIR}/cmake
@@ -24,17 +23,9 @@ if (NOT Boost_FOUND)
     )
 endif ()
 
-#find_package (CBLAS)
-#if (NOT CBLAS_FOUND)
-#  include (cmake/openblas.cmake)
-#  fetch_openblas (
-#    ${PROJECT_SOURCE_DIR}/cmake
-#    ${PROJECT_BINARY_DIR}/openblas
-#    )
-#endif ()
-
 find_package (BLAS)
 if (NOT BLAS_FOUND)
+  message (STATUS "Building OpenBLAS")
   include (cmake/openblas.cmake)
   fetch_openblas (
     ${PROJECT_SOURCE_DIR}/cmake
