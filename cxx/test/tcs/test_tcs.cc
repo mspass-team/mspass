@@ -19,7 +19,7 @@ void print_mdlist(MetadataList& mdl)
             case MDtype::Real:
                 cout << " is real attribute";
                 break;
-            case MDtype::Int:
+            case MDtype::Integer:
                 cout << " is integer attribute";
                 break;
             case MDtype::Boolean:
@@ -38,9 +38,7 @@ int main(int argc, char **argv)
 {
     string pfname("test_tcs");
     string amname="css3.0";
-    int i;
-    int ierr;
-    AntelopePF pf(pfname);
+    //AntelopePf pf(pfname);
     ios::sync_with_stdio();
    try
    {
