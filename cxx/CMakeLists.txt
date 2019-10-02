@@ -34,7 +34,7 @@ if (NOT BLAS_FOUND)
 endif ()
 
 include (FortranCInterface)
-list (APPEND FORTRAN_FUNCTIONS ddot)
+list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
 FortranCInterface_HEADER (include/FC.h 
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
