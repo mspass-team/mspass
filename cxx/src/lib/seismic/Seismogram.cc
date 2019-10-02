@@ -1,7 +1,7 @@
 #include <float.h>
 #include <math.h>
 #include <sstream>
-#include "cblas.h"
+#include "FC.h"
 /* This is a temporary hack fix for mac laptop.   Had fink install
    openblas.  This is the fink default location for include files. */
 //#include "/sw/include/lapacke.h"
@@ -10,11 +10,22 @@
  * issue of how we will standardize lapack version.*/
 #define LAPACK_ROW_MAJOR               101
 #define LAPACK_COL_MAJOR               102
-int LAPACKE_dgetrf(int,int,int,double*,int,int*);
-int LAPACKE_dgetri(int,int,double*,int,int *);
 #include "seismic/Seismogram.h"
 #include "mspass/MsPASSError.h"
 #include "mspass/SphericalCoordinate.h"
+/* For now we put these prototypes here - should be made an include
+   file when we stablize how blas and lapack should be handled. */
+extern "C" {
+double ddot(const int& n,const double *x,const int& incx,
+        const double *y,const int& incy);
+double dscal(const int& n, const double& a, const double *x, const int& incx);
+double daxpy(const int &n, const double& a, const double *x,const int& incx,
+        const double *y,const int& incy);
+double dcopy(const int &n, const double *x,const int& incx,
+        const double *y,const int& incy);
+int LAPACKE_dgetrf(int,int,int,double*,int,int*);
+int LAPACKE_dgetri(int,int,double*,int,int *);
+};
 namespace mspass
 {
 using namespace mspass;
@@ -171,9 +182,9 @@ Seismogram::Seismogram(const vector<TimeSeries>& ts,
         // This is a vector version that I'll use because it will
         // be faster albeit infinitely more obscure and
         // intrinsically more dangerous
-        cblas_dcopy(ns,&(ts[0].s[0]),1,u.get_address(0,0),3);
-        cblas_dcopy(ns,&(ts[1].s[0]),1,u.get_address(1,0),3);
-        cblas_dcopy(ns,&(ts[2].s[0]),1,u.get_address(2,0),3);
+        dcopy(ns,&(ts[0].s[0]),1,u.get_address(0,0),3);
+        dcopy(ns,&(ts[1].s[0]),1,u.get_address(1,0),3);
+        dcopy(ns,&(ts[2].s[0]),1,u.get_address(2,0),3);
     }
     else
     {
@@ -259,12 +270,12 @@ void Seismogram::rotate_to_standard()
         for(i=0; i<3; ++i)
         {
             // x has a stride of 3 because we store in fortran order in x
-            cblas_dcopy(ns,u.get_address(0,0),3,work[i],1);
-            cblas_dscal(ns,tmatrix[0][i],work[i],1);
-            cblas_daxpy(ns,tmatrix[1][i],u.get_address(1,0),3,work[i],1);
-            cblas_daxpy(ns,tmatrix[2][i],u.get_address(2,0),3,work[i],1);
+            dcopy(ns,u.get_address(0,0),3,work[i],1);
+            dscal(ns,tmatrix[0][i],work[i],1);
+            daxpy(ns,tmatrix[1][i],u.get_address(1,0),3,work[i],1);
+            daxpy(ns,tmatrix[2][i],u.get_address(2,0),3,work[i],1);
         }
-        for(i=0; i<3; ++i) cblas_dcopy(ns,work[i],1,u.get_address(i,0),3);
+        for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
     }
     else
     {
@@ -326,12 +337,12 @@ void Seismogram::rotate_to_standard()
 
         for(i=0; i<3; ++i)
         {
-            cblas_dcopy(ns,u.get_address(0,0),3,work[i],1);
-            cblas_dscal(ns,tmatrix[i][0],work[i],1);
-            cblas_daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
-            cblas_daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
+            dcopy(ns,u.get_address(0,0),3,work[i],1);
+            dscal(ns,tmatrix[i][0],work[i],1);
+            daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+            daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
         }
-        for(i=0; i<3; ++i) cblas_dcopy(ns,work[i],1,u.get_address(i,0),3);
+        for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
         components_are_orthogonal = true;
     }
     //
@@ -400,7 +411,7 @@ void Seismogram::rotate(SphericalCoordinate xsc)
     {
         //This will be left handed
         tmatrix[2][2] = -1.0;
-        cblas_dscal(ns,-1.0,u.get_address(2,0),3);
+        dscal(ns,-1.0,u.get_address(2,0),3);
         return;
     }
 
@@ -443,12 +454,12 @@ void Seismogram::rotate(SphericalCoordinate xsc)
     for(i=0; i<3; ++i)work[i] = new double[ns];
     for(i=0; i<3; ++i)
     {
-        cblas_dcopy(ns,u.get_address(0,0),3,work[i],1);
-        cblas_dscal(ns,tmatrix[i][0],work[i],1);
-        cblas_daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
-        cblas_daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
+        dcopy(ns,u.get_address(0,0),3,work[i],1);
+        dscal(ns,tmatrix[i][0],work[i],1);
+        daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+        daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
     }
-    for(i=0; i<3; ++i) cblas_dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
     components_are_cardinal=false;
     for(i=0; i<3; ++i) delete [] work[i];
 }
@@ -488,11 +499,11 @@ void Seismogram::rotate(double phi)
     for(i=0; i<2; ++i)work[i] = new double[ns];
     for(i=0; i<2; ++i)
     {
-        cblas_dcopy(ns,u.get_address(0,0),3,work[i],1);
-        cblas_dscal(ns,tmatrix[i][0],work[i],1);
-        cblas_daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+        dcopy(ns,u.get_address(0,0),3,work[i],1);
+        dscal(ns,tmatrix[i][0],work[i],1);
+        daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
     }
-    for(i=0; i<2; ++i) cblas_dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<2; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
     components_are_cardinal=false;
     for(i=0; i<2; ++i) delete [] work[i];
 }
@@ -504,12 +515,12 @@ void Seismogram::transform(const double a[3][3])
     for(i=0; i<3; ++i) work[i] = new double[ns];
     for(i=0; i<3; ++i)
     {
-        cblas_dcopy(ns,u.get_address(0,0),3,work[i],1);
-        cblas_dscal(ns,a[i][0],work[i],1);
-        cblas_daxpy(ns,a[i][1],u.get_address(1,0),3,work[i],1);
-        cblas_daxpy(ns,a[i][2],u.get_address(2,0),3,work[i],1);
+        dcopy(ns,u.get_address(0,0),3,work[i],1);
+        dscal(ns,a[i][0],work[i],1);
+        daxpy(ns,a[i][1],u.get_address(1,0),3,work[i],1);
+        daxpy(ns,a[i][2],u.get_address(2,0),3,work[i],1);
     }
-    for(i=0; i<3; ++i) cblas_dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
     for(i=0; i<3; ++i) delete [] work[i];
     /* Hand code this rather than use dmatrix or other library.
        Probably dumb, but this is just a 3x3 system.  This

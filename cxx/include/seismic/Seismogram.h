@@ -2,7 +2,6 @@
 #define _MSPASS_SEISMOGRAM_H_
 #include <memory>
 #include <vector>
-#include "cblas.h"
 #include "mspass/Metadata.h"
 #include "mspass/dmatrix.h"
 #include "seismic/BasicTimeSeries.h"
