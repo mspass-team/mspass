@@ -20,5 +20,5 @@ macro(fetch_openblas _download_module_path _download_root)
             ${_download_root}
         )
 
-    set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+#    set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
 endmacro()

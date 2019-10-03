@@ -31,10 +31,26 @@ if (NOT BLAS_FOUND)
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_BINARY_DIR}/openblas
     )
+  set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+endif ()
+
+find_package (LAPACK)
+if (NOT LAPACK_FOUND AND NOT BLAS_FOUND)
+  message (STATUS "Use OpenBLAS for LAPACK")
+  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+elseif (NOT LAPACK_FOUND)
+  message (STATUS "Building OpenBLAS for LAPACK")
+  include (cmake/openblas.cmake)
+  fetch_openblas (
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/openblas
+    )
+  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
 endif ()
 
 include (FortranCInterface)
 list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
+list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
 FortranCInterface_HEADER (include/FC.h 
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}

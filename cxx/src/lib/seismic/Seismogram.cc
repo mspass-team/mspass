@@ -23,8 +23,8 @@ double daxpy(const int &n, const double& a, const double *x,const int& incx,
         const double *y,const int& incy);
 double dcopy(const int &n, const double *x,const int& incx,
         const double *y,const int& incy);
-int LAPACKE_dgetrf(int,int,int,double*,int,int*);
-int LAPACKE_dgetri(int,int,double*,int,int *);
+void dgetrf(int,int,double*,int,int*,int*);
+void dgetri(int,double*,int,int*,int*);
 };
 namespace mspass
 {
@@ -301,9 +301,9 @@ void Seismogram::rotate_to_standard()
         //Perf lib matrix inversion routine using LU factorizatoin
         // Note this is changed from parent code.  Untested.
         //This was the call using perf library in antelope contrib
-        //dgetrf_(&asize,&asize,a,&asize,ipivot,&info);
+        dgetrf(3,3,a,3,ipivot,&info);
         // This is the openblas version 
-        info=LAPACKE_dgetrf(LAPACK_COL_MAJOR,3,3,a,3,ipivot);
+        //info=LAPACKE_dgetrf(LAPACK_COL_MAJOR,3,3,a,3,ipivot);
         if(info!=0)
         {
             for(i=0; i<3; ++i) delete [] work[i];
@@ -312,9 +312,9 @@ void Seismogram::rotate_to_standard()
                   ErrorSeverity::Invalid);
         }
         // Again this is the perf lib version
-        //dgetri_(&asize,a,&asize,ipivot,awork,&ldwork,&info);
+        dgetri(3,a,3,ipivot,&info);
         // This is the openblas version
-        info=LAPACKE_dgetri(LAPACK_COL_MAJOR,3,a,3,ipivot);
+        //info=LAPACKE_dgetri(LAPACK_COL_MAJOR,3,a,3,ipivot);
         if(info!=0)
         {
             for(i=0; i<3; ++i) delete [] work[i];
