@@ -5,8 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "mspass/MsPASSError.h"
-#include "mspass/AntelopePf.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/AntelopePf.h"
 namespace mspass {
 using namespace std;
 using namespace mspass;

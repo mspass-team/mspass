@@ -1,4 +1,4 @@
-#include "Seismogram.h"
+#include "mspass/seismic/Seismogram.h"
 #include "MsPASSAddOn.h"
 class MPSeismogram : public Seismogram : public MsPASSAddOn
 {

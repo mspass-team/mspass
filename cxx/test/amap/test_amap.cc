@@ -1,7 +1,7 @@
-#include "mspass/utility.h"
-#include "mspass/AntelopePf.h"
-#include "mspass/AttributeMap.h"
-#include "mspass/AttributeCrossReference.h"
+#include "mspass/utility/utility.h"
+#include "mspass/utility/AntelopePf.h"
+#include "mspass/utility/AttributeMap.h"
+#include "mspass/utility/AttributeCrossReference.h"
 using namespace mspass;
 /* This is a test program for AttributeMap and AttributeCrossReference objects.*/
 

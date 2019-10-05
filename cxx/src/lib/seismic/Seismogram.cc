@@ -10,9 +10,9 @@
  * issue of how we will standardize lapack version.*/
 #define LAPACK_ROW_MAJOR               101
 #define LAPACK_COL_MAJOR               102
-#include "seismic/Seismogram.h"
-#include "mspass/MsPASSError.h"
-#include "mspass/SphericalCoordinate.h"
+#include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/SphericalCoordinate.h"
 /* For now we put these prototypes here - should be made an include
    file when we stablize how blas and lapack should be handled. */
 extern "C" {

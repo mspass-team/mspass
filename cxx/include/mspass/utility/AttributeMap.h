@@ -3,8 +3,8 @@
 #include <string>
 #include <map>
 #include <list>
-#include "mspass/Metadata.h"
-#include "mspass/AntelopePf.h"
+#include "mspass/utility/Metadata.h"
+#include "mspass/utility/AntelopePf.h"
 namespace mspass
 {
 /*! \brief  Defines properties of a database attribute and link to internal names.

@@ -1,6 +1,6 @@
 #include <math.h>
-#include "mspass/MsPASSError.h"
-#include "seismic/Seismogram.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/Seismogram.h"
 namespace mspass {
 using namespace mspass;
 /* This file contains helper procedures for Seismogram objects.  Most

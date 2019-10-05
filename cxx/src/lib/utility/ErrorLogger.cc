@@ -1,4 +1,4 @@
-#include "mspass/ErrorLogger.h"
+#include "mspass/utility/ErrorLogger.h"
 using namespace mspass;
 namespace mspass
 {

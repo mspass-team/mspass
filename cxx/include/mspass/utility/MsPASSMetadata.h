@@ -1,6 +1,6 @@
 #ifndef _METADATA_MSPASS_H_
 #define _METADATA_MSPASS_H_
-#include "Metadata.h"
+#include "mspass/utility/Metadata.h"
 /* Not sure this class is necessary.   I think we could have
 int update(Somemongohandle);
 int save(Someomongohandle);

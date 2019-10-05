@@ -1,5 +1,5 @@
 #include <string>
-#include "mspass/MsPASSError.h"
+#include "mspass/utility/MsPASSError.h"
 namespace mspass{
 /* Standardizes top level directory for mspass */
 std::string data_directory()

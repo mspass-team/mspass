@@ -1,7 +1,7 @@
-#include "mspass/ErrorLogger.h"
-#include "mspass/MsPASSError.h"
-#include "mspass/Metadata.h"
-#include "mspass/AntelopePf.h"
+#include "mspass/utility/ErrorLogger.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/Metadata.h"
+#include "mspass/utility/AntelopePf.h"
 using namespace mspass;
 int main(int argc, char **argv)
 {

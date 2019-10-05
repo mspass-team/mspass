@@ -1,6 +1,6 @@
 #include <float.h>
 #include <math.h>
-#include "mspass/SphericalCoordinate.h"
+#include "mspass/utility/SphericalCoordinate.h"
 namespace mspass
 {
 using namespace mspass;

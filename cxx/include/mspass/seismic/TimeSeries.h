@@ -1,8 +1,8 @@
 #ifndef _MSPASS_TIMESERIES_H_
 #define _MSPASS_TIMESERIES_H_
 #include <vector>
-#include "seismic/BasicTimeSeries.h"
-#include "mspass/Metadata.h"
+#include "mspass/seismic/BasicTimeSeries.h"
+#include "mspass/utility/Metadata.h"
 
 namespace mspass{
 /*! \brief Scalar time series data object.

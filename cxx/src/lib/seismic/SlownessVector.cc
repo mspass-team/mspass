@@ -1,6 +1,6 @@
 #include <float.h>
 #include <math.h>
-#include "seismic/SlownessVector.h"
+#include "mspass/seismic/SlownessVector.h"
 namespace mspass
 {
 using namespace std;

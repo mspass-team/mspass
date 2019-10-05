@@ -2,14 +2,14 @@
 #define _MSPASS_SEISMOGRAM_H_
 #include <memory>
 #include <vector>
-#include "mspass/Metadata.h"
-#include "mspass/dmatrix.h"
-#include "seismic/BasicTimeSeries.h"
-#include "seismic/TimeSeries.h"
-#include "mspass/SphericalCoordinate.h"
-#include "seismic/SlownessVector.h"
-#include "seismic/TimeWindow.h"
-#include "seismic/Ensemble.h"
+#include "mspass/utility/Metadata.h"
+#include "mspass/utility/dmatrix.h"
+#include "mspass/seismic/BasicTimeSeries.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/utility/SphericalCoordinate.h"
+#include "mspass/seismic/SlownessVector.h"
+#include "mspass/seismic/TimeWindow.h"
+#include "mspass/seismic/Ensemble.h"
 namespace mspass{
 
 /* A Seismogram is viewed as a special collection of Time Series

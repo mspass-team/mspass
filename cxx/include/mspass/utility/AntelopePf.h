@@ -3,7 +3,7 @@
 
 #include <list>
 #include <string>
-#include "Metadata.h"
+#include "mspass/utility/Metadata.h"
 namespace mspass{
 /*! key for accessing Tbl and Arr entries.
  *

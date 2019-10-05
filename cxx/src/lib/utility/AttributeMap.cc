@@ -1,7 +1,7 @@
 #include <sstream>
-#include "mspass/utility.h"
-#include "mspass/Metadata.h"
-#include "mspass/AttributeMap.h"
+#include "mspass/utility/utility.h"
+#include "mspass/utility/Metadata.h"
+#include "mspass/utility/AttributeMap.h"
 namespace mspass{
 using namespace std;
 using namespace mspass;

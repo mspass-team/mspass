@@ -1,5 +1,5 @@
 #include <set>
-#include "TimeWindow.h"
+#include "mspass/seismic/TimeWindow.h"
 /*! \brief Function object used for weak comparison to order TimeWindow objects.
 
 // TimeWindow objects are used, among other things, to define real

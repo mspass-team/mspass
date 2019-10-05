@@ -1,5 +1,5 @@
 #include <math.h>
-#include "mspass/dmatrix.h"
+#include "mspass/utility/dmatrix.h"
 #include "FC.h"
 
 extern "C" double ddot (

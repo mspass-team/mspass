@@ -5,6 +5,6 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include)
 
 add_library(seismic STATIC ${sources_seismic})
-target_link_libraries(seismic PRIVATE mspass ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(seismic PRIVATE utility ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
 install (TARGETS seismic DESTINATION lib)

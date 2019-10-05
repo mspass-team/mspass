@@ -8,8 +8,8 @@
 #include <fstream>
 #include <sstream>
 #include <boost/any.hpp>
-#include "MsPASSError.h"
-#include "BasicMetadata.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/BasicMetadata.h"
 
 namespace mspass
 {

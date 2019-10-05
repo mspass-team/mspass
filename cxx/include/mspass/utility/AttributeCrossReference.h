@@ -3,8 +3,8 @@
 #include <string>
 #include <map>
 #include <set>
-#include "mspass/Metadata.h"
-#include "AttributeMap.h"
+#include "mspass/utility/Metadata.h"
+#include "mspass/utility/AttributeMap.h"
 namespace mspass
 {
 /*! \brief Cross reference between external and internal names.

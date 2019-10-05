@@ -1,8 +1,8 @@
 #include <math.h>
-#include "mspass/MsPASSError.h"
-#include "seismic/TimeWindow.h"
-#include "seismic/TimeSeries.h"
-#include "seismic/Ensemble.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/TimeWindow.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Ensemble.h"
 using namespace std;
 namespace mspass {
 using namespace mspass;

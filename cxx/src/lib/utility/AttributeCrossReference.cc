@@ -1,5 +1,5 @@
 #include <sstream>
-#include "mspass/AttributeCrossReference.h"
+#include "mspass/utility/AttributeCrossReference.h"
 using namespace std;
 using namespace mspass;
 namespace mspass {

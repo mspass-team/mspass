@@ -2,8 +2,8 @@
 //#include <boost/config.hpp>
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
-#include "seismic/Seismogram.h"
-#include "mspass/AntelopePf.h"
+#include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass;
 /* This procedure probably should be added to mdlist.cc.  I writes the contents of a MetadataList to 

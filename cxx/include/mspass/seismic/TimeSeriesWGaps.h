@@ -1,5 +1,5 @@
-#include "TimeSeries.h"
-#include "DataGap.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/DataGap.h"
 class TimeSeriesWGaps : public TimeSeries, public DataGap
 {
 public:

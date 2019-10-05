@@ -1,7 +1,7 @@
 #include <vector>
-#include "mspass/MsPASSError.h"
-#include "seismic/TimeSeries.h"
-#include "mspass/Metadata.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/utility/Metadata.h"
 namespace mspass
 {
 using namespace std;

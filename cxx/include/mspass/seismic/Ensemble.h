@@ -1,8 +1,8 @@
 #ifndef _MSPASS_ENSEMBLE_H_
 #define _MSPASS_ENSEMBLE_H_
 #include <vector>
-#include "seismic/TimeSeries.h"
-#include "seismic/Seismogram.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Seismogram.h"
 namespace mspass{
 template <typename Tdata> class Ensemble : public Metadata
 {

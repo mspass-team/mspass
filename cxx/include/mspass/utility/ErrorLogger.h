@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <list>
 #include <list>
-#include "MsPASSError.h"
+#include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
 class LogData

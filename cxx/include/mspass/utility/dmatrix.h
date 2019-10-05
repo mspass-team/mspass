@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include "MsPASSError.h"
+#include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
 //==================================================================

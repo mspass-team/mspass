@@ -1,7 +1,7 @@
 /* This file contains member functions for a BasicTimeSeries object.*/
 #include <ostream>
-#include "seismic/BasicTimeSeries.h"
-#include "mspass/MsPASSError.h"
+#include "mspass/seismic/BasicTimeSeries.h"
+#include "mspass/utility/MsPASSError.h"
 namespace mspass {
 using namespace mspass;
 
