@@ -4,4 +4,4 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/)
 
-target_link_libraries(test_tcs PRIVATE seismic)
+target_link_libraries(test_tcs PRIVATE mspass)
