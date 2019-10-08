@@ -202,7 +202,7 @@ method defined below.
 
 \param sc defines final x3 direction (longitudinal) in a spherical coordinate structure.
 **/
-	void rotate(const SphericalCoordinate sc);
+	void rotate(SphericalCoordinate& sc);
 
 /*!
  Rotate data using a P wave type coordinate definition.

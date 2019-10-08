@@ -396,7 +396,7 @@ Written:  Sept. 1999
 Modified:  Feb 2003
 Original was plain C.  Adapted to C++ for seismic processing
 */
-void Seismogram::rotate(SphericalCoordinate xsc)
+void Seismogram::rotate(SphericalCoordinate& xsc)
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     int i;
