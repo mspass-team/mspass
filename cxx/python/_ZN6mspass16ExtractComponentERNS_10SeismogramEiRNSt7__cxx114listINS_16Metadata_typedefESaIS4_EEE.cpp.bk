@@ -1,0 +1,19 @@
+
+
+#include <mspass/mspass.h>
+#include <boost/python.hpp>
+
+
+void _ZN6mspass16ExtractComponentERNS_10SeismogramEiRNSt7__cxx114listINS_16Metadata_typedefESaIS4_EEE()
+{
+    
+
+    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    ::boost::python::scope parent_scope(parent_object);
+
+    ::boost::python::def("ExtractComponent", +[](mspass::Seismogram & tcs, int component, mspass::MetadataList & mdl) -> std::shared_ptr<mspass::TimeSeries> { return mspass::ExtractComponent(tcs, component, mdl); }, (::boost::python::arg("tcs"), ::boost::python::arg("component"), ::boost::python::arg("mdl")));
+
+    
+}
+
+
