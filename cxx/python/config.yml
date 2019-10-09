@@ -1,0 +1,9 @@
+functions:
+  'const char * mspass::MsPASSError::what() const throw()':
+    return_value_policy: copy_const_reference
+  'const char * mspass::dmatrix_index_error::what() const throw()':
+    return_value_policy: copy_const_reference
+  'const char * mspass::dmatrix_size_error::what() const throw()':
+    return_value_policy: copy_const_reference
+  'double * mspass::dmatrix::get_address(int r, int c)':
+    return_value_policy: reference_existing_object
