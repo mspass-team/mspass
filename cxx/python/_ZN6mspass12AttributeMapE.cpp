@@ -72,8 +72,8 @@ void _ZN6mspass12AttributeMapE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::AttributeMap >("AttributeMap", _ZN6mspass12AttributeMapE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::AttributeMap * { return new mspass::AttributeMap(); }, ::boost::python::default_call_policies()))

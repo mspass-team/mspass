@@ -31,8 +31,8 @@ void _ZN6mspass19AttributePropertiesE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::AttributeProperties >("AttributeProperties", _ZN6mspass19AttributePropertiesE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::AttributeProperties * { return new mspass::AttributeProperties(); }, ::boost::python::default_call_policies()))

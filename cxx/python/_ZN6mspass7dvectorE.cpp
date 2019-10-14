@@ -21,8 +21,8 @@ void _ZN6mspass7dvectorE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::dvector, ::boost::python::bases<mspass::dmatrix > >("dvector", _ZN6mspass7dvectorE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::dvector * { return new mspass::dvector(); }, ::boost::python::default_call_policies()))

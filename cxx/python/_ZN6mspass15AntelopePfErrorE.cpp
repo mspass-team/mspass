@@ -20,8 +20,8 @@ void _ZN6mspass15AntelopePfErrorE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::AntelopePfError, ::boost::noncopyable, ::boost::python::bases<mspass::MsPASSError > >("AntelopePfError", _ZN6mspass15AntelopePfErrorE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::AntelopePfError * { return new mspass::AntelopePfError(); }, ::boost::python::default_call_policies()))

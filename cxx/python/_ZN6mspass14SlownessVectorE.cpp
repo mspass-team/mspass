@@ -34,8 +34,8 @@ void _ZN6mspass14SlownessVectorE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::SlownessVector >("SlownessVector", _ZN6mspass14SlownessVectorE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::SlownessVector * { return new mspass::SlownessVector(); }, ::boost::python::default_call_policies()))

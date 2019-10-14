@@ -14,8 +14,8 @@ void _ZN6mspass7LogDataE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::LogData >("LogData", boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::LogData * { return new mspass::LogData(); }, ::boost::python::default_call_policies()))

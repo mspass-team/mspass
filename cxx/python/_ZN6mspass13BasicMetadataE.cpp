@@ -19,8 +19,8 @@ void _ZN6mspass13BasicMetadataE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::BasicMetadata, ::boost::noncopyable >("BasicMetadata", _ZN6mspass13BasicMetadataE_docstring, boost::python::no_init)
         .def("get_int", +[](const mspass::BasicMetadata *self, const std::string key) -> int { return self->get_int(key); }, (::boost::python::arg("key")))

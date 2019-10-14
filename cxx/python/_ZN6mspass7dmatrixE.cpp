@@ -42,8 +42,8 @@ void _ZN6mspass7dmatrixE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::dmatrix >("dmatrix", _ZN6mspass7dmatrixE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::dmatrix * { return new mspass::dmatrix(); }, ::boost::python::default_call_policies()))

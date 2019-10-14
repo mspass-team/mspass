@@ -8,8 +8,8 @@ void _ZN6mspass13ErrorSeverityE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::enum_<mspass::ErrorSeverity>("ErrorSeverity")
         .value("Fatal", mspass::ErrorSeverity::Fatal)

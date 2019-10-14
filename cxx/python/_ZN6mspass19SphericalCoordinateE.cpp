@@ -19,8 +19,8 @@ void _ZN6mspass19SphericalCoordinateE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::SphericalCoordinate, ::boost::noncopyable >("SphericalCoordinate", _ZN6mspass19SphericalCoordinateE_docstring, boost::python::no_init)
         .def_readwrite("radius", &mspass::SphericalCoordinate::radius)
