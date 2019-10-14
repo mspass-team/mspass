@@ -11,6 +11,6 @@ target_link_libraries(mspasspython PRIVATE mspass ${Boost_LIBRARIES} ${PYTHON_LI
 
 PYTHON_ADD_MODULE(mspasspy mspasspy.cpp)
 
-target_link_libraries(mspasspy PUBLIC mspasspython ${Boost_LIBRARIES})
+target_link_libraries(mspasspy PRIVATE mspasspython ${Boost_LIBRARIES})
 
 install (TARGETS mspasspy DESTINATION lib)
