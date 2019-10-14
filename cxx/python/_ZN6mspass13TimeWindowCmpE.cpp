@@ -21,8 +21,8 @@ void _ZN6mspass13TimeWindowCmpE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::TimeWindowCmp, ::boost::noncopyable >("TimeWindowCmp", _ZN6mspass13TimeWindowCmpE_docstring, boost::python::no_init)
     ;

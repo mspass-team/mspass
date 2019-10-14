@@ -44,8 +44,8 @@ void _ZN6mspass8MetadataE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::Metadata, ::boost::python::bases<mspass::BasicMetadata > >("Metadata", _ZN6mspass8MetadataE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::Metadata * { return new mspass::Metadata(); }, ::boost::python::default_call_policies()))

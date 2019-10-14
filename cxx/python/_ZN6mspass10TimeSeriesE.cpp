@@ -20,8 +20,8 @@ void _ZN6mspass10TimeSeriesE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::TimeSeries, ::boost::python::bases<mspass::Metadata, mspass::BasicTimeSeries > >("TimeSeries", _ZN6mspass10TimeSeriesE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::TimeSeries * { return new mspass::TimeSeries(); }, ::boost::python::default_call_policies()))

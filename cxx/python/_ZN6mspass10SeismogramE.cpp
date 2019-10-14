@@ -97,8 +97,8 @@ void _ZN6mspass10SeismogramE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::Seismogram, ::boost::python::bases<mspass::Metadata, mspass::BasicTimeSeries > >("Seismogram", _ZN6mspass10SeismogramE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::Seismogram * { return new mspass::Seismogram(); }, ::boost::python::default_call_policies()))

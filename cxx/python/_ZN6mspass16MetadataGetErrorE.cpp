@@ -18,8 +18,8 @@ void _ZN6mspass16MetadataGetErrorE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::MetadataGetError, ::boost::noncopyable, ::boost::python::bases<mspass::MsPASSError > >("MetadataGetError", _ZN6mspass16MetadataGetErrorE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[](std::string key, std::string Texpected) -> mspass::MetadataGetError * { return new mspass::MetadataGetError(key, Texpected); }, ::boost::python::default_call_policies(), (::boost::python::arg("key"), ::boost::python::arg("Texpected"))))

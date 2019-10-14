@@ -98,8 +98,8 @@ void _ZN6mspass10AntelopePfE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::AntelopePf, ::boost::python::bases<mspass::Metadata > >("AntelopePf", _ZN6mspass10AntelopePfE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::AntelopePf * { return new mspass::AntelopePf(); }, ::boost::python::default_call_policies()))

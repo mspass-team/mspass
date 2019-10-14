@@ -8,8 +8,8 @@ void _ZN6mspass6MDtypeE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::enum_<mspass::MDtype>("MDtype")
         .value("Real", mspass::MDtype::Real)

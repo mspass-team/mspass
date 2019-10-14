@@ -25,8 +25,8 @@ void _ZN6mspass10TimeWindowE()
 {
     
 
-    ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
-    ::boost::python::scope parent_scope(parent_object);
+    // ::boost::python::object parent_object(::boost::python::scope().attr("mspass"));
+    // ::boost::python::scope parent_scope(parent_object);
 
     ::boost::python::class_<mspass::TimeWindow >("TimeWindow", _ZN6mspass10TimeWindowE_docstring, boost::python::no_init)
         .def("__init__", ::boost::python::make_constructor(+[]() -> mspass::TimeWindow * { return new mspass::TimeWindow(); }, ::boost::python::default_call_policies()))
