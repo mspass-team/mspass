@@ -5,6 +5,6 @@ include_directories(
   ${PROJECT_BINARY_DIR}/include)
 
 add_library(utility STATIC ${sources_utility})
-target_link_libraries(utility PRIVATE ${Boost_LIBRARIES} ${BLAS_LIBRARIES})
+target_link_libraries(utility PRIVATE ${BLAS_LIBRARIES})
 
 install (TARGETS utility DESTINATION lib)
