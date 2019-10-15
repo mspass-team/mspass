@@ -10,7 +10,7 @@ RUN apt-get update \
        build-essential python3-setuptools \
        python3-dev python3-pip openjdk-8-jdk \
        git cmake gfortran gdb \
-       liblapack-dev libboost-dev \
+       liblapack-dev libboost-dev libboost-python1.65.1\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
@@ -49,6 +49,9 @@ RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators
 # Install obspy through pip
 RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install obspy
+
+# Have to manually link with a standard name
+RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python3-py36.so.1.65.1 /usr/lib/x86_64-linux-gnu/libboost_python3.so
 
 # Add cxx library
 ADD cxx /mspass/cxx
