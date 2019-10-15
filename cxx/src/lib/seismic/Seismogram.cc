@@ -475,21 +475,20 @@ void Seismogram::rotate(const double nu[3])
 void Seismogram::rotate(double phi)
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
-    int i;
+    int i,j,k;
     double a,b;
-    /* Restore to cardinate coordinates */
-    this->rotate_to_standard();
     a=cos(phi);
     b=sin(phi);
-    tmatrix[0][0] = a;
-    tmatrix[1][0] = b;
-    tmatrix[2][0] = 0.0;
-    tmatrix[0][1] = -b;
-    tmatrix[1][1] = a;
-    tmatrix[2][1] = 0.0;
-    tmatrix[0][2] = 0.0;
-    tmatrix[1][2] = 0.0;
-    tmatrix[2][2] = 1.0;
+    double tmnew[3][3];
+    tmnew[0][0] = a;
+    tmnew[1][0] = b;
+    tmnew[2][0] = 0.0;
+    tmnew[0][1] = -b;
+    tmnew[1][1] = a;
+    tmnew[2][1] = 0.0;
+    tmnew[0][2] = 0.0;
+    tmnew[1][2] = 0.0;
+    tmnew[2][2] = 1.0;
 
     /* Now multiply the data by this transformation matrix.
      Not trick in this i only goes to 2 because 3 component
@@ -499,10 +498,21 @@ void Seismogram::rotate(double phi)
     for(i=0; i<2; ++i)
     {
         dcopy(ns,u.get_address(0,0),3,work[i],1);
-        dscal(ns,tmatrix[i][0],work[i],1);
-        daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+        dscal(ns,tmnew[i][0],work[i],1);
+        daxpy(ns,tmnew[i][1],u.get_address(1,0),3,work[i],1);
     }
     for(i=0; i<2; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+    double tm_tmp[3][3];
+    double prod;
+    for(i=0; i<3; ++i)
+        for(j=0; j<3; ++j)
+        {
+            for(prod=0.0,k=0; k<3; ++k)
+                prod+=tmnew[i][k]*tmatrix[k][j];
+            tm_tmp[i][j]=prod;
+        }
+    for(i=0; i<3; ++i)
+        for(j=0; j<3; ++j)tmatrix[i][j]=tm_tmp[i][j];
     components_are_cardinal=false;
     for(i=0; i<2; ++i) delete [] work[i];
 }

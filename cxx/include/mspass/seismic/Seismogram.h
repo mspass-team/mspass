@@ -200,6 +200,13 @@ SphericalCoordinate object consistent with given propagation direction
 defined by a slowness vector.  Alternatively, use the free_surface_transformation
 method defined below.
 
+A VERY IMPORTANT thing to recognize about this tranformation is it will
+always yield a result relative to cardinal coordinates.  i.e. if the data
+had been previously rotated or were not originally in ENZ form they 
+will be first transformed to ENZ before actually performing this
+transformation.   Use the transform or horizontal rotation method to 
+create cummulative transformations. 
+
 \param sc defines final x3 direction (longitudinal) in a spherical coordinate structure.
 **/
 	void rotate(SphericalCoordinate& sc);
@@ -220,6 +227,12 @@ method defined below.
  theta) and orthogonal to x3prime, and x1 will be horizontal and perpendicular to x2prime
  and x3prime.
 
+A VERY IMPORTANT thing to recognize about this tranformation is it will
+always yield a result relative to cardinal coordinates.  i.e. if the data
+had been previously rotated or were not originally in ENZ form they 
+will be first transformed to ENZ before actually performing this
+transformation.   Use the transform or horizontal rotation method to 
+
 \param nu defines direction of x3 direction (longitudinal) as a unit vector with three components.
 **/
 	void rotate(const double nu[3]);
@@ -230,6 +243,11 @@ method defined below.
           (assumed here x3) unaltered.   This routine rotates the horizontals
           by angle phi using with positive phi counterclockwise as in
           polar coordinates and the azimuth angle of spherical coordinates.
+
+          Note this transformation is cummulative.  i.e. this transformation
+          is cumulative.  The internal transformation matrix will be updated.
+          This is a useful feature for things like incremental horizontal
+          rotation in rotational angle grid searches.  
 
           \param phi rotation angle around x3 axis in counterclockwise
             direction (in radians).
@@ -257,6 +275,23 @@ method defined below.
 \param vs0 Surface S wave velocity.
 **/
 	void free_surface_transformation(const mspass::SlownessVector u, const double vp0, const double vs0);
+/*! Return current transformation matrix.
+
+The transformation matrix is maintained internally in this object.   
+Transformations like rotations and the transform method can change make 
+this matrix not an identity matrix.  It should always be an identity 
+matrix when the coordinates are cardinal (i.e. ENZ).   
+
+\return 3x3 transformation matrix. 
+*/
+        dmatrix transformation_matrix()
+        {
+            dmatrix result(3,3);
+            for(int i=0;i<3;++i)
+                for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
+            return result;
+        };
+
 protected:
 	/*!
 	 Defines if the contents of this object are components of an orthogonal basis.
