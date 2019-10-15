@@ -72,11 +72,13 @@ int main(int argc, char **argv)
         cout << "Product y=Ax"<<endl;
         y=A*x;
         cout << y<<endl;
+        exit(0);
 
     }catch(std::exception& stex)
     {
         cerr<<"Error:  something threw an exception.  This is the message"<<endl;
         cerr << stex.what()<<endl;
+        exit(-1);
     }
 }
 

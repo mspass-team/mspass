@@ -6,4 +6,7 @@ if(BUILD_TESTING)
   add_subdirectory(tcs)
 
   add_test(NAME test_dmatrix COMMAND ${PROJECT_BINARY_DIR}/test/dmatrix/test_dmatrix)
+  add_test(NAME test_Metadata COMMAND ${PROJECT_BINARY_DIR}/test/md/test_md)
+  add_test(NAME test_amap COMMAND ${PROJECT_BINARY_DIR}/test/amap/test_amap)
+  add_test(NAME test_tcs COMMAND ${PROJECT_BINARY_DIR}/test/tcs/test_tcs)
 endif()
