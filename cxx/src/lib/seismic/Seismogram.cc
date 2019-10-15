@@ -23,8 +23,8 @@ double daxpy(const int &n, const double& a, const double *x,const int& incx,
         const double *y,const int& incy);
 double dcopy(const int &n, const double *x,const int& incx,
         const double *y,const int& incy);
-void dgetrf(int,int,double*,int,int*,int*);
-void dgetri(int,double*,int,int*,int*);
+void dgetrf(int&,int&,double*,int&,int*,int&);
+void dgetri(int&,double*,int&,int*,double*,int&,int&);
 };
 namespace mspass
 {
@@ -298,12 +298,9 @@ void Seismogram::rotate_to_standard()
         a[6] = tmatrix[0][2];
         a[7] = tmatrix[1][2];
         a[8] = tmatrix[2][2];
-        //Perf lib matrix inversion routine using LU factorizatoin
-        // Note this is changed from parent code.  Untested.
-        //This was the call using perf library in antelope contrib
-        dgetrf(3,3,a,3,ipivot,&info);
-        // This is the openblas version 
-        //info=LAPACKE_dgetrf(LAPACK_COL_MAJOR,3,3,a,3,ipivot);
+        //LAPACK routine with FORTRAN interface using pass by reference and pointers
+        int three(3);
+        dgetrf(three,three,a,three,ipivot,info);
         if(info!=0)
         {
             for(i=0; i<3; ++i) delete [] work[i];
@@ -311,8 +308,10 @@ void Seismogram::rotate_to_standard()
                       string("rotate_to_standard:  LU factorization of transformation matrix failed")),
                   ErrorSeverity::Invalid);
         }
-        // Again this is the perf lib version
-        dgetri(3,a,3,ipivot,&info);
+        // inversion routine after factorization from lapack FORT$RAN interface
+        double awork[10];  //Larger than required but safety value small cost
+        int ldwork(10);
+        dgetri(three,a,three,ipivot,awork,ldwork,info);
         // This is the openblas version
         //info=LAPACKE_dgetri(LAPACK_COL_MAJOR,3,a,3,ipivot);
         if(info!=0)
@@ -538,6 +537,8 @@ void Seismogram::transform(const double a[3][3])
     for(i=0; i<3; ++i)
         for(j=0; j<3; ++j)tmatrix[i][j]=tmnew[i][j];
     components_are_cardinal = this->tmatrix_is_cardinal();
+    /* Assume this method does not yield cartesian coordinate directions.*/
+    if(!components_are_cardinal) components_are_orthogonal=false;
 }
 /* This function computes and applies the free surface tranformaton
 matrix described by Kennett 1991.  The result is a ray coordinate
