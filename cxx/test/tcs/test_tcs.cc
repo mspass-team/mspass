@@ -6,34 +6,6 @@
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass;
-/* This procedure probably should be added to mdlist.cc.  I writes the contents of a MetadataList to 
-   stdout */
-void print_mdlist(MetadataList& mdl)
-{
-    MetadataList::iterator mdlptr;
-    for(mdlptr=mdl.begin();mdlptr!=mdl.end();++mdlptr)
-    {
-        cout << mdlptr->tag;
-        switch(mdlptr->mdt)
-        {
-            case MDtype::Real:
-                cout << " is real attribute";
-                break;
-            case MDtype::Integer:
-                cout << " is integer attribute";
-                break;
-            case MDtype::Boolean:
-                cout << " is boolean attribute";
-                break;
-            case MDtype::String:
-                cout << " is string attribute";
-                break;
-            default:
-                cout << " has unrecognized type";
-        }
-        cout << endl;
-    }
-}
 int main(int argc, char **argv)
 {
     string pfname("test_tcs");
@@ -297,9 +269,11 @@ int main(int argc, char **argv)
             << testsum<<endl;;
             */
 
+        exit(0);
     }
     catch (MsPASSError&  serr)
     {
 	serr.log_error();
+        exit(-1);
     }
 }
