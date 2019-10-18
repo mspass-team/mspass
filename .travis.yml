@@ -19,6 +19,10 @@ jobs:
       compiler:
         - gcc
         - clang
+      addons:
+        apt:
+          packages:
+            - gfortran
       before_install:
         - cd cxx 
         - mkdir build 
@@ -26,6 +30,7 @@ jobs:
       install:
         - cmake ..
         - make -j 8
+      script:
         - make test
       
 
