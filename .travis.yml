@@ -25,6 +25,7 @@ jobs:
         - cd build
       install:
         - cmake ..
-        - make install
+        - make -j 8
+        - make test
       
 
