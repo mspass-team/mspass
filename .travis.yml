@@ -10,8 +10,4 @@ jobs:
         - docker build -t wangyinz/mspass .
       script:
         - docker-compose up -d
-        - docker-compose exec master bash -i -c "build/sbt assembly"
         - docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
-
-
-
