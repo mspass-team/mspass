@@ -1,6 +1,7 @@
 jobs:
   include:
-    - os: linux
+    - name: "Docker Compose"
+      os: linux
       dist: bionic
       sudo: required
       language: minimal
@@ -11,3 +12,19 @@ jobs:
       script:
         - docker-compose up -d
         - docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
+
+    - name: "Ubuntu Bionic Default"
+      os: linux
+      dist: bionic
+      compiler:
+        - gcc
+        - clang
+      before_install:
+        - cd cxx 
+        - mkdir build 
+        - cd build
+      install:
+        - cmake ..
+        - make install
+      
+
