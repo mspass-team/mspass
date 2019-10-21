@@ -26,12 +26,47 @@ jobs:
             - gfortran
       compiler: gcc
       
+    - name: "Ubuntu Bionic Boost LAPACK GCC"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-python-dev
+            - liblapack-dev
+      compiler: gcc
+      
     - name: "Ubuntu Bionic Default CLANG"
       addons:
         apt:
           packages:
             - gfortran
       compiler: clang
+      
+    - name: "Ubuntu Bionic Boost LAPACK CLANG"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-python-dev
+            - liblapack-dev
+      compiler: clang
+      
+    - name: "OSX XC9.4 Default"
+      os: osx
+      osx_image: xcode9.4
+      addons:
+        homebrew:
+          packages:
+            - gfortran
+      
+    - name: "OSX XC9.4 Default Boost"
+      os: osx
+      osx_image: xcode9.4
+      addons:
+        homebrew:
+          packages:
+            - gfortran
+            - boost-python
       
 before_install:
   - cd cxx 
