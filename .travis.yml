@@ -57,7 +57,7 @@ jobs:
       addons:
         homebrew:
           packages:
-            - gfortran
+            - gcc
           update: true
       
     - name: "OSX XC9.4 Boost"
@@ -66,7 +66,7 @@ jobs:
       addons:
         homebrew:
           packages:
-            - gfortran
+            - gcc
             - boost-python
           update: true
       
