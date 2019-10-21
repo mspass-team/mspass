@@ -58,8 +58,9 @@ jobs:
         homebrew:
           packages:
             - gfortran
+          update: true
       
-    - name: "OSX XC9.4 Default Boost"
+    - name: "OSX XC9.4 Boost"
       os: osx
       osx_image: xcode9.4
       addons:
@@ -67,6 +68,7 @@ jobs:
           packages:
             - gfortran
             - boost-python
+          update: true
       
 before_install:
   - cd cxx 
