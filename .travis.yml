@@ -19,14 +19,14 @@ jobs:
         - docker-compose up -d
         - docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
 
-    - name: "Ubuntu Bionic Default"
+    - name: "Ubuntu Bionic Default GCC"
       addons:
         apt:
           packages:
             - gfortran
       compiler: gcc
       
-    - name: "Ubuntu Bionic Default"
+    - name: "Ubuntu Bionic Default CLANG"
       addons:
         apt:
           packages:
