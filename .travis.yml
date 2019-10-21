@@ -51,15 +51,6 @@ jobs:
             - liblapack-dev
       compiler: clang
       
-    - name: "OSX XC9.4 Default"
-      os: osx
-      osx_image: xcode9.4
-      addons:
-        homebrew:
-          packages:
-            - gcc
-          update: true
-      
     - name: "OSX XC9.4 Boost"
       os: osx
       osx_image: xcode9.4
@@ -68,7 +59,6 @@ jobs:
           packages:
             - gcc
             - boost-python
-          update: true
       
 before_install:
   - cd cxx 
