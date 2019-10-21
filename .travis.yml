@@ -18,6 +18,7 @@ jobs:
       script:
         - docker-compose up -d
         - docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
+      if: type = cron
 
     - name: "Ubuntu Bionic Default GCC"
       addons:
@@ -25,6 +26,7 @@ jobs:
           packages:
             - gfortran
       compiler: gcc
+      if: type = cron
       
     - name: "Ubuntu Bionic Boost LAPACK GCC"
       addons:
@@ -41,6 +43,7 @@ jobs:
           packages:
             - gfortran
       compiler: clang
+      if: type = cron
       
     - name: "Ubuntu Bionic Boost LAPACK CLANG"
       addons:
@@ -59,6 +62,7 @@ jobs:
           packages:
             - gcc
             - boost-python
+          update: true
       
 before_install:
   - cd cxx 
