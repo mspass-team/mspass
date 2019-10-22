@@ -6,34 +6,6 @@
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass;
-/* This procedure probably should be added to mdlist.cc.  I writes the contents of a MetadataList to 
-   stdout */
-void print_mdlist(MetadataList& mdl)
-{
-    MetadataList::iterator mdlptr;
-    for(mdlptr=mdl.begin();mdlptr!=mdl.end();++mdlptr)
-    {
-        cout << mdlptr->tag;
-        switch(mdlptr->mdt)
-        {
-            case MDtype::Real:
-                cout << " is real attribute";
-                break;
-            case MDtype::Integer:
-                cout << " is integer attribute";
-                break;
-            case MDtype::Boolean:
-                cout << " is boolean attribute";
-                break;
-            case MDtype::String:
-                cout << " is string attribute";
-                break;
-            default:
-                cout << " has unrecognized type";
-        }
-        cout << endl;
-    }
-}
 int main(int argc, char **argv)
 {
     string pfname("test_tcs");
@@ -60,6 +32,8 @@ int main(int argc, char **argv)
 				s2.u(i,j)=0.0;
 		}
         s2.live=true;
+        s2.ns=100;
+        s2.t0=0.0;
 	SphericalCoordinate sc;
 	sc.phi=0.0;
 	sc.theta=M_PI_4;
@@ -111,6 +85,8 @@ int main(int argc, char **argv)
 				s3.u(i,j)=0.0;
 		}
         s3.live=true;
+        s3.ns=100;
+        s3.t0=0.0;
 	// set some other vectors used in test below
 	s3.u(0,1)=1.0;
 	s3.u(1,1)=1.0;
@@ -127,6 +103,9 @@ int main(int argc, char **argv)
 	cout << "Trying unit vector rotation to (1,1,1) with (1,0,0) data"<<endl;
 	double nu[3]={sqrt(3.0)/3.0,sqrt(3.0)/3.0,sqrt(3.0)/3.0};
 	s3.rotate(nu);
+        cout << "Transformation matrix created by this method:"<<endl;
+        dmatrix tm=s3.transformation_matrix();
+        cout << tm<<endl;
 	cout << "one sample of (1,0,0) rotated to (1,1,1)"
 		<< s3.u(0,0) << ", "
 		<< s3.u(1,0) << ", "
@@ -135,6 +114,7 @@ int main(int argc, char **argv)
 		<< s3.u(0,1) << ", "
 		<< s3.u(1,1) << ", "
 		<< s3.u(2,1) << endl;
+        cout << "Should be (0,0,sqrt(3))"<<endl;
 	cout << "Restoring to standard" << endl;
 	s3.rotate_to_standard();
 	cout << "One sample of restored (1,0,0): "
@@ -150,15 +130,22 @@ int main(int argc, char **argv)
 	sc.phi=M_PI_4;
 	sc.theta=0.0;
 	s3.rotate(sc);
-	cout << "one sample of rotated (1,0,0)"
+        cout << "Transformation matrix created by this method:"<<endl;
+        tm=s3.transformation_matrix();
+        cout << tm<<endl;
+	cout << "one sample of transformed (1,0,0)"
 		<< s3.u(0,0) << ", "
 		<< s3.u(1,0) << ", "
 		<< s3.u(2,0) << endl;
-	cout << "one sample of rotated (1,1,0)"
+	cout << "One sample of transformed (1,1,1): "
+		<< s3.u(0,1) << ", "
+		<< s3.u(1,1) << ", "
+		<< s3.u(2,1) << endl;
+	cout << "one sample of transformed (1,1,0)"
 		<< s3.u(0,2) << ", "
 		<< s3.u(1,2) << ", "
 		<< s3.u(2,2) << endl;
-	cout << "one sample of rotated (0,0,1)"
+	cout << "one sample of transformed (0,0,1)"
 		<< s3.u(0,3) << ", "
 		<< s3.u(1,3) << ", "
 		<< s3.u(2,3) << endl;
@@ -169,19 +156,23 @@ int main(int argc, char **argv)
 	a[1][0]=-1.0;  a[1][1]=1.0;  a[1][2]=1.0;
 	a[2][0]=0.0;  a[2][1]=-1.0;  a[2][2]=0.0;
 	s3.transform(a);
-	cout << "one sample of transformed (1,0,0)"
+	cout << "one sample of transformed (1,0,0):  "
 		<< s3.u(0,0) << ", "
 		<< s3.u(1,0) << ", "
 		<< s3.u(2,0) << endl;
-	cout << "one sample of transformed (1,1,0)"
+	cout << "One sample of transformed (1,1,1): "
+		<< s3.u(0,1) << ", "
+		<< s3.u(1,1) << ", "
+		<< s3.u(2,1) << endl;
+	cout << "one sample of transformed (1,1,0):  "
 		<< s3.u(0,2) << ", "
 		<< s3.u(1,2) << ", "
 		<< s3.u(2,2) << endl;
-	cout << "one sample of transformed (0,0,1)"
+	cout << "one sample of transformed (0,0,1):  "
 		<< s3.u(0,3) << ", "
 		<< s3.u(1,3) << ", "
 		<< s3.u(2,3) << endl;
-	cout << "Testing back conversion to standard coordinates";
+	cout << "Testing back conversion to standard coordinates"<<endl;
 	s3.rotate_to_standard();
 	cout << "One sample of restored (1,0,0): "
 		<< s3.u(0,0) << ", "
@@ -201,9 +192,28 @@ int main(int argc, char **argv)
 		<< s3.u(2,3) << endl;
 
 	cout << "Testing multiple, accumulated transformations" << endl;
-	s3.rotate(nu);
+	s3.rotate(M_PI_4);
 	s3.transform(a);
-	s3.rotate(sc);
+        cout << "Accumulated transformation matrix from double transformation"
+            <<endl;
+        tm=s3.transformation_matrix();
+        cout << tm;
+	cout << "one sample of transformed (1,0,0):  "
+		<< s3.u(0,0) << ", "
+		<< s3.u(1,0) << ", "
+		<< s3.u(2,0) << endl;
+	cout << "One sample of transformed (1,1,1): "
+		<< s3.u(0,1) << ", "
+		<< s3.u(1,1) << ", "
+		<< s3.u(2,1) << endl;
+	cout << "one sample of transformed (1,1,0):  "
+		<< s3.u(0,2) << ", "
+		<< s3.u(1,2) << ", "
+		<< s3.u(2,2) << endl;
+	cout << "one sample of transformed (0,0,1):  "
+		<< s3.u(0,3) << ", "
+		<< s3.u(1,3) << ", "
+		<< s3.u(2,3) << endl;
 	s3.rotate_to_standard();
 	cout << "One sample of restored (1,0,0): "
 		<< s3.u(0,0) << ", "
@@ -230,6 +240,9 @@ int main(int argc, char **argv)
 	//s4.free_surface_transformation(uvec,8.0,3.5); // test exception
 	s4.free_surface_transformation(uvec,5.0,3.5);
         cout << "Completed"<<endl;
+        cout << "Computed transformation matrix:"<<endl;
+        tm=s4.transformation_matrix();
+        cout << tm<<endl;
         /*
         ofstream ofs("testserial.dat");
         boost::archive::text_oarchive oa(ofs);
@@ -256,9 +269,11 @@ int main(int argc, char **argv)
             << testsum<<endl;;
             */
 
+        exit(0);
     }
     catch (MsPASSError&  serr)
     {
 	serr.log_error();
+        exit(-1);
     }
 }

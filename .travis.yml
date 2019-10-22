@@ -1,0 +1,77 @@
+language: cpp
+
+os: linux
+
+dist: bionic
+
+jobs:
+  include:
+    - name: "Docker Compose"
+      sudo: required
+      language: minimal
+      services: 
+        - docker
+      before_install: 
+        - pwd
+      install:
+        - docker build -t wangyinz/mspass .
+      script:
+        - docker-compose up -d
+        - docker exec mspass-worker /usr/local/spark/bin/run-example --master spark://mspass-master:7077 SparkPi 10
+      if: type = cron
+
+    - name: "Ubuntu Bionic Default GCC"
+      addons:
+        apt:
+          packages:
+            - gfortran
+      compiler: gcc
+      if: type = cron
+      
+    - name: "Ubuntu Bionic Boost LAPACK GCC"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-python-dev
+            - liblapack-dev
+      compiler: gcc
+      
+    - name: "Ubuntu Bionic Default CLANG"
+      addons:
+        apt:
+          packages:
+            - gfortran
+      compiler: clang
+      if: type = cron
+      
+    - name: "Ubuntu Bionic Boost LAPACK CLANG"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-python-dev
+            - liblapack-dev
+      compiler: clang
+      
+    - name: "OSX XC9.4 Boost"
+      os: osx
+      osx_image: xcode9.4
+      addons:
+        homebrew:
+          packages:
+            - gcc
+            - boost-python
+          update: true
+      
+before_install:
+  - cd cxx 
+  - mkdir build 
+  - cd build
+install:
+  - cmake ..
+  - make -j 8
+script:
+  - make test
+      
+

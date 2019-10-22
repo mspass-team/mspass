@@ -8,6 +8,7 @@ using namespace mspass;
 int main(int argc,char **argv)
 {
   try{
+    int retcode(0);
     cout << "test_aml program:  testing AttributeMap and AttributeCrossRefence outility classes"<<endl
         << "Trying default constructor for AttributeMap"<<endl;
     AttributeMap amdef;
@@ -34,10 +35,16 @@ int main(int argc,char **argv)
     if(bval) 
         cout << "Correctly returned true for attribute sta"<<endl;
     else
+    {
         cout << "ERROR - returned false for sta - should be true"<<endl;
+        ++retcode;
+    }
     bval=amdef.is_alias("foo"); 
     if(bval)
+    {
         cout << "ERROR - returned true for invalid key - should be false"<<endl;
+        ++retcode;
+    }
     else
         cout << "Corrected returned false for invalid key"<<endl;
     cout << "Testing aliastable method"<<endl<<"Trying to retrieve table for attribute time"<<endl;
@@ -66,7 +73,10 @@ int main(int argc,char **argv)
     if(axref.size()==axcpy->size())
         cout << "Size of copy matches original - assume success"<<endl;
     else
+    {
         cout << "Something is wrong.   Size of copy="<<axcpy->size()<<endl;
+        ++retcode;
+    }
     cout << "Testing destructor"<<endl;
     delete axcpy;
     cout << "Testing operator="<<endl;
@@ -74,7 +84,10 @@ int main(int argc,char **argv)
     if(axref.size()==axcpy2.size())
         cout << "Size of copy matches original - assume success"<<endl;
     else
+    {
         cout << "Something is wrong.   Size of copy="<<axcpy2.size()<<endl;
+        ++retcode;
+    }
     cout << "Testing internal method"<<endl;
     const string ekey("sourceLongOrX");
     const string ikey("sx");
@@ -84,14 +97,21 @@ int main(int argc,char **argv)
     if(stest==ikey) 
         cout <<"Test passed - got result expected"<<endl;
     else
+    {
         cout << "ERROR:   expected result="<<ikey;
+        ++retcode;
+    }
     cout << "Testing external method"<<endl;
     stest=axref.external(ikey);
     cout << "Internal method returned "<<stest;
     if(stest==ekey) 
         cout <<"Test passed - got result expected"<<endl;
     else
+    {
         cout << "ERROR:   expected result="<<ekey;
+        ++retcode;
+    }
+    exit(retcode);
 
   }catch(MsPASSError& merr)
   {
@@ -105,4 +125,5 @@ int main(int argc,char **argv)
   {
       cerr << "Something threw an unexpected exception"<<endl;
   }
+  exit(-1);
 }
