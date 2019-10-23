@@ -1,32 +1,28 @@
 #include <vector>
 #include "mspass/utility/MsPASSError.h"
-#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/Metadata.h"
 namespace mspass
 {
 using namespace std;
 using namespace mspass;
 //
-// simple constructors for the TimeSeries object are defined inline
+// simple constructors for the CoreTimeSeries object are defined inline
 // in seispp.h.
 //
-TimeSeries::TimeSeries() : BasicTimeSeries(), Metadata()
+CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 {
     s.reserve(0);
 }
-TimeSeries::TimeSeries(int nsin) : BasicTimeSeries(), Metadata()
+CoreTimeSeries::CoreTimeSeries(int nsin) : BasicTimeSeries(), Metadata()
 {
     s.reserve(nsin);
     // This seems to be necessary at least for Sun's compiler
     for(int i=0; i<nsin; ++i)s.push_back(0.0);
 }
 
-/*
-TimeSeries::TimeSeries(const TimeSeries& tsi) :
-		BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(tsi)),
-		Metadata(dynamic_cast<const Metadata&>(tsi))
-*/
-TimeSeries::TimeSeries(const TimeSeries& tsi) :
+
+CoreTimeSeries::CoreTimeSeries(const CoreTimeSeries& tsi) :
     BasicTimeSeries(tsi),
     Metadata(tsi)
 {
@@ -36,7 +32,7 @@ TimeSeries::TimeSeries(const TimeSeries& tsi) :
     }
 }
 
-TimeSeries::TimeSeries(const BasicTimeSeries& bd,const Metadata& md)
+CoreTimeSeries::CoreTimeSeries(const BasicTimeSeries& bd,const Metadata& md)
     : BasicTimeSeries(bd), Metadata(md)
 {
     int i;
@@ -45,7 +41,7 @@ TimeSeries::TimeSeries(const BasicTimeSeries& bd,const Metadata& md)
         this->s.push_back(0.0);
 }
 // standard assignment operator
-TimeSeries& TimeSeries::operator=(const TimeSeries& tsi)
+CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
 {
     if(this!=&tsi)
     {
@@ -58,21 +54,21 @@ TimeSeries& TimeSeries::operator=(const TimeSeries& tsi)
     }
     return(*this);
 }
-/*  Sum operator for TimeSeries object */
+/*  Sum operator for CoreTimeSeries object */
 
-void TimeSeries::operator+=(const TimeSeries& data)
+void CoreTimeSeries::operator+=(const CoreTimeSeries& data)
 {
     int i,i0,iend;
     int j,j0=0;
     // Sun's compiler complains about const objects without this.
-    TimeSeries& d=const_cast<TimeSeries&>(data);
+    CoreTimeSeries& d=const_cast<CoreTimeSeries&>(data);
     // Silently do nothing if d is marked dead
     if(!d.live) return;
     // Silently do nothing if d does not overlap with data to contain sum
     if( (d.endtime()<t0)
             || (d.t0>(this->endtime())) ) return;
     if(d.tref!=(this->tref))
-        throw MsPASSError("TimeSeries += operator cannot handle data with inconsistent time base\n",
+        throw MsPASSError("CoreTimeSeries += operator cannot handle data with inconsistent time base\n",
                           ErrorSeverity::Invalid);
     //
     // First we have to determine range fo sum for d into this
@@ -96,15 +92,15 @@ void TimeSeries::operator+=(const TimeSeries& data)
     for(i=i0,j=j0; i<iend; ++i,++j)
         this->s[j]+=d.s[i];
 }
-double TimeSeries::operator[](int i) const
+double CoreTimeSeries::operator[](int i) const
 {
     if(!live)
-        throw MsPASSError(string("TimeSeries operator[]: attempting to access data marked as dead"),
+        throw MsPASSError(string("CoreTimeSeries operator[]: attempting to access data marked as dead"),
                           ErrorSeverity::Invalid);
     if( (i<0) || (i>=ns) )
     {
         throw MsPASSError(
-            string("TimeSeries operator[]:  request for sample outside range of data"),
+            string("CoreTimeSeries operator[]:  request for sample outside range of data"),
             ErrorSeverity::Invalid);
     }
     return(s[i]);

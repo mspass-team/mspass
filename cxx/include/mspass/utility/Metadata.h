@@ -79,7 +79,7 @@ public:
   \param mdold - parent object to be copied
   **/
   Metadata(const Metadata& mdold);
-  /*! Destructor - has to be explicitly implemented and declared virtual 
+  /*! Destructor - has to be explicitly implemented and declared virtual
     for reasons found in textbooks and various web forums.  A very subtle
     feature of C++  inheritance. */
   virtual ~Metadata(){};
@@ -253,7 +253,6 @@ protected:
   /* The keys of any entry changed will be contained here.   */
   set<string> changed_or_set;
 };
-
 template <typename T> T Metadata::get(const string key) const
 {
   T result;
@@ -274,9 +273,9 @@ template <typename T> T Metadata::get(const string key) const
   return result;
 }
 /*   Start of helper procedures for Metadata. */
-/*! \brief Define standard types for Metadata.   
+/*! \brief Define standard types for Metadata.
 
-Attributes in Metadata here can be any type that boost::any supports.  
+Attributes in Metadata here can be any type that boost::any supports.
 However, 99% of attributes one normally wants to work with can be
 cast into the stock language types defined by this enum.   This is
 derived form seispp in antelope contrib but adapted to the new form with
@@ -304,32 +303,32 @@ typedef struct Metadata_typedef {
 
 /*! Container to drive selected copies.
 
-Often it is necessary to define a list of Metadata elements 
+Often it is necessary to define a list of Metadata elements
 that are to be copied or accessed sequentially.  This is common
 enough we use this typedef to reduce the ugly syntax.  */
 typedef std::list<Metadata_typedef> MetadataList;
 
 /*! \brief Procedure to copy a subset of a container of Metadata.
 
-It is often useful to do a selective copy of the contents of a Metadata 
+It is often useful to do a selective copy of the contents of a Metadata
 container.  e.g. the function ExtractComponent creates a scalar time
-series object from a three component seismogram extracting a single component. 
+series object from a three component seismogram extracting a single component.
 It would make no sense to copy attributes related to the orientation of all
 three components in the copy.   Programs using this feature should build
-the MetadataList at startup to define the subset.   See related procedures 
-that create one of them.   (Not presently a class because the MetadataList is 
+the MetadataList at startup to define the subset.   See related procedures
+that create one of them.   (Not presently a class because the MetadataList is
 just a simple std::list container.)
 
 \param mdin is the container to retrieve attributes from (commonly a dynamic_cast
 from a data object).
 \param mdout is the output Metadata (also commonly a dynamic_cast from a data object.)
-\param mdlist is the list that defines the subset to copy from mdin to mdout. 
+\param mdlist is the list that defines the subset to copy from mdin to mdout.
 
 \return number of items copied
 
 \exception will throw an MsPASSError if the input is missing one of the attributes
-  defined in mdlist or if there is a type mismatch.  This means the copy 
-  will be incomplete and not trusted.   Handlers need to decide what to 
+  defined in mdlist or if there is a type mismatch.  This means the copy
+  will be incomplete and not trusted.   Handlers need to decide what to
   do in this condition.
 */
 int copy_selected_metadata(const Metadata& mdin, Metadata& mdout,

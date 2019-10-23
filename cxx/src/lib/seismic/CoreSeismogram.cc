@@ -5,12 +5,12 @@
 /* This is a temporary hack fix for mac laptop.   Had fink install
    openblas.  This is the fink default location for include files. */
 //#include "/sw/include/lapacke.h"
-/* These should com from lapacke.h but there are some collisions with 
- * boost that create compile errors. Hack fix until we resolve the 
+/* These should com from lapacke.h but there are some collisions with
+ * boost that create compile errors. Hack fix until we resolve the
  * issue of how we will standardize lapack version.*/
 #define LAPACK_ROW_MAJOR               101
 #define LAPACK_COL_MAJOR               102
-#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
 /* For now we put these prototypes here - should be made an include
@@ -34,11 +34,11 @@ using namespace mspass;
  *
 */
 //
-// Default constructor for Seismogram could be
+// Default constructor for CoreSeismogram could be
 // done inline in seispp.h, but it is complication enough I put
 // it here
 //
-Seismogram::Seismogram() : Metadata(),u(0,0)
+CoreSeismogram::CoreSeismogram() : Metadata(),u(0,0)
 {
     live = false;
     dt=0.0;
@@ -54,7 +54,7 @@ Seismogram::Seismogram() : Metadata(),u(0,0)
             else
                 tmatrix[i][j]=0.0;
 }
-Seismogram::Seismogram(int nsamples)
+CoreSeismogram::CoreSeismogram(int nsamples)
     : BasicTimeSeries(),Metadata(),u(3,nsamples)
 {
     components_are_orthogonal=true;
@@ -67,7 +67,7 @@ Seismogram::Seismogram(int nsamples)
                 tmatrix[i][j]=0.0;
 }
 
-Seismogram::Seismogram(const Seismogram& t3c) :
+CoreSeismogram::CoreSeismogram(const CoreSeismogram& t3c) :
     BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(t3c)),
     Metadata(dynamic_cast<const Metadata&>(t3c)),
     u(t3c.u)
@@ -78,7 +78,7 @@ Seismogram::Seismogram(const Seismogram& t3c) :
     for(i=0; i<3; ++i)
         for(j=0; j<3; ++j) tmatrix[i][j]=t3c.tmatrix[i][j];
 }
-bool Seismogram::tmatrix_is_cardinal()
+bool CoreSeismogram::tmatrix_is_cardinal()
 {
     /* Test for 0 or 1 to 5 figures - safe but conservative for
        float input although tmatrix is double */
@@ -103,13 +103,13 @@ bool Seismogram::tmatrix_is_cardinal()
     return true;
 }
 
-Seismogram::Seismogram(const vector<TimeSeries>& ts,
+CoreSeismogram::CoreSeismogram(const vector<TimeSeries>& ts,
                        const int component_to_clone)
     : BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(ts[component_to_clone])),
      Metadata(dynamic_cast<const Metadata&>(ts[component_to_clone])),
       u()
 {
-    const string base_error("Seismogram constructor from 3 Time Series:  ");
+    const string base_error("CoreSeismogram constructor from 3 Time Series:  ");
     int i,j;
     /* beware irregular sample rates, but don' be too machevelian.
            Abort only if the mismatch is large defined as accumulated time
@@ -253,7 +253,7 @@ Seismogram::Seismogram(const vector<TimeSeries>& ts,
 // all key on the BLAS for speed.  That is, a transformation matrix could be done
 // by using the * operator between matrix objects.
 
-void Seismogram::rotate_to_standard()
+void CoreSeismogram::rotate_to_standard()
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     double *work[3];
@@ -395,7 +395,7 @@ Written:  Sept. 1999
 Modified:  Feb 2003
 Original was plain C.  Adapted to C++ for seismic processing
 */
-void Seismogram::rotate(SphericalCoordinate& xsc)
+void CoreSeismogram::rotate(SphericalCoordinate& xsc)
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     int i;
@@ -462,7 +462,7 @@ void Seismogram::rotate(SphericalCoordinate& xsc)
     components_are_cardinal=false;
     for(i=0; i<3; ++i) delete [] work[i];
 }
-void Seismogram::rotate(const double nu[3])
+void CoreSeismogram::rotate(const double nu[3])
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     SphericalCoordinate xsc=UnitVectorToSpherical(nu);
@@ -472,7 +472,7 @@ void Seismogram::rotate(const double nu[3])
  Similar to above but using only azimuth angle AND doing a simple
  rotation in the horizontal plane.  Efficient algorithm only
  alters 0 and 1 components. */
-void Seismogram::rotate(double phi)
+void CoreSeismogram::rotate(double phi)
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     int i,j,k;
@@ -516,7 +516,7 @@ void Seismogram::rotate(double phi)
     components_are_cardinal=false;
     for(i=0; i<2; ++i) delete [] work[i];
 }
-void Seismogram::transform(const double a[3][3])
+void CoreSeismogram::transform(const double a[3][3])
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
     int i,j,k;
@@ -564,7 +564,7 @@ translation of m file from Michael Bostock.
 
 Author:  Gary Pavlis
 */
-void Seismogram::free_surface_transformation(SlownessVector uvec,
+void CoreSeismogram::free_surface_transformation(SlownessVector uvec,
         double a0, double b0)
 {
     if( (ns<=0) || !live) return; // do nothing in these situations
@@ -579,7 +579,7 @@ void Seismogram::free_surface_transformation(SlownessVector uvec,
     if(vapparent<a0 || vapparent<b0)
     {
         stringstream ss;
-        ss<<"Seismogram::free_surface_transformation method:  illegal input"<<endl
+        ss<<"CoreSeismogram::free_surface_transformation method:  illegal input"<<endl
           << "Apparent velocity defined by input slowness vector="<<vapparent<<endl
           << "Smaller than specified surface P velocity="<<a0<<" or S velocity="<<b0<<endl
           << "That implies evanescent waves that violate the assumption of this operator"<<endl;
@@ -629,7 +629,7 @@ void Seismogram::free_surface_transformation(SlownessVector uvec,
     components_are_orthogonal=false;
 }
 
-Seismogram& Seismogram::operator=(const Seismogram& seisin)
+CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
 {
     if(this!=&seisin)
     {
@@ -648,22 +648,22 @@ Seismogram& Seismogram::operator=(const Seismogram& seisin)
     }
     return(*this);
 }
-vector<double> Seismogram::operator[] (const int i)const
+vector<double> CoreSeismogram::operator[] (const int i)const
 {
     try {
         vector<double> result;
         result.reserve(3);
-        for(int k=0;k<3;++k) 
+        for(int k=0;k<3;++k)
           result.push_back(this->u(k,i));
         return result;
     }catch(...){throw;};
 }
-vector<double> Seismogram::operator[] (const double t) const
+vector<double> CoreSeismogram::operator[] (const double t) const
 {
     try {
         vector<double> result;
         int i=this->sample_number(t);
-        for(int k=0;k<3;++k) 
+        for(int k=0;k<3;++k)
           result.push_back(this->u(k,i));
         return result;
     }catch(...){throw;};

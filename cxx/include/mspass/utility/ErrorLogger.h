@@ -4,6 +4,7 @@
 #include <list>
 #include <list>
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/ErrorLogger.h"
 namespace mspass
 {
 class LogData

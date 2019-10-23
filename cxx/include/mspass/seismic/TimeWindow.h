@@ -1,7 +1,5 @@
 #ifndef _TIMEWINDOW_H_
 #define _TIMEWINDOW_H_
-//#include <boost/archive/text_oarchive.hpp>
-//#include <boost/archive/text_iarchive.hpp>
 namespace mspass
 {
 /*!
@@ -50,16 +48,6 @@ public:
 	{
 		return(end-start);
 	};
-/* For now we comment out the boost serialization - will either delete it or
-   restore this functionality later. */
-//private:
-//        friend class boost::serialization::access;
-//        template<class Archive>
-//            void serialize(Archive & ar, const unsigned int version)
-//        {
-//            ar & start;
-//            ar & end;
-//        };
 };
 
 /* This strange looking function is a C++ function object.

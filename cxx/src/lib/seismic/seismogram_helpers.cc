@@ -1,10 +1,10 @@
 #include <math.h>
 #include "mspass/utility/MsPASSError.h"
-#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/CoreSeismogram.h"
 namespace mspass {
 using namespace mspass;
-/* This file contains helper procedures for Seismogram objects.  Most
-are truly procedural and take a Seismogram object or a Seismogram_Ensemble
+/* This file contains helper procedures for CoreSeismogram objects.  Most
+are truly procedural and take a CoreSeismogram object or a Ensemble
 object and return one or the other.
 
 This file was modified from code developed earlier in antelope contrib.   Most
@@ -16,7 +16,7 @@ Author:  Gary L. Pavlis
 */
 
 
-/* This function converts a seismogram from an absolute time standard to
+/* This function converts a CoreSeismogram from an absolute time standard to
 an arrival time reference frame using an arrival time stored in the
 metadata area of the object and referenced by a variable keyword.
 A time window is relative time units defines the portion to be extracted.
@@ -37,7 +37,7 @@ Arguments:
 
 */
 
-shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
+shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
         string arrival_time_key,
         TimeWindow tw)
 {
@@ -52,7 +52,7 @@ shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
     {
         throw MsPASSError(base_error_message
                           + arrival_time_key
-                          + string(" not found in Seismogram object"),
+                          + string(" not found in CoreSeismogram object"),
                           ErrorSeverity::Invalid);
     }
     // We have to check this condition because ator will do nothing if
@@ -65,7 +65,7 @@ shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
                           ErrorSeverity::Invalid);
 
     // start with a clone of the original
-    shared_ptr<Seismogram> tcso(new Seismogram(tcsi));
+    shared_ptr<CoreSeismogram> tcso(new CoreSeismogram(tcsi));
     tcso->ator(atime);  // shifts to arrival time relative time reference
     // Simply return a copy of traces marked dead
     if(!(tcso->live)) return(tcso);
@@ -123,37 +123,37 @@ shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
 special thing it does is handle exceptions.  When the single object
 processing function throws an exception the error is printed and the
 object is simply not copied to the output ensemble */
-shared_ptr<Ensemble<Seismogram>> ArrivalTimeReference(Ensemble<Seismogram>& tcei,
+shared_ptr<Ensemble<CoreSeismogram>> ArrivalTimeReference(Ensemble<CoreSeismogram>& tcei,
         string arrival_time_key,
         TimeWindow tw)
 {
     int nmembers=tcei.member.size();
     // use the special constructor to only clone the metadata and
     // set aside slots for the new ensemble.
-    shared_ptr<Ensemble<Seismogram>>
-    tceo(new Ensemble<Seismogram>(dynamic_cast<Metadata&>(tcei),
+    shared_ptr<Ensemble<CoreSeismogram>>
+    tceo(new Ensemble<CoreSeismogram>(dynamic_cast<Metadata&>(tcei),
                                     nmembers));
     tceo->member.reserve(nmembers);  // reserve this many slots for efficiency
     // We have to use a loop instead of for_each as I don't see how
     // else to handle errors cleanly here.
-    vector<Seismogram>::iterator indata;
+    vector<CoreSeismogram>::iterator indata;
     for(indata=tcei.member.begin(); indata!=tcei.member.end(); ++indata)
     {
         try {
-            shared_ptr<Seismogram>
+            shared_ptr<CoreSeismogram>
             tcs(ArrivalTimeReference(*indata,arrival_time_key,tw));
             tceo->member.push_back(*tcs);
         } catch ( MsPASSError& serr)
         {
             serr.log_error();
-            cerr << "This seismogram was not copied to output ensemble"<<endl;
+            cerr << "This CoreSeismogram was not copied to output ensemble"<<endl;
         }
     }
     return(tceo);
 }
 
 /* This is a procedural form of one of the rotate method and is a bit redundant. */
-void HorizontalRotation(Seismogram& d, double phi)
+void HorizontalRotation(CoreSeismogram& d, double phi)
 {
     double tmatrix[3][3];
     double a,b;
@@ -177,11 +177,11 @@ simply rethrown.
 This version clones the entire metadata space of the parent to the
 output TimeSeries.
 */
-shared_ptr<TimeSeries> ExtractComponent(const Seismogram& tcs,const int component)
+shared_ptr<CoreTimeSeries> ExtractComponent(const CoreSeismogram& tcs,const int component)
 {
     try {
-        shared_ptr<TimeSeries> ts;
-        ts=shared_ptr<TimeSeries>(new TimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
+        shared_ptr<CoreTimeSeries> ts;
+        ts=shared_ptr<CoreTimeSeries>(new CoreTimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
                                   dynamic_cast<const Metadata&>(tcs)));
         /* Important - need to clear vector or we get nothing */
         ts->s.clear();
@@ -202,15 +202,15 @@ shared_ptr<TimeSeries> ExtractComponent(const Seismogram& tcs,const int componen
     }
 }
 // Overloaded version to do a selective copy
-shared_ptr<TimeSeries> ExtractComponent(const Seismogram& tcs,const int component,
+shared_ptr<CoreTimeSeries> ExtractComponent(const CoreSeismogram& tcs,const int component,
                                         const MetadataList& mdl)
 {
     try {
         Metadata mdclone;
         copy_selected_metadata(dynamic_cast<const Metadata &>(tcs),
                                mdclone,mdl);
-        shared_ptr<TimeSeries> ts;
-        ts=shared_ptr<TimeSeries>(new TimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
+        shared_ptr<CoreTimeSeries> ts;
+        ts=shared_ptr<CoreTimeSeries>(new CoreTimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
                                   mdclone));
         double *ptr;
         dmatrix *uptr;

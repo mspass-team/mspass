@@ -1,11 +1,11 @@
-#ifndef _MSPASS_SEISMOGRAM_H_
-#define _MSPASS_SEISMOGRAM_H_
+#ifndef _MSPASS_CORESEISMOGRAM_H_
+#define _MSPASS_CORESEISMOGRAM_H_
 #include <memory>
 #include <vector>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/seismic/BasicTimeSeries.h"
-#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/SphericalCoordinate.h"
 #include "mspass/seismic/SlownessVector.h"
 #include "mspass/seismic/TimeWindow.h"
@@ -18,7 +18,10 @@ It is "special" as the vector is 3D with real components.  One could produce a
 similar inherited type for an n vector time series object.
 
 The structure of a vector time series allows the data to be stored in a matrix.
-Here we use a lightweight matrix object I call dmatrix.
+Here we use a lightweight matrix object I call dmatrix.   This object is
+contains core concepts that define a seismogram.   It can be extended as in
+MsPASS to add functionality or aliased to Seismogram to simplify the naming as
+done, for example, with std::basic_string made equivalent to std::string.
 */
 
 
@@ -34,7 +37,7 @@ Here we use a lightweight matrix object I call dmatrix.
  through inheritance of a Metadata object.
 \author Gary L. Pavlis
 **/
-class Seismogram : public mspass::BasicTimeSeries , public mspass::Metadata
+class CoreSeismogram : public mspass::BasicTimeSeries , public mspass::Metadata
 {
 public:
  /*!
@@ -56,7 +59,7 @@ Matrix is 3xns.  Thus the rows are the component number
 Sets ns to zero and builds an empty data matrix.  The live variable
 in BasicTimeSeries is also set false.
 **/
-	Seismogram();
+	CoreSeismogram();
 /*!
  Simplest parameterized constructor.
 
@@ -65,7 +68,7 @@ Initializes data and sets aside memory for
  and the object is marked as not live.
 \param nsamples number of samples expected for holding data.
 **/
-	Seismogram(const int nsamples);
+	CoreSeismogram(const int nsamples);
 /*!
  Construct a three component seismogram from three TimeSeries objects.
 
@@ -106,18 +109,18 @@ Initializes data and sets aside memory for
    of the three components passed through ts is used.  Default is 0.
 
 **/
-	Seismogram(const vector<mspass::TimeSeries>& ts,
+	CoreSeismogram(const vector<mspass::TimeSeries>& ts,
 		const int component_to_clone=0);
 /*!
  Standard copy constructor.
 **/
 
-	Seismogram(const Seismogram&);
+	CoreSeismogram(const CoreSeismogram&);
 /*!
  Standard assignment operator.
 **/
-	Seismogram& operator
-		= (const Seismogram&);
+	CoreSeismogram& operator
+		= (const CoreSeismogram&);
 /*!
  Extract a sample from data vector.
 
@@ -154,7 +157,7 @@ to an exception if the the time requested is outside the data range.
 */
         std::vector<double> operator[](const double time)const;
 /*! Standard destructor. */
-	~Seismogram(){};
+	~CoreSeismogram(){};
 /*!
  Apply inverse transformation matrix to return data to cardinal direction components.
 
@@ -202,10 +205,10 @@ method defined below.
 
 A VERY IMPORTANT thing to recognize about this tranformation is it will
 always yield a result relative to cardinal coordinates.  i.e. if the data
-had been previously rotated or were not originally in ENZ form they 
+had been previously rotated or were not originally in ENZ form they
 will be first transformed to ENZ before actually performing this
-transformation.   Use the transform or horizontal rotation method to 
-create cummulative transformations. 
+transformation.   Use the transform or horizontal rotation method to
+create cummulative transformations.
 
 \param sc defines final x3 direction (longitudinal) in a spherical coordinate structure.
 **/
@@ -229,9 +232,9 @@ create cummulative transformations.
 
 A VERY IMPORTANT thing to recognize about this tranformation is it will
 always yield a result relative to cardinal coordinates.  i.e. if the data
-had been previously rotated or were not originally in ENZ form they 
+had been previously rotated or were not originally in ENZ form they
 will be first transformed to ENZ before actually performing this
-transformation.   Use the transform or horizontal rotation method to 
+transformation.   Use the transform or horizontal rotation method to
 
 \param nu defines direction of x3 direction (longitudinal) as a unit vector with three components.
 **/
@@ -247,7 +250,7 @@ transformation.   Use the transform or horizontal rotation method to
           Note this transformation is cummulative.  i.e. this transformation
           is cumulative.  The internal transformation matrix will be updated.
           This is a useful feature for things like incremental horizontal
-          rotation in rotational angle grid searches.  
+          rotation in rotational angle grid searches.
 
           \param phi rotation angle around x3 axis in counterclockwise
             direction (in radians).
@@ -277,12 +280,12 @@ transformation.   Use the transform or horizontal rotation method to
 	void free_surface_transformation(const mspass::SlownessVector u, const double vp0, const double vs0);
 /*! Return current transformation matrix.
 
-The transformation matrix is maintained internally in this object.   
-Transformations like rotations and the transform method can change make 
-this matrix not an identity matrix.  It should always be an identity 
-matrix when the coordinates are cardinal (i.e. ENZ).   
+The transformation matrix is maintained internally in this object.
+Transformations like rotations and the transform method can change make
+this matrix not an identity matrix.  It should always be an identity
+matrix when the coordinates are cardinal (i.e. ENZ).
 
-\return 3x3 transformation matrix. 
+\return 3x3 transformation matrix.
 */
         dmatrix transformation_matrix()
         {
@@ -322,18 +325,18 @@ protected:
 	**/
 		double tmatrix[3][3];
 private:
-        /* This is used internally when necessary to test if a computed or input 
+  /* This is used internally when necessary to test if a computed or input
            matrix is an identity matrix. */
-        bool tmatrix_is_cardinal();
+  bool tmatrix_is_cardinal();
 };
 //
 ////////////////////////////////////////////////////
 //  Start helper function prototypes
 ///////////////////////////////////////////////////
 //
-/*! \brief Return a new seismogram in an arrival time (relative) refernce frame.
+/*! \brief Return a new CoreSeismogram in an arrival time (relative) refernce frame.
 
- An arrival time reference means that the time is set to relative and 
+ An arrival time reference means that the time is set to relative and
  zero is defined as an arrival time extracted from the metadata area of
  the object.  The key used to extract the arrival time used for the
  conversion is passed as a variable as this requires some flexibility.
@@ -342,7 +345,7 @@ private:
  time of the start of the output seismogram as atime+t0.  This result
  is stored in the metadata field keyed by the word "time".  This allows
  one to convert the data back to an absolute time standard if they so
- desire, but it is less flexible than the input key method.  
+ desire, but it is less flexible than the input key method.
 
 \exception SeisppError for errors in extracting required information from metadata area.
 
@@ -351,28 +354,28 @@ private:
 \param tw is a TimeWindow object that defines the window of data to extract around
     the desired arrival time.
 **/
-std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
+std::shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& din,
 	std::string key, mspass::TimeWindow tw);
 /*!
  Extract one component from a Seismogram and
- create a TimeSeries object from it.
+ create a CoreTimeSeries object from it.
 
 \param tcs is the Seismogram to convert.
 \param component is the component to extract (0, 1, or 2)
 \param mdl list of metadata to copy to output from input object.
 **/
-std::shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component,
+std::shared_ptr<mspass::CoreTimeSeries> ExtractComponent(CoreSeismogram& tcs,int component,
         mspass::MetadataList& mdl);
 /*!
- Extract one component from a Seismogram and
- create a TimeSeries object from it.
+ Extract one component from a CoreSeismogram and
+ create a CoreTimeSeries object from it.
 
  Similar to overloaded function of same name, but all metadata from
  parent is copied to the output.
 
-\param tcs is the Seismogram to convert.
+\param tcs is the CoreSeismogram to convert.
 \param component is the component to extract (0, 1, or 2)
 **/
-std::shared_ptr<mspass::TimeSeries> ExtractComponent(Seismogram& tcs,int component);
+std::shared_ptr<mspass::CoreTimeSeries> ExtractComponent(CoreSeismogram& tcs,int component);
 }  //end mspass namespace enscapsulation
 #endif  // End guard
