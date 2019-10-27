@@ -1,12 +1,12 @@
 #include <math.h>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/TimeWindow.h"
-#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
 using namespace std;
 namespace mspass {
 using namespace mspass;
-typedef Ensemble<TimeSeries> TimeSeriesEnsemble;
+typedef Ensemble<CoreTimeSeries> TimeSeriesEnsemble;
 /* This file is very very similar to a related set of procedures found
 in the file three_component_helpers.cc.  Future efforts could merge
 them into a template version standardizes what these do.
@@ -42,7 +42,7 @@ Arguments:
 
 */
 
-shared_ptr<TimeSeries> ArrivalTimeReference(TimeSeries& tcsi,
+shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
         string arrival_time_key,
         TimeWindow tw)
 {
@@ -57,7 +57,7 @@ shared_ptr<TimeSeries> ArrivalTimeReference(TimeSeries& tcsi,
     {
         throw MsPASSError(base_error_message
                           + arrival_time_key
-                          + string(" not found in TimeSeries object"),
+                          + string(" not found in CoreTimeSeries object"),
                           ErrorSeverity::Invalid);
     }
     // We have to check this condition because ator will do nothing if
@@ -70,7 +70,7 @@ shared_ptr<TimeSeries> ArrivalTimeReference(TimeSeries& tcsi,
                           ErrorSeverity::Invalid);
 
     // start with a clone of the original
-    shared_ptr<TimeSeries> tcso(new TimeSeries(tcsi));
+    shared_ptr<CoreTimeSeries> tcso(new CoreTimeSeries(tcsi));
     tcso->ator(atime);  // shifts to arrival time relative time reference
 
     // Extracting a subset of the data is not needed when the requested
@@ -122,8 +122,8 @@ special thing it does is handle exceptions.  When the single object
 processing function throws an exception the error is printed and the
 object is simply not copied to the output ensemble.
 
-This procedure is retained, but probably should be depricated to only 
-be used on error logging children of TimeSeries that can post an 
+This procedure is retained, but probably should be depricated to only
+be used on error logging children of CoreTimeSeries that can post an
 error like the one handled here to an error log.  Retained for now
 as this functionality is essential. */
 shared_ptr <TimeSeriesEnsemble> ArrivalTimeReference(TimeSeriesEnsemble& tcei,
@@ -139,8 +139,8 @@ shared_ptr <TimeSeriesEnsemble> ArrivalTimeReference(TimeSeriesEnsemble& tcei,
     tceo->member.reserve(nmembers);  // reserve this many slots for efficiency
     // We have to use a loop instead of for_each as I don't see how
     // else to handle errors cleanly here.
-    vector<TimeSeries>::iterator indata;
-    shared_ptr<TimeSeries> tcs;
+    vector<CoreTimeSeries>::iterator indata;
+    shared_ptr<CoreTimeSeries> tcs;
     for(indata=tcei.member.begin(); indata!=tcei.member.end(); ++indata)
     {
         try {

@@ -2,7 +2,7 @@
 //#include <boost/config.hpp>
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
-#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass;
@@ -16,10 +16,10 @@ int main(int argc, char **argv)
    {
 	int i,j;
 	cout << "Testing simple constructors" << endl;
-	Seismogram s1;
+	CoreSeismogram s1;
         cout << "Success"<<endl;
         cout << "Testing space allocating constructor"<<endl;
-	Seismogram s2(100);
+	CoreSeismogram s2(100);
         cout << "Success"<<endl;
 	// Initialize the contents of s2 and apply a rotation 
 	// matrix
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 		<< s2.u(1,0) << ", "
 		<< s2.u(2,0) << endl;
 
-	Seismogram s3(100);
+	CoreSeismogram s3(100);
 	for(i=0;i<3;++i)
 		for(j=0;j<100;++j)
 		{
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 		<< s3.u(1,3) << ", "
 		<< s3.u(2,3) << endl;
 
-        Seismogram s4(s3);
+        CoreSeismogram s4(s3);
         cout << "Testing free_surface_transformation method"<<endl;
 	SlownessVector uvec;
 	uvec.ux=0.17085;  // cos(-20deg)/5.5
@@ -243,32 +243,6 @@ int main(int argc, char **argv)
         cout << "Computed transformation matrix:"<<endl;
         tm=s4.transformation_matrix();
         cout << tm<<endl;
-        /*
-        ofstream ofs("testserial.dat");
-        boost::archive::text_oarchive oa(ofs);
-        oa << s4;
-        ofs.close();
-        cout << "Success"<<endl
-            << "Attempting restore"
-            <<endl;
-        Seismogram s6;
-        ifstream ifs("testserial.dat");
-        boost::archive::text_iarchive ia(ifs);
-        ia >> s6;
-        ifs.close();
-        cout << "Comparing before and after serialize" <<endl;
-        dmatrix d4=s4.u;
-        dmatrix d6=s6.u;
-        dmatrix dio=d4-d6;
-        double testsum;
-        testsum=0.0;
-        for(i=0;i<dio.rows();++i)
-            for(j=0;j<dio.columns();++j)
-                testsum += dio(i,j)*dio(i,j);
-        cout << "Sum of squares of difference input - output"
-            << testsum<<endl;;
-            */
-
         exit(0);
     }
     catch (MsPASSError&  serr)
