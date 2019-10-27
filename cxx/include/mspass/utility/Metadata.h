@@ -247,6 +247,11 @@ other attributes.
       this->put<string>(key,val);
   };
 
+  /*! Return the keys of all altered Metadata values. */
+  set<string> modified()
+  {
+      return changed_or_set;
+  };
   friend ostream& operator<<(ostream&, Metadata&);
 protected:
   map<string,boost::any> md;
