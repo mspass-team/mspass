@@ -6,8 +6,13 @@ namespace mspass{
 
 This class is intended to be provide common API elements for data objects to interact with
 MsPASS framework.   It contains elements needed by the data to interact seamlessly with MongoDB and
-spark.   A convention we'l use is that all data objects that inherit this class will have MP as
-the first two characters in the name.  e.g. MPSeismogram is Seismogram with this class as a child.
+spark.  
+
+This implementation assumes most database manipulations will take place in python scripts.  That
+means the actual contents of this object are minimal.  For the initial implementation the main 
+hook is the string that is used in MongoDB as an external form fo the ObjectID.   This assumption
+is the get and put methods for the objectid string will be sufficient for a python wrapper to 
+associate data with the a unique document in the database.   
 */
 class MsPASSCoreTS
 {
@@ -23,14 +28,20 @@ class MsPASSCoreTS
     be tested for validity through the ErrorLogger API.  */
     ErrorLogger elog;
     /*! Default constructor.   Does almost nothing. */
-    MsPASSCoreTS() : elog(){};
+    MsPASSCoreTS() : elog(){hex_id="INVALID";};
     /*! Standard copy constructor. */
-    MsPASSCoreTS(const MsPASSCoreTS& parent);
+    MsPASSCoreTS(const MsPASSCoreTS& parent){hex_id=parent.hex_id;};
     /*! Standard assignment operator. */
-    MsPASSCoreTS& operator=(const MsPASSCoreTS& parent);
-    //Objectid get_id();
-    //void set_id(const ObjectId& newid);
-    void set_id(const string hexstring);
+    MsPASSCoreTS& operator=(const MsPASSCoreTS& parent)
+    {
+        if(this!=(&parent))
+        {
+            hex_id=parent.hex_id;
+        }
+        return *this;
+    };
+    void set_id(const string hexstring){hex_id=hexstring;};
+    string get_id(){return hex_id;};
   private:
     /*! ObjectID hex string.   Can be converted readily to form needed to
     find a document. */

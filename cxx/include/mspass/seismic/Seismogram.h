@@ -13,12 +13,10 @@ class Seismogram : public mspass::CoreSeismogram, public mspass::MsPASSCoreTS
 {
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
-  //Seismogram() : mspass::CoreSeismogram(),mspass::MsPASSCoreTS(){};
+  Seismogram() : mspass::CoreSeismogram(),mspass::MsPASSCoreTS(){};
   /*! Standard copy constructor. */
-    /*
   Seismogram(const Seismogram& parent)
     : mspass::CoreSeismogram(parent), mspass::MsPASSCoreTS(parent){};
-    */
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
 };
