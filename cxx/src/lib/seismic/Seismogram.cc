@@ -1,4 +1,4 @@
-#include "Seismogram.h"
+#include "mspass/seismic/Seismogram.h"
 using namespace mspass;
 namespace mspass
 {
@@ -8,7 +8,8 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
     {
         this->Metadata::operator=(parent);
         this->CoreSeismogram::operator=(parent);
-        this->MdPASSCoreTS::operator=(parent);
+        this->MsPASSCoreTS::operator=(parent);
+	return *this;
     }
 }
 }// end mspass namespace
