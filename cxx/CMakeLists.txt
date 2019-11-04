@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.4)
 
 project (mspass Fortran C CXX)
 
@@ -12,9 +12,8 @@ endif ()
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall -O0 -g")
 set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
-set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package (Boost 1.65.0)
+find_package (Boost 1.64.0)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
   include (cmake/boost.cmake)
@@ -22,7 +21,6 @@ if (NOT Boost_FOUND)
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_BINARY_DIR}/boost
     )
-  set (Boost_LIBRARIES ${BOOST_HOME}/lib)
 endif ()
 
 find_package (BLAS)
@@ -59,37 +57,8 @@ FortranCInterface_HEADER (include/FC.h
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
 
-find_package (PythonInterp)
-
-if (PYTHONINTERP_FOUND)
-  if (PYTHON_VERSION_MAJOR EQUAL 3)
-      FIND_PACKAGE(Boost COMPONENTS python${PYTHON_VERSION_MAJOR})
-      if (NOT Boost_PYTHON3_FOUND)
-          FIND_PACKAGE(Boost REQUIRED COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-      endif()
-      FIND_PACKAGE(PythonInterp 3)
-      FIND_PACKAGE(PythonLibs 3 REQUIRED)
-  else()
-      FIND_PACKAGE(Boost COMPONENTS python)
-      if (NOT Boost_PYTHON_FOUND)
-          FIND_PACKAGE(Boost REQUIRED COMPONENTS python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
-      endif()
-      FIND_PACKAGE(PythonInterp)
-      FIND_PACKAGE(PythonLibs REQUIRED)
-  endif()
-else()
-    message("Python not found")
-endif()
-
-message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
-message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
-message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
-
 add_subdirectory (src)
 add_subdirectory (include)
-
-add_subdirectory (python)
 
 enable_testing ()
 add_subdirectory (test)
