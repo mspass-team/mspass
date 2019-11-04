@@ -1,0 +1,16 @@
+FILE(GLOB sources_python *.cpp)
+
+include_directories(
+  ${pylib11_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/include
+  ${PROJECT_BINARY_DIR}/include)
+
+add_library(mspasspython STATIC ${sources_python})
+target_link_libraries(mspasspython PRIVATE mspass ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+
+pybind11_add_module(mspasspy mspass_wrapper.cpp)
+
+target_link_libraries(mspasspy PRIVATE mspasspython ${Boost_LIBRARIES})
+
+install (TARGETS mspasspy DESTINATION lib)
