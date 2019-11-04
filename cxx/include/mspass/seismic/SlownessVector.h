@@ -40,7 +40,7 @@ slowness vector is 0.
 \param az0 - use this as azimuth (radians) if this is a zero slowness vector
 	(default 0.0)
 */
-	SlownessVector(double ux0, double uy0, double az0=0.0);
+	SlownessVector(const double ux0, const double uy0, const double az0=0.0);
 /*!
  Copy constructor.
 **/

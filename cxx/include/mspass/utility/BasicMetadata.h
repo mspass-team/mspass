@@ -13,6 +13,7 @@ the standard basic data types.
 class BasicMetadata
 {
 public:
+  virtual ~BasicMetadata(){};
   virtual int get_int(const string key) const =0;
   virtual double get_double(const string key)const =0;
   virtual bool get_bool(const string key) const =0;

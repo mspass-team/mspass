@@ -9,7 +9,7 @@ TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
         this->Metadata::operator=(parent);
         this->CoreTimeSeries::operator=(parent);
         this->MsPASSCoreTS::operator=(parent);
-	return *this;
     }
+    return *this;
 }
 }// end mspass namespace

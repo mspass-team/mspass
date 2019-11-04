@@ -30,11 +30,11 @@ public:
 //\param ts - start time
 //\param te - end time 
 **/
-	TimeWindow(double ts,double te){start=ts;end=te;};
+	TimeWindow(const double ts,const double te){start=ts;end=te;};
 /*!
 // Returns a new time window translated by tshift argument.
 **/
-	TimeWindow shift(double tshift) 
+	TimeWindow shift(const double tshift) 
 	{
 		TimeWindow newwindow(*this);
 		newwindow.start+=tshift;
