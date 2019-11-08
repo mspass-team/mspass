@@ -103,7 +103,7 @@ bool CoreSeismogram::tmatrix_is_cardinal()
     return true;
 }
 
-CoreSeismogram::CoreSeismogram(const vector<TimeSeries>& ts,
+CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
                        const int component_to_clone)
     : BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(ts[component_to_clone])),
      Metadata(dynamic_cast<const Metadata&>(ts[component_to_clone])),

@@ -9,7 +9,7 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
         this->Metadata::operator=(parent);
         this->CoreSeismogram::operator=(parent);
         this->MsPASSCoreTS::operator=(parent);
-	return *this;
     }
+    return *this;
 }
 }// end mspass namespace

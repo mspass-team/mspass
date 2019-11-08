@@ -109,7 +109,7 @@ Initializes data and sets aside memory for
    of the three components passed through ts is used.  Default is 0.
 
 **/
-	CoreSeismogram(const vector<mspass::TimeSeries>& ts,
+	CoreSeismogram(const vector<mspass::CoreTimeSeries>& ts,
 		const int component_to_clone=0);
 /*!
  Standard copy constructor.
