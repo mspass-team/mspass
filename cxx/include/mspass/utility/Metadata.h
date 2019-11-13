@@ -252,6 +252,8 @@ other attributes.
   {
       return changed_or_set;
   };
+  /*! Return all keys without any type information. */
+  set<string> keys() noexcept;
   friend ostream& operator<<(ostream&, Metadata&);
 protected:
   map<string,boost::any> md;
