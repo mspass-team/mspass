@@ -10,6 +10,7 @@
 //Note this loads BasicTimeSeries that is used also by Seismogram and TimeSeries
 #include <mspass/seismic/TimeSeries.h>
 #include <mspass/seismic/Seismogram.h>
+#include <mspass/utility/MetadataDefinitions.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -37,6 +38,8 @@ using mspass::MsPASSError;
 using mspass::ErrorSeverity;
 using mspass::ErrorLogger;
 using mspass::pfread;
+using mspass::MDDefFormat;
+using mspass::MetadataDefinitions;
 /* We enable this gem for reasons explain in the documentation for pybinde11
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
 Upshot is we need the py::bind line at the start of the module definition.
@@ -419,4 +422,22 @@ PYBIND11_MODULE(mspasspy,m)
   m.def("get_mdlist",&mspass::get_mdlist,"retrieve list with keys and types",
     py::return_value_policy::copy
   );
-}
+  py::enum_<mspass::MDDefFormat>(m,"MDDefFormat")
+    .value("PF",MDDefFormat::PF)
+    .value("SimpleText",MDDefFormat::SimpleText)
+  ;
+  /* Enabling this causes seg faults for mysterious reasons
+  py::class_<mspass::MetadataDefinitions>(m,"MetadataDefinitions")
+    .def(py::init<>())
+    .def(py::init<std::string,mspass::MDDefFormat>())
+    .def("concept",&mspass::MetadataDefinitions::concept)
+    .def("type",&mspass::MetadataDefinitions::type)
+    .def("add",&mspass::MetadataDefinitions::add)
+    .def("has_alias",&mspass::MetadataDefinitions::has_alias)
+    .def("aliases",&mspass::MetadataDefinitions::aliases)
+    .def("unique_name",&mspass::MetadataDefinitions::unique_name)
+    .def("add_alias",&mspass::MetadataDefinitions::add_alias)
+    .def(py::self += py::self)
+  ;
+  */
+  }

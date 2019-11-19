@@ -65,3 +65,4 @@ print(a)
 u=msp.dmatrix(a)
 seis.u=u
 print(seis.u)
+#mddef=msp.MetadataDefinitions('obspy_namespace.pf',PF)
