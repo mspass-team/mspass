@@ -1,0 +1,77 @@
+There are some clear needs for mspass at the python to C++ boundary
+where the issue of how to implement that need is not obvious without
+some experimentation and further reading.  As these come up expand this
+list. Fill out Implementation line below each item when a decision is
+reached:
+
+1.   We need a way to convert and obspy Trace object to a C++ TimeSeries.
+There may be a way to cleanly map the numpy array used in obspy into the
+vector<double> container of TimeSeries.   For efficiency we would want to
+find a way to do this without a copy operation that won't crash the
+system because of the disconnect between how memory is managed in C and python.
+
+Implementation:
+
+2.  Item 1 is ditto for the Seismogram object (3C data) but obspy uses a
+"Stream" object to define 3C data rather than an numpy array that defines
+a matrix.   i.e. in obspy to handle 3c data one builds a list of 3 Trace
+objects that are considered a bundle that defines one 3c seismogram.
+That is a more fundamental disconnect in concept that Trace and TimeSeries
+and will absolute require a copy operation.   The unsettled issue, in this
+case, is which side of the fence that should happen?   The answer is probably
+that the obspy->mspassC should probably be done in C++ so the copy is under
+C control while mspassC->obspy would need to be python (cython for speed)
+so python owns the copy.
+
+Implementation:
+
+3. What elements of the C++ api (if any) to expose to python for the custom
+dmatrix used in Seismogram is an open question.   Because it is a custom
+and completely nonstandard implementation dmatrix should almost certainly be
+totally hid behind the interface.   These are probably best implemented as
+elements of the mspass::Seismogram extension of CoreSeismogram and then
+wrapped with pybind11.   A direct C++ api is then just like any of the
+other wrappers here.  An issue that arose from reading the documentation, however,
+is whether or not some of that could be implemented in the wrappers using
+some of the special elements pybind11 defines for interacting with numpy
+through direct manipulation of buffers?   Initial development will start
+without any reference to numpy, but I'm putting this here as a reminder that
+the numpy option may be worth considering in the future for efficieny
+
+Implementation:
+
+4.  A set of common procedures to map between an obspy Stats object and
+Metadata is an essential tool.   A complication for bindings is that it seems
+the Stats class is actually not just a standard python dict, but "dictionary like".
+That probably means conversion functions will likely need a mixed solution like
+Seismogram where the python->C converter is a wrapped C++ function and the
+C->python converter is a python function with calls to the C api.
+
+Implementation:
+
+5.   The mongodb interface will have to be in python, but cython might be needed
+to make key procedures faster.   The API for mspass::Seismogram and
+mspass::TimeSeries will unquestionably need to be adapted for this purpose.
+One of the dark sides of wrappers like these is each such addition that needs
+will require additions to this wrapper code.
+
+
+Implementation:
+
+6.   This single file in this directory will need to evolve to a multiple files
+as this set of wrappers get bigger.   Not at all clear how to do that in
+with cmake and what can be gleaned from the pybind11 documentation.
+
+Implementation:
+
+7.   There is an issue with the current api to CoreSeismogram for the general
+3c transformation methods.  Specifically, pybind11 doesn't seem to know how
+to handle fixed length C arrays passed as an arg or returned.   Seismogram
+should probably have C++ light wrappers to adapt this interface to something
+easier to digest in python.  There are a number of options and which to use
+is not clear.  Options I currently think viable:  vector container, pointer to a
+C array, shared_ptr to a C array, and a numpy array.  A numpy array would be
+the cleanest solution for the python interface, but requires changes to the
+link structure for Seismogram that could get ugly.
+
+Implementation:
