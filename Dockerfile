@@ -8,7 +8,8 @@ MAINTAINER Ian Wang <yinzhi.wang.cug@gmail.com>
 RUN apt-get update \
     && apt-get install -y wget ssh rsync vim-tiny less \
        build-essential python3-setuptools \
-       python3-dev python3-pip openjdk-8-jdk \
+       python3-dev python3-pip \
+       openjdk-8-jdk \
        git cmake gfortran gdb \
        liblapack-dev libboost-dev \
     && apt-get clean \
@@ -49,6 +50,17 @@ RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators
 # Install obspy through pip
 RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install obspy
+
+# Install pytest through pip
+RUN pip3 --no-cache-dir install pytest
+
+# Download & install pybind11
+ENV PYBIND11_VERSION 2.4.3
+ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
+RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
+    && cd /usr/local/pybind11-${PYBIND11_VERSION} \
+    && mkdir build && cd build && cmake .. && make install
+RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 
 # Add cxx library
 ADD cxx /mspass/cxx
