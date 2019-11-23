@@ -36,6 +36,7 @@ using mspass::dmatrix;
 using mspass::Seismogram;
 using mspass::MsPASSError;
 using mspass::ErrorSeverity;
+msing mspass::LogData;
 using mspass::ErrorLogger;
 using mspass::pfread;
 using mspass::MDDefFormat;
@@ -191,20 +192,6 @@ using overload_cast_ = pybind11::detail::overload_cast_impl<Args...>;
 PYBIND11_MODULE(mspasspy,m)
 {
   py::bind_vector<std::vector<double>>(m, "Vector");
-  py::class_<mspass::AttributeMap>(m,"AttributeMap")
-    .def(py::init<>())
-    .def(py::init<const std::string>() )
-    /* Having trouble making these work - disable for initial testing until
-    we need these methods.
-    .def("aliastables",py::overload_cast<const std::string>(&mspass::AttributeMap::aliastables))
-    .def("aliastables",py::overload_cast<const char *>(&mspass::AttributeMap::aliastables))
-    */
-    /*
-    .def("is_alias",py::overload_cast<const std::string>(&AttributeMap::is_alias))
-    .def("is_alias",py::overload_cast<const char *>(&AttributeMap::is_alias))
-    */
-    //.def("is_alias",(bool (mspass::AttributeMap::*)(const std::string)) &AttributeMap::is_alias)
-  ;
 
   py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate")
     .def_readwrite("radius", &mspass::SphericalCoordinate::radius)
@@ -397,24 +384,6 @@ PYBIND11_MODULE(mspasspy,m)
     .def(py::init<const std::string,mspass::ErrorSeverity>())
     .def("what",&mspass::MsPASSError::what)
   ;
-  py::class_<mspass::LogData>(m,"LogData")
-    .def(py::init<>())
-    .def(py::init<int,std::string,mspass::MsPASSError&>())
-    .def_readwrite("job_id",&mspass::LogData::job_id)
-    .def_readwrite("algorithm",&mspass::LogData::algorithm)
-    .def_readwrite("badness",&mspass::LogData::badness)
-    .def_readwrite("message",&mspass::LogData::message)
-  ;
-  py::class_<mspass::ErrorLogger>(m,"ErrorLogger")
-    .def(py::init<>())
-    .def(py::init<int,std::string>())
-    .def("set_job_id",&mspass::ErrorLogger::set_job_id)
-    .def("set_algorithm",&mspass::ErrorLogger::set_algorithm)
-    .def("log_error",&mspass::ErrorLogger::log_error)
-    .def("log_verbose",&mspass::ErrorLogger::log_verbose)
-    .def("size",&mspass::ErrorLogger::size)
-    .def("worst_errors",&mspass::ErrorLogger::worst_errors)
-  ;
   m.def("pfread",&mspass::pfread,"parameter file reader",
       py::return_value_policy::copy,
       py::arg("pffile")
@@ -426,7 +395,6 @@ PYBIND11_MODULE(mspasspy,m)
     .value("PF",MDDefFormat::PF)
     .value("SimpleText",MDDefFormat::SimpleText)
   ;
-  /* Enabling this causes seg faults for mysterious reasons
   py::class_<mspass::MetadataDefinitions>(m,"MetadataDefinitions")
     .def(py::init<>())
     .def(py::init<std::string,mspass::MDDefFormat>())
@@ -439,5 +407,43 @@ PYBIND11_MODULE(mspasspy,m)
     .def("add_alias",&mspass::MetadataDefinitions::add_alias)
     .def(py::self += py::self)
   ;
-  */
-  }
+/* These are needed for mspass extensions of Core data objects */
+  py::class_<mspass::LogData>(m,"LogData")
+    .def(py::init<>())
+    .def(py::init<int,std::string,mspass::MsPASSError>())
+    .def_readwrite("job_id",&LogData::jobid)
+    .def_readwrite("p_id",&LogData::p_id)
+    .def_readwrite("algorithm",&LogData::algorithm)
+    .def_readwrite("badness",&LogData::badness)
+    .def_readwrite("message",&LogData::message)
+  ;
+  py::class_<mspass::ErrorLogger>(m,"ErrorLoger")
+    .def(py::init<>())
+    .def(py::init<int,std::string>(m,"ErrorLoger"))
+    .def("set_job_id",&mspass::ErrorLoger::set_job_id)
+    .def("set_algorithm",&mspass::ErrorLoger::set_algorithm)
+    .def("get_job_id",&mspass::ErrorLoger::get_job_id)
+    .def("get_algorithm",&mspass::ErrorLoger::get_algorithm)
+    .def("log_error",&mspass::ErrorLoger::log_error)
+    .def("log_verbose",&mspass::ErrorLoger::log_verbose)
+    .def("get_error_log",&mspass::ErrorLoger::get_error_log)
+    .def("size",&mspass::ErrorLoger::size)
+    .def("worst_errors",&mspass::ErrorLoger::worst_errors)
+  ;
+  py::class_<mspass::MsPASSCoreTS>(m,"MsPASSCoreTS")
+    .def(py::init<>())
+    .def("set_id",&mspass::MsPASSCoreTS::set_id)
+    .def("get_id",&mspass::MsPASSCoreTS::get_id)
+  /* These two APIs are incomplete but are nontheless mostly wrappers for
+  Core versions of same */
+  py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>
+                                                (m,"TimeSeries")
+    .def(py::init<>())
+    /* This is not currently in the api but is needed */
+    .def(py::init<CoreTimeSeries,std::string>())
+  py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
+                                                (m,"Seismogram")
+    .def(py::init<>())
+    /* This is not currently in the api but is needed*/
+    .def(py::init<CoreSeismogram,std:;string>())
+}
