@@ -62,25 +62,21 @@ FortranCInterface_HEADER (include/FC.h
 find_package (PythonInterp)
 
 if (PYTHONINTERP_FOUND)
-  if (PYTHON_VERSION_MAJOR EQUAL 3)
-      find_package(pybind11 REQUIRED)
-      if(NOT pybind11_FOUND)
-         message("pybind11 not found")
-      endif()
+  find_package(pybind11 REQUIRED)
+  if(NOT pybind11_FOUND)
+    message("pybind11 not found")
   endif()
+  message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
+  message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
+  message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
+  add_subdirectory (python)
 else()
     message("Python not found")
 endif()
 
-message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
-message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
-message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 add_subdirectory (src)
 add_subdirectory (include)
-
-add_subdirectory (python)
 
 enable_testing ()
 add_subdirectory (test)
