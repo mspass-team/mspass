@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.4)
 
 project (mspass Fortran C CXX)
 
@@ -62,16 +62,23 @@ FortranCInterface_HEADER (include/FC.h
 find_package (PythonInterp)
 
 if (PYTHONINTERP_FOUND)
-  find_package(pybind11 REQUIRED)
-  if(NOT pybind11_FOUND)
-    message("pybind11 not found")
-  endif()
+  find_package(pybind11)
+  if (NOT pybind11_FOUND)
+    message (STATUS "Building Pybind11")
+    include (cmake/pybind11.cmake)
+    fetch_pybind11 (
+      ${PROJECT_SOURCE_DIR}/cmake
+      ${PROJECT_BINARY_DIR}/pybind11
+      )
+  endif ()
   message(STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
   message(STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
   message(STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
+  message(STATUS "pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
+  message(STATUS "pybind11_INCLUDE_DIR= ${pybind11_INCLUDE_DIR}")
   add_subdirectory (python)
-else()
-    message("Python not found")
+else ()
+  message("Python not found")
 endif()
 
 
