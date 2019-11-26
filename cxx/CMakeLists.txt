@@ -59,7 +59,7 @@ FortranCInterface_HEADER (include/FC.h
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
 
-find_package (PythonInterp)
+find_package (PythonInterp 3)
 
 if (PYTHONINTERP_FOUND)
   find_package(pybind11)
@@ -78,7 +78,7 @@ if (PYTHONINTERP_FOUND)
   message(STATUS "pybind11_INCLUDE_DIR= ${pybind11_INCLUDE_DIR}")
   add_subdirectory (python)
 else ()
-  message("Python not found")
+  message(WARNING "Python not found")
 endif()
 
 
