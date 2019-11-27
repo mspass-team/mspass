@@ -33,7 +33,8 @@ jobs:
         apt:
           packages:
             - gfortran
-            - libboost-python-dev
+            - python3
+            - libboost-dev
             - liblapack-dev
       compiler: gcc
       
