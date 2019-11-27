@@ -65,7 +65,10 @@ jobs:
           update: true
       
 before_install:
-  - pyenv global 3.7
+  - |
+    if [ $TRAVIS_OS_NAME == "linux" ]; then
+      pyenv global 3.6
+    fi
   - cd cxx 
   - mkdir build 
   - cd build
