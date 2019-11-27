@@ -68,9 +68,7 @@ before_install:
   - |
     if [ $TRAVIS_OS_NAME == "linux" ]; then
       pyenv versions
-      pyenv whence 2to3
-      pyenv install --list
-      pyenv global system
+      pyenv global 3.7.1
     fi
   - cd cxx 
   - mkdir build 
