@@ -33,7 +33,6 @@ jobs:
         apt:
           packages:
             - gfortran
-            - python3
             - libboost-dev
             - liblapack-dev
       compiler: gcc
@@ -51,7 +50,7 @@ jobs:
         apt:
           packages:
             - gfortran
-            - libboost-python-dev
+            - libboost-dev
             - liblapack-dev
       compiler: clang
       
@@ -62,10 +61,11 @@ jobs:
         homebrew:
           packages:
             - gcc
-            - boost-python
+            - boost
           update: true
       
 before_install:
+  - pyenv global 3.7
   - cd cxx 
   - mkdir build 
   - cd build
