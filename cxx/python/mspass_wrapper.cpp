@@ -36,7 +36,7 @@ using mspass::dmatrix;
 using mspass::Seismogram;
 using mspass::MsPASSError;
 using mspass::ErrorSeverity;
-msing mspass::LogData;
+using mspass::LogData;
 using mspass::ErrorLogger;
 using mspass::pfread;
 using mspass::MDDefFormat;
@@ -410,25 +410,25 @@ PYBIND11_MODULE(mspasspy,m)
 /* These are needed for mspass extensions of Core data objects */
   py::class_<mspass::LogData>(m,"LogData")
     .def(py::init<>())
-    .def(py::init<int,std::string,mspass::MsPASSError>())
-    .def_readwrite("job_id",&LogData::jobid)
+    .def(py::init<int,std::string,mspass::MsPASSError&>())
+    .def_readwrite("job_id",&LogData::job_id)
     .def_readwrite("p_id",&LogData::p_id)
     .def_readwrite("algorithm",&LogData::algorithm)
     .def_readwrite("badness",&LogData::badness)
     .def_readwrite("message",&LogData::message)
   ;
-  py::class_<mspass::ErrorLogger>(m,"ErrorLoger")
+  py::class_<mspass::ErrorLogger>(m,"ErrorLogger")
     .def(py::init<>())
-    .def(py::init<int,std::string>(m,"ErrorLoger"))
-    .def("set_job_id",&mspass::ErrorLoger::set_job_id)
-    .def("set_algorithm",&mspass::ErrorLoger::set_algorithm)
-    .def("get_job_id",&mspass::ErrorLoger::get_job_id)
-    .def("get_algorithm",&mspass::ErrorLoger::get_algorithm)
-    .def("log_error",&mspass::ErrorLoger::log_error)
-    .def("log_verbose",&mspass::ErrorLoger::log_verbose)
-    .def("get_error_log",&mspass::ErrorLoger::get_error_log)
-    .def("size",&mspass::ErrorLoger::size)
-    .def("worst_errors",&mspass::ErrorLoger::worst_errors)
+    .def(py::init<int,std::string>())
+    .def("set_job_id",&mspass::ErrorLogger::set_job_id)
+    .def("set_algorithm",&mspass::ErrorLogger::set_algorithm)
+    .def("get_job_id",&mspass::ErrorLogger::get_job_id)
+    .def("get_algorithm",&mspass::ErrorLogger::get_algorithm)
+    .def("log_error",&mspass::ErrorLogger::log_error)
+    .def("log_verbose",&mspass::ErrorLogger::log_verbose)
+    .def("get_error_log",&mspass::ErrorLogger::get_error_log)
+    .def("size",&mspass::ErrorLogger::size)
+    .def("worst_errors",&mspass::ErrorLogger::worst_errors)
   ;
   py::class_<mspass::MsPASSCoreTS>(m,"MsPASSCoreTS")
     .def(py::init<>())
@@ -445,5 +445,5 @@ PYBIND11_MODULE(mspasspy,m)
                                                 (m,"Seismogram")
     .def(py::init<>())
     /* This is not currently in the api but is needed*/
-    .def(py::init<CoreSeismogram,std:;string>())
+    .def(py::init<CoreSeismogram,std::string>())
 }
