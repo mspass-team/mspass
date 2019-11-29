@@ -2,6 +2,12 @@
 #define _METADATADEFINITIONS_H_
 #include <map>
 namespace mspass{
+enum class MDDefFormat
+{
+    PF,
+    SimpleText
+};
+
 /*! \brief Define properties of Metadata known to mspass.
 
 The metadata system in mspass was designed to be infinitely flexible.
@@ -23,16 +29,24 @@ class MetadataDefinitions
 {
 public:
   /*! Default constructor - defaults to mspass namespace. */
-  MetadataDefinitions()[];
-  /*! \brief Construct using a specified attribute namespace.
+  MetadataDefinitions();
+  /*! \brief Construct from a namespace title.
 
-  This constructor uses an alternative definition to the default namespace.
-  It is an implementation detail (to be worked out) on where the data for
-  any attribute namespace lives.
-
-  \param mdname is a name tag used to define the attribute namespace.
+  How this is to be implemented is to be determined, but for many uses a simple 
+  one line description of the name space for attributes would be a helpful api.  
+  At this time it is not implemented and attempts to use this will throw 
+  an exception. 
   */
   MetadataDefinitions(const std::string mdname);
+  /*! \brief Construct from a file with variable formats.
+
+  This constructor reads from a file to build the object.  The API 
+  allows multiple formats through the enum class. 
+
+  \param mdname is the file to read
+  \param form defines the format (limited by MDDefFormat definitions)
+  */
+  MetadataDefinitions(const std::string mdname,const MDDefFormat form);
   /*! Standard copy constructor. */
   MetadataDefinitions(const MetadataDefinitions& parent);
   /*! Return a description of the concept this attribute defines.
@@ -49,6 +63,7 @@ public:
   \return MDtype enum that can be used to establish the proper type.
   */
   mspass::MDtype type(const std::string key) const;
+  std::list<std::string> keys() const;
   /*! Basic putter.
 
   Use to add a new entry to the definitions.   Note that because this is
@@ -88,7 +103,7 @@ public:
   \param key is the main key for which an alias is to be defined
   \param aliasname is the the alternative name to define.
   */
-  int add_alias(const std::string key, const std::string aliasname);
+  void add_alias(const std::string key, const std::string aliasname);
   /*! Standard assignment operator. */
   MetadataDefinitions& operator=(const MetadataDefinitions& parent);
   /*! Accumulate additional definitions.   Appends other to current.
@@ -101,6 +116,9 @@ private:
   map<std::string,string> cmap;
   multimap<std::string,std::string> aliasmap;
   map<string,string> alias_xref;
+  void pfreader(const string pfname);
+  void text_reader(const string pfname);
+
 };
 }  // end mspass namespace
 #endif
