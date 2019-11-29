@@ -227,4 +227,9 @@ void MetadataDefinitions::pfreader(const string pfname)
     }
   }catch(...){throw;};
 }
+void MetadataDefinitions::text_reader(const string pfname)
+{
+    throw MsPASSError("text_reader not yet implemented");
+}
+
 }
