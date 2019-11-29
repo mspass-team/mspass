@@ -434,16 +434,19 @@ PYBIND11_MODULE(mspasspy,m)
     .def(py::init<>())
     .def("set_id",&mspass::MsPASSCoreTS::set_id)
     .def("get_id",&mspass::MsPASSCoreTS::get_id)
+    ;
   /* These two APIs are incomplete but are nontheless mostly wrappers for
   Core versions of same */
   py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>
                                                 (m,"TimeSeries")
     .def(py::init<>())
     /* This is not currently in the api but is needed */
-    .def(py::init<CoreTimeSeries,std::string>())
+    //.def(py::init<CoreTimeSeries,std::string>())
+    ;
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
                                                 (m,"Seismogram")
     .def(py::init<>())
     /* This is not currently in the api but is needed*/
-    .def(py::init<CoreSeismogram,std::string>())
+    //.def(py::init<CoreSeismogram,std::string>())
+    ;
 }
