@@ -405,6 +405,7 @@ PYBIND11_MODULE(mspasspy,m)
     .def("aliases",&mspass::MetadataDefinitions::aliases)
     .def("unique_name",&mspass::MetadataDefinitions::unique_name)
     .def("add_alias",&mspass::MetadataDefinitions::add_alias)
+    .def("keys",&mspass::MetadataDefinitions::keys)
     .def(py::self += py::self)
   ;
 /* These are needed for mspass extensions of Core data objects */
