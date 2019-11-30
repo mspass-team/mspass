@@ -17,7 +17,11 @@ MetadataDefinitions::MetadataDefinitions()
 }
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
-throw MsPASSError("MetadataDefinitions constructor form namespace title not yet implemented");
+    try{
+        /* This s temporary.  For now this defaults to pf format file input */
+        MetadataDefinitions tmp(mdname,MDDefFormat::PF);
+        *this=tmp;
+    }catch(...){throw;};
 
 }
 MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat mdf)
@@ -25,10 +29,14 @@ MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat md
   try{
     switch(mdf)
     {
-      case MDDefFormat::PF:
-        this->pfreader(fname);
       case MDDefFormat::SimpleText:
         this->text_reader(fname);
+        break;
+      case MDDefFormat::PF:
+        this->pfreader(fname);
+        break;
+      default:
+        throw MsPASSError("MetadataDefintions file constructor:   illegal format specification");
     };
   }catch(...){throw;};
 }
@@ -210,6 +218,8 @@ void MetadataDefinitions::pfreader(const string pfname)
         mdt_this=MDtype::Double;
       else if((tstr=="long") || (tstr=="int64"))
         mdt_this=MDtype::Int64;
+      else if(tstr=="string")
+        mdt_this=MDtype::String;
       else
         throw MsPASSError("MetadataDefinitions::pfreader:  type value="
           + tstr+" not recognized");
