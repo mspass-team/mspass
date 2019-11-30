@@ -2,6 +2,13 @@
 using namespace mspass;
 namespace mspass
 {
+TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string oid)
+    : CoreTimeSeries(d)
+{
+    try{
+        this->set_id(oid);
+    }catch(...){throw;};
+}
 TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
 {
     if(this!=(&parent))

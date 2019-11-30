@@ -441,13 +441,11 @@ PYBIND11_MODULE(mspasspy,m)
   py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>
                                                 (m,"TimeSeries")
     .def(py::init<>())
-    /* This is not currently in the api but is needed */
-    //.def(py::init<CoreTimeSeries,std::string>())
+    .def(py::init<CoreTimeSeries,std::string>())
     ;
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
                                                 (m,"Seismogram")
     .def(py::init<>())
-    /* This is not currently in the api but is needed*/
-    //.def(py::init<CoreSeismogram,std::string>())
+    .def(py::init<CoreSeismogram,std::string>())
     ;
 }
