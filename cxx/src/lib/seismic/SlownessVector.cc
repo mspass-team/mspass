@@ -21,7 +21,7 @@ SlownessVector::SlownessVector(const SlownessVector& old)
 	uy=old.uy;
 	azimuth0=old.azimuth0;
 }
-SlownessVector::SlownessVector(double ux0, double uy0, double az0)
+SlownessVector::SlownessVector(const double ux0, const double uy0, const double az0)
 {
 	ux=ux0;
 	uy=uy0;
