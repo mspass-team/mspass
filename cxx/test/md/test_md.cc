@@ -5,7 +5,7 @@
 using namespace mspass;
 int main(int argc, char **argv)
 {
-	char *pfname=strdup("test_md");
+	char *pfname=strdup("test_md.pf");
 	try {
             cout << "Test program for Metadata object, AntelopePf, and ErrorLogger"
                 <<endl
