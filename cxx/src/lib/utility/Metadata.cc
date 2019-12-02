@@ -97,6 +97,17 @@ const Metadata Metadata::operator+(const Metadata& other) const
   result += other;
   return result;
 }
+set<string> Metadata::keys() noexcept
+{
+  set<string> result;
+  map<string,boost::any>::iterator mptr;
+  for(mptr=md.begin();mptr!=md.end();++mptr)
+  {
+    string key(mptr->first);\
+    result.insert(key);
+  }
+  return result;
+}
 /* Helper returns demangled name using boost demangle.  */
 string demangled_name(boost::any a)
 {

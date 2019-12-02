@@ -89,14 +89,14 @@ the enum allows simpler usage for most errors.
 \param mess - is the error message to be posted.
 \param s is the severity enum (default Invalid).
 */
-	MsPASSError(const string mess,ErrorSeverity s=ErrorSeverity::Invalid)
+	MsPASSError(const string mess,const ErrorSeverity s=ErrorSeverity::Invalid)
         {
             message=mess;
             badness=s;
         };
 /*! Construct from a char * and severity enum.
 **/
-	MsPASSError(const char *mess,ErrorSeverity s){
+	MsPASSError(const char *mess,const ErrorSeverity s){
 		message=string(mess);
 		badness=s;
 	};

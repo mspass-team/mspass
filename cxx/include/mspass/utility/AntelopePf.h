@@ -195,6 +195,8 @@ section.
 
   */
 MetadataList get_mdlist(const mspass::AntelopePf& m, const std::string tag);
+/*! Read a single pf file and return as an AntelopePf object. */
+AntelopePf pfread(const string fname);
 
 } // End mspass namespace declaration
 #endif

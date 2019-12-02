@@ -21,12 +21,13 @@ class MetadataGetError : public MsPASSError
 {
 public:
   stringstream ss;
+  MetadataGetError():MsPASSError(){}; // seems necessary to not default this with gcc
   /*! Constructor called when a key is not found in the Metadata.
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
-  MetadataGetError(string key,string Texpected)
+  MetadataGetError(const string key,const char *Texpected) 
   {
 
-    string pretty_name(boost::core::demangle(Texpected.c_str()));
+    string pretty_name(boost::core::demangle(Texpected));
     ss<<"Error trying to extract Metadata with key="<<key<<endl
       << "No value associated with this key is set in Metadata object"<<endl
       << "Expected an entry of type="<<pretty_name<<endl;
@@ -39,17 +40,31 @@ public:
     contents of the map can by any type.  We use boost::any to provide
     sanity checks on types.   This is creates the error message thrown
     when the type of the return does not match the type requested. */
-  MetadataGetError(const char *boostmessage,string key,
-          string Texpected,string Tactual)
+  MetadataGetError(const char *boostmessage,const string key,
+      const char *Texpected, const char *Tactual)
   {
     ss << "Error in Metadata get method.   Type mismatch in request"<<endl
       << "boost::any bad_any_cast wrote this message:  "<< boostmessage<<endl;
-    string name_e(boost::core::demangle(Texpected.c_str()));
+    string name_e(boost::core::demangle(Texpected));
     ss << "Trying to convert to data of type="<<name_e<<endl;
-    string name_a(boost::core::demangle(Tactual.c_str()));
+    string name_a(boost::core::demangle(Tactual));
     ss << "Actual entry has type="<<name_a<<endl;
     message=ss.str();
     badness=ErrorSeverity::Suspect;
+  };
+  MetadataGetError(const MetadataGetError& parent)
+  {
+      message=parent.message;
+      badness=parent.badness;
+  };
+  MetadataGetError operator=(const MetadataGetError& parent)
+  {
+      if(this!=&parent)
+      {
+          message=parent.message;
+          badness=parent.badness;
+      }
+      return *this;
   };
 };
 
@@ -252,6 +267,8 @@ other attributes.
   {
       return changed_or_set;
   };
+  /*! Return all keys without any type information. */
+  set<string> keys() noexcept;
   friend ostream& operator<<(ostream&, Metadata&);
 protected:
   map<string,boost::any> md;

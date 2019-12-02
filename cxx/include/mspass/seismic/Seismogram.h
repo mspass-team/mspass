@@ -14,6 +14,16 @@ class Seismogram : public mspass::CoreSeismogram, public mspass::MsPASSCoreTS
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
   Seismogram() : mspass::CoreSeismogram(),mspass::MsPASSCoreTS(){};
+  /*! Partial copy constructor.
+
+   Most of this class is defined by the CoreSeismogram class, but at present for
+   mspass extension we need the objectid for mongdb.  This passes the object id
+   as a string of hex digits.  
+
+   \param d is the main CoreSeismogram to be copied.
+   \param oid is the objectid specified as a hex string.
+   */
+  Seismogram(const mspass::CoreSeismogram& d, const std::string oid);
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::CoreSeismogram(parent), mspass::MsPASSCoreTS(parent){};

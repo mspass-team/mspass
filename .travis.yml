@@ -33,7 +33,7 @@ jobs:
         apt:
           packages:
             - gfortran
-            - libboost-python-dev
+            - libboost-dev
             - liblapack-dev
       compiler: gcc
       
@@ -50,7 +50,7 @@ jobs:
         apt:
           packages:
             - gfortran
-            - libboost-python-dev
+            - libboost-dev
             - liblapack-dev
       compiler: clang
       
@@ -61,10 +61,15 @@ jobs:
         homebrew:
           packages:
             - gcc
-            - boost-python
+            - boost
           update: true
       
 before_install:
+  - |
+    if [ $TRAVIS_OS_NAME == "linux" ]; then
+      pyenv versions
+      pyenv global 3.7.1
+    fi
   - cd cxx 
   - mkdir build 
   - cd build

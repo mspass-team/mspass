@@ -2,6 +2,13 @@
 using namespace mspass;
 namespace mspass
 {
+Seismogram::Seismogram(const CoreSeismogram& d, const std::string oid)
+    : CoreSeismogram(d)
+{
+    try{
+        this->set_id(oid);
+    }catch(...){throw;};
+}
 Seismogram& Seismogram::operator=(const Seismogram& parent)
 {
     if(this!=(&parent))

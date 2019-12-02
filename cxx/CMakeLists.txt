@@ -9,9 +9,11 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set (CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif ()
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall -O0 -g")
 set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
+set (CMAKE_POSITION_INDEPENDENT_CODE ON)
+set (PYBIND11_CPP_STANDARD -std=c++14)
 
 find_package (Boost 1.64.0)
 if (NOT Boost_FOUND)
@@ -56,6 +58,28 @@ FortranCInterface_HEADER (include/FC.h
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
+
+find_package (PythonInterp 3)
+
+if (PYTHONINTERP_FOUND)
+  find_package (pybind11)
+  if (NOT pybind11_FOUND)
+    message (STATUS "Building Pybind11")
+    include (cmake/pybind11.cmake)
+    fetch_pybind11 (
+      ${PROJECT_SOURCE_DIR}/cmake
+      ${PROJECT_BINARY_DIR}/pybind11
+      )
+  endif ()
+  message (STATUS "PYTHON_LIBRARIES = ${PYTHON_LIBRARIES}")
+  message (STATUS "PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
+  message (STATUS "PYTHON_INCLUDE_DIRS = ${PYTHON_INCLUDE_DIRS}")
+  message (STATUS "pybind11_LIBRARIES = ${pybind11_LIBRARIES}")
+  message (STATUS "pybind11_INCLUDE_DIR= ${pybind11_INCLUDE_DIR}")
+  add_subdirectory (python)
+else ()
+  message (WARNING "Python not found")
+endif ()
 
 add_subdirectory (src)
 add_subdirectory (include)

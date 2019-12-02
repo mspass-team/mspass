@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <string>
 #include <list>
 #include <iostream>
@@ -97,13 +98,23 @@ bool is_comment_line(string testline)
     else
         return false;
 }
-AntelopePf pfread(string fname)
+AntelopePf pfread(const string fname)
 {
+    const string base_error("mspass::pfread:  ");
+    /* Low level check to see if file exists - for some reason ifstream
+     * does not throw an error if trying to read from a nonexistent file.
+     * Seems like a mistake in std to me. Taken from example on web
+     * man page for stat doesn't explicitly say this, but example shows
+     * that stat will return nonzero if file does not exist*/
+    struct stat buffer;
+    if(stat(fname.c_str(),&buffer))
+    {
+      throw MsPASSError(base_error+"file="+fname+" does not exist");
+    }
     ifstream inp;
     inp.open(fname.c_str(),ios::in);
     if(inp.fail())
-        throw MsPASSError(string("MsPASS::pfread: open failed for file ")
-                          +fname);
+        throw MsPASSError(base_error + "open failed for file="+fname);
 
     /* Eat up the whole file - this assumes not a large
        file following antelope pf model.  */
@@ -322,7 +333,7 @@ AntelopePf::AntelopePf(string pfbase)
         list<string> pffiles;
         if(s==NULL)
         {
-            pffiles.push_back(".");
+            pffiles.push_back(pfbase);
         }
         /* Test to see if pfbase is an absolute path - if so just use
          * it and ignore the pfpath feature */
