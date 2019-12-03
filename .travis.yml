@@ -70,8 +70,8 @@ before_install:
     if [ $TRAVIS_OS_NAME == "linux" ]; then
       pyenv versions
       pyenv global 3.7.1
-      ls /opt/pyenv/versions/3.7.1/include/python3.7
-      find / -name pyconfig.h
+      ls /opt/pyenv/versions/*/include/*
+      ls /opt/python/3.7.1/include/python3.7m/pyconfig.h
     fi
   - cd cxx 
   - mkdir build 
