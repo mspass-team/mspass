@@ -25,8 +25,9 @@ jobs:
         apt:
           packages:
             - gfortran
+            - python3-dev
       compiler: gcc
-      if: type = cron
+#      if: type = cron
       
     - name: "Ubuntu Bionic Boost LAPACK GCC"
       addons:
