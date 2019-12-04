@@ -25,9 +25,8 @@ jobs:
         apt:
           packages:
             - gfortran
-            - python3-dev
       compiler: gcc
-#      if: type = cron
+      if: type = cron
       
     - name: "Ubuntu Bionic Boost LAPACK GCC"
       addons:
@@ -70,8 +69,6 @@ before_install:
     if [ $TRAVIS_OS_NAME == "linux" ]; then
       pyenv versions
       pyenv global 3.7.1
-      ls /opt/pyenv/versions/*/include/*
-      ls /opt/python/3.7.1/include/python3.7m/pyconfig.h
     fi
   - cd cxx 
   - mkdir build 
