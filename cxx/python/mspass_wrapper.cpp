@@ -420,55 +420,6 @@ PYBIND11_MODULE(mspasspy,m)
     .def_readwrite("job_id",&LogData::job_id,"Return the job id defined for this log message")
     .def_readwrite("p_id",&LogData::p_id,"Return the process id of the procedure that threw the defined message")
     .def_readwrite("algorithm",&LogData::algorithm,"Return the algorithm of the procedure that threw the defined message")
-  ;
-  py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
-    .value("Fatal",ErrorSeverity::Fatal)
-    .value("Invalid",ErrorSeverity::Invalid)
-    .value("Suspect",ErrorSeverity::Suspect)
-    .value("Complaint",ErrorSeverity::Complaint)
-    .value("Debug",ErrorSeverity::Debug)
-    .value("Informational",ErrorSeverity::Informational)
-  ;
-  py::class_<std::exception>(m,"std_exception")
-    .def("what",&std::exception::what)
-  ;
-  py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
-    .def(py::init<>())
-    .def(py::init<const std::string,const char *>())
-    .def(py::init<const std::string,mspass::ErrorSeverity>())
-    .def("what",&mspass::MsPASSError::what)
-  ;
-  m.def("pfread",&mspass::pfread,"parameter file reader",
-      py::return_value_policy::copy,
-      py::arg("pffile")
-  );
-  m.def("get_mdlist",&mspass::get_mdlist,"retrieve list with keys and types",
-    py::return_value_policy::copy
-  );
-  py::enum_<mspass::MDDefFormat>(m,"MDDefFormat")
-    .value("PF",MDDefFormat::PF)
-    .value("SimpleText",MDDefFormat::SimpleText)
-  ;
-  py::class_<mspass::MetadataDefinitions>(m,"MetadataDefinitions","Load a catalog of valid metadata names with types defined")
-    .def(py::init<>())
-    .def(py::init<std::string,mspass::MDDefFormat>())
-    .def("concept",&mspass::MetadataDefinitions::concept,"Return a string with a brief description of the concept this attribute captures")
-    .def("type",&mspass::MetadataDefinitions::type,"Return a description of the type of this attribute")
-    .def("add",&mspass::MetadataDefinitions::add,"Append a new attribute to the catalog")
-    .def("has_alias",&mspass::MetadataDefinitions::has_alias,"Returns true if a specified key as an alterate name - alias")
-    .def("aliases",&mspass::MetadataDefinitions::aliases,"Return a list of aliases for a particular key")
-    .def("unique_name",&mspass::MetadataDefinitions::unique_name,"Returns the unique key name associated with an alias")
-    .def("add_alias",&mspass::MetadataDefinitions::add_alias,"Add an alias for a particular atrribute key")
-    .def("keys",&mspass::MetadataDefinitions::keys,"Return a list of all valid keys")
-    .def(py::self += py::self)
-  ;
-/* These are needed for mspass extensions of Core data objects */
-  py::class_<mspass::LogData>(m,"LogData","Many mspass create error and log messages with this structure")
-    .def(py::init<>())
-    .def(py::init<int,std::string,mspass::MsPASSError&>())
-    .def_readwrite("job_id",&LogData::job_id,"Return the job id defined for this log message")
-    .def_readwrite("p_id",&LogData::p_id,"Return the process id of the procedure that threw the defined message")
-    .def_readwrite("algorithm",&LogData::algorithm,"Return the algorithm of the procedure that threw the defined message")
     .def_readwrite("badness",&LogData::badness,"Return a error level code")
     .def_readwrite("message",&LogData::message,"Return the actual posted message")
   ;
