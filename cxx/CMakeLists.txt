@@ -15,6 +15,9 @@ set (CMAKE_CXX_FLAGS_RELEASE "-Wall -O3")
 set (CMAKE_POSITION_INDEPENDENT_CODE ON)
 set (PYBIND11_CPP_STANDARD -std=c++14)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
 find_package (Boost 1.64.0)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
