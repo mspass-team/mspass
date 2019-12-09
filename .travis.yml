@@ -7,8 +7,7 @@ dist: bionic
 jobs:
   include:
     - name: "Docker Compose"
-      sudo: required
-      language: minimal
+      language: shell
       services: 
         - docker
       before_install: 
