@@ -70,6 +70,10 @@ RUN cd /mspass/cxx \
     && make \
     && make install 
 
+# Add setup.py to install python components
+ADD setup.py /mspass/setup.py
+RUN pip3 install /mspass -vvv
+
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
