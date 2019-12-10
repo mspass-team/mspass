@@ -1,5 +1,7 @@
 #include <fstream>
 #include <exception>
+#include <functional>
+#include <boost/any.hpp>
 #include <mspass/utility/MsPASSError.h>
 #include <mspass/utility/AttributeMap.h>
 #include <mspass/utility/SphericalCoordinate.h>
@@ -14,6 +16,41 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
+
+namespace pybind11 { namespace detail {
+  template <> struct type_caster<boost::any> {
+  public:
+    PYBIND11_TYPE_CASTER(boost::any, _("boost::any"));
+    bool load(handle src, bool) {
+      /*Always return false since we are not converting
+        any PyObject into boost::any.
+        */
+      return false;
+    }
+    static handle cast(boost::any src, return_value_policy /* policy */, handle /* parent */) {
+      auto it = toPythonMap.find(src.type());
+      if(it != toPythonMap.end()){
+        return it->second(src);
+      }else{
+        std::cerr << "WARNING: Could not convert directly to Python type. Trying to cast as pybind11::object." << std::endl;
+        return boost::any_cast<pybind11::object>(src);
+      }
+    }
+  private:
+    static std::map<std::type_index, std::function<handle(boost::any const&)>> toPythonMap;
+    static std::map<std::type_index, std::function<handle(boost::any const&)>> createToPythonMap() {
+      std::map<std::type_index, std::function<handle(boost::any const&)>> m;
+      m[typeid(long)]        = [](boost::any const& x) { return PyLong_FromLong(boost::any_cast<long>(x));};
+      m[typeid(int)]         = [](boost::any const& x) { return PyLong_FromLong(boost::any_cast<int>(x));};
+      m[typeid(double)]      = [](boost::any const& x) { return PyFloat_FromDouble(boost::any_cast<double>(x));};
+      m[typeid(bool)]        = [](boost::any const& x) { return PyBool_FromLong(boost::any_cast<bool>(x));};
+      m[typeid(std::string)] = [](boost::any const& x) { return PyUnicode_FromString(boost::any_cast<std::string>(x).c_str());};
+      return m;
+    }
+  };
+  std::map<std::type_index, std::function<handle(boost::any const&)>>
+  type_caster<boost::any>::toPythonMap = type_caster<boost::any>::createToPythonMap();
+}} // namespace pybind11::detail
 
 namespace py=pybind11;
 
@@ -248,6 +285,7 @@ PYBIND11_MODULE(mspasspy,m)
     .def("get_long",&mspass::Metadata::get_long,"Return a long integer by a specified key")
     .def("get_bool",&mspass::Metadata::get_bool,"Return a (C) boolean defined by a specified key")
     .def("get_string",&mspass::Metadata::get_string,"Return a string indexed by a specified key")
+    .def("get",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
     /* These use a feature I not able to make work.   They are supposed to
     require c14 but even when I turn that on all of these cause hard to
     understand (for me anyway) compilation errors.   For now will use the
