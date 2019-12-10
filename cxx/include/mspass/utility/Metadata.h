@@ -242,13 +242,13 @@ other attributes.
   \exception - MetadataGetError if requested parameter is not found.
   */
   boost::any get_any(const string key) const {
-  map<string,boost::any>::const_iterator iptr;
-  iptr=md.find(key);
-  if(iptr==md.end())
-  {
-    throw MetadataGetError(key,typeid(boost::any).name());
-  }
-  return iptr->second;
+    map<string,boost::any>::const_iterator iptr;
+    iptr=md.find(key);
+    if(iptr==md.end())
+    {
+      throw MetadataGetError(key,typeid(boost::any).name());
+    }
+    return iptr->second;
   };
   template <typename T> void put(const string key, T val) noexcept
   {
