@@ -13,5 +13,3 @@ include_directories(
 pybind11_add_module(mspasspy mspass_wrapper.cpp)
 
 target_link_libraries(mspasspy PRIVATE mspass)
-
-install (TARGETS mspasspy DESTINATION lib)
