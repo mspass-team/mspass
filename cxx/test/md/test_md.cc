@@ -37,6 +37,19 @@ int main(int argc, char **argv)
                 cout << "bool_val="<<mdplain.get<bool>("bool_val")<<endl;
                 cout << "Same thing using operator >> "<<endl;
 		cout << mdplain;
+		cout << "Testing is_defined and clear methods"<<endl;
+		cout << "This should be a False(0) (undefined key)->"
+			<<mdplain.is_defined("HUHLigh")<<endl;
+		cout << "This should be a True(1)->"
+			<<mdplain.is_defined("double_val")<<endl;
+		/* Clear double_val*/
+		mdplain.clear("double_val");
+		if(mdplain.is_defined("double_val"))
+			cout << "Test of clear method failed"<<endl;
+		else
+			cout << "Test of clear method succeeded"<<endl;
+		cout << "Contents of edited mdplain"<<endl;
+		cout << mdplain<<endl;
 		cout << "Trying simple file read constructor"<<endl
                     << "Reading from simple.txt"<<endl;
                 ifstream ifs("simple.txt");

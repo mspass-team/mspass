@@ -16,6 +16,15 @@ bool_val bool 1
 double_val double 2.5
 long_val long 10
 string_val string test_string
+Testing is_defined and clear methods
+This should be a False(0) (undefined key)->0
+This should be a True(1)->1
+Test of clear method succeeded
+Contents of edited mdplain
+bool_val bool 1
+long_val long 10
+string_val string test_string
+
 Trying simple file read constructor
 Reading from simple.txt
 MYPAR double 2.5
@@ -103,23 +112,23 @@ Posting that message to log
 Posting a set of fake messages to log
 Dump of error log
 Undefined
-10000 22816 test_md Error trying to extract Metadata with key=bad_key
+10000 20342 test_md Error trying to extract Metadata with key=bad_key
 No value associated with this key is set in Metadata object
 Expected an entry of type=double
 
 
-Informational 10000 22816 test_md log_error method succeeded
+Informational 10000 20342 test_md log_error method succeeded
 
 Undefined
-10000 22816 test_md Error in Metadata get method.   Type mismatch in request
+10000 20342 test_md Error in Metadata get method.   Type mismatch in request
 boost::any bad_any_cast wrote this message:  boost::bad_any_cast: failed conversion using boost::any_cast
 Trying to convert to data of type=int
 Actual entry has type=double
 
 
-Fatal 10000 22816 test_md Fake fatal error
+Fatal 10000 20342 test_md Fake fatal error
 
-Debug 10000 22816 test_md Fake debug error
+Debug 10000 20342 test_md Fake debug error
 
-Complaint 10000 22816 test_md Fake complain error
+Complaint 10000 20342 test_md Fake complain error
 
