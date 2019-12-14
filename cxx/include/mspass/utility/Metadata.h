@@ -288,6 +288,18 @@ other attributes.
   };
   /*! Return all keys without any type information. */
   set<string> keys() noexcept;
+  /*! Test if a key has an associated value.  Returns true if
+   * a value is defined. */
+  bool is_defined(const std::string key)
+  {
+    map<string,boost::any>::const_iterator iptr;
+    iptr=md.find(key);
+    if(iptr==md.end()) 
+	    return false;
+    else
+	    return true;
+
+  };
   friend ostream& operator<<(ostream&, Metadata&);
 protected:
   map<string,boost::any> md;
