@@ -297,6 +297,7 @@ PYBIND11_MODULE(mspasspy,m)
     .def("keys",&Metadata::keys,"Return a list of the keys of all defined attributes")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("is_defined",&Metadata::is_defined,"Test if a key has a value set")
+    .def("clear",&Metadata::clear,"Clears contents associated with a key")
     .def(py::self += py::self)
     .def(py::self + py::self)
   ;

@@ -290,16 +290,24 @@ other attributes.
   set<string> keys() noexcept;
   /*! Test if a key has an associated value.  Returns true if
    * a value is defined. */
-  bool is_defined(const std::string key)
+  bool is_defined(const std::string key) const;
+  /*! Overload for C string*/
+  /*
+  bool is_define(const char* key) const
   {
-    map<string,boost::any>::const_iterator iptr;
-    iptr=md.find(key);
-    if(iptr==md.end()) 
-	    return false;
-    else
-	    return true;
-
+    return this->is_defined(string(key));
   };
+  */
+  /*! Clear data associated with a particular key. */
+  void clear(const std::string key);
+  /*! Overload for C string*/
+  /*
+  void clear(const char* key) 
+  {
+    return this->clear(string(key));
+  };
+  */
+  /*! Clear data associated with a particular key. */
   friend ostream& operator<<(ostream&, Metadata&);
 protected:
   map<string,boost::any> md;
