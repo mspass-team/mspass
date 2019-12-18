@@ -13,7 +13,6 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
 {
     if(this!=(&parent))
     {
-        this->Metadata::operator=(parent);
         this->CoreSeismogram::operator=(parent);
         this->MsPASSCoreTS::operator=(parent);
     }
