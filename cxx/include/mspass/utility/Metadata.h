@@ -127,7 +127,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  double get_double(const string key) const{
+  double get_double(const string key) const override{
     try{
       double val;
       val=get<double>(key);
@@ -140,7 +140,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  int get_int(const string key) const
+  int get_int(const string key) const override
   {
     try{
       int val;
@@ -171,7 +171,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  string get_string(const string key) const{
+  string get_string(const string key) const override{
     try{
       string val;
       val=get<string>(key);
@@ -186,7 +186,7 @@ other attributes.
 
   \param key keyword associated with requested metadata member.
   **/
-  bool get_bool(const string key) const{
+  bool get_bool(const string key) const override{ 
     try{
       bool val;
       val=get<bool>(key);
@@ -264,19 +264,19 @@ other attributes.
     md[string(key)]=aval;
     changed_or_set.insert(string(key));
   }
-  void put(const string key, const double val)
+  void put(const string key, const double val) override
   {
       this->put<double>(key,val);
   };
-  void put(const string key, const int val)
+  void put(const string key, const int val) override
   {
       this->put<int>(key,val);
   };
-  void put(const string key, const bool val)
+  void put(const string key, const bool val) override
   {
       this->put<bool>(key,val);
   };
-  void put(const string key, const string val)
+  void put(const string key, const string val) override
   {
       this->put<string>(key,val);
   };
