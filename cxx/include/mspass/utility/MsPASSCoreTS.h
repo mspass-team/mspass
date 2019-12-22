@@ -13,24 +13,26 @@ means the actual contents of this object are minimal.  For the initial implement
 hook is the string that is used in MongoDB as an external form fo the ObjectID.   This assumption
 is the get and put methods for the objectid string will be sufficient for a python wrapper to 
 associate data with the a unique document in the database.   
+
+A key feature this component contains is hooks to the ErrorLogger functionality of mspass.
+That is, all data objects in mspass should not abort on most errors, but post messages to
+the error log.   When objects are saved writers should normally drop data with errors posted
+at some defined level (usually ErrorSeverity::Invalid).  Note the original design had the
+error logging component as a nested/inner class of MsPASSCoreTS.   We found it was problematic
+to handle tested classes with python wrappers so MsPASSCoreTS was made a child of ErrorLogger.
+This strongly violates the normal rules for how the API should define this because 
+ErrorLogger is a type example of a "has a" instead of an "is a".  
 */
-class MsPASSCoreTS
+class MsPASSCoreTS : public ErrorLogger
 {
   public:
-    /*! \brief  Error logging component.
-
-    Data processing always involves grey areas of errors.   Some errors invalidate the data and
-    others make it just questionable.   Some errors should be fatal, but we may not want to
-    abort everything in a large job running for many hours.   This object in MsPASS implements
-    a generic, scalable log mechanism where objects can post errors to the log and abort only
-    when essential.   The idea is that log messages are cached with the data and saved only
-    when we ask the data in a container to be saved.   Intermediate processing results can also
-    be tested for validity through the ErrorLogger API.  */
-    ErrorLogger elog;
     /*! Default constructor.   Does almost nothing. */
-    MsPASSCoreTS() : elog(){hex_id="INVALID";};
+    MsPASSCoreTS() : ErrorLogger(){hex_id="INVALID";};
     /*! Standard copy constructor. */
-    MsPASSCoreTS(const MsPASSCoreTS& parent){hex_id=parent.hex_id;};
+    MsPASSCoreTS(const MsPASSCoreTS& parent) : ErrorLogger(dynamic_cast<const ErrorLogger&>(parent))
+    {
+	hex_id=parent.hex_id;
+    };
     /*! Standard assignment operator. */
     MsPASSCoreTS& operator=(const MsPASSCoreTS& parent)
     {

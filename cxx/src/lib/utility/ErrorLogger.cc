@@ -3,7 +3,8 @@ using namespace mspass;
 namespace mspass
 {
 /* First code for the LogData class that are too long for inline */
-LogData::LogData(int jid, std::string alg, mspass::MsPASSError& merr)
+LogData::LogData(const int jid, const std::string alg,
+  const mspass::MsPASSError& merr)
 {
   job_id=jid;
   p_id=getpid();
@@ -58,13 +59,13 @@ ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
   }
   return *this;
 }
-int ErrorLogger::log_error(mspass::MsPASSError& merr)
+int ErrorLogger::log_error(const mspass::MsPASSError& merr)
 {
   LogData thislog(this->job_id,this->algorithm,merr);
   allmessages.push_back(thislog);
   return allmessages.size();
 }
-int ErrorLogger::log_verbose(std::string mess)
+int ErrorLogger::log_verbose(const std::string mess)
 {
   LogData entry;
   entry.job_id=this->job_id;

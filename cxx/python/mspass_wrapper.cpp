@@ -78,6 +78,7 @@ using mspass::ErrorLogger;
 using mspass::pfread;
 using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
+using mspass::MsPASSCoreTS;
 /* We enable this gem for reasons explain in the documentation for pybinde11
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
 Upshot is we need the py::bind line at the start of the module definition.
@@ -221,11 +222,6 @@ public:
     );
   }
 };
-/* Documentation says this is needed for c11 compilation, but cannot make
-it work. Preserve for now.
-template <typename... Args>
-using overload_cast_ = pybind11::detail::overload_cast_impl<Args...>;
-*/
 PYBIND11_MODULE(mspasspy,m)
 {
   py::bind_vector<std::vector<double>>(m, "Vector");
@@ -470,13 +466,15 @@ PYBIND11_MODULE(mspasspy,m)
     .def("set_algorithm",&mspass::ErrorLogger::set_algorithm)
     .def("get_job_id",&mspass::ErrorLogger::get_job_id)
     .def("get_algorithm",&mspass::ErrorLogger::get_algorithm)
-    .def("log_error",&mspass::ErrorLogger::log_error)
+    .def("log_error",py::overload_cast<const MsPASSError&>(&mspass::ErrorLogger::log_error),"log error thrown as MsPASSError")
+    .def("log_error",py::overload_cast<const std::string,const ErrorSeverity>(&mspass::ErrorLogger::log_error),"log a message at a specified severity level")
     .def("log_verbose",&mspass::ErrorLogger::log_verbose)
     .def("get_error_log",&mspass::ErrorLogger::get_error_log)
     .def("size",&mspass::ErrorLogger::size)
     .def("worst_errors",&mspass::ErrorLogger::worst_errors)
   ;
-  py::class_<mspass::MsPASSCoreTS>(m,"MsPASSCoreTS","class to extend a data object to integrate with MongoDB")
+  py::class_<mspass::MsPASSCoreTS,mspass::ErrorLogger>(m,
+               "MsPASSCoreTS","class to extend a data object to integrate with MongoDB")
     .def(py::init<>())
     .def("set_id",&mspass::MsPASSCoreTS::set_id,"Set the mongodb unique id to associate with this object")
     .def("get_id",&mspass::MsPASSCoreTS::get_id,"Return the mongodb uniqueid associated with a data object")
