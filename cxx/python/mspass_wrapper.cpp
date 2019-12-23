@@ -473,12 +473,12 @@ PYBIND11_MODULE(mspasspy,m)
     .def("size",&mspass::ErrorLogger::size)
     .def("worst_errors",&mspass::ErrorLogger::worst_errors)
   ;
-  py::class_<mspass::MsPASSCoreTS,mspass::ErrorLogger>(m,
+  py::class_<mspass::MsPASSCoreTS>(m,
                "MsPASSCoreTS","class to extend a data object to integrate with MongoDB")
     .def(py::init<>())
     .def("set_id",&mspass::MsPASSCoreTS::set_id,"Set the mongodb unique id to associate with this object")
     .def("get_id",&mspass::MsPASSCoreTS::get_id,"Return the mongodb uniqueid associated with a data object")
-    ;
+    .def_readwrite("elog",&mspass::MsPASSCoreTS::elog,"Error logger object");
   /* These two APIs are incomplete but are nontheless mostly wrappers for
   Core versions of same */
   py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>
