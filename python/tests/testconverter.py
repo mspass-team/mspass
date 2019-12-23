@@ -21,7 +21,6 @@ from obspy2mspass import obspy2mspass
 dout=obspy2mspass(tr,mdef,mdother,aliases)
 print("obspy2mspass completed but test generates a complaint stored in the log")
 print("This is the messsage stored in the TimeSeries log as a complaint")
-elog=dout.get_error_log()
+elog=dout.elog.get_error_log()
 print(elog[0].message)
-print("Done with test of obspy2mspass for TimeSeries")
 # Extension is needed here to test converter to Seismogram - under development
