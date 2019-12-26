@@ -64,16 +64,17 @@ int ErrorLogger::log_error(mspass::MsPASSError& merr)
   allmessages.push_back(thislog);
   return allmessages.size();
 }
-int ErrorLogger::log_verbose(std::string mess)
+int ErrorLogger::log_error(const std::string mess,const ErrorSeverity es)
 {
   LogData entry;
   entry.job_id=this->job_id;
   entry.p_id=getpid();
   entry.algorithm=this->algorithm;
   entry.message=mess;
-  entry.badness=ErrorSeverity::Informational;
+  entry.badness=es;
   allmessages.push_back(entry);
   return allmessages.size();
+
 }
 /* This method needs to return a list of the highest ranking
 errors in the log.   This is a bit tricky because we specify badness with

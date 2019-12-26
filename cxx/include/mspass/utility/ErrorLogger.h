@@ -49,9 +49,19 @@ public:
   std::string get_algorithm(){return algorithm;};
   /*! Logs one error message.
 
+  \param merr - many mspass procedures throw MsPASSError objects.
+    This simplifies the process of posting them to an error log.
+
   \return size of error log after insertion.
   */
   int log_error(mspass::MsPASSError& merr);
+  /*! Logs an error with a specified badness level.
+    \param mess - error message posted
+    \param es - severity of error as defined by enum class ErrorSeverity
+
+  \return size of error log after insertion.
+  */
+  int log_error(const std::string mess, const ErrorSeverity es);
   /*! \brief Log a verbose message marking it informational.
 
   Frequently programs need a verbose option to log something of interest
@@ -59,7 +69,12 @@ public:
   method posts the string mess and marks it Informational. Returns
   the size of the log after insertion.
   */
-  int log_verbose(std::string mess);
+  int log_verbose(std::string mess)
+  {
+      int count;
+      count=this->log_error(mess,ErrorSeverity::Informational);
+      return count;
+  };
   std::list<LogData> get_error_log(){return allmessages;};
   int size(){return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);
