@@ -6,6 +6,7 @@ from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 client = Client("IRIS")
 t = UTCDateTime("2010-02-27T06:45:00.000")
+
 d = client.get_waveforms("IU", "ANMO", "00", "LH*", t, t + 60 * 60)
 # We need this for 3c test later, but we will load them now
 #inventory=client.get_stations(network='IU',station='ANMO',starttime=t,endtime=t+3600.0)
@@ -53,5 +54,4 @@ print("obspy2mspass completed but test generates a complaint stored in the log")
 print("This is the messsage stored in the TimeSeries log as a complaint")
 elog=dout.elog.get_error_log()
 print(elog[0].message)
-
 

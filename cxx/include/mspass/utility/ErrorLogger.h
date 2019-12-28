@@ -22,7 +22,7 @@ public:
   \param alg is assigned to algorithm attribute.
   \param merr is parsed to fill the message and severity fields.
   Note p_id is always fetched with the system call getpid in the constructor.*/
-  LogData(int jid, std::string alg, mspass::MsPASSError& merr);
+  LogData(const int jid, const std::string alg,const mspass::MsPASSError& merr);
   friend ostream& operator<<(ostream&, LogData&);
 };
 /*! \brief Container to hold error logs for a data object.
@@ -54,14 +54,22 @@ public:
 
   \return size of error log after insertion.
   */
-  int log_error(mspass::MsPASSError& merr);
-  /*! Logs an error with a specified badness level.
-    \param mess - error message posted
-    \param es - severity of error as defined by enum class ErrorSeverity
+  int log_error(const mspass::MsPASSError& merr);
+  /*! Log one a message directly with a specified severity.
 
-  \return size of error log after insertion.
-  */
-  int log_error(const std::string mess, const ErrorSeverity es);
+    This is a convenience overload of log_error.  It splits the
+    MsPASSError components as arguments with a default that
+    allows a default behavior of Invalid as the error state.
+
+    \param mess is the message to be posted.
+    \param level is the badness level to be set with the message.
+       (default is ErrorSeverity::Invalid).
+
+    \return size of error log after insertion.
+    */
+  int log_error(const std::string mess,
+		  const mspass::ErrorSeverity level);
+
   /*! \brief Log a verbose message marking it informational.
 
   Frequently programs need a verbose option to log something of interest
@@ -69,12 +77,7 @@ public:
   method posts the string mess and marks it Informational. Returns
   the size of the log after insertion.
   */
-  int log_verbose(std::string mess)
-  {
-      int count;
-      count=this->log_error(mess,ErrorSeverity::Informational);
-      return count;
-  };
+  int log_verbose(const std::string mess);
   std::list<LogData> get_error_log(){return allmessages;};
   int size(){return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);

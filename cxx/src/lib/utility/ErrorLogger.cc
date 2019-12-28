@@ -3,7 +3,8 @@ using namespace mspass;
 namespace mspass
 {
 /* First code for the LogData class that are too long for inline */
-LogData::LogData(int jid, std::string alg, mspass::MsPASSError& merr)
+LogData::LogData(const int jid, const std::string alg,
+  const mspass::MsPASSError& merr)
 {
   job_id=jid;
   p_id=getpid();
@@ -58,24 +59,25 @@ ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
   }
   return *this;
 }
-int ErrorLogger::log_error(mspass::MsPASSError& merr)
+int ErrorLogger::log_error(const mspass::MsPASSError& merr)
 {
   LogData thislog(this->job_id,this->algorithm,merr);
   allmessages.push_back(thislog);
   return allmessages.size();
 }
-int ErrorLogger::log_error(const std::string mess,const ErrorSeverity es)
+int ErrorLogger::log_error(const std::string mess,
+  const mspass::ErrorSeverity level=ErrorSeverity::Invalid)
 {
-  LogData entry;
-  entry.job_id=this->job_id;
-  entry.p_id=getpid();
-  entry.algorithm=this->algorithm;
-  entry.message=mess;
-  entry.badness=es;
-  allmessages.push_back(entry);
-  return allmessages.size();
-
+  MsPASSError err(mess,level);
+  int count=this->log_error(err);
+  return count;
 }
+int ErrorLogger::log_verbose(const std::string mess)
+{
+  int count;
+  count=this->log_error(mess,ErrorSeverity::Informational);
+  return count;
+};
 /* This method needs to return a list of the highest ranking
 errors in the log.   This is a bit tricky because we specify badness with
 an enum.   It seems dangerous to depend upon the old (I think depricated)

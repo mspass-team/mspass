@@ -199,6 +199,7 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
             mess="obspy2mspass:  Error during processing aliases list for alias key="+a+"\n"
             dout.elog.log_error(mess,ErrorSeverity.Complaint)
     return dout
+
 # comparable function to take a Stream object with 3 members and return
 # a Seismogram object
 def obspy2mspass_3c(st,mdef,mdother=[],aliases=[],master=0,cardinal=bool(0),
