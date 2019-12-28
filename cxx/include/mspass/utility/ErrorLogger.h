@@ -68,7 +68,7 @@ public:
     \return size of error log after insertion.
     */
   int log_error(const std::string mess,
-		  const mspass::ErrorSeverity level=ErrorSeverity::Invalid);
+		  const mspass::ErrorSeverity level);
 
   /*! \brief Log a verbose message marking it informational.
 
@@ -77,7 +77,7 @@ public:
   method posts the string mess and marks it Informational. Returns
   the size of the log after insertion.
   */
-  int log_verbose(std::string mess)
+  int log_verbose(const std::string mess);
   std::list<LogData> get_error_log(){return allmessages;};
   int size(){return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);
