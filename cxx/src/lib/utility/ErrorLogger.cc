@@ -65,17 +65,19 @@ int ErrorLogger::log_error(const mspass::MsPASSError& merr)
   allmessages.push_back(thislog);
   return allmessages.size();
 }
+int ErrorLogger::log_error(const std::string mess,
+  const mspass::ErrorSeverity level=ErrorSeverity::Invalid)
+{
+  MsPASSError err(mess,level);
+  int count=this->log_error(err);
+  return count;
+}
 int ErrorLogger::log_verbose(const std::string mess)
 {
-  LogData entry;
-  entry.job_id=this->job_id;
-  entry.p_id=getpid();
-  entry.algorithm=this->algorithm;
-  entry.message=mess;
-  entry.badness=ErrorSeverity::Informational;
-  allmessages.push_back(entry);
-  return allmessages.size();
-}
+  int count;
+  count=this->log_error(mess,ErrorSeverity::Informational);
+  return count;
+};
 /* This method needs to return a list of the highest ranking
 errors in the log.   This is a bit tricky because we specify badness with
 an enum.   It seems dangerous to depend upon the old (I think depricated)

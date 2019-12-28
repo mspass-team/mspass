@@ -10,7 +10,7 @@ from mspasspy import MsPASSError
 from mspasspy import ErrorSeverity
 
 from obspy import Trace
-def obspy2mspass(d,mdef,mdother,aliases):
+def obspy2mspass(d,mdef,mdother=[],aliases=[]):
     """
     Convert an obspy Trace object to a TimeSeries object.
 
@@ -20,13 +20,14 @@ def obspy2mspass(d,mdef,mdother,aliases):
     mdother - This function always loads obspy required attributes and passes the directly to the mspass
         TimeSeries object..  For each entry in mdother the procedure tries to fetch that attribute.  It's type
         is then extracted from the MetadataDefinitions object and saved with the same key.
+        (default is an empty list)
     aliases - is a list of attributes that should be posted to output with an alias name.  Aliases have
         a large overhead as the algorithm first looks for the unique key associated with the aliases and
         deletes it from the output before adding it back with the alias.   This is an essential feature to
         prevent duplicates that could easily get out of sync.  Aliases should generally be avoided but
-        can be a useful feature.
+        can be a useful feature. (default is an empty list)
     Returns a mspass TimeSeries object equivalent to obspy input but reorganized into mspass class structure
-"""
+    """
 # First get the data size to know use allocating constructor for TimeSeries
     ns=d.stats.npts
     dout=CoreTimeSeries(ns)
@@ -198,3 +199,121 @@ def obspy2mspass(d,mdef,mdother,aliases):
             mess="obspy2mspass:  Error during processing aliases list for alias key="+a+"\n"
             dout.elog.log_error(mess,ErrorSeverity.Complaint)
     return dout
+
+# comparable function to take a Stream object with 3 members and return
+# a Seismogram object
+def obspy2mspass_3c(st,mdef,mdother=[],aliases=[],master=0,cardinal=bool(0),
+                azimuth='azimuth',dip='dip'):
+    """
+    Convert an obspy Stream object with 3 components to a mspass::Seismogram
+    (three-component data) object.  This implementation actually converts
+    each component first to a TimeSeries and then calls a C++ function to
+    assemble the complete Seismogram.   This has some inefficiencies, but
+    the assumption is this function is called early on in a processing chain
+    to build a raw data set.
+
+    st - input obspy Stream object.  The object MUST have exactly 3 components
+        or the function will throw a AssertionError exception.  The program is
+        less dogmatic about start times and number of samples as these are
+        handled by the C++ function this python script calls.  Be warned,
+        however, that the C++ function can throw a MsPASSrror exception that
+        should be handled separately.
+    mdef - global metadata catalog.   Used to guarantee all names used are registered.
+    mdother - This function always loads obspy required attributes and passes the directly to the mspass
+        TimeSeries object..  For each entry in mdother the procedure tries to fetch that attribute.  It's type
+        is then extracted from the MetadataDefinitions object and saved with the same key.
+        (default is an empty list)   Must contain azimuth and dip keys (as passed)
+        unless cardinal is true
+    aliases - is a list of attributes that should be posted to output with an alias name.  Aliases have
+        a large overhead as the algorithm first looks for the unique key associated with the aliases and
+        deletes it from the output before adding it back with the alias.   This is an essential feature to
+        prevent duplicates that could easily get out of sync.  Aliases should generally be avoided but
+        can be a useful feature.  (default is an empty list)
+    master - a Seismogram is an assembly of three channels composed created from
+        three TimeSeries/Trace objects.   Each component may have different
+        metadata (e.g. orientation data) and common metadata (e.g. station
+        coordinates).   To assemble a Seismogram a decision has to be made on
+        which component has the definitive common metadata.   We use a simple
+        algorithm and clone the data from one component defined by this index.
+        Must be 0,1, or 2 or the function wil throw a RuntimeError.  Default is 0.
+    cardinal - boolean used to define one of two algorithms used to assemble the
+        bundle.  When true the three input components are assumed to be in
+        cardinal directions (x1=positive east, x2=positive north, and x3=positive up)
+        AND in a fixed order of E,N,Z. Otherwise the Metadata fetched with
+        the azimuth and dip keys are used for orientation.
+    azimuth - defines the Metadata key used to fetch the azimuth angle
+       used to define the orientation of each component Trace object.
+       Default is 'azimuth' used by obspy.   Note azimuth=hang in css3.0.
+       Cannot be aliased - must be present in obspy Stats unless cardinal is true
+    dip - defines the Metadata key used to fetch the vertical angle orientation
+        of each data component.  Vertical angle (vang in css3.0) is exactly
+        the same as theta in spherical coordinates.  Default is obspy 'dip'
+        key. Cannot be aliased - must be defined in obspy Stats unless
+        cardinal is true
+
+    Can throw either an AssertionError or MsPASSrror(currently defaulted to
+    pybind11's default RuntimeError.  Error message can be obtained by
+    calling the what method of RuntimeError).
+    """
+    # First make sure we have exactly 3 components
+    assert len(st)==3, "Stream length must be EXACTLY 3 for 3-components"
+    assert (master>=0 and master<3), "master argument must be 0, 1, or 2"
+    # Complicated logic here, but the point is to make sure the azimuth
+    # attribute is set. The cardinal part is to override the test if
+    # we can assume he components are ENZ
+    if(not cardinal):
+        if( not (azimuth in mdother)) :
+            raise RuntimeError("obspy2mspass_3c:  Required attribute "+azimuth+" must be in mdother list")
+    if(not cardinal):
+        if( not (dip in mdother)) :
+            raise RuntimeError("obspy2mspass_3c:  Required attribute "+dip+" must be in mdother list")
+    # Outer exception handler to handle range of possible errors in
+    # converting each component.  Note we pass an empty list for mdother
+    # and aliases except the master
+    bundle=[]
+    if(cardinal):
+        mdo2=[]
+    else:
+        mdo2=[azimuth,dip]
+    try:
+        for i in range(3):
+            tr=st[i]
+            if(i==master):
+                # Assume azimuth and dip variables are in mdother
+                # perhaps should test that for stability
+                bundle.append(obspy2mspass(tr,mdef,mdother,aliases))
+            else:
+                #We could depend on defaults here, but being explicit is safer
+                bundle.append(obspy2mspass(tr,mdef,mdo2,[]))
+    except RuntimeError:
+        print("obspy2mspass_3c Seismogram converter - unrecoverable error in assembling components")
+        # I believe this rethrows the exception
+        raise
+    # The constructor we use below has frozen names hang for azimuth and
+    # vang for what obspy calls dip.   Copy to those names - should work
+    # even if the hang and vang are the names although with some inefficiency
+    # assume that would not be normal so avoid unnecessary code
+    if(cardinal):
+        for i in range(3):
+            if(i<3):
+                bundle[i].put("vang",90.0)
+            else:
+                bundle[i].put("vang",0.0)
+        bundle[0].put("hang",90.0)
+        bundle[1].put("hang",0.0)
+        bundle[2].put("hang",0.0)
+    else:
+        for i in range(3):
+            hang=bundle[i].get_double(azimuth)
+            bundle[i].put('hang',hang)
+            vang=bundle[i].get_double(dip)
+            bundle[i].put('vang',vang)
+    # Assume now bundle contains all the pieces we need.   This constructor
+    # for CoreSeismogram should then do the job
+    # This may throw an exception, but we require the caller to handle it
+    # All errors returned by this constructor currenlty leave the data INVALID
+    # so handler should discard anything with an error
+    from mspasspy import CoreSeismogram
+    from mspasspy import Seismogram
+    dout=CoreSeismogram(bundle,master)
+    return(Seismogram(dout,'INVALID'))
