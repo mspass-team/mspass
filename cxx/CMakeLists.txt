@@ -18,6 +18,19 @@ set (PYBIND11_CPP_STANDARD -std=c++14)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
+find_package (yaml-cpp 0.5.0)
+if (NOT YAML_CPP_INCLUDE_DIR)
+  message (STATUS "Building yaml-cpp")
+  include (cmake/yaml-cpp.cmake)
+  fetch_yaml_cpp (
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/yaml-cpp
+    )
+endif ()
+message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
+message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
+
+
 find_package (Boost 1.64.0)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
