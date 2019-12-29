@@ -501,4 +501,14 @@ PYBIND11_MODULE(mspasspy,m)
     py::arg("d"),
     py::arg("twin") )
   ;
+  m.def("WindowData",&mspass::WindowData,"Reduce data to window inside original",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("twin") )
+  ;
+  m.def("WindowData3C",&mspass::WindowData3C,"Reduce data to window inside original",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("twin") )
+  ;
 }
