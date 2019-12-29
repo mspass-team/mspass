@@ -24,6 +24,26 @@ public:
    \param oid is the objectid specified as a hex string.
    */
   Seismogram(const mspass::CoreSeismogram& d, const std::string oid);
+  /*! Extended partial copy constructor. 
+
+  A Seismogram object is created from several pieces.   It can be 
+  useful at times to create a partial clone that copies everything 
+  but the actual data.   This version clones all components that are
+  not data.  Note whenever this constructor is called the object id
+  will automatically be invalid since by definition the object 
+  created is not stored in the MongoDB database.
+
+  \param b - BasicSeismogram component to use to construct data.
+  \param m - Metadata componet to use to construct data (no test are 
+    made to verify any attributes stored here are consistent with b.
+  \param e - ErrorLogger content.  If these data are derived from a 
+    parent that has an error log (ErrorLogger) that may not be empty 
+    it can be useful to copy the log.   This argument has a default
+    that passes an empty ErrorLog object.   The idea is calling this
+    constructor with only two parameters will not copy the error log.
+    */
+  Seismogram(const mspass::BasicTimeSeries& b,const mspass::Metadata& m, 
+          const ErrorLogger elf=ErrorLogger());
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::CoreSeismogram(parent), mspass::MsPASSCoreTS(parent){};
