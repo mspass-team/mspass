@@ -1,3 +1,4 @@
+#include <string.h>
 #include <fstream>
 #include <sstream>
 #include "mspass/utility/utility.h"
@@ -217,7 +218,7 @@ void MetadataDefinitions::pfreader(const string pfname)
     is the expected norm */
     AntelopePf pf(pfname);
     list<string> akeys=pf.arr_keys();
-    list<string>::iterator kptr;
+    list<string>::iterator kptr,aptr;
     for(kptr=akeys.begin();kptr!=akeys.end();++kptr)
     {
       AntelopePf pfb(pf.get_branch(*kptr));
@@ -228,24 +229,21 @@ void MetadataDefinitions::pfreader(const string pfname)
       string tstr=pfb.get_string("type");
       MDtype mdt_this=str2mdt(tstr);
       tmap[*kptr]=mdt_this;
-    }
-    /* now parse any aliases */
-    list<string> alist=pf.get_tbl("aliases");
-    for(kptr=alist.begin();kptr!=alist.end();++kptr)
-    {
-      stringstream ss(*kptr);
-      string skey,salias;
-      ss>>skey;
-      ss>>salias;
-      this->add_alias(skey,salias);
+      /* parse aliases as a tbl linked to this key */
+      list<string> alist=pfb.get_tbl("aliases");
+      for(aptr=alist.begin();aptr!=alist.end();++aptr)
+      {
+        this->add_alias(*kptr,*aptr);
+      }
     }
   }catch(...){throw;};
 }
 void MetadataDefinitions::yaml_reader(const string fname)
 {
   try{
-    YAML::Node outer=YAML::LoadFile(fname.c_str());
-    const YAML::Node& attributes=outer["Attributes"];
+    //YAML::Node outer=YAML::LoadFile(fname.c_str());
+    //const YAML::Node& attributes=outer["Attributes"];
+    YAML::Node attributes=YAML::LoadFile(fname.c_str());
     unsigned int natt=attributes.size();
     unsigned int i;
     for(i=0;i<natt;++i)
@@ -257,17 +255,20 @@ void MetadataDefinitions::yaml_reader(const string fname)
       string styp=attributes["type"].as<string>();
       MDtype mdt_this=str2mdt(styp);
       tmap[key]=mdt_this;
-    }
-    /* Now handle aliases - split using a stringstream as in pfreader */
-    const YAML::Node& aliases=outer["aliases"];
-    for(i=0;i<aliases.size();++i)
-    {
-      string s=aliases[i].as<string>();
-      stringstream ss(s);
-      string skey,salias;
-      ss>>skey;
-      ss>>salias;
-      this->add_alias(skey,salias);
+      string str=attributes["aliases"].as<string>();
+      if(str.size()>0)
+      {
+        /* using strtok which will alter the string contents so we have
+        to copy it first*/
+        char *s=strdup(str.c_str());
+        string delim(" ,");  // allow either spaces or commas as delimiters
+        char *p=strtok(s,delim.c_str());
+        while(p!=NULL){
+          this->add_alias(key,string(p));
+          p=strtok(NULL,delim.c_str());  //strtok oddity of NULL meaning use last position
+        }
+        free(s);
+      }
     }
   }catch(YAML::Exception& eyaml)
   {
