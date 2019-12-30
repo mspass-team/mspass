@@ -1,26 +1,21 @@
 #include <fstream>
 #include <sstream>
+#include "mspass/utility/utility.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/AntelopePf.h"
+#include "yaml-cpp/yaml.h"
 #include "mspass/utility/MetadataDefinitions.h"
 namespace mspass{
 using namespace mspass;
-using std::string;
-/* This is a temporary implementation to test a theory for why this created a
-seg fault*/
-MetadataDefinitions::MetadataDefinitions()
-{
-  /*
-  MetadataDefinitions temp(string("obspy_namespace.pf"),MDDefFormat::PF);
-  *this=temp;
-  */
-}
+using namespace std;
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
     try{
-        /* This s temporary.  For now this defaults to pf format file input */
-        MetadataDefinitions tmp(mdname,MDDefFormat::PF);
-        *this=tmp;
+      string datadir=datadir=mspass::data_directory();
+      string path;
+      path=datadir+"/yaml/"+mdname+".yaml";
+      MetadataDefinitions tmp(path,MDDefFormat::YAML);
+      *this=tmp;
     }catch(...){throw;};
 
 }
@@ -29,8 +24,8 @@ MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat md
   try{
     switch(mdf)
     {
-      case MDDefFormat::SimpleText:
-        this->text_reader(fname);
+      case MDDefFormat::YAML:
+        this->yaml_reader(fname);
         break;
       case MDDefFormat::PF:
         this->pfreader(fname);
@@ -190,6 +185,28 @@ std::string list_to_1str(list<std::string>& l)
   }
   return result;
 }
+/* Small helper used by parsers.   Note tstr can't be const because it is
+altered, but because it is called by value I don't think the caller would
+be modified copy could be modified. */
+MDtype str2mdt(string tstr)
+{
+  transform(tstr.begin(), tstr.end(), tstr.begin(), ::tolower);
+  MDtype mdt_this;
+  if( (tstr=="real") || (tstr=="float") || (tstr=="real32") )
+    mdt_this=MDtype::Real32;
+  else if((tstr=="int") || (tstr=="integer") || (tstr=="int32"))
+    mdt_this=MDtype::Int32;
+  else if((tstr=="real64") || (tstr=="double"))
+    mdt_this=MDtype::Double;
+  else if((tstr=="long") || (tstr=="int64"))
+    mdt_this=MDtype::Int64;
+  else if(tstr=="string")
+    mdt_this=MDtype::String;
+  else
+    throw MsPASSError("MetadataDefinitions::pfreader:  type value="
+      + tstr+" not recognized");
+  return mdt_this;
+}
 /* Private methods */
 void MetadataDefinitions::pfreader(const string pfname)
 {
@@ -209,20 +226,7 @@ void MetadataDefinitions::pfreader(const string pfname)
       string con_str=list_to_1str(con_list);
       cmap[*kptr]=con_str;
       string tstr=pfb.get_string("type");
-      MDtype mdt_this;
-      if( (tstr=="real") || (tstr=="float") || (tstr=="real32") )
-        mdt_this=MDtype::Real32;
-      else if((tstr=="int") || (tstr=="integer") || (tstr=="int32"))
-        mdt_this=MDtype::Int32;
-      else if((tstr=="Real64") || (tstr=="double"))
-        mdt_this=MDtype::Double;
-      else if((tstr=="long") || (tstr=="int64"))
-        mdt_this=MDtype::Int64;
-      else if(tstr=="string")
-        mdt_this=MDtype::String;
-      else
-        throw MsPASSError("MetadataDefinitions::pfreader:  type value="
-          + tstr+" not recognized");
+      MDtype mdt_this=str2mdt(tstr);
       tmap[*kptr]=mdt_this;
     }
     /* now parse any aliases */
@@ -237,9 +241,39 @@ void MetadataDefinitions::pfreader(const string pfname)
     }
   }catch(...){throw;};
 }
-void MetadataDefinitions::text_reader(const string pfname)
+void MetadataDefinitions::yaml_reader(const string fname)
 {
-    throw MsPASSError("text_reader not yet implemented");
+  try{
+    YAML::Node outer=YAML::LoadFile(fname.c_str());
+    const YAML::Node& attributes=outer["Attributes"];
+    unsigned int natt=attributes.size();
+    unsigned int i;
+    for(i=0;i<natt;++i)
+    {
+      string key;
+      key=attributes["name"].as<string>();
+      string concept=attributes["concept"].as<string>();
+      cmap[key]=concept;
+      string styp=attributes["type"].as<string>();
+      MDtype mdt_this=str2mdt(styp);
+      tmap[key]=mdt_this;
+    }
+    /* Now handle aliases - split using a stringstream as in pfreader */
+    const YAML::Node& aliases=outer["aliases"];
+    for(i=0;i<aliases.size();++i)
+    {
+      string s=aliases[i].as<string>();
+      stringstream ss(s);
+      string skey,salias;
+      ss>>skey;
+      ss>>salias;
+      this->add_alias(skey,salias);
+    }
+  }catch(YAML::Exception& eyaml)
+  {
+    /* Rethrow these as a MsPASSError */
+    throw MsPASSError(eyaml.what(),ErrorSeverity::Invalid);
+  }
+  catch(...){throw;};
 }
-
 }

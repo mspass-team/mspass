@@ -5,7 +5,7 @@ namespace mspass{
 enum class MDDefFormat
 {
     PF,
-    SimpleText
+    YAML
 };
 
 /*! \brief Define properties of Metadata known to mspass.
@@ -28,8 +28,9 @@ data file.
 class MetadataDefinitions
 {
 public:
-  /*! Default constructor - defaults to mspass namespace. */
-  MetadataDefinitions();
+  /*Comment out default constructor for now - needs to default to mspass 
+   * and not sure how to do that.
+  MetadataDefinitions();*/
   /*! \brief Construct from a namespace title.
 
   How this is to be implemented is to be determined, but for many uses a simple 
@@ -37,7 +38,7 @@ public:
   At this time it is not implemented and attempts to use this will throw 
   an exception. 
   */
-  MetadataDefinitions(const std::string mdname);
+  MetadataDefinitions(const std::string mdname=std::string("mspass"));
   /*! \brief Construct from a file with variable formats.
 
   This constructor reads from a file to build the object.  The API 
@@ -117,7 +118,7 @@ private:
   multimap<std::string,std::string> aliasmap;
   map<string,string> alias_xref;
   void pfreader(const string pfname);
-  void text_reader(const string pfname);
+  void yaml_reader(const string fname);
 
 };
 }  // end mspass namespace
