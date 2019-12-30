@@ -12,7 +12,7 @@ using namespace std;
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
     try{
-      string datadir=datadir=mspass::data_directory();
+      string datadir=mspass::data_directory();
       string path;
       path=datadir+"/yaml/"+mdname+".yaml";
       MetadataDefinitions tmp(path,MDDefFormat::YAML);
@@ -195,11 +195,12 @@ MDtype str2mdt(string tstr)
   MDtype mdt_this;
   if( (tstr=="real") || (tstr=="float") || (tstr=="real32") )
     mdt_this=MDtype::Real32;
-  else if((tstr=="int") || (tstr=="integer") || (tstr=="int32"))
+  else if(tstr=="int32")
     mdt_this=MDtype::Int32;
   else if((tstr=="real64") || (tstr=="double"))
     mdt_this=MDtype::Double;
-  else if((tstr=="long") || (tstr=="int64"))
+  /* in the 64 bit world we default int and integer to int64 */
+  else if((tstr=="long") || (tstr=="int64") || (tstr=="int") || (tstr=="integer") )
     mdt_this=MDtype::Int64;
   else if(tstr=="string")
     mdt_this=MDtype::String;
@@ -241,33 +242,37 @@ void MetadataDefinitions::pfreader(const string pfname)
 void MetadataDefinitions::yaml_reader(const string fname)
 {
   try{
-    //YAML::Node outer=YAML::LoadFile(fname.c_str());
-    //const YAML::Node& attributes=outer["Attributes"];
-    YAML::Node attributes=YAML::LoadFile(fname.c_str());
+    YAML::Node outer=YAML::LoadFile(fname.c_str());
+    const YAML::Node& attributes=outer["Attributes"];
+    //YAML::Node attributes=YAML::LoadFile(fname.c_str());
     unsigned int natt=attributes.size();
     unsigned int i;
     for(i=0;i<natt;++i)
     {
       string key;
-      key=attributes["name"].as<string>();
-      string concept=attributes["concept"].as<string>();
+      key=attributes[i]["name"].as<string>();
+      string concept=attributes[i]["concept"].as<string>();
       cmap[key]=concept;
-      string styp=attributes["type"].as<string>();
+      string styp=attributes[i]["type"].as<string>();
       MDtype mdt_this=str2mdt(styp);
       tmap[key]=mdt_this;
-      string str=attributes["aliases"].as<string>();
-      if(str.size()>0)
+      /* Aliases is optional - this skips parsing aliases if key is missing*/
+      if(attributes[i]["aliases"])
       {
-        /* using strtok which will alter the string contents so we have
-        to copy it first*/
-        char *s=strdup(str.c_str());
-        string delim(" ,");  // allow either spaces or commas as delimiters
-        char *p=strtok(s,delim.c_str());
-        while(p!=NULL){
-          this->add_alias(key,string(p));
-          p=strtok(NULL,delim.c_str());  //strtok oddity of NULL meaning use last position
+        string str=attributes[i]["aliases"].as<string>();
+        if(str.size()>0)
+        {
+          /* using strtok which will alter the string contents so we have
+          to copy it first*/
+          char *s=strdup(str.c_str());
+          string delim(" ,");  // allow either spaces or commas as delimiters
+          char *p=strtok(s,delim.c_str());
+          while(p!=NULL){
+            this->add_alias(key,string(p));;
+            p=strtok(NULL,delim.c_str());  //strtok oddity of NULL meaning use last position
+          }
+          free(s);
         }
-        free(s);
       }
     }
   }catch(YAML::Exception& eyaml)
