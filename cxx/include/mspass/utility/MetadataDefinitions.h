@@ -28,9 +28,8 @@ data file.
 class MetadataDefinitions
 {
 public:
-  /*Comment out default constructor for now - needs to default to mspass 
-   * and not sure how to do that.
-  MetadataDefinitions();*/
+  /*! Default constructor.   Loads default schema name of mspass. */
+  MetadataDefinitions();
   /*! \brief Construct from a namespace title.
 
   How this is to be implemented is to be determined, but for many uses a simple 
@@ -38,7 +37,7 @@ public:
   At this time it is not implemented and attempts to use this will throw 
   an exception. 
   */
-  MetadataDefinitions(const std::string mdname=std::string("mspass"));
+  MetadataDefinitions(const std::string mdname);
   /*! \brief Construct from a file with variable formats.
 
   This constructor reads from a file to build the object.  The API 

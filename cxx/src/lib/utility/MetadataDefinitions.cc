@@ -1,25 +1,59 @@
-#include <string.h>
 #include <fstream>
 #include <sstream>
+#include <string.h>
+#include <string>
 #include "mspass/utility/utility.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/AntelopePf.h"
 #include "yaml-cpp/yaml.h"
 #include "mspass/utility/MetadataDefinitions.h"
+const string DefaultSchemaName("mspass");
 namespace mspass{
 using namespace mspass;
 using namespace std;
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
     try{
+      /* silent try to recover if the user adds .yaml to mdname*/
+      std::size_t ipos;  //size_t seems essential here for this to work -weird
+      string name_to_use;
+      ipos=mdname.find(".yaml");
+      if(ipos==std::string::npos)
+      {
+	name_to_use=mdname;
+      }
+      /* We throw an exception if the name is a path with / characters*/
+      else if(mdname.find("/")!=std::string::npos)
+      {
+	throw MsPASSError("MetadataDefinitions:  name passed seems to be a full path name that is not allowed\nReceived this:  "
+		+mdname,ErrorSeverity::Invalid);
+      }
+      else
+      {
+        name_to_use.assign(mdname,0,ipos);
+      }
       string datadir=mspass::data_directory();
       string path;
-      path=datadir+"/yaml/"+mdname+".yaml";
+      path=datadir+"/yaml/"+name_to_use+".yaml";
       MetadataDefinitions tmp(path,MDDefFormat::YAML);
       *this=tmp;
     }catch(...){throw;};
 
 }
+/* The unparameterized constructor is almost like the single string constructor
+ * loading a frozen file name. The only difference is not needing to worry
+ * about user errors.*/
+MetadataDefinitions::MetadataDefinitions()
+{
+    try{
+      string datadir=mspass::data_directory();
+      string path;
+      path=datadir+"/yaml/"+DefaultSchemaName+".yaml";
+      MetadataDefinitions tmp(path,MDDefFormat::YAML);
+      *this=tmp;
+    }catch(...){throw;};
+}
+
 MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat mdf)
 {
   try{
