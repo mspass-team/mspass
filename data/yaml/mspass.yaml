@@ -1,0 +1,39 @@
+Attributes:
+  - name: npts
+    type: int
+    concept: Number of data samples
+    aliases: nsamp wfdisc.nsamp
+  - name: delta
+    type: real
+    concept:  Data sample interval in seconds
+    aliases: dt
+  - name: station
+    type: string
+    concept:  Seismic station code
+    aliases:  sta site.sta KSTA
+  - name: sampling_rate
+    type: real
+    concept:  Data sampling frequency in Hz=1/s
+  - name: calib
+    type: real
+    concept: Nominal conversion factor for changing sample data to ground motion units.
+  - name: network
+    type: string
+    concept: network code (net component of SEED net:sta:chan)
+    aliases: net
+  - name: station
+    type: string
+    concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+    aliases: sta site.sta
+  - name: location
+    type: string
+    concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
+    aliases: loc
+  - name: starttime
+    type:  real
+    concept:  Time of first sample of data (epoch time or relative to some other time mark)
+    aliases: t0 time
+Extensions:
+  - name: cdp
+    type: int
+    concept:  common depth point number used in reflection processing

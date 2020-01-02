@@ -437,10 +437,11 @@ PYBIND11_MODULE(mspasspy,m)
   );
   py::enum_<mspass::MDDefFormat>(m,"MDDefFormat")
     .value("PF",MDDefFormat::PF)
-    .value("SimpleText",MDDefFormat::SimpleText)
+    .value("YAML",MDDefFormat::YAML)
   ;
   py::class_<mspass::MetadataDefinitions>(m,"MetadataDefinitions","Load a catalog of valid metadata names with types defined")
     .def(py::init<>())
+    .def(py::init<string>())
     .def(py::init<std::string,mspass::MDDefFormat>())
     .def("concept",&mspass::MetadataDefinitions::concept,"Return a string with a brief description of the concept this attribute captures")
     .def("type",&mspass::MetadataDefinitions::type,"Return a description of the type of this attribute")

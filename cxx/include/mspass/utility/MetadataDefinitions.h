@@ -5,7 +5,7 @@ namespace mspass{
 enum class MDDefFormat
 {
     PF,
-    SimpleText
+    YAML
 };
 
 /*! \brief Define properties of Metadata known to mspass.
@@ -28,7 +28,7 @@ data file.
 class MetadataDefinitions
 {
 public:
-  /*! Default constructor - defaults to mspass namespace. */
+  /*! Default constructor.   Loads default schema name of mspass. */
   MetadataDefinitions();
   /*! \brief Construct from a namespace title.
 
@@ -117,7 +117,7 @@ private:
   multimap<std::string,std::string> aliasmap;
   map<string,string> alias_xref;
   void pfreader(const string pfname);
-  void text_reader(const string pfname);
+  void yaml_reader(const string fname);
 
 };
 }  // end mspass namespace

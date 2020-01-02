@@ -1,36 +1,66 @@
 #include <fstream>
 #include <sstream>
+#include <string.h>
+#include <string>
+#include "mspass/utility/utility.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/AntelopePf.h"
+#include "yaml-cpp/yaml.h"
 #include "mspass/utility/MetadataDefinitions.h"
+const string DefaultSchemaName("mspass");
 namespace mspass{
 using namespace mspass;
-using std::string;
-/* This is a temporary implementation to test a theory for why this created a
-seg fault*/
-MetadataDefinitions::MetadataDefinitions()
-{
-  /*
-  MetadataDefinitions temp(string("obspy_namespace.pf"),MDDefFormat::PF);
-  *this=temp;
-  */
-}
+using namespace std;
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
     try{
-        /* This s temporary.  For now this defaults to pf format file input */
-        MetadataDefinitions tmp(mdname,MDDefFormat::PF);
-        *this=tmp;
+      /* silent try to recover if the user adds .yaml to mdname*/
+      std::size_t ipos;  //size_t seems essential here for this to work -weird
+      string name_to_use;
+      ipos=mdname.find(".yaml");
+      if(ipos==std::string::npos)
+      {
+	name_to_use=mdname;
+      }
+      /* We throw an exception if the name is a path with / characters*/
+      else if(mdname.find("/")!=std::string::npos)
+      {
+	throw MsPASSError("MetadataDefinitions:  name passed seems to be a full path name that is not allowed\nReceived this:  "
+		+mdname,ErrorSeverity::Invalid);
+      }
+      else
+      {
+        name_to_use.assign(mdname,0,ipos);
+      }
+      string datadir=mspass::data_directory();
+      string path;
+      path=datadir+"/yaml/"+name_to_use+".yaml";
+      MetadataDefinitions tmp(path,MDDefFormat::YAML);
+      *this=tmp;
     }catch(...){throw;};
 
 }
+/* The unparameterized constructor is almost like the single string constructor
+ * loading a frozen file name. The only difference is not needing to worry
+ * about user errors.*/
+MetadataDefinitions::MetadataDefinitions()
+{
+    try{
+      string datadir=mspass::data_directory();
+      string path;
+      path=datadir+"/yaml/"+DefaultSchemaName+".yaml";
+      MetadataDefinitions tmp(path,MDDefFormat::YAML);
+      *this=tmp;
+    }catch(...){throw;};
+}
+
 MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat mdf)
 {
   try{
     switch(mdf)
     {
-      case MDDefFormat::SimpleText:
-        this->text_reader(fname);
+      case MDDefFormat::YAML:
+        this->yaml_reader(fname);
         break;
       case MDDefFormat::PF:
         this->pfreader(fname);
@@ -190,6 +220,29 @@ std::string list_to_1str(list<std::string>& l)
   }
   return result;
 }
+/* Small helper used by parsers.   Note tstr can't be const because it is
+altered, but because it is called by value I don't think the caller would
+be modified copy could be modified. */
+MDtype str2mdt(string tstr)
+{
+  transform(tstr.begin(), tstr.end(), tstr.begin(), ::tolower);
+  MDtype mdt_this;
+  if( (tstr=="real") || (tstr=="float") || (tstr=="real32") )
+    mdt_this=MDtype::Real32;
+  else if(tstr=="int32")
+    mdt_this=MDtype::Int32;
+  else if((tstr=="real64") || (tstr=="double"))
+    mdt_this=MDtype::Double;
+  /* in the 64 bit world we default int and integer to int64 */
+  else if((tstr=="long") || (tstr=="int64") || (tstr=="int") || (tstr=="integer") )
+    mdt_this=MDtype::Int64;
+  else if(tstr=="string")
+    mdt_this=MDtype::String;
+  else
+    throw MsPASSError("MetadataDefinitions::pfreader:  type value="
+      + tstr+" not recognized");
+  return mdt_this;
+}
 /* Private methods */
 void MetadataDefinitions::pfreader(const string pfname)
 {
@@ -200,7 +253,7 @@ void MetadataDefinitions::pfreader(const string pfname)
     is the expected norm */
     AntelopePf pf(pfname);
     list<string> akeys=pf.arr_keys();
-    list<string>::iterator kptr;
+    list<string>::iterator kptr,aptr;
     for(kptr=akeys.begin();kptr!=akeys.end();++kptr)
     {
       AntelopePf pfb(pf.get_branch(*kptr));
@@ -209,37 +262,65 @@ void MetadataDefinitions::pfreader(const string pfname)
       string con_str=list_to_1str(con_list);
       cmap[*kptr]=con_str;
       string tstr=pfb.get_string("type");
-      MDtype mdt_this;
-      if( (tstr=="real") || (tstr=="float") || (tstr=="real32") )
-        mdt_this=MDtype::Real32;
-      else if((tstr=="int") || (tstr=="integer") || (tstr=="int32"))
-        mdt_this=MDtype::Int32;
-      else if((tstr=="Real64") || (tstr=="double"))
-        mdt_this=MDtype::Double;
-      else if((tstr=="long") || (tstr=="int64"))
-        mdt_this=MDtype::Int64;
-      else if(tstr=="string")
-        mdt_this=MDtype::String;
-      else
-        throw MsPASSError("MetadataDefinitions::pfreader:  type value="
-          + tstr+" not recognized");
+      MDtype mdt_this=str2mdt(tstr);
       tmap[*kptr]=mdt_this;
-    }
-    /* now parse any aliases */
-    list<string> alist=pf.get_tbl("aliases");
-    for(kptr=alist.begin();kptr!=alist.end();++kptr)
-    {
-      stringstream ss(*kptr);
-      string skey,salias;
-      ss>>skey;
-      ss>>salias;
-      this->add_alias(skey,salias);
+      /* parse aliases as a tbl linked to this key */
+      list<string> alist=pfb.get_tbl("aliases");
+      for(aptr=alist.begin();aptr!=alist.end();++aptr)
+      {
+        this->add_alias(*kptr,*aptr);
+      }
     }
   }catch(...){throw;};
 }
-void MetadataDefinitions::text_reader(const string pfname)
+void MetadataDefinitions::yaml_reader(const string fname)
 {
-    throw MsPASSError("text_reader not yet implemented");
+  try{
+    YAML::Node outer=YAML::LoadFile(fname.c_str());
+    /* The structure of yaml file is a map with a group key 
+     * for each piece.  We ignore the group key here and use it 
+     * only to make the file more human readable.  */
+    //const YAML::Node& attributes=outer["Attributes"];
+    for(YAML::const_iterator it=outer.begin();it!=outer.end();++it)
+    {
+	string group_key=it->first.as<string>();
+	const YAML::Node& attributes=outer[group_key];
+    	unsigned int natt=attributes.size();
+    	unsigned int i;
+    	for(i=0;i<natt;++i)
+    	{
+      	string key;
+      	key=attributes[i]["name"].as<string>();
+      	string concept=attributes[i]["concept"].as<string>();
+      	cmap[key]=concept;
+      	string styp=attributes[i]["type"].as<string>();
+      	MDtype mdt_this=str2mdt(styp);
+      	tmap[key]=mdt_this;
+	/* Aliases is optional - this skips parsing aliases if key is missing*/
+	if(attributes[i]["aliases"])
+	{
+	  string str=attributes[i]["aliases"].as<string>();
+	  if(str.size()>0)
+	  {
+	    /* using strtok which will alter the string contents so we have
+	     to copy it first*/
+	        char *s=strdup(str.c_str());
+	        string delim(" ,");  // allow either spaces or commas as delimiters
+	        char *p=strtok(s,delim.c_str());
+	        while(p!=NULL){
+	            this->add_alias(key,string(p));;
+	            p=strtok(NULL,delim.c_str());  //strtok oddity of NULL meaning use last position
+                }
+	        free(s);
+	    }
+	  }
+	}
+    }
+  }catch(YAML::Exception& eyaml)
+  {
+    /* Rethrow these as a MsPASSError */
+    throw MsPASSError(eyaml.what(),ErrorSeverity::Invalid);
+  }
+  catch(...){throw;};
 }
-
 }
