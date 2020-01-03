@@ -97,10 +97,10 @@ const Metadata Metadata::operator+(const Metadata& other) const
   result += other;
   return result;
 }
-set<string> Metadata::keys() noexcept
+set<string> Metadata::keys() const noexcept
 {
   set<string> result;
-  map<string,boost::any>::iterator mptr;
+  map<string,boost::any>::const_iterator mptr;
   for(mptr=md.begin();mptr!=md.end();++mptr)
   {
     string key(mptr->first);\

@@ -282,12 +282,12 @@ other attributes.
   };
 
   /*! Return the keys of all altered Metadata values. */
-  set<string> modified()
+  set<string> modified() const
   {
       return changed_or_set;
   };
   /*! Return all keys without any type information. */
-  set<string> keys() noexcept;
+  set<string> keys() const noexcept;
   /*! Test if a key has an associated value.  Returns true if
    * a value is defined. */
   bool is_defined(const std::string key) const;
