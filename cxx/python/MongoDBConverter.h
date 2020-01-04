@@ -38,29 +38,34 @@ public:
   only those attributes marked as change.
 
   \param d is the data object to handle.  Normally a TimeSeries or Seismogram.
+  \param verbose - when true any nonfatal errors are writen to stderr
+    (use for debugging interactive python scripts)
   \return python dictionary that pymongo requires for mongodb CRUD operations
   \exception a MsPASError is thrown if data for a key marked in Metadata as changed
   is not present.  That should never happen so it is a major expection marked as fatal.
   */
-  py::dict modified(const mspass::Metadata& d) const;
+  py::dict modified(const mspass::Metadata& d,bool verbose) const;
   /*! \brief Return all Metadata for MongoDB CRUD operations.
 
   This method returns all elements of a data object (normally a TimeSeries
   or Seismogram cast to Metadata) Metadata as a python dictionary (dict).
   Such a dictionary is the input pymongo uses for CRUD operations.
+  \param d is the input data object
+  \param verbose - when true any nonfatal errors are writen to stderr
+    (use for debugging interactive python scripts)
 
   \exception A MsPASError object is thrown if the size of the dict created
   does not match the size of the original Metadata map.   That should
   never happen so the returned error is marked Fatal.
   */
-  py::dict all(const mspass::Metadata& d) const;
+  py::dict all(const mspass::Metadata& d,bool verbose) const;
   /*! \brief Return a python dict for CRUD operations driven by a list of keys.
 
   This method returns a python dict of Metadata defined by a list of keys.
   Types are sorted out internally.
   */
   py::dict selected(const mspass::Metadata& d,
-    const py::list& keys,bool noabort=true) const;
+    const py::list& keys,const bool noabort=true,bool verbose=false) const;
   /*! Method to find undefined keys.
 
   This method exists to handle the situation when a call to selected
@@ -71,8 +76,8 @@ public:
 
 private:
   MetadataDefinitions mdef;
-  py::dict extract_selected(const Metadata& d, const list<std::string>& keys)
-     const noexcept;
+  py::dict extract_selected(const Metadata& d, const list<std::string>& keys,
+     bool verbose) const;
 };
 
 } // End mspass namespace scope

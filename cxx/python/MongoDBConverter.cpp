@@ -20,7 +20,7 @@ defined in the input Metadata.  Rather than return a more complicated object
 to handle this, all callers need to check the size of the output compared to
 the input and handle that condition as appropriate*/
 py::dict MongoDBConverter::extract_selected(const Metadata& md,
-  const list<string>& keys) const noexcept
+  const list<string>& keys,bool verbose) const
 {
   py::dict result;
   if(keys.size()<=0) return result;
@@ -51,7 +51,8 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
       case MDtype::Long:
       case MDtype::Int64:
       case MDtype::Integer:
-        ival=md.get<long>(key);
+        /* python seems to create int and using a long here fails */
+        ival=md.get<int>(key);
         result[key]=ival;
         break;
       case MDtype::Int32:
@@ -84,7 +85,15 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
         continue;
       // do nothing for default - should not happen but will lead size mismatch
       };
-    }catch(...){continue;};  // do nothing if there are errors
+    }catch(MsPASSError& merr){
+      if(verbose)
+        merr.log_error();
+      else
+        throw merr;
+    }catch(...)
+    {
+      throw MsPASSError("MongoDBConverter::extract_selected:  Something threw an unexpected exception");
+    };  // do nothing if there are errors
   }
   return result;
 }
@@ -94,7 +103,7 @@ try{
   mdef=MetadataDefinitions(mdefname);
 }catch(...){throw;};
 }
-py::dict MongoDBConverter::modified(const mspass::Metadata& d) const
+py::dict MongoDBConverter::modified(const mspass::Metadata& d,bool verbose) const
 {
   try{
     py::dict result;
@@ -110,11 +119,11 @@ py::dict MongoDBConverter::modified(const mspass::Metadata& d) const
     {
       clist.push_back(*sptr);
     }
-    result=this->extract_selected(d,clist);
+    result=this->extract_selected(d,clist,verbose);
     return result;
   }catch(...){throw;};
 }
-py::dict MongoDBConverter::all(const mspass::Metadata& d) const
+py::dict MongoDBConverter::all(const mspass::Metadata& d,bool verbose) const
 {
   try{
     set<string> klist=d.keys();
@@ -124,11 +133,11 @@ py::dict MongoDBConverter::all(const mspass::Metadata& d) const
     {
       clist.push_back(*sptr);
     }
-    return(this->extract_selected(d,clist));
+    return(this->extract_selected(d,clist,verbose));
   }catch(...){throw;};
 }
 py::dict MongoDBConverter::selected(const mspass::Metadata& d,
-  const py::list& keys, bool noabort) const
+  const py::list& keys, bool noabort,bool verbose ) const
 {
   try{
     if(keys.size()<=0) return(py::dict());
@@ -145,20 +154,28 @@ py::dict MongoDBConverter::selected(const mspass::Metadata& d,
     }
     /* we use the noabort argument to optionally abort if some attributes
     weren't copies. */
-    py::dict result=this->extract_selected(d,keystd);
+    py::dict result=this->extract_selected(d,keystd,verbose);
+
     if(noabort)
       return result;
     else
     {
-      stringstream ss;
-      ss << "MongoDBConverter::selected method: copy error"<<endl
-        << "Input list of keys length="<<keys.size()<<endl
-        << "Output python dict size="<<result.size()<<endl
-        << "Assuming this is an interactive script"<<endl
-        << "Run keys_to_test method, fix the list, and try again"
-        <<endl;
-      throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+      int n_in,n_out;
+      n_in=keystd.size();
+      n_out=result.size();
+      if(n_in!=n_out)
+      {
+        stringstream ss;
+        ss << "MongoDBConverter::selected method: copy error"<<endl
+          << "Input list of keys length="<<keys.size()<<endl
+          << "Output python dict size="<<result.size()<<endl
+          << "Assuming this is an interactive script"<<endl
+          << "Run badkeys method to find problem, fix the list, and try again"
+          <<endl;
+          throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+      }
     }
+    return result;
   }catch(...){throw;};
 }
 py::list MongoDBConverter::badkeys(const Metadata& d,
@@ -174,6 +191,14 @@ py::list MongoDBConverter::badkeys(const Metadata& d,
       {
         badlist.append(a);
       }
+      else
+      {
+        if(!mdef.is_defined(keystr))
+        {
+          badlist.append(a);
+        }
+      }
+
     }
     return badlist;
   }catch(...){throw;};
