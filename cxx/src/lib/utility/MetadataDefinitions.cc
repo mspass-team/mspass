@@ -173,6 +173,15 @@ std::list<std::string> MetadataDefinitions::keys() const
   }
   return result;
 }
+bool MetadataDefinitions::is_defined(const std::string key) const
+{
+    map<string,mspass::MDtype>::const_iterator tptr;
+    tptr=tmap.find(key);
+    if(tptr==tmap.end())
+        return false;
+    else
+        return true;
+}
 MetadataDefinitions& MetadataDefinitions::operator=(const MetadataDefinitions& parent)
 {
   if(this!=&parent)

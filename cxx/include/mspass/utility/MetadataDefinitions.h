@@ -104,6 +104,12 @@ public:
   \param aliasname is the the alternative name to define.
   */
   void add_alias(const std::string key, const std::string aliasname);
+  /*! \brief test to see if a key is defind.
+
+  \param key is key to test for a definition.
+  \return true if the key is defined, false otherwise.
+  */
+  bool is_defined(const std::string key) const;
   /*! Standard assignment operator. */
   MetadataDefinitions& operator=(const MetadataDefinitions& parent);
   /*! Accumulate additional definitions.   Appends other to current.
