@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>MsPASS Home Page</title>
+  </head>
+  <body>
+    <h1 align="center"><a name="mozTocId832373" class="mozTocH1"></a>Massively
+
+      Parallel Analysis System for Seismology (MsPASS)</h1>
+    <h1 align="center"><a name="mozTocId1236" class="mozTocH1"></a>Documentation
+
+      Home Page<br>
+    </h1>
+    <hr size="2" width="100%">
+    <p><br>
+    </p>
+    <p>Suggest we start with a home page that can be made prettier than
+      this.&nbsp;&nbsp; Point is a single point of entry for all
+      documentation.&nbsp;&nbsp; Have recently seen way to many packages
+      with documentation scattered to the wind.&nbsp; The idea here is
+      this is a prototype table of contents with the different heading
+      levels being section numbers.&nbsp; I couldn't figure out how to
+      actually build such a thing for adapting to this model so I'll
+      insert section numbers to make that clearer<br>
+    </p>
+    <h2>1. User's Manual</h2>
+    <h3>1.1. Overview - Primary Features of MsPASS</h3>
+    <p>This should be designed as a big picture document that a
+      potential user would want to look at first.&nbsp;&nbsp; Important
+      to teach them the core ideas and help them decide if they want to
+      pursue working with it.<br>
+    </p>
+    <h3>1.2. Design Concepts</h3>
+    <h4>1.2.1. Role of Python and C++</h4>
+    <p>Key idea to present here is that interpreted python is the driver
+      language used to build a processing workflow - the new unix shell
+      idea.&nbsp;&nbsp; python functions in modules can be used directly
+      with the interpreter or compiled with cython if the interpreter
+      becomes a bottleneck.&nbsp; Core functions and classes are coded
+      in C++ for processing speed.&nbsp;&nbsp; Should point out we used
+      pybind11 to build the python wrappers and provide links to the
+      reference sections.&nbsp; Not C++ api reference is there for
+      developers who would want to extend the package with C++
+      implementations.&nbsp;&nbsp; <br>
+    </p>
+    <h4>1.2.2. Data Objects</h4>
+    <p>This section needs to describe concepts behind TimeSeries and
+      Seismogram data objects and relationship to obspy Trace and Stream
+      objects.&nbsp; <br>
+    </p>
+    <p>I intend to start this on immediately - is not subject to many
+      changes in the near future.&nbsp; <br>
+    </p>
+    <h4>1.2.3. Database Concept</h4>
+    <p>All of this section is a place holder.&nbsp;&nbsp; Most of it we
+      can't write until we make further progress.<br>
+    </p>
+    <h5>1.2.3.1 NonSQL database</h5>
+    <h5>1.2.3.2. Schema Concepts</h5>
+    <h5>1.2.3.3. Create-Read-Update-Delete (CRUD) operations in MsPASS</h5>
+    <h4>1.2.4. Parallel Processing <br>
+    </h4>
+    <p>Like the database section this is a place holder.&nbsp; Ian, you
+      could perhaps start on these, but probably not a good use of your
+      time initially.&nbsp; Think of it more as we develop this to flesh
+      these out.<br>
+    </p>
+    <h5>1.2.4.1. Transformation-Action (Map-Reduce) Concepts</h5>
+    <h5>1.2.4.2. SPARK <br>
+    </h5>
+    <h5>1.2.4.3. MsPASS Simplified Interface <br>
+    </h5>
+    <p>Think we need to aim to eventually produce this - an abstraction
+      of the spark interface&nbsp; to make it easier to string a series
+      of processes together.&nbsp;&nbsp; May, however, just have to turn
+      this into a lot or examples.&nbsp; <br>
+    </p>
+    <p><br>
+    </p>
+    <p><br>
+    </p>
+    <h2>2. Tutorial</h2>
+    <h2>3. Reference Manual</h2>
+    <h3>3.1. Python API</h3>
+    <p>sphinx generated documentation would go here.<br>
+    </p>
+    <h3>3.2. C++ API</h3>
+    <p>doxygen generated documentation would go here.<br>
+    </p>
+    <h3>3.3.&nbsp; Schema</h3>
+    <h4>3.3.1.&nbsp;&nbsp; Default Schema Description</h4>
+    <p>Here we should have a large table constructed from the
+      MetadataDefinitions configuration file.&nbsp;&nbsp; It is enough
+      work to generate and enough subject to change that we will want to
+      develop a nontrivial program to build it from the configuration
+      file.&nbsp; <br>
+    </p>
+    <h4>3.3.2.&nbsp; Modifying Schema</h4>
+    <p>Here we should describe the yaml configuration file and discuss
+      how a user could easily extend the namespace by adding a new block
+      for their extensions.&nbsp;&nbsp; Also might mention the option of
+      a complete customization.<br>
+    </p>
+    <p><br>
+    </p>
+  </body>
+</html>
