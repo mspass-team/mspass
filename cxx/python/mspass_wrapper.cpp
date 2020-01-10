@@ -451,6 +451,14 @@ PYBIND11_MODULE(mspasspy,m)
     .def("unique_name",&mspass::MetadataDefinitions::unique_name,"Returns the unique key name associated with an alias")
     .def("add_alias",&mspass::MetadataDefinitions::add_alias,"Add an alias for a particular atrribute key")
     .def("keys",&mspass::MetadataDefinitions::keys,"Return a list of all valid keys")
+    .def("writeable",&mspass::MetadataDefinitions::writeable,"Test if an attribute should be saved")
+    .def("readonly",&mspass::MetadataDefinitions::readonly,"Test if an attribute is marked readonly")
+    .def("set_readonly",&mspass::MetadataDefinitions::set_readonly,"Force an attribute to be marked readonly")
+    .def("set_writeable",&mspass::MetadataDefinitions::set_readonly,"Force an attribute to be marked as writeable")
+    .def("is_normalized",&mspass::MetadataDefinitions::is_normalized,"Test to see if an attribute is stored in a master table")
+    .def("unique_id_key",&mspass::MetadataDefinitions::unique_id_key,"Return the key for a unique id to fetch an attribute from a master table")
+    .def("table",&mspass::MetadataDefinitions::table,"Return the table (collection) name for an attribute defined in a master table")
+    .def("normalize_data",&mspass::MetadataDefinitions::normalize_data,"Faster method to return unique_id_key and table name")
     .def(py::self += py::self)
   ;
 /* These are needed for mspass extensions of Core data objects */
@@ -495,7 +503,7 @@ PYBIND11_MODULE(mspasspy,m)
     .def(py::init<>())
     .def(py::init<CoreSeismogram,std::string>())
     ;
-  /* For now algorithm functions will go here.  These may eventually be 
+  /* For now algorithm functions will go here.  These may eventually be
      moved to a different module. */
   m.def("agc",&mspass::agc,"Automatic gain control a Seismogram",
     py::return_value_policy::copy,

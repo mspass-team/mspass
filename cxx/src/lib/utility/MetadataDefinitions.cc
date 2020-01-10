@@ -66,12 +66,15 @@ MetadataDefinitions::MetadataDefinitions(const string fname,const MDDefFormat md
         this->pfreader(fname);
         break;
       default:
-        throw MsPASSError("MetadataDefintions file constructor:   illegal format specification");
+        throw MsPASSError("MetadataDefinitions file constructor:   illegal format specification");
     };
   }catch(...){throw;};
 }
 MetadataDefinitions::MetadataDefinitions(const MetadataDefinitions& parent)
-  : tmap(parent.tmap),cmap(parent.cmap), aliasmap(parent.aliasmap), alias_xref(parent.alias_xref)
+  : tmap(parent.tmap),cmap(parent.cmap),
+  aliasmap(parent.aliasmap),
+  alias_xref(parent.alias_xref),roset(parent.roset),
+  unique_id_data(parent.unique_id_data)
 {}
 std::string MetadataDefinitions::concept(const std::string key) const
 {
@@ -181,6 +184,8 @@ MetadataDefinitions& MetadataDefinitions::operator=(const MetadataDefinitions& p
     cmap=parent.cmap;
     aliasmap=parent.aliasmap;
     alias_xref=parent.alias_xref;
+    roset=parent.roset;
+    unique_id_data=parent.unique_id_data;
   }
   return *this;
 }
@@ -192,6 +197,7 @@ MetadataDefinitions& MetadataDefinitions::operator+=(const MetadataDefinitions& 
   for(kptr=kvals.begin();kptr!=kvals.end();++kptr)
   {
     MDtype mdt=other.type(*kptr);
+    /* Note this will silently overwrite previous if the key was already present*/
     this->tmap[*kptr]=mdt;
     try{
       string cother=other.concept(*kptr);
@@ -202,8 +208,115 @@ MetadataDefinitions& MetadataDefinitions::operator+=(const MetadataDefinitions& 
       cerr << "MetadataDefinitions operator+= (Warning): concept description is missing for key="
          <<*kptr<<endl<<"Error will be ignored"<<endl;
     }
+    /* The alias_xref is a multimap so we just append other data - no such thing as duplicates*/
+    map<string,string>::const_iterator aptr;
+    for(aptr=other.alias_xref.begin();aptr!=other.alias_xref.end();++aptr)
+    {
+      this->alias_xref.insert(*aptr);
+    }
+    /* These behave like the type map above - we silently replace any entry
+    that was present before.  i.e. other overrides */
+    set<string>::const_iterator sptr;
+    for(sptr=other.roset.begin();sptr!=roset.end();++sptr)
+    {
+      this->roset.insert(*sptr);
+    }
+    map<string,tuple<string,string>>::const_iterator uptr;
+    for(uptr=other.unique_id_data.begin();uptr!=other.unique_id_data.end();++uptr)
+    {
+      this->unique_id_data.insert(*uptr);
+    }
   }
   return *this;
+}
+/* We assume the readonly list is smaller so the set of defined
+keys is those for readonly.  That inverts the logic of this function.
+i.e. roset contains keys of attributes marked readonly and this function
+is the not of that logic. */
+bool MetadataDefinitions::writeable(const string key) const
+{
+  set<string>::const_iterator roptr;
+  roptr=roset.find(key);
+  if(roptr==roset.end())
+    return true;
+  else
+    return false;
+}
+/* This function is a thin wrapper for writeable for efficiency */
+bool MetadataDefinitions::readonly(const string key) const
+{
+  return( ! (this->writeable(key)));
+}
+void MetadataDefinitions::set_readonly(const string key)
+{
+  /* Silently return if key is already set as readonly */
+  if(roset.find(key)==roset.end())
+  {
+    roset.insert(key);
+  }
+}
+void MetadataDefinitions::set_writeable(const string key)
+{
+  set<string>::const_iterator roptr;
+  roptr=roset.find(key);
+  /* Here we silently do nothing if the key is not in roset */
+  if(roptr!=roset.end())
+  {
+    roset.erase(roptr);
+  }
+}
+bool MetadataDefinitions::is_normalized(const string key) const
+{
+  if(unique_id_data.find(key)!=unique_id_data.end())
+    return true;
+  else
+    return false;
+}
+/* The normalization is stored with the 0 element of the tuple being the
+table(collection) name and the 1 element being the key for the id needed */
+string MetadataDefinitions::unique_id_key(const string key) const
+{
+  map<string,tuple<string,string>>::const_iterator uidptr;
+  uidptr=unique_id_data.find(key);
+
+  if(uidptr!=unique_id_data.end())
+  {
+    return(get<1>(uidptr->second));
+  }
+  else
+  {
+    return (string(""));
+  }
+}
+string MetadataDefinitions::table(const string key) const
+{
+  map<string,tuple<string,string>>::const_iterator uidptr;
+  uidptr=unique_id_data.find(key);
+  if(uidptr==unique_id_data.end())
+  {
+    return (string(""));
+  }
+  else
+  {
+    return(get<0>(uidptr->second));
+  }
+}
+std::pair<std::string,std::string> MetadataDefinitions::normalize_data(const string key) const
+{
+  map<string,tuple<string,string>>::const_iterator uidptr;
+  uidptr=unique_id_data.find(key);
+  if(uidptr==unique_id_data.end())
+  {
+    throw MsPASSError("MetadataDefinitions::normalize_data:  key="
+      + key + " has no normalization data");
+  }
+  else
+  {
+    pair<string,string> result;
+    result.first=get<0>(uidptr->second);
+    result.second=get<1>(uidptr->second);
+    return result;
+  }
 }
 /* Helper for below */
 /* This function takes a list of lines form a tbl in  pf, adds a newline at
@@ -277,14 +390,14 @@ void MetadataDefinitions::yaml_reader(const string fname)
 {
   try{
     YAML::Node outer=YAML::LoadFile(fname.c_str());
-    /* The structure of yaml file is a map with a group key 
-     * for each piece.  We ignore the group key here and use it 
+    /* The structure of yaml file is a map with a group key
+     * for each piece.  We ignore the group key here and use it
      * only to make the file more human readable.  */
     //const YAML::Node& attributes=outer["Attributes"];
     for(YAML::const_iterator it=outer.begin();it!=outer.end();++it)
     {
-	string group_key=it->first.as<string>();
-	const YAML::Node& attributes=outer[group_key];
+	    string group_key=it->first.as<string>();
+	    const YAML::Node& attributes=outer[group_key];
     	unsigned int natt=attributes.size();
     	unsigned int i;
     	for(i=0;i<natt;++i)
@@ -296,25 +409,38 @@ void MetadataDefinitions::yaml_reader(const string fname)
       	string styp=attributes[i]["type"].as<string>();
       	MDtype mdt_this=str2mdt(styp);
       	tmap[key]=mdt_this;
-	/* Aliases is optional - this skips parsing aliases if key is missing*/
-	if(attributes[i]["aliases"])
-	{
-	  string str=attributes[i]["aliases"].as<string>();
-	  if(str.size()>0)
-	  {
-	    /* using strtok which will alter the string contents so we have
-	     to copy it first*/
-	        char *s=strdup(str.c_str());
-	        string delim(" ,");  // allow either spaces or commas as delimiters
-	        char *p=strtok(s,delim.c_str());
-	        while(p!=NULL){
+	      /* Aliases is optional - this skips parsing aliases if key is missing*/
+	      if(attributes[i]["aliases"])
+        {
+          string str=attributes[i]["aliases"].as<string>();
+          if(str.size()>0)
+          {
+	        /* using strtok which will alter the string contents so we have
+	        to copy it first*/
+            char *s=strdup(str.c_str());
+	          string delim(" ,");  // allow either spaces or commas as delimiters
+	          char *p=strtok(s,delim.c_str());
+	          while(p!=NULL){
 	            this->add_alias(key,string(p));;
 	            p=strtok(NULL,delim.c_str());  //strtok oddity of NULL meaning use last position
-                }
-	        free(s);
-	    }
-	  }
-	}
+            }
+	          free(s);
+          }
+        }
+        /* We parse this set of parameters only when readonly is set */
+        if(attributes[i]["readonly"])
+        {
+          string str=attributes[i]["readonly"].as<string>();
+          /* Break out of this if tagged false - user error handled silently. */
+          if(str=="false" || str=="False") continue;
+          roset.insert(key);
+          string uid, tbl;
+          uid=attributes[i]["unique_id"].as<string>();
+          tbl=attributes[i]["table"].as<string>();
+          std::tuple<string,string> entry(std::make_tuple(tbl,uid));
+          unique_id_data[key]=entry;
+        }
+      }
     }
   }catch(YAML::Exception& eyaml)
   {
