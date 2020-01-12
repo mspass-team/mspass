@@ -288,7 +288,7 @@ string MetadataDefinitions::unique_id_key(const string key) const
     return (string(""));
   }
 }
-string MetadataDefinitions::table(const string key) const
+string MetadataDefinitions::collection(const string key) const
 {
   map<string,tuple<string,string>>::const_iterator uidptr;
   uidptr=unique_id_data.find(key);
@@ -436,7 +436,7 @@ void MetadataDefinitions::yaml_reader(const string fname)
           roset.insert(key);
           string uid, tbl;
           uid=attributes[i]["unique_id"].as<string>();
-          tbl=attributes[i]["table"].as<string>();
+          tbl=attributes[i]["collection"].as<string>();
           std::tuple<string,string> entry(std::make_tuple(tbl,uid));
           unique_id_data[key]=entry;
         }

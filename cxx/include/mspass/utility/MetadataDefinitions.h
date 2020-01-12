@@ -169,8 +169,8 @@ public:
   is an integer key with a one-to-one relation for channel data in the CSS3.0
   schema.)
 
-  Some unique id specifications require a table/document qualifier.   See
-  related table method that is designed to handle that.
+  Some unique id specifications require a table/collection qualifier.   See
+  related collection method that is designed to handle that.
 
   This method should normally be used only on read operations
   to select the correct entry for what could otherwise be a potentially ambiguous key.
@@ -182,32 +182,32 @@ public:
     search required if preceded by is_normalized.
   */
   string unique_id_key(const string key) const;
-  /*! \Brief return the master table for a key used as a unique id.
+  /*! \Brief return the master collection (table) for a key used as a unique id.
 
   Support for normalized Metadata requires static tables (collection in MongoDB)
   that contain the data using normalization.   In seismic data type examples are
   receiver location tables, receiver response tables, and source location data.
   This method should nearly always be paired with a call to unique_id_key.
-  The idea is to first ask for the unique_id_key and then ask what table (collection)
+  The idea is to first ask for the unique_id_key and then ask what collection (table)
   contains the key returned by unique_id_key.   This provides a fast and
   convenient lookup for normalized data.
 
   \param key is the normally the return from unique_id_key
-  \return string defining the table(collection) the key can be used for locating the
+  \return string defining the collection(table) the key can be used for locating the
      unique tuple/document required to access related Metadata.  String will be
      empty if the search fails.
   */
-  string table(const string key) const;
+  string collection(const string key) const;
   /*! \brief Special method for efficiency.
 
   For mspass using mongodb normalization for all currently supported Metadata
-  can be reduced to a table(collection)-attribute name pair.   The unique_id_key
-  and table methods can be called to obtained this information, but doing so
-  requires a purely duplicate search.   This convenience method is best used
-  with MongoDB for efficiency.
+  can be reduced to a collection(table)-attribute name pair.   The unique_id_key
+  and collection methods can be called to obtained this information, but doing so
+  requires a purely duplicate (internal map container) search.
+  This convenience method is best used with MongoDB for efficiency.
 
   \param key is the flat namespace key for which normalizing data is needed
-  \return an std::pair with of strings with first=table and second=attribute name.
+  \return an std::pair with of strings with first=collection and second=attribute name.
   */
 
   std::pair<std::string,std::string> normalize_data(const string key) const;
@@ -228,7 +228,7 @@ public:
   The second case is more trivial and rarely of importance.  That is,
   other can have empty concept data for a key and it will be silently
   set empty.   The reason is concept is purely for human readers
-  and is not expected to ever be used by processors.  
+  and is not expected to ever be used by processors.
 
   */
   MetadataDefinitions& operator+=(const MetadataDefinitions& other);
