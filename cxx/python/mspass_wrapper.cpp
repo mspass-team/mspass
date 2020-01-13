@@ -13,6 +13,8 @@
 #include <mspass/seismic/TimeSeries.h>
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/utility/MetadataDefinitions.h>
+// These includes are objects only visible from the python interpreter
+#include "MongoDBConverter.h"
 #include <mspass/algorithms/algorithms.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -80,6 +82,7 @@ using mspass::pfread;
 using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
 using mspass::MsPASSCoreTS;
+using mspass::MongoDBConverter;
 using mspass::agc;
 
 /* We enable this gem for reasons explain in the documentation for pybinde11
@@ -502,6 +505,26 @@ PYBIND11_MODULE(mspasspy,m)
                                                 (m,"Seismogram")
     .def(py::init<>())
     .def(py::init<CoreSeismogram,std::string>())
+    ;
+  /* This object is in a separate pair of files in this directory.  */
+  py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
+      .def(py::init<>())
+      .def(py::init<const mspass::MetadataDefinitions>())
+      .def(py::init<const std::string>())
+      .def("modified",&mspass::MongoDBConverter::modified,
+         py::arg("d"), py::arg("verbose")=false,
+         "Return dict of modified Metadata attributes")
+      .def("selected",&mspass::MongoDBConverter::selected,
+         py::arg("d"),
+         py::arg("keys"),
+         py::arg("noabort")=false,
+         py::arg("verbose")=true,
+         "Return dict of fields defined in input list")
+      .def("all",&mspass::MongoDBConverter::all,
+         py::arg("d"),py::arg("verbose")=true,
+         "Return dict of all Metadata attributes")
+      .def("badkeys",&mspass::MongoDBConverter::badkeys,
+         "Return a python list of any keys that are not defined in input object")
     ;
   /* For now algorithm functions will go here.  These may eventually be
      moved to a different module. */
