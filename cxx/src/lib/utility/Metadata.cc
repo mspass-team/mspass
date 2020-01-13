@@ -64,7 +64,19 @@ Metadata::Metadata(const Metadata& parent)
   : md(parent.md),changed_or_set(parent.changed_or_set)
 {
 }
-
+bool Metadata::is_defined(const string key) const noexcept
+{
+  map<string,boost::any>::const_iterator mptr;
+  mptr=md.find(key);
+  if(mptr!=md.end())
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 Metadata& Metadata::operator=(const Metadata& parent)
 {
   if(this!=(&parent))
@@ -97,10 +109,10 @@ const Metadata Metadata::operator+(const Metadata& other) const
   result += other;
   return result;
 }
-set<string> Metadata::keys() noexcept
+set<string> Metadata::keys() const noexcept
 {
   set<string> result;
-  map<string,boost::any>::iterator mptr;
+  map<string,boost::any>::const_iterator mptr;
   for(mptr=md.begin();mptr!=md.end();++mptr)
   {
     string key(mptr->first);\
@@ -108,21 +120,11 @@ set<string> Metadata::keys() noexcept
   }
   return result;
 }
-bool Metadata::is_defined(const std::string key) const
-{
-    map<string,boost::any>::const_iterator iptr;
-    iptr=md.find(key);
-    if(iptr==md.end())
-            return false;
-    else
-            return true;
-
-}
 void Metadata::clear(const std::string key)
 {
     map<string,boost::any>::iterator iptr;
     iptr=md.find(key);
-    if(iptr!=md.end()) 
+    if(iptr!=md.end())
     	md.erase(iptr);
     /* Also need to modify this set if the key is found there */
     set<std::string>::iterator sptr;
@@ -147,7 +149,7 @@ ostream& operator<<(ostream& os, Metadata& m)
     map<string,boost::any>::iterator mdptr;
     for(mdptr=m.md.begin();mdptr!=m.md.end();++mdptr)
     {
-        /* Only handle simple types for now.  Issue an error message to 
+        /* Only handle simple types for now.  Issue an error message to
          * cerr for other types */
         int ival;
         long lval;
@@ -161,7 +163,7 @@ ostream& operator<<(ostream& os, Metadata& m)
         string pretty_name=demangled_name(a);
         /*WARNING:  potential future maintance issue.
          * Currently the demangling process is not standardized and the
-         * boost code used here does not return a name that is at all 
+         * boost code used here does not return a name that is at all
          * pretty for string data.   This crude approach just tests for
          * the keyword basic_string embedded in the long name.  This works
          * for now, but could create problems if and when this anomaly

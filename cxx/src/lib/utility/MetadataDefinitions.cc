@@ -76,6 +76,29 @@ MetadataDefinitions::MetadataDefinitions(const MetadataDefinitions& parent)
   alias_xref(parent.alias_xref),roset(parent.roset),
   unique_id_data(parent.unique_id_data)
 {}
+bool MetadataDefinitions::is_defined(const std::string key) const noexcept
+{
+  /* test type map because concept can be empty for a key */
+  map<string,MDtype>::const_iterator tptr;
+  tptr=tmap.find(key);
+  if(tptr!=tmap.end())
+  {
+    return true;
+  }
+  else
+  {
+    pair<string,MDtype> unr;
+    /* A bit weird to catch an exception as a way to test for a false, but
+    the way the api currently is defined requires this. */
+    try{
+      unr=this->unique_name(key);
+      return true;
+    }catch(MsPASSError& mderr)
+    {
+      return false;
+    }
+  }
+}
 std::string MetadataDefinitions::concept(const std::string key) const
 {
   const string base_error("MetadataDefinitions::concept:  ");

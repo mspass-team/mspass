@@ -24,7 +24,7 @@ public:
   MetadataGetError():MsPASSError(){}; // seems necessary to not default this with gcc
   /*! Constructor called when a key is not found in the Metadata.
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
-  MetadataGetError(const string key,const char *Texpected) 
+  MetadataGetError(const string key,const char *Texpected)
   {
 
     string pretty_name(boost::core::demangle(Texpected));
@@ -186,7 +186,7 @@ other attributes.
 
   \param key keyword associated with requested metadata member.
   **/
-  bool get_bool(const string key) const override{ 
+  bool get_bool(const string key) const override{
     try{
       bool val;
       val=get<bool>(key);
@@ -235,7 +235,7 @@ other attributes.
   Get the boost::any container from the Metadata object.
 
   This method is mostly for Python bindings so that a generic get method
-  can work in Python. 
+  can work in Python.
 
   \param key is the name tag of desired component.
 
@@ -282,27 +282,25 @@ other attributes.
   };
 
   /*! Return the keys of all altered Metadata values. */
-  set<string> modified()
+  set<string> modified() const
   {
       return changed_or_set;
   };
   /*! Return all keys without any type information. */
-  set<string> keys() noexcept;
+  set<string> keys() const noexcept;
   /*! Test if a key has an associated value.  Returns true if
    * a value is defined. */
-  bool is_defined(const std::string key) const;
+  bool is_defined(const std::string key) const noexcept;
   /*! Overload for C string*/
-  /*
-  bool is_define(const char* key) const
+  bool is_define(const char* key) const noexcept
   {
     return this->is_defined(string(key));
   };
-  */
   /*! Clear data associated with a particular key. */
   void clear(const std::string key);
   /*! Overload for C string*/
   /*
-  void clear(const char* key) 
+  void clear(const char* key)
   {
     return this->clear(string(key));
   };

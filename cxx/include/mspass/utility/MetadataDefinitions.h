@@ -50,6 +50,8 @@ public:
   MetadataDefinitions(const std::string mdname,const mspass::MDDefFormat form);
   /*! Standard copy constructor. */
   MetadataDefinitions(const MetadataDefinitions& parent);
+  /*! Test if a key is defined either as a unique key or an alias */
+  bool is_defined(const std::string key) const noexcept;
   /*! Return a description of the concept this attribute defines.
 
   \param key is the name that defines the attribute of interest
@@ -97,9 +99,7 @@ public:
   \param aliasname is the name of the alias for which we want the definitive key
 
   \return std::pair with the definitive key as the first of the pair and the type
-  in the second field.
-  \exception Will throw a MsPASSError if the aliasname has not been define.
-  */
+  in the second field. */
   std::pair<std::string,mspass::MDtype> unique_name(const string aliasname) const;
   /*! Add an alias for key.
 
@@ -110,25 +110,17 @@ public:
   /*! Check if a key:value pair is mutable(writeable). Inverted logic from
   similar readonly method.
 
-  \param key is key used to access the parameter to be tested.  This key
-  can be an aliasand it will resolve back to the unique name for that
-  concept.
+  \param key is key used to access the parameter to be tested.
   \return true if the data linked to this not not marked readonly.
-  (If the key is undefined a false is return and a warning message is posted
-  to stderr.   db interactions may want to use this to test for undefined
-  keys as it can prevent writing to the database with bogus keys. )
+  (if the key is undefined a false is silently returned)
   */
   bool writeable(const string key) const;
   /*! Check if a key:value pair is marked readonly. Inverted logic
   of similar writeable method.
 
-  \param key is key used to access the parameter to be tested. This key
-  can be an aliasand it will resolve back to the unique name for that
-  concept.
+  \param key is key used to access the parameter to be tested.
   \return true of the data linked to this keys IS marked readonly.
-  (If the key is undefined a true is return and a warning message is posted
-  to stderr.   db interactions may want to use this to test for undefined
-  keys as it can prevent writing to the database with bogus keys. )
+  (if the key is undefined this method silently returns true)
   */
   bool readonly(const string key) const;
   /*! \brief Lock a parameter to assure it will not be saved.
