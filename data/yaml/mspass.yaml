@@ -1,4 +1,21 @@
+# Notes on the format of this master configuration file
+# Multiple groups of attributes can be defined in indented sections.  The
+# top level master is Attributes.  Exensions should be added in groups with
+# appropriate names.  All will be parsed.
+#
+# For each entry these keys are required:  name, type, and concept.
+# If aliases is missing it means tehre are none.  You can also just have no entry after the keyword
+# readonly is a boolean.  If is present it will be taken as true unless explicitly marked false
+#   Hence, normally just omit this for atributes that are to be automatically written
+#   and updated.
+# unique_id and table are required ONLY if readonly is true.   These are used to
+#   reference what MongoDB calls the normalized data model.  This feature is used
+#   attributes that are stable, stored in one place (table), and readonly.
+#   unique_id is a key to access data in table (a document in mongodb).  See
+#   documentation for a full description of the concepts
 Attributes:
+# These are required attributes in an obspy trace object.  We keep them here
+# to make that clear
   - name: npts
     type: int
     concept: Number of data samples
@@ -7,32 +24,134 @@ Attributes:
     type: real
     concept:  Data sample interval in seconds
     aliases: dt
-  - name: station
-    type: string
-    concept:  Seismic station code
-    aliases:  sta site.sta KSTA
   - name: sampling_rate
     type: real
     concept:  Data sampling frequency in Hz=1/s
   - name: calib
     type: real
     concept: Nominal conversion factor for changing sample data to ground motion units.
-  - name: network
+  - name: net
     type: string
     concept: network code (net component of SEED net:sta:chan)
-    aliases: net
-  - name: station
+    aliases: network
+    readonly: true
+    unique_id:  staid
+    collection: site
+  - name: sta
     type: string
     concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-    aliases: sta site.sta
-  - name: location
+    aliases: station site.sta sitchan.sta wf.sta
+    readonly: true
+    unique_id:  staid
+    collection: site
+  - name: loc
     type: string
     concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
-    aliases: loc
+    aliases: location sitechan.loc site.loc
+    readonly: true
+    unique_id:  staid
+    collection: site
   - name: starttime
     type:  real
     concept:  Time of first sample of data (epoch time or relative to some other time mark)
     aliases: t0 time
+# These are additional attributes for the static site collection/table
+  - name: stlat
+    type: real
+    concept:  latitude of a seismic station/instrument in degrees
+    aliases: STLA site.lat
+    readonly: true
+    unique_id:  staid
+    collection: site
+  - name: stlon
+    type: real
+    concept:  longitude of a seismic station/instrument in degrees
+    aliases: STLO site.lon
+    readonly: true
+    unique_id:  staid
+    collection: site
+  - name: stelev
+    type: real
+    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+    aliases: STEL site.elev
+    readonly: true
+    unique_id:  staid
+    collection: site
+# unique id keys like this ar marked readonly and define the unique_id as themselves
+# constructors take this as a signal that this is a unique id
+  - name: staid
+    type: integer
+    concept:  unique identifier of a particular instrument/seismic station
+    readonly:  true
+    unique_id:  staid
+    collection:  site
+# These define the css3.0 sitechan minimal Attributes
+  - name: chan
+    type: string
+    concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
+    aliases: KCMPNM sitchan.chan
+    readonly: true
+    unique_id: chanid
+    collection: sitechan
+  - name: hang
+    type: real
+    concept:  Azimuth (in degree) of a seismometer component - horizontal angle
+    aliases: CMPAZ sitechan.hang
+    readonly: true
+    unique_id: chanid
+    collection: sitechan
+  - name: vang
+    type: real
+    concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
+    aliases: CMPINC sitechan.vang
+    readonly: true
+    unique_id: chanid
+    collection: sitechan
+  - name: chanid
+    type: integer
+    concept:  unique identifier of a particular component of data
+    readonly:  true
+    unique_id:  chanid
+    collection:  sitechan
+# These are attributes for source data.   This schema does not support multiple
+# source locations for a single seismic event.   We use source for the table name
+# instead of event or origin to avoid make that clear.   An event-origin
+# capability is probably possible, but would create baggage for the primary
+# use goal of mspass
+  - name: source_lat
+    type:  real
+    concept: Latitude (in degrees) of the hypocenter of seismic source
+    aliases:  EVLA origin.lat
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source_lon
+    type:  real
+    concept: Longitude (in degrees) of the hypocenter of seismic source
+    aliases:  EVLA origin.lon
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source_depth
+    type:  real
+    concept: Depth (in km) of the hypocenter of seismic source
+    aliases:  EVDP origin.depth
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source_time
+    type:  real
+    concept: Origin time of the hypocenter of seismic source (epoch time)
+    aliases:  origin.time
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: evid
+    type: integer
+    concept:  unique identifier of a particular seismic source
+    readonly:  true
+    unique_id:  evid
+    collection:  source 
 Extensions:
   - name: cdp
     type: int
