@@ -240,7 +240,27 @@ bool MetadataDefinitions::writeable(const string key) const
   if(roptr==roset.end())
     return true;
   else
-    return false;
+  {
+    /* roset only contains unique key entries.  This checks any possible
+    aliases. */
+    pair<string,MDtype> kp;
+    /* unique_name method returns an exception if the key is not defined.
+    We avoid that and silently return false if that happens, although
+    that situation will likely create downstream problems. */
+    try{
+      kp=this->unique_name(key);
+    }catch(MsPASSError &mderr)
+    {
+      cerr << "MetadataDefinitions::writeable method (WARNING):  Requested key is undefined"<<endl
+         <<"This may cause downstream problems"<<endl;
+      return false;
+    }
+    roptr=roset.find(kp.first);
+    if(roptr==roset.end())
+      return true;
+    else
+      return false;
+  }
 }
 /* This function is a thin wrapper for writeable for efficiency */
 bool MetadataDefinitions::readonly(const string key) const
