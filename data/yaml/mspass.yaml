@@ -56,24 +56,24 @@ Attributes:
     concept:  Time of first sample of data (epoch time or relative to some other time mark)
     aliases: t0 time
 # These are additional attributes for the static site collection/table
-  - name: stlat
+  - name: site_lat
     type: real
     concept:  latitude of a seismic station/instrument in degrees
     aliases: STLA site.lat
     readonly: true
     unique_id:  staid
     collection: site
-  - name: stlon
+  - name: site_lon
     type: real
     concept:  longitude of a seismic station/instrument in degrees
-    aliases: STLO site.lon
+    aliases: STLO stlo site.lon
     readonly: true
     unique_id:  staid
     collection: site
-  - name: stelev
+  - name: site_elev
     type: real
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: STEL site.elev
+    aliases: STEL stel site.elev
     readonly: true
     unique_id:  staid
     collection: site
@@ -128,7 +128,7 @@ Attributes:
   - name: source_lon
     type:  real
     concept: Longitude (in degrees) of the hypocenter of seismic source
-    aliases:  EVLA origin.lon
+    aliases:  EVLO origin.lon
     readonly: true
     unique_id: source_id
     collection: source
@@ -152,6 +152,47 @@ Attributes:
     readonly:  true
     unique_id:  evid
     collection:  source 
+  - name: U11
+    type: real
+    concept:  Transformation matrix row 1, column 1 of a Seismogram object
+  - name: U12
+    type: real
+    concept:  Transformation matrix row 1, column 2 of a Seismogram object
+  - name: U13
+    type: real
+    concept:  Transformation matrix row 1, column 3 of a Seismogram object
+  - name: U21
+    type: real
+    concept:  Transformation matrix row w, column 1 of a Seismogram object
+  - name: U22
+    type: real
+    concept:  Transformation matrix row 2, column 2 of a Seismogram object
+  - name: U23
+    type: real
+    concept:  Transformation matrix row 2, column 3 of a Seismogram object
+  - name: U31
+    type: real
+    concept:  Transformation matrix row 2, column 1 of a Seismogram object
+  - name: U32
+    type: real
+    concept:  Transformation matrix row 3, column 2 of a Seismogram object
+  - name: U33
+    type: real
+    concept:  Transformation matrix row 3, column 3 of a Seismogram object
+# These are used in wf document when sample data are stored in files
+  - name: dfile
+    type: string
+    concept:  File name containing sample data.
+    aliases: wfdisc.dfile wfprocess.dfile
+  - name: dir
+    type: string
+    concept:  Directory path name for a file of sample data
+    aliases: wfdisc.dir wfprocess.dir
+  - name: foff
+    type: int
+    concept:  Offset position of first sample of data in bytes
+    aliases: wfdisc.foff wfprocess.foff
+
 Extensions:
   - name: cdp
     type: int
