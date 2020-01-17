@@ -43,8 +43,10 @@ public:
   MetadataGetError(const char *boostmessage,const string key,
       const char *Texpected, const char *Tactual)
   {
-    ss << "Error in Metadata get method.   Type mismatch in request"<<endl
-      << "boost::any bad_any_cast wrote this message:  "<< boostmessage<<endl;
+    ss << "Error in Metadata get method.   Type mismatch in attem to get "
+	    << "data with key="<<key<<endl
+      << "boost::any bad_any_cast wrote this message:  "<<endl
+      << boostmessage<<endl;
     string name_e(boost::core::demangle(Texpected));
     ss << "Trying to convert to data of type="<<name_e<<endl;
     string name_a(boost::core::demangle(Tactual));
