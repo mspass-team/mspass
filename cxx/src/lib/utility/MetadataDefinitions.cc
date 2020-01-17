@@ -394,6 +394,8 @@ MDtype str2mdt(string tstr)
     mdt_this=MDtype::Int64;
   else if(tstr=="string")
     mdt_this=MDtype::String;
+  else if((tstr=="boolean") || (tstr=="Boolean") || (tstr=="bool") )
+    mdt_this=MDtype::Boolean;
   else
     throw MsPASSError("MetadataDefinitions::pfreader:  type value="
       + tstr+" not recognized");
@@ -439,8 +441,8 @@ void MetadataDefinitions::yaml_reader(const string fname)
     //const YAML::Node& attributes=outer["Attributes"];
     for(YAML::const_iterator it=outer.begin();it!=outer.end();++it)
     {
-	    string group_key=it->first.as<string>();
-	    const YAML::Node& attributes=outer[group_key];
+        string group_key=it->first.as<string>();
+        const YAML::Node& attributes=outer[group_key];
     	unsigned int natt=attributes.size();
     	unsigned int i;
     	for(i=0;i<natt;++i)
