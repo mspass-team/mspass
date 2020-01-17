@@ -56,21 +56,21 @@ Attributes:
     concept:  Time of first sample of data (epoch time or relative to some other time mark)
     aliases: t0 time
 # These are additional attributes for the static site collection/table
-  - name: stlat
+  - name: site_lat
     type: real
     concept:  latitude of a seismic station/instrument in degrees
     aliases: STLA site.lat
     readonly: true
     unique_id:  staid
     collection: site
-  - name: stlon
+  - name: site_lon
     type: real
     concept:  longitude of a seismic station/instrument in degrees
     aliases: STLO site.lon
     readonly: true
     unique_id:  staid
     collection: site
-  - name: stelev
+  - name: site_elev
     type: real
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
     aliases: STEL site.elev
@@ -152,6 +152,84 @@ Attributes:
     readonly:  true
     unique_id:  evid
     collection:  source 
+  - name: orid
+    type: integer
+    concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
+    readonly:  true
+    unique_id:  evid
+    collection:  source 
+ThreeComponentData:
+  - name: U11
+    type: real
+    concept:  Row 1,  column 1 of 3C data transformation matrix
+    readonly: false
+  - name: U21
+    type: real
+    concept:  Row 2,  column 1 of 3C data transformation matrix
+    readonly: false
+  - name: U31
+    type: real
+    concept:  Row 3,  column 1 of 3C data transformation matrix
+    readonly: false
+  - name: U12
+    type: real
+    concept:  Row 1,  column 2 of 3C data transformation matrix
+    readonly: false
+  - name: U22
+    type: real
+    concept:  Row 2,  column 2 of 3C data transformation matrix
+    readonly: false
+  - name: U32
+    type: real
+    concept:  Row 3,  column 2 of 3C data transformation matrix
+    readonly: false
+  - name: U13
+    type: real
+    concept:  Row 1,  column 3 of 3C data transformation matrix
+    readonly: false
+  - name: U23
+    type: real
+    concept:  Row 2,  column 3 of 3C data transformation matrix
+    readonly: false
+  - name: U33
+    type: real
+    concept:  Row 3,  column 3 of 3C data transformation matrix
+    readonly: false
+Magnitude:
+  - name: ms
+    type: real
+    concept: Surface wave magnitude
+    readonly: true
+    unique_id: evid
+    collection: source
+  - name: mb
+    type: real
+    concept: Body wave magnitude
+    readonly: true
+    unique_id: evid
+    collection: source
+External_files:
+  - name: dfile
+    type: string
+    concept: External data file name.
+    readonly: false
+  - name: dir
+    type: string
+    concept: Directory path to an external file (always used with dfile)
+    readonly: false
+  - name: foff
+    type: int
+    concept:  Offset in bytes from beginning of a file to first data sample.
+    readonly: false
+SeismicPhases:
+  - name: phase
+    type: string
+    concept: Phase name assigned by an analyst to a pick
+    readonly: false
+  - name: iphase
+    type: string
+    concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
+    readonly: false
 Extensions:
   - name: cdp
     type: int
