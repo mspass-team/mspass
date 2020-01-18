@@ -102,6 +102,74 @@ bool CoreSeismogram::tmatrix_is_cardinal()
     }
     return true;
 }
+CoreSeismogram::CoreSeismogram(const Metadata& md,
+                const bool load_data) : Metadata(md)
+{
+    string dfile, dir;
+    long foff;
+    FILE *fp;
+    double *inbuffer;
+
+    components_are_orthogonal=true;
+    live=false;
+    try {
+        // Names used are from mspass defintions as of Jan 2020
+        dt = this->get_double("delta");
+        t0 = this->get_double("starttime");
+        ns = this->get_int("npts");
+        tmatrix[0][0]=this->get_double("U11");
+        tmatrix[1][0]=this->get_double("U21");
+        tmatrix[2][0]=this->get_double("U31");
+        tmatrix[0][1]=this->get_double("U12");
+        tmatrix[1][1]=this->get_double("U22");
+        tmatrix[2][1]=this->get_double("U32");
+        tmatrix[0][2]=this->get_double("U13");
+        tmatrix[1][2]=this->get_double("U23");
+        tmatrix[2][2]=this->get_double("U33");
+        components_are_cardinal=this->tmatrix_is_cardinal();
+        if(components_are_cardinal)
+          components_are_orthogonal=true;
+        else
+          components_are_orthogonal=false;  //May be wrong but cost is tiny
+        u=dmatrix(3,ns);
+        if(load_data)
+        {
+            dir = this->get_string("dir");
+            dfile = this->get_string("dfile");
+            foff = this->get_long("foff");
+            string fname=dir+"/"+dfile;
+            if((fp=fopen(fname.c_str(),"r")) == NULL)
+                throw(MsPASSError(string("Open failure for file ")+fname,
+					ErrorSeverity::Invalid));
+            if (foff>0)fseek(fp,foff,SEEK_SET);
+            /* The older seispp code allowed byte swapping here.   For
+            efficiency we don't support that here and assume can do a
+            raw fread from the file and get valid data.  If support for
+            other types is needed this will need to be extended.  Here
+            we just point fread at the internal u array. */
+            inbuffer = this->u.get_address(0,0);
+            unsigned int nt=3*this->ns;
+            if(fread((void *)(inbuffer),sizeof(double),nt,fp)
+                    != nt )
+            {
+                throw(MsPASSError(string("CoreSeismogram constructor:  fread error on file ")+fname,
+                      ErrorSeverity::Invalid));
+            }
+            fclose(fp);
+	    live=true;
+	    }
+        else
+        {
+          /* Initialize the matrix in this case but leave the object marked
+          as dead */
+          this->u.zero();
+        }
+    }
+    catch (...)
+    {
+      throw;
+    };
+}
 
 CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
                        const int component_to_clone)

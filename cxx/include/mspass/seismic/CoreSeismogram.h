@@ -111,6 +111,34 @@ Initializes data and sets aside memory for
 **/
 	CoreSeismogram(const vector<mspass::CoreTimeSeries>& ts,
 		const int component_to_clone=0);
+/*! \brief Construct from Metadata definition that includes data path.
+ *
+ A Metadata object is sufficiently general that it can contain enough
+ information to contruct an object from attributes contained in it. 
+ This constuctor uses that approach, with the actual loading of data 
+ being an option (on by default).   In mspass this is constructor is
+ used to load data with Metadata constructed from MongoDB and then 
+ using the path created from two parameters (dir and dfile used as
+ in css3.0 wfdisc) to read data.   The API is general but the 
+ implementation in mspass is very rigid.   It blindly assumes the
+ data being read are binary doubles in the right byte order and 
+ ordered in the native order for dmatrix (Fortran order).  i.e.
+ the constuctor does a raw fread of ns*3 doubles into the internal
+ array used in the dmatrix implementation. 
+
+ \param md is the Metadata used for the construction.  It MUST contain
+ all of the following or it will fail:  delta, starttime,npts,U11,U21,
+ U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.  
+
+ \param load_data if true (default) a file name is constructed from 
+ dir+"/"+dfile, the file is openned, fseek is called to foff, 
+ data are read with fread, and the file is closed.  If false a dmatrix
+ for u is still created of size 3xns, but the matrix is only initialized
+ to all zeros.  
+
+ \exception  Will throw a MsPASSError if required metadata are missing.
+ */
+        CoreSeismogram(const mspass::Metadata& md,const bool load_data=true);
 /*!
  Standard copy constructor.
 **/

@@ -44,6 +44,27 @@ public:
     */
   Seismogram(const mspass::BasicTimeSeries& b,const mspass::Metadata& m, 
           const ErrorLogger elf=ErrorLogger());
+/*! \brief Construct from Metadata and read data from file.
+   *
+   This constuctor creates a Seismogram object with attributes loaded
+   from Metadata AND data loaded from a file described by Metadata
+   attributes dir and dfile.   Most of the work is done in the
+   CoreSeismogram constructor with the same signature.  See documentation
+   there for details.   This constuctor creates an empty error log
+   and tries to extract the ObjectID string from the Metadata and
+   set the id.   If that fails it sets the id invalid.  When the
+   Metadata object passed is created from MongoDB queries the id
+   should alway be defined. Invalid will only happen if this constructor
+   is used for some other purpose and the Id is not set.
+
+   Note CoreSeismogram has a load_data boolean which is always defined
+   true when used by this constructor.   Thus, the parallel constructor
+   for CoreSeismogram to this one has only a const Metadata as an argument.
+
+   \param md is the Metadata object used to drive the constructor.
+
+   */
+  Seismogram(const Metadata& md);
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::CoreSeismogram(parent), mspass::MsPASSCoreTS(parent){};
