@@ -117,10 +117,24 @@ py::dict MongoDBConverter::modified(const mspass::Metadata& d,bool verbose) cons
     set<string>::iterator sptr;
     for(sptr=tochange.begin();sptr!=tochange.end();++sptr)
     {
-      clist.push_back(*sptr);
+      if(mdef.writeable(*sptr)) clist.push_back(*sptr);
     }
     result=this->extract_selected(d,clist,verbose);
     return result;
+  }catch(...){throw;};
+}
+py::dict MongoDBConverter::writeable(const mspass::Metadata& d, bool verbose) const
+{
+  try{
+    py::dict result;
+    set<string> klist=d.keys();
+    list<string> clist;
+    set<string>::iterator sptr;
+    for(sptr=klist.begin();sptr!=klist.end();++sptr)
+    {
+      if(mdef.writeable(*sptr)) clist.push_back(*sptr);
+    }
+    return(this->extract_selected(d,clist,verbose));
   }catch(...){throw;};
 }
 py::dict MongoDBConverter::all(const mspass::Metadata& d,bool verbose) const

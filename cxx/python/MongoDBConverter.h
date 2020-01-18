@@ -31,11 +31,13 @@ public:
     : mdef(mdefinition){};
   /*! Construct using a name driven tag that defines a MetadataDefinitions object. */
   MongoDBConverter(const std::string mdefname);
-  /*! \brief Return all Metadata marked as changed.
+  /*! \brief Return all Metadata marked as changed and set writeable.
 
   In mspass the Metadata object keeps track of all updates and has methods
   to establish if an attribute has changed or not.  This method returns
-  only those attributes marked as change.
+  only those attributes marked as change.  It also enforces readonly attributes
+  and silently drops any such attributes marked as such.  Perhaps should
+  write a message, but for now it is silent.
 
   \param d is the data object to handle.  Normally a TimeSeries or Seismogram.
   \param verbose - when true any nonfatal errors are writen to stderr
@@ -59,6 +61,15 @@ public:
   never happen so the returned error is marked Fatal.
   */
   py::dict all(const mspass::Metadata& d,bool verbose) const;
+  /*! \brief Return all Metadata for MongoDB write operations that are marked as mutable.
+
+  This method is variant of the all method.  It returns all attributes in
+  Metadata as a python dict BUT skipping those marked as readonly.
+  \param d is the input data object
+  \param verbose - when true any nonfatal errors are writen to stderr
+    (use for debugging interactive python scripts)
+    */
+  py::dict writeable(const mspass::Metadata& d,bool verbose) const;
   /*! \brief Return a python dict for CRUD operations driven by a list of keys.
 
   This method returns a python dict of Metadata defined by a list of keys.
