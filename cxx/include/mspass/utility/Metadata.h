@@ -134,7 +134,18 @@ other attributes.
       double val;
       val=get<double>(key);
       return val;
-    }catch(...){throw;};
+    }catch(MetadataGetError& merr)
+    {
+    /* Try a float if that failed */
+      try{
+        float fval;
+        fval=get<float>(key);
+        return fval;
+      }catch(MetadataGetError& merr)
+      {
+	throw merr;
+      }
+    }
   };
   /*!
   Get an integer from the Metadata object.
@@ -144,11 +155,22 @@ other attributes.
   **/
   int get_int(const string key) const override
   {
-    try{
-      int val;
-      val=get<int>(key);
-      return val;
-    }catch(...){throw;};
+      try{
+        int val;
+        val=get<int>(key);
+        return val;
+      }
+      catch(MetadataGetError& merr)
+      {
+	try{
+          long lval;
+  	  lval=get<long>(key);
+  	  return lval;
+	}catch(MetadataGetError& merr)
+	{
+	  throw merr;
+	}
+      }
   };
   /*!
   Get a long integer from the Metadata object.
@@ -156,12 +178,24 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  long get_long(const string key) const{
-    try{
-      long val;
-      val=get<long>(key);
-      return val;
-    }catch(...){throw;};
+  long get_long(const string key) const
+  {
+      try{
+        long val;
+        val=get<long>(key);
+        return val;
+      }
+      catch(MetadataGetError& merr)
+      {
+	try{
+          int ival;
+  	  ival=get<int>(key);
+  	  return ival;
+	}catch(MetadataGetError& merr)
+	{
+	  throw merr;
+	}
+      }
   };
   /*!
   Get a string from the Metadata object.
@@ -281,6 +315,26 @@ other attributes.
   void put(const string key, const string val) override
   {
       this->put<string>(key,val);
+  };
+  void put_int(const string key,const int val)
+  {
+    this->put<int>(key,val);
+  };
+  void put_string(const string key,const string val)
+  {
+    this->put<string>(key,val);
+  };
+  void put_bool(const string key,const bool val)
+  {
+    this->put<bool>(key,val);
+  };
+  void put_double(const string key,const double val)
+  {
+    this->put<double>(key,val);
+  };
+  void put_long(const string key,const long val)
+  {
+    this->put<long>(key,val);
   };
 
   /*! Return the keys of all altered Metadata values. */
