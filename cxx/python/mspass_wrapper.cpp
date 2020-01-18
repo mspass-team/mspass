@@ -296,6 +296,11 @@ PYBIND11_MODULE(mspasspy,m)
     .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const int>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
+    .def("put_double",&Metadata::put_double,"Interface class for doubles")
+    .def("put_bool",&Metadata::put_bool,"Interface class for boolean")
+    .def("put_string",&Metadata::put_string,"Interface class for strings")
+    .def("put_long",&Metadata::put_long,"Interface class for long ints")
+    .def("put_int",&Metadata::put_int,"Interface class for generic ints")
     .def("keys",&Metadata::keys,"Return a list of the keys of all defined attributes")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("is_defined",&Metadata::is_defined,"Test if a key has a value set")
@@ -505,6 +510,7 @@ PYBIND11_MODULE(mspasspy,m)
                                                 (m,"Seismogram")
     .def(py::init<>())
     .def(py::init<CoreSeismogram,std::string>())
+    .def(py::init<Metadata>())
     ;
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
@@ -523,6 +529,9 @@ PYBIND11_MODULE(mspasspy,m)
       .def("all",&mspass::MongoDBConverter::all,
          py::arg("d"),py::arg("verbose")=true,
          "Return dict of all Metadata attributes")
+      .def("writeable",&mspass::MongoDBConverter::writeable,
+          py::arg("d"),py::arg("verbose")=true,
+          "Return dict of all Metadata attributes defined to be mutable")
       .def("badkeys",&mspass::MongoDBConverter::badkeys,
          "Return a python list of any keys that are not defined in input object")
     ;
