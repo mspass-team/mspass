@@ -66,14 +66,14 @@ Attributes:
   - name: site_lon
     type: real
     concept:  longitude of a seismic station/instrument in degrees
-    aliases: STLO site.lon
+    aliases: STLO stlo site.lon
     readonly: true
     unique_id:  staid
     collection: site
   - name: site_elev
     type: real
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: STEL site.elev
+    aliases: STEL stel site.elev
     readonly: true
     unique_id:  staid
     collection: site
@@ -128,7 +128,7 @@ Attributes:
   - name: source_lon
     type:  real
     concept: Longitude (in degrees) of the hypocenter of seismic source
-    aliases:  EVLA origin.lon
+    aliases:  EVLO origin.lon
     readonly: true
     unique_id: source_id
     collection: source
@@ -212,15 +212,18 @@ External_files:
   - name: dfile
     type: string
     concept: External data file name.
+    aliases: wfdisc.dfile wfprocess.dfile
     readonly: false
   - name: dir
     type: string
     concept: Directory path to an external file (always used with dfile)
+    aliases: wfdisc.dir wfprocess.dir
     readonly: false
   - name: foff
     type: int
     concept:  Offset in bytes from beginning of a file to first data sample.
     readonly: false
+    aliases: wfdisc.foff wfprocess.foff
 SeismicPhases:
   - name: phase
     type: string
@@ -230,7 +233,3 @@ SeismicPhases:
     type: string
     concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
     readonly: false
-Extensions:
-  - name: cdp
-    type: int
-    concept:  common depth point number used in reflection processing
