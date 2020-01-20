@@ -1,7 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Data Object Design Concepts</title>
   </head>
@@ -16,6 +15,12 @@
       normally interact with are two objects defined in MsPASS as <i>TimeSeries</i>
       and <i>Seismogram</i> respectively.&nbsp;&nbsp; <br>
     </p>
+    <p>These data objects were designed to simply interactions with
+      MongoDB.&nbsp; MongoDB is completely flexible in attributes names
+      handled by the database.&nbsp; We manage the attribute names and
+      data types through an interfacing object we call <i>MetadataDefinitions</i>
+      that is a required in most python database interactions.<br>
+    </p>
     <p>Data objects are grouped in memory with a generic concept called
       an <i>Ensemble</i>.&nbsp;&nbsp; The implementation in C++ uses a
       template to define a generic ensemble.&nbsp;&nbsp; A limitation of
@@ -26,28 +31,37 @@
       and <i>ThreeComponentEnsemble</i> respectively.<i> &nbsp;
         ThreeComponentEnemble </i>is a bit of a mismatch in a naming
       convention, but we felt the name was long enough already that the
-      name seems clearer than the alternative of SeismogramEnsemble.
-      &nbsp;<i> </i><br>
+      name seems clearer than the alternative of
+      SeismogramEnsemble.&nbsp; <br>
+    </p>
+    <p>The C++ objects have wrappers for python that hide the details
+      from the user. &nbsp; All MongoDB operations implemented with the
+      pymongo package using these wrappers. &nbsp; Numerical operations
+      on the sample data should either be written in C/C++ with their
+      own wrappers or exploit numpy/scipy numerical routines. &nbsp; The
+      later is possible because the wrappers make the data arrays look
+      like numpy arrays. &nbsp;<i> </i><br>
     </p>
     <h3>History</h3>
     <p>It might be helpful for the user to recognize that the core data
-      objects in MsPASS are a second generation of a set of data objects
-      developed by one of the authors (Pavlis) over a period of more
-      than 15 years.&nbsp;&nbsp; The original implementation was
-      developed as a component of Antelope through the open source add
-      on to Antelope distributed through the <a
+      objects in MsPASS are the second generation of a set of data
+      objects developed by one of the authors (Pavlis) over a period of
+      more than 15 years.&nbsp;&nbsp; The original implementation was
+      developed as a component of Antelope.&nbsp; It was distribured via
+      the open source additions to Antelope distributed through the <a
         href="antelopeusersgroup">antelope user's group</a> and referred
       to as SEISPP. &nbsp; The bulk of the original code can be found <a
 href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp">here</a>
       in github, and doxygen generated pages comparable to those found
       with this package can be found <a
         href="http://www.indiana.edu/%7Epavlab/software/seispp/html/index.html">here</a>.&nbsp;
+
       <br>
     </p>
-    <p>To build the core data components from this older library we
+    <p>To build the core data objects from this older library we
       followed standard advice and mostly burned the original keeping
-      only the most generic with features the authors had found useful
-      over the years.&nbsp;&nbsp; The revisions followed these
+      only the most generic with features the authors had found
+      essential over the years.&nbsp;&nbsp; The revisions followed these
       guidelines:<br>
     </p>
     <ul>
@@ -55,20 +69,21 @@ href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/sei
       <li>Use inheritance more effectively to make the class structure
         more easily extended to encapsulate different variations in
         seismic data.</li>
-      <li>Divorce the lower level API completely from Antelope to
-        achieve the full open source goals of MsPASS.&nbsp; Although not
-        implemented at this time, the concept is that an extension to
-        work with Antelope data structures would require only a set of
-        different class extensions. <br>
+      <li>Divorce the API completely from Antelope to achieve the full
+        open source goals of MsPASS.&nbsp; Although not implemented at
+        this time, the design will allow a version 2 of SEISPP in
+        Antelope, although that is a "small matter of programming" that
+        may never happen. <br>
       </li>
       <li>Eliminate unnecessary/extraneous constructors and methods
         developed by the authors as the class structure evolved
         organically over the years.&nbsp; In short, think through the
-        core concepts more carefully.<br>
+        core concepts more carefully and treat SEISPP as a prototype.<br>
       </li>
       <li>Extend the Metadata object (see below) to provide support for
         more types (objects) than the lowest common denominator of
-        floats, ints, strings, and booleans.&nbsp;&nbsp; <br>
+        floats, ints, strings, and booleans handled by
+        SEISPP.&nbsp;&nbsp; <br>
       </li>
     </ul>
     MsPASS has hooks to and leans heavily on <a
@@ -80,33 +95,36 @@ href="https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/sei
       <li>obspy handles what we call Metadata through set of python
         objects that have to be maintained separately and we think
         unnecessarily complicate the API.&nbsp;&nbsp; We aimed instead
-        to simplify the management of Metadata much as we could to make
-        the system more like seismic reflection processing systems that
-        manage the same problem through a fixed header
-        namespace.&nbsp;&nbsp; We use a more flexible namespace, but
-        users familiar with traditional reflection processing may find
-        this a useful conceptual model.</li>
-      <li>obspy does no handle three component data in a native way, but
-        mixes up the concepts we call <i>Seismogram </i>and <i>Ensemble</i>
+        to simplify the management of Metadata much as possible.&nbsp;
+        Our goal was to make the system more like seismic reflection
+        processing systems that manage the same problem through a simple
+        namespace wherein metadata can be fetched with simple
+        keys.&nbsp;&nbsp; We aimed to hide any hierarchic structures
+        (e.g relational database table relationships, obspy object
+        hierarchies,&nbsp; or MongoDB normalized data structures) behind
+        the <i>MetadataDefinitions </i>object to reduce all Metadata
+        to pure name:value pairs.&nbsp; <br>
+      </li>
+      <li>obspy does not handle three component data in a native way,
+        but mixes up the concepts we call <i>Seismogram </i>and <i>Ensemble</i>
         in to a common python object they define as a <a
 href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream">Stream</a>.&nbsp;&nbsp;
+
         We would argue our model is a more logical encapsulation of the
         concepts that define these ideas.&nbsp; <br>
       </li>
     </ol>
     <h3>Core Concepts</h3>
     <h4>Overview - Inheritance Relationships</h4>
-    <p>The reader needs to see the big picture of how TimeSeries and
-      Seismogram objects are defined to understand the core concepts
+    <p>The reader needs to first see the big picture of how TimeSeries
+      and Seismogram objects are defined to understand the core concepts
       described in sections that follow.&nbsp; We assume the reader has
       some understanding of the concepts of inheritance in object
-      oriented code, but it has been our experience that there are a lot
-      of more subtle issues that, in practice, are harder to articulate
-      and are implementation dependent.&nbsp; Perhaps the best
-      justification of the structure we used is that is is derived from
-      SEISPP (see history above) and we aimed to rebranch and prune
-      based on the experience we had with this approach from the
-      development history of SEISPP.&nbsp;&nbsp; <br>
+      oriented code.&nbsp;&nbsp; The inheritance structure use we best
+      understood as derived from the SEISPP prototype (see history
+      above).&nbsp; We aimed to rebranch and prune
+      SEISPP&nbsp; based on the experience from 15 years of development
+      for SEISPP. <br>
     </p>
     <p>The (admittedly) complicated inheritance diagrams for TimeSeries
       and Seismogram objects generated by doxygen are illustrated below
@@ -117,23 +135,31 @@ href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy
         height="56%" width="75%"><br>
     </p>
     <p>Notice that both CoreSeismogram and CoreTime series have a common
-      inheritance using multiple inheritance.&nbsp;&nbsp; Python does
-      not currently support multiple inheritance so the python interface
-      was designed to largely hide this detail from the user.&nbsp;
+      inheritance from three base classes:&nbsp; <i>BasicTimeSeries,
+        BasicMetadata, </i>and <i>MsPASSCoreTS</i>.&nbsp;&nbsp; Python
+      supports multiple inheritance and the wrappers make dynamic
+      casting within the hierarchy automatic.&nbsp; e.g. a<i> Seismogram</i>
+      object can be passed directly to a python function that does only
+      Metadata operations and it will be handled seamlessly because
+      python does no enforce type signatures on functions.&nbsp;
       CoreTimeSeries and CoreSeismogram should be though of a core data
       that is independent of MsPASS.&nbsp;&nbsp; Common features need by
       both objects to interact with MsPASS are inherited from
-      MsPASSCoreTS.&nbsp;&nbsp;&nbsp; A key point is future users could
-      chose to prune the MsPASSCoreTS component and build on
+      MsPASSCoreTS.&nbsp;&nbsp;&nbsp; A key point is that future users
+      could chose to prune the MsPASSCoreTS component and build on
       CoreTimeSeries and CoreSeismogram and have no dependence upon
-      MsPASS.&nbsp; <br>
+      MsPASS to build a completely different framework.&nbsp; <br>
+    </p>
+    <p>The remainder of this section discusses the individual components
+      in the class hierarchy.<br>
     </p>
     <h4>BasicTimeSeries&lt;make a link when location is settled&gt; -
       Base class of common data characteristics <br>
     </h4>
     <p>This base class object can be best viewed as an answer to this
-      questions:&nbsp; What is a time series?&nbsp;&nbsp; This class
-      design answers this question as containing the following elements:</p>
+      questions:&nbsp; What is a time series?&nbsp;&nbsp; Our design
+      answers this question by saying all time series data have the
+      following elements:</p>
     <ol>
       <li>We define a time series as data that has a<b> fixed sample
           rate.</b>&nbsp;&nbsp; Some extend this to arbitrary x-y data,
@@ -144,30 +170,31 @@ href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy
         to convert sample numbers to time and the inverse (time to
         sample number).</li>
       <li>Data processing always requires the time series have a <b>finite
+
           length</b>.&nbsp;&nbsp; Hence, our definition of a time series
         directly supports windowed data of a specific length (public
         attribute <i>ns</i> - mnemonic abbreviation for number of
         samples).&nbsp; This definition does not preclude an extension
         to modern continuous data sets that are too large to fit in
-        memory, but assume is an extension we don't currently
-        support.&nbsp; e.g one way to implement an abstraction of an
-        existing continuous channel of data is an
-        std::list&lt;TimeSeries&gt;, although that would prove
-        impractical for all but a short running instrument as the size
-        could quickly overwhelm all but the largest memory machines.</li>
+        memory, but that is an extension we don't currently
+        support.&nbsp; <br>
+      </li>
       <li>We assume the data has been cleaned and <b>lacks data gaps</b>.&nbsp;
+
         Real continuous data today nearly always have gaps at a range of
         scale created by a range of possible problems that create
-        gaps:&nbsp; telemetry gaps, power failures, instrument failures.
+        gaps:&nbsp; telemetry gaps, power failures, instrument failures,
         time tears, and with older data gaps created by station
-        servicing.&nbsp; MsPASS has stubs API definitions for data with
-        gaps, but there are currently no implementations and it is low
-        on our development priority to do so.&nbsp;&nbsp; Since the main
-        goal of MsPASS is to provide a framework for efficient
-        processing of large data sets, we pass the job of finding and/or
-        fixing data gaps to other packages or algorithms using MsPASS
-        with a "when in doubt throw it out" approach to
-        editing.&nbsp;&nbsp; <br>
+        servicing.&nbsp; MsPASS has stub API definitions for data with
+        gaps, but these are currently not implementations.&nbsp;&nbsp;
+        Since the main goal of MsPASS is to provide a framework for
+        efficient processing of large data sets, we pass the job of
+        finding and/or fixing data gaps to other packages or algorithms
+        using MsPASS with a "when in doubt throw it out" approach to
+        editing.&nbsp;&nbsp; The machinery to handle gap processing
+        exists in both obpsy and Antelope and provide possible path to
+        solution for users needing more extensive gap processing
+        functionality.<br>
       </li>
     </ol>
     <p>BasicTimeSeries uses public attributes to define the base
@@ -178,15 +205,17 @@ href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy
       boolean variable with the name <i>live</i>.&nbsp;&nbsp; Data not
       marked live (live == false) should normally be passed through a
       processing chain, but will always be dropped by database
-      writers.&nbsp; <br>
+      writers.&nbsp; Other public attributes are public for convenience,
+      but changing any of them must be done with caution.&nbsp;&nbsp; <br>
     </p>
     <h4>Handling Time</h4>
     <p>MsPASS uses a generalization to handle time that is the same as a
       novel method used in the original SEISPP library.&nbsp;&nbsp; The
-      concept can be thought of as a generalized, but simplified version
-      of how SAC handles time.&nbsp;&nbsp; The time standard is defined
-      by an enum class in C++ called tref which is mapped to fixed names
-      in python.&nbsp;&nbsp; There are currently two options:&nbsp; <br>
+      concept can be thought of as a generalized, but yet simplified
+      version of how SAC handles time.&nbsp;&nbsp; The time standard is
+      defined by an enum class in C++ called tref which is mapped to
+      fixed names in python.&nbsp;&nbsp; There are currently two
+      options:&nbsp; <br>
     </p>
     <ol>
       <li>When tref is TimeReferenceType::Relative
@@ -204,12 +233,12 @@ href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy
         algorithm needs to know the detail of "relative to what?" means,
         that detail will be defined in a Metadata attribute.<br>
       </li>
-      <li>When tref is TimeReferenceType::UTC all times are assumed to
-        be an absolute time standard defined by coordinated universal
-        time (UTC). &nbsp; We follow the approach used in Antelope and
-        store ALL times defined as UTC as <a
-          href="https://en.wikipedia.org/wiki/Unix_time">unix epoch
-          times.</a>&nbsp; We use this simple approach for two
+      <li>When tref is TimeReferenceType::UTC (TimeReferenceType.UTC in
+        python) all times are assumed to be an absolute time standard
+        defined by coordinated universal time (UTC). &nbsp; We follow
+        the approach used in Antelope and store ALL times defined as UTC
+        with <a href="https://en.wikipedia.org/wiki/Unix_time">unix
+          epoch times.</a>&nbsp; We use this simple approach for two
         reasons:&nbsp; (1) storage (times can be stored as a simple
         double precision (64 bit float) field), and (2) efficiency
         (computing relative times is trivial compared to handling
@@ -217,6 +246,7 @@ href="http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy
         require ALL start times (t0 in mspass data objects) be defined
         by a python class they call <a
 href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime.html#obspy.core.utcdatetime.UTCDateTime">UTCDateTime</a>.&nbsp;
+
         Since MsPASS is linked to obspy we recommend you use the
         UTCDateTime class in python if you need to convert from epoch
         times to one of the calendar structures UTCDateTime can handle.
@@ -226,7 +256,8 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.utcdatetime.UTCDateTime
     A more concise summary of what these two time standard mean is
     this:&nbsp; active source data always use Relative time and
     earthquake data are always stored in raw form as UTC time stamps
-    (e.g. see the SEED standard).<br>
+    (e.g. see the SEED standard).&nbsp; UTC is a fixed standard while
+    Relative could have other meanings.<br>
     <br>
     BasicTimeSeries defines two methods to convert between these two
     time standards:&nbsp; rtoa (Relative to Absolute) and ator (Absolute
@@ -277,6 +308,7 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
       for Metadata attributes to those supported as distinct types in
       the python MongoDB API.&nbsp;&nbsp; That list is defined <a
         href="https://docs.mongodb.com/manual/reference/bson-types/">here</a>.&nbsp;
+
       In principle, MongoDB can support generic "array" and "object"
       types that could contain serialized containers, but currently
       MsPASS only supports core types in all database engines:&nbsp;
@@ -296,25 +328,14 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
       b=d.get_bool("LPSPOL")&nbsp; # boolean for positive polarity used
       in SAC<br>
     </blockquote>
-    The putters are overloaded methods, which is not a standard concept
-    in python.&nbsp;&nbsp; For those not familiar with overloading it
-    means which function to call is sorted out by the type of the
-    arguments.&nbsp; To demonstrate the following code snippet is the
-    inverse of the getters above (type of the arguments is defined
-    above)<br>
-    <blockquote>d.put("t0",x)<br>
-      d.put("nsamp",n)<br>
-      d.put("sta",sta)<br>
-      d.put("LPSPOL",bool(1))&nbsp; <br>
+    There are parallel "putter":<br>
+    <blockquote>d.put_double("to",x)<br>
+      d.put_int("nsamp",n)<br>
+      d.put_string("sta",s)<br>
+      d.put_bool("LPSPOL",True)<br>
     </blockquote>
-    The odd construct for boolean is necessary because of a collision
-    between C and python demonstrated in this example.&nbsp; In C a
-    boolean could, in principle, be defined by one bit (in all
-    implementations the actual test is 0 versus nonzero and the storage
-    is the native integer size).&nbsp;&nbsp; In python a boolean is a
-    class (object).&nbsp; The bool(1) construct provides that
-    interface.&nbsp;&nbsp; This is a potential confusion in writing
-    python scripts because a python boolean <br>
+    <blockquote> </blockquote>
+    <blockquote> </blockquote>
     <p>Mapping the C++ Metadata container to python was a challenge
       because of a fundamental difference in an axiom of the two
       languages:&nbsp;&nbsp; python has a loose definition of "type"
@@ -326,9 +347,9 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
       much more complicated type like an obspy Trace object.&nbsp;
       Similar usage in a C program will always fail to
       compile.&nbsp;&nbsp; To assure consistency on this issue the
-      Metadata container will throw an exception if a user tries to
-      extract a parameter (call one of the getters) with the wrong
-      type.&nbsp;&nbsp; For example:<br>
+      Metadata container will throw an exception (RuntimeError in python
+      and MsPASSError in C++) if a user tries to extract a parameter
+      with the wrong type.&nbsp;&nbsp; For example:<br>
     </p>
     <blockquote>d.put("sta","AAK")<br>
       s=d.get_string("sta")&nbsp;&nbsp; # this succeeds because sta was
@@ -343,11 +364,11 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
     can be thought of as a referee that can be used to guarantee type
     consistency of any key:value pair that is to be read from or written
     to MongoDB.&nbsp; <br>
-    <h4>MetadataDefinitions object</h4>
+    <h4>MetadataDefinitions&nbsp; and MongoDBConverter objects</h4>
     <p>A MetadataDefinitions object is required by all MongoDB functions
       that perform CRUD operations to MongoDB with data
       objects.&nbsp;&nbsp; It has two critical purposes when interacting
-      with MongoDB:<br>
+      with MongoDB: <br>
     </p>
     <ol>
       <li>It manages type properties and enforces decisions about
@@ -385,24 +406,37 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
     algorithms that require a different namespace.&nbsp; For example, in
     principle it should be possible to build a specialized configuration
     to build a MetadataDefinitions object that could be used to
-    translate between the SAC or SEGY namespaces and mspass.
-    &nbsp;&nbsp; <br>
+    translate between the SAC or SEGY namespaces and mspass.&nbsp; <br>
+    <br>
+    A closely related object has the name <i>MongoDBConverter.&nbsp; </i>The
+    <i>MongoDBConverter&nbsp;</i> caches a copy of the <i>MetadataDefinitions</i>
+    it loads (usually behind the scenes).&nbsp; It has methods that
+    provide an interface between the C++ objects and python that
+    simplify database interactions with MongoDB. &nbsp; Most MongoDB
+    CRUD operations functions require a&nbsp; <i>MongoDBConverter</i>
+    as an argument. &nbsp; <br>
     <h4>Scalar versus 3C data</h4>
     <p>MsPASS currently supports two different data objects:&nbsp;&nbsp;
       TimeSeries is used to store single channel data while Seismogram
-      is used store data from three component instruments.&nbsp;
+      is used to store data from three component instruments.&nbsp;
       TimeSeries objects are based on the standard concept for storing
       scalar data that has been around since the earliest days of
       digital seismic data in the oil and gas industry.&nbsp; That is,
       the sample values are stored in a continuous
-      array/vector.&nbsp;&nbsp; The index for the array serves as a
-      proxy for time.&nbsp;&nbsp; We use a C++ <a
+      block of memory that we abstract as an array/vector.&nbsp;&nbsp;
+      The index for the array serves as a proxy for time (<i>time </i>method
+      in BasicTimeSeries).&nbsp;&nbsp; We use a C++ <a
         href="http://www.cplusplus.com/reference/vector/vector/">standard
+
         template library vector container</a> to hold the sample data
       accessible through the public variable s.&nbsp; The python API
       makes the vector container look like a numpy array that can be
       accessed in same way sample data are handled in an obspy Trace
-      object in the "data" array.&nbsp;&nbsp; <br>
+      object in the "data" array.&nbsp;&nbsp; They can similarly be
+      processed with the wide variety of operations available in scipy
+      (e.g. <a
+href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.iirfilter.html#scipy.signal.iirfilter">simple
+        bandpass filters</a>).&nbsp; <br>
     </p>
     <p>Although scalar time series data are treated the same (i.e. as a
       vector) in every seismic processing system we are aware of, the
@@ -412,25 +446,29 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
     </p>
     <ol>
       <li>&nbsp;Most modern seismic reflection systems provide some
-        support for three-component data.&nbsp;&nbsp; Scalar,
-        multichannel raw data are conceptually treated as a matrix with
-        on array dimension defining the time variable and the other
-        index defined by the channel number. When three component data
-        are recorded the component orientation can be defined implicitly
-        by a component index number.&nbsp;&nbsp; A shot gather than can
-        be indexed conveniently with three array indexes.&nbsp; A
-        complication in that approach is that which index is used for
-        which of the three concept required for a gather of 3C
-        data&nbsp; is completely undefined.&nbsp;&nbsp; Furthermore, for
-        a generic system like mspass the multichannel model does not map
-        cleanly into passive array data because a collection of 3C
-        seismograms have irregular size, may have variable sample
-        rates,&nbsp; and variable instrumentation.&nbsp; Hence, a simple
-        matrix or array model would be very limiting.</li>
+        support for three-component data.&nbsp;&nbsp; In reflection
+        processing scalar, multichannel raw data are often conceptually
+        treated as a matrix with one array dimension defining the time
+        variable and the other index defined by the channel number. When
+        three component data are recorded the component orientation can
+        be defined implicitly by a component index number.&nbsp;&nbsp; A
+        3C shot gather than can be indexed conveniently with three array
+        indexes.&nbsp; A complication in that approach is that which
+        index is used for which of the three concept required for a
+        gather of 3C data&nbsp; is completely undefined.&nbsp;&nbsp;
+        Furthermore, for a generic system like mspass the multichannel
+        model does not map cleanly into passive array data because a
+        collection of 3C seismograms may have irregular size, may have
+        variable sample rates,&nbsp; and may come from variable
+        instrumentation.&nbsp; Hence, a simple matrix or array model
+        would be very limiting.</li>
       <li>Traditional multichannel data have synchronous time
         sampling.&nbsp;&nbsp; Seismic reflection processing always
         assumes during processing that time computed from sample numbers
-        is accurate to within one sample.&nbsp;&nbsp; That is not
+        is accurate to within one sample.&nbsp;&nbsp; Furthermore, the
+        stock assumption is that all data have sample 0 at shot
+        time;&nbsp; that assumption allows the conceptual model of a
+        matrix to represent scalar, multichannel data.&nbsp; That is not
         necessarily true in passive array data and raw processing
         requires efforts to make sure the time of all samples can be
         computed accurately and time aligned.&nbsp; Alignment for a
@@ -453,26 +491,28 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
     </ol>
     We handle three component data in MsPASS by using a matrix, which we
     define with the symbol "u" following the convention in Aki and
-    Richards, to store the data.&nbsp;&nbsp; There are two choices of
-    the order of indices for this matrix.&nbsp; A Seismogram has defines
-    index 1 as the channel number and index 2 as the time index.&nbsp;
-    The following python code section illustrates this more clearly than
-    any words:<br>
+    Richards, to store the data for a given <i>Seismogram</i>.&nbsp;&nbsp;
+    There are two choices of the order of indices for this matrix.&nbsp;
+    A <i>Seismogram</i> defines index 0(1) as the channel number and
+    index 1(2) as the time index.&nbsp; The following python code
+    section illustrates this more clearly than any words:<br>
     <blockquote>from mspasspy import Seismogram<br>
       d=Seismogram(100)&nbsp;&nbsp;&nbsp;&nbsp; # Create an empty
       Seismogram with storage for 100 time steps initialized to all
       zeros<br>
       d.u(0,50)=1.0
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
       # Create a delta function at time t0+dt*50 in channel 0<br>
     </blockquote>
-    Note we use the C convention for indexing starting at 0.&nbsp;&nbsp;
-    In the C++ API the matrix u is defined with a lightweight
-    implementation of a matrix as object.&nbsp;&nbsp; That detail is
-    largely irrelevant to python programmers as the matrix is
-    equivalenced to a numpy matrix.&nbsp;&nbsp; Hence, python
-    programmers familiar with numpy can manipulate the data in the u
-    matrix with all the tools of numpy.&nbsp; <br>
+    Note we use the C (an python) convention for indexing starting at
+    0.&nbsp;&nbsp; In the C++ API the matrix u is defined with a
+    lightweight implementation of a matrix as the data
+    object.&nbsp;&nbsp; That detail is largely irrelevant to python
+    programmers as the matrix is equivalenced to a numpy matrix by the
+    wrappers.&nbsp;&nbsp; Hence, python programmers familiar with numpy
+    can manipulate the data in the u matrix with all the tools of
+    numpy.&nbsp; <br>
     <br>
     The Seismogram object has a minimal set of methods that the authors
     consider core concepts defining a three component seismogram.&nbsp;
@@ -481,9 +521,9 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
     the components (overloaded rotate method), restoring data to
     cardinal directions at the instrument (rotate_to_standard),
     Kennett's free surface transformation, and a general transformation
-    matrix.&nbsp;&nbsp; We use a pair of boolean variables that are
-    helpful for efficiency:&nbsp; <i>components_are_orthogonal</i> is
-    true after any sequence of orthogonal transformations and <i>components_are_cardinal</i>
+    matrix.&nbsp;&nbsp; We use a pair of (public) boolean variables that
+    are helpful for efficiency:&nbsp; <i>components_are_orthogonal</i>
+    is true after any sequence of orthogonal transformations and <i>components_are_cardinal</i>
     is true when the components are in the standard ENZ directions.
     &nbsp; &nbsp; <br>
     <br>
@@ -542,19 +582,17 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
         MongoDB the lowest common denominator to identify a particular
         "document" in the database is the <a
           href="https://docs.mongodb.com/manual/reference/method/ObjectId/">ObjectID</a>.&nbsp;
+
         We store a representation of the ObjectID that was used to
-        create any data object read from the database.&nbsp;&nbsp;
-        Whenever any processing algorithm alters the sample in an
-        object, however, the ObjectID is set invalid.&nbsp;&nbsp;&nbsp;
-        Database writers use an invalid ObjectID as a signal that an
-        image of such data needs to be saved.&nbsp; If, however, the
-        ObjectID is valid a writer assumes it only needs to do a
-        database update to Metadata attributes.&nbsp; Metadata has a
-        method to return the keys of all Metadata attributes that were
-        changed since the original creation from an earlier read.&nbsp;
-        That feature is important for efficiency in pure Metadata
-        operations or processing that can be reduce to a new set of
-        Metadata. <br>
+        create any data object read from the database.&nbsp;&nbsp; The <i>Metadata</i>
+        object has a mechanism that keeps track of which attributes have
+        been altered from the original. &nbsp; That feature can be
+        exploited for pure <i>Metadata </i>operations to only update
+        the changed attributes and retain the original data. &nbsp; When
+        the sample data are altered the user is responsible for deciding
+        if the original waveform data are to be retained and the new
+        data added or updated in place. &nbsp; The ObjectID is critical
+        for managing any update. &nbsp; <br>
       </li>
       <li>MsPASSCoreTS contains an error logging object.&nbsp;&nbsp; The
         purpose of this object is to contain a log of any errors or
@@ -565,7 +603,70 @@ href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html">Stats
         More details on this feature are given in the next section. <br>
       </li>
     </ol>
-    <h4>Error Logging Concepts<br>
-    </h4>
+    <h4>Error Logging Concepts</h4>
+    <p>When processing large volumes of data errors are inevitable and
+      handling them clearly is an essential part of any processing
+      framework.&nbsp;&nbsp; This is particularly challenging with a
+      system like Spark where a data set gets fragmented and handled by
+      (potentially) many processors.&nbsp;&nbsp; A poorly designed error
+      handling system could abort an entire workflow if one function on
+      one piece of data threw some kinds of "fatal" errors.&nbsp;&nbsp;
+      <br>
+    </p>
+    <p>To handle this problem MsPASS uses a novel <i>ErrorLogger</i>
+      object.&nbsp; Any data processing module in MsPASS should NEVER
+      exit on any error condition except one from which the operating
+      system cannot recover.&nbsp; All C++ and python processing modules
+      need to have appropriate error handles (i.e. try/catch in C++ and
+      try/except in python) to keep a single error from prematurely
+      killing a large processing job. &nbsp; We recommend all error
+      handlers in processing functions post a message that can help
+      debug the error.&nbsp;&nbsp; Error messages should be registered
+      with the data object's elog object.&nbsp;&nbsp; Error messages
+      should not normally be just posted to stdout (i.e. print in
+      python) for two reasons.&nbsp; First, stream io is not thread safe
+      and garbled output is nearly guaranteed unless the log message are
+      rare.&nbsp; Second, with a large dataset it can become a nearly
+      impossible to find out which pieces of data created the
+      errors.&nbsp; Proper application of the <i>ErrorLogger</i> object
+      will eliminate both of these problems. <br>
+    </p>
+    <p>Multiple methods are available to post errors of severity from
+      fatal to logging messages that do not necessarily indicate an
+      error.&nbsp;&nbsp; A small python code segment may illustrate this
+      more clearly.&nbsp;&nbsp; :<br>
+    </p>
+    <blockquote>try:<br>
+      &nbsp; d.rotate_to_standard() <br>
+      &nbsp; d.elog.log_verbose("rotate_to_standard succeed for me")<br>
+      &nbsp; ...<br>
+      except RuntimeError:<br>
+      &nbsp; d.elog.log_error("rotate_to_standard method failure -
+      transformation matrix may be singular",<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      ErrorSeverity.Invalid) <br>
+      &nbsp; d.live=False&nbsp;&nbsp; # note in python just be False not
+      false<br>
+    </blockquote>
+    To understand the code above assume the symbol d is a <i>Seismogram</i>
+    object with a singular transformation matrix created, for example,
+    by incorrectly building the object with two redundant east-west
+    components.&nbsp;&nbsp; The rotate_to_standard method tries to
+    compute a matrix inverse of the transformation matrix, which will
+    generate an exception. &nbsp; This code catches that exception with
+    a python RuntimeError.&nbsp; In this simple case we compose our own
+    error message and post it to the <i>ErrorLogger</i> attached to
+    this data (d.elog). &nbsp;The ErrorSeverity.Invalid implies the data
+    are bad so the last line sets the live boolean false.&nbsp;&nbsp; In
+    contrast, the call to log_verbose, like the name suggests, writes a
+    pure informational message.&nbsp;&nbsp; <br>
+    <br>
+    All that would be usless baggage except the MongoDB database writers
+    (Create and Update in CRUD) automatically save any elog entries in a
+    separate database collection called elog.&nbsp;&nbsp; The saved
+    messages can be linked back to the data with which they are
+    associated through the ObjectID of the data in the wf
+    collection.&nbsp; <br>
+    <br>
   </body>
 </html>
