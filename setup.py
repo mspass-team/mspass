@@ -4,7 +4,7 @@ import sys
 import platform
 import subprocess
 
-from setuptools import setup, Extension, find_packages
+from setuptools import setup, Extension, find_namespace_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
@@ -68,6 +68,6 @@ setup(
     ext_modules=[CMakeExtension('mspass')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    packages=find_packages(),
+    packages=find_namespace_packages(include=['mspass.*']),
     install_requires=['pyyaml']
 )
