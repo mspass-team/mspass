@@ -9,10 +9,10 @@ from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 
 setup_path = os.path.abspath(__file__)
-os.chdir(os.path.normpath(os.path.join(setup_path, os.pardir, 'python')))
+os.chdir(os.path.normpath(os.path.join(setup_path, os.pardir)))
 
 class CMakeExtension(Extension):
-    def __init__(self, name, sourcedir='../cxx'):
+    def __init__(self, name, sourcedir='cxx'):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
 
@@ -68,6 +68,7 @@ setup(
     ext_modules=[CMakeExtension('mspass')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
-    packages=find_namespace_packages(include=['mspass.*']),
+    package_dir={"": "python"},
+    packages=find_namespace_packages(where="python", include=["mspass.*"]),    
     install_requires=['pyyaml']
 )
