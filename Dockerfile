@@ -62,6 +62,9 @@ RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && mkdir build && cd build && cmake .. && make install
 RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 
+# Upgrade setuptools to enable namespace package
+RUN pip3 --no-cache-dir install --upgrade setuptools
+
 # Add cxx library
 ADD cxx /mspass/cxx
 RUN cd /mspass/cxx \
@@ -72,6 +75,7 @@ RUN cd /mspass/cxx \
 
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
+ADD python /mspass/python
 RUN pip3 install /mspass -vvv
 
 # Add startup script
