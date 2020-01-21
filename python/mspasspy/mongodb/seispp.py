@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from mspasspy import MetadataDefinitions
-from mspasspy import Metadata
-from mspasspy import MDtype
+from mspasspy.ccore import MetadataDefinitions
+from mspasspy.ccore import Metadata
+from mspasspy.ccore import MDtype
 def dict2md(d,mdef):
   """
   Function to convert python dict data returned by MongoDB find to mspass::Metadata.

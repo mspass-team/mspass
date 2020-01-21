@@ -228,8 +228,10 @@ public:
     );
   }
 };
-PYBIND11_MODULE(mspasspy,m)
+PYBIND11_MODULE(ccore,m)
 {
+  m.attr("__name__") = "mspasspy.ccore";
+
   py::bind_vector<std::vector<double>>(m, "Vector");
 
   py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")

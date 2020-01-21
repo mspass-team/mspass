@@ -1,13 +1,13 @@
 # Converter from obspy Trace object to mspass::TimeSeries
-from mspasspy import CoreTimeSeries
-from mspasspy import TimeSeries
-from mspasspy import TimeReferenceType
-from mspasspy import MetadataDefinitions
-from mspasspy import MDDefFormat
-from mspasspy import MDtype
+from mspasspy.ccore import CoreTimeSeries
+from mspasspy.ccore import TimeSeries
+from mspasspy.ccore import TimeReferenceType
+from mspasspy.ccore import MetadataDefinitions
+from mspasspy.ccore import MDDefFormat
+from mspasspy.ccore import MDtype
 # We need this for error ErrorLogger
-from mspasspy import MsPASSError
-from mspasspy import ErrorSeverity
+from mspasspy.ccore import MsPASSError
+from mspasspy.ccore import ErrorSeverity
 
 from obspy import Trace
 def obspy2mspass(d,mdef,mdother=[],aliases=[]):
@@ -313,7 +313,7 @@ def obspy2mspass_3c(st,mdef,mdother=[],aliases=[],master=0,cardinal=bool(0),
     # This may throw an exception, but we require the caller to handle it
     # All errors returned by this constructor currenlty leave the data INVALID
     # so handler should discard anything with an error
-    from mspasspy import CoreSeismogram
-    from mspasspy import Seismogram
+    from mspasspy.ccore import CoreSeismogram
+    from mspasspy.ccore import Seismogram
     dout=CoreSeismogram(bundle,master)
     return(Seismogram(dout,'INVALID'))
