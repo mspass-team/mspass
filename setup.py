@@ -65,10 +65,10 @@ setup(
     author_email='yinzhi.wang.cug@gmail.com',
     description='Massive Parallel Analysis System for Seismologists',
     long_description='',
-    ext_modules=[CMakeExtension('mspass')],
+    ext_modules=[CMakeExtension('mspasspy.ccore')],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     package_dir={"": "python"},
-    packages=find_namespace_packages(where="python", include=["mspasspy.*"]),    
+    packages=find_namespace_packages(where="python", include=["mspasspy.*"]),
     install_requires=['pyyaml']
 )
