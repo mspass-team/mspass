@@ -11,11 +11,9 @@ int main(int argc, char **argv)
                 <<endl
             << "First try creating an ErrorLogger object"<<endl;
             ErrorLogger elog;
-            cout << "Try algorithms to set jobid and algorithm"<<endl;
+            cout << "Try algorithms to set jobid in ErrorLogger"<<endl;
             elog.set_job_id(10000);
-            elog.set_algorithm(string("test_md"));
-            cout << "Success - job_id set to "<<elog.get_job_id()<<endl
-                << "Algorithm="<<elog.get_algorithm()<<endl;
+            cout << "Success - job_id set to "<<elog.get_job_id()<<endl;
 		cout << "Trying to build Metadata objects" << endl;
 		cout << "Trying default constructor" << endl;
 		Metadata mdplain;
@@ -108,12 +106,13 @@ int main(int argc, char **argv)
                             <<endl;
                     cout << "Trying to write log with ErrorLogger"<<endl;
                     elog.log_error(mdge);
-                    elog.log_verbose(string("log_error method succeeded"));
+                    elog.log_verbose("test_md",string("log_error method succeeded"));
                 }
                 cout << "Trying intentional type mismatch."<<endl;
                 try{
-                    int ibad;
+		    int ibad;
                     ibad=pfbr.get<int>("test_double");
+		    cout<<"FAILURE:  returned a double as int="<<ibad;
                 }catch(MetadataGetError& mdge)
                 {
                     cout << "Properly handled trying to get test_double as int"

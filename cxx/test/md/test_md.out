@@ -1,8 +1,7 @@
 Test program for Metadata object, AntelopePf, and ErrorLogger
 First try creating an ErrorLogger object
-Try algorithms to set jobid and algorithm
+Try algorithms to set jobid in ErrorLogger
 Success - job_id set to 10000
-Algorithm=test_md
 Trying to build Metadata objects
 Trying default constructor
 Trying put methods for int, double, string, and bool
@@ -102,8 +101,9 @@ Trying to write log with ErrorLogger
 Trying intentional type mismatch.
 Properly handled trying to get test_double as int
 Error message posted
-Error in Metadata get method.   Type mismatch in request
-boost::any bad_any_cast wrote this message:  boost::bad_any_cast: failed conversion using boost::any_cast
+Error in Metadata get method.   Type mismatch in attem to get data with key=test_double
+boost::any bad_any_cast wrote this message:  
+boost::bad_any_cast: failed conversion using boost::any_cast
 Trying to convert to data of type=int
 Actual entry has type=double
 
@@ -112,23 +112,24 @@ Posting that message to log
 Posting a set of fake messages to log
 Dump of error log
 Undefined
-10000 20342 test_md Error trying to extract Metadata with key=bad_key
+10000 23098 MsPASSError Error trying to extract Metadata with key=bad_key
 No value associated with this key is set in Metadata object
 Expected an entry of type=double
 
 
-Informational 10000 20342 test_md log_error method succeeded
+Invalid 10000 23098 test_md log_error method succeeded
 
 Undefined
-10000 20342 test_md Error in Metadata get method.   Type mismatch in request
-boost::any bad_any_cast wrote this message:  boost::bad_any_cast: failed conversion using boost::any_cast
+10000 23098 MsPASSError Error in Metadata get method.   Type mismatch in attem to get data with key=test_double
+boost::any bad_any_cast wrote this message:  
+boost::bad_any_cast: failed conversion using boost::any_cast
 Trying to convert to data of type=int
 Actual entry has type=double
 
 
-Fatal 10000 20342 test_md Fake fatal error
+Fatal 10000 23098 MsPASSError Fake fatal error
 
-Debug 10000 20342 test_md Fake debug error
+Debug 10000 23098 MsPASSError Fake debug error
 
-Complaint 10000 20342 test_md Fake complain error
+Complaint 10000 23098 MsPASSError Fake complain error
 
