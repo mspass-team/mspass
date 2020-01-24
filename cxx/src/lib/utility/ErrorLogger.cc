@@ -46,7 +46,6 @@ ErrorLogger::ErrorLogger(const ErrorLogger& parent)
   conceive that would be an issue is if the entry were serialized and sent
   somewhere through something like mpi.   A copy is a copy so seems best to
   clone this not ask for confusion. */
-  algorithm=parent.algorithm;
   allmessages=parent.allmessages;
 }
 ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
@@ -54,28 +53,27 @@ ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
   if(this!=&parent)
   {
     job_id=parent.job_id;
-    algorithm=parent.algorithm;
     allmessages=parent.allmessages;
   }
   return *this;
 }
 int ErrorLogger::log_error(const mspass::MsPASSError& merr)
 {
-  LogData thislog(this->job_id,this->algorithm,merr);
+  LogData thislog(this->job_id,string("MsPASSError"),merr);
   allmessages.push_back(thislog);
   return allmessages.size();
 }
-int ErrorLogger::log_error(const std::string mess,
+int ErrorLogger::log_error(const std::string alg, const std::string mess,
   const mspass::ErrorSeverity level=ErrorSeverity::Invalid)
 {
-  MsPASSError err(mess,level);
-  int count=this->log_error(err);
-  return count;
+  LogData thislog(this->job_id,alg,mess);
+  allmessages.push_back(thislog);
+  return allmessages.size();
 }
-int ErrorLogger::log_verbose(const std::string mess)
+int ErrorLogger::log_verbose(const std::string  alg,const std::string mess)
 {
   int count;
-  count=this->log_error(mess,ErrorSeverity::Informational);
+  count=this->log_error(alg,mess,ErrorSeverity::Informational);
   return count;
 };
 /* This method needs to return a list of the highest ranking

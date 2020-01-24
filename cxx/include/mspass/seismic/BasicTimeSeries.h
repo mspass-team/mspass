@@ -103,6 +103,40 @@ of this data object.
         {
             return(t0+dt*static_cast<double>(ns-1));
         };
+/*! Return true if a time shift has been applied to the data.
+ * Never true if data were never in an absolute time frame (i.e.UTC)*/
+	bool shifted() const
+	{
+		return t0shift_is_valid;
+	};
+/*! Return the reference time.
+
+  We distinguish relative and UTC time by a time shift constant
+  stored with the object.   This returns the time shift to return
+  data to an epoch time.
+
+  \throw SeisppError object if the request is not rational.  That is this
+  request only makes sense if the data began with an absolute time and was
+  converted with the ator method.   Some cross checks are made for consistency
+  that can throw an error in this condition. */
+  double time_reference() const;
+/*! \brief Force a t0 shift value on data.
+ *
+ * This is largely an interface routine for constructors that need to 
+ * handle data in relative time that are derived from an absolute 
+ * base.  It can also be used to fake processing routines that demand
+ * data be in absolute time when the original data were not.  It was
+ * added for MsPASS to support reads and writes to MongoDB where we
+ * want to be able to read and write data that had been previously 
+ * time shifted (e.g. ArrivalTimeReference).
+ *
+ * \param t is the time shift to force 
+ * */
+	void force_t0_shift(const double t)
+	{
+		this->t0shift=t;
+		t0shift_is_valid=true;
+	};
 /*!
 Absolute to relative time conversion.
 Sometimes we want to convert data from absolute time (epoch times)
@@ -142,17 +176,6 @@ NOTE:  This method is maintained only for backward compatibility.   May be depri
   zero will be shifted left because relative time is t-t0.
   */
   virtual void shift(const double dt);
-/*! Return the reference time.
-
-  We distinguish relative and UTC time by a time shift constant
-  stored with the object.   This returns the time shift to return
-  data to an epoch time.
-
-  \throw SeisppError object if the request is not rational.  That is this
-  request only makes sense if the data began with an absolute time and was
-  converted with the ator method.   Some cross checks are made for consistency
-  that can throw an error in this condition. */
-  double time_reference() const;
 /*! Standard assignment operator. */
   BasicTimeSeries& operator=(const BasicTimeSeries& parent);
 

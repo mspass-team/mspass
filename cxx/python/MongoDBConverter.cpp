@@ -28,8 +28,6 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
   for(kptr=keys.begin();kptr!=keys.end();++kptr)
   {
     double dval;
-    float fval;
-    int32_t i32val;
     long int ival;
     bool bval;
     string sval;
@@ -45,23 +43,34 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
       case MDtype::Real:
       case MDtype::Real64:
       case MDtype::Double:
-        dval=md.get<double>(key);
+        dval=md.get_double(key);
         result[key]=dval;
         break;
       case MDtype::Long:
       case MDtype::Int64:
       case MDtype::Integer:
-        /* python seems to create int and using a long here fails */
-        ival=md.get<int>(key);
+	/* Always use long for this as the intrinsic in python*/
+        ival=md.get_long(key);
         result[key]=ival;
         break;
       case MDtype::Int32:
-        i32val=md.get<int32_t>(key);
-        result[key]=i32val;
+	/* We found for python interaction 32 bit ints and floats
+	 * created havoc.   We thus always promote them to 64 bit versions.
+	 * Writes to cerr in verbose mode are to help debugging problems.
+	 * This depends on get_long autoconversion of this type - maintenance 
+	 * issue if that ever changed.*/
+	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+		<< " defined int32 - promoting to int64"<<endl;
+	ival=md.get_long(key);
+        result[key]=ival;
         break;
       case MDtype::Real32:
-        fval=md.get<float>(key);
-        result[key]=fval;
+	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+		<< " defined float - promoting to double"<<endl;
+	/* This also depends on auto conversion in get_double which is
+	 * implementation dependent*/
+	dval=md.get_double(key);
+        result[key]=dval;
         break;
       case MDtype::String:
         sval=md.get<string>(key);
@@ -81,9 +90,14 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
         }
         break;
       case MDtype::Invalid:
+        if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+		<< " is marked Invalid and will be skipped"<<endl;
+	break;
       default:
-        continue;
-      // do nothing for default - should not happen but will lead size mismatch
+	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+		<< " is marked with unknown type"<<endl
+		<< "This should not happen and is a bug that should be reported"
+		<<endl;
       };
     }catch(MsPASSError& merr){
       if(verbose)

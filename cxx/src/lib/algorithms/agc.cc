@@ -32,7 +32,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
         iwagc=nwin/2;
         if(iwagc<=0) 
         {
-            d.elog.log_error("agc:  illegal gain time window - resolves to less than one sample",
+            d.elog.log_error("agc","Illegal gain time window - resolves to less than one sample",
                 ErrorSeverity::Invalid);
             return TimeSeries();
         }
@@ -150,8 +150,8 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
         gf.ns=gf.s.size();
         return gf;
     }catch(...){
-        string uxperr("agc:  something threw an unexpected exception");
-        d.elog.log_error(uxperr,ErrorSeverity::Invalid);
+        string uxperr("Something threw an unexpected exception");
+        d.elog.log_error("agc",uxperr,ErrorSeverity::Invalid);
         /* Return an empty TimeSeries object in this case. */
         return TimeSeries();
     }

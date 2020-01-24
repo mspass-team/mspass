@@ -134,7 +134,7 @@ void Metadata::clear(const std::string key)
 }
 
 /* Helper returns demangled name using boost demangle.  */
-string demangled_name(boost::any a)
+string demangled_name(const boost::any a)
 {
     try{
         const std::type_info &ti = a.type();
@@ -142,6 +142,14 @@ string demangled_name(boost::any a)
         string pretty_name(boost::core::demangle(rawname));
         return pretty_name;
     }catch(...){throw;};
+}
+std::string Metadata::type(const string key) const
+{
+    try{
+      boost::any a=this->get_any(key);
+      return demangled_name(a);
+    }
+    catch(...){throw;};
 }
 ostream& operator<<(ostream& os, Metadata& m)
 {

@@ -165,7 +165,7 @@ other attributes.
 	try{
           long lval;
   	  lval=get<long>(key);
-  	  return lval;
+  	  return static_cast<int>(lval);
 	}catch(MetadataGetError& merr)
 	{
 	  throw merr;
@@ -190,7 +190,7 @@ other attributes.
 	try{
           int ival;
   	  ival=get<int>(key);
-  	  return ival;
+  	  return static_cast<long>(ival);
 	}catch(MetadataGetError& merr)
 	{
 	  throw merr;
@@ -286,6 +286,7 @@ other attributes.
     }
     return iptr->second;
   };
+  std::string type(const string key) const;
   template <typename T> void put(const string key, T val) noexcept
   {
     boost::any aval=val;
@@ -387,6 +388,16 @@ template <typename T> T Metadata::get(const string key) const
   };
   return result;
 }
+/*! Return a pretty name from a boost any object.
+ *
+ * We use a boost::any object as a container to hold any generic object.
+ * The type name is complicated by name mangling.  This small function
+ * returns a human readable type name.  
+ *
+ * \param val is the boost::any container to be checked for type.
+ * \return demangled name of type of the entity stored in the container.
+ * */
+string demangled_name(const boost::any val);
 /*   Start of helper procedures for Metadata. */
 /*! \brief Define standard types for Metadata.
 

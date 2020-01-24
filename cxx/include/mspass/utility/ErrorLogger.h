@@ -36,17 +36,14 @@ enabled by something like a verbose option to a program.  */
 class ErrorLogger
 {
 public:
-  ErrorLogger(){};
-  ErrorLogger(int job,std::string alg)
+  ErrorLogger(){job_id=0;};
+  ErrorLogger(int job)
   {
     job_id=job;
-    algorithm=alg;
   };
   ErrorLogger(const ErrorLogger& parent);
   void set_job_id(int jid){job_id=jid;};
-  void set_algorithm(std::string alg){algorithm=alg;};
   int get_job_id(){return job_id;};
-  std::string get_algorithm(){return algorithm;};
   /*! Logs one error message.
 
   \param merr - many mspass procedures throw MsPASSError objects.
@@ -61,13 +58,14 @@ public:
     MsPASSError components as arguments with a default that
     allows a default behavior of Invalid as the error state.
 
+    \param alg is name of algorithm posting this message
     \param mess is the message to be posted.
     \param level is the badness level to be set with the message.
        (default is ErrorSeverity::Invalid).
 
     \return size of error log after insertion.
     */
-  int log_error(const std::string mess,
+  int log_error(const std::string alg, const std::string mess,
 		  const mspass::ErrorSeverity level);
 
   /*! \brief Log a verbose message marking it informational.
@@ -77,14 +75,13 @@ public:
   method posts the string mess and marks it Informational. Returns
   the size of the log after insertion.
   */
-  int log_verbose(const std::string mess);
+  int log_verbose(const std::string alg, const std::string mess);
   std::list<LogData> get_error_log(){return allmessages;};
   int size(){return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);
   /*! Return an std::list container with most serious error level marked. */
   std::list<LogData> worst_errors();
 private:
-  std::string algorithm;
   int job_id;
   std::list<LogData> allmessages;
 };
