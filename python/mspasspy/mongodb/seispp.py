@@ -3,6 +3,7 @@ from bson.objectid import ObjectId
 import bson.errors
 import gridfs
 import pickle
+import struct
 #from mspasspy.ccore import MetadataDefinitions
 #from mspasspy.ccore import Metadata
 #from mspasspy.ccore import MDtype
@@ -12,6 +13,11 @@ from mspasspy.ccore import MDtype
 from mspasspy.ccore import MongoDBConverter
 from mspasspy.ccore import ErrorLogger
 from mspasspy.ccore import ErrorSeverity
+from mspasspy.ccore import BasicTimeSeries
+from mspasspy.ccore import TimeReferenceType
+from mspasspy.ccore import dmatrix
+from mspasspy.ccore import Seismogram
+
 def dict2md(d,mdef,elog):
   """
   Function to convert python dict data returned by MongoDB find to mspass::Metadata.
@@ -197,6 +203,109 @@ def dict2md(d,mdef,elog):
           emess+="attribute will not be loaded\n"
           elog.log_error("dict2md",emess,ErrorSeverity.Suspect)
   return md
+def dbload3C(db,oid,mdef,smode='gridfs'):
+    """
+    Loads a Seismogram object from MongoDB based on ObjectId.
+    
+    This is a core reader for Seismogram objects with MongoDB.  The unique
+    document in the wf collection is selected by ObjectID (oid arg).  
+    That oid is used to select a unique waveform document. 
+    Samples can be read from system files or from gridfs.  
+    
+    A string attribute extracted from the db with the key 'storage_mode' is 
+    normally used to tell the function mode to use to fetch the sample 
+    data.   If that attribute is not found the method defined in the smode
+    argument will be attempted.   When smode is gridfs, the function will 
+    load the Metadata from the wf collection which must include the string attribute
+    wfid_string.   It access the sample data from the gridfs_wf 
+    collection after creating a buffer space for the sample data.
+    when smod is file the sample data is read by a C++ function that
+    uses a raw binary read.
+    
+    This function was designed to never abort.  If the read failed the 
+    boolean attribute of Seismogram called 'live' will be set false.  
+    Both fatal and nonfatal errors will be posted to the elog member of 
+    Seismogram.  Callers should test live and handle fatal and nonfatal 
+    errors as appropriate to the algorithm.   
+    
+    Args:
+        db is the MongoDB database object from which data is to be extracted.
+        oid is the ObjectId in the wf collection to be read
+        mdef is a MetadataDefinitions object used to validate types stored
+           in the database against what is expected for a given name.
+           In reading this is a necessary cross check to reduce errors
+           from incorrect expectations of the contents of a name:value pair
+           found in the document associated with this waveform. 
+        smode sets the expected method for saving sample data.
+          (Metadata are normally stored in a single document of the wf collection)
+          Supported values at present are 'file' and 'gridfs' matching 
+          allowed values for the storage_mode attribute.  
+             
+    Returns:  A Seismogram object 
+    Exception:  May throw a RuntimeError exception in one of several
+      error conditions.   Nonfatal errors will be posted to the error 
+      log on the returned object. 
+    """
+    try:
+        wfcol=db.wf
+        findkey={'_id':oid}
+        pymd=wfcol.find_one(findkey)
+        # We create a temporary ErrorLogger object to hold any 
+        # errors encountered in the conversion cross check agains 
+        # MetadataDefinitions
+        elogtmp=ErrorLogger()
+        md=dict2md(pymd,mdef,elogtmp)
+        mode=smode
+        try:
+            smtest=md.get_string('storage_mode')
+            mode=smtest
+            if(not ((smtest=='gridfs')or(smtest=='file'))):
+                mode=smode
+                elogtmp.log_error("dbload3C",
+                  "Required attribute storage_mode has invalid value="+smtest+\
+                  "Using default of "+smode+" passed by function argument smode\n",
+              ErrorSeverity.Complaint)
+        except:
+            elogtmp.log_error("dbload3C",
+              "Required attribute storage_mode not found in document read from db\n" +\
+              "Using default of "+smode+" passed by function argument smode\n",
+              ErrorSeverity.Complaint)
+        if(mode=='gridfs'):
+            # Like this function this one should never throw an exception 
+            # but only post errors to d.elog
+            d=read_data3C_from_gridfs(db,md,elogtmp)
+            return d
+        else:
+            try:
+                # This C++ constructor can fail for a variety of reasons
+                # but all return a RuntimeError exception.  I uses 
+                # a generic catch to be safe.  I would like 
+                # to be able to retrieve the what string for the std::exception
+                # to which a RuntimeError is a subclass, 
+                # but that doesn't seem possible.  To fix this
+                # I believe we would need to implement a custom exception 
+                # in pybind11
+                d=Seismogram(md)
+                d.elog=elogtmp
+                return d
+            except:
+                derr=Seismogram()
+                derr.elog.log_error("dbload3c",
+                    "Failure in file based constructor\n"+
+                    "Most likely problem is that dir and/or defile are invalid\n",
+                    ErrorSeverity.Invalid)
+                return derr
+                
+    except:
+        # Should only land here for an unexpected exception.  To 
+        # be consistent with this being equivalent to a noexcept function
+        # in C++ we create an empty Seismogram and post message to 
+        # it's error log.  
+        derr=Seismogram()
+        derr.elog.log_error("dbload3c","Unexpected exception - debug required for a bug fix",
+                            ErrorSeverity.Invalid)
+        return derr
+    
 def dbsave_elog(elogcol,oidstr,elog):
     """
     Save error log for a data object.
@@ -278,7 +387,7 @@ def save_data3C_to_dfile(d):
     finally:
         fh.close()
         return(foff)
-def save_data3C_to_gridfs(db,d):
+def save_data3C_to_gridfs(db,d,fscol='gridfs_wf',update=False):
     """
     Save a Seismogram object sample data to MongoDB gridfs_wf collection.
     Use this method for saving a Seismogram inside MongoDB.   This is
@@ -292,7 +401,14 @@ def save_data3C_to_gridfs(db,d):
 
     Args:
         db is a database handle returned by the MongodB.client object
+        oid is the ObjectId of parent waveform
         d is the Seismogram to be saved
+        fscol is the gridfs collection name to save the data in
+          (default is 'gridfs_wf')
+        update is a Boolean. When true the existing sample data will be 
+          deleted and then replaced by the data in d. When false (default) 
+          the data will be saved an given a new ObjectId saved to 
+          d with key gridfs_idstr.  
     Return:
         object_id of the document used to store the data in gridfs
         -1 if something failed.  In that condition a generic error message
@@ -300,105 +416,159 @@ def save_data3C_to_gridfs(db,d):
            trying to do this write to preserve the log
     """
     try:
-        col=db.gridfs_wf
-        gfsh=gridfs.GridFS(col)
+        gfsh=gridfs.GridFS(db,collection=fscol)
+        if(update):
+            try:
+                ids=d.get_string('gridfs_idstr')
+                oldid=ObjectId(ids)
+                if(gfsh.exists(oldid)):
+                    gfsh.delete(oldid)
+            except RuntimeError:
+                d.elog.log_error("sav3e_data3C_to_gridfs",
+                  "Error fetching object id defined by key gridfs_idstr",
+                  ErrorSeverity.Complaint)
+            else:
+                d.elog.log_error("sav3e_data3C_to_gridfs",
+                    "GridFS failed to delete data with gridfs_idstr="+ids,
+                    ErrorSeverity.Complaint)
         ub=bytes(d.u)
         # pickle dumps returns its result as a byte stream - dump (without the s)
         # used in file writer writes to a file
-        file_id = gfsh(pickle.dumps(ub))
+        file_id = gfsh.put(pickle.dumps(ub))
+        d.put_string('gridfs_idstr',str(file_id))
     except:
         d.elog.log_error("save_data3C_to_gridfs","IO Error",
                          ErrorSeverity.Invalid)
         return -1
     else:
         return file_id
-def read_data3C_from_gridfs(db,oidstr,mdef):
+def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     """
-    Reads a single Seismogram object from MongoDB defined by the ObjectId in
-    wf collection.  Assumes the wf collection has a wfid (stored as a string)
-    that can can be used to locate the sample data in the gridfs_wf collection
-    using it's ObjectId.
+    Constructs a Seismogram object from Metadata and sample data 
+    pulled from a MongoDB gridfs document.   The Metadata must contain 
+    a string representation of the ObjectId of the document with the 
+    key gridfs_idstr.  That string is used to generate a unique ObjectId 
+    which is then used to find the unique document containing the sample
+    data in the collection called gridfs_wf (optionally can be changed with 
+    argument fscol)
+    
+    This function was designed to never throw an exception but always 
+    return some form of Seismogram object. Caller should test the boolean
+    'live" attribute of the return. If it is false, it means this function
+    failed completely.  The error log may also contain various levels of 
+    warning errors posted to it's internal ErrorLogger (elog) object. 
+    
 
     Args:
         db is the database (output of MongoDBClient) from which to read the data
+        md is the Metadata object used to drive the construction.  This 
+          would normally be constructed from a parent document in the wf
+          collection using dict2md.  A critical key is the entry gridfs_idstr
+          as described above.   Several other key:value pairs are required or
+          the function will abort with the result returned as invalid (live=false).
+          These are:  npts, starttime, and delta.   time_reference is a special 
+          switch for handling UTC versus relative time.   Default is UTC
+          but relative time can be handled with the attribure t0_shift.  
+          See User Manual for more about this feature.
+        elogtmp is an (optional) ErrorLogger object added to the Seismogram 
+          object during construction. It's primary use is to preserve any
+          warning errors encountered during the construction of md passed
+          to the function.   
+        fscol is the collection name the function should use to find the 
+          gridfs data document
     """
-    # First find the document in wf collection defined by oidstr
+    # First make sure we have a valid id string.  No reason to procede if
+    # not the case
     try:
-        col=db.wf
-        oid=ObjectId(oidstr)  #Intentionally assume oidstr is valid
-        findkey={'_id':oid} 
-        mddata=col.find_one(findkey)
-        # We have to initalize wfid to empty to keep it in scope below
-        wfid=ObjectId()
-        wfidstr=""
-        try:
-            wfidstr=mddata['wfid_string']
-            wfid=ObjectId(wfidstr)
-        except RuntimeError:
-            d=Seismogram()
-            d.elog.log_error("read_data3C_from_grifs",
-              "Required parameter wfid_string is not present in document with oid="+oidstr,
-              ErrorSeverity.Invalid)
-            return d
-        except bson.errors.InvalidId:
-            d=Seismogram()
-            d.elog.log_error("read_data3C_from_grifs",
-                "ObjectId string="+wfidstr+" appears to not be a valid objectid",
-                ErrorSeverity.Invalid)
-            return d
-        md=dict2md(mddata,mdef)
+        idstr=md.get_string('gridfs_idstr')
+    except:
+        elogtmp.log_error("read3C_from_gridfs",
+            + "Required attribute gridfs_idstr is not defined - null Seismogram returned",
+            ErrorSeverity.Invalid)
+        dbad=Seismogram()
+        dbad.elog=elogtmp
+        return dbad
+    try:
+        dataid=ObjectId(idstr)
+    except bson.errors.InvalidId:
+        d=Seismogram()
+        d.elog=elogtmp
+        d.elog.log_error("read_data3C_from_grifs",
+                "ObjectId string="+idstr+" appears to not be define a valid objectid",
+            ErrorSeverity.Invalid)
+        return d
+    try:
         # Now we need to build an empty BasicTimeSeries object to be used
         # to construct our working Seismogram
         bts=BasicTimeSeries()
-        bts.ns=mddata['npts']
-        bts.t0=mddata['starttime']
-        bts.dt=mddata['delta']
-        # We construct the Seismogram now and deal with the time standard
-        # issue next - easier for error handling
-        d=Seismogram(bts,md,ErrorLogger())
-        # Before finishing we have to handle the unusual issue in mspass
-        # of handling relative and absolute time.  This is complicated by
-        # needing the distinction been data that were born relative versus
-        # becoming relative from absolute from a time shift.   This section
-        # handles that in a robust way.   First, if the Metadata extracted from
-        # MongoDB don't have the time standard defined, we assume UTC.
-        try:
-            trefstr=md.get_string('time_standard')
-        except RuntimeError:
-            d.tref=TimeReferenceType.UTC
-            d.elog.log_error("read_data3C_from_grifs",
-                "string attribute time_standard was not defined - defaulting to UTC",
-                ErrorSeverity.Complaint)
+        bts.ns=md.get_long('npts')
+        bts.t0=md.get_double('starttime')
+        bts.dt=md.get_double('delta')
+    except RuntimeError:
+        d=Seismogram()
+        d.elog.log_error("read_data3C_from_grifs",
+              "One of required attributes (npts, starttime, and delta) were not defined",
+              ErrorSeverity.Invalid)
+        return d
+    d=Seismogram(bts,md,elogtmp)
+    # Before finishing we have to handle the unusual issue in mspass
+    # of handling relative and absolute time.  This is complicated by
+    # needing the distinction been data that were born relative versus
+    # becoming relative from absolute from a time shift.   This section
+    # handles that in a robust way.   First, if the Metadata extracted from
+    # MongoDB don't have the time standard defined, we assume UTC.
+    try:
+        trefstr=md.get_string('time_standard')
         if(trefstr=='relative'):
             d.tref=TimeReferenceType.relative
             try:
                 t0shift=d.get_double('t0_shift')
                 d.force_t0_shift(t0shift)
             except:
-                elog("read_data3C_from_gridfs","read_data3C_from_gridfs(WARNING):  ",
-                     "Data are marked relative but t0_shift is not defined",
-                     ErrorSeverity.Suspect)
-        else:
-            # we intentionally are loose on what trefstr is - default to utc this way
-            d.tref=TimeReferenceType.UTC
-        # Now try to retrieve the sample data.  Here we use pickle to 
-        # retrieve the raw bits as a bytearray and then put double in the 
-        # d.u matrix. 
-        fscol=db.gridfs_wf
-        gfsh=gridfs.GridFS(fscol)
-        if(gfsh.exists(wfid)):
-            fh=gfsh.find_one(wfid)
-        else:
-            d.elog.log_error("read_data3C_from_gridfs",
-                "No match found for id string ="+wfidstr+" in gridfs_wf collection",
-                ErrorSeverity.Invalid)
-        return d
-    except:
+                d.elog.log_error("read_data3C_from_gridfs",
+                    "read_data3C_from_gridfs(WARNING):  "+\
+                    "Data are marked relative but t0_shift is not defined",
+                        ErrorSeverity.Suspect)
+    except RuntimeError:
+        d.tref=TimeReferenceType.UTC
+        d.elog.log_error("read_data3C_from_grifs",
+            "string attribute time_standard was not defined - defaulting to UTC",
+              ErrorSeverity.Complaint)
+    
+    else:
+        # we intentionally are loose on what trefstr is - default to utc this way
+        d.tref=TimeReferenceType.UTC
+    # Now we actually retrieve the sample data.  
+    gfsh=gridfs.GridFS(db,collection=fscol)
+    # This retrieves only a handle to the file object matching ObjectId=dataid
+    # This probably needs an error handler, but the documentation does not 
+    # make it clear what happens if the return is null
+    fh=gfsh.get(file_id=dataid)
+    ub=pickle.load(fh)
+    # this sets the format string in the obscure way for struct to 
+    # match total number of data points.  These are converted to 
+    # a tuple with that many doubles 
+    fmt="@%dd" % int(len(ub)/8) 
+    x=struct.unpack(fmt,ub)
+    # Validate sizes. For now we post a message making the data invalid 
+    # and set live false if there is a size mismatch.
+    if(len(x)==(3*d.ns)):
+        d.u=dmatrix(3,d.ns)
+        ii=0
+        for i in range(3):
+            for j in range(d.ns):
+                d.u[i,j]=x[ii]
+    else:
+        emess="Size mismatch in sample data.  Number of points in gridfs file=%d but expected %d" \
+           % (len(x),(3*d.ns))
         d.elog.log_error("read_data3C_from_gridfs",
-            "Something threw an unexpected exception\n",
-            ErrorSeverity.Invalid)
-
-def dbsave3C(db,d,mc,smode="file",mmode="save"):
+            emess,ErrorSeverity.Invalid)
+    # Necessary step for efficiency.  Seismogram constructor here 
+    # incorrectly marks data copied form metadata object as changed
+    # This could lead to unnecessary database transaction with updates
+    d.clear_modified()   
+    return d
+def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
     """
     Function to save mspass::Seismogram objects in MongoDB.
 
@@ -470,20 +640,24 @@ def dbsave3C(db,d,mc,smode="file",mmode="save"):
                 + 'This will may cause stranded data in existing files\n'\
                 + 'Consider using smode set to gridfs',ErrorSeverity.Informational)
             error_count+=1
+    except RuntimeError:
+        raise
+    try:
         # Now open the wf collections
         wfcol=db.wf
         if(d.live):
             if( (mmode=='save') or (mmode=='saveall') ):
-
                 if(smode=='file'):
                     foff=save_data3C_to_dfile(d)
                     d.put_long('foff',foff)
+                    d.put_string('storage_mode','file')
                 elif(smode=='gridfs'):
                     fileoid=save_data3C_to_gridfs(db,d)
-                    d.put_string('wfid_string',fileoid.str())
+                    d.put_string('gridfs_idstr',str(fileoid))
+                    d.put_string('storage_mode','gridfs')
                 else:
                     if(not(smode=='unchanged')):
-                      elog("dbsave3C","Unrecognized value for smode="+\
+                      d.elog.log_error("dbsave3C","Unrecognized value for smode="+\
                         smode+" Assumed to be unchanged\n"\
                         "That means only Metadata for these data were saved and sample data were left unchanged\n",
                          ErrorSeverity.Complaint)
@@ -497,13 +671,24 @@ def dbsave3C(db,d,mc,smode="file",mmode="save"):
                 newid=wfcol.insert_one(updict).inserted_id
                 # Because we trap condition of an invalid mmode we can do just an else instead of This
                 #elif( (mmode=='updatemd') or (mmode=="updateall")):
+                #
+                # insert_one creates a new copy so we need to post the 
+                # new ObjectId
+                d.put_string('wfid_string',str(newid)) 
             else:
                 # Make sure the oid string is valid
                 oid=ObjectId()
                 try:
+                    oidstr=d.get_string('wfid_string')
                     oid=ObjectId(oidstr)
+                except RuntimeError:
+                    d.elog.log_error("dbsave3C","Error in attempting an update\n" +\
+                      "Required key wfid_string, which is a string representation of parent ObjectId, not found\n" +\
+                      "Cannot peform an update - updated data will not be saved",
+                      ErrorSeverity.Invalid)
+                    error_count += 1
                 except bson.errors.InvalidId:
-                    elog("dbsave3C","Error running in updatemd mode\n" +\
+                    d.elog.log_errore("dbsave3C","Error in attempting an update\n" +\
                       "ObjectId string="+oidstr+" is not a valid ObjectId string\n" +\
                      "Cannot perform an update - this datum will be not be saved",
                      ErrorSeverity.Invalid)
@@ -514,41 +699,57 @@ def dbsave3C(db,d,mc,smode="file",mmode="save"):
                     if(mmode=='updateall'):
                         updict=mc.all(d,True)
                     else:
-                        updict=mc.writeable(d,True)
-                    ur=wfcol.update_one({'_id': oid},updict)
-                    if(ur.modified_count <=0):
-                        emess="metadata attribute update failed\n "
-                        if(mmode=="updateall"):
-                            emess+="Sample data also will not be saved\n"
-                        d.elog.log_error("dbsave3C",emess,ErrorSeverity.Invalid)
-                        error_count+=1
-                    elif(mmode=="updateall"):
+                        updict=mc.modified(d,True)
+                        # DEBUG
+                        print('number changed=',len(updict))
+                    if(len(updict)>0):
+                        try:
+                            ur=wfcol.update_one({'_id': oid},{'$set':updict})
+                        except:
+                            # This perhaps should be a fatal error
+                            d.elog.log_error("dbsave3C",
+                                "Metadata update operation failed with MongoDB\n"+\
+                                "All parts of this Seismogram will be dropped",
+                                ErrorSeverity.Invalid)
+                            error_count+=1
+                            return error_count
+                        # This silently skips case when no Metadata were modified
+                        # That situation would be common if only the sample 
+                        # data were changed and  no metadata operations
+                        # were performed
+                        if(ur.modified_count <=0):
+                            emess="metadata attribute update failed\n "
+                            if(mmode=="updateall"):
+                                emess+="Sample data also will not be saved\n"
+                                d.elog.log_error("dbsave3C",emess,ErrorSeverity.Invalid)
+                                error_count+=1
+                    if(mmode=="updateall"):
                         if(smode=='file'):
                             save_data3C_to_dfile(d)
                         elif(smode=='gridfs'):
                         #BROKEN - this needs to be changed to an update mode
                         # Working on more primitives first, but needs to be fixed
-                            save_data3C_to_gridfs(db,d)
+                            save_data3C_to_gridfs(db,d,update=True)
                         else:
                             if(not(smode=='unchanged')):
-                                elog("dbsave3C","Unrecognized value for smode="+\
+                                d.elog.log_error("dbsave3C","Unrecognized value for smode="+\
                                   smode+" Assumed to be unchanged\n"+\
                                   "That means only Metadata for these data were saved and sample data were left unchanged",
                                   ErrorSeverity.Suspect)
                                 error_count+=1
-
     except:
         # Not sure what of if update_one can throw an exception.  docstring does not say
-        elog.d.log_error("dbsave3C","something threw an unexpected exception in update section",
+        d.elog.log_error("dbsave3C",
+            "something threw an unexpected exception",
                          ErrorSeverity.Invalid)
         error_count+=1
     finally:
         # always save the error log.  Done before exit in case any of the 
         # python functions posted errors
         elogcol=db.elog
-        #oidstr=d.get_string('wfid_string')
+        oidstr=d.get_string('wfid_string')
         #dbsave_elog(elogcol,oidstr,d.elog)
         # this works as well and simpler - retained above temporarily
-        dbsave_elog(elogcol,str(newid),d.elog)
+        dbsave_elog(elogcol,oidstr,d.elog)
         return error_count
         
