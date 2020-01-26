@@ -343,6 +343,20 @@ other attributes.
   {
       return changed_or_set;
   };
+  /*! \brief Mark all data as unmodified.
+   *
+   * There are situations where it is necessary to clear the 
+   * data structure used to mark changed metadata.  The best
+   * example know is when data objects interact with a database
+   * and try to do updates.   Effort can be wasted in unnecessary
+   * updates if metadata are improperly marked as modified.   
+   * This method clears the entire container that defines
+   * changed data. 
+   * */
+  void clear_modified() 
+  {
+	  changed_or_set.clear();
+  };
   /*! Return all keys without any type information. */
   set<string> keys() const noexcept;
   /*! Test if a key has an associated value.  Returns true if
