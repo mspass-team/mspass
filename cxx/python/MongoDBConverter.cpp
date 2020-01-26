@@ -33,24 +33,43 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
     string sval;
     try{
       string keystr(*kptr);
-      /* pybind11 operator[] for a dict seems to only work with a
-      C char* key.  Use of a std::string creates an errors so we use this
-      pointer to make the logic clearer. */
-      const char *key=keystr.c_str();
-      MDtype mdt=mdef.type(key);
+      string ukey;  // this is used to hold unique key to handle aliases
+      MDtype mdt;
+      if(mdef.is_alias(keystr))
+      {
+	pair<string,MDtype> uname;
+        uname=mdef.unique_name(keystr);
+	ukey=uname.first;
+	mdt=uname.second;
+      }
+      else
+      {
+        try{
+	  ukey=keystr;
+          mdt=mdef.type(keystr);
+         }catch(MsPASSError& err)
+         {
+	   if(verbose) err.log_error();
+	   cerr << "Data for this attribute may be lost"<<endl;
+	   continue;
+         }
+      }
+      /*pybind dict container requires a const char* so we need to 
+       * create this pointer and use it for filling result*/
+      const char *key=ukey.c_str(); 
       switch(mdt)
       {
       case MDtype::Real:
       case MDtype::Real64:
       case MDtype::Double:
-        dval=md.get_double(key);
+        dval=md.get_double(keystr);
         result[key]=dval;
         break;
       case MDtype::Long:
       case MDtype::Int64:
       case MDtype::Integer:
 	/* Always use long for this as the intrinsic in python*/
-        ival=md.get_long(key);
+        ival=md.get_long(keystr);
         result[key]=ival;
         break;
       case MDtype::Int32:
@@ -59,27 +78,27 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
 	 * Writes to cerr in verbose mode are to help debugging problems.
 	 * This depends on get_long autoconversion of this type - maintenance 
 	 * issue if that ever changed.*/
-	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+	if(verbose) cerr << "MongoDBConverter:  data for keystr="<<keystr
 		<< " defined int32 - promoting to int64"<<endl;
-	ival=md.get_long(key);
+	ival=md.get_long(keystr);
         result[key]=ival;
         break;
       case MDtype::Real32:
-	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+	if(verbose) cerr << "MongoDBConverter:  data for keystr="<<keystr
 		<< " defined float - promoting to double"<<endl;
 	/* This also depends on auto conversion in get_double which is
 	 * implementation dependent*/
-	dval=md.get_double(key);
+	dval=md.get_double(keystr);
         result[key]=dval;
         break;
       case MDtype::String:
-        sval=md.get<string>(key);
+        sval=md.get<string>(keystr);
         result[key]=sval;
         break;
       case MDtype::Boolean:
         /* this one is tricky because of a mismatch with python's rather
         ridiculous concept of a boolean as a class */
-        bval=md.get<bool>(key);
+        bval=md.get<bool>(keystr);
         if(bval)
         {
           result[key]=py::bool_(true);
@@ -90,11 +109,11 @@ py::dict MongoDBConverter::extract_selected(const Metadata& md,
         }
         break;
       case MDtype::Invalid:
-        if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+        if(verbose) cerr << "MongoDBConverter:  data for keystr="<<keystr
 		<< " is marked Invalid and will be skipped"<<endl;
 	break;
       default:
-	if(verbose) cerr << "MongoDBConverter:  data for key="<<key
+	if(verbose) cerr << "MongoDBConverter:  data for keystr="<<keystr
 		<< " is marked with unknown type"<<endl
 		<< "This should not happen and is a bug that should be reported"
 		<<endl;
