@@ -87,6 +87,14 @@ public:
   To get a list of aliases call the aliases method.
   */
   bool has_alias(const std::string key) const;
+  /*! \brief Ask if a key is a registered alias.
+   *
+   This asks the inverse question to has_alias.  That is, it yields
+   true of the key is registered as a valid alias.  It returns false
+   if the key is not defined at all.   Note it will yield false if 
+   the key is a registered unique name and not an alias. 
+   */
+  bool is_alias(const std::string key) const;
   list<std::string> aliases(const std::string key) const;
   /*! Get definitive name for an alias.
 

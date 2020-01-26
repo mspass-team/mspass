@@ -163,6 +163,16 @@ void MetadataDefinitions::add_alias(const std::string key, const std::string ali
   aliasmap.insert(std::pair<string,string>(key,aliasname));
   alias_xref.insert(std::pair<string,string>(aliasname,key));
 }
+bool MetadataDefinitions::is_alias(const std::string key) const
+{
+  map<string,string>::const_iterator mptr;
+  mptr=alias_xref.find(key);
+  if(mptr==alias_xref.end())
+	  return false;
+  else
+	  return true;
+}
+
 std::pair<std::string,mspass::MDtype> MetadataDefinitions::unique_name
                                   (const string aliasname) const
 {
@@ -262,7 +272,7 @@ bool MetadataDefinitions::writeable(const string key) const
   roptr=roset.find(key);
   if(roptr==roset.end())
     return true;
-  else
+  else if(this->is_alias(key))
   {
     /* roset only contains unique key entries.  This checks any possible
     aliases. */
@@ -274,7 +284,8 @@ bool MetadataDefinitions::writeable(const string key) const
       kp=this->unique_name(key);
     }catch(MsPASSError &mderr)
     {
-      cerr << "MetadataDefinitions::writeable method (WARNING):  Requested key is undefined"<<endl
+      cerr << "MetadataDefinitions::writeable method (WARNING):  Requested key "
+	 << key<<" is undefined and is not a registered alias"<<endl
          <<"This may cause downstream problems"<<endl;
       return false;
     }
@@ -283,6 +294,12 @@ bool MetadataDefinitions::writeable(const string key) const
       return true;
     else
       return false;
+  }
+  else
+  {
+    /* A bit confusing layout here.  We land here if the 
+     * key was marked read only and was not an alias.  */
+    return false;
   }
 }
 /* This function is a thin wrapper for writeable for efficiency */
