@@ -513,6 +513,7 @@ PYBIND11_MODULE(ccore,m)
                                                 (m,"Seismogram")
     .def(py::init<>())
     .def(py::init<CoreSeismogram,std::string>())
+    .def(py::init<BasicTimeSeries,Metadata,ErrorLogger>())
     .def(py::init<Metadata>())
     ;
   /* This object is in a separate pair of files in this directory.  */
