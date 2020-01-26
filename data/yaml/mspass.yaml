@@ -3,6 +3,9 @@
 # top level master is Attributes.  Exensions should be added in groups with
 # appropriate names.  All will be parsed.
 #
+# All real number values should have type: set to double because python float
+# today is always a 64 bit entity which to C++ is a double
+#
 # For each entry these keys are required:  name, type, and concept.
 # If aliases is missing it means tehre are none.  You can also just have no entry after the keyword
 # readonly is a boolean.  If is present it will be taken as true unless explicitly marked false
@@ -21,14 +24,14 @@ Attributes:
     concept: Number of data samples
     aliases: nsamp wfdisc.nsamp
   - name: delta
-    type: real
+    type: double
     concept:  Data sample interval in seconds
     aliases: dt
   - name: sampling_rate
-    type: real
+    type: double
     concept:  Data sampling frequency in Hz=1/s
   - name: calib
-    type: real
+    type: double
     concept: Nominal conversion factor for changing sample data to ground motion units.
   - name: net
     type: string
@@ -52,26 +55,26 @@ Attributes:
     unique_id:  staid
     collection: site
   - name: starttime
-    type:  real
+    type: double
     concept:  Time of first sample of data (epoch time or relative to some other time mark)
     aliases: t0 time
 # These are additional attributes for the static site collection/table
   - name: site_lat
-    type: real
+    type: double
     concept:  latitude of a seismic station/instrument in degrees
     aliases: STLA site.lat
     readonly: true
     unique_id:  staid
     collection: site
   - name: site_lon
-    type: real
+    type: double
     concept:  longitude of a seismic station/instrument in degrees
     aliases: STLO stlo site.lon
     readonly: true
     unique_id:  staid
     collection: site
   - name: site_elev
-    type: real
+    type: double
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
     aliases: STEL stel site.elev
     readonly: true
@@ -82,7 +85,8 @@ Attributes:
   - name: staid
     type: integer
     concept:  unique identifier of a particular instrument/seismic station
-    readonly:  true
+    # this is not marked readonly as needs to be saved always in wf
+    readonly:  false
     unique_id:  staid
     collection:  site
 # These define the css3.0 sitechan minimal Attributes
@@ -94,14 +98,14 @@ Attributes:
     unique_id: chanid
     collection: sitechan
   - name: hang
-    type: real
+    type: double
     concept:  Azimuth (in degree) of a seismometer component - horizontal angle
     aliases: CMPAZ sitechan.hang
     readonly: true
     unique_id: chanid
     collection: sitechan
   - name: vang
-    type: real
+    type: double
     concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
     aliases: CMPINC sitechan.vang
     readonly: true
@@ -119,28 +123,28 @@ Attributes:
 # capability is probably possible, but would create baggage for the primary
 # use goal of mspass
   - name: source_lat
-    type:  real
+    type: double
     concept: Latitude (in degrees) of the hypocenter of seismic source
     aliases:  EVLA origin.lat
     readonly: true
     unique_id: source_id
     collection: source
   - name: source_lon
-    type:  real
+    type: double
     concept: Longitude (in degrees) of the hypocenter of seismic source
     aliases:  EVLO origin.lon
     readonly: true
     unique_id: source_id
     collection: source
   - name: source_depth
-    type:  real
+    type: double
     concept: Depth (in km) of the hypocenter of seismic source
     aliases:  EVDP origin.depth
     readonly: true
     unique_id: source_id
     collection: source
   - name: source_time
-    type:  real
+    type: double
     concept: Origin time of the hypocenter of seismic source (epoch time)
     aliases:  origin.time
     readonly: true
@@ -149,7 +153,8 @@ Attributes:
   - name: evid
     type: integer
     concept:  unique identifier of a particular seismic source
-    readonly:  true
+    # this is not marked readonly as needs to be saved always in wf
+    readonly:  false
     unique_id:  evid
     collection:  source 
   - name: orid
@@ -158,52 +163,61 @@ Attributes:
     readonly:  true
     unique_id:  evid
     collection:  source 
+BasicTimeSeries:
+  - name: time_standard
+    type: string
+    concept:  Defines time standard for meaning of t0 of a seismogram (default should be UTC)
+    readonly: false
+  - name: t0_shift
+    type: double
+    concept: Value of a time shift applied to a standard (normally UTC standard)
+    readonly: false
 ThreeComponentData:
   - name: U11
-    type: real
+    type: double
     concept:  Row 1,  column 1 of 3C data transformation matrix
     readonly: false
   - name: U21
-    type: real
+    type: double
     concept:  Row 2,  column 1 of 3C data transformation matrix
     readonly: false
   - name: U31
-    type: real
+    type: double
     concept:  Row 3,  column 1 of 3C data transformation matrix
     readonly: false
   - name: U12
-    type: real
+    type: double
     concept:  Row 1,  column 2 of 3C data transformation matrix
     readonly: false
   - name: U22
-    type: real
+    type: double
     concept:  Row 2,  column 2 of 3C data transformation matrix
     readonly: false
   - name: U32
-    type: real
+    type: double
     concept:  Row 3,  column 2 of 3C data transformation matrix
     readonly: false
   - name: U13
-    type: real
+    type: double
     concept:  Row 1,  column 3 of 3C data transformation matrix
     readonly: false
   - name: U23
-    type: real
+    type: double
     concept:  Row 2,  column 3 of 3C data transformation matrix
     readonly: false
   - name: U33
-    type: real
+    type: double
     concept:  Row 3,  column 3 of 3C data transformation matrix
     readonly: false
 Magnitude:
   - name: ms
-    type: real
+    type: double
     concept: Surface wave magnitude
     readonly: true
     unique_id: evid
     collection: source
   - name: mb
-    type: real
+    type: double
     concept: Body wave magnitude
     readonly: true
     unique_id: evid
@@ -232,4 +246,20 @@ SeismicPhases:
   - name: iphase
     type: string
     concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
+    readonly: false
+MongoDb:
+# This set of parameters are essential for mspass, but are intimately linked to MongoDB
+  - name: wfid_string
+    type: string
+    concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
+    readonly: false
+    collection: wf
+  - name: gridfs_idstr
+    type: string
+    concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
+    readonly: false 
+    collection: gridfs_wf 
+  - name: storage_mode
+    type: string
+    concept: Provides storage options for seismic data samples.
     readonly: false
