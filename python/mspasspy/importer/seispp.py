@@ -2,8 +2,8 @@
 import os
 import yaml
 from pymongo import MongoClient
-from mspasspy import MetadataDefinitions
-from mspasspy import MDtype
+from mspasspy.ccore import MetadataDefinitions
+from mspasspy.ccore import MDtype
 import numpy as np
 def dbsave_indexdata(filebase,dbname,ext='d3C'):
     """
