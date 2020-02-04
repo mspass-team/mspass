@@ -38,21 +38,21 @@ Attributes:
     concept: network code (net component of SEED net:sta:chan)
     aliases: network
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
   - name: sta
     type: string
     concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
     aliases: station site.sta sitchan.sta wf.sta
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
   - name: loc
     type: string
     concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
     aliases: location sitechan.loc site.loc
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
   - name: starttime
     type: double
@@ -64,28 +64,28 @@ Attributes:
     concept:  latitude of a seismic station/instrument in degrees
     aliases: STLA site.lat
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
   - name: site_lon
     type: double
     concept:  longitude of a seismic station/instrument in degrees
     aliases: STLO stlo site.lon
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
   - name: site_elev
     type: double
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
     aliases: STEL stel site.elev
     readonly: true
-    unique_id:  siteid
+    unique_id:  site_id
     collection: site
-  - name: siteid
+  - name: site_id
     type: integer
     concept:  unique identifier of a particular instrument/seismic station
     # this is not marked readonly as needs to be saved always in wf
     readonly:  false
-    unique_id:  siteid
+    unique_id:  site_id
     collection:  site
 # These define the css3.0 sitechan minimal Attributes
   - name: chan
@@ -148,19 +148,21 @@ Attributes:
     readonly: true
     unique_id: source_id
     collection: source
-  - name: evid
+  - name: source_id
     type: integer
     concept:  unique identifier of a particular seismic source
     # this is not marked readonly as needs to be saved always in wf
     readonly:  false
-    unique_id:  evid
+    unique_id:  source_id
     collection:  source 
+    alias: evid,event.evid
   - name: orid
     type: integer
     concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
     readonly:  true
-    unique_id:  evid
+    unique_id:  souce_id
     collection:  source 
+    alias: origin.orid,event.orid
 BasicTimeSeries:
   - name: time_standard
     type: string
@@ -261,3 +263,11 @@ MongoDb:
     type: string
     concept: Provides storage options for seismic data samples.
     readonly: false
+  - name: oid_site
+    type: string
+    concept:  String representation of ObjectId of an entry in site collection - for linking to other collections
+    readonly:  false
+  - name: oid_source
+    type: string
+    concept:  String representation of ObjectId of an entry in source collection - for linking to other collections
+    readonly:  false
