@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>MsPASS Database Concepts</title>
+  </head>
+  <body>
+    <h1>1.2.3. Database Concepts</h1>
+    <h2><a name="NonSQL_Database"></a>1.2.3.1. NonSQL Database</h2>
+    <p>This should mostly be a link to MongoDB's introduction explaining
+      document database conceps.<br>
+    </p>
+    <h2><a name="Schema"></a>1.2.3.2. Schema</h2>
+    <h3 align="center"><i>Overview</i></h3>
+    <p>Wikepedia defines a database schema as follow:&nbsp;
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      The term "<a href="https://en.wiktionary.org/wiki/schema"
+        class="extiw" title="wikt:schema">schema</a>" refers to the
+      organization of data as a blueprint of how the database is
+      constructed (divided into database tables in the case of <a
+        href="https://en.wikipedia.org/wiki/Relational_databases"
+        class="mw-redirect" title="Relational databases">relational
+        databases</a>)."&nbsp; As this definition states in a relational
+      database like CSS3.0 the schema defines a set of tables,
+      attributes, and a how they are linked.&nbsp;&nbsp; MsPASS uses a
+      "nonSQL database", which means the interaction is not with
+      Structured Query Language (SQL).&nbsp;&nbsp; We use a particular
+      form of nonSQL database called a "document database" as
+      implemented in the open source package <a
+        href="https://www.mongodb.com/">MongoDB</a>.&nbsp; <br>
+    </p>
+    <p>MongoDB has excellent documentation.&nbsp;&nbsp; Newcomers to
+      MsPASS who are unfamiliar with the idea of a document database
+      should read the <a
+        href="https://docs.mongodb.com/manual/introduction/">Introduction</a>
+      section of the MongoDB tutorial before reading the rest of this
+      document.<br>
+    </p>
+    <h3 align="center"><i>Design Concepts</i></h3>
+    <p>A properly designed database schema needs to prioritize the
+      problem it aims to solve.&nbsp;&nbsp; The schema for MsPASS was
+      aimed to address the following design goals:</p>
+    <p></p>
+    <ol>
+      <li><i>Efficient flow through SPARK.&nbsp;&nbsp; </i>A key reason
+        MongoDB was chosen as the database engine for MsPASS was that it
+        is cleanly integrated with SPARK.&nbsp;&nbsp; Nonetheless, the
+        design needs to minimize database transaction within a
+        workflow.&nbsp;&nbsp; Our aim was to try to limit database
+        transaction to reading input data, saving intermediate results,
+        and saving a final result.&nbsp;&nbsp; <br>
+        <i></i></li>
+      <li><i>KISS (Keep It Simple Stupid).&nbsp; </i>Experience has
+        shown clearly that complex relational schemas like CSS3.0 have
+        many, sometimes subtle, issues that confound beginners.&nbsp; A
+        case in point is that large organizations commonly have a team
+        of database managers to maintain the integrity of their database
+        and optimize performance.&nbsp;&nbsp; An important objective of
+        our design is to keep it simple so scientists do not have to be
+        come database managers to work with the system.<br>
+      </li>
+      <li><i>Efficient and robust handling of three-component
+          seismograms.&nbsp; </i>Although MsPASS supports <a
+          href="../DataObjects/DataObjects.html">scalar seismic data,</a>
+        our view is that the greater need in the community is an
+        efficient system for handling 3C data. &nbsp; In reality, our
+        schema design ended up completely neutral on this point and
+        scalar and 3C data are handled identically.&nbsp; The only
+        differences is what attributes (Metadata) are required. <br>
+      </li>
+      <li><i>Provide a clean mechanism to manage static metadata.</i>&nbsp;
+        MsPASS is a system designed to process a "data set", which means
+        the data are preassembled, validated, and then passed into a
+        processing chain.&nbsp;&nbsp; The first two steps (assembly and
+        validation) are standalone tasks that require assembly of
+        waveform data and a heterogenous collection of metadata from a
+        range of sources.&nbsp;&nbsp; Much of that problem has been the
+        focus of extensive development work by IRIS and the
+        FDSN.&nbsp;&nbsp; We thus provide tools for importing datasets
+        through web services that have become the current, standard
+        exchange for data and Metadata.&nbsp;&nbsp; The complexity of
+        the Metadata is the reason that development effort has been far
+        from trivial.&nbsp;&nbsp; A primary issue is that some
+        attributes change with nearly every seismogram (e.g. the start
+        time of a waveform), while many others either never change (e.g.
+        a station name almost never changes) or change rarely (e.g. a
+        change in sensor orientation).&nbsp; We aimed for a balance to
+        efficiently manage static data while avoiding all the things
+        that can go wrong that have to be handled by network operators
+        and the PIs of shorter term deployments.&nbsp; <br>
+        <i></i></li>
+      <li><i>Extensible.&nbsp;&nbsp; </i>A DBMS cannot be too rigid, or
+        it will create barriers to progress.&nbsp;&nbsp; A goals was to
+        provide a mechanism for users to extend the database with little
+        to no impact on the core system.&nbsp; <br>
+      </li>
+    </ol>
+    On the other hand, we have explicitly avoided worrying about
+    problems we concluded were already solved.&nbsp; These are:<br>
+    <ol>
+      <li><i>Catalog preparation.</i>&nbsp;&nbsp; At this time a primary
+        job of all operational seismic networks of all scales is
+        preparation of a catalog of seismic events and linking that
+        information to data used to generate the event location and
+        source parameters.&nbsp; There are multiple commericial and
+        government supported systems for solving this
+        problem.&nbsp;&nbsp; We thus treat catalog data as an import
+        problem.</li>
+      <li><i>Real time processing</i>.&nbsp;&nbsp; Although there are
+        elements of MsPASS that are amenable to near real time processng
+        of streaming data, we view real time processing as another
+        solved problem outside the scope of this system. <br>
+      </li>
+    </ol>
+    <h3 align="center"><i>Collections</i></h3>
+    <p><i>wf</i>.&nbsp; The wf collection (reminder:&nbsp; a
+      "collection" is roughly equivalent to a table in a relational
+      database and "document" is roughly equivalent to a row (tuple) in
+      a relation/table) is THE core table in MsPASS.&nbsp; All
+      seismogram read operations access ONLY the wf collection.&nbsp;
+      Writers can and are more complicated because they may have to deal
+      with newly generated attributes potentially fundamental changes in
+      the nature of the waveform we want to index.&nbsp; <i>e.g.</i>, a
+      stack can become completely inconsistent with the concept of a
+      station name and may require creation of a different set of
+      attributes like an index back to the parent seismograms that
+      created the stack.&nbsp;&nbsp; We thus define this rule that all
+      users need to recognize in designing a MsPASS workflow:</p>
+    <p><u>Rule 1.</u>&nbsp; All required attributes to run a workflow
+      must exist in the wf collection before starting the
+      job.&nbsp;&nbsp; <br>
+    </p>
+    <p>An abstract way of saying this is that at the start of processing
+      the input data must obey what MongoDB calls an <a
+        href="https://docs.mongodb.com/manual/core/data-model-design/">embedded</a>
+      data model.&nbsp; On the oher hand, the full system has support
+      for <i>normalized</i> data managed by collections like site and
+      source (see below - note the list of normalization collections is
+      expected to evolve as MsPASS is developed).&nbsp; <br>
+    </p>
+    <p>This model was chosen exactly due to design issues 1 and 2
+      above:&nbsp; data processing is efficient because database
+      transactions are limited to the initial loading of data into the
+      system, and the model statisfies the KISS principle because within
+      a processing chain attributes look like header data accessible by
+      simple name:value pair getters and putters. <br>
+    </p>
+    <p><i>elog</i>.&nbsp;&nbsp; The elog collection holds log messages
+      that should automatically be posted and saved in a MsPASS
+      workflow.&nbsp; The elog collection saves any entries in
+      ErrorLogger objects that are components of all data objects
+      handled internally by MsPASS.&nbsp;&nbsp; The main idea of an
+      ErrorLogger is a mechanism to post errors of any level of severity
+      to the data with which the error is associated, preserve a record
+      that can be used by the user to debug the problem, and allow the
+      entire job to run to completion even if the error made the data
+      invalid.&nbsp; More details about this idea can be found in the <a
+        href="../DataObjects/DataObjects.html">Data Objects </a>section.
+      <br>
+    </p>
+    <p><i>site.&nbsp; </i>The site collection is intended as a largely
+      static table that can be used to <a
+        href="https://docs.mongodb.com/manual/core/data-model-design/">normalize</a>
+      a wf collection.&nbsp;&nbsp; The name is (intentionally) identical
+      to the CSS3.0 site table.&nbsp;&nbsp; It's role is similar, but
+      not identical to the CSS3.0 table.&nbsp; There are two primary
+      differences.&nbsp; First, the (unnecessary in our view)
+      requirement of a station name tag is not required in the documents
+      the collection contains.&nbsp; It is optional.&nbsp; Second, the
+      link to data is not defined through a station name tag, but by a
+      form of spatial query.&nbsp; The use of a spatial query was a
+      design decision based on the author's experiences using CSS3.0's
+      site table as implemented in Antelope.&nbsp;&nbsp; Antelope uses
+      the station name and a time period as a key to find location
+      information for a waveform.&nbsp;&nbsp; That model works well for
+      bulletin preparation but creates a dilema for processed
+      waveforms;&nbsp; the concept of a "station name" is meaningless
+      for many types of processed waveform.&nbsp; Two type examples, are
+      a phased array beam and Common Conversion Point (CCP) stacks of
+      receiver functions.&nbsp;&nbsp; On the other hand, many such
+      processed waveforms have a space concept that needs to be
+      preserved.&nbsp; Hence, the location information in the collection
+      may relate to some more abstract point like&nbsp; piercing point
+      for a CCP stack.&nbsp;&nbsp; Each document is keyed a unique
+      integer with tag (siteid).&nbsp;&nbsp; wf documents can index a
+      location in site either through the siteid, or the ObjectId of an
+      entry in the collection (the choice is implementation
+      dependent).&nbsp;&nbsp;&nbsp; <br>
+    </p>
+    <p>A spatial query to link anything to a point in the site
+      collection has two complexities:&nbsp; (1) all spatial queries
+      require a uncertainty specification that data and implementation
+      dependent, and (2) sometimes, but not always, a vertical position
+      (site_elev) needs to be defined.&nbsp; The first is readily solved
+      with the geospatial indexing capabilities of MongoDB. &nbsp;
+      Geospatial queries can define a radius of uncertainty to
+      efficiently find one or more documents linked to a circle defined
+      relative to a query point.&nbsp; The size of such a circle is
+      always a data dependent choice;&nbsp; a scientist working with
+      free oscillations of the earth require station coordinates with
+      minimal precision, while an active source experiment often
+      requires submeter location precision.&nbsp;&nbsp; We treat
+      vertical positions differently.&nbsp; The common key to define
+      vertical position is <i>site_elev</i>.&nbsp;&nbsp; How to handle
+      vertical position is application dependent.&nbsp; <i>e.g. </i>to
+      look up the location of an operational GSN station, it may be
+      necessary to distinguish borehole and vault instruments that are
+      deployed at many stations.&nbsp;&nbsp; In contrast, a point
+      defined by piercing points for a CCP stack would normally be
+      assumed referenced to a common, fixed depth so site_elev may not
+      even be needed.&nbsp; We deal with this complexity by a defining
+      another rule that user's need to recognize and abide by:<br>
+    </p>
+    <p><u>Rule 2</u>&nbsp; The site collection only contains points in
+      space relevant to the data set.&nbsp;&nbsp; Assembly of a working
+      data set requires linking required points in site to wf documents
+      as required and defining the coordinates with the proper wf keys.
+      &nbsp; <br>
+    </p>
+    <p>As an example, to begin processing on a set of raw waveforms
+      imported from the FDSN the wf collection would normally need to be
+      normalized with data from site to set geographic locations of the
+      instrument that generated each wf entry:&nbsp; <i>site_lon, site_lan,
+      </i>and <i>site_elev</i>.&nbsp;&nbsp; Partially processed wf
+      entries may require the definition of additional geospatial points
+      in site. <br>
+    </p>
+    <p><i>source.&nbsp;&nbsp; </i>The source collection has much in
+      common with site, but has two fundamental differences:&nbsp; (1)
+      the origin time of each source needs to be specified, and (2)
+      multiple estimates are frequently available for the same
+      source.&nbsp;&nbsp; <br>
+    </p>
+    <p>The origin time issue is a more multifaceted problem that it
+      might first appear.&nbsp; The first is that MongoDB, like ArcGIS,
+      is map-centric and stock geospatial queries lack a depth
+      attribute, let alone a time variable.&nbsp;&nbsp; Hence,
+      associating a waveform to a source position defined in terms of
+      hypocenter coordinates (<i>source_lat, source_lon, source_depth</i>,
+      and <i>source_time</i>) requires a multistage query that can
+      potentially be very slow for a large data set.&nbsp;&nbsp; Hence,
+      Rule 2 could be restated as Rule 3 with "site collection" replaced
+      everythere by "source collection".&nbsp; The other issue that
+      distinguishes origin time is that it's accuracy is data
+      dependent.&nbsp;&nbsp; With earthquake it is always estimated by
+      an earthquake location algorithm, while with active source it
+      normally measured directly.&nbsp; The complexity with active
+      source data is a classic case distinguishing "precision" from
+      "accuracy".&nbsp;&nbsp; Active source times relative to the start
+      time of a seismogram may be very precise but not accurate.&nbsp; A
+      type example is multichannel data where time 0 of each seismogram
+      is defined by the shot time, but the absolute time linked to that
+      shot may be poorly constrained.&nbsp;&nbsp; We address this
+      problem in MsPASS through the concept of UTC versus "Relative"
+      time definined in all MsPASS data objects.&nbsp; See the <a
+        href="../DataObjects/DataObjects.html">Data Object section</a>
+      on BasicTimeSeries for more on this topic. <br>
+    </p>
+    <p>A final point about the source table is the issue of multiple
+      estimates of the same event.&nbsp;&nbsp; The CSS3.0 has an
+      elaborate mechanism for dealing with this issue involving three
+      closely related tables (relations):&nbsp; event, origin, assoc,
+      and arrival.&nbsp;&nbsp; The approach we take in MsPASS is to
+      treat that issue as somebody else's problem.&nbsp;&nbsp; Thus, for
+      the same reason as above we state rule 3 which is very similar to
+      rule 2:<br>
+    </p>
+    <p><u>Rule 3</u>.&nbsp; The source collection could contain any
+      useful source positions that define locations in space and time
+      (attributes <i>source_lat, source_lon, source_depth</i>, and <i>source_time</i>).&nbsp;
+      Linking each document in a wf collection to the desired point in
+      source is a preprocessing step to define a valid dataset.&nbsp; <br>
+    </p>
+    <p><i>global.</i>&nbsp; Not yet implemented, but something we
+      need.&nbsp; Should be a place to hold global attributes.&nbsp;
+      Examples might be unit definitions, space tolerance for site
+      information, space-time tolerance for events, and an alternative
+      to yaml storage of data stored now in mspass.yaml.&nbsp; <br>
+    </p>
+  </body>
+</html>
