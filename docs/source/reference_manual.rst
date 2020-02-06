@@ -4,9 +4,7 @@ Reference Manual
 
 .. include:: ./python_api/index.rst
 
-
-C++ API
--------
+.. include:: ./cxx_api/index.rst
 
 
 Schema

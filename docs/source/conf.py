@@ -32,6 +32,7 @@ release = '0.0.1'
 extensions = [
   'sphinx.ext.autodoc',
   'm2r',
+  'breathe',
 ]
 
 
@@ -58,3 +59,8 @@ html_static_path = ['_static']
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = False
+
+# Breathe Configuration
+breathe_default_project = 'MsPASS'
+breathe_projects = {}
+breathe_projects['MsPASS'] = '../doxygen/xml'

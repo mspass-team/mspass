@@ -1,0 +1,6 @@
+mspass
+======
+
+.. doxygennamespace:: mspass
+   :members:
+
