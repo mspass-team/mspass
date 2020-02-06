@@ -2,8 +2,7 @@ Reference Manual
 ================
 
 
-Python API
-----------
+.. include:: ./python_api/index.rst
 
 
 C++ API
