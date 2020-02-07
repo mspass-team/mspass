@@ -9,3 +9,4 @@ The MsPASS Python API is organized into the following modules.
    ../python_api/mspasspy.importer
    ../python_api/mspasspy.mongodb
 
+Please refer to :ref:`modindex` for a complete list.

@@ -32,8 +32,3 @@ package.
 .. warning::
 
     The current version is under development. The APIs are subject to breaking change.
-
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
