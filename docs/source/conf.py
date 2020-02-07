@@ -71,5 +71,5 @@ breathe_projects['MsPASS'] = './doxygen/xml'
 
 # Install mspasspy in readthedocs env
 if os.environ.get('READTHEDOCS') is not None:
-  subprocess.call('pip install ../../', shell=True)
+  subprocess.call('pip install mspasspy', shell=True)
 
