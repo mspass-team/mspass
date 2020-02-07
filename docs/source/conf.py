@@ -66,7 +66,7 @@ html_show_sphinx = False
 # Breathe Configuration
 breathe_default_project = 'MsPASS'
 breathe_projects = {}
-subprocess.call('doxygen ../Doxyfile', shell=True)
+subprocess.call('doxygen Doxyfile', shell=True)
 breathe_projects['MsPASS'] = './doxygen/xml'
 
 
