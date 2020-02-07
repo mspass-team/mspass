@@ -70,6 +70,6 @@ html_show_sphinx = False
 breathe_default_project = 'MsPASS C++ API'
 breathe_projects = {}
 subprocess.call('doxygen Doxyfile', shell=True)
-breathe_projects['MsPASS'] = './doxygen/xml'
+breathe_projects['MsPASS C++ API'] = './doxygen/xml'
 
 
