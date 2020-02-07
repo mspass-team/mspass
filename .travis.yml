@@ -77,10 +77,16 @@ jobs:
         - |
           pyenv versions
           pyenv global 3.7
+        - pip install -U pip
+        - pip install pymongo
+        - pip install numpy 
+        - pip install obspy
+        - pip install -r docs/requirements.txt
       install:
         - pip3 install ./ -vvv
       script:
         - cd docs 
+        - ls
         - make html
       deploy:
         provider: pages # deploy on github pages
