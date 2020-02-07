@@ -108,7 +108,7 @@ before_install:
   - cd build
 install:
   - cmake ..
-  - make install -j 8
+  - make -j 8
 script:
   - make test
       
