@@ -14,6 +14,8 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import subprocess
+
 # -- Project information -----------------------------------------------------
 
 project = 'MsPASS'
@@ -63,4 +65,5 @@ html_show_sphinx = False
 # Breathe Configuration
 breathe_default_project = 'MsPASS'
 breathe_projects = {}
-breathe_projects['MsPASS'] = '../doxygen/xml'
+subprocess.call('doxygen ../Doxyfile', shell=True)
+breathe_projects['MsPASS'] = './doxygen/xml'
