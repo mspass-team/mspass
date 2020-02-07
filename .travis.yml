@@ -62,6 +62,31 @@ jobs:
             - gcc
             - boost
           update: true
+    
+    - stage: deploy
+      name: "Deploy to GitHub Pages"
+      #if: (NOT type IN (pull_request)) AND (branch = master) # only deploy if merging on master
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-dev
+            - liblapack-dev
+      compiler: gcc
+      before_install:
+        - |
+          pyenv versions
+          pyenv global 3.7
+      install:
+        - pip3 install ./ -vvv
+      script:
+        - cd docs 
+        - make html
+      deploy:
+        provider: pages # deploy on github pages
+        skip_cleanup: true
+        github_token: "$token" # defined via the Travis interface
+        local_dir: build/html
       
 before_install:
   - |
@@ -74,7 +99,7 @@ before_install:
   - cd build
 install:
   - cmake ..
-  - make -j 8
+  - make install -j 8
 script:
   - make test
       
