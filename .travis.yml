@@ -72,6 +72,7 @@ jobs:
             - gfortran
             - libboost-dev
             - liblapack-dev
+            - doxygen
       compiler: gcc
       before_install:
         - |
@@ -93,6 +94,8 @@ jobs:
         skip_cleanup: true
         github_token: "$token" # defined via the Travis interface
         local_dir: build/html
+        on:
+          branch: add_docs
       
 before_install:
   - |
