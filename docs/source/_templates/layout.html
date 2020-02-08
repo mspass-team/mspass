@@ -4,3 +4,11 @@
     {{ super() }}
     <a href= "{{pathto('genindex.html', 1)}}">Index</a>
   {% endblock %}
+
+  {% block extrahead %} {{ super() }}
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  {% endblock %}

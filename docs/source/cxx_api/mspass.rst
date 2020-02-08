@@ -1,8 +1,18 @@
-.. _mspass:
+.. _mspass_namespace:
 
-mspass
-======
+MsPASS C++ API
+==============
 
-.. doxygennamespace:: mspass
-   :members:
+.. raw:: html
+
+    <script language="javascript" type="text/javascript">
+    function resizeIframe(obj) {
+        obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
+    </script>
+
+    <iframe src="../_static/html/hierarchy.html" width="100%" marginheight="0" frameborder="0" scrolling="no" id="iframe" onload='javascript:resizeIframe(this);' />
+
+.. .. doxygennamespace:: mspass
+..    :members:
 
