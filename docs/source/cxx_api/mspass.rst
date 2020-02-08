@@ -11,7 +11,7 @@ MsPASS C++ API
     }
     </script>
 
-    <iframe src="../_static/html/hierarchy.html" width="100%" marginheight="0" frameborder="0" scrolling="no" id="iframe" onload='javascript:resizeIframe(this);' />
+    <iframe src="../_static/html/hierarchy.html" width="100%" marginheight="0" frameborder="0" scrolling="no" id="iframe" onload='javascript:resizeIframe(this);'></iframe>
 
 .. .. doxygennamespace:: mspass
 ..    :members:
