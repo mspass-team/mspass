@@ -28,13 +28,12 @@ def dict2md(d,mdef,elog):
   bombproof routine to do that.  It handles supported types and will issue
   warning if asked to convert an unsupported type.
 
-  Args:
-      d is the dict created by MongoDB query
-      mdef is the MetadataDefinitions object used to validate types against
+  :param d: is the dict created by MongoDB query
+  :param mdef: is the MetadataDefinitions object used to validate types against
         keys and types expected by mspass.  If a mismatch occurs the
         function attempts to convert to the type defined in mdef.  If
         a key is missing the data are still converted and a warning is issued.
-      elog is expected to be an ErrorLogger object.   It should normally be
+  :param elog: is expected to be an ErrorLogger object.   It should normally be
         already be a component of the Seismogram or TimeSeries with which it
         is or will be (read) associated.   Any conversions problems in
         this function will create log messages of different severity
@@ -42,8 +41,9 @@ def dict2md(d,mdef,elog):
         TimeSeries an empty container must be created and passed AND after
         running if it is not empty it should be added to the data object
         being created.
-  Returns:
-      Metadata object
+  :return: Metadata object translated from d
+  :rtype: Metadata object (ccore)
+  :raise:  Should never throw an exception, but can leave messages on elog.
   """
   md=Metadata()
   for x in d.keys():
@@ -228,21 +228,21 @@ def dbload3C(db,oid,mdef,smode='gridfs'):
     Seismogram.  Callers should test live and handle fatal and nonfatal 
     errors as appropriate to the algorithm.   
     
-    Args:
-        db is the MongoDB database object from which data is to be extracted.
-        oid is the ObjectId in the wf collection to be read
-        mdef is a MetadataDefinitions object used to validate types stored
+    :param db: is the MongoDB database object from which data is to be extracted.
+    :param oid: is the ObjectId in the wf collection to be read
+    :param mdef: is a MetadataDefinitions object used to validate types stored
            in the database against what is expected for a given name.
            In reading this is a necessary cross check to reduce errors
            from incorrect expectations of the contents of a name:value pair
            found in the document associated with this waveform. 
-        smode sets the expected method for saving sample data.
+     :param smode: sets the expected method for saving sample data.
           (Metadata are normally stored in a single document of the wf collection)
           Supported values at present are 'file' and 'gridfs' matching 
           allowed values for the storage_mode attribute.  
              
-    Returns:  A Seismogram object 
-    Exception:  May throw a RuntimeError exception in one of several
+    :Returns:  Seismogram data object loaded.
+    :rtype: Seismogram
+    :raise:  May throw a RuntimeError exception in one of several
       error conditions.   Nonfatal errors will be posted to the error 
       log on the returned object. 
     """
@@ -347,15 +347,17 @@ def dbsave_elog(elogcol,oidstr,elog):
     return oidlst
 def save_data3C_to_dfile(d):
     """
+    Saves sample data as a binary dump of the sample data.
+
     Save a Seismogram object as a pure binary dump of the sample data
     in native (Fortran) order.   The file name to write is derived from
     dir and dfile in the usual way, but frozen to unix / separator.
     Opens the file and ALWAYS appends data to the end of the file.
 
-    Args: d is a Seismogram object for whose data is to be saved
+    :param: d is a Seismogram object whose data is to be saved
 
-    Returns:  -1 if failure.  Position of first data sample (foff) for success
-    Exception:  Any io failures will be trapped and posted to the elog area of
+    :returns:  -1 if failure.  Position of first data sample (foff) for success
+    :raise:  None. Any io failures will be trapped and posted to the elog area of
       the object d.   Caller should test for negative return and post the error
       to the database to help debug data problems.  
     """
@@ -390,6 +392,7 @@ def save_data3C_to_dfile(d):
 def save_data3C_to_gridfs(db,d,fscol='gridfs_wf',update=False):
     """
     Save a Seismogram object sample data to MongoDB gridfs_wf collection.
+
     Use this method for saving a Seismogram inside MongoDB.   This is
     the recommended mode for anything but data to be exported or data that
     is expected to remain static.   External files are subject to several
@@ -399,21 +402,21 @@ def save_data3C_to_gridfs(db,d,fscol='gridfs_wf',update=False):
     corrupting a file with a careless insert, and (3) when the number of files
     gets large managing them becomes difficult.
 
-    Args:
-        db is a database handle returned by the MongodB.client object
-        oid is the ObjectId of parent waveform
-        d is the Seismogram to be saved
-        fscol is the gridfs collection name to save the data in
+    :param db: is a database handle returned by the MongodB.client object
+    :param oid: is the ObjectId of parent waveform
+    :param d: is the Seismogram to be saved
+    :param fscol: is the gridfs collection name to save the data in
           (default is 'gridfs_wf')
-        update is a Boolean. When true the existing sample data will be 
+    :param update: is a Boolean. When true the existing sample data will be 
           deleted and then replaced by the data in d. When false (default) 
           the data will be saved an given a new ObjectId saved to 
           d with key gridfs_idstr.  
-    Return:
-        object_id of the document used to store the data in gridfs
+    :return: object_id of the document used to store the data in gridfs
         -1 if something failed.  In that condition a generic error message
            is posted to elog.    Caller should dump elog only after 
            trying to do this write to preserve the log
+    :raise: Should never throw an exception, but caller should test and save 
+       error log if it is not empty.
     """
     try:
         gfsh=gridfs.GridFS(db,collection=fscol)
@@ -444,6 +447,8 @@ def save_data3C_to_gridfs(db,d,fscol='gridfs_wf',update=False):
         return file_id
 def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     """
+    Load a Seismogram object stored as a gridfs file.
+
     Constructs a Seismogram object from Metadata and sample data 
     pulled from a MongoDB gridfs document.   The Metadata must contain 
     a string representation of the ObjectId of the document with the 
@@ -458,10 +463,8 @@ def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     failed completely.  The error log may also contain various levels of 
     warning errors posted to it's internal ErrorLogger (elog) object. 
     
-
-    Args:
-        db is the database (output of MongoDBClient) from which to read the data
-        md is the Metadata object used to drive the construction.  This 
+    :param db: is the database (output of MongoDBClient) from which to read the data
+    :param md: is the Metadata object used to drive the construction.  This 
           would normally be constructed from a parent document in the wf
           collection using dict2md.  A critical key is the entry gridfs_idstr
           as described above.   Several other key:value pairs are required or
@@ -470,12 +473,14 @@ def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
           switch for handling UTC versus relative time.   Default is UTC
           but relative time can be handled with the attribure t0_shift.  
           See User Manual for more about this feature.
-        elogtmp is an (optional) ErrorLogger object added to the Seismogram 
+    :param elogtmp: is an (optional) ErrorLogger object added to the Seismogram 
           object during construction. It's primary use is to preserve any
           warning errors encountered during the construction of md passed
           to the function.   
-        fscol is the collection name the function should use to find the 
+    :param fscol: is the collection name the function should use to find the 
           gridfs data document
+    :return: the Seismogram object requested
+    :rtype: Seismogram
     """
     # First make sure we have a valid id string.  No reason to procede if
     # not the case
@@ -581,19 +586,18 @@ def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
     with sever errors are silently dropped assuming the user will use the
     error log document to backtrack problems.
 
-    Args:
-    db  MongoDB database handle.  This function will immediately attempt to
+    :param db: MongoDB database handle.  This function will immediately attempt to
         open a connection to the wf and elog collections.  An assumption of
         that algorithm is that doing so is lightweight and the simplification of
         a single argument is preferable to requiring two args that have to be
         checked for consistency.  If you don't want to clobber an existing
         database just create an empty scratch db before calling this
         function for the first time.
-    d   Seismogram object to be saved.  Not if d is marked dead (live false)
+    :param d: Seismogram object to be saved.  Not if d is marked dead (live false)
         the function attempts to write an entry in elog to save the error
         messages posted for that seismogram.
-    mc   MongoDBConverter object created for schema used by d
-    smode - mnemonic for SamplelMODE.   Options are currently supported:
+    :param mc: MongoDBConverter object created for schema used by d
+    :param smode: mnemonic for SamplelMODE.   Options are currently supported:
        (1) 'file' (default) - use the dir and dfile attributes to write sample
          data as a raw dump with fwrite.  File is ALWAYS appended so user
          can either change dir and/or defile and write to a new file or
@@ -602,7 +606,7 @@ def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
        (2) 'gridfs' - data are stored internally in MongoDB's gridfs system
        (3) 'unchanged' - do not save the data.  This mode is required when mmode
          is set to updatemd (used for pure Metadata manipulations for efficiency)
-    mmode - mnemonic for MetadataMODE.   Supported options are:
+    :param mmode: mnemonic for MetadataMODE.   Supported options are:
        (1) 'save' - contents are saved dropping all marked readonly (default)
        (2) 'saveall' - all Metadata attributes are saved even if marked readonly
          (most useful for temporary data saved inside a job stream)
@@ -618,12 +622,10 @@ def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
          warning message is posted in this situation, but the program
          will blunder on.
 
-
-    Returns:
-        Number of errors posted to ErrorLogger and saved in the database
-    Exception:  
-        should be surrounded by a RuntimeError exception handler.  The function
-        will abort with several illegal argument combinations
+    :return: Number of errors posted to ErrorLogger and saved in the database
+    :rtype: integer
+    :raise: should be surrounded by a RuntimeError exception handler.  The function
+        can abort with several illegal argument combinations
     """
     # First we do a series of sanity checks to avoid writing garbage
     error_count=0

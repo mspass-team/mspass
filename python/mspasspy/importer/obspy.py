@@ -14,19 +14,23 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
     """
     Convert an obspy Trace object to a TimeSeries object.
 
-    Arguments:
-    d - obspy trace object to convert
-    mdef - global metadata catalog.   Used to guarantee all names used are registered.
-    mdother - This function always loads obspy required attributes and passes the directly to the mspass
+    :param d: obspy trace object to convert
+    :param mdef: global metadata catalog.   Used to guarantee all names used are registered.
+    :param mdother: This function always loads obspy required attributes and passes the directly to the mspass
         TimeSeries object..  For each entry in mdother the procedure tries to fetch that attribute.  It's type
         is then extracted from the MetadataDefinitions object and saved with the same key.
         (default is an empty list)
-    aliases - is a list of attributes that should be posted to output with an alias name.  Aliases have
+    :param aliases: is a list of attributes that should be posted to output with an alias name.  Aliases have
         a large overhead as the algorithm first looks for the unique key associated with the aliases and
         deletes it from the output before adding it back with the alias.   This is an essential feature to
         prevent duplicates that could easily get out of sync.  Aliases should generally be avoided but
         can be a useful feature. (default is an empty list)
     Returns a mspass TimeSeries object equivalent to obspy input but reorganized into mspass class structure
+    :return:  TimeSeries object derived from obpsy input Trace object
+    :rtype: TimeSeries (ccore)
+    :raise:  Should never throw an exception, but the elog area of the 
+       returned TimeSeries should be tested for errors.  If the errors make
+       the input invalid the live boolean in TimeSeries will be set false. 
     """
 # First get the data size to know use allocating constructor for TimeSeries
     ns=d.stats.npts
@@ -205,6 +209,8 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
 def obspy2mspass_3c(st,mdef,mdother=[],aliases=[],master=0,cardinal=bool(0),
                 azimuth='azimuth',dip='dip'):
     """
+    Convert obspy Stream to a Seismogram.
+
     Convert an obspy Stream object with 3 components to a mspass::Seismogram
     (three-component data) object.  This implementation actually converts
     each component first to a TimeSeries and then calls a C++ function to
@@ -212,46 +218,46 @@ def obspy2mspass_3c(st,mdef,mdother=[],aliases=[],master=0,cardinal=bool(0),
     the assumption is this function is called early on in a processing chain
     to build a raw data set.
 
-    st - input obspy Stream object.  The object MUST have exactly 3 components
+    :param st: input obspy Stream object.  The object MUST have exactly 3 components
         or the function will throw a AssertionError exception.  The program is
         less dogmatic about start times and number of samples as these are
         handled by the C++ function this python script calls.  Be warned,
         however, that the C++ function can throw a MsPASSrror exception that
         should be handled separately.
-    mdef - global metadata catalog.   Used to guarantee all names used are registered.
-    mdother - This function always loads obspy required attributes and passes the directly to the mspass
+    :param mdef: global metadata catalog.   Used to guarantee all names used are registered.
+    :param mdother: This function always loads obspy required attributes and passes the directly to the mspass
         TimeSeries object..  For each entry in mdother the procedure tries to fetch that attribute.  It's type
         is then extracted from the MetadataDefinitions object and saved with the same key.
         (default is an empty list)   Must contain azimuth and dip keys (as passed)
         unless cardinal is true
-    aliases - is a list of attributes that should be posted to output with an alias name.  Aliases have
+    :param aliases: is a list of attributes that should be posted to output with an alias name.  Aliases have
         a large overhead as the algorithm first looks for the unique key associated with the aliases and
         deletes it from the output before adding it back with the alias.   This is an essential feature to
         prevent duplicates that could easily get out of sync.  Aliases should generally be avoided but
         can be a useful feature.  (default is an empty list)
-    master - a Seismogram is an assembly of three channels composed created from
+    :param master: a Seismogram is an assembly of three channels composed created from
         three TimeSeries/Trace objects.   Each component may have different
         metadata (e.g. orientation data) and common metadata (e.g. station
         coordinates).   To assemble a Seismogram a decision has to be made on
         which component has the definitive common metadata.   We use a simple
         algorithm and clone the data from one component defined by this index.
         Must be 0,1, or 2 or the function wil throw a RuntimeError.  Default is 0.
-    cardinal - boolean used to define one of two algorithms used to assemble the
+    :param cardinal: boolean used to define one of two algorithms used to assemble the
         bundle.  When true the three input components are assumed to be in
         cardinal directions (x1=positive east, x2=positive north, and x3=positive up)
         AND in a fixed order of E,N,Z. Otherwise the Metadata fetched with
         the azimuth and dip keys are used for orientation.
-    azimuth - defines the Metadata key used to fetch the azimuth angle
+    :param azimuth: defines the Metadata key used to fetch the azimuth angle
        used to define the orientation of each component Trace object.
        Default is 'azimuth' used by obspy.   Note azimuth=hang in css3.0.
        Cannot be aliased - must be present in obspy Stats unless cardinal is true
-    dip - defines the Metadata key used to fetch the vertical angle orientation
+    :param dip:  defines the Metadata key used to fetch the vertical angle orientation
         of each data component.  Vertical angle (vang in css3.0) is exactly
         the same as theta in spherical coordinates.  Default is obspy 'dip'
         key. Cannot be aliased - must be defined in obspy Stats unless
         cardinal is true
 
-    Can throw either an AssertionError or MsPASSrror(currently defaulted to
+    :raise: Can throw either an AssertionError or MsPASSrror(currently defaulted to
     pybind11's default RuntimeError.  Error message can be obtained by
     calling the what method of RuntimeError).
     """

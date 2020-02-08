@@ -5,27 +5,28 @@ from math import pi
 
 def unique_receivers(wfcol,firstid,tolerance=0.0001,ztol=10.0):
     """
+    Create a dict of unique receiver positions. 
+
     Works through the return of a find with sort of the (potentially large) 
     list of dict containers of docs to be scanned.   Returns a subset of 
     input that have unique positions defined by the tolerance value.
     tolerance is a simple distance as hypot of the differences in degrees.
     ztol is a tolerance in elevation (default size assumes units of km)
 
-    Args: 
-      wfcol handle pointing at collection to be queried, sorted, and used for 
+    :param wfcol: handle pointing at collection to be queried, sorted, and used for 
         as input the algorithm
-      firstid is the initial site_id to use in this pass.  This should
+    :param firstid: is the initial site_id to use in this pass.  This should
         normally be created by scanning a previously created site collection
         but could be some arbitrarily large number (caution if you go there)
-      tolerance - horizontal tolerance to define equalities
-      ztol - elevation tolerance
-    Return:
-     tuple with two elements.  Element 0 will contain a deduced dict of 
+    :param tolerance:  horizontal tolerance to define equalities
+    :param ztol: elevation tolerance
+    :return: tuple with two elements.  Element 0 will contain a deduced dict of 
      receiver attributes with unique locations.  After cross-checks it is 
      intended to be posted to MongoDB with update or insert.  Element 1 
      of a list of tuples with 0 containing the ObjectId of the parent 
      waveform (from wfcol) and 1 containing the unique site_id adetermined by 
      this algorithm.  
+    :rtype: tuple with 2 elements (see return for details)
     """
     # this is a two key sort and find combined
     # WARNING:  google searches can yield comfusing exmaples.  pymongo 
@@ -85,6 +86,8 @@ def unique_receivers(wfcol,firstid,tolerance=0.0001,ztol=10.0):
     return(idlist,unique_coords)
 def load_site_wf(db,tolerance=0.0001,ztol=10.0,verbose=False):
     """
+    Normalize the site collection. 
+
     Scans entire wf collection, extracts unique receiver locations, and 
     inserts the unique set into the site collection.   This function 
     is intended to be run on a wf collection of newly imported data 
@@ -108,11 +111,11 @@ def load_site_wf(db,tolerance=0.0001,ztol=10.0,verbose=False):
     key oid_site.  The cross-reference value for oid_site is placed 
     in each wf document.   
 
-    Args:
-      db - is the database handled returned from a call to MongoClient
+    :param db:  is the database handled returned from a call to MongoClient
            (the function will internally look up the wf and site collections)
-      tolerance, ztol - see help(unique_receivers)
-      verbose - when true will echo some information about number of entries
+    :param tolerance:  horizontal tolerance to define equalities
+    :param ztol: elevation tolerance
+    :param verbose: when true will echo some information about number of entries
           found and added to each table (default is false).
 
     """
@@ -161,6 +164,9 @@ def load_site_wf(db,tolerance=0.0001,ztol=10.0,verbose=False):
             " documents of wf collection")
 def unique_sources(wfcol,firstid,dttol=1250.0,degtol=1.0,drtol=25.0,Vsource=6.0):
     """
+    Produce a set of unique coordinates from source coordinates in wf collection.
+
+
     Works through the return of a find with sort by time of the (potentially large) 
     list of dict containers of docs to be scanned.   Returns a subset of 
     input that have unique space-time positions defined by three tolerance 
@@ -181,28 +187,27 @@ def unique_sources(wfcol,firstid,dttol=1250.0,degtol=1.0,drtol=25.0,Vsource=6.0)
     Note other than the difference of the above test this algorithm is 
     nearly identical to unique_receivers
 
-    Args: 
-      wfcol handle pointing at collection to be queried, sorted, and used for 
+    :param wfcol: handle pointing at collection to be queried, sorted, and used for 
         as input the algorithm
-      firstid is the initial source_id to use in this pass.  This should
+    :param firstid: is the initial source_id to use in this pass.  This should
         normally be created by scanning a previously created event collection
         but could be some arbitrarily large number (caution if you go there)
-      dttol - initial time test tolerance (see above) (default 1250 s)
-      degtol - lat,lon degree difference test tolerance (see above - default 
+    :param dttol: initial time test tolerance (see above) (default 1250 s)
+    :param degtol: lat,lon degree difference test tolerance (see above - default 
         1 degree for either coordinate)
-      drtol - space-time distance test tolerance (see above - default of 25 km
+    :param drtol: space-time distance test tolerance (see above - default of 25 km
         is appropriate for teleseismic data.  Local scales require a change 
         for certain)
-      vsource is velocity used to convert origin time difference to a 
+     :param vsource: is velocity used to convert origin time difference to a 
         distance for sum of square used for drtol test.
       
-    Return:
-     tuple with two elements.  Element 0 will contain a deduced dict of 
+    :return:  tuple with two elements.  Element 0 will contain a deduced dict of 
      source attributes with unique locations.  After cross-checks it is 
      intended to be posted to MongoDB with update or insert.  Element 1 
      of a list of tuples with 0 containing the ObjectId of the parent 
      waveform (from wfcol) and 1 containing the unique source_id adetermined by 
      this algorithm.  
+     :rtype: tuple with 2 elements (see return for details)
     """
     degtor=pi/180.0   # degrees tp radians - needed below
     # this is a two key sort and find combined
@@ -294,6 +299,8 @@ def unique_sources(wfcol,firstid,dttol=1250.0,degtol=1.0,drtol=25.0,Vsource=6.0)
     return(idlist,unique_coords)
 def load_source_wf(db,dttol=1250.0,degtol=1.0,drtol=25.0,verbose=False):
     """
+    Normalize source collection.
+
     Scans entire wf collection, extracts unique source locations, and 
     inserts the unique set into the source collection.   This function 
     is intended to be run on a wf collection of newly imported data 
@@ -313,11 +320,15 @@ def load_source_wf(db,dttol=1250.0,degtol=1.0,drtol=25.0,verbose=False):
     key oid_source.  The cross-reference value for oid_source is placed 
     in each wf document.   
 
-    Args:
-      db - is the database handled returned from a call to MongoClient
+    :param db: is the database handled returned from a call to MongoClient
            (the function will internally look up the wf and source collections)
-      dttol, degtol, drtol - see help(unique_sources)
-      verbose - when true will echo some information about number of entries
+    :param dttol: initial time test tolerance (see above) (default 1250 s)
+    :param degtol: lat,lon degree difference test tolerance (see above - default 
+        1 degree for either coordinate)
+    :param drtol: space-time distance test tolerance (see above - default of 25 km
+        is appropriate for teleseismic data.  Local scales require a change 
+        for certain)
+    :param verbose: when true will echo some information about number of entries
           found and added to each table (default is false).
 
     """
