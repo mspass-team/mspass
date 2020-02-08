@@ -65,7 +65,7 @@ jobs:
     
     - stage: deploy
       name: "Deploy to GitHub Pages"
-      #if: (NOT type IN (pull_request)) AND (branch = master) # only deploy if merging on master
+      if: (NOT type IN (pull_request)) AND (branch = master) # only deploy if merging on master
       addons:
         apt:
           packages:
@@ -91,11 +91,10 @@ jobs:
         - make html
       deploy:
         provider: pages # deploy on github pages
-        skip_cleanup: true
-        github_token: "$token" # defined via the Travis interface
+        token: "$token" # defined via the Travis interface
         local_dir: docs/build/html
         on:
-          branch: add_docs
+          branch: master
       
 before_install:
   - |
