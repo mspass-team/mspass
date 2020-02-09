@@ -306,7 +306,14 @@ PYBIND11_MODULE(ccore,m)
     .def("type",&Metadata::type,"Return a demangled typename for value associated with a key")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("clear_modified",&Metadata::clear_modified,"Clear container used to mark altered Metadata")
-    .def("is_defined",&Metadata::is_defined,"Test if a key has a value set")
+    /*  For unknown reasons could not make this overload work.  
+     *  Ended up commenting out char * section of C++ code - baggage in python
+     *  anyway.  
+    .def("is_defined",py::overload_cast<const std::string>(&Metadata::is_defined))
+    .def("is_defined",py::overload_cast<const char *>(&Metadata::is_defined))
+    */
+    .def("is_defined",&Metadata::is_defined,"Test if a key has a defined value")
+    .def("append_chain",&Metadata::append_chain,"Create or append to a string attribute that defines a chain")
     .def("clear",&Metadata::clear,"Clears contents associated with a key")
     .def(py::self += py::self)
     .def(py::self + py::self)

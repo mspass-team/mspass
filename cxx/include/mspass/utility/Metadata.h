@@ -337,6 +337,31 @@ other attributes.
   {
     this->put<long>(key,val);
   };
+  /*! Create or append to a chained string.
+   *
+   A chain conceptually is identical to a list of string data.  
+   We implement it in Metadata because sometimes (e.g. MongoDB 
+   interaction and some constructs like the unix shell PATH variable) 
+   handling a full scale container like list<std::string> would be
+   awkward.   If more extensive capability like that is needed it would
+   be better to add a class that inherits Metadata and does so.  
+   AntelopePf more or less does this, for example, handling Tbl sections.
+   In any case, this usage is more for one word strings separated by 
+   a common separator:  e.g. path=/usr/local/bin:/bin uses : as 
+   the separator.   /usr/local/bin and /bin are the chain.  
+
+   If the key related to the chain does not yet exist it is silently
+   created.  If it already exists and we append to it. 
+
+   \param key is the key that defines the string.
+   \param val is the the new string to append to the chain
+   \param separator is the string used for a separator (default ":")
+
+   \exception MsPASSError will be thrown if data is found in key 
+     and it is not of type string. 
+   */
+  void append_chain(const std::string key, const std::string val, 
+		  const std::string separator=string(":"));
 
   /*! Return the keys of all altered Metadata values. */
   set<string> modified() const
@@ -363,10 +388,12 @@ other attributes.
    * a value is defined. */
   bool is_defined(const std::string key) const noexcept;
   /*! Overload for C string*/
+  /*
   bool is_defined(const char* key) const noexcept
   {
     return this->is_defined(string(key));
   };
+  */
   /*! Clear data associated with a particular key. */
   void clear(const std::string key);
   /*! Overload for C string*/
