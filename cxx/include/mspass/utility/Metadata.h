@@ -363,7 +363,7 @@ other attributes.
    * a value is defined. */
   bool is_defined(const std::string key) const noexcept;
   /*! Overload for C string*/
-  bool is_define(const char* key) const noexcept
+  bool is_defined(const char* key) const noexcept
   {
     return this->is_defined(string(key));
   };
