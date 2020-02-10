@@ -91,6 +91,7 @@ jobs:
         - make html
       deploy:
         provider: pages # deploy on github pages
+        skip_cleanup: true
         token: "$token" # defined via the Travis interface
         local_dir: docs/build/html
         on:
