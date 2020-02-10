@@ -62,6 +62,39 @@ jobs:
             - gcc
             - boost
           update: true
+    
+    - stage: deploy
+      name: "Deploy to GitHub Pages"
+      if: (NOT type IN (pull_request)) AND (branch = master) # only deploy if merging on master
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-dev
+            - liblapack-dev
+            - doxygen
+      compiler: gcc
+      before_install:
+        - |
+          pyenv versions
+          pyenv global 3.7
+        - pip install -U pip
+        - pip install pymongo
+        - pip install numpy 
+        - pip install obspy
+        - pip install -r docs/requirements.txt
+      install:
+        - pip3 install ./ -vvv
+      script:
+        - cd docs 
+        - ls
+        - make html
+      deploy:
+        provider: pages # deploy on github pages
+        token: "$token" # defined via the Travis interface
+        local_dir: docs/build/html
+        on:
+          branch: master
       
 before_install:
   - |
