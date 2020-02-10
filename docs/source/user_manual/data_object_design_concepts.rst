@@ -142,7 +142,7 @@ This base class object can be best viewed as an answer to this
 questions:  What is a time series?   Our design answers this question by
 saying all time series data have the following elements:
 
-#. We define a time series as data that has a **fixed sample rate.**  
+#. We define a time series as data that has a **fixed sample rate**.  
    Some extend this to arbitrary x-y data, but we view that as wrong. 
    Standard textbooks on signal processing focus exclusively on
    uniformly sampled data.  With that assumption the time of any sample
@@ -247,11 +247,12 @@ Metadata and MetadataDefinitions
   to store comparable information.   That approach allows metadata
   attributes to be extracted from a flexible container addressable by a
   key word and that can contain any valid data.   For example, a typical
-  obspy script will contain a line like this:
+  obspy script will contain a line like the following to fetch the station 
+  name from a Trace object :code:`d`. 
 
-| sta=d.Stats["station]
+.. code-block:: python
 
-| to fetch the station name from a Trace object, d. 
+  sta=d.Stats["station]
 
 | In MsPASS we use a similar concept building on Pavlis's SEISPP library
   developed originally a number of years before obspy.   The Metadata
@@ -277,22 +278,22 @@ Metadata and MetadataDefinitions
   to a Metadata.   There are four "getters" seen in the following
   contrived code segment:
 
-   # Assume d is a Seismogram or TimeSeries which automatically casts to
-   a Metadata in the python API use here
-   x=d.get_double("t0")    # example fetching a floating point number -
-   here a start time
+.. code-block:: python
+
+   # Assume d is a Seismogram or TimeSeries which automatically casts to a Metadata in the python API use here
+   x=d.get_double("t0")   # example fetching a floating point number - here a start time
    n=d.get_int("nsamp")   # example fetching an integer
-   s=d.get_string("sta")    # example fetching a UTF-8 string
-   b=d.get_bool("LPSPOL")  # boolean for positive polarity used in SAC
+   s=d.get_string("sta")  # example fetching a UTF-8 string
+   b=d.get_bool("LPSPOL") # boolean for positive polarity used in SAC
 
 | There are parallel "putter":
+
+.. code-block:: python
 
    d.put_double("to",x)
    d.put_int("nsamp",n)
    d.put_string("sta",s)
    d.put_bool("LPSPOL",True)
-
-..
 
 | Mapping the C++ Metadata container to python was a challenge because
   of a fundamental difference in an axiom of the two languages:   python
@@ -307,10 +308,11 @@ Metadata and MetadataDefinitions
   (RuntimeError in python and MsPASSError in C++) if a user tries to
   extract a parameter with the wrong type.   For example:
 
+.. code-block:: python
+
    d.put("sta","AAK")
-   s=d.get_string("sta")   # this succeeds because sta was set a string
-   x-d.get_double("sta")  # this will throw an exception because "sta"
-   was not set as a real number.
+   s=d.get_string("sta")  # this succeeds because sta was set a string
+   x-d.get_double("sta")  # this will throw an exception because "sta" was not set as a real number.
 
 | This effectively creates a strong typing layer between python and the
   C libraries to prevent type collisions that would otherwise be too
@@ -349,6 +351,8 @@ MetadataDefinitions and MongoDBConverter objects
 | For most users the practical issue is that most processing workflows
   will need to include these lines near the top of any python script:
 
+.. code-block:: python
+
    from mspasspy import MetadataDefinitions
    mdef=MetadataDefinitions()
 
@@ -358,8 +362,8 @@ MetadataDefinitions and MongoDBConverter objects
   possible to build a specialized configuration to build a
   MetadataDefinitions object that could be used to translate between the
   SAC or SEGY namespaces and mspass. 
-| A closely related object has the name *MongoDBConverter. * The
-  *MongoDBConverter * caches a copy of the *MetadataDefinitions* it
+| A closely related object has the name *MongoDBConverter*. The
+  *MongoDBConverter* caches a copy of the *MetadataDefinitions* it
   loads (usually behind the scenes).  It has methods that provide an
   interface between the C++ objects and python that simplify database
   interactions with MongoDB.   Most MongoDB CRUD operations functions
@@ -436,11 +440,11 @@ Scalar versus 3C data
   index.  The following python code section illustrates this more
   clearly than any words:
 
+.. code-block:: python
+
    from mspasspy import Seismogram
-   d=Seismogram(100)     # Create an empty Seismogram with storage for
-   100 time steps initialized to all zeros
-   d.u(0,50)=1.0               # Create a delta function at time
-   t0+dt*50 in channel 0
+   d=Seismogram(100)  # Create an empty Seismogram with storage for 100 time steps initialized to all zeros
+   d.u(0,50)=1.0      # Create a delta function at time t0+dt*50 in channel 0
 
 | Note we use the C (an python) convention for indexing starting at 0.  
   In the C++ API the matrix u is defined with a lightweight
@@ -468,13 +472,15 @@ Scalar versus 3C data
   definition created by stripping the comments from the definition in
   Ensemble.h:
 
+.. code-block:: c++
+
    template <typename Tdata> class Ensemble : public Metadata
    {
    public:
      vector<Tdata> member;
-     ...
+     // ...
      Tdata& operator[](const int n) const
-     ...
+     // ...
    }
 
 | where we omit all standard constuctors and methods to focus on the key
@@ -489,12 +495,11 @@ Scalar versus 3C data
   simple loop to work through an entire Ensemble (defined in this code
   segment with the symbol d) in order of the vector index:
 
+.. code-block:: python
+
    n=d.member.size()
    for i in range(n):
      somefunction(d.member[i])    # pass member i to somefunction
-
-| NOT SURE ABOUT THE ABOVE SYNTAX IN THE PYTHON API.   COULD BE ()
-  INSTEAD OF []
 
 MsPASSCoreTS and Core versus Top-level Data Objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -559,17 +564,18 @@ Error Logging Concepts
 
 | Multiple methods are available to post errors of severity from fatal
   to logging messages that do not necessarily indicate an error.   A
-  small python code segment may illustrate this more clearly.   :
+  small python code segment may illustrate this more clearly.
 
-   try:
-     d.rotate_to_standard()
-     d.elog.log_verbose("rotate_to_standard succeed for me")
-     ...
-   except RuntimeError:
-     d.elog.log_error("rotate_to_standard method failure -
-   transformation matrix may be singular",
-                 ErrorSeverity.Invalid)
-     d.live=False   # note in python just be False not false
+.. code-block:: python
+
+  try:
+    d.rotate_to_standard()
+    d.elog.log_verbose("rotate_to_standard succeed for me")
+    # ...
+  except RuntimeError:
+    d.elog.log_error("rotate_to_standard method failure - transformation matrix may be singular",
+      ErrorSeverity.Invalid)
+    d.live=False   # note in python just be False not false
 
 | To understand the code above assume the symbol d is a *Seismogram*
   object with a singular transformation matrix created, for example, by

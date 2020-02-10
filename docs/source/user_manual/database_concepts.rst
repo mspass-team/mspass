@@ -46,27 +46,27 @@ A properly designed database schema needs to prioritize the problem it
 aims to solve.   The schema for MsPASS was aimed to address the
 following design goals:
 
-#. *Efficient flow through SPARK.  * A key reason MongoDB was chosen as
+#. *Efficient flow through Spark.* A key reason MongoDB was chosen as
    the database engine for MsPASS was that it is cleanly integrated with
-   SPARK.   Nonetheless, the design needs to minimize database
+   Spark.   Nonetheless, the design needs to minimize database
    transaction within a workflow.   Our aim was to try to limit database
    transaction to reading input data, saving intermediate results, and
    saving a final result.  
-#. *KISS (Keep It Simple Stupid). * Experience has shown clearly that
+#. *KISS (Keep It Simple Stupid).* Experience has shown clearly that
    complex relational schemas like CSS3.0 have many, sometimes subtle,
    issues that confound beginners.  A case in point is that large
    organizations commonly have a team of database managers to maintain
    the integrity of their database and optimize performance.   An
    important objective of our design is to keep it simple so scientists
    do not have to become database managers to work with the system.
-#. *Efficient and robust handling of three-component seismograms. *
+#. *Efficient and robust handling of three-component seismograms.*
    Although MsPASS supports :ref:`scalar seismic
    data, <data_object_design_concepts>` our view is that the
    greater need in the community is an efficient system for handling 3C
    data.   In reality, our schema design ended up completely neutral on
    this point and scalar and 3C data are handled identically.  The only
    differences is what attributes (Metadata) are required.
-#. *Provide a clean mechanism to manage static metadata.*  MsPASS is a
+#. *Provide a clean mechanism to manage static metadata.* MsPASS is a
    system designed to process a "data set", which means the data are
    preassembled, validated, and then passed into a processing chain.  
    The first two steps (assembly and validation) are standalone tasks
@@ -84,7 +84,7 @@ following design goals:
    data while avoiding all the things that can go wrong that have to be
    handled by network operators and the PIs of shorter term
    deployments. 
-#. *Extensible.  * A DBMS cannot be too rigid, or it will create
+#. *Extensible.* A DBMS cannot be too rigid, or it will create
    barriers to progress.  This is especially important to MsPASS as our
    objective is to produce a system for seismic research, not a
    production system for repetitive processing of the similar data.
@@ -122,7 +122,7 @@ require creation of a different set of attributes like an index back to
 the parent seismograms that created the stack.   We thus define this
 rule that all users need to recognize in designing a MsPASS workflow:
 
-| Rule 1.  All required attributes to run a workflow must exist in the
+| **Rule 1**.  All required attributes to run a workflow must exist in the
   wf collection before starting the job.  
 
 | An abstract way of saying this is that at the start of processing the
@@ -151,7 +151,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   invalid.  More details about this idea can be found in the :ref:`Data
   Objects <data_object_design_concepts>` section.
 
-| *site. * The site collection is intended as a largely static table
+| *site*. The site collection is intended as a largely static table
   that can be used to
   `normalize <https://docs.mongodb.com/manual/core/data-model-design/>`__
   a wf collection.   The name is (intentionally) identical to the CSS3.0
@@ -198,7 +198,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   site_elev may not even be needed.  We deal with this complexity by a
   defining another rule that user's need to recognize and abide by:
 
-| Rule 2  The site collection only contains points in space relevant to
+| **Rule 2**. The site collection only contains points in space relevant to
   the data set.   Assembly of a working data set requires linking
   required points in site to wf documents as required and defining the
   coordinates with the proper wf keys.  
@@ -206,11 +206,11 @@ rule that all users need to recognize in designing a MsPASS workflow:
 | As an example, to begin processing on a set of raw waveforms imported
   from the FDSN the wf collection would normally need to be normalized
   with data from site to set geographic locations of the instrument that
-  generated each wf entry:  *site_lon, site_lan,* and *site_elev*.  
+  generated each wf entry:  *site_lat, site_lon,* and *site_elev*.  
   Partially processed wf entries may require the definition of
   additional geospatial points in site.
 
-| *source.  * The source collection has much in common with site, but
+| *source*. The source collection has much in common with site, but
   has two fundamental differences:  (1) the origin time of each source
   needs to be specified, and (2) multiple estimates are frequently
   available for the same source.  
@@ -247,13 +247,13 @@ rule that all users need to recognize in designing a MsPASS workflow:
   Thus, for the same reason as above we state rule 3 which is very
   similar to rule 2:
 
-| Rule 3.  The source collection should contain any useful source
+| **Rule 3**.  The source collection should contain any useful source
   positions that define locations in space and time (attributes
   *source_lat, source_lon, source_depth*, and *source_time*).  Linking
   each document in a wf collection to the desired point in the source
   collection is a preprocessing step to define a valid dataset. 
 
-| *global.*  Not yet implemented, but something we need.  Should be a
+| *global*.  Not yet implemented, but something we need.  Should be a
   place to hold global attributes.  Examples might be unit definitions,
   space tolerance for site information, space-time tolerance for events,
   and an alternative to yaml storage of data stored now in mspass.yaml. 
