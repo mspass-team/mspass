@@ -12,22 +12,11 @@ Design Concepts
 Role of Python and C++
 ~~~~~~~~~~~~~~~~~~~~~~
 
+.. toctree::
+    :maxdepth: 2
 
-Data Objects
-~~~~~~~~~~~~
-
-
-Database Concept
-~~~~~~~~~~~~~~~~
-
-
-NonSQL database
-^^^^^^^^^^^^^^^
-
-
-Schema Concepts
-^^^^^^^^^^^^^^^
-
+    user_manual/data_object_design_concepts
+    user_manual/database_concepts
 
 CRUD operations in MsPASS
 ^^^^^^^^^^^^^^^^^^^^^^^^^
