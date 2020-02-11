@@ -315,13 +315,31 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 
 \return 3x3 transformation matrix.
 */
-        dmatrix transformation_matrix()
+        dmatrix get_transformation_matrix()
         {
             dmatrix result(3,3);
             for(int i=0;i<3;++i)
                 for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
             return result;
         };
+/*! \brief Define the transformaton matrix.
+ *
+ Occasionally we need to set the transformation matrix manually.
+ The type example is input with a format where the component 
+ directions are embedded.  We use a dmatrix as it is more 
+ easily wrapped for python than the raw C 2D array which 
+ really doesn't translate well between the languages.   
+
+ \param A is the 3X3 matrix copied to the internal transformation
+   matrix array.
+ 
+ \return true if the given transformation matrix is an identity
+   meaning components_are_cardinal gets set true. 
+   false if the test for an identity matrix fails. 
+ \exception Will throw a MsPASSError if the input matrix is
+   not 3x3.
+   */
+        bool set_transformation_matrix(const dmatrix& A);
 
 protected:
 	/*!

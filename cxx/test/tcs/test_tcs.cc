@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 	double nu[3]={sqrt(3.0)/3.0,sqrt(3.0)/3.0,sqrt(3.0)/3.0};
 	s3.rotate(nu);
         cout << "Transformation matrix created by this method:"<<endl;
-        dmatrix tm=s3.transformation_matrix();
+        dmatrix tm=s3.get_transformation_matrix();
         cout << tm<<endl;
 	cout << "one sample of (1,0,0) rotated to (1,1,1)"
 		<< s3.u(0,0) << ", "
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	sc.theta=0.0;
 	s3.rotate(sc);
         cout << "Transformation matrix created by this method:"<<endl;
-        tm=s3.transformation_matrix();
+        tm=s3.get_transformation_matrix();
         cout << tm<<endl;
 	cout << "one sample of transformed (1,0,0)"
 		<< s3.u(0,0) << ", "
@@ -196,7 +196,7 @@ int main(int argc, char **argv)
 	s3.transform(a);
         cout << "Accumulated transformation matrix from double transformation"
             <<endl;
-        tm=s3.transformation_matrix();
+        tm=s3.get_transformation_matrix();
         cout << tm;
 	cout << "one sample of transformed (1,0,0):  "
 		<< s3.u(0,0) << ", "
@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 	s4.free_surface_transformation(uvec,5.0,3.5);
         cout << "Completed"<<endl;
         cout << "Computed transformation matrix:"<<endl;
-        tm=s4.transformation_matrix();
+        tm=s4.get_transformation_matrix();
         cout << tm<<endl;
         exit(0);
     }

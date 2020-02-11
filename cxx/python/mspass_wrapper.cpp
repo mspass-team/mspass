@@ -412,7 +412,8 @@ PYBIND11_MODULE(ccore,m)
     around the issue.  See README_Implementation_TODO */
     //.def("transform",&CoreSeismogram::transform)
     .def("free_surface_tranformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
-    //.def("transformation_matrix",&CoreSeismogram::transformation_matrix)
+    .def("get_transformation_matrix",&CoreSeismogram::get_transformation_matrix,"Fetch transformation matrix as a dmatrix object")
+    .def("set_transformation_matrix",&CoreSeismogram::set_transformation_matrix,"Set transformation matrix using a dmatrix object")
     .def(py::self += py::self)
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
