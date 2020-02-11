@@ -445,6 +445,34 @@ def save_data3C_to_gridfs(db,d,fscol='gridfs_wf',update=False):
         return -1
     else:
         return file_id
+def tmatrix_from_md(md):
+    """
+    Helper function to parse md to build and set a transformation matrix.
+    
+    A Seismgogram object has an embedded transformation matrix that needs to 
+    be set for the object to be properly defined.   In MsPASS we do that 
+    through Metadata attributes loaded from MongoDB with special tags U11,U12, etc.
+    This function fetches the 9 numbers required to define such a matrix and
+    return them in a ccore.dmatrix object.  
+    
+    :param md:  Metadata assumed to contain U11, U12, etc. attribures
+    
+    :return: 3x3 transformation matrix extracted from md attributes
+    :rtype: dmatrix
+    :raise:   Will throw a RunTimeError if any of the tmatrix attributes are not in md
+    """
+    A=dmatrix(3,3)
+    A[0,0]=md.get_double('U11')   # names have fortran indexing but dmatrix is C
+    A[1,0]=md.get_double('U21')
+    A[2,0]=md.get_double('U31')
+    A[0,1]=md.get_double('U12')
+    A[1,1]=md.get_double('U22')
+    A[2,1]=md.get_double('U32')
+    A[0,2]=md.get_double('U13')
+    A[1,2]=md.get_double('U23')
+    A[2,2]=md.get_double('U33')
+    return A
+    
 def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     """
     Load a Seismogram object stored as a gridfs file.
@@ -543,6 +571,19 @@ def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     else:
         # we intentionally are loose on what trefstr is - default to utc this way
         d.tref=TimeReferenceType.UTC
+    # finally need to deal with the transformation matrix
+    try:
+        A=tmatrix_from_md(md)
+        d.set_transformation_matrix(A)
+    except  RuntimeError:
+        Iden=dmatrix(3,3)
+        Iden.zero()
+        for i in range(3):
+            Iden[i,i]=1.0
+        d.set_transformation_matrix(A)
+        d.elog.log_error("read_data3C_from_grifs",
+            "Metadata extracted from database are missing transformation matrix definition\n" +
+             "Defaulting to identity matrix",ErrorSeverity.Suspect)
     # Now we actually retrieve the sample data.  
     gfsh=gridfs.GridFS(db,collection=fscol)
     # This retrieves only a handle to the file object matching ObjectId=dataid
@@ -573,6 +614,28 @@ def read_data3C_from_gridfs(db,md,elogtmp=ErrorLogger(),fscol='gridfs_wf'):
     # This could lead to unnecessary database transaction with updates
     d.clear_modified()   
     return d
+def sync_metadata(d):
+    d.put_long('npts',d.ns)
+    d.put_double('starttime',d.t0)
+    d.put_double('delta',d.dt)
+    if(d.tref == TimeReferenceType.Relative):
+        d.put_string('time_standard','relative')
+    else:
+        d.put_string('time_standard','UTC')
+    # Because of inheritance we can use this same function for both TimeSeries
+    # and Seismogram objects 
+    if(isinstance(d,Seismogram)):
+        U=d.get_transformation_matrix()
+        d.put_double('U11',U[0,0])
+        d.put_double('U12',U[0,1])
+        d.put_double('U13',U[0,2])
+        d.put_double('U21',U[1,0])
+        d.put_double('U22',U[1,1])
+        d.put_double('U23',U[1,2])
+        d.put_double('U31',U[2,0])
+        d.put_double('U32',U[2,1])
+        d.put_double('U33',U[2,2])
+      
 def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
     """
     Function to save mspass::Seismogram objects in MongoDB.
@@ -598,12 +661,12 @@ def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
         messages posted for that seismogram.
     :param mc: MongoDBConverter object created for schema used by d
     :param smode: mnemonic for SamplelMODE.   Options are currently supported:
-       (1) 'file' (default) - use the dir and dfile attributes to write sample
+       (1) 'file' - use the dir and dfile attributes to write sample
          data as a raw dump with fwrite.  File is ALWAYS appended so user
          can either change dir and/or defile and write to a new file or
          append to the parent data.   The function will fail if dir or
          dfile are not defined in this mode.
-       (2) 'gridfs' - data are stored internally in MongoDB's gridfs system
+       (2) 'gridfs' - (default) data are stored internally in MongoDB's gridfs system
        (3) 'unchanged' - do not save the data.  This mode is required when mmode
          is set to updatemd (used for pure Metadata manipulations for efficiency)
     :param mmode: mnemonic for MetadataMODE.   Supported options are:
@@ -648,6 +711,10 @@ def dbsave3C(db,d,mc,smode="gridfs",mmode="save"):
         # Now open the wf collections
         wfcol=db.wf
         if(d.live):
+            #Make sure the stored attributes in a Seismogram are consistent
+            #synced with Metadata as when we save to the database we assume 
+            #use the Metadata attributes to build the update document.
+            sync_metadata(d)
             if( (mmode=='save') or (mmode=='saveall') ):
                 if(smode=='file'):
                     foff=save_data3C_to_dfile(d)
