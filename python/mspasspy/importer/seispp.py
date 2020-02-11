@@ -88,6 +88,6 @@ def dbsave_indexdata(filebase,dbname,ext='d3C',verbose=False):
         pyd['foff']=foff
         wfid=collection.insert_one(pyd).inserted_id
         junk=np.fromfile(fh,dtype=dtyp,count=ns3c)
-    if(verbose)
+    if(verbose):
         print("Finished with file=",dfile)
         print("Size of wf collection is now ",collection.count()," documents")
