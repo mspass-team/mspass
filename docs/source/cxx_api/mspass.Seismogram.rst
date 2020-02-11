@@ -1,6 +1,6 @@
 mspass::Seismogram
 ------------------
 
-.. doxygenclass:: mspass::TimeSeries
+.. doxygenclass:: mspass::Seismogram
    :members:
 
