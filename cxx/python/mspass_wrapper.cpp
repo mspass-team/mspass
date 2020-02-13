@@ -84,6 +84,7 @@ using mspass::MetadataDefinitions;
 using mspass::MsPASSCoreTS;
 using mspass::MongoDBConverter;
 using mspass::agc;
+using mspass::ExtractComponent;
 
 /* We enable this gem for reasons explain in the documentation for pybinde11
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
@@ -425,6 +426,13 @@ PYBIND11_MODULE(ccore,m)
       py::arg("key"),
       py::arg("window")
   );
+  m.def("ExtractComponent",&mspass::ExtractComponent,
+  	"Extract component as a TimeSeries object",
+      py::return_value_policy::copy,
+      py::arg("tcs"),
+      py::arg("component")
+  );
+  /*
   m.def("ExtractComponent",
         py::overload_cast<mspass::CoreSeismogram&,int>(&mspass::ExtractComponent),
   	"Extract component as a TimeSeries object",
@@ -432,17 +440,8 @@ PYBIND11_MODULE(ccore,m)
       py::arg("tcs"),
       py::arg("component")
   );
- /*Note the list in this overload is unwrapping the alias in Metadata.h for a MetadataList
-  * This wwould be an issue if MetadataList were redefined */
-  m.def("ExtractComponent",
-        py::overload_cast<mspass::CoreSeismogram&,int,std::list<Metadata_typedef>&>(&mspass::ExtractComponent),
-  	"Extract component as a TimeSeries object",
-      py::return_value_policy::copy,
-      py::arg("tcs"),
-      py::arg("component"),
-      py::arg("mdl")
-  );
-  py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
+  */
+   py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
     .value("Fatal",ErrorSeverity::Fatal)
     .value("Invalid",ErrorSeverity::Invalid)
     .value("Suspect",ErrorSeverity::Suspect)
@@ -450,6 +449,7 @@ PYBIND11_MODULE(ccore,m)
     .value("Debug",ErrorSeverity::Debug)
     .value("Informational",ErrorSeverity::Informational)
   ;
+
   py::class_<std::exception>(m,"std_exception")
     .def("what",&std::exception::what)
   ;
@@ -474,10 +474,12 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<>())
     .def(py::init<string>())
     .def(py::init<std::string,mspass::MDDefFormat>())
+    .def("is_defined",&mspass::MetadataDefinitions::is_defined,"Test if a key is defined")
     .def("concept",&mspass::MetadataDefinitions::concept,"Return a string with a brief description of the concept this attribute captures")
     .def("type",&mspass::MetadataDefinitions::type,"Return a description of the type of this attribute")
     .def("add",&mspass::MetadataDefinitions::add,"Append a new attribute to the catalog")
     .def("has_alias",&mspass::MetadataDefinitions::has_alias,"Returns true if a specified key as an alterate name - alias")
+    .def("is_alias",&mspass::MetadataDefinitions::is_alias,"Return true if a key is an alias")
     .def("aliases",&mspass::MetadataDefinitions::aliases,"Return a list of aliases for a particular key")
     .def("unique_name",&mspass::MetadataDefinitions::unique_name,"Returns the unique key name associated with an alias")
     .def("add_alias",&mspass::MetadataDefinitions::add_alias,"Add an alias for a particular atrribute key")
@@ -485,7 +487,7 @@ PYBIND11_MODULE(ccore,m)
     .def("writeable",&mspass::MetadataDefinitions::writeable,"Test if an attribute should be saved")
     .def("readonly",&mspass::MetadataDefinitions::readonly,"Test if an attribute is marked readonly")
     .def("set_readonly",&mspass::MetadataDefinitions::set_readonly,"Force an attribute to be marked readonly")
-    .def("set_writeable",&mspass::MetadataDefinitions::set_readonly,"Force an attribute to be marked as writeable")
+    .def("set_writeable",&mspass::MetadataDefinitions::set_writeable,"Force an attribute to be marked as writeable")
     .def("is_normalized",&mspass::MetadataDefinitions::is_normalized,"Test to see if an attribute is stored in a master collection (table)")
     .def("unique_id_key",&mspass::MetadataDefinitions::unique_id_key,"Return the key for a unique id to fetch an attribute from a master collection (table)")
     .def("collection",&mspass::MetadataDefinitions::collection,"Return the table (collection) name for an attribute defined in a master table")

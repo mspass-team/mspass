@@ -171,55 +171,26 @@ void HorizontalRotation(CoreSeismogram& d, double phi)
     d.transform(tmatrix);
 }
 /* Extracts one component from a 3c seismogram returning the
- result as a pointer to a TimeSeries object.  Any exceptions are
+ result as a TimeSeries object.  Any exceptions are
 simply rethrown.
 
-This version clones the entire metadata space of the parent to the
-output TimeSeries.
 */
-shared_ptr<CoreTimeSeries> ExtractComponent(const CoreSeismogram& tcs,const int component)
+CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const int component)
 {
     try {
-        shared_ptr<CoreTimeSeries> ts;
-        ts=shared_ptr<CoreTimeSeries>(new CoreTimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
-                                  dynamic_cast<const Metadata&>(tcs)));
+        CoreTimeSeries ts(dynamic_cast<const BasicTimeSeries&>(tcs),
+                                  dynamic_cast<const Metadata&>(tcs));
         /* Important - need to clear vector or we get nothing */
-        ts->s.clear();
+        ts.s.clear();
         double *ptr;
         dmatrix *uptr;
-        if(ts->live)
+        if(tcs.live)
             for(int i=0; i<tcs.ns; ++i)
             {
                 uptr=const_cast<dmatrix *>(&(tcs.u));
                 ptr=uptr->get_address(component,i);
-                ts->s.push_back(*ptr);
+                ts.s.push_back(*ptr);
             }
-        return(ts);
-    }
-    catch (...)
-    {
-        throw;
-    }
-}
-// Overloaded version to do a selective copy
-shared_ptr<CoreTimeSeries> ExtractComponent(const CoreSeismogram& tcs,const int component,
-                                        const MetadataList& mdl)
-{
-    try {
-        Metadata mdclone;
-        copy_selected_metadata(dynamic_cast<const Metadata &>(tcs),
-                               mdclone,mdl);
-        shared_ptr<CoreTimeSeries> ts;
-        ts=shared_ptr<CoreTimeSeries>(new CoreTimeSeries(dynamic_cast<const BasicTimeSeries&>(tcs),
-                                  mdclone));
-        double *ptr;
-        dmatrix *uptr;
-        for(int i=0; i<tcs.ns; ++i)
-        {
-            uptr=const_cast<dmatrix *>(&(tcs.u));
-            ptr=uptr->get_address(component,i);
-            ts->s.push_back(*ptr);
-        }
         return(ts);
     }
     catch (...)

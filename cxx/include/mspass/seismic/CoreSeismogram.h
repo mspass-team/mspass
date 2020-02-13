@@ -403,25 +403,19 @@ private:
 std::shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& din,
 	std::string key, mspass::TimeWindow tw);
 /*!
- Extract one component from a Seismogram and
- create a CoreTimeSeries object from it.
-
-\param tcs is the Seismogram to convert.
-\param component is the component to extract (0, 1, or 2)
-\param mdl list of metadata to copy to output from input object.
-**/
-std::shared_ptr<mspass::CoreTimeSeries> ExtractComponent(CoreSeismogram& tcs,int component,
-        mspass::MetadataList& mdl);
-/*!
  Extract one component from a CoreSeismogram and
  create a CoreTimeSeries object from it.
 
- Similar to overloaded function of same name, but all metadata from
- parent is copied to the output.
+ Copies all Metadata from parent CoreSeismogram to build a CoreTimeSeries
+ object.  Note that process will often leave relics like transformation
+ matrix components.
 
 \param tcs is the CoreSeismogram to convert.
 \param component is the component to extract (0, 1, or 2)
+
+\return CoreTimeSeries of component requested
 **/
-std::shared_ptr<mspass::CoreTimeSeries> ExtractComponent(CoreSeismogram& tcs,int component);
+mspass::CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,
+		const int component);
 }  //end mspass namespace enscapsulation
 #endif  // End guard
