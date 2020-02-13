@@ -425,6 +425,23 @@ PYBIND11_MODULE(ccore,m)
       py::arg("key"),
       py::arg("window")
   );
+  m.def("ExtractComponent",
+        py::overload_cast<mspass::CoreSeismogram&,int>(&mspass::ExtractComponent),
+  	"Extract component as a TimeSeries object",
+      py::return_value_policy::copy,
+      py::arg("tcs"),
+      py::arg("component")
+  );
+ /*Note the list in this overload is unwrapping the alias in Metadata.h for a MetadataList
+  * This wwould be an issue if MetadataList were redefined */
+  m.def("ExtractComponent",
+        py::overload_cast<mspass::CoreSeismogram&,int,std::list<Metadata_typedef>&>(&mspass::ExtractComponent),
+  	"Extract component as a TimeSeries object",
+      py::return_value_policy::copy,
+      py::arg("tcs"),
+      py::arg("component"),
+      py::arg("mdl")
+  );
   py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
     .value("Fatal",ErrorSeverity::Fatal)
     .value("Invalid",ErrorSeverity::Invalid)
