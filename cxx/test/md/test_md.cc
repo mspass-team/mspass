@@ -3,6 +3,12 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace mspass;
+void print_metadata(Metadata& md)
+{
+  ostringstream ss;
+  ss << md;
+  cout << ss.str();
+}
 int main(int argc, char **argv)
 {
 	char *pfname=strdup("test_md.pf");
@@ -33,8 +39,23 @@ int main(int argc, char **argv)
                 cout << "double_val="<<mdplain.get<double>("double_val")<<endl;
                 cout << "string_val="<<mdplain.get<string>("string_val")<<endl;
                 cout << "bool_val="<<mdplain.get<bool>("bool_val")<<endl;
-                cout << "Same thing using operator >> "<<endl;
-		cout << mdplain;
+		ostringstream ss;
+		cout << "Trying to serialize with operator stringstream"<<endl;
+		ss << mdplain;
+		cout << "Succeeded - stringstream contents:"<<endl;
+		cout << ss.str()<<endl;
+		cout<< "Trying same with serialize function"<<endl;
+		string sbuf=serialize(mdplain);
+		cout<<"Serialized completed: content "<<endl
+			<<"(should be same as stringstream output above)"<<endl;
+		cout <<sbuf;
+		cout << "Trying to run inverse function restore_serialized "
+			<<"on sterialization output"<<endl;
+		Metadata mrestored=restore_serialized(sbuf);
+		cout<<"Result - should again be the same"<<endl;
+		print_metadata(mrestored);
+                cout << "Same thing using operator >> to cout"<<endl;
+		print_metadata(mdplain);
 		cout << "Testing is_defined and clear methods"<<endl;
 		cout << "This should be a False(0) (undefined key)->"
 			<<mdplain.is_defined("HUHLigh")<<endl;
@@ -47,26 +68,26 @@ int main(int argc, char **argv)
 		else
 			cout << "Test of clear method succeeded"<<endl;
 		cout << "Contents of edited mdplain"<<endl;
-		cout << mdplain<<endl;
+		print_metadata(mdplain);
 		cout << "Trying simple file read constructor"<<endl
                     << "Reading from simple.txt"<<endl;
                 ifstream ifs("simple.txt");
                 Metadata mds(ifs);
-		cout << mds;
+		print_metadata(mds);
                 cout << "Trying to read more complex pf file using AntelopePF object constructor"<<endl;
                 AntelopePf pfsmd(pfname);
-                cout << "Success - read the following:  "<<endl
-                    << pfsmd<<endl;
+                cout << "Success - read the following:  "<<endl;
+		print_metadata(pfsmd);
                 cout << "Trying assignment operator for Metadata with RTTI"<<endl;
                 Metadata mdsum;
                 mdsum=dynamic_cast<Metadata&>(pfsmd);
                 cout << "Worked"<<endl<<"Contents of copy (simple attributes ony)"<<endl;
-                cout << mdsum<<endl;
+		print_metadata(mdsum);
                 cout << "Trying += operator.  Merging inline and pf objects"<<endl;
                 cout << "Trying to add simple to Metadata derived from pf"<<endl;
                 mdsum+=mds;
                 cout << "Done - result:"<<endl;
-                cout << mdsum<<endl;
+		print_metadata(mdsum);
                 cout << "Reading and writing a couple of simple parameters"<<endl;
                 cout << "simple_real_parameter="
                     <<pfsmd.get<double>("simple_real_parameter")<<endl
@@ -87,8 +108,8 @@ int main(int argc, char **argv)
                   <<endl;
                 AntelopePf pfbr(pfsmd.get_branch("test_nested_tag"));
                 cout << "Success"<<endl
-                    <<"Contents"<<endl
-                    << dynamic_cast<Metadata&>(pfbr)<<endl;
+                    <<"Contents"<<endl;
+		print_metadata(pfbr);
                 cout << "test_double parameter in branch="<<pfbr.get_double("test_double")<<endl;
                 cout << "Testing exceptions.  First a get failure:"<<endl;
                 try{
