@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <boost/core/demangle.hpp>
 #include "mspass/utility/Metadata.h"
 namespace mspass
@@ -151,7 +152,8 @@ std::string Metadata::type(const string key) const
     }
     catch(...){throw;};
 }
-ostream& operator<<(ostream& os, Metadata& m)
+/* friend operator */
+ostringstream& operator<<(ostringstream& os, Metadata& m)
 {
   try{
     map<string,boost::any>::iterator mdptr;
@@ -221,6 +223,67 @@ ostream& operator<<(ostream& os, Metadata& m)
         }
     }
     return os;
+  }catch(...){throw;};
+}
+/* This function is very much like operator<< except it is more
+ * restricted on allowed types and it add a type name to the output */
+std::string serialize(const Metadata& md)
+{
+  try{
+    ostringstream ss;
+    /* We do this to make sure we don't truncate precision */
+    ss<<setprecision(14);
+    ss << const_cast<Metadata&>(md);
+    return std::string(ss.str());
+  }catch(...){throw;};
+}
+/* This has a lot more complexity but assumes a series of lines
+ * defined by ostringstream operator:  key, type, value
+ * */
+Metadata restore_serialized(const std::string s)
+{
+  try{
+    stringstream ss(s);
+    Metadata md;
+    string key,typ;
+    double dval;
+    long int ival;
+    bool bval;
+    string sval;
+    do{
+      ss>>key;
+      ss>>typ;
+      if(ss.eof())break;   // normal exit of this loop is here
+      if(typ=="double")
+      {
+        ss>>dval;
+        md.put(key,dval);
+      }
+      else if( (typ=="long")||(typ=="int") )
+      {
+        ss>>ival;
+        md.put(key,ival);
+      }
+      else if(typ=="bool")
+      {
+        ss>>bval;
+        md.put(key,bval);
+      }
+      /* this assumes output has been made pretty so this simple test works*/
+      else if(typ=="string")
+      {
+        ss>>sval;
+        md.put(key,sval);
+      }
+      else
+      {
+        cerr << "restore_serialized (WARNING):  unrecognized type for key="<<key
+           << " of "<<typ<<endl<<"Trying to save as string"<<endl;
+        ss>>sval;
+        md.put(key,sval);
+      }
+    }while(!ss.eof());
+    return md;
   }catch(...){throw;};
 }
 
