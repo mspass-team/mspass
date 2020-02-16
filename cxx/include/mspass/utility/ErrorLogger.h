@@ -3,6 +3,10 @@
 #include <unistd.h>
 #include <list>
 #include <list>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ErrorLogger.h"
 namespace mspass
@@ -24,6 +28,17 @@ public:
   Note p_id is always fetched with the system call getpid in the constructor.*/
   LogData(const int jid, const std::string alg,const mspass::MsPASSError& merr);
   friend ostream& operator<<(ostream&, LogData&);
+private:
+  friend boost::serialization::access;
+  template<class Archive>
+     void serialize(Archive& ar,const unsigned int version)
+  {
+    ar & job_id;
+    ar & p_id;
+    ar & algorithm;
+    ar & badness;
+    ar & message;
+  };
 };
 /*! \brief Container to hold error logs for a data object.
 
@@ -84,6 +99,13 @@ public:
 private:
   int job_id;
   std::list<LogData> allmessages;
+  friend boost::serialization::access;
+  template<class Archive>
+     void serialize(Archive& ar,const unsigned int version)
+  {
+    ar & job_id;
+    ar & allmessages;
+  };
 };
 } // End mspass namespace
 #endif

@@ -227,7 +227,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
 }
 /* This function is very much like operator<< except it is more
  * restricted on allowed types and it add a type name to the output */
-std::string serialize(const Metadata& md)
+std::string serialize_metadata(const Metadata& md)
 {
   try{
     ostringstream ss;
@@ -240,7 +240,7 @@ std::string serialize(const Metadata& md)
 /* This has a lot more complexity but assumes a series of lines
  * defined by ostringstream operator:  key, type, value
  * */
-Metadata restore_serialized(const std::string s)
+Metadata restore_serialized_metadata(const std::string s)
 {
   try{
     stringstream ss(s);

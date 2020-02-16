@@ -1,18 +1,20 @@
 #ifndef _MSPASS_CORE_TS_H_
 #define _MSPASS_CORE_TS_H_
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/ErrorLogger.h"
 namespace mspass{
 /*! \brief Common components for interaction with MsPASS.
 
 This class is intended to be provide common API elements for data objects to interact with
 MsPASS framework.   It contains elements needed by the data to interact seamlessly with MongoDB and
-spark.  
+spark.
 
 This implementation assumes most database manipulations will take place in python scripts.  That
-means the actual contents of this object are minimal.  For the initial implementation the main 
+means the actual contents of this object are minimal.  For the initial implementation the main
 hook is the string that is used in MongoDB as an external form fo the ObjectID.   This assumption
-is the get and put methods for the objectid string will be sufficient for a python wrapper to 
-associate data with the a unique document in the database.   
+is the get and put methods for the objectid string will be sufficient for a python wrapper to
+associate data with the a unique document in the database.
 */
 class MsPASSCoreTS
 {
@@ -46,6 +48,13 @@ class MsPASSCoreTS
     /*! ObjectID hex string.   Can be converted readily to form needed to
     find a document. */
     string hex_id;
+    friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & hex_id;
+      ar & elog;
+    };
 };
 }  //End Namespace mspass
 #endif
