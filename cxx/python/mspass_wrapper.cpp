@@ -572,9 +572,14 @@ PYBIND11_MODULE(ccore,m)
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<tmatrix;
+        /* This is a very slow solution, but using the axiom make it work
+        before you make it fast*/
+        stringstream ssu;
+        boost::archive::text_oarchive aru(ssu);
+        aru<<self.u;
         return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
           cardinal, orthogonal,sstm.str(),
-          self.u);
+          ssu.str());
       },
       [](py::tuple t) {
        string sbuf=t[0].cast<std::string>();
@@ -594,7 +599,11 @@ PYBIND11_MODULE(ccore,m)
        boost::archive::text_iarchive artm(sstm);
        dmatrix tmatrix;
        artm>>tmatrix;
-       return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,t[6].cast<dmatrix&>());
+       stringstream ssu(t[6].cast<std::string>());
+       boost::archive::text_iarchive aru(ssu);
+       dmatrix u;
+       aru>>u;
+       return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
      }
      ))
     ;
