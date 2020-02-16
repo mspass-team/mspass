@@ -315,7 +315,7 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 
 \return 3x3 transformation matrix.
 */
-        dmatrix get_transformation_matrix()
+        dmatrix get_transformation_matrix() const
         {
             dmatrix result(3,3);
             for(int i=0;i<3;++i)
@@ -340,6 +340,10 @@ matrix when the coordinates are cardinal (i.e. ENZ).
    not 3x3.
    */
         bool set_transformation_matrix(const dmatrix& A);
+/*! Returns true of components are cardinal. */
+	bool cardinal()const {return components_are_cardinal;};
+/*! Return true if the components are orthogonal. */
+	bool orthogonal()const {return components_are_orthogonal;};
 
 protected:
 	/*!

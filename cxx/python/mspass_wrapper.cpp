@@ -1,7 +1,10 @@
 #include <fstream>
+#include <sstream>
+#include <iomanip>
 #include <exception>
 #include <functional>
 #include <boost/any.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <mspass/utility/MsPASSError.h>
 #include <mspass/utility/AttributeMap.h>
 #include <mspass/utility/SphericalCoordinate.h>
@@ -58,6 +61,7 @@ namespace pybind11 { namespace detail {
 namespace py=pybind11;
 
 using std::exception;
+using std::stringstream;
 using mspass::AttributeMap;
 using mspass::SphericalCoordinate;
 using mspass::SlownessVector;
@@ -300,7 +304,7 @@ PYBIND11_MODULE(ccore,m)
     .def("put_string",&Metadata::put_string,"Interface class for strings")
     .def("put_long",&Metadata::put_long,"Interface class for long ints")
     /* Intentionally do NOT enable put_int.   Found type skew problems if
-     * called from python.   Best avoided. 
+     * called from python.   Best avoided.
     .def("put_int",&Metadata::put_int,"Interface class for generic ints")
     */
     .def("keys",&Metadata::keys,"Return a list of the keys of all defined attributes")
@@ -311,6 +315,18 @@ PYBIND11_MODULE(ccore,m)
     .def("clear",&Metadata::clear,"Clears contents associated with a key")
     .def(py::self += py::self)
     .def(py::self + py::self)
+    /* these are need to allow the class to be pickled*/
+    .def(py::pickle(
+      [](const Metadata &self) {
+        string sbuf;
+        sbuf=serialize_metadata(self);
+        return py::make_tuple(sbuf);
+      },
+      [](py::tuple t) {
+       string sbuf=t[0].cast<std::string>();
+       return mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+     }
+     ))
   ;
 
   py::class_<mspass::AntelopePf,Metadata>(m,"AntelopePf")
@@ -389,6 +405,9 @@ PYBIND11_MODULE(ccore,m)
       })
     .def("rows",&dmatrix::rows,"Rows in the matrix")
     .def("columns",&dmatrix::columns,"Columns in the matrix")
+    .def("zero",&dmatrix::zero,"Initialize a matrix to all zeros")
+    .def(py::self += py::self,"Operator +=")
+    .def(py::self -= py::self,"Operator -=")
     .def("__getitem__", [](const dmatrix &m, std::pair<int, int> i) {
           if (i.first >= m.rows() || i.second >= m.columns())
               throw py::index_error();
@@ -535,6 +554,49 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<CoreSeismogram,std::string>())
     .def(py::init<BasicTimeSeries,Metadata,ErrorLogger>())
     .def(py::init<Metadata>())
+    .def(py::pickle(
+      [](const Seismogram &self) {
+        string sbuf;
+        sbuf=serialize_metadata(self);
+        stringstream ssbts;
+        ssbts << std::setprecision(15);
+        boost::archive::text_oarchive arbts(ssbts);
+        arbts << dynamic_cast<const BasicTimeSeries&>(self);
+        stringstream sscorets;
+        boost::archive::text_oarchive arcorets(sscorets);
+        arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
+        /* these are behind getter/setters */
+        bool cardinal=self.cardinal();
+        bool orthogonal=self.orthogonal();
+        dmatrix tmatrix=self.get_transformation_matrix();
+        stringstream sstm;
+        boost::archive::text_oarchive artm(sstm);
+        artm<<tmatrix;
+        return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
+          cardinal, orthogonal,sstm.str(),
+          self.u);
+      },
+      [](py::tuple t) {
+       string sbuf=t[0].cast<std::string>();
+       Metadata md;
+       md=mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+       stringstream ssbts(t[1].cast<std::string>());
+       boost::archive::text_iarchive arbts(ssbts);
+       BasicTimeSeries bts;
+       arbts>>bts;
+       stringstream sscorets(t[2].cast<std::string>());
+       boost::archive::text_iarchive arcorets(sscorets);
+       MsPASSCoreTS corets;
+       arcorets>>corets;
+       bool cardinal=t[3].cast<bool>();
+       bool orthogonal=t[4].cast<bool>();
+       stringstream sstm(t[5].cast<std::string>());
+       boost::archive::text_iarchive artm(sstm);
+       dmatrix tmatrix;
+       artm>>tmatrix;
+       return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,t[6].cast<dmatrix&>());
+     }
+     ))
     ;
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")

@@ -1,3 +1,4 @@
+#include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/ErrorLogger.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/Metadata.h"
@@ -44,14 +45,14 @@ int main(int argc, char **argv)
 		ss << mdplain;
 		cout << "Succeeded - stringstream contents:"<<endl;
 		cout << ss.str()<<endl;
-		cout<< "Trying same with serialize function"<<endl;
-		string sbuf=serialize(mdplain);
+		cout<< "Trying same with serialize_metadata function"<<endl;
+		string sbuf=serialize_metadata(mdplain);
 		cout<<"Serialized completed: content "<<endl
 			<<"(should be same as stringstream output above)"<<endl;
 		cout <<sbuf;
-		cout << "Trying to run inverse function restore_serialized "
+		cout << "Trying to run inverse function restore_serialized_metadata "
 			<<"on sterialization output"<<endl;
-		Metadata mrestored=restore_serialized(sbuf);
+		Metadata mrestored=restore_serialized_metadata(sbuf);
 		cout<<"Result - should again be the same"<<endl;
 		print_metadata(mrestored);
                 cout << "Same thing using operator >> to cout"<<endl;
@@ -162,6 +163,24 @@ int main(int argc, char **argv)
                 {
                     cout << *lptr<<endl;
                 }
+		cout << "Testing serialization of error log"<<endl;
+		stringstream serial_ss;
+		boost::archive::text_oarchive ar(serial_ss);
+		ar << elog;
+		cout << "serialization finished"<<endl;
+		cout << "Attempting to restore"<<endl;
+		string serialbuf=serial_ss.str();
+		istringstream eloginstrm(serialbuf);
+		ErrorLogger elog_restored;
+		boost::archive::text_iarchive arin(eloginstrm);
+		arin>>elog_restored;
+		cout << "Error log restored - contents should match above"<<endl;
+		ldata=elog_restored.get_error_log();
+		for(lptr=ldata.begin();lptr!=ldata.end();++lptr)
+                {
+                    cout << *lptr<<endl;
+                }
+
 	}
 	catch (MsPASSError& sess)
 	{

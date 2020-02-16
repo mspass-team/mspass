@@ -4,6 +4,12 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+/* Either text or binary can be specified here, but we use binary
+ * to emphasize this class is normally serialized binary for 
+ * speed*/
+#include <boost/serialization/vector.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
@@ -256,6 +262,14 @@ protected:
    vector<double> ary;   // initial size of container 0
    int length;
    int nrr, ncc;
+private:
+   friend class boost::serialization::access;
+   template<class Archive>void serialize(Archive & ar,
+                           const unsigned int version)
+   {
+       ar & nrr & ncc & length;
+       ar & ary;
+   }
 };
 /*! \brief A vector compatible with dmatrix objects.
  

@@ -1,6 +1,8 @@
 #ifndef _BASICTIMESERIES_H_
 #define _BASICTIMESERIES_H_
 #include <math.h>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 namespace mspass{
 /*! \brief Type of time standard for time series data.
 
@@ -122,15 +124,15 @@ of this data object.
   double time_reference() const;
 /*! \brief Force a t0 shift value on data.
  *
- * This is largely an interface routine for constructors that need to 
- * handle data in relative time that are derived from an absolute 
+ * This is largely an interface routine for constructors that need to
+ * handle data in relative time that are derived from an absolute
  * base.  It can also be used to fake processing routines that demand
  * data be in absolute time when the original data were not.  It was
  * added for MsPASS to support reads and writes to MongoDB where we
- * want to be able to read and write data that had been previously 
+ * want to be able to read and write data that had been previously
  * time shifted (e.g. ArrivalTimeReference).
  *
- * \param t is the time shift to force 
+ * \param t is the time shift to force
  * */
 	void force_t0_shift(const double t)
 	{
@@ -187,6 +189,18 @@ private:
     /*When ator or rtoa are called this variable defines the conversion back
      * and forth.  The shift method should be used to change it. */
     double t0shift;
+		friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & live;
+      ar & dt;
+			ar & ns;
+			ar & t0;
+			ar & tref;
+			ar & t0shift_is_valid;
+			ar & t0shift;
+    };
 };
 }
 #endif   // End guard

@@ -12,5 +12,5 @@ include_directories(
 
 pybind11_add_module(ccore mspass_wrapper.cpp MongoDBConverter.cpp)
 
-target_link_libraries(ccore PRIVATE mspass)
+target_link_libraries(ccore PRIVATE mspass ${Boost_LIBRARIES})
 
