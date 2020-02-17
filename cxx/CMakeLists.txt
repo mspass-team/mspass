@@ -31,8 +31,7 @@ message (STATUS "YAML_CPP_LIBRARIES   = ${YAML_CPP_LIBRARIES}")
 message (STATUS "YAML_CPP_INCLUDE_DIR = ${YAML_CPP_INCLUDE_DIR}")
 
 
-#find_package (Boost 1.64.0)
-find_package (Boost 1.64.0 REQUIRED COMPONENTS serialization )
+find_package (Boost 1.64.0 COMPONENTS serialization)
 if (NOT Boost_FOUND)
   message (STATUS "Building Boost")
   include (cmake/boost.cmake)
@@ -41,9 +40,8 @@ if (NOT Boost_FOUND)
     ${PROJECT_BINARY_DIR}/boost
     )
 endif ()
-message (STATUS "BOOSTROOT="${BOOSTROOT})
 message (STATUS "Boost_LIBRARIES="${Boost_LIBRARIES})
-message (STATUS "Boost_LIBRARY_DIR_RELEASE="${Boost_LIBRARY_DIR_RELEASE})
+message (STATUS "Boost_LIBRARY_DIRS="${Boost_LIBRARY_DIRS})
 message (STATUS "Boost_INCLUDE_DIRS="${Boost_INCLUDE_DIRS})
 
 find_package (BLAS)

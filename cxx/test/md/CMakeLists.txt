@@ -6,4 +6,4 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/)
 
-target_link_libraries(test_md PRIVATE -L/opt/boost/lib mspass boost_serialization)
+target_link_libraries(test_md PRIVATE mspass ${Boost_LIBRARIES})
