@@ -615,9 +615,9 @@ PYBIND11_MODULE(ccore,m)
           stringstream sscorets;
           boost::archive::text_oarchive arcorets(sscorets);
           arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
-          /*This creates a numpy array of length ns to hold data */
-          py::array_t<double, py::array::f_style> darr(self.ns);
-          for(int i=0;i<self.ns;++i) darr.mutable_at(i)=self.s[i];
+          /*This creates a numpy array alias from the vector container
+          without a move or copy of the data */
+          py::array_t<double, py::array::f_style> darr(self.ns,&(self.s[0]));
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
         },
         [](py::tuple t) {
