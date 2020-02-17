@@ -18,32 +18,44 @@ public:
 
    Most of this class is defined by the CoreTimeSeries class, but at present for
    mspass extension we need the objectid for mongdb.  This passes the object id
-   as a string of hex digits.  
+   as a string of hex digits.
 
    \param d is the main CoreTimeSeries to be copied.
    \param oid is the objectid specified as a hex string.
    */
   TimeSeries(const mspass::CoreTimeSeries& d, const std::string oid);
-  /*! Extended partial copy constructor. 
+  /*! Extended partial copy constructor.
 
-  A TimeSeries object is created from several pieces.   It can be 
-  useful at times to create a partial clone that copies everything 
+  A TimeSeries object is created from several pieces.   It can be
+  useful at times to create a partial clone that copies everything
   but the actual data.   This version clones all components that are
   not data.  Note whenever this constructor is called the object id
-  will automatically be invalid since by definition the object 
+  will automatically be invalid since by definition the object
   created is not stored in the MongoDB database.
 
   \param b - BasicTimeSeries component to use to construct data.
-  \param m - Metadata componet to use to construct data (no test are 
+  \param m - Metadata componet to use to construct data (no test are
     made to verify any attributes stored here are consistent with b.
-  \param e - ErrorLogger content.  If these data are derived from a 
-    parent that has an error log (ErrorLogger) that may not be empty 
+  \param e - ErrorLogger content.  If these data are derived from a
+    parent that has an error log (ErrorLogger) that may not be empty
     it can be useful to copy the log.   This argument has a default
     that passes an empty ErrorLog object.   The idea is calling this
     constructor with only two parameters will not copy the error log.
     */
-  TimeSeries(const BasicTimeSeries& b,const Metadata& m, 
+  TimeSeries(const BasicTimeSeries& b,const Metadata& m,
           const ErrorLogger elf=ErrorLogger());
+/*! Special constructor for pickle interface.
+
+The pickle interface required by spark presented problems for MsPASS.  The
+complicated data objects of TimeSeries and Seismogram have to be serialized
+in pieces.   This constructor is only used in the function called
+indirectly by pickle.load.   It essentially contains a TimeSeries dismembered
+into the pieces that can be the serialized independently.   The
+parameters are each associated with one of those required pieces and
+are simply copied to build a valid TimeSeries object in the pickle.load
+function */
+  TimeSeries(const BasicTimeSeries& b,const Metadata& m,
+                  const MsPASSCoreTS& mcts,const vector<double>& d);
   /*! Standard copy constructor. */
   TimeSeries(const TimeSeries& parent)
     : CoreTimeSeries(parent), MsPASSCoreTS(parent){};
