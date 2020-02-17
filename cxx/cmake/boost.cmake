@@ -21,5 +21,8 @@ macro(fetch_boost _download_module_path _download_root)
         )
 
     set (BOOST_ROOT ${PROJECT_BINARY_DIR}/boost)
-    find_package (Boost 1.71.0 REQUIRED)
+    set (Boost_NO_BOOST_CMAKE ON)
+    set (Boost_USE_STATIC_LIBS ON)
+
+    find_package (Boost 1.71.0 REQUIRED COMPONENTS serialization)
 endmacro()
