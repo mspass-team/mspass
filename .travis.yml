@@ -33,6 +33,7 @@ jobs:
           packages:
             - gfortran
             - libboost-dev
+            - libboost-serialization-dev
             - liblapack-dev
       compiler: gcc
       
@@ -50,6 +51,7 @@ jobs:
           packages:
             - gfortran
             - libboost-dev
+            - libboost-serialization-dev
             - liblapack-dev
       compiler: clang
       
@@ -71,6 +73,7 @@ jobs:
           packages:
             - gfortran
             - libboost-dev
+            - libboost-serialization-dev
             - liblapack-dev
             - doxygen
       compiler: gcc
