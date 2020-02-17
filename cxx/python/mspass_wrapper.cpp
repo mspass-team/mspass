@@ -22,6 +22,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/numpy.h>
 
 namespace pybind11 { namespace detail {
   template <> struct type_caster<boost::any> {
@@ -375,7 +376,7 @@ PYBIND11_MODULE(ccore,m)
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
   ;
-  /* We need this definition to bind dmatrix to a numpy array as described
+    /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\
   https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html
   Leans heavily on example here:
@@ -541,13 +542,6 @@ PYBIND11_MODULE(ccore,m)
     .def("set_id",&mspass::MsPASSCoreTS::set_id,"Set the mongodb unique id to associate with this object")
     .def("get_id",&mspass::MsPASSCoreTS::get_id,"Return the mongodb uniqueid associated with a data object")
     .def_readwrite("elog",&mspass::MsPASSCoreTS::elog,"Error logger object");
-  /* These two APIs are incomplete but are nontheless mostly wrappers for
-  Core versions of same */
-  py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>
-                                                (m,"TimeSeries")
-    .def(py::init<>())
-    .def(py::init<CoreTimeSeries,std::string>())
-    ;
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
                                                 (m,"Seismogram")
     .def(py::init<>())
@@ -607,6 +601,51 @@ PYBIND11_MODULE(ccore,m)
      }
      ))
     ;
+    py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>(m,"TimeSeries","mspass scalar time series data object")
+      .def(py::init<>())
+      .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
+      .def(py::pickle(
+        [](const TimeSeries &self) {
+          string sbuf;
+          sbuf=serialize_metadata(self);
+          stringstream ssbts;
+          ssbts << std::setprecision(15);
+          boost::archive::text_oarchive arbts(ssbts);
+          arbts << dynamic_cast<const BasicTimeSeries&>(self);
+          stringstream sscorets;
+          boost::archive::text_oarchive arcorets(sscorets);
+          arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
+          /*This creates a numpy array of length ns to hold data */
+          py::array_t<double, py::array::f_style> darr(self.ns);
+          for(int i=0;i<self.ns;++i) darr.mutable_at(i)=self.s[i];
+          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
+        },
+        [](py::tuple t) {
+         string sbuf=t[0].cast<std::string>();
+         Metadata md;
+         md=mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+         stringstream ssbts(t[1].cast<std::string>());
+         boost::archive::text_iarchive arbts(ssbts);
+         BasicTimeSeries bts;
+         arbts>>bts;
+         stringstream sscorets(t[2].cast<std::string>());
+         boost::archive::text_iarchive arcorets(sscorets);
+         MsPASSCoreTS corets;
+         arcorets>>corets;
+         /* There might be a faster way to do this than a copy like
+         this but for now this, like Seismogram, is make it work before you
+         make it fast */
+         py::array_t<double, py::array::f_style> darr;
+         darr=t[3].cast<py::array_t<double, py::array::f_style>>();
+         /* A tad dangerous assuming bts.ns matches actual size of darr, but it should
+         in this context. */
+         std::vector<double> d;
+         d.reserve(bts.ns);
+         for(int i=0;i<bts.ns;++i) d.push_back(darr.at(i));
+         return TimeSeries(bts,md,corets,d);;
+       }
+     ));
+
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
