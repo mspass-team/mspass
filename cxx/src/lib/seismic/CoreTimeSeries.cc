@@ -30,6 +30,16 @@ CoreTimeSeries::CoreTimeSeries(const CoreTimeSeries& tsi) :
     {
         s=tsi.s;
     }
+    else if(tsi.s.size()>0)
+    {
+      /* This is needed to preserve the contents of data vector when something
+      marks the data dead, but one wants to restore it later.  Classic example
+      is an interactive trace editor.  Found mysterious errors can occur
+      without this features. */
+        s=tsi.s;
+    }
+    /* Do nothing if the parent s is empty as std::vector will be properly
+    initialized*/
 }
 
 CoreTimeSeries::CoreTimeSeries(const BasicTimeSeries& bd,const Metadata& md)
@@ -47,10 +57,7 @@ CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
     {
         this->BasicTimeSeries::operator=(tsi);
         this->Metadata::operator=(tsi);
-        if(tsi.live)
-        {
-            s=tsi.s;
-        }
+        s=tsi.s;
     }
     return(*this);
 }
