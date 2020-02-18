@@ -20,7 +20,7 @@ RUN pip3 --no-cache-dir install pymongo
 RUN mkdir /home/data
 
 # Prepare the environment
-ENV SPARK_VERSION 2.4.4
+ENV SPARK_VERSION 2.4.5
 ENV SPARK_MASTER_PORT 7077
 
 ENV MSPASS_ROLE master
