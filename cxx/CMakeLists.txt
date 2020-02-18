@@ -40,9 +40,9 @@ if (NOT Boost_FOUND)
     ${PROJECT_BINARY_DIR}/boost
     )
 endif ()
-message (STATUS "Boost_LIBRARIES="${Boost_LIBRARIES})
-message (STATUS "Boost_LIBRARY_DIRS="${Boost_LIBRARY_DIRS})
-message (STATUS "Boost_INCLUDE_DIRS="${Boost_INCLUDE_DIRS})
+message (STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
+message (STATUS "Boost_LIBRARY_DIRS = ${Boost_LIBRARY_DIRS}")
+message (STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 
 find_package (BLAS)
 if (NOT BLAS_FOUND)
