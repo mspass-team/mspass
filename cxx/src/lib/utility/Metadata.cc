@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <boost/core/demangle.hpp>
 #include "mspass/utility/Metadata.h"
+#include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
 Metadata::Metadata(ifstream& ifs, const string form)
@@ -77,6 +78,28 @@ bool Metadata::is_defined(const string key) const noexcept
   {
     return false;
   }
+}
+void Metadata::append_chain(const std::string key, const std::string val, 
+                  const std::string separator) 
+{
+  if(this->is_defined(key))
+  {
+    string typ=this->type(key);
+    if(typ.find("string")==string::npos)
+	    throw MsPASSError("Metadata::append_chain:  data for key="
+	      + key + " is not string type but "+typ
+	      + "\nMust be string type to define a valid chain",
+	      ErrorSeverity::Invalid);
+    string sval=this->get_string(key);
+    sval += separator;
+    sval += val;
+    this->put(key,sval);
+  }
+  else
+  {
+    this->put(key,val); 
+  }
+  changed_or_set.insert(key);
 }
 Metadata& Metadata::operator=(const Metadata& parent)
 {
