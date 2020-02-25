@@ -64,8 +64,8 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
         dout.s.append(d.data[i])
 # Things below here can throw exceptions.  We capture them with a feature
 # of mspass using the ErrorLogger object that is a component of the TimeSeries
-# object. Here we initialize the error logger to post obspy2mspass as the algorithm
-    dout.elog.set_algorithm("obspy2mspass")
+# object.  This name is posted to all error messages.
+    algorithm="obspy2mspass"
 
 # Mow load and copy all mdother data. Cannot assume the set of attributes
 # requested are actually with the data being imported for cxx
@@ -82,10 +82,10 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
                         val_to_save=int(val)
                         dout.put(key,val_to_save)
                     except ValueError:
-                        error_message="obspy2mspass: Error handling attribute with key="+key+"\n"
+                        error_message="Error handling attribute with key="+key+"\n"
                         error_message=error_message+"Data in trace attribute with this key cannot be converted to an Int64 as required by schema\n"
                         error_message=error_message+"Content stored with this key=" + str(val)
-                        dout.elog.log_error(error_messag3e,ErrorSeverity.Complaint)
+                        dout.elog.log_error(algorithm,error_message,ErrorSeverity.Complaint)
                         # testing - delete for release
                         print("Saved message=",error_message," to log")
                         #print("obspy2mspass: Error handling attribute with key="+key)
@@ -97,10 +97,10 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
                         val_to_save=float(val)
                         dout.put(key,val_to_save)
                     except ValueError:
-                        error_message="obspy2mspass: Error handling attribute with key="+key+"\n"
+                        error_message="Error handling attribute with key="+key+"\n"
                         error_message=error_message + "Data in trace attribute with this key cannot be converted to Real64 as required by schema\n"
                         error_message=error_message + "Content stored this key="+str(val)+"\n"
-                        dout.elog.log_error(error_message,ErrorSeverity.Complaint)
+                        dout.elog.log_error(algorithm,error_message,ErrorSeverity.Complaint)
                 # Section for short versions of numeric types.   For now we promote
                 # all int32 to int64 and real32 (C float) to real64(C double)
                 # This code repeats above intentionally in case these cases
@@ -112,25 +112,25 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
                         val_to_save=int(val)
                         dout.put(key,val_to_save)
                         if(val>2147483648 or val<-2147483648) :
-                            mess="obspy2mspass:  Attribute with key="+key+"\n"
+                            mess="Attribute with key="+key+"\n"
                             mess=mess + "Valued stored="+str(val)+" will overflow Int32 required by schema\n"
                             mess=mess + "Converted for now to Int64, but may be wrong in output if saved\n"
-                            dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                            dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
                     except ValueError:
-                        mess="obspy2mspass: Error handling attribute with key="+key+"\n"
+                        mess="Error handling attribute with key="+key+"\n"
                         mess=mess + "Data in trace attribute with this key cannot be converted to an integer as required by schema\n"
                         mess=mess + "Content stored with this key="+str(val)+"\n"
-                        dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                        dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
                 elif(typ==MDtype.Real32):
                     try :
                         val_to_save=float(val)
                         dout.put(key,val_to_save)
                     except ValueError:
-                        mess="obspy2mspass: Error handling attribute with key="+key+"\n"
+                        mess="Error handling attribute with key="+key+"\n"
                         mess=mess + "Data in trace attribute with this key cannot be converted to Real64 as required by schema\n"
                         mess=mess + "Note it is defines as a Real32, but is always promoted to Real64 inside mspass\n"
                         mess=mess + "Content stored this key="+str(val)+"\n"
-                        dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                        dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
                 elif(typ==MDtype.String) :
                     # As far as I can tell the python str function is bombproof
                     # and will always return a result for any numeric typeself
@@ -145,18 +145,18 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
                     val_to_save=bool(val)
                     dout.put(key,val_to_save)
                 else :
-                    mess="obspy2mspass:  Cannot handle attribute with key =" + "\n"
+                    mess="Cannot handle attribute with key =" + "\n"
                     + "MetadataDefinitions has an error and contains an unsupported type definition\n"
                     mess=mess + "Check data used to generate MetadataDefinitions for errors"
-                    dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                    dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
             except RuntimeError:
-                mess="obspy2mspass:  optional key="+key+" is undefined in master schema\n"
+                mess="Optional key="+key+" is undefined in master schema\n"
                 + "attribute linked to that key will not be copied to mspass TimeSeries\n"
-                dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
         except KeyError:
-            mess="obspy2mspass:  optional key="+key+" not found in obspy stats\n"
+            mess="Optional key="+key+" not found in obspy stats\n"
             mess=mess + "attribute linked to that key will not be copied to mspass TimeSeries\n"
-            dout.elog.log_error(mess,ErrorSeverity.Complaint)
+            dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
     # Now handle entries that are to be set as aliases.  As docstring says the approach
     # is to delete contents of a master name associated with the requested alias to
     # avoid stale duplicates.  An additional complication is that we also have to clear
@@ -191,17 +191,17 @@ def obspy2mspass(d,mdef,mdother=[],aliases=[]):
                     dout.clear(ukey)
                 else :
                     # This block should never be executed, but good for stability
-                    mess="obspy2mspass (WARNING): cannot set attribute alias="+a+"\n"
+                    mess="Cannot set attribute alias="+a+"\n"
                     mess=mess + "unique key="+ukey+" has illegal type\n"
                     mess=mess + "Check aliases section data used to create MetadataDefinitions for errors"
-                    dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                    dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
             else :
-                mess="obspy2mspass (WARNING):  cannot rename attribute with key="+ukey+"\n"
+                mess="Cannot rename attribute with key="+ukey+"\n"
                 mess=mess + "Requested change to alias name="+a+" failed because "+ukey+" was not previously set\n"
-                dout.elog.log_error(mess,ErrorSeverity.Complaint)
+                dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
         except RuntimeError:
-            mess="obspy2mspass:  Error during processing aliases list for alias key="+a+"\n"
-            dout.elog.log_error(mess,ErrorSeverity.Complaint)
+            mess="Error during processing aliases list for alias key="+a+"\n"
+            dout.elog.log_error(algorithm,mess,ErrorSeverity.Complaint)
     return dout
 
 # comparable function to take a Stream object with 3 members and return
