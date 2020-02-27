@@ -259,32 +259,21 @@ A properly constructed algorithm to be used in MsPASS will register itself at th
 
 ::
 
-'_id': ObjectId('5e3fecc021d9d7571de83241')
-'jobid': 5
-'testsimple':
+  '_id': ObjectId('5e3fecc021d9d7571de83241')
+  'jobid': 5
+  'testsimple':
+    'algorithm': 'testsimple'
+    'param_type': 'dict'
+    'params': 
+      'foo': 'bar'
+      'testint': 10
+      'testfloat': 2.0
+  'testpfalg': 
+    algorithm': 'testpfalg'
+    'param_type': 'AntelopePf'
+    'params': {'simple_string_parameter': 'test_string', 'simple_real_parameter': 2.0, 
+    ...} 
 
-  'algorithm': 'testsimple'
-  
-  'param_type': 'dict'
-  
-  'params': 
-  
-    'foo': 'bar'
-    
-    'testint': 10
-    
-    'testfloat': 2.0
-    
-'testpfalg': 
-
-  algorithm': 'testpfalg'
-  
-  'param_type': 'AntelopePf'
-  
-  'params': {'simple_string_parameter': 'test_string', 'simple_real_parameter': 2.0, 
-  ...} 
-
-::
 
 The example shows that each history document is indexed by a jobid that is assigned to the run when the registration process is completed.  The '_id' key is an alternative created by MongoDB that provides a unique key for any document.  That is followed in this example by two subdocuments posted in the order in which they were registered.  The key to each subducument ('testsimple' and 'testpfalg' for this example) are the names of the algorithm applied.   In this case they are artificial but a more typical might be a sequence like: 'filter','WindowData', 'deconvolution'. The subdocument keyed by each algorithm name has three field: 
 
