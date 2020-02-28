@@ -77,6 +77,21 @@ FortranCInterface_HEADER (include/FC.h
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
+find_package ( gsl )
+if (NOT GSL_FOUND)
+  message (STATUS "Building GNU Scientific Library (gsl)")
+  include (cmake/gsl.cmake)
+  fetch_gsl (
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/gsl
+    )
+  set (GSL_INCLUDE_DIRS ${PROJECT_BINARY_DIR}/gsl/include)
+  set (GSL_LIBRARIES ${PROJECT_BINARY_DIR}/gsl/lib/libgsl.so)
+endif ()
+message (STATUS "GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
+message (STATUS "GSL_LIBRARIES=${GSL_LIBRARIES}")
+
+
 
 find_package (PythonInterp 3)
 
