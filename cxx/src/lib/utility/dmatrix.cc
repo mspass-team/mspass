@@ -1,11 +1,6 @@
 #include <math.h>
+#include "misc/blas.h"
 #include "mspass/utility/dmatrix.h"
-#include "FC.h"
-
-extern "C" double ddot (
-  const int& n,
-  const double* x, const int& incx,
-  const double* y, const int& incy);
 
 namespace mspass{
 dmatrix::dmatrix()
