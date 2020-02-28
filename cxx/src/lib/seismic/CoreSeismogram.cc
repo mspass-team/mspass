@@ -1,31 +1,11 @@
 #include <float.h>
 #include <math.h>
 #include <sstream>
-#include "FC.h"
-/* This is a temporary hack fix for mac laptop.   Had fink install
-   openblas.  This is the fink default location for include files. */
-//#include "/sw/include/lapacke.h"
-/* These should com from lapacke.h but there are some collisions with
- * boost that create compile errors. Hack fix until we resolve the
- * issue of how we will standardize lapack version.*/
-#define LAPACK_ROW_MAJOR               101
-#define LAPACK_COL_MAJOR               102
+#include "misc/blas.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
-/* For now we put these prototypes here - should be made an include
-   file when we stablize how blas and lapack should be handled. */
-extern "C" {
-double ddot(const int& n,const double *x,const int& incx,
-        const double *y,const int& incy);
-double dscal(const int& n, const double& a, const double *x, const int& incx);
-double daxpy(const int &n, const double& a, const double *x,const int& incx,
-        const double *y,const int& incy);
-double dcopy(const int &n, const double *x,const int& incx,
-        const double *y,const int& incy);
-void dgetrf(int&,int&,double*,int&,int*,int&);
-void dgetri(int&,double*,int&,int*,double*,int&,int&);
-};
+
 namespace mspass
 {
 using namespace mspass;

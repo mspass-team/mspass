@@ -1,5 +1,6 @@
 //#include "perf.h"
 #include <stdlib.h>   
+#include "misc/blas.h"
 #include "mspass/deconvolution/dpss.h"
 using namespace std;
 namespace mspass{
