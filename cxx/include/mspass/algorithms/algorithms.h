@@ -35,7 +35,7 @@ CoreTimeSeries agc(CoreSeismogram& d,const double twin) noexcept;
 
 It is common to need to extract a smaller segment of data from a larger 
 time window of data.  This function accomplishes this in a nifty method that
-takes advantage of the methods contained in the BasicCoreTimeSeries object for
+takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
 \return new Seismgram object derived from  parent but windowed by input
@@ -51,7 +51,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw);
 
 It is common to need to extract a smaller segment of data from a larger 
 time window of data.  This function accomplishes this in a nifty method that
-takes advantage of the methods contained in the BasicCoreTimeSeries object for
+takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
 \return new Seismgram object derived from  parent but windowed by input

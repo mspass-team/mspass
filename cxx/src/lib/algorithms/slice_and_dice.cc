@@ -6,7 +6,7 @@ namespace mspass {
 
 It is common to need to extract a smaller segment of data from a larger 
 time window of data.  This function accomplishes this in a nifty method that
-takes advantage of the methods contained in the BasicCoreTimeSeries object for
+takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
 \return new Seismgram object derived from  parent but windowed by input
@@ -41,7 +41,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
             throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
         }
         int outns=ie-is+1;
-        CoreSeismogram result(dynamic_cast<const BasicCoreTimeSeries&>(parent),
+        CoreSeismogram result(dynamic_cast<const BasicTimeSeries&>(parent),
                 dynamic_cast<const Metadata&>(parent),parent.elog);
         result.ns=outns;
         result.t0=tw.start;
@@ -60,7 +60,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
 
 It is common to need to extract a smaller segment of data from a larger 
 time window of data.  This function accomplishes this in a nifty method that
-takes advantage of the methods contained in the BasicCoreTimeSeries object for
+takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
 \return new Seismgram object derived from  parent but windowed by input
@@ -95,7 +95,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
             throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
         }
         int outns=ie-is+1;
-        CoreTimeSeries result(dynamic_cast<const BasicCoreTimeSeries&>(parent),
+        CoreTimeSeries result(dynamic_cast<const BasicTimeSeries&>(parent),
                 dynamic_cast<const Metadata&>(parent),parent.elog);
         result.ns=outns;
         result.t0=tw.start;
