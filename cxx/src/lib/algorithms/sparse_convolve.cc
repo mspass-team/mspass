@@ -1,4 +1,5 @@
 //#include "perf.h"
+#include "misc/blas.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
@@ -6,14 +7,14 @@ namespace mspass {
 CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet, 
 	const CoreSeismogram& d)
 {
-	if( (wavelet.tref==absolute) || (d.tref==absolute) )
+	if( (wavelet.tref==TimeReferenceType::UTC) || (d.tref==TimeReferenceType::UTC) )
 		throw MsPASSError(string("Error (convolve procedure): ")
 			+ "both functions to be convolved must have "
 			+ "relative time base",ErrorSeverity::Invalid);
 	CoreSeismogram out3c(d);
         int nw=wavelet.ns;
         double *wptr;
-        wptr=&(wavelet.s[0]);
+        wptr=const_cast<double*>(&(wavelet.s[0]));
 	/* Add a generous padding for out3c*/
 	int nsout=d.ns+2*nw;
 
@@ -32,7 +33,7 @@ CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet,
         int i,k;
         for(i=0;i<d.ns;++i,++si){
             double *sptr=const_cast<double *>(out3c.u.get_address(0,si));
-            double *dptr=const_cast<double *>(d.u.get_address(0,i));
+            double *dptr=d.u.get_address(0,i);
             for(k=0;k<3;++k){
                 if((*dptr)!=0.0){
                     daxpy(nw,(*dptr),wptr,1,sptr,3);
