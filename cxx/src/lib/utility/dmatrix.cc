@@ -66,7 +66,7 @@ double& dmatrix::operator()(const int rowindex, const int colindex)
 // subtle difference here.  This one returns a pointer to the 
 // requested element
 //
-double* dmatrix::get_address(int rowindex, int colindex) 
+double* dmatrix::get_address(int rowindex, int colindex) const
 {
   double *ptr;
   int out_of_range=0;
@@ -76,7 +76,11 @@ double* dmatrix::get_address(int rowindex, int colindex)
   if (colindex<0) out_of_range=1;
   if (out_of_range)
         throw dmatrix_index_error(nrr,ncc,rowindex,colindex);
-  ptr=&(ary[rowindex+(nrr)*(colindex)]);
+  /* This is somewhat contradictory to the const qualifier of the method
+     but not really.  const in that position implies the method itself
+     does not alter the object, but a pointer that is not const is
+     always something that allows data to be changed*/
+  ptr=const_cast<double *>(&(ary[rowindex+(nrr)*(colindex)]));
   return(ptr);
 }
 
