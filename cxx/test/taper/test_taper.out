@@ -1,0 +1,44 @@
+test_taper starting - building working data objects
+Setup finished - Starting tests of tapers
+Trying a front mute linear taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Trying linear tail mute taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Trying full linear taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Intentional error to test error logging functions
+Both of the following should show an informational error
+TimeSeries apply method completed returning -1
+LinearTaper:LinearTaper::apply:  inconsistent tail taper parameters
+Data start time=10000 is after the end of the tail taper = 180
+Data vector was not altered
+
+Seismogram apply method completed returning -1
+LinearTaper:LinearTaper::apply:  inconsistent tail taper parameters
+Data start time=10000 is after the end of the tail taper = 180
+Data vector was not altered
+
+Starting similar tests for cosine taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Trying linear tail mute taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Trying full linear taper
+TimeSeries apply method completed returning 0
+Seismogram apply method completed returning 0
+Intentional error to test error logging functions
+Both of the following should show an informational error
+TimeSeries apply method completed returning -1
+CosineTaper:CosineTaper::apply:  inconsistent tail taper parameters
+Data start time=10000 is after the end of the tail taper = 180
+Data vector was not altered
+
+Seismogram apply method completed returning -1
+CosineTaper:CosineTaper::apply:  inconsistent tail taper parameters
+Data start time=10000 is after the end of the tail taper = 180
+Data vector was not altered
+
