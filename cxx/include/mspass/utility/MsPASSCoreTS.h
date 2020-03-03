@@ -39,6 +39,7 @@ class MsPASSCoreTS
         if(this!=(&parent))
         {
             hex_id=parent.hex_id;
+            elog=parent.elog;
         }
         return *this;
     };
