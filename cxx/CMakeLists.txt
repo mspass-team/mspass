@@ -44,6 +44,18 @@ message (STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 message (STATUS "Boost_LIBRARY_DIRS = ${Boost_LIBRARY_DIRS}")
 message (STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 
+find_package (gsl)
+if (NOT GSL_FOUND)
+  message (STATUS "Building GNU Scientific Library (gsl)")
+  include (cmake/gsl.cmake)
+  fetch_gsl (
+    ${PROJECT_SOURCE_DIR}/cmake
+    ${PROJECT_BINARY_DIR}/gsl
+    )
+endif ()
+message (STATUS "GSL_INCLUDE_DIRS=${GSL_INCLUDE_DIRS}")
+message (STATUS "GSL_LIBRARIES=${GSL_LIBRARIES}")
+
 find_package (BLAS)
 if (NOT BLAS_FOUND)
   message (STATUS "Building OpenBLAS")
@@ -73,6 +85,7 @@ endif ()
 include (FortranCInterface)
 list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
 list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
+list (APPEND FORTRAN_FUNCTIONS dlamch dstebz dstein)
 FortranCInterface_HEADER (include/FC.h 
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
