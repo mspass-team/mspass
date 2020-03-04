@@ -48,7 +48,7 @@ int main(int argc, char **argv)
   seis0.tref=TimeReferenceType::Relative;
   seis0.ns=200;
   for(i=0;i<200;++i)
-    for(k=0;k<3;++k) seis0.u(k,i)=1.0;
+    for(k=0;k<3;++k) seis0.u(k,i)=(double)(k+1);
   cout << "Setup finished - Starting tests of tapers"<<endl
     << "Trying a front mute linear taper"<<endl;
   LinearTaper tfront(4.0,14.0,500.0,450.0);
@@ -102,6 +102,7 @@ int main(int argc, char **argv)
   CosineTaper tcfront(4.0,14.0,500.0,450.0);
   ts1=ts;
   seis1=seis0;
+  cout << "Trying cosine front end taper"<<endl;
   iret=tcfront.apply(ts1);
   cout << "TimeSeries apply method completed returning "<<iret<<endl;
   if(iret!=0) print_error_log(ts1.elog);
@@ -110,7 +111,7 @@ int main(int argc, char **argv)
   if(iret!=0) print_error_log(seis1.elog);
   tsout.push_back(ts1.s);
   seisout.push_back(seis1.u);
-  cout << "Trying linear tail mute taper"<<endl;
+  cout << "Trying cosine tail mute taper"<<endl;
   CosineTaper tcback(-20.0,-30.0,150.0,180.0);
   ts2=ts;
   seis2=seis0;
@@ -122,7 +123,7 @@ int main(int argc, char **argv)
   if(iret!=0) print_error_log(seis2.elog);
   tsout.push_back(ts2.s);
   seisout.push_back(seis2.u);
-  cout << "Trying full linear taper"<<endl;
+  cout << "Trying full CosineTaper taper"<<endl;
   CosineTaper tcfull(10.0,25.0,150.0,180.0);
   ts3=ts;
   seis3=seis0;
@@ -144,4 +145,15 @@ int main(int argc, char **argv)
   iret=tcfull.apply(seis3);
   cout << "Seismogram apply method completed returning "<<iret<<endl;
   if(iret!=0) print_error_log(seis3.elog);
+  dmatrix allts=vov2dmatrix(tsout);
+  cout << "dump of all TimeSeries tests"<<endl;
+  cout << allts;
+  vector<dmatrix>::iterator sptr;
+  for(sptr=seisout.begin(),i=0;sptr!=seisout.end();++sptr,++i)
+  {
+    dmatrix dtmp;
+    dtmp=tr(*sptr);
+    cout << "Data from test number "<<i<<endl;
+    cout << dtmp;
+  }
 }

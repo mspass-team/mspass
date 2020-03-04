@@ -83,19 +83,18 @@ int LinearTaper::apply(TimeSeries& d)
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t<=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt)
     {
       is=d.sample_number(t);
       if(is>=0 && is<d.ns) d.s[is]=0.0;
     }
-    /* This slope will always be negative - check above essential to assure that*/
-    rampslope=1.0/(t1tail-t0tail);
-    for(t=t1tail;t<t0tail;t+=d.dt)
+    rampslope=1.0/(t0tail-t1tail);
+    for(t=t0tail;t>=t1tail;t-=d.dt)
     {
       is=d.sample_number(t);
       if(is>=0)
       {
-        wt=rampslope*(t-t1tail);
+        wt=rampslope*(t0tail-t);
         d.s[is]*=wt;
       }
     }
@@ -160,9 +159,8 @@ int LinearTaper::apply( Seismogram& d)
         for(k=0;k<3;++k) d.u(k,is)=0.0;
       }
     }
-    /* This slope will always be negative - check above essential to assure that*/
-    rampslope=1.0/(t1tail-t0tail);
-    for(t=t1tail;t<t0tail;t+=d.dt)
+    rampslope=1.0/(t0tail-t1tail);
+    for(t=t0tail;t>=t1tail;t-=d.dt)
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -333,7 +331,7 @@ int CosineTaper::apply( Seismogram& d)
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t<=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt)
     {
       is=d.sample_number(t);
       if(is>=0 && is<d.ns)
