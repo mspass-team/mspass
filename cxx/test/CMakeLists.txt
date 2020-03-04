@@ -1,8 +1,9 @@
 include(CTest)
 if(BUILD_TESTING)
+  add_subdirectory(amap)
   add_subdirectory(dmatrix)
   add_subdirectory(md)
-  add_subdirectory(amap)
+  add_subdirectory(spectrum)
   add_subdirectory(taper)
   add_subdirectory(tcs)
 
