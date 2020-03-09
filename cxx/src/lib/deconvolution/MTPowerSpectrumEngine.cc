@@ -43,6 +43,8 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize, const double tbp
       }
   }
   delete [] work;
+  wavetable=shared_ptr<gsl_fft_complex_wavetable>(gsl_fft_complex_wavetable_alloc (taperlen));
+  workspace=shared_ptr<gsl_fft_complex_workspace>(gsl_fft_complex_workspace_alloc (taperlen));
 }
 MTPowerSpectrumEngine::MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent) : tapers(parent.tapers)
 {
@@ -50,12 +52,16 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent
   ntapers=parent.ntapers;
   tbp=parent.tbp;
   deltaf=parent.deltaf;
+  wavetable=parent.wavetable;
+  workspace=parent.workspace;
 }
+/*
 MTPowerSpectrumEngine::MTPowerSpectrumEngine::~MTPowerSpectrumEngine()
 {
     if(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);
     if(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);
 }
+*/
 MTPowerSpectrumEngine& MTPowerSpectrumEngine::operator=(const MTPowerSpectrumEngine& parent)
 {
   if(&parent!=this)
@@ -65,6 +71,12 @@ MTPowerSpectrumEngine& MTPowerSpectrumEngine::operator=(const MTPowerSpectrumEng
     tbp=parent.tbp;
     deltaf=parent.deltaf;
     tapers=parent.tapers;
+    /*
+    wavetable = gsl_fft_complex_wavetable_alloc (taperlen);
+    workspace = gsl_fft_complex_workspace_alloc (taperlen);
+    */
+    wavetable=parent.wavetable;
+    workspace=parent.workspace;
   }
   return *this;
 }
@@ -149,7 +161,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   /* Now apply DFT to each of tapered arrays */
   for(i=0; i<ntapers; ++i)
   {
-      gsl_fft_complex_forward(tdata[i].ptr(),1,taperlen,wavetable,workspace);
+      gsl_fft_complex_forward(tdata[i].ptr(),1,taperlen,
+              wavetable.get(),workspace.get());
   }
   /* could bundle this into the previous loop, but clearer here.  We
   accumulate power spectra here - created by A.conj * A . */

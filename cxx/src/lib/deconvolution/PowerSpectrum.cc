@@ -15,6 +15,9 @@ PowerSpectrum::PowerSpectrum(const PowerSpectrum& parent)
   df=parent.df;
   f0=parent.f0;
   spectrum_type=parent.spectrum_type;
+  spectrum_type=parent.spectrum_type;
+  spectrum=parent.spectrum;
+  elog=parent.elog;
 }
 PowerSpectrum& PowerSpectrum::operator=(const PowerSpectrum& parent)
 {

@@ -1,6 +1,7 @@
 #ifndef __MTPOWERSPECTRUM_ENGINE_H__
 #define  __MTPOWERSPECTRUM_ENGINE_H__
 
+#include <memory>
 #include <vector>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
@@ -25,7 +26,7 @@ public:
   MTPowerSpectrumEngine();
   MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers);
   MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
-  ~MTPowerSpectrumEngine();
+  //~MTPowerSpectrumEngine();
   MTPowerSpectrumEngine& operator=(const MTPowerSpectrumEngine& parent);
   /*! \process a TimeSeries.
 
@@ -87,8 +88,8 @@ private:
   dmatrix tapers;
   /* Frequency bin interval of last data processed.*/
   double deltaf;
-  gsl_fft_complex_wavetable *wavetable;
-  gsl_fft_complex_workspace *workspace;
+  shared_ptr<gsl_fft_complex_wavetable> wavetable;
+  shared_ptr<gsl_fft_complex_workspace> workspace;
 };
 } //namespace ed
 #endif
