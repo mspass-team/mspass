@@ -22,5 +22,5 @@ macro(fetch_gsl _download_module_path _download_root)
 
     set (GSL_ROOT_DIR ${PROJECT_BINARY_DIR}/gsl)
 
-    find_package (gsl REQUIRED)
+    find_package (GSL REQUIRED)
 endmacro()
