@@ -44,7 +44,7 @@ message (STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 message (STATUS "Boost_LIBRARY_DIRS = ${Boost_LIBRARY_DIRS}")
 message (STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 
-find_package (gsl)
+find_package (GSL)
 if (NOT GSL_FOUND)
   message (STATUS "Building GNU Scientific Library (gsl)")
   include (cmake/gsl.cmake)
