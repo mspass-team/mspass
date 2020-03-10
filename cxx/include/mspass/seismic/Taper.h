@@ -14,6 +14,7 @@ public:
     tail = false;
     all = false;
   };
+  virtual ~BasicTaper(){};
   virtual int apply(mspass::TimeSeries& d)=0;
   virtual int apply(mspass::Seismogram& d)=0;
 protected:

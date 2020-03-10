@@ -33,7 +33,19 @@ public:
 
   The amplitude spectrum is sqrt of the power values.  This is a
   convenience class to return the values in that form. */
-  vector<double> amplitude();
+  vector<double> amplitude() const;
+  /*! \brief Amplitude at a given frequency.
+
+  This is an overloaded method that returns the interpolated
+  amplitude (sqrt(power)) at a requested frequency.   If the frequency
+  exceeds the Nyquist the function silently returns 0.
+
+  \param f is the frequency for which amplitude is desired.
+
+  \exception will throw a MsPaSSError if f is less than 0.
+  */
+  double amplitude(const double f) const;
+  int nf()const{return spectrum.size();};
 };
 template <class T> PowerSpectrum::PowerSpectrum(const mspass::Metadata& md,
     const std::vector<T>& d,double dfin,string nm) : Metadata(md),elog()

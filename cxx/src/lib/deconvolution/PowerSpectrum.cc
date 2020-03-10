@@ -54,7 +54,7 @@ PowerSpectrum& PowerSpectrum::operator+=(const PowerSpectrum& other)
   }
   return *this;
 }
-vector<double> PowerSpectrum::amplitude()
+vector<double> PowerSpectrum::amplitude() const
 {
   vector<double> result;
   result.reserve(spectrum.size());
@@ -62,4 +62,19 @@ vector<double> PowerSpectrum::amplitude()
     result.push_back(sqrt(spectrum[k]));
   return result;
 }
-}  // End naespace
+double PowerSpectrum::amplitude(const double f) const
+{
+  if(f<0.0) throw MsPASSError("PowerSpectrum::amplitude:  requested amplitude for a negative frequency which is assumed to be an erorr",
+                ErrorSeverity::Invalid);
+  int filow;
+  filow=static_cast<int>((f-f0)/df);
+  /* Force 0 at Nyquist and above - this allows simple interpolation in else */
+  if(filow>=(spectrum.size()-1))
+     return 0.0;
+  else
+  {
+    double slope=(spectrum[filow+1]-spectrum[filow])/df;
+    return sqrt( (f-spectrum[filow])*slope);
+  }
+}
+}  // End namespace
