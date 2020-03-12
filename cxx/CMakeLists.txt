@@ -83,7 +83,7 @@ elseif (NOT LAPACK_FOUND)
 endif ()
 
 include (FortranCInterface)
-list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
+list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy dnrm2)
 list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
 list (APPEND FORTRAN_FUNCTIONS dlamch dstebz dstein)
 FortranCInterface_HEADER (include/FC.h 

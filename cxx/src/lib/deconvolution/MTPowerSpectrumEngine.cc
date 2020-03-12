@@ -1,4 +1,5 @@
 #include <sstream>
+#include "mspass/utility/utility.h"
 #include "mspass/deconvolution/MTPowerSpectrumEngine.h"
 #include "mspass/deconvolution/dpss.h"
 #include "mspass/deconvolution/ComplexArray.h"
@@ -33,6 +34,8 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize, const double tbp
   double *work=new double[ntapers*taperlen];
   dpss_calc(taperlen, tbp, seql, sequ, work);
   tapers=dmatrix(ntapers,taperlen);
+  vector<double> norms;
+  norms=normalize_rows(tapers);
   int i,ii,j;
   for(i=0,ii=0; i<ntapers; ++i)
   {
