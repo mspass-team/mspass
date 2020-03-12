@@ -7,7 +7,7 @@
 #include "mspass/deconvolution/ShapingWavelet.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 namespace mspass{
-class WaterLevelDecon : public FFTDeconOperator, public ScalarDecon
+class WaterLevelDecon : public mspass::FFTDeconOperator, public mspass::ScalarDecon
 {
 public:
     WaterLevelDecon(const WaterLevelDecon &parent);

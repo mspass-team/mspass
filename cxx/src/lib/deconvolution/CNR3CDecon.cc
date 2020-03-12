@@ -1,3 +1,4 @@
+#include <string.h>  //needed for memcpy
 #include "mspass/deconvolution/CNR3CDecon.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
@@ -5,20 +6,27 @@
 using namespace std;
 using namespace mspass;
 namespace mspass{
-CNR3CDecon::CNR3CDecon() : shapingwavelet()
+CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),shapingwavelet()
 {
   damp=0.0;
   taper_data=false;
-  taper=NULL;
+  wavelet_taper=NULL;
+  data_taper=NULL;
 }
-CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : shapingwavelet(pf)
+CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : FFTDeconOperator(pf),
+        shapingwavelet(pf)
 {
   this->read_parameters(pf);
 }
-void CNR3CDecon::change_parameters(const AntelopePf& pf)
+/* Note this method assumes BasicMetadata is actually an AntelopePf.*/
+void CNR3CDecon::change_parameters(const BasicMetadata& basemd)
 {
-  if(taper!=NULL) delete taper;
-  this->read_parameters(pf);
+    try{
+      if(wavelet_taper!=NULL) delete wavelet_taper;
+      if(data_taper!=NULL) delete data_taper;
+      AntelopePf pf=dynamic_cast<const AntelopePf&>(basemd);
+      this->read_parameters(pf);
+    }catch(...){throw;};
 }
 void CNR3CDecon::read_parameters(const AntelopePf& pf)
 {
@@ -31,6 +39,14 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     te=pf.get_double("deconvolution_data_window_end");
     this->processing_window=TimeWindow(ts,te);
     this->winlength=round((te-ts)/operator_dt)+1;
+    /* In this algorithm we are very careful to avoid circular convolution
+    artifacts that I (glp) suspect may be a problem in some frequency domain
+    implementations of rf deconvolution.   Here we set the length of the fft
+    (nfft) to a minimum of 3 times the window size.   That allows 1 window
+    of padding around both ends of the waveform being deconvolved.  Circular
+    shift is used to put the result back in a rational time base. */
+    int minwinsize=3*(this->winlength);
+    FFTDeconOperator::nfft=nextPowerOf2(minwinsize);
     ts=pf.get_double("noise_window_start");
     te=pf.get_double("noise_window_end");
     this->noise_window=TimeWindow(ts,te);
@@ -43,23 +59,37 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     if(sval=="linear")
     {
       double f0,f1,t1,t0;
-      AntelopePf pfbranch=pf.get_branch("LinearTaper");
+      AntelopePf pfb=pf.get_branch("LinearTaper");
+      AntelopePf pfbranch=pfb.get_branch("wavelet_taper");
       f0=pfbranch.get_double("front0");
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      taper=new LinearTaper(f0,f1,t1,t0);
+      wavelet_taper=new LinearTaper(f0,f1,t1,t0);
+      pfbranch=pfb.get_branch("data_taper");
+      f0=pfbranch.get_double("front0");
+      f1=pfbranch.get_double("front1");
+      t1=pfbranch.get_double("tail1");
+      t0=pfbranch.get_double("tail0");
+      data_taper=new LinearTaper(f0,f1,t1,t0);
       taper_data=true;
     }
     else if(sval=="cosine")
     {
       double f0,f1,t1,t0;
-      AntelopePf pfbranch=pf.get_branch("CosineTaper");
+      AntelopePf pfb=pf.get_branch("CosineTaper");
+      AntelopePf pfbranch=pfb.get_branch("wavelet_taper");
       f0=pfbranch.get_double("front0");
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      taper=new CosineTaper(f0,f1,t1,t0);
+      wavelet_taper=new CosineTaper(f0,f1,t1,t0);
+      pfbranch=pfb.get_branch("data_taper");
+      f0=pfbranch.get_double("front0");
+      f1=pfbranch.get_double("front1");
+      t1=pfbranch.get_double("tail1");
+      t0=pfbranch.get_double("tail0");
+      data_taper=new CosineTaper(f0,f1,t1,t0);
       taper_data=true;
     }
     else if(sval=="vector")
@@ -67,7 +97,7 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
       AntelopePf pfbranch=pf.get_branch("VectorTaper");
       vector<double> tdataread;
       list<string> tdl;
-      tdl=pfbranch.get_tbl("taper_data");
+      tdl=pfbranch.get_tbl("wavelet_taper_vector");
       tdataread.reserve(tdl.size());
       list<string>::iterator tptr;
       for(tptr=tdl.begin();tptr!=tdl.end();++tptr)
@@ -76,12 +106,24 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
         sscanf(tptr->c_str(),"%lf",&val);
         tdataread.push_back(val);
       }
-      taper=new VectorTaper(tdataread);
+      wavelet_taper=new VectorTaper(tdataread);
+      tdataread.clear();
+      tdl.clear();
+      tdl=pfbranch.get_tbl("data_taper_vector");
+      tdataread.reserve(tdl.size());
+      for(tptr=tdl.begin();tptr!=tdl.end();++tptr)
+      {
+        double val;
+        sscanf(tptr->c_str(),"%lf",&val);
+        tdataread.push_back(val);
+      }
+      data_taper=new VectorTaper(tdataread);
       taper_data=true;
     }
     else
     {
-      taper=NULL;
+      wavelet_taper=NULL;
+      data_taper=NULL;
       taper_data=false;
     }
 
@@ -89,7 +131,8 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
 }
 CNR3CDecon::~CNR3CDecon()
 {
-  if(taper!=NULL) delete taper;
+  if(wavelet_taper!=NULL) delete wavelet_taper;
+  if(data_taper!=NULL) delete data_taper;
 }
 /* Small helper to test for common possible input data issues.
 If return is nonzero errors were encountered.   Can be retrieved
@@ -141,17 +184,25 @@ void CNR3CDecon::loaddata(Seismogram& d, const int wcomp)
         << "Operator does not contain valid data for processing"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    if(d.ns==winlength)
-    {
-      decondata=d;
-    }
-    else
-    {
-      /* This can throw an exception, but we let the overall catch for the
-      method handle these errors.  Caller will need to not process data
-      that create an exception.*/
-      decondata=WindowData3C(d,processing_window);
-    }
+    /* This copying is a bit inefficient but I don't see how to fix it without
+    messing up a lot of other things. The ugly construct with memcpy will
+    reduce the overhead some at the cost of a confusing construct.  That
+    exploits strucure of the dmatrix internal array that is packed storage of
+    the data in forgran order.  Hence we just copy 3*nfft values to the right
+    position*/
+    decondata=d;
+    dmatrix utmp(3,FFTDeconOperator::nfft);
+    utmp.zero();
+    /* Offset by winlength to put zero pad at front of the data.  */
+    double *toptr,*fromptr;
+    toptr=utmp.get_address(0,this->winlength);
+    fromptr=d.u.get_address(0,0);
+    //3 for number of components not padding
+    size_t bytestocopy=3*(this->winlength)*sizeof(double);
+    memcpy((void*)toptr,(const void*)fromptr,bytestocopy);
+    decondata.u=utmp;
+    decondata.ns=FFTDeconOperator::nfft;
+    decondata.t0 -= operator_dt*static_cast<double>(winlength);
     /* This weird construct is required because ExtractComponent returns a
     CoreSeismogram object that needs additional info to be promoted to a
     Seismogram*/
@@ -173,21 +224,34 @@ void CNR3CDecon::loaddata(Seismogram& d, const TimeSeries& w)
         << "Operator does not contain valid data for processing"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    if(d.ns==winlength)
-    {
-      decondata=d;
-    }
-    else
-    {
-      /* This can throw an exception, but we let the overall catch for the
-      method handle these errors.  Caller will need to not process data
-      that create an exception.*/
-      decondata=WindowData3C(d,processing_window);
-    }
-    if(w.ns==winlength)
-      wavelet=w;
-    else
-      wavelet=TimeSeries(WindowData(w,processing_window),"Invalid");
+    /* This is the same construct to add padding as above - perhaps
+    should be made a function, would add some inefficiency*/
+    decondata=d;
+    dmatrix utmp(3,FFTDeconOperator::nfft);
+    utmp.zero();
+    /* Offset by winlength to put zero pad at front of the data.  */
+    double *toptr,*fromptr;
+    toptr=utmp.get_address(0,this->winlength);
+    fromptr=d.u.get_address(0,0);
+    //3 for number of components not padding
+    size_t bytestocopy=3*(this->winlength)*sizeof(double);
+    memcpy((void*)toptr,(const void*)fromptr,bytestocopy);
+    decondata.u=utmp;
+    decondata.ns=FFTDeconOperator::nfft;
+    decondata.t0 -= operator_dt*static_cast<double>(winlength);
+    this->loadwavelet(w);
+  }catch(...){throw;};
+}
+void CNR3CDecon::loadwavelet(const TimeSeries& w)
+{
+  try{
+    int k,kk;
+    wavelet=w;
+    wavelet.s.clear();
+    wavelet.s.reserve(FFTDeconOperator::nfft);
+    for(k=0;k<FFTDeconOperator::nfft;++k)wavelet.s.push_back(0.0);
+    for(k=0,kk=this->winlength;k<w.ns;++k,++kk)wavelet.s[kk]=w.s[k];
+    wavelet.t0 -= operator_dt*static_cast<double>(winlength);
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise(Seismogram& n)
@@ -267,7 +331,7 @@ Seismogram CNR3CDecon::process()
     the solution for all three components.   We could gain some efficiency
     by assuming wavelet had already been tapered, but doing it here makes
     the algorithm much clearer. */
-    taper->apply(work);
+    if(taper_data) wavelet_taper->apply(work);
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* Assume load method assures wavelet.ns <=nfft*/
@@ -281,6 +345,7 @@ Seismogram CNR3CDecon::process()
     df=1.0/(operator_dt*static_cast<double>(FFTDeconOperator::nfft));
     fNy=df*static_cast<double>(FFTDeconOperator::nfft/2);
     wavelet_snr.clear();
+    int nreg(0);
     for(j=0;j<FFTDeconOperator::nfft;++j)
     {
       double *z=cwvec.ptr(j);
@@ -298,8 +363,12 @@ Seismogram CNR3CDecon::process()
         double scale=sqrt(amp*amp+damp*damp*namp*namp);
         *z *= scale;
         *(z+1) *= scale;
+        ++nreg;
       }
     }
+    /* This is used a a QCMetric */
+    regularization_bandwidth_fraction=static_cast<double>(nreg)
+                / static_cast<double>(FFTDeconOperator::nfft);
     double *d0=new double[FFTDeconOperator::nfft];
     for(int k=0;k<FFTDeconOperator::nfft;++k) d0[k]=0.0;
     d0[0]=1.0;
@@ -311,9 +380,11 @@ Seismogram CNR3CDecon::process()
     /* This is the proper mspass way to preserve history */
     rfest.append_chain("process_sequence","CNR3CDecon");
     if(rfest.ns!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
+    int nhighsnr;
     for(k=0;k<3;++k)
     {
       work=TimeSeries(ExtractComponent(decondata,k),"Invalid");
+      if(taper_data) data_taper->apply(work);
       wvec.clear();
       int ntocopy=FFTDeconOperator::nfft;
       if(ntocopy>work.ns) ntocopy=work.ns;
@@ -323,6 +394,26 @@ Seismogram CNR3CDecon::process()
       ComplexArray numerator(FFTDeconOperator::nfft,wvec);
       gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,
             wavetable,workspace);
+      /* This loop computes QCMetrics of bandwidth fraction that
+      is above a defined snr floor - not necessarily the same as the
+      regularization floor used in computing the inverse */
+      double snrmax;
+      snrmax=1.0;
+      nhighsnr=0;
+      for(j=0;j<FFTDeconOperator::nfft/2;++j)
+      {
+        double f;
+        f=df*static_cast<double>(j);
+        Complex64 z=numerator[j];
+        double sigamp=abs(z);
+        double namp=psnoise.amplitude(f);
+        double snr=sigamp/namp;
+        if(snr>snrmax) snrmax=snr;
+        if(snr>band_snr_floor) ++nhighsnr;
+      }
+      signal_bandwidth_fraction[k]=static_cast<double>(nhighsnr)
+                  / static_cast<double>(FFTDeconOperator::nfft/2);
+      peak_snr[k]=snrmax;
       ComplexArray rftmp=numerator/cwvec;
       rftmp=(*shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
@@ -340,9 +431,8 @@ Seismogram CNR3CDecon::process()
 TimeSeries CNR3CDecon::ideal_output()
 {
   try{
-    /* We simply return the sahaping wavelet.  Only complexity here is the
-    need to create the higher level TimeSeries object. */
-    cerr << "Not yet implemented"<<endl;
+    CoreTimeSeries ideal_tmp=this->shapingwavelet.impulse_response();
+    return TimeSeries(ideal_tmp,"Invalid");
   }catch(...){throw;};
 }
 TimeSeries CNR3CDecon::actual_output()
@@ -390,13 +480,21 @@ TimeSeries CNR3CDecon::inverse_wavelet(double tshift)
     result.elog=wavelet.elog;
     result.put("waveform_type","deconvolution_inverse_wavelet");
     result.put("decon_type","CNR3CDecon");
+    return result;
   } catch(...) {
       throw;
   };
 }
 Metadata CNR3CDecon::QCMetrics()
 {
-  cerr << "CNR3CDecon::QCMEtrics not yet implemented - this is a placeholder";
-  return Metadata();
+  Metadata result;
+  result.put("waveletbf",regularization_bandwidth_fraction);
+  result.put("maxsnr0",peak_snr[0]);
+  result.put("maxsnr1",peak_snr[1]);
+  result.put("maxsnr2",peak_snr[2]);
+  result.put("signalbf0",signal_bandwidth_fraction[0]);
+  result.put("signalbf1",signal_bandwidth_fraction[1]);
+  result.put("signalbf2",signal_bandwidth_fraction[2]);
+  return result;
 }
 } //end namespace
