@@ -1,0 +1,38 @@
+damping_factor 1.0
+snr_regularization_floor 3.0
+target_sample_interval 0.01
+deconvolution_data_window_start -5.0
+deconvolution_data_window_end 120.0
+noise_window_start -200.0
+noise_window_end -5.0
+time_bandwidth_product 4.0
+number_tapers 8
+taper_type cosine
+LinearTaper &Arr{
+  data_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 100.0
+    tail0 110.0
+  }
+  wavelet_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 30.0
+    tail0 35.0
+  }
+}
+CosineTaper &Arr{
+  data_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 100.0
+    tail0 110.0
+  }
+  wavelet_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 30.0
+    tail0 35.0
+  }
+}

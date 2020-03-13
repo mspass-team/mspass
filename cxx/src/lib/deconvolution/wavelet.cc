@@ -95,6 +95,12 @@ double *slepian0(double tbp, int n)
   double *w=new double[n];
   /* We only need the 0th order taper here so sequ and seql are 0 in this call*/
   dpss_calc(n,tbp,0,0,w);
+  /* dpss_calc does not normalize the functions returned so we normalize the
+  result to unit L2 norm. */
+  double nrm(0.0);
+  for(int i=0;i<n;++i) nrm += w[i]*w[i];
+  nrm=sqrt(nrm);
+  for(int i=0;i<n;++i) w[i]/=nrm;
   return w;
 }
 } // End namespace

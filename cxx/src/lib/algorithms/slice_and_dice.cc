@@ -41,8 +41,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
             throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
         }
         int outns=ie-is+1;
-        CoreSeismogram result(dynamic_cast<const BasicTimeSeries&>(parent),
-                dynamic_cast<const Metadata&>(parent),parent.elog);
+        CoreSeismogram result(parent);
         result.ns=outns;
         result.t0=tw.start;
         result.u=dmatrix(3,outns);
@@ -95,8 +94,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
             throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
         }
         int outns=ie-is+1;
-        CoreTimeSeries result(dynamic_cast<const BasicTimeSeries&>(parent),
-                dynamic_cast<const Metadata&>(parent),parent.elog);
+        CoreTimeSeries result(parent);
         result.ns=outns;
         result.t0=tw.start;
         result.s.reserve(outns);

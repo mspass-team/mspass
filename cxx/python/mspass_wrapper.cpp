@@ -19,6 +19,14 @@
 // These includes are objects only visible from the python interpreter
 #include "MongoDBConverter.h"
 #include <mspass/algorithms/algorithms.h>
+//Deconvolution algorithms are in a separate directory
+#include <mspass/deconvolution/WaterLevelDecon.h>
+#include <mspass/deconvolution/LeastSquareDecon.h>
+#include <mspass/deconvolution/MultiTaperXcorDecon.h>
+#include <mspass/deconvolution/MultiTaperSpecDivDecon.h>
+#include <mspass/deconvolution/GeneralIterDecon.h>
+//#include <mspass/deconvolution/Base3CDecon.h>
+#include <mspass/deconvolution/CNR3CDecon.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -90,6 +98,14 @@ using mspass::MsPASSCoreTS;
 using mspass::MongoDBConverter;
 using mspass::agc;
 using mspass::ExtractComponent;
+using mspass::BasicDeconOperator;
+using mspass::WaterLevelDecon;
+using mspass::LeastSquareDecon;
+using mspass::MultiTaperXcorDecon;
+using mspass::MultiTaperSpecDivDecon;
+using mspass::GeneralIterDecon;
+using mspass::Base3CDecon;
+using mspass::CNR3CDecon;
 
 /* We enable this gem for reasons explain in the documentation for pybinde11
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
@@ -234,6 +250,132 @@ public:
     );
   }
 };
+/* Trampoline class for BasicDeconOperator */
+class PyBasicDeconOperator : public BasicDeconOperator
+{
+public:
+  using BasicDeconOperator::BasicDeconOperator;
+  void change_parameter(const mspass::Metadata &md)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      mspass::BasicDeconOperator,
+      change_parameter,
+    );
+  }
+};
+/* This is is needed here because ScalarDecon has multiple pure virtual methods
+   overridden by all scalar trace decon operators */
+class PyScalarDecon : public mspass::ScalarDecon
+{
+public:
+  using ScalarDecon::ScalarDecon;
+  void process()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        void,
+        mspass::ScalarDecon,
+        process
+    );
+  }
+  mspass::CoreTimeSeries actual_output()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::CoreTimeSeries,
+        mspass::ScalarDecon,
+        actual_output
+    );
+  }
+  mspass::CoreTimeSeries inverse_wavelet()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::CoreTimeSeries,
+        mspass::ScalarDecon,
+        inverse_wavelet
+    );
+  }
+  mspass::CoreTimeSeries inverse_wavelet(double)
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::CoreTimeSeries,
+        mspass::ScalarDecon,
+        inverse_wavelet
+    );
+  }
+  mspass::Metadata QCMetrics()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::Metadata,
+        mspass::ScalarDecon,
+        QCMetrics
+    );
+  }
+};
+/* This trampoline is currently used only by CNR3CDecon. Different base than
+other methods derived from Wang's library that were build on ScalarDecon
+concept.  CNR3CDecon is domagmatically three-component*/
+class PyBase3CDecon : public mspass::Base3CDecon
+{
+public:
+  using Base3CDecon::Base3CDecon;
+  void change_parameters(const BasicMetadata&)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      mspass::Base3CDecon,
+      change_parameters
+    );
+  }
+  void loaddata(mspass::Seismogram&,const int)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      mspass::Base3CDecon,
+      loaddata
+    );
+  }
+  void loadwavelet(const mspass::TimeSeries&)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      void,
+      mspass::Base3CDecon,
+      loadwavelet
+    );
+  }
+  mspass::Seismogram process()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::Seismogram,
+        mspass::Base3CDecon,
+        process
+    );
+  }
+  mspass::TimeSeries actual_output()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::TimeSeries,
+        mspass::Base3CDecon,
+        actual_output
+    );
+  }
+  mspass::TimeSeries inverse_wavelet(double)
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::TimeSeries,
+        mspass::Base3CDecon,
+        inverse_wavelet
+    );
+  }
+  mspass::Metadata QCMetrics()
+  {
+    PYBIND11_OVERLOAD_PURE(
+        mspass::Metadata,
+        mspass::Base3CDecon,
+        QCMetrics
+    );
+  }
+};
+
 PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
@@ -312,9 +454,9 @@ PYBIND11_MODULE(ccore,m)
     .def("type",&Metadata::type,"Return a demangled typename for value associated with a key")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("clear_modified",&Metadata::clear_modified,"Clear container used to mark altered Metadata")
-    /*  For unknown reasons could not make this overload work.  
+    /*  For unknown reasons could not make this overload work.
      *  Ended up commenting out char * section of C++ code - baggage in python
-     *  anyway.  
+     *  anyway.
     .def("is_defined",py::overload_cast<const std::string>(&Metadata::is_defined))
     .def("is_defined",py::overload_cast<const char *>(&Metadata::is_defined))
     */
@@ -652,9 +794,103 @@ PYBIND11_MODULE(ccore,m)
          return TimeSeries(bts,md,corets,d);;
        }
      ));
-
+  /* this is a set of deconvolution related classes*/
+  py::class_<mspass::ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
+      .def("load",&mspass::ScalarDecon::load,
+        py::arg("w"),py::arg("d"),"Load data and wavelet to use to construct deconvolutions operator")
+      .def("process",&mspass::ScalarDecon::process)
+      .def("getresult",&mspass::ScalarDecon::getresult,
+              "Fetch vector of deconvolved data - after calling process")
+      .def("change_parameter",&mspass::ScalarDecon::changeparameter,"Change deconvolution parameters")
+      .def("change_shaping_wavelet",&mspass::ScalarDecon::change_shaping_wavelet,
+              "Change the shaping wavelet applied to output")
+      .def("actual_output",&mspass::ScalarDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("ideal_output",&mspass::ScalarDecon::ideal_output,"Return ideal output of for inverse")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::ScalarDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::ScalarDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::ScalarDecon::QCMetrics,"Return ideal output of for inverse")
+  ;
+  py::class_<mspass::WaterLevelDecon,mspass::ScalarDecon>(m,"WaterLevelDecon","Water level frequency domain operator")
+      .def(py::init<const mspass::Metadata>())
+      .def("changeparameter",&mspass::WaterLevelDecon::changeparameter,"Change operator parameters")
+      .def("process",&mspass::WaterLevelDecon::process,"Process previously loaded data")
+      .def("actual_output",&mspass::WaterLevelDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::WaterLevelDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::WaterLevelDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+  ;
+  py::class_<mspass::LeastSquareDecon,mspass::ScalarDecon>(m,"LeastSquareDecon","Water level frequency domain operator")
+      .def(py::init<const mspass::Metadata>())
+      .def("changeparameter",&mspass::LeastSquareDecon::changeparameter,"Change operator parameters")
+      .def("process",&mspass::LeastSquareDecon::process,"Process previously loaded data")
+      .def("actual_output",&mspass::LeastSquareDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::LeastSquareDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::LeastSquareDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::LeastSquareDecon::QCMetrics,"Return ideal output of for inverse")
+  ;
+  py::class_<mspass::MultiTaperSpecDivDecon,mspass::ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
+      .def(py::init<const mspass::Metadata>())
+      .def("changeparameter",&mspass::MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
+      .def("process",&mspass::MultiTaperSpecDivDecon::process,"Process previously loaded data")
+      .def("loadnoise",&mspass::MultiTaperSpecDivDecon::loadnoise,"Load noise data for regularization")
+      .def("load",&mspass::MultiTaperSpecDivDecon::loadnoise,"Load all data, wavelet, and noise")
+      .def("actual_output",&mspass::MultiTaperSpecDivDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::MultiTaperSpecDivDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::MultiTaperSpecDivDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
+      .def("get_taperlen",&mspass::MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
+      .def("get_number_tapers",&mspass::MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
+      .def("get_time_bandwidth_product",&mspass::MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+  ;
+  ;
+  py::class_<mspass::MultiTaperXcorDecon,mspass::ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
+      .def(py::init<const mspass::Metadata>())
+      .def("changeparameter",&mspass::MultiTaperXcorDecon::changeparameter,"Change operator parameters")
+      .def("process",&mspass::MultiTaperXcorDecon::process,"Process previously loaded data")
+      .def("loadnoise",&mspass::MultiTaperXcorDecon::loadnoise,"Load noise data for regularization")
+      .def("load",&mspass::MultiTaperXcorDecon::load,"Load all data, wavelet, and noise")
+      .def("actual_output",&mspass::MultiTaperXcorDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::MultiTaperXcorDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::MultiTaperXcorDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
+      .def("get_taperlen",&mspass::MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
+      .def("get_number_tapers",&mspass::MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
+      .def("get_time_bandwidth_product",&mspass::MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+  ;
+  py::class_<mspass::GeneralIterDecon,mspass::ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
+      .def(py::init<mspass::AntelopePf&>())
+      .def("changeparameter",&mspass::GeneralIterDecon::changeparameter,"Change operator parameters")
+      .def("process",&mspass::GeneralIterDecon::process,"Process previously loaded data")
+      .def("loadnoise",&mspass::GeneralIterDecon::loadnoise,"Load noise data for regularization")
+      .def("load",py::overload_cast<const mspass::CoreSeismogram&,const mspass::TimeWindow>
+              (&mspass::GeneralIterDecon::load),"Load data")
+      .def("actual_output",&mspass::GeneralIterDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&mspass::GeneralIterDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&mspass::GeneralIterDecon::inverse_wavelet))
+      .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
+  ;
+py::class_<mspass::CNR3CDecon,mspass::Base3CDecon>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+  .def(py::init<>())
+  .def(py::init<const mspass::AntelopePf&>())
+  .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
+      "Change operator definition")
+  .def("loaddata",py::overload_cast<mspass::Seismogram&,const int>(&mspass::CNR3CDecon::loaddata),
+       "Load data defining wavelet by one data component")
+  .def("loaddata",py::overload_cast<mspass::Seismogram&,const mspass::TimeSeries&>(&mspass::CNR3CDecon::loaddata),
+       "Load data defining wavelet independently")
+  .def("loadnoise",py::overload_cast<Seismogram&>(&mspass::CNR3CDecon::loadnoise),
+       "Load noise to use for regularization from a seismogram")
+  .def("loadnoise",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise),
+       "Load noise to use for regularization from a seismogram")
+  .def("loadwavelet",&mspass::CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
+  .def("process",&mspass::CNR3CDecon::process,"Process data previously loaded")
+  .def("ideal_output",&mspass::CNR3CDecon::ideal_output,"Return ideal output for this operator")
+  .def("actual_output",&mspass::CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
+  .def("inverse_wavelet",&mspass::CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
+  .def("QCMetrics",&mspass::CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
+;
   /* This object is in a separate pair of files in this directory.  */
-  py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
+py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
       .def(py::init<const mspass::MetadataDefinitions>())
       .def(py::init<const std::string>())

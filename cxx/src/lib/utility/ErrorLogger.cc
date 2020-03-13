@@ -83,12 +83,12 @@ equivalence of an enum with an ordered list of ints.   Hence, we have a
 bit of an ugly algorithm here.  The algorithm is a memory hog and would be
 a bad idea if the log got huge, but for the indended use in mspass that
 should never happen.  User beware if transported though - glp 9/28/2019.*/
-list<LogData> ErrorLogger::worst_errors()
+list<LogData> ErrorLogger::worst_errors() const
 {
   /* Return immediately if the messages container is empty. */
   if(allmessages.size()<=0) return allmessages;
   list<LogData> flist,ivlist,slist,clist,dlist,ilist;
-  list<LogData>::iterator aptr;
+  list<LogData>::const_iterator aptr;
   for(aptr=allmessages.begin();aptr!=allmessages.end();++aptr)
   {
     switch(aptr->badness)

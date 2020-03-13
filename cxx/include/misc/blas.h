@@ -11,6 +11,7 @@ double daxpy(const int &n, const double& a, const double *x,const int& incx,
         const double *y,const int& incy);
 double dcopy(const int &n, const double *x,const int& incx,
         const double *y,const int& incy);
+double dnrm2(const int &n, const double *x,const int& incx);
 void dgetrf(int&,int&,double*,int&,int*,int&);
 void dgetri(int&,double*,int&,int*,double*,int&,int&);
 double dlamch(const char *cmach);

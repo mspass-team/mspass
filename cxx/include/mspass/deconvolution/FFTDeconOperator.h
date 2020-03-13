@@ -28,6 +28,8 @@ public:
     void change_shift(const int shift) {
         sample_shift=shift;
     };
+    int get_size(){return nfft;};
+    int get_shift(){return sample_shift;};
     int operator_size() {
         return static_cast<int>(nfft);
     };

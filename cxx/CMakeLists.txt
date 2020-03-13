@@ -44,7 +44,7 @@ message (STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 message (STATUS "Boost_LIBRARY_DIRS = ${Boost_LIBRARY_DIRS}")
 message (STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}")
 
-find_package (gsl)
+find_package (GSL)
 if (NOT GSL_FOUND)
   message (STATUS "Building GNU Scientific Library (gsl)")
   include (cmake/gsl.cmake)
@@ -83,7 +83,7 @@ elseif (NOT LAPACK_FOUND)
 endif ()
 
 include (FortranCInterface)
-list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
+list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy dnrm2)
 list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
 list (APPEND FORTRAN_FUNCTIONS dlamch dstebz dstein)
 FortranCInterface_HEADER (include/FC.h 

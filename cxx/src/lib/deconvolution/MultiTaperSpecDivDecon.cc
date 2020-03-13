@@ -2,6 +2,7 @@
 #include <string>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/utility.h"
 #include "mspass/deconvolution/MultiTaperSpecDivDecon.h"
 #include "mspass/deconvolution/dpss.h"
 /* this include is local to this directory*/
@@ -106,6 +107,8 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
             /* The tapers are stored in row order in work.  We preserve that
             here but use the dmatrix to store the values as transpose*/
             tapers=dmatrix(nseq,taperlen);
+            vector<double> norms;
+            norms=normalize_rows(tapers);
             for(i=0,ii=0; i<nseq; ++i)
             {
                 for(j=0; j<taperlen; ++j)

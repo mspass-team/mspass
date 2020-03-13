@@ -89,7 +89,7 @@ public:
     int get_number_tapers() {
         return nseq;
     };
-    double get_time_bandwith_product() {
+    double get_time_bandwidth_product() {
         return nw;
     };
 private:
