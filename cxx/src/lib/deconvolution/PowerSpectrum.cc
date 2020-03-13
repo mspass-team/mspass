@@ -1,4 +1,5 @@
 #include <sstream>
+#include <cmath>
 #include "mspass/deconvolution/PowerSpectrum.h"
 using namespace std;
 using namespace mspass;
