@@ -76,6 +76,7 @@ public:
   CNR3CDecon(const mspass::AntelopePf& pf);
   CNR3CDecon(const CNR3CDecon& parent);
   ~CNR3CDecon();
+  CNR3CDecon& operator=(const CNR3CDecon& parent);
   void change_parameters(const mspass::BasicMetadata& md);
   /*! \brief Load data with one component used as wavelet estimate.
 

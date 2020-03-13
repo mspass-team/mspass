@@ -129,6 +129,61 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
 
   }catch(...){throw;};
 }
+CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
+  processing_window(parent.processing_window),
+  noise_window(parent.noise_window),
+  specengine(parent.specengine),
+  psnoise(parent.psnoise),
+  noisedata(parent.noisedata),
+  decondata(parent.decondata),
+  wavelet(parent.wavelet),
+  shapingwavelet(parent.shapingwavelet),
+  ao_fft(parent.ao_fft),
+  wavelet_snr(parent.wavelet_snr)
+{
+  taper_data=parent.taper_data;
+  operator_dt=parent.operator_dt;
+  winlength=parent.winlength;
+  damp=parent.damp;
+  snr_regularization_floor=parent.snr_regularization_floor;
+  band_snr_floor=parent.band_snr_floor;
+  regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
+  for(int k=0;k<3;++k)
+  {
+    signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
+    peak_snr[k]=parent.peak_snr[k];
+  }
+}
+CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
+{
+  if(this!=(&parent))
+  {
+    processing_window=parent.processing_window;
+    noise_window=parent.noise_window;
+    specengine=parent.specengine;
+    psnoise=parent.psnoise;
+    noisedata=parent.noisedata;
+    decondata=parent.decondata;
+    wavelet=parent.wavelet;
+    shapingwavelet=parent.shapingwavelet;
+    ao_fft=parent.ao_fft;
+    wavelet_snr=parent.wavelet_snr;
+    taper_data=parent.taper_data;
+    operator_dt=parent.operator_dt;
+    winlength=parent.winlength;
+    damp=parent.damp;
+    snr_regularization_floor=parent.snr_regularization_floor;
+    band_snr_floor=parent.band_snr_floor;
+    regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
+    for(int k=0;k<3;++k)
+    {
+      signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
+      peak_snr[k]=parent.peak_snr[k];
+    }
+
+  }
+  return *this;
+}
 CNR3CDecon::~CNR3CDecon()
 {
   if(wavelet_taper!=NULL) delete wavelet_taper;
