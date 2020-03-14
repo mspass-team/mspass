@@ -4,8 +4,8 @@
    algorithms that are to be part of mspass.   
    *
    */
-#include "mspass/seismic/CoreSeismogram.h"
-#include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/TimeSeries.h"
 namespace mspass{
 /* \brief Apply agc operator to three component seismogram data.
 
@@ -30,7 +30,7 @@ original data.
 This function does not throw an exception, but can post errors to the 
 ErrorLogger object that is a member of CoreSeismogram.  
 */
-CoreTimeSeries agc(CoreSeismogram& d,const double twin) noexcept;
+TimeSeries agc(Seismogram& d,const double twin) noexcept;
 /*! \brief Extracts a requested time window of data from a parent CoreSeismogram object.
 
 It is common to need to extract a smaller segment of data from a larger 
