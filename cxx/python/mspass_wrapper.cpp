@@ -25,7 +25,6 @@
 #include <mspass/deconvolution/MultiTaperXcorDecon.h>
 #include <mspass/deconvolution/MultiTaperSpecDivDecon.h>
 #include <mspass/deconvolution/GeneralIterDecon.h>
-//#include <mspass/deconvolution/Base3CDecon.h>
 #include <mspass/deconvolution/CNR3CDecon.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
@@ -104,7 +103,6 @@ using mspass::LeastSquareDecon;
 using mspass::MultiTaperXcorDecon;
 using mspass::MultiTaperSpecDivDecon;
 using mspass::GeneralIterDecon;
-using mspass::Base3CDecon;
 using mspass::CNR3CDecon;
 
 /* We enable this gem for reasons explain in the documentation for pybinde11
@@ -307,70 +305,6 @@ public:
     PYBIND11_OVERLOAD_PURE(
         mspass::Metadata,
         mspass::ScalarDecon,
-        QCMetrics
-    );
-  }
-};
-/* This trampoline is currently used only by CNR3CDecon. Different base than
-other methods derived from Wang's library that were build on ScalarDecon
-concept.  CNR3CDecon is domagmatically three-component*/
-class PyBase3CDecon : public mspass::Base3CDecon
-{
-public:
-  using Base3CDecon::Base3CDecon;
-  void change_parameters(const BasicMetadata&)
-  {
-    PYBIND11_OVERLOAD_PURE(
-      void,
-      mspass::Base3CDecon,
-      change_parameters
-    );
-  }
-  void loaddata(mspass::Seismogram&,const int)
-  {
-    PYBIND11_OVERLOAD_PURE(
-      void,
-      mspass::Base3CDecon,
-      loaddata
-    );
-  }
-  void loadwavelet(const mspass::TimeSeries&)
-  {
-    PYBIND11_OVERLOAD_PURE(
-      void,
-      mspass::Base3CDecon,
-      loadwavelet
-    );
-  }
-  mspass::Seismogram process()
-  {
-    PYBIND11_OVERLOAD_PURE(
-        mspass::Seismogram,
-        mspass::Base3CDecon,
-        process
-    );
-  }
-  mspass::TimeSeries actual_output()
-  {
-    PYBIND11_OVERLOAD_PURE(
-        mspass::TimeSeries,
-        mspass::Base3CDecon,
-        actual_output
-    );
-  }
-  mspass::TimeSeries inverse_wavelet(double)
-  {
-    PYBIND11_OVERLOAD_PURE(
-        mspass::TimeSeries,
-        mspass::Base3CDecon,
-        inverse_wavelet
-    );
-  }
-  mspass::Metadata QCMetrics()
-  {
-    PYBIND11_OVERLOAD_PURE(
-        mspass::Metadata,
-        mspass::Base3CDecon,
         QCMetrics
     );
   }
@@ -842,6 +776,13 @@ PYBIND11_MODULE(ccore,m)
       .def("get_number_tapers",&mspass::MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
       .def("get_time_bandwidth_product",&mspass::MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
+  py::class_<mspass::FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
+    .def(py::init<>())
+    .def("change_size",&mspass::FFTDeconOperator::change_size,"Change fft buffer size")
+    .def("get_size",&mspass::FFTDeconOperator::get_size,"Get current fft buffer size")
+    .def("change_shift",&mspass::FFTDeconOperator::change_shift,"Change reference time shift")
+    .def("get_shift",&mspass::FFTDeconOperator::get_shift,"Get current reference time shift")
+    .def("df",&mspass::FFTDeconOperator::df,"Get frequency bin size")
   ;
   py::class_<mspass::MultiTaperXcorDecon,mspass::ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
       .def(py::init<const mspass::Metadata>())
@@ -869,15 +810,17 @@ PYBIND11_MODULE(ccore,m)
       .def("inverse_wavelet",py::overload_cast<double>(&mspass::GeneralIterDecon::inverse_wavelet))
       .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-py::class_<mspass::CNR3CDecon,mspass::Base3CDecon>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
   .def(py::init<>())
   .def(py::init<const mspass::AntelopePf&>())
   .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
       "Change operator definition")
+  /*
   .def("loaddata",py::overload_cast<mspass::Seismogram&,const int>(&mspass::CNR3CDecon::loaddata),
        "Load data defining wavelet by one data component")
   .def("loaddata",py::overload_cast<mspass::Seismogram&,const mspass::TimeSeries&>(&mspass::CNR3CDecon::loaddata),
        "Load data defining wavelet independently")
+       */
   .def("loadnoise",py::overload_cast<Seismogram&>(&mspass::CNR3CDecon::loadnoise),
        "Load noise to use for regularization from a seismogram")
   .def("loadnoise",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise),

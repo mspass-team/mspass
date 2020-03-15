@@ -16,9 +16,11 @@ class Base3CDecon
 {
 public:
     virtual ~Base3CDecon() {};
+    /*
     virtual void change_parameters(const mspass::BasicMetadata &md)=0;
     virtual void loaddata(mspass::Seismogram& d,const int comp)=0;
     virtual void loadwavelet(const mspass::TimeSeries& w)=0;
+    */
     /* \brief Return the ideal output of the deconvolution operator.
 
     All deconvolution operators have a implicit or explicit ideal output
@@ -67,7 +69,7 @@ it would be hard to do so without causing more problems that it would
 solve.  In MsPASS we expect to hide this a bit behind some python wrappers
 to create some safeties.
 */
-//class CNR3CDecon : public mspass::FFTDeconOperator, public mspass::Base3CDecon
+//class CNR3CDecon : public mspass::FFTDeconOperator
 class CNR3CDecon : public mspass::Base3CDecon, public mspass::FFTDeconOperator
 {
 public:

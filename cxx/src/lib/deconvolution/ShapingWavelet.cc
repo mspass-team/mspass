@@ -2,14 +2,12 @@
 #include <math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
+#include "misc/blas.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/deconvolution/ShapingWavelet.h"
 #include "mspass/deconvolution/wavelet.h"
 #include "mspass/deconvolution/FFTDeconOperator.h"
-/* Temporary until we resolve the blas include issue */
-void dcopy(int,double*,int,double*,int);
-//
 using namespace mspass;
 namespace mspass{
 ShapingWavelet::ShapingWavelet(const Metadata& md, int nfftin)
