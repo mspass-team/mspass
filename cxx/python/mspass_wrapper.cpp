@@ -326,6 +326,7 @@ public:
       change_parameters
     );
   }
+  /*
   void loaddata(mspass::Seismogram&,const int)
   {
     PYBIND11_OVERLOAD_PURE(
@@ -342,6 +343,7 @@ public:
       loadwavelet
     );
   }
+  */
   mspass::Seismogram process()
   {
     PYBIND11_OVERLOAD_PURE(
@@ -869,15 +871,31 @@ PYBIND11_MODULE(ccore,m)
       .def("inverse_wavelet",py::overload_cast<double>(&mspass::GeneralIterDecon::inverse_wavelet))
       .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-py::class_<mspass::CNR3CDecon,mspass::Base3CDecon>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+  /*
+py::class_<mspass::Base3CDecon,PyBase3CDecon>(m,"Base3CDecon","Base class for deconvolution of 3C data")
   .def(py::init<>())
-  .def(py::init<const mspass::AntelopePf&>())
   .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
       "Change operator definition")
   .def("loaddata",py::overload_cast<mspass::Seismogram&,const int>(&mspass::CNR3CDecon::loaddata),
        "Load data defining wavelet by one data component")
+  .def("loadwavelet",&mspass::CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
+  .def("process",&mspass::CNR3CDecon::process,"Process data previously loaded")
+  .def("actual_output",&mspass::CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
+  .def("inverse_wavelet",&mspass::CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
+  .def("QCMetrics",&mspass::CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
+;
+       */
+py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+  .def(py::init<>())
+  .def(py::init<const mspass::AntelopePf&>())
+  .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
+      "Change operator definition")
+  /*
+  .def("loaddata",py::overload_cast<mspass::Seismogram&,const int>(&mspass::CNR3CDecon::loaddata),
+       "Load data defining wavelet by one data component")
   .def("loaddata",py::overload_cast<mspass::Seismogram&,const mspass::TimeSeries&>(&mspass::CNR3CDecon::loaddata),
        "Load data defining wavelet independently")
+       */
   .def("loadnoise",py::overload_cast<Seismogram&>(&mspass::CNR3CDecon::loadnoise),
        "Load noise to use for regularization from a seismogram")
   .def("loadnoise",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise),
