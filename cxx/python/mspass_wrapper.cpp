@@ -844,6 +844,13 @@ PYBIND11_MODULE(ccore,m)
       .def("get_number_tapers",&mspass::MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
       .def("get_time_bandwidth_product",&mspass::MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
+  py::class_<mspass::FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
+    .def(py::init<>())
+    .def("change_size",&mspass::FFTDeconOperator::change_size,"Change fft buffer size")
+    .def("get_size",&mspass::FFTDeconOperator::get_size,"Get current fft buffer size")
+    .def("change_shift",&mspass::FFTDeconOperator::change_shift,"Change reference time shift")
+    .def("get_shift",&mspass::FFTDeconOperator::get_shift,"Get current reference time shift")
+    .def("df",&mspass::FFTDeconOperator::df,"Get frequency bin size")
   ;
   py::class_<mspass::MultiTaperXcorDecon,mspass::ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
       .def(py::init<const mspass::Metadata>())
