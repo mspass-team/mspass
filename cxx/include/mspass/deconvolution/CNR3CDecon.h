@@ -69,8 +69,8 @@ it would be hard to do so without causing more problems that it would
 solve.  In MsPASS we expect to hide this a bit behind some python wrappers
 to create some safeties.
 */
-class CNR3CDecon : public mspass::FFTDeconOperator
-//class CNR3CDecon : public mspass::Base3CDecon, public mspass::FFTDeconOperator
+//class CNR3CDecon : public mspass::FFTDeconOperator
+class CNR3CDecon : public mspass::Base3CDecon, public mspass::FFTDeconOperator
 {
 public:
   /*! Default constructor.  Puts operator in an invalid state.*/
