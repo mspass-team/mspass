@@ -6,6 +6,6 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include)
 
 add_library(deconvolution STATIC ${sources_deconvolution})
-target_link_libraries(deconvolution PRIVATE seismic utility ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES} )
+target_link_libraries(deconvolution PRIVATE seismic utility algorithms ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES} )
 
 install (TARGETS deconvolution DESTINATION lib)
