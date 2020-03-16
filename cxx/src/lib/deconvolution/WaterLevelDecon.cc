@@ -1,3 +1,4 @@
+#include <cfloat> // Needed for DBL_EPSILON
 #include "mspass/deconvolution/WaterLevelDecon.h"
 using namespace std;
 using namespace mspass;
@@ -67,20 +68,38 @@ void WaterLevelDecon::process()
     gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 
     double b_rms=b_fft.rms();
+    if(b_rms==0.0) throw MsPASSError("WaterLevelDecon::process():  wavelet data vector is all zeros");
 
     //water level - count the number of points below water level
     int nunderwater(0);
     for(int i=0; i<nfft; i++)
     {
+	/* We have to avoid hard zeros because the formula below will
+	 * yield an NaN when that happens from 0/0 */
+	double bamp;
+	bamp=abs(b_fft[i]);
+	//DEBUG
+	cerr<< "amp at i="<<i<<" is "<<bamp<<endl;
       /*WARNING:  this is dependent on implementation detail of ComplexArray
       that defines the data as a FortranComplex64 - real,imag pairs. */
-        if(abs(b_fft[i])<b_rms*wlv)
+        if(bamp<b_rms*wlv)
         {
-            //real part
-            *b_fft.ptr(i)=*b_fft.ptr(i)/abs(b_fft[i])*b_rms*wlv;
-            //imag part
-            *(b_fft.ptr(i)+1)=*(b_fft.ptr(i)+1)/abs(b_fft[i])*b_rms*wlv;
+	   /* Use 64 bit epsilon as the floor for defining a pure zero */
+	    if(bamp/b_rms<DBL_EPSILON)
+	    {
+	       *b_fft.ptr(i)=b_rms*wlv;
+	       *(b_fft.ptr(i)+1)=b_rms*wlv;
+	    }
+	    else
+	    {
+              //real part
+              *b_fft.ptr(i)=(*b_fft.ptr(i)/abs(b_fft[i]))*b_rms*wlv;
+              //imag part
+              *(b_fft.ptr(i)+1)=(*(b_fft.ptr(i)+1)/abs(b_fft[i]))*b_rms*wlv;
+	    }
             ++nunderwater;
+	    //DEBUG
+	    cerr<< "Regularized to amplitude="<<abs(b_fft[i])<<endl;
         }
     }
     regularization_fraction= ((double)nunderwater)/((double)nfft);
@@ -105,12 +124,12 @@ void WaterLevelDecon::process()
     {
         for(int k=sample_shift; k>0; k--)
             result.push_back(rf_fft[nfft-k].real());
-        for(int k=0; k<data.size()-sample_shift-1; k++)
+        for(unsigned int k=0; k<data.size()-sample_shift; k++)
             result.push_back(rf_fft[k].real());
     }
     else
     {
-        for(int k=0; k<data.size(); k++)
+        for(unsigned int k=0; k<data.size(); k++)
             result.push_back(rf_fft[k].real());
     }
 }
@@ -127,7 +146,7 @@ CoreTimeSeries WaterLevelDecon::actual_output()
         gsl_fft_complex_inverse(ao_fft.ptr(),1,nfft,wavetable,workspace);
         vector<double> ao;
         ao.reserve(nfft);
-        for(int k=0; k<ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());
+        for(unsigned int k=0; k<ao_fft.size(); ++k) ao.push_back(ao_fft[k].real());
         /* We always shift this wavelet to the center of the data vector.
         We handle the time through the CoreTimeSeries object. */
         int i0=nfft/2;

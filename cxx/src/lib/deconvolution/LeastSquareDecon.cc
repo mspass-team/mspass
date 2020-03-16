@@ -103,7 +103,7 @@ void LeastSquareDecon::process()
     {
         for(int k=sample_shift; k>0; k--)
             result.push_back(rf_fft[nfft-k].real());
-        for(int k=0; k<data.size()-sample_shift-1; k++)
+        for(int k=0; k<data.size()-sample_shift; k++)
             result.push_back(rf_fft[k].real());
     }
     else if(sample_shift==0)
