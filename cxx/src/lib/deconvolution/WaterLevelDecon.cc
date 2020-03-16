@@ -78,8 +78,6 @@ void WaterLevelDecon::process()
 	 * yield an NaN when that happens from 0/0 */
 	double bamp;
 	bamp=abs(b_fft[i]);
-	//DEBUG
-	cerr<< "amp at i="<<i<<" is "<<bamp<<endl;
       /*WARNING:  this is dependent on implementation detail of ComplexArray
       that defines the data as a FortranComplex64 - real,imag pairs. */
         if(bamp<b_rms*wlv)
@@ -98,8 +96,6 @@ void WaterLevelDecon::process()
               *(b_fft.ptr(i)+1)=(*(b_fft.ptr(i)+1)/abs(b_fft[i]))*b_rms*wlv;
 	    }
             ++nunderwater;
-	    //DEBUG
-	    cerr<< "Regularized to amplitude="<<abs(b_fft[i])<<endl;
         }
     }
     regularization_fraction= ((double)nunderwater)/((double)nfft);
