@@ -1,3 +1,4 @@
+#include <cfloat>
 #include <vector>
 #include <string>
 #include "mspass/utility/Metadata.h"
@@ -69,11 +70,13 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
         with K(seql here) of 3 */
         //seql=md.get_int("lower_dpss");
         nseq=md.get_int("number_tapers");
-        if(nseq>(2*nw-1) || (nseq<1))
+	int nseqtest=static_cast<int>(2.0*nw);
+        if(nseq>nseqtest || (nseq<1))
         {
-            cerr << base_error << "(WARNING) Illegal value for number_of tapers parameter="<<nseq
-                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)=" ;
-            nseq=static_cast<int>(2.0*nw);
+            cerr << base_error << "(WARNING) Illegal value for number_tapers parameter="<<nseq
+                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)=" 
+		 << nseqtest<<endl;
+            nseq=nseqtest;
             cerr << nseq<<endl;
         }
         int seql=nseq-1;
@@ -103,12 +106,20 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
             set them as follows */
             seql=0;
             int sequ=nseq-1;
+	    //DEBUG
+	    /*
+	    cerr << "Size of taperlen passed to dpss_cals"<<this->taperlen<<endl;
+	    cerr << "nw="<<nw<<" seql="<<seql<<" sequ="<<sequ<<endl;
+	    */
             dpss_calc(taperlen, nw, seql, sequ, work);
+	    /*
+	    cerr << "Raw vector of tapers returned by dpss_calc"<<endl;
+	    for(i=0;i<(nseq*taperlen);++i) cerr << work[i]<<endl;
+	    */
             /* The tapers are stored in row order in work.  We preserve that
             here but use the dmatrix to store the values as transpose*/
             tapers=dmatrix(nseq,taperlen);
             vector<double> norms;
-            norms=normalize_rows(tapers);
             for(i=0,ii=0; i<nseq; ++i)
             {
                 for(j=0; j<taperlen; ++j)
@@ -117,17 +128,13 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
                     ++ii;
                 }
             }
-            //DEBUG
-            /*
-            vector<double> tmptaper;
-            for(i=0;i<nseq;++i)
-            {
-                tmptaper.clear();
-                for(j=0;j<taperlen;++j)
-                    tmptaper.push_back(tapers(i,j));
-                continue;
-            }
-            */
+	    //DEBUG
+	    /*
+	    cerr << "Calling normalize_rows"<<endl;
+            norms=normalize_rows(tapers);
+	    for(i=0;i<norms.size();++i) cerr <<"eigentaper "<<i<<" has L2 norm "
+		    << norms[i]<<endl;
+		    */
             delete [] work;
             shapingwavelet=ShapingWavelet(md,nfft);
         }
@@ -196,16 +203,32 @@ vector<ComplexArray> MultiTaperSpecDivDecon::taper_data(const vector<double>& si
     tdata.reserve(ntapers);
     vector<double> work;
     work.reserve(nfft);
+    //DEBUG
+    /*
+    cerr<<"in taper_data;  ntapers="<<ntapers<<endl
+	    << "nfft variable="<<nfft<<endl;
+    cerr << "signal vector size="<<signal.size()<<endl;
+    cerr << "taper matrix taper length="<<tapers.columns()<<endl;
+    */
+    if(tapers.columns()!=signal.size())
+    {
+      cerr << "MultiTaperSpecDivDecon::taper_data method: "
+	      << "Data vector length received ="<<signal.size()
+	      << " is inconsistent with taper length="<<tapers.columns()<<endl
+	      << "Zeroing data outside taper length"<<endl;
+    }
     for(j=0; j<nfft; ++j) work.push_back(0.0);
     for(i=0; i<ntapers; ++i)
     {
         /* This will assure part of vector between end of
          * data and nfft is zero padded */
-        for(j=0; j<data.size(); ++j)
+        for(j=0; j<this->tapers.columns(); ++j)
         {
             work[j]=tapers(i,j)*signal[j];
             //DEBUG
-            //work[j]=signal[j];
+	    /*
+	    cerr << "i,j="<<i<<","<<j<<" taper(i,j)="<<tapers(i ,j)<<" signal[j]="<<signal[j]<<" work[j]="<<work[j]<<endl;
+	    */
         }
         /* Force zero pads always */
         ComplexArray cwork(nfft,work);
@@ -217,6 +240,13 @@ void MultiTaperSpecDivDecon::process()
 {
   const string base_error("MultiTaperSpecDivDecon::process():  ");
   try{
+	  //DEBUG
+	  /*
+	  cerr << "Entered process method"<<endl;
+	  cerr << "wavelet, data, noise vectors"<<endl;
+	  for(int itest=0;itest<wavelet.size();++itest)
+	    cerr << wavelet[itest]<<" "<<data[itest]<<" "<<noise[itest]<<endl;
+	    */
     /* WARNING about this algorithm. At present there is nothing to stop
     a coding error of calling the algorithm with inconsistent signal and
     noise data vectors. */
@@ -224,6 +254,7 @@ void MultiTaperSpecDivDecon::process()
     {
         throw MsPASSError(base_error+"noise data is empty.",ErrorSeverity::Invalid);
     }
+
     /* The tapered data are stored in this vector of arrays */
     int i,j;
     vector<ComplexArray> tdata;
@@ -246,7 +277,6 @@ void MultiTaperSpecDivDecon::process()
     }
     cerr << "taper 0 and 1 sum of abs(dz) values "<<dtaper01<<endl;
     */
-
 
     /* Now we need to do the same for the wavelet data */
     vector<ComplexArray> wdata;
@@ -309,11 +339,22 @@ void MultiTaperSpecDivDecon::process()
         double amp=sqrt( re*re +im*im);
         //DEBUG
         //snr.push_back(amp/noise_spectrum[j]);
+	//cerr << "j="<<j<<"amp,noiseamp "<<amp<<", "<<noise_spectrum[j]<<endl;
         if(amp<noise_spectrum[j])
         {
-          double wlscal=noise_spectrum[j]/amp;
-          (*z)*=wlscal;
-          (*(z+1))*=wlscal;
+	  double wlscal;
+	  /* Avoid divide by zero if amp is tiny */
+	  if(fabs(amp)<DBL_EPSILON)
+	  {
+            (*z)=noise_spectrum[j];
+	    (*(z+1))=noise_spectrum[j];
+	  }
+	  else
+	  {
+            double wlscal=noise_spectrum[j]/amp;
+            (*z)*=wlscal;
+            (*(z+1))*=wlscal;
+	  }
           ++number_regularized;
         }
         //DEBUG water level
@@ -326,8 +367,10 @@ void MultiTaperSpecDivDecon::process()
         */
       }
       denominator.push_back(work);
+      /*
       cerr << "Taper number "<<i<<" regularized number of points="
           << number_regularized<<endl;
+	  */
       //snr.clear();
     }
     /* Probably should save these in private area for this estimator*/

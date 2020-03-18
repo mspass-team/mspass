@@ -69,11 +69,13 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md,bool refresh)
         with K(seql here) of 3 */
         //seql=md.get_int("lower_dpss");
         nseq=md.get_int("number_tapers");
-        if(nseq>(2*nw-1) || (nseq<1))
+	int nseqtest=static_cast<int>(2.0*nw);
+        if(nseq>nseqtest || (nseq<1))
         {
             cerr << base_error << "(WARNING) Illegal value for number_of tapers parameter="<<nseq
-                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)=" ;
-            nseq=static_cast<int>(2.0*nw);
+                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)=" 
+		 <<nseqtest<<endl;
+            nseq=nseqtest;
             cerr << nseq<<endl;
         }
         int seql=nseq-1;
@@ -107,8 +109,6 @@ int MultiTaperXcorDecon::read_metadata(const Metadata &md,bool refresh)
             /* The tapers are stored in row order in work.  We preserve that
             here but use the dmatrix to store the values */
             tapers=dmatrix(nseq,taperlen);
-            vector<double> norms;
-            norms=normalize_rows(tapers);
             for(i=0,ii=0; i<nseq; ++i)
             {
                 for(j=0; j<taperlen; ++j)
@@ -189,7 +189,7 @@ vector<ComplexArray> MultiTaperXcorDecon::taper_data(const vector<double>& signa
         /* This will assure part of vector between end of
          * data and nfft is zero padded */
         for(j=0; j<nfft; ++j) work[j]=0.0;
-        for(j=0; j<data.size(); ++j)
+        for(j=0; j<tapers.columns(); ++j)
         {
             work[j]=tapers(i,j)*signal[j];
         }
@@ -201,6 +201,8 @@ vector<ComplexArray> MultiTaperXcorDecon::taper_data(const vector<double>& signa
 }
 void MultiTaperXcorDecon::process()
 {
+	//DEBUG
+	//cerr<< "Entering process method"<<endl;
     const string base_error("MultiTaperXcorDecon::process():  ");
     /* WARNING about this algorithm. At present there is nothing to stop
     a coding error of calling the algorithm with inconsistent signal and
@@ -209,6 +211,8 @@ void MultiTaperXcorDecon::process()
     {
       throw MsPASSError(base_error+"noise data is empty.",ErrorSeverity::Invalid);
     }
+    //DEBUG
+    //cerr<< "tapering data vector"<<endl;
     /* The tapered data are stored in this vector of arrays */
     int i,j;
     vector<ComplexArray> tdata;
@@ -218,6 +222,8 @@ void MultiTaperXcorDecon::process()
     {
         gsl_fft_complex_forward(tdata[i].ptr(),1,nfft,wavetable,workspace);
     }
+    //DEBUG
+    //cerr<< "Tapering wavelet vector"<<endl;
     /* Now we need to do the same for the wavelet data */
     vector<ComplexArray> wdata;
     wdata=taper_data(wavelet);
@@ -327,7 +333,7 @@ void MultiTaperXcorDecon::process()
     {
         for(int k=sample_shift; k>0; k--)
             result.push_back(rf_fft[nfft-k].real());
-        for(int k=0; k<data.size()-sample_shift-1; k++)
+        for(int k=0; k<data.size()-sample_shift; k++)
             result.push_back(rf_fft[k].real());
     }
     else if(sample_shift==0)
