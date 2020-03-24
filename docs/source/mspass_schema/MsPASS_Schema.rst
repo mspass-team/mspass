@@ -1,11 +1,13 @@
-*********************************
+.. _mspass_schema:
+
 MsPASS Schema
-*********************************
+-------------
+
 May seismologists think of a database schema as the specification of a set of
 tables and attributes in a relational database schema.  The standard one in
 seismology is that defined decades ago by the Center for Seismic Studies
-commonly referred to as CSS3.0 in, for example, Antelope.   In computer
-science, however, the term has a more abstract definition.   For a readable
+commonly referred to as CSS3.0 in, for example, Antelope.  In computer
+science, however, the term has a more abstract definition.  For a readable
 description follow `this link <https://en.wikipedia.org/wiki/Database\_schema>`_
 to a short article in Wikipedia.  We use schema in the broader sense defined
 in that article because MsPASS utilizes the nonSQL (not relational) database
@@ -13,10 +15,10 @@ called MongoDB.
 
 This section addresses two key topics about the MsPaSS schema:
 
-1.  The atomic object in MongoDB is a name-value pair.   This section contains
+1. The atomic object in MongoDB is a name-value pair.  This section contains
 a table of all recognized keys, the data types that we assume are associated
 with each key, and the short verbal description of the concept that the value
-associated with the key defines.   The document also contains a set of useful
+associated with the key defines.  The document also contains a set of useful
 subsets of the full table that contain attributes that have an association.
 For example, one table defines attributes related to a sensors position
 on the Earth.  (Note "table" is this context is what normal people would
@@ -42,9 +44,9 @@ your data set.  All normalized attributes are defined in separate tables below.
 
 Finish later here with a roadmap with links to tables below.
 
-#####################
-All Valid attributes
-#####################
+All Valid Attributes
+~~~~~~~~~~~~~~~~~~~~
+
 The table below defines all attributes MsPaSS should handle without special
 treatment.  They are arranged in alphabetical order. (Note all keys are
 case sensitive.  In UTF-8 alphabetical order capitals appear before lower case.)
@@ -66,13 +68,11 @@ separated by colons:
    :widths: 20,60
    :header-rows: 1
 
-###########################################
 Master Documents for Normalized Attributes
-###########################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-=======================================
 Site Collection (Receiver coordinates)
-=======================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This set of attributes are used to define the physical location of a seismic sensor
 on the Earth.   Also listed are related attributes used for cross referencing
@@ -83,9 +83,8 @@ with a collection with the special name 'site'.
     :widths: 12,5,5,50
     :header-rows: 1
 
-===============================================
 Source Collection (Seismic Source coordinates)
-===============================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This set of attributes are used to define location estimates or measured
 locations of seismic sources.   MsPASS does not support the concept of
@@ -99,13 +98,11 @@ oid_source defined in the table below.
     :widths: 12,5,5,50
     :header-rows: 1
 
-###############################################################
 Attributes with Conceptual Relationship
-###############################################################
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-=============================
-obpsy Trace object
-=============================
+ObsPy Trace Object
+^^^^^^^^^^^^^^^^^^
 
 The obspy package on which MsPASS leans heavily defines a Trace object with
 a fixed set of required parameters.  The names can be aliased but the
@@ -117,33 +114,33 @@ for the obspy Trace object.
     :widths: 12,5,5,50
     :header-rows: 1
 
-==============================
-Channel (sitechan) attributes
-==============================
+Channel (sitechan) Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. csv-table:: **Channel attributes**
     :file: sitechan.csv
     :widths: 12,5,5,50
     :header-rows: 1
 
-=================================
-Seismic phase related attributes
-=================================
+Seismic Phase Related Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. csv-table:: **Phase attributes**
     :file: phase.csv
     :widths: 12,5,5,50
     :header-rows: 1
 
-=============================
 External File Attributes
-=============================
+^^^^^^^^^^^^^^^^^^^^^^^^
 .. csv-table:: **File attributes**
     :file: files.csv
     :widths: 12,5,5,50
     :header-rows: 1
     
-================================
+
 Indexing Attributes for MongoDb
-================================
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. csv-table:: **MongoDB attributes**
     :file: MongoDB.csv
     :widths: 12,5,5,50
