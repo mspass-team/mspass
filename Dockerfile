@@ -73,14 +73,14 @@ RUN cd /mspass/cxx \
     && make \
     && make install 
 
+# Add data and env variable for the MetadataDefinition class
+ADD data /mspass/data
+ENV MSPASS_HOME /mspass
+
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 RUN pip3 install /mspass -vvv
-
-# Add data and env variable for the MetadataDefinition class
-ADD data /mspass/data
-ENV MSPASS_HOME /mspass
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
