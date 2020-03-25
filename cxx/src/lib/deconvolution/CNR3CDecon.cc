@@ -1,4 +1,5 @@
 #include <string.h>  //needed for memcpy
+#include "mspass/utility/MsPASSError.h"
 #include "mspass/deconvolution/CNR3CDecon.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
@@ -134,7 +135,6 @@ CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   noise_window(parent.noise_window),
   specengine(parent.specengine),
   psnoise(parent.psnoise),
-  noisedata(parent.noisedata),
   decondata(parent.decondata),
   wavelet(parent.wavelet),
   shapingwavelet(parent.shapingwavelet),
@@ -162,7 +162,6 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     noise_window=parent.noise_window;
     specengine=parent.specengine;
     psnoise=parent.psnoise;
-    noisedata=parent.noisedata;
     decondata=parent.decondata;
     wavelet=parent.wavelet;
     shapingwavelet=parent.shapingwavelet;
@@ -192,7 +191,7 @@ CNR3CDecon::~CNR3CDecon()
 /* Small helper to test for common possible input data issues.
 If return is nonzero errors were encountered.   Can be retrieved
 from elog of d */
-int CNR3CDecon::TestSeismogramInput(Seismogram& d,int wcomp)
+int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loadnoise)
 {
   /* Fractional error allowed in sample interval */
   const double DTSKEW(0.0001);
@@ -202,7 +201,7 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,int wcomp)
   {
     stringstream ss;
     ss<<base_error<<"Data received are using UTC standard; must be Relative"<<endl;
-    d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
+    d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
     ++error_count;
   }
   /* 9999 is a magic number used for external wavelet input */
@@ -211,7 +210,7 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,int wcomp)
     stringstream ss;
     ss<<base_error<<"Illegal component ="<<wcomp<<" specified for wavelet"<<endl
       << "Must be 0,1, or 2"<<endl;
-    d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
+    d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
     ++error_count;
   }
   if((abs(d.dt-operator_dt)/operator_dt)>DTSKEW)
@@ -224,64 +223,82 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,int wcomp)
     d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
     ++error_count;
   }
-  return error_count;
-}
-void CNR3CDecon::loaddata(Seismogram& d, const int wcomp)
-{
-  try{
-    int errcount;
-    errcount=TestSeismogramInput(d,wcomp);
-    if(errcount>0)
+  if(this->processing_window.start<d.t0 || this->processing_window.end>d.endtime())
+  {
+    stringstream ss;
+    ss<<base_error<<"Data time window mistmatch."<<endl
+	    <<"Data span relative time range ="<<d.t0<<" to "<<d.endtime()<<endl
+	    <<"Processing window range of "<<this->processing_window.start
+      	    << " to " <<this->processing_window.start<<" is not inside data range"<<endl;
+    d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
+    ++error_count;
+  }
+  if(loadnoise)
+  {
+    if(this->noise_window.start<d.t0 || this->noise_window.end>d.endtime())
     {
       stringstream ss;
-      ss<<"CNR3CDecon::loaddata:  "<<errcount<<" errors were detected in this call"
-        <<endl<<"Check ErrorLog for input Seismogram has detailed error messages"<<endl
-        << "Operator does not contain valid data for processing"<<endl;
-      throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+      ss<<base_error<<"Noise time window mistmatch."<<endl
+            <<"Data span relative time range ="<<d.t0<<" to "<<d.endtime()<<endl
+            <<"Noise window range of "<<this->noise_window.start<<d.t0
+            << " to " <<this->noise_window.start<<" is not inside data range"<<endl;
+
+      d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
+      ++error_count;
     }
-    /* This copying is a bit inefficient but I don't see how to fix it without
-    messing up a lot of other things. The ugly construct with memcpy will
-    reduce the overhead some at the cost of a confusing construct.  That
-    exploits strucure of the dmatrix internal array that is packed storage of
-    the data in forgran order.  Hence we just copy 3*nfft values to the right
-    position*/
-    decondata=d;
-    dmatrix utmp(3,FFTDeconOperator::nfft);
-    utmp.zero();
-    /* Offset by winlength to put zero pad at front of the data.  */
-    double *toptr,*fromptr;
-    toptr=utmp.get_address(0,this->winlength);
-    fromptr=d.u.get_address(0,0);
-    //3 for number of components not padding
-    size_t bytestocopy=3*(this->winlength)*sizeof(double);
-    memcpy((void*)toptr,(const void*)fromptr,bytestocopy);
-    decondata.u=utmp;
-    decondata.ns=FFTDeconOperator::nfft;
-    decondata.t0 -= operator_dt*static_cast<double>(winlength);
-    /* This weird construct is required because ExtractComponent returns a
-    CoreSeismogram object that needs additional info to be promoted to a
-    Seismogram*/
-    wavelet=TimeSeries(ExtractComponent(decondata,wcomp),"Invalid");
-  }catch(...){throw;};
+  }
+  return error_count;
 }
-void CNR3CDecon::loaddata(Seismogram& d, const TimeSeries& w)
+void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
 {
   try{
+    if(!d.live) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
+		    ErrorSeverity::Invalid);
+    /* This does everything except load the wavelet from wcomp so we just
+     * invoke it here. */
+    this->loaddata(d,loadnoise);
+    /* We need to pull wcomp now because we alter the decondata matrix with 
+     * padding next.  We don't want that for the wavelet at this stage as 
+     * the loadwavelet method handles the padding stuff and we call it after
+     * windowing*/
+    CoreTimeSeries wtmp(ExtractComponent(decondata,wcomp));
+    wtmp=WindowData(wtmp,this->processing_window);
+    TimeSeries wtmp2(wtmp,"Invalid");
+    this->loadwavelet(wtmp2);
+  }catch(...){throw;};
+}
+void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
+{
+  if(!d.live) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
+		    ErrorSeverity::Invalid);
+  try{
+	  //DEBUG
+	  cerr << "Entering loaddata"<<endl;
     int errcount;
     /* The -9999 is a magic number used to signal the test is
     coming from this variant*/
-    errcount=TestSeismogramInput(d,-9999);
+    errcount=TestSeismogramInput(d,-9999,nload);
     if(errcount>0)
     {
       stringstream ss;
       ss<<"CNR3CDecon::loaddata:  "<<errcount<<" errors were detected in this call"
-        <<endl<<"Check ErrorLog for input Seismogram has detailed error messages"<<endl
+        <<endl<<"Check error log for input Seismogram has detailed error messages"<<endl
         << "Operator does not contain valid data for processing"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    /* This is the same construct to add padding as above - perhaps
-    should be made a function, would add some inefficiency*/
-    decondata=d;
+    CoreSeismogram dtmp(WindowData3C(d,this->processing_window));
+    this->decondata=Seismogram(dtmp,"invalid");
+    if(FFTDeconOperator::nfft<(2*this->winlength))
+    {
+      cerr << "CNR3CDecon:  coding error in loaddata method"<<endl
+	      << "fft buffer size="<<FFTDeconOperator::nfft<<endl
+	      << "winlength is only "<<this->winlength<<endl
+	      << "Expect winlength to be 3 times nfft"<<endl
+	      << "Debug exit to avoid seg fault"<<endl;
+      exit(-1);
+    }
+    //DEBUG
+    cerr<< "Entering loaddata copy section"<<endl;
     dmatrix utmp(3,FFTDeconOperator::nfft);
     utmp.zero();
     /* Offset by winlength to put zero pad at front of the data.  */
@@ -294,85 +311,93 @@ void CNR3CDecon::loaddata(Seismogram& d, const TimeSeries& w)
     decondata.u=utmp;
     decondata.ns=FFTDeconOperator::nfft;
     decondata.t0 -= operator_dt*static_cast<double>(winlength);
-    this->loadwavelet(w);
+    if(nload)
+    {
+      Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
+      this->loadnoise(ntmp);
+    }
   }catch(...){throw;};
 }
+/* Note we intentionally do not trap nfft size mismatch in this function because 
+ * we assume loadwavelet would be called within loaddata or after calls to loaddata
+ * */
 void CNR3CDecon::loadwavelet(const TimeSeries& w)
 {
+  if(!w.live) throw MsPASSError("CNR3CDecon::loadwavelet method received data marked dead",
+		    ErrorSeverity::Invalid);
   try{
     int k,kk;
-    wavelet=w;
+    int ns_to_copy;
+    this->wavelet=w;
+    if(w.ns>(this->winlength))
+    {
+      ns_to_copy=this->winlength;
+      stringstream ss;
+      ss<<"loadwavelet method:  size mismatch.  Wavelet received has length="<<w.ns<<endl
+	      << "This is larger than processing window length of "<<this->winlength<<endl
+	      << "Wavelet length must be less than or equal processing window length"<<endl
+	      << "Truncated on the right to processing window length - results may be invalid"
+	      <<endl;
+      wavelet.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
+    }
+    else
+      ns_to_copy=w.ns;
     wavelet.s.clear();
     wavelet.s.reserve(FFTDeconOperator::nfft);
     for(k=0;k<FFTDeconOperator::nfft;++k)wavelet.s.push_back(0.0);
+    /* this retains winlength zeros at the front */
     for(k=0,kk=this->winlength;k<w.ns;++k,++kk)wavelet.s[kk]=w.s[k];
     wavelet.t0 -= operator_dt*static_cast<double>(winlength);
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise(Seismogram& n)
 {
+  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise method received data marked dead",
+		    ErrorSeverity::Invalid);
   try{
-    /* If the noise data length is larger than the operator we
-    truncate it.  If less we zero pad and post a warning error to n.elog.*/
-    Seismogram work(n);
+	  //DEBUG
+	  cerr << "In loadnoise"<<endl;
+    /* If the noise data length is larger than the operator we silenetly
+    truncate it.  If less we zero pad*/
+    CoreSeismogram work(n);
     if(n.ns>FFTDeconOperator::nfft)
     {
-      TimeWindow twork(n.time(0),n.time(FFTDeconOperator::nfft-1));
+      TimeWindow twork(n.t0,n.time(FFTDeconOperator::nfft-1));
       work=WindowData3C(n,twork);
     }
-    else if(n.ns<FFTDeconOperator::nfft)
+    else if(n.ns<=FFTDeconOperator::nfft)
     {
       work.u=dmatrix(3,FFTDeconOperator::nfft);
       work.u.zero();
       for(int i=0;i<n.ns;++i)
         for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
-      stringstream ss;
-      ss << "CNR3CDecon::loadnoise:  noise data window was shorter than expected"<<endl
-        << "Operator wants a window of length at least "<<FFTDeconOperator::nfft
-        << "samples"<<endl
-        << "Input data has length of only "<<n.ns<<endl
-        << "Zero padding to compute power spectrum on operator frequency grid"
-        <<endl;
-      n.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
     }
+    //DEBUG
+    cerr<< "Trying to compute power spectra"<<endl;
     /* We always compute noise as total of three component power spectra
     normalized by number of components - sum of squares */
     TimeSeries tswork;
     for(int k=0;k<3;++k)
     {
       tswork=TimeSeries(ExtractComponent(work,k),"Invalid");
+	      //DEBUG
+	      cerr << "Computing spectrum for component "<<k<<endl;
       if(k==0)
         this->psnoise = this->specengine.apply(tswork);
       else
         this->psnoise += this->specengine.apply(tswork);
     }
+    //DEBUG
+    cerr<< "Scaling power spectrum"<<endl;
     double scl=1.0/3.0;
     for(int i=0;i<this->psnoise.nf();++i)this->psnoise.spectrum[i]*=scl;
+    //DEBUG
+    cerr<< "Exiting loadnoise"<<endl;
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise(const PowerSpectrum& d)
 {
-  const string base_error("CNR3CDecon::loadnoise from PowerSpectrum object:  ");
   try{
-    int nd=d.nf();
-    if(nd!=(FFTDeconOperator::nfft/2))
-    {
-      stringstream ss;
-      ss<<base_error<<"Size mismatch"<<endl
-        << "PowerSpectrum object number of frequencies="<<nd<<endl
-        << "Operator requires size="<<FFTDeconOperator::nfft<<endl;
-      throw MsPASSError(ss.str(),ErrorSeverity::Complaint);
-    }
-    const double DFFACTION(0.001);
-    double operator_df=1.0/((this->operator_dt)*((double)FFTDeconOperator::nfft));
-    if( abs(d.df - operator_df)/operator_df > DFFACTION)
-    {
-      stringstream ss;
-      ss<<base_error<<"Frequency mismatch"<<endl
-        << "PowerSpectrum object Rayleigh bin size="<<d.df<<" Hz"<<endl
-        << "Operator frequency bin size="<<operator_df<<endl;
-      throw MsPASSError(ss.str(),ErrorSeverity::Complaint);
-    }
     psnoise=d;
   }catch(...){throw;};
 }

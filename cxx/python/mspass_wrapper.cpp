@@ -798,6 +798,9 @@ PYBIND11_MODULE(ccore,m)
       .def("get_number_tapers",&mspass::MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
       .def("get_time_bandwidth_product",&mspass::MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
+  /* this wrapper is propertly constructed, but for now we disable it 
+   * because it has known bugs that need to be squashed.  It should be 
+   * turned back on if and when those bugs are squashed.  
   py::class_<mspass::GeneralIterDecon,mspass::ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
       .def(py::init<mspass::AntelopePf&>())
       .def("changeparameter",&mspass::GeneralIterDecon::changeparameter,"Change operator parameters")
@@ -810,17 +813,16 @@ PYBIND11_MODULE(ccore,m)
       .def("inverse_wavelet",py::overload_cast<double>(&mspass::GeneralIterDecon::inverse_wavelet))
       .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
   ;
+  */
 py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
   .def(py::init<>())
   .def(py::init<const mspass::AntelopePf&>())
   .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
       "Change operator definition")
-  /*
-  .def("loaddata",py::overload_cast<mspass::Seismogram&,const int>(&mspass::CNR3CDecon::loaddata),
+  .def("loaddata",py::overload_cast<mspass::Seismogram&,const int,const bool>(&mspass::CNR3CDecon::loaddata),
        "Load data defining wavelet by one data component")
-  .def("loaddata",py::overload_cast<mspass::Seismogram&,const mspass::TimeSeries&>(&mspass::CNR3CDecon::loaddata),
-       "Load data defining wavelet independently")
-       */
+  .def("loaddata",py::overload_cast<mspass::Seismogram&,const bool>(&mspass::CNR3CDecon::loaddata),
+       "Load data only with optional noise")
   .def("loadnoise",py::overload_cast<Seismogram&>(&mspass::CNR3CDecon::loadnoise),
        "Load noise to use for regularization from a seismogram")
   .def("loadnoise",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise),

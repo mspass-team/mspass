@@ -84,11 +84,63 @@ public:
 
   Use this method for conventional receiver function data if one of
   components is to be used as the wavelet estimate (conventionally Z or L).
+  Optionally they can also load preevent noise defined by the noise
+  window parameters defined by Pf constructor.  
+
+  \param d is the data to be loaded.  If loadnoise is true it is assumed to 
+    be long enough to span the range of both the signal and noise windows
+    defined in constuction.
+  \param wcomp is the component that is used as an estimate of the 
+    wavelet.   In standard P receiver functions this would be the Z 
+    component but for S it would be the radial component
+  \param loadnoise when true method also loads noise data from predefined
+    window.
+
+  \exception Will throw an MsPASSError for a number of potential problems
+    that can arise. All such errors will have an invalid condition set.
 
   */
-  void loaddata(mspass::Seismogram& d, const int wcomp);
-  void loaddata(mspass::Seismogram& d, const mspass::TimeSeries& w);
+  void loaddata(mspass::Seismogram& d, const int wcomp,const bool loadnoise=false);
+  /*! \brief Load data and optionally load noise.
+   *
+   This method must be called before running process to get a unique result. 
+   Input data are windowed by the processing window parameters and inserted into
+   an internal buffer with sufficient padding to avoid fft circular convolution
+   artifacts.   Noise can optionally be loaded but use that approach ONLY 
+   if the time span of d contains both the processing and noise time windows. 
+   Use loadnoise if the input data do not match that model.
+
+   \param d is the input data (see note about time span above)
+   \param loadnoise when true the function will attempt to load data for 
+     the noise based regularization from the noise window defined for the operator. 
+   \exception MsPASSError may be thrown for a number of potential error conditions. 
+   */
+  void loaddata(mspass::Seismogram& d, const bool loadnoise=false);
+  /*! \brief Load noise data directly.
+
+   This method can be used to load noise to be used for regularization from an 
+   arbitrary time window.   The spectrum of the noise is computed from a 
+   mutlitaper spectral estimator for the data passed as n.  Best results will be 
+   obtain if the length of n is larger than the operator size defined by it's
+   internal noise window (defined in constructor by noise_window_start and 
+   and parameters).   Note for this constructor the actual time of the noise
+   window passed is ignored, but the length it defines is used to define the 
+   length of the computed spectrum.  It is better to have the input noise
+   slightly larger than the operator length to be consistent with the expectations
+   of the multitaper method.   If the noise window is short the spectrum is 
+   computed but will be biased to lower amplitudes because of zero padding. 
+   That happens because the operator will not recompute Slepian tapers if the 
+   data are short.   
+   */
   void loadnoise(mspass::Seismogram& n);
+  /*! \brief Load noise estimate directly as a PowerSpectrum object.
+   *
+   The actual noise regularization is computed by this algorithm from an internally 
+   stored PowerSpectrum object.   This method allows the power spectrum to be computed
+   by some other method or using previously computed estimates rather than computing 
+   it through loadnoise. 
+
+   */
   void loadnoise(const mspass::PowerSpectrum& n);
   void loadwavelet(const mspass::TimeSeries& w);
   /* These same names are used in ScalarDecon but we don't inherit them
@@ -127,7 +179,7 @@ private:
   /* Expected time window size in samples
   (computed from processing_window and operator dt)*/
   int winlength;
-  /* Defins relative time time window - ignored if length of input is
+  /* Defines relative time time window - ignored if length of input is
   consistent with number of samples expected in this window */
   mspass::TimeWindow processing_window;
   mspass::TimeWindow noise_window;
@@ -138,7 +190,6 @@ private:
   than the data.
   */
   mspass::PowerSpectrum psnoise;
-  mspass::Seismogram noisedata;
   mspass::Seismogram decondata;
   mspass::TimeSeries wavelet;
   /* AS the name suggest we allow different tapes for data and wavelet */
@@ -166,7 +217,7 @@ private:
   double peak_snr[3];
   double regularization_bandwidth_fraction;
   void read_parameters(const mspass::AntelopePf& pf);
-  int TestSeismogramInput(Seismogram& d,int comp);
+  int TestSeismogramInput(Seismogram& d,const int comp,const bool loaddata);
 };
 }  // End namespace
 

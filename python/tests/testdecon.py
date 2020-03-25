@@ -46,21 +46,6 @@ def make_impulse_vector(lag,imp,n=500):
         d[lag[i]]=imp[i]
     return d
 
-def vectors2dmatrix(d):
-    """
-    Converts a list of three ndarrays in d to a dmatrix that is returned. 
-    sizes of three components must match.
-    """
-    if(len(d)!=3):
-        raise RuntimeError("vector2dmatrix:  input must be list of 3 ndarrays")
-    n=len(d[0]);
-    if((len(d[1])!=n) | (len(d[2])!=n)):
-        raise RuntimeError("vector2dmatrix:  input vectors have irregular sizes - must be equal length")
-    u=dmatrix(3,n)
-    for i in range(3):
-        for j in range(n):
-            u[i][j]=d[i][j]
-    return u
 
 # some initial testing using only scipy
 # first make a proto source wavelet that is minimum phase

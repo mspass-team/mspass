@@ -34,8 +34,6 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const int winsize, const double tbp
   double *work=new double[ntapers*taperlen];
   dpss_calc(taperlen, tbp, seql, sequ, work);
   tapers=dmatrix(ntapers,taperlen);
-  vector<double> norms;
-  norms=normalize_rows(tapers);
   int i,ii,j;
   for(i=0,ii=0; i<ntapers; ++i)
   {
@@ -86,6 +84,10 @@ MTPowerSpectrumEngine& MTPowerSpectrumEngine::operator=(const MTPowerSpectrumEng
 PowerSpectrum MTPowerSpectrumEngine::apply(const mspass::TimeSeries& d)
 {
   try{
+    //DEBUG
+    cerr<< "Entering apply method"<<endl
+	    << "Input data number of samples="<<d.ns<<endl
+	    << "Operator taper length="<<taperlen<<endl;
     const string algorithm("MTPowerSpectrumEngine");
     /* We need to define this here to allow posting problems to elog.*/
     PowerSpectrum result;
@@ -130,6 +132,9 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const mspass::TimeSeries& d)
 }
 vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
 {
+	//DEBUG
+	cerr << "Entered lower level apply method"<<endl;
+	cerr << "input vector size="<<d.size()<<" and taperlen="<<taperlen<<endl;
   /* This function must be dogmatic about d size = taperlen*/
   if(d.size() != taperlen)
   {
@@ -144,23 +149,33 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   but housework.   Computes the power spectrum by average DFT of d^*d where
   the average is over the tapes. First taper data and store tapered data in
   tdata container*/
+  //DEBUG
+  cerr << "Applying Slepians with "<<ntapers<<" tapers of length "<<taperlen<<endl;
   int i,j;
   vector<ComplexArray> tdata;
+  cerr << "calling reserve"<<endl;
   tdata.reserve(ntapers);
+  cerr << "Creating work vector"<<endl;
   vector<double> work;
+  cerr << "Calling reserve for second work vector"<<endl;
   work.reserve(taperlen);
+  cerr << "Entering loop over tapers"<<endl;
   for(i=0; i<ntapers; ++i)
   {
+	  //DEBUG
+	  cerr << "working on taper number "<<i<<endl;
     work.clear();
     /* This will assure part of vector between end of
        * data and nfft is zero padded */
     for(j=0; j<d.size(); ++j)
     {
       work.push_back(tapers(i,j)*d[j]);
-      ComplexArray cwork(taperlen,work);
-      tdata.push_back(cwork);
     }
+    ComplexArray cwork(taperlen,&(work[0]));
+    tdata.push_back(cwork);
   }
+  //DEBUG
+  cerr << "Computing fourier transforms"<<endl;
   /* Now apply DFT to each of tapered arrays */
   for(i=0; i<ntapers; ++i)
   {
@@ -169,6 +184,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   }
   /* could bundle this into the previous loop, but clearer here.  We
   accumulate power spectra here - created by A.conj * A . */
+  //DEBUG
+  cerr << "Averaging tapered spectra"<<endl;
   i=0;
   ComplexArray power;
   do{
@@ -188,6 +205,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   /* Documentation for gsl_complex_forward indicates if taperlen is odd
   integer truncated divide by 2 like this (i.e. taperlen/2 below) will
   correctly extract the nyquist frequency sample at the end of the array*/
+  //DEBUG
+  cerr << "Scaling by number of tapers"<<endl;
   result.reserve(taperlen/2);
   double scale=1.0/static_cast<double>(ntapers);
   for(j=0;j<taperlen/2;++j)
@@ -197,6 +216,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
     pval*=scale;
     result.push_back(pval);
   }
+  //DEBUG
+  cerr << "Returning from apply method"<<endl;
   return result;
 }
 vector<double> MTPowerSpectrumEngine::frequencies()
