@@ -1,8 +1,7 @@
-import sys
-sys.path.append('/Users/pavlis/src/mspass/python/mspasspy')
-from ccore import MetadataDefinitions
-from ccore import MDtype
-from ccore import AntelopePf
+from mspasspy.ccore import MetadataDefinitions
+from mspasspy.ccore import MDtype
+from mspasspy.ccore import AntelopePf
+
 def write_group(pf, tag,mdef):
     """
     This function is implements the repetitious task of creating a
