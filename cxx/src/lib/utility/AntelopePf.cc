@@ -362,8 +362,18 @@ AntelopePf::AntelopePf(string pfbase)
             }
             ++nread;
         }
-        if(nread==0) throw MsPASSError(string("PFPATH=")+s
-                                           +" had no pf files matching " + pfbase,ErrorSeverity::Invalid);
+        if(nread==0) 
+        {
+            // This was necessary to avoid seg faults when s was a null pointer
+            // which happens when PFPATH is not set 
+          throw MsPASSError(string("PFPATH is no defined and default pf=")
+               + pfbase + " was not found",ErrorSeverity::Invalid);
+        }
+        else
+        {
+          throw MsPASSError(string("PFPATH=")+s
+             +" had no pf files matching " + pfbase,ErrorSeverity::Invalid);
+        }
     } catch(...) {
         throw;
     };
