@@ -114,13 +114,13 @@ ao0.plot(t,d)
 ao0.set_title('impulse sequence')
 ao1.plot(t,f)
 ao1.set_title('source wavelet')
-plt.show()
+#plt.show()
 wtmp=CoreTimeSeries(n)
 wavelet=TimeSeries(wtmp,'invalid')
-wavelet.dt=n
 wavelet.t0=t0w
 wavelet.dt=dt
 wavelet.tref=TimeReferenceType.Relative
+wavelet.ns=n
 wavelet.live=True
 for i in range(n):
     wavelet.s[i]=f[i]
@@ -168,7 +168,7 @@ dsig2=addnoise(dsig2,nsc,padlength)
 u=vectors2dmatrix([dsig0,dsig1,dsig2])
 dtmp=CoreSeismogram(nsig)
 d=Seismogram(dtmp,'undefined')
-t=t0-dt*padlength
+t0=t0-dt*padlength
 d.u=u
 d.ns=nfullsig
 d.t0=t0
@@ -176,7 +176,7 @@ d.dt=dt
 d.tref=TimeReferenceType.Relative
 d.live=True
 plot3cs(d)
-plt.show()
+#plt.show()
 
 pf=AntelopePf('CNR3CDecon.pf')
 decon=CNR3CDecon(pf)
@@ -184,3 +184,5 @@ decon.loaddata(d,False)
 decon.loadwavelet(wavelet)
 decon.loadnoise(d)
 dout=decon.process()
+plot3cs(dout)
+plt.show()
