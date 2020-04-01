@@ -110,11 +110,10 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const mspass::TimeSeries& d)
       stringstream ss;
       ss<<"Received data window of length="<<d.ns<<" samples"<<endl
          << "Operator length="<<taperlen<<endl
-         << "Results may be unreliable"<<endl;
+         << "Results may be unreliable because data will be truncated to taper length"<<endl;
       result.elog.log_error(algorithm,ss.str(),ErrorSeverity::Suspect);
       int k;
-      for(k=0;k<taperlen;++k)work.push_back(0.0);
-      for(k=0;k<dsize;++k)work[k]=d.s[k];
+      for(k=0;k<taperlen;++k)work.push_back(d.s[k]);
     }
     else
     {
@@ -142,7 +141,7 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
     ss<<"MTPowerSpectrumEngine::apply method:  input data vector length of "
        << d.size()<<endl
        << "does not match operator taper length="<<taperlen<<endl
-       << "Sizes must match to use this operator algorithm"<<endl;
+       << "Sizes must match to use this implementation of this algorithm"<<endl;
     throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
   }
   /* This is the only function in this entire object that does anything
@@ -191,6 +190,8 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   do{
     ComplexArray work(tdata[i]);
     work.conj();
+    //DEBUG
+    cerr << "Averaging i="<<i<<" work size="<<work.size()<<" tdata[i] size="<<tdata[i].size()<<endl;
     if(i==0)
     {
       power=work*tdata[i];
@@ -200,7 +201,7 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
       power+=work*tdata[i];
     }
     ++i;
-  }while(i<=ntapers);
+  }while(i<ntapers);
   vector<double> result;
   /* Documentation for gsl_complex_forward indicates if taperlen is odd
   integer truncated divide by 2 like this (i.e. taperlen/2 below) will
