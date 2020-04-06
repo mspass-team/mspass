@@ -659,12 +659,12 @@ class Database(pymongo.database.Database):
             but could be some arbitrarily large number (caution if you go there)
         :param tolerance:  horizontal tolerance to define equalities
         :param ztol: elevation tolerance
-        :return: tuple with two elements.  Element 0 will contain a deduced dict of 
+        :return: tuple with two elements.  Element 0 of a list of tuples with 0 
+        containing the ObjectId of the parent waveform (from wf collection) and
+        1 containing the unique site_id adetermined by 
+        this algorithm.  Element 1 will contain a deduced dict of 
         receiver attributes with unique locations.  After cross-checks it is 
-        intended to be posted to MongoDB with update or insert.  Element 1 
-        of a list of tuples with 0 containing the ObjectId of the parent 
-        waveform (from wf collection) and 1 containing the unique site_id adetermined by 
-        this algorithm.  
+        intended to be posted to MongoDB with update or insert.  
         :rtype: tuple with 2 elements (see return for details)
         """
         # this is a two key sort and find combined
@@ -836,12 +836,12 @@ class Database(pymongo.database.Database):
         :param vsource: is velocity used to convert origin time difference to a 
             distance for sum of square used for drtol test.
         
-        :return:  tuple with two elements.  Element 0 will contain a deduced dict of 
-        source attributes with unique locations.  After cross-checks it is 
-        intended to be posted to MongoDB with update or insert.  Element 1 
+        :return:  tuple with two elements.  Element 0 
         of a list of tuples with 0 containing the ObjectId of the parent 
         waveform (from wf collection) and 1 containing the unique source_id adetermined by 
-        this algorithm.  
+        this algorithm.  Element 1 will contain a deduced dict of 
+        source attributes with unique locations.  After cross-checks it is 
+        intended to be posted to MongoDB with update or insert.    
         :rtype: tuple with 2 elements (see return for details)
         """
         degtor=math.pi/180.0   # degrees tp radians - needed below
