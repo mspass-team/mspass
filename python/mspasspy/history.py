@@ -1,5 +1,8 @@
 import pymongo
+
 from mspasspy.ccore import AntelopePf
+from mspasspy.io.converter import Metadata2dict
+
 def get_jobid(db):
     """ 
     Ask MongoDB for the a valid jobid. 
@@ -22,39 +25,7 @@ def get_jobid(db):
         maxcur.rewind()   # may not be necessary but near zero cost
         maxdoc=maxcur[0]
         return maxdoc['jobid']+1
-def md2dict(md):
-    """
-    Converts a ccore.Metadata object to a python dict.
-    
-    This is the inverse of md2dict.  It converts a Metadata object to 
-    a python dict, usually for interaction with MongoDB.  Only supports
-    basic types of int, double, bool, and string.  
-    
-    :param md:  Metadata object to convert.
-    :type md:  Metadata
-    :return:  python dict equivalent to md.
-    :raise:  AssertionError will be thrown if md contains anything but int, double, string, or bool
-    """
-    result={}
-    keys=md.keys()
-    for k in keys:
-        typ=md.type(k)
-        if(typ=='int'):
-            ival=md.get_int(k)
-            result[k]=ival
-        elif(typ=='double'):
-            dval=md.get_double(k)
-            result[k]=dval
-        elif(typ=='bool'):
-            bval=md.get_bool(k)
-            result[k]=bval
-        else:
-            # should be a string, but we need a sanity check as 
-            # C code could insert nonstandard Metadata
-            assert("string" in typ), "md2dict: Unsupported type for key %s=%s" % (k,typ)
-            sval=md.get_string(k)
-            result[k]=sval
-    return result
+
 def pfbranch_to_dict(pf,key): 
     """
     Recursive function to convert a single branch in an AntelopePf to a python dict.
@@ -82,7 +53,7 @@ def pfbranch_to_dict(pf,key):
     brkeys=pf.arr_keys()
     if(len(brkeys)>0):
         # This loads simple parameters at this level
-        allbrdata=md2dict(pf)
+        allbrdata=Metadata2dict(pf)
         # This loads any Tbl& data at this level of the hierarchy
         tblkeys=pf.tbl_keys()
         for k in tblkeys:
@@ -94,7 +65,7 @@ def pfbranch_to_dict(pf,key):
             allbrdata[k]=bk
         return allbrdata
     else:
-        brdata=md2dict(pf)
+        brdata=Metadata2dict(pf)
         return brdata
             
              
@@ -160,9 +131,9 @@ class pf_history_data(basic_history_data):
         self.jobid=job
         self.algorithm=alg
         self.param_type='AntelopePf'
-        # This works because md2dict calls pf.keys() which only returns
+        # This works because Metadata2dict calls pf.keys() which only returns
         # simple name:value pair parameters.  We use branch and tbl calls later
-        self.params=md2dict(pf)
+        self.params=Metadata2dict(pf)
         # tbl's next - simpler than a Arr which requires recursion
         tblkeys=pf.tbl_keys()
         for k in tblkeys:
