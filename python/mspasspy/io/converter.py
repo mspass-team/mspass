@@ -203,6 +203,41 @@ def dict2Metadata(d, mdef, elog):
   return md
 #dict.toMetadata = dict2Metadata
 
+def Metadata2dict(md):
+    """
+    Converts a Metadata object to a python dict.
+    
+    This is the inverse of dict2Metadata.  It converts a Metadata object to 
+    a python dict, usually for interaction with MongoDB.  Only supports
+    basic types of int, double, bool, and string.  
+    
+    :param md:  Metadata object to convert.
+    :type md:  Metadata
+    :return:  python dict equivalent to md.
+    :raise:  AssertionError will be thrown if md contains anything but int, double, string, or bool
+    """
+    result={}
+    keys=md.keys()
+    for k in keys:
+        typ=md.type(k)
+        if(typ=='int'):
+            ival=md.get_int(k)
+            result[k]=ival
+        elif(typ=='double'):
+            dval=md.get_double(k)
+            result[k]=dval
+        elif(typ=='bool'):
+            bval=md.get_bool(k)
+            result[k]=bval
+        else:
+            # should be a string, but we need a sanity check as 
+            # C code could insert nonstandard Metadata
+            assert("string" in typ), "Metadata2dict: Unsupported type for key %s=%s" % (k,typ)
+            sval=md.get_string(k)
+            result[k]=sval
+    return result
+Metadata.todict = Metadata2dict
+
 def TimeSeries2Trace(d, mdef):
     """
     Converts a TimeSeries object to an obspy Trace object.
