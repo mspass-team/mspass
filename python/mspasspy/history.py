@@ -53,7 +53,7 @@ def pfbranch_to_dict(pf,key):
     brkeys=pf.arr_keys()
     if(len(brkeys)>0):
         # This loads simple parameters at this level
-        allbrdata=Metadata2dict(pf)
+        allbrdata=pf.todict()
         # This loads any Tbl& data at this level of the hierarchy
         tblkeys=pf.tbl_keys()
         for k in tblkeys:
@@ -65,7 +65,7 @@ def pfbranch_to_dict(pf,key):
             allbrdata[k]=bk
         return allbrdata
     else:
-        brdata=Metadata2dict(pf)
+        brdata=pf.todict()
         return brdata
             
              
@@ -133,7 +133,7 @@ class pf_history_data(basic_history_data):
         self.param_type='AntelopePf'
         # This works because Metadata2dict calls pf.keys() which only returns
         # simple name:value pair parameters.  We use branch and tbl calls later
-        self.params=Metadata2dict(pf)
+        self.params=pf.todict()
         # tbl's next - simpler than a Arr which requires recursion
         tblkeys=pf.tbl_keys()
         for k in tblkeys:
