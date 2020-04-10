@@ -44,8 +44,8 @@ History
   developed by one of the authors (Pavlis) over a period of more than 15
   years.   The original implementation was developed as a component of
   Antelope.  It was distribured via the open source additions to
-  Antelope distributed through the `antelope user's
-  group <antelopeusersgroup>`__ and referred to as SEISPP.   The bulk of
+  Antelope distributed through the `Antelope user's
+  group <https://github.com/antelopeusersgroup/antelope_contrib>`__ and referred to as SEISPP.   The bulk of
   the original code can be found
   `here <https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp>`__
   in github, and doxygen generated pages comparable to those found with

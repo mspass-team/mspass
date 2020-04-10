@@ -43,7 +43,7 @@ Attributes:
   - name: sta
     type: string
     concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-    aliases: station site.sta sitchan.sta wf.sta
+    aliases: station site.sta sitechan.sta wf.sta KSTNM
     readonly: true
     unique_id:  site_id
     collection: site
@@ -91,7 +91,7 @@ Attributes:
   - name: chan
     type: string
     concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
-    aliases: KCMPNM sitchan.chan
+    aliases: KCMPNM sitechan.chan
     readonly: true
     unique_id: chanid
     collection: sitechan
@@ -115,6 +115,10 @@ Attributes:
     readonly:  true
     unique_id:  chanid
     collection:  sitechan
+  - name: LPSPOL
+    type: boolean
+    concept: True of channel components have positive polarity (SAC)
+    readonly: false
 # These are attributes for source data.   This schema does not support multiple
 # source locations for a single seismic event.   We use source for the table name
 # instead of event or origin to avoid make that clear.   An event-origin
@@ -163,6 +167,14 @@ Attributes:
     unique_id:  souce_id
     collection:  source 
     alias: origin.orid,event.orid
+  - name: KEVNM
+    type: string
+    concept: Event name 
+    readonly: false
+  - name: IEVTYP
+    type:  integer
+    concept:  Event type code as used in SAC
+    readonly: false
 BasicTimeSeries:
   - name: time_standard
     type: string
@@ -222,6 +234,11 @@ Magnitude:
     readonly: true
     unique_id: evid
     collection: source
+  - name: magnitude
+    type: real
+    concept: generic magnitude attribute
+    readonly: false
+    aliases: MAG
 External_files:
   - name: dfile
     type: string
@@ -247,6 +264,16 @@ SeismicPhases:
     type: string
     concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
     readonly: false
+  - name: seaz
+    type: real
+    concept: Station to event azimuth
+    readonly: false
+    aliases: BAZ
+  - name: esaz
+    type: real
+    concept: Event to station azimuth
+    readonly: false
+    aliases: AZ
 MongoDb:
 # This set of parameters are essential for mspass, but are intimately linked to MongoDB
   - name: wfid_string
@@ -271,3 +298,44 @@ MongoDb:
     type: string
     concept:  String representation of ObjectId of an entry in source collection - for linking to other collections
     readonly:  false
+# These are assorted attributes that can be used in wf but have not logical 
+# grouping
+Other:
+  - name: units
+    type:  string
+    concept:  Physical units of sample data (nm/s is normal assumed default)
+    readonly: false
+    aliases: idep,IDEP
+  - name: DEPMIN
+    type: real
+    concept: Maximum amplitude of a signal
+    readonly: false
+    aliases: depmin
+  - name: DEPMAX
+    type: real
+    concept: Minimum amplitude of a signal
+    readonly: false
+    aliases: depmax
+  - name: DEPMEN
+    type: real
+    concept: Mean amplitude of a signal
+    readonly: false
+    aliases: depmen
+  - name: jdate
+    type: int
+    concept: Julian date string as used in CSS3.0
+    readonly: false
+  - name: IZTYPE
+    type: integer
+    concept: Reference time type as used by SAC
+    readonly: false
+    aliases: TimeReferenceType
+  - name: dist
+    type: real
+    concept: Source receiver distance
+    readonly: false
+    aliases: assoc.delta,GCARC
+  - name: distance_units
+    type: string
+    concept: Units of dist attribute
+    readonly: false

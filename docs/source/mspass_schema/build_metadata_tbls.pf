@@ -1,0 +1,64 @@
+site &Tbl{
+site_lat
+site_lon
+site_elev
+site_id
+oid_site
+}
+source &Tbl{
+source_id
+source_lat
+source_lon
+source_depth
+source_time
+mb
+ms
+oid_source
+}
+obspy_trace &Tbl{
+calib
+chan
+delta
+loc
+net
+npts
+sampling_rate
+sta
+starttime
+}
+sitechan &Tbl{
+chan
+hang
+vang
+chanid
+}
+3Cdata &Tbl{
+U11
+U12
+U13
+U21
+U22
+U23
+U31
+U32
+U33
+}
+files &Tbl{
+dir
+dfile
+foff
+}
+phase &Tbl{
+phase
+iphase
+esaz
+seaz
+dist
+}
+MongoDB &Tbl{
+wfid_string
+gridfs_idstr
+storage_mode
+oid_site
+oid_source
+}

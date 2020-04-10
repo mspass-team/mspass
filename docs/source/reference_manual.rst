@@ -6,15 +6,5 @@ Reference Manual
 
 .. include:: ./cxx_api/index.rst
 
-
-Schema
-------
-
-
-Default Schema Description
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-Modifying Schema
-~~~~~~~~~~~~~~~~
+.. include:: ./mspass_schema/mspass_schema.rst
 

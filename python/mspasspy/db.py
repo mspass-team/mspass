@@ -8,6 +8,7 @@ import struct
 
 import gridfs
 import pymongo
+import pickle
 import bson.errors
 import bson.objectid
 
@@ -19,19 +20,22 @@ from mspasspy.ccore import (BasicTimeSeries,
                             ErrorSeverity)
 from mspasspy.io.converter import dict2Metadata
 
+from obspy import Inventory
+from obspy import UTCDateTime
+from obspy import Catalog
 
 def _tmatrix_from_md(md):
     """
     Helper function to parse md to build and set a transformation matrix.
-    
-    A Seismgogram object has an embedded transformation matrix that needs to 
-    be set for the object to be properly defined.   In MsPASS we do that 
+
+    A Seismgogram object has an embedded transformation matrix that needs to
+    be set for the object to be properly defined.   In MsPASS we do that
     through Metadata attributes loaded from MongoDB with special tags U11,U12, etc.
     This function fetches the 9 numbers required to define such a matrix and
-    return them in a ccore.dmatrix object.  
-    
+    return them in a ccore.dmatrix object.
+
     :param md:  Metadata assumed to contain U11, U12, etc. attribures
-    
+
     :return: 3x3 transformation matrix extracted from md attributes
     :rtype: dmatrix
     :raise:   Will throw a RunTimeError if any of the tmatrix attributes are not in md
@@ -47,7 +51,7 @@ def _tmatrix_from_md(md):
     A[1,2]=md.get_double('U23')
     A[2,2]=md.get_double('U33')
     return A
-    
+
 def _sync_metadata(d):
     d.put_long('npts',d.ns)
     d.put_double('starttime',d.t0)
@@ -57,7 +61,7 @@ def _sync_metadata(d):
     else:
         d.put_string('time_standard','UTC')
     # Because of inheritance we can use this same function for both TimeSeries
-    # and Seismogram objects 
+    # and Seismogram objects
     if(isinstance(d,Seismogram)):
         U=d.get_transformation_matrix()
         d.put_double('U11',U[0,0])
@@ -80,51 +84,51 @@ class Database(pymongo.database.Database):
     def load3C(self, oid, mdef, smode='gridfs'):
         """
         Loads a Seismogram object from MongoDB based on ObjectId.
-        
+
         This is a core reader for Seismogram objects with MongoDB.  The unique
-        document in the wf collection is selected by ObjectID (oid arg).  
-        That oid is used to select a unique waveform document. 
-        Samples can be read from system files or from gridfs.  
-        
-        A string attribute extracted from the database with the key 'storage_mode' is 
-        normally used to tell the mode to use to fetch the sample 
+        document in the wf collection is selected by ObjectID (oid arg).
+        That oid is used to select a unique waveform document.
+        Samples can be read from system files or from gridfs.
+
+        A string attribute extracted from the database with the key 'storage_mode' is
+        normally used to tell the mode to use to fetch the sample
         data.   If that attribute is not found the method defined in the smode
-        argument will be attempted.   When smode is gridfs, the method will 
+        argument will be attempted.   When smode is gridfs, the method will
         load the Metadata from the wf collection which must include the string attribute
-        wfid_string.   It access the sample data from the gridfs_wf 
+        wfid_string.   It access the sample data from the gridfs_wf
         collection after creating a buffer space for the sample data.
         when smod is file the sample data is read by a C++ function that
         uses a raw binary read.
-        
-        This method was designed to never abort.  If the read failed the 
-        boolean attribute of Seismogram called 'live' will be set false.  
-        Both fatal and nonfatal errors will be posted to the elog member of 
-        Seismogram.  Callers should test live and handle fatal and nonfatal 
-        errors as appropriate to the algorithm.   
-        
+
+        This method was designed to never abort.  If the read failed the
+        boolean attribute of Seismogram called 'live' will be set false.
+        Both fatal and nonfatal errors will be posted to the elog member of
+        Seismogram.  Callers should test live and handle fatal and nonfatal
+        errors as appropriate to the algorithm.
+
         :param oid: is the ObjectId in the wf collection to be read
         :param mdef: is a MetadataDefinitions object used to validate types stored
             in the database against what is expected for a given name.
             In reading this is a necessary cross check to reduce errors
             from incorrect expectations of the contents of a name:value pair
-            found in the document associated with this waveform. 
+            found in the document associated with this waveform.
         :param smode: sets the expected method for saving sample data.
             (Metadata are normally stored in a single document of the wf collection)
-            Supported values at present are 'file' and 'gridfs' matching 
-            allowed values for the storage_mode attribute.  
-                
+            Supported values at present are 'file' and 'gridfs' matching
+            allowed values for the storage_mode attribute.
+
         :Returns:  Seismogram data object loaded.
         :rtype: Seismogram
         :raise:  May throw a RuntimeError exception in one of several
-        error conditions.   Nonfatal errors will be posted to the error 
-        log on the returned object. 
+        error conditions.   Nonfatal errors will be posted to the error
+        log on the returned object.
         """
         try:
             wfcol=self.wf
             findkey={'_id':oid}
             pymd=wfcol.find_one(findkey)
-            # We create a temporary ErrorLogger object to hold any 
-            # errors encountered in the conversion cross check agains 
+            # We create a temporary ErrorLogger object to hold any
+            # errors encountered in the conversion cross check agains
             # MetadataDefinitions
             elogtmp=ErrorLogger()
             md=dict2Metadata(pymd,mdef,elogtmp)
@@ -144,19 +148,19 @@ class Database(pymongo.database.Database):
                 "Using default of "+smode+" passed by argument smode\n",
                 ErrorSeverity.Complaint)
             if(mode=='gridfs'):
-                # Like this function this one should never throw an exception 
+                # Like this function this one should never throw an exception
                 # but only post errors to d.elog
                 d=self._read_data3C_from_gridfs(md,elogtmp)
                 return d
             else:
                 try:
                     # This C++ constructor can fail for a variety of reasons
-                    # but all return a RuntimeError exception.  I uses 
-                    # a generic catch to be safe.  I would like 
+                    # but all return a RuntimeError exception.  I uses
+                    # a generic catch to be safe.  I would like
                     # to be able to retrieve the what string for the std::exception
-                    # to which a RuntimeError is a subclass, 
+                    # to which a RuntimeError is a subclass,
                     # but that doesn't seem possible.  To fix this
-                    # I believe we would need to implement a custom exception 
+                    # I believe we would need to implement a custom exception
                     # in pybind11
                     d=Seismogram(md)
                     d.elog=elogtmp
@@ -168,12 +172,12 @@ class Database(pymongo.database.Database):
                         "Most likely problem is that dir and/or defile are invalid\n",
                         ErrorSeverity.Invalid)
                     return derr
-                    
+
         except:
-            # Should only land here for an unexpected exception.  To 
+            # Should only land here for an unexpected exception.  To
             # be consistent with this being equivalent to a noexcept function
-            # in C++ we create an empty Seismogram and post message to 
-            # it's error log.  
+            # in C++ we create an empty Seismogram and post message to
+            # it's error log.
             derr=Seismogram()
             derr.elog.log_error("load3c","Unexpected exception - debug required for a bug fix",
                                 ErrorSeverity.Invalid)
@@ -256,7 +260,7 @@ class Database(pymongo.database.Database):
                 wfcol=self.wf
                 if(d.live):
                     #Make sure the stored attributes in a Seismogram are consistent
-                    #synced with Metadata as when we save to the database we assume 
+                    #synced with Metadata as when we save to the database we assume
                     #use the Metadata attributes to build the update document.
                     _sync_metadata(d)
                     if( (mmode=='save') or (mmode=='saveall') ):
@@ -285,9 +289,9 @@ class Database(pymongo.database.Database):
                         # Because we trap condition of an invalid mmode we can do just an else instead of This
                         #elif( (mmode=='updatemd') or (mmode=="updateall")):
                         #
-                        # insert_one creates a new copy so we need to post the 
+                        # insert_one creates a new copy so we need to post the
                         # new ObjectId
-                        d.put_string('wfid_string',str(newid)) 
+                        d.put_string('wfid_string',str(newid))
                     else:
                         # Make sure the oid string is valid
                         oid=bson.objectid.ObjectId()
@@ -327,7 +331,7 @@ class Database(pymongo.database.Database):
                                     error_count+=1
                                     return error_count
                                 # This silently skips case when no Metadata were modified
-                                # That situation would be common if only the sample 
+                                # That situation would be common if only the sample
                                 # data were changed and  no metadata operations
                                 # were performed
                                 if(ur.modified_count <=0):
@@ -357,7 +361,7 @@ class Database(pymongo.database.Database):
                                 ErrorSeverity.Invalid)
                 error_count+=1
             finally:
-                # always save the error log.  Done before exit in case any of the 
+                # always save the error log.  Done before exit in case any of the
                 # python functions posted errors
                 oidstr=d.get_string('wfid_string')
                 self._save_elog(oidstr,d.elog)
@@ -379,7 +383,7 @@ class Database(pymongo.database.Database):
         oidstr is the ObjectID represented as a string.  It is normally pulled from
             Metadata with the key oid_string.
         elog is the error log object to be saved.
-        Return:  List of ObjectID of inserted 
+        Return:  List of ObjectID of inserted
         """
         n=elog.size()
         if(n==0):
@@ -417,7 +421,7 @@ class Database(pymongo.database.Database):
         :returns:  -1 if failure.  Position of first data sample (foff) for success
         :raise:  None. Any io failures will be trapped and posted to the elog area of
         the object d.   Caller should test for negative return and post the error
-        to the database to help debug data problems.  
+        to the database to help debug data problems.
         """
         try:
             dir=d.get_string('dir')
@@ -426,7 +430,7 @@ class Database(pymongo.database.Database):
             d.elog.log_error("save_data3C_to_dfile",
                 "Data missing dir and/or dfile - sample data were not saved",
                 ErrorSeverity.Invalid)
-            return -1 
+            return -1
         fname=dir+"/"+dfile
         try:
             fh=open(fname,mode='r+b')
@@ -464,15 +468,15 @@ class Database(pymongo.database.Database):
         :param d: is the Seismogram to be saved
         :param fscol: is the gridfs collection name to save the data in
             (default is 'gridfs_wf')
-        :param update: is a Boolean. When true the existing sample data will be 
-            deleted and then replaced by the data in d. When false (default) 
-            the data will be saved an given a new ObjectId saved to 
-            d with key gridfs_idstr.  
+        :param update: is a Boolean. When true the existing sample data will be
+            deleted and then replaced by the data in d. When false (default)
+            the data will be saved an given a new ObjectId saved to
+            d with key gridfs_idstr.
         :return: object_id of the document used to store the data in gridfs
             -1 if something failed.  In that condition a generic error message
-            is posted to elog.    Caller should dump elog only after 
+            is posted to elog.    Caller should dump elog only after
             trying to do this write to preserve the log
-        :raise: Should never throw an exception, but caller should test and save 
+        :raise: Should never throw an exception, but caller should test and save
         error log if it is not empty.
         """
         try:
@@ -507,34 +511,34 @@ class Database(pymongo.database.Database):
         """
         Load a Seismogram object stored as a gridfs file.
 
-        Constructs a Seismogram object from Metadata and sample data 
-        pulled from a MongoDB gridfs document.   The Metadata must contain 
-        a string representation of the ObjectId of the document with the 
-        key gridfs_idstr.  That string is used to generate a unique ObjectId 
+        Constructs a Seismogram object from Metadata and sample data
+        pulled from a MongoDB gridfs document.   The Metadata must contain
+        a string representation of the ObjectId of the document with the
+        key gridfs_idstr.  That string is used to generate a unique ObjectId
         which is then used to find the unique document containing the sample
-        data in the collection called gridfs_wf (optionally can be changed with 
+        data in the collection called gridfs_wf (optionally can be changed with
         argument fscol)
-        
-        This function was designed to never throw an exception but always 
+
+        This function was designed to never throw an exception but always
         return some form of Seismogram object. Caller should test the boolean
         'live" attribute of the return. If it is false, it means this function
-        failed completely.  The error log may also contain various levels of 
-        warning errors posted to it's internal ErrorLogger (elog) object. 
-        
-        :param md: is the Metadata object used to drive the construction.  This 
+        failed completely.  The error log may also contain various levels of
+        warning errors posted to it's internal ErrorLogger (elog) object.
+
+        :param md: is the Metadata object used to drive the construction.  This
             would normally be constructed from a parent document in the wf
             collection using dict2Metadata.  A critical key is the entry gridfs_idstr
             as described above.   Several other key:value pairs are required or
             the function will abort with the result returned as invalid (live=false).
-            These are:  npts, starttime, and delta.   time_reference is a special 
+            These are:  npts, starttime, and delta.   time_reference is a special
             switch for handling UTC versus relative time.   Default is UTC
-            but relative time can be handled with the attribure t0_shift.  
+            but relative time can be handled with the attribure t0_shift.
             See User Manual for more about this feature.
-        :param elogtmp: is an (optional) ErrorLogger object added to the Seismogram 
+        :param elogtmp: is an (optional) ErrorLogger object added to the Seismogram
             object during construction. It's primary use is to preserve any
             warning errors encountered during the construction of md passed
-            to the function.   
-        :param fscol: is the collection name the function should use to find the 
+            to the function.
+        :param fscol: is the collection name the function should use to find the
             gridfs data document
         :return: the Seismogram object requested
         :rtype: Seismogram
@@ -596,7 +600,7 @@ class Database(pymongo.database.Database):
             d.elog.log_error("read_data3C_from_grifs",
                 "string attribute time_standard was not defined - defaulting to UTC",
                 ErrorSeverity.Complaint)
-        
+
         else:
             # we intentionally are loose on what trefstr is - default to utc this way
             d.tref=TimeReferenceType.UTC
@@ -613,19 +617,19 @@ class Database(pymongo.database.Database):
             d.elog.log_error("read_data3C_from_grifs",
                 "Metadata extracted from database are missing transformation matrix definition\n" +
                 "Defaulting to identity matrix",ErrorSeverity.Suspect)
-        # Now we actually retrieve the sample data.  
+        # Now we actually retrieve the sample data.
         gfsh=gridfs.GridFS(self,collection=fscol)
         # This retrieves only a handle to the file object matching ObjectId=dataid
-        # This probably needs an error handler, but the documentation does not 
+        # This probably needs an error handler, but the documentation does not
         # make it clear what happens if the return is null
         fh=gfsh.get(file_id=dataid)
         ub=pickle.load(fh)
-        # this sets the format string in the obscure way for struct to 
-        # match total number of data points.  These are converted to 
-        # a tuple with that many doubles 
-        fmt="@%dd" % int(len(ub)/8) 
+        # this sets the format string in the obscure way for struct to
+        # match total number of data points.  These are converted to
+        # a tuple with that many doubles
+        fmt="@%dd" % int(len(ub)/8)
         x=struct.unpack(fmt,ub)
-        # Validate sizes. For now we post a message making the data invalid 
+        # Validate sizes. For now we post a message making the data invalid
         # and set live false if there is a size mismatch.
         if(len(x)==(3*d.ns)):
             d.u=dmatrix(3,d.ns)
@@ -638,18 +642,18 @@ class Database(pymongo.database.Database):
             % (len(x),(3*d.ns))
             d.elog.log_error("read_data3C_from_gridfs",
                 emess,ErrorSeverity.Invalid)
-        # Necessary step for efficiency.  Seismogram constructor here 
+        # Necessary step for efficiency.  Seismogram constructor here
         # incorrectly marks data copied form metadata object as changed
         # This could lead to unnecessary database transaction with updates
-        d.clear_modified()   
+        d.clear_modified()
         return d
 
     def _unique_sites(self, firstid, tolerance=0.0001, ztol=10.0):
         """
-        Create a dict of unique receiver positions. 
+        Create a dict of unique receiver positions.
 
-        Works through the return of a find with sort of the (potentially large) 
-        list of dict containers of docs to be scanned.   Returns a subset of 
+        Works through the return of a find with sort of the (potentially large)
+        list of dict containers of docs to be scanned.   Returns a subset of
         input that have unique positions defined by the tolerance value.
         tolerance is a simple distance as hypot of the differences in degrees.
         ztol is a tolerance in elevation (default size assumes units of km)
@@ -659,17 +663,17 @@ class Database(pymongo.database.Database):
             but could be some arbitrarily large number (caution if you go there)
         :param tolerance:  horizontal tolerance to define equalities
         :param ztol: elevation tolerance
-        :return: tuple with two elements.  Element 0 of a list of tuples with 0 
+        :return: tuple with two elements.  Element 0 of a list of tuples with 0
         containing the ObjectId of the parent waveform (from wf collection) and
-        1 containing the unique site_id adetermined by 
-        this algorithm.  Element 1 will contain a deduced dict of 
-        receiver attributes with unique locations.  After cross-checks it is 
-        intended to be posted to MongoDB with update or insert.  
+        1 containing the unique site_id adetermined by
+        this algorithm.  Element 1 will contain a deduced dict of
+        receiver attributes with unique locations.  After cross-checks it is
+        intended to be posted to MongoDB with update or insert.
         :rtype: tuple with 2 elements (see return for details)
         """
         # this is a two key sort and find combined
-        # WARNING:  google searches can yield comfusing exmaples.  pymongo 
-        # syntax is deceptively different from mongo shell - don't follow a 
+        # WARNING:  google searches can yield comfusing exmaples.  pymongo
+        # syntax is deceptively different from mongo shell - don't follow a
         # MongoDB shell example
         # good source: https://kite.com/python/docs/pymongo.cursor.Cursor.sort
         allwf=self.wf.find().sort([('site_lat',pymongo.ASCENDING),
@@ -723,33 +727,33 @@ class Database(pymongo.database.Database):
                     idlist.append((oid,site_id))
             count+=1
         return(idlist,unique_coords)
-    
+
     def normalize_site(self, tolerance=0.0001, ztol=10.0, verbose=False):
         """
-        Normalize the site collection. 
+        Normalize the site collection.
 
-        Scans entire wf collection, extracts unique receiver locations, and 
-        inserts the unique set into the site collection.   This method 
-        is intended to be run on a wf collection of newly imported data 
-        created by the antelope contrib program extract_events, run through 
-        export_to_mspass, and then loaded to MongoDB with 
-        mspasspy.io.seispp.index_data.   
+        Scans entire wf collection, extracts unique receiver locations, and
+        inserts the unique set into the site collection.   This method
+        is intended to be run on a wf collection of newly imported data
+        created by the antelope contrib program extract_events, run through
+        export_to_mspass, and then loaded to MongoDB with
+        mspasspy.io.seispp.index_data.
 
-        The algorithm is simple and should only be used in a context where 
+        The algorithm is simple and should only be used in a context where
         the wf collection matches the same assumptions made here.   That is:
         1.  Each wf document has receiver coordinates defined with the mspass
             names of: site_lon, site_lat, and site_elev.
-        2.  The scaling defining if a station is 'close' to another is 
+        2.  The scaling defining if a station is 'close' to another is
             frozen at 0.0001 degrees.  That comes from the highest precision
-            digit for coordinates stored in Antelope.   If that is not 
-            appropriate the default can easily be changed for 
+            digit for coordinates stored in Antelope.   If that is not
+            appropriate the default can easily be changed for
             a special applciation.
 
-        The algorithm constructs a cross reference to site table using the 
-        ObjectId of each entry it creates in site.  The string represention 
-        of the matching doc in site to each wf entry is defined by the 
-        key oid_site.  The cross-reference value for oid_site is placed 
-        in each wf document.   
+        The algorithm constructs a cross reference to site table using the
+        ObjectId of each entry it creates in site.  The string represention
+        of the matching doc in site to each wf entry is defined by the
+        key oid_site.  The cross-reference value for oid_site is placed
+        in each wf document.
 
         :param tolerance:  horizontal tolerance to define equalities
         :param ztol: elevation tolerance
@@ -757,7 +761,7 @@ class Database(pymongo.database.Database):
             found and added to each table (default is false).
 
         """
-        # We have to first query the site collection to get the largest value 
+        # We have to first query the site collection to get the largest value
         # of the simple integer staid.   A couple true incantations to pymongo
         # are needed to get that - follow
         sitecol=self.site
@@ -784,9 +788,9 @@ class Database(pymongo.database.Database):
             result=sitecol.insert_one(idmap[b])
             sid=result.inserted_id
             sitexref[b]=sid
-        # Now we put sitid integer value and the ObjectId in sitecol into 
+        # Now we put sitid integer value and the ObjectId in sitecol into
         # each wf collection document we match - should be all and assume that
-        # Note for consistency and to allow the attribute to be passed to 
+        # Note for consistency and to allow the attribute to be passed to
         # Metadata we convert to string representation
         count=1
         for a in oidxref:
@@ -799,55 +803,55 @@ class Database(pymongo.database.Database):
         if(verbose):
             print("normalize_site:  updated site cross reference data in ",count,
                 " documents of wf collection")
-    
+
     def _unique_sources(self, firstid, dttol=1250.0, degtol=1.0, drtol=25.0, Vsource=6.0):
         """
         Produce a set of unique coordinates from source coordinates in wf collection.
 
-        Works through the return of a find with sort by time of the (potentially large) 
-        list of dict containers of docs to be scanned.   Returns a subset of 
-        input that have unique space-time positions defined by three tolerance 
-        values that are used in a sequence most appropriate for earthquake 
+        Works through the return of a find with sort by time of the (potentially large)
+        list of dict containers of docs to be scanned.   Returns a subset of
+        input that have unique space-time positions defined by three tolerance
+        values that are used in a sequence most appropriate for earthquake
         catalogs sorted in by time.   That sequence is:
             1.  If delta time is > dttol break and consider these distinct events
                 (dttol should be of the order of P wave travel time through the earth
                 to be safe).
-            2.  Check if either the latitude or longitude are less than degtol. 
+            2.  Check if either the latitude or longitude are less than degtol.
                 If either are larger,  immediately define a new event.
             3.  Estimate a total distance in space-time units using a velocity
-                multiplier defined by vsource (default 6.0 km/s).   Horizontal 
-                distance of separation uses a local cartesian approximation with 
-                delta longitude scaled by latitude.   Depth is used directly.  
-                Time uses delta_otime*vsource.  L2 norm of that set of 4 delta 
-                numbers are computed.   If the L2 norm is < drtol events 
+                multiplier defined by vsource (default 6.0 km/s).   Horizontal
+                distance of separation uses a local cartesian approximation with
+                delta longitude scaled by latitude.   Depth is used directly.
+                Time uses delta_otime*vsource.  L2 norm of that set of 4 delta
+                numbers are computed.   If the L2 norm is < drtol events
                 are considered equal.
-        Note other than the difference of the above test this algorithm is 
+        Note other than the difference of the above test this algorithm is
         nearly identical to _unique_sites
 
         :param firstid: is the initial source_id to use in this pass.  This should
             normally be created by scanning a previously created event collection
             but could be some arbitrarily large number (caution if you go there)
         :param dttol: initial time test tolerance (see above) (default 1250 s)
-        :param degtol: lat,lon degree difference test tolerance (see above - default 
+        :param degtol: lat,lon degree difference test tolerance (see above - default
             1 degree for either coordinate)
         :param drtol: space-time distance test tolerance (see above - default of 25 km
-            is appropriate for teleseismic data.  Local scales require a change 
+            is appropriate for teleseismic data.  Local scales require a change
             for certain)
-        :param vsource: is velocity used to convert origin time difference to a 
+        :param vsource: is velocity used to convert origin time difference to a
             distance for sum of square used for drtol test.
-        
-        :return:  tuple with two elements.  Element 0 
-        of a list of tuples with 0 containing the ObjectId of the parent 
-        waveform (from wf collection) and 1 containing the unique source_id adetermined by 
-        this algorithm.  Element 1 will contain a deduced dict of 
-        source attributes with unique locations.  After cross-checks it is 
-        intended to be posted to MongoDB with update or insert.    
+
+        :return:  tuple with two elements.  Element 0
+        of a list of tuples with 0 containing the ObjectId of the parent
+        waveform (from wf collection) and 1 containing the unique source_id adetermined by
+        this algorithm.  Element 1 will contain a deduced dict of
+        source attributes with unique locations.  After cross-checks it is
+        intended to be posted to MongoDB with update or insert.
         :rtype: tuple with 2 elements (see return for details)
         """
         degtor=math.pi/180.0   # degrees tp radians - needed below
         # this is a two key sort and find combined
-        # WARNING:  google searches can yield comfusing exmaples.  pymongo 
-        # syntax is deceptively different from mongo shell - don't follow a 
+        # WARNING:  google searches can yield comfusing exmaples.  pymongo
+        # syntax is deceptively different from mongo shell - don't follow a
         # MongoDB shell example
         # good source: https://kite.com/python/docs/pymongo.cursor.Cursor.sort
         allwf=self.wf.find().sort([('source_time',pymongo.ASCENDING)])
@@ -894,7 +898,7 @@ class Database(pymongo.database.Database):
                     else:
                         if( (abs(lat-lat0)>degtol) or (abs(lon-lon0)>degtol)):
                             neweventflag=True
-                        else:               
+                        else:
                             # crude radius of earth=6371 km
                             Rearth=6371.0
                             rlon=Rearth*math.cos(lat0*degtor)
@@ -913,7 +917,7 @@ class Database(pymongo.database.Database):
                     if(neweventflag):
                         source_id+=1
                         # A weird python thing is if the next line is missing
-                        # unique_coords gets overwritten for each entry with 
+                        # unique_coords gets overwritten for each entry with
                         # the last value.  reason, I think, is m is a pointer and
                         # without the next line the container is a fixed memory location
                         # that gets overwritten each pass
@@ -932,42 +936,42 @@ class Database(pymongo.database.Database):
                     idlist.append((oid,source_id))
             count+=1
         return(idlist,unique_coords)
-    
+
     def normalize_source(self, dttol=1250.0, degtol=1.0, drtol=25.0, verbose=False):
         """
         Normalize source collection.
 
-        Scans entire wf collection, extracts unique source locations, and 
-        inserts the unique set into the source collection.   This method 
-        is intended to be run on a wf collection of newly imported data 
-        created by the antelope contrib program extract_events, run through 
-        export_to_mspass, and then loaded to MongoDB with 
-        mspasspy.io.seispp.index_data. 
+        Scans entire wf collection, extracts unique source locations, and
+        inserts the unique set into the source collection.   This method
+        is intended to be run on a wf collection of newly imported data
+        created by the antelope contrib program extract_events, run through
+        export_to_mspass, and then loaded to MongoDB with
+        mspasspy.io.seispp.index_data.
         The algorithm is nearly identical to normalize_site
         but for sources instead of receivers.  Perhaps could combine into \
-        one function, but left for a different time.  
-        
+        one function, but left for a different time.
+
         The _unique_sources method sorts out the unique source locations.  This
         method does MongoDB interactions to insert the results in the source
-        collection. 
+        collection.
 
-        The algorithm constructs a cross reference to source collection using the 
-        ObjectId of each entry it creates in source.  The string represention 
-        of the matching doc in source to each wf entry is defined by the 
-        key oid_source.  The cross-reference value for oid_source is placed 
-        in each wf document.   
+        The algorithm constructs a cross reference to source collection using the
+        ObjectId of each entry it creates in source.  The string represention
+        of the matching doc in source to each wf entry is defined by the
+        key oid_source.  The cross-reference value for oid_source is placed
+        in each wf document.
 
         :param dttol: initial time test tolerance (see above) (default 1250 s)
-        :param degtol: lat,lon degree difference test tolerance (see above - default 
+        :param degtol: lat,lon degree difference test tolerance (see above - default
             1 degree for either coordinate)
         :param drtol: space-time distance test tolerance (see above - default of 25 km
-            is appropriate for teleseismic data.  Local scales require a change 
+            is appropriate for teleseismic data.  Local scales require a change
             for certain)
         :param verbose: when true will echo some information about number of entries
             found and added to each table (default is false).
 
         """
-        # We have to first query the source collection to get the largest value 
+        # We have to first query the source collection to get the largest value
         # of the simple integer staid.   A couple true incantations to pymongo
         # are needed to get that - follow
         sourcecol=self.source
@@ -975,7 +979,7 @@ class Database(pymongo.database.Database):
         if(nsource==0):
             startid=0
         else:
-            # Docs claim this is faster than a full sort 
+            # Docs claim this is faster than a full sort
             maxcur=sourcecol.find().sort([('source_id',pymongo.DESCENDING)]).limit(1)
             maxcur.rewind()   # may not be necessary but near zero cost
             maxdoc=maxcur[0]
@@ -996,9 +1000,9 @@ class Database(pymongo.database.Database):
             sid=result.inserted_id
             srcxref[b]=sid
             # debug - delete when working
-        # Now we put sitid integer value and the ObjectId in sourcecol into 
+        # Now we put sitid integer value and the ObjectId in sourcecol into
         # each wf collection document we match - should be all and assume that
-        # Note for consistency and to allow the attribute to be passed to 
+        # Note for consistency and to allow the attribute to be passed to
         # Metadata we convert to string representation
         count=1
         updict={}
@@ -1036,7 +1040,7 @@ class Client(pymongo.MongoClient):
           - `name`: the name of the database to get
         """
         return Database(self, name)
-    
+
     def get_default_database(self, default=None, codec_options=None,
         read_preference=None, write_concern=None, read_concern=None):
         if self.__default_database_name is None and default is None:
@@ -1057,3 +1061,462 @@ class Client(pymongo.MongoClient):
         return Database(
             self, name, codec_options, read_preference,
             write_concern, read_concern)
+
+
+def _extract_edepths(chanlist):
+    """
+    Parses the list returned by obspy channels attribute
+    for a Station object and returns a dict of unique
+    edepth values keyed by loc code.  This algorithm
+    would be horribly inefficient for large lists with
+    many duplicates, but the assumption here is the list
+    will always be small
+    """
+    alllocs={}
+    for chan in chanlist:
+        alllocs[chan.location_code]=chan.depth
+    return alllocs
+
+def _site_is_not_in_db(dbsite,record_to_test):
+    """
+    Small helper functoin for save_inventory.
+    Tests if dict content of record_to_test is
+    in the site collection (assumed to be passed
+    as argument dbsite).  Inverted logic in one sense
+    as it returns true when the record is not yet in
+    the database.  Uses key of net,sta,loc,site_starttime
+    and site_endtime.  All tests are simple equality.
+    Should be ok for times as stationxml uses nearest
+    day as in css3.0.
+    """
+    queryrecord={}
+    queryrecord['net']=record_to_test['net']
+    queryrecord['sta']=record_to_test['sta']
+    queryrecord['loc']=record_to_test['loc']
+    #queryrecord['site_elev']=record_to_test['site_elev']
+    #queryrecord['site_edepth']=record_to_test['site_edepth']
+    queryrecord['site_starttime']=record_to_test['site_starttime']
+    queryrecord['site_endtime']=record_to_test['site_endtime']
+    matches=dbsite.find(queryrecord)
+    # this returns a warning that count is depricated but
+    # I'm getting confusing results from google search on the
+    # topic so will use this for now
+    nrec=matches.count()
+    if(nrec<=0):
+        return True
+    else:
+        return False
+
+
+def save_inventory(db,inv,firstid=-1,verbose=False):
+    """
+    Saves contents of all components of an obspy inventory
+    object to documents in the site collection.   No checking
+    for duplicates is preformed so every component of the
+    input inventory will generate a new document in collection.
+    The design depends on the using a some other mechanism to
+    sort out pure duplicates from legimate station definitions
+    to handle issues like orientation changes of components,
+    gain changes, etc.   We emphasize this point because this
+    function should be used with care for large data sets.
+    Careless application to the output of buld downloads
+    with obspy using web services could generate large numbers
+    of unnecessary duplicates.   Use this function only when
+    the inventory object(s) to be saved do not have excessive
+    numbers of duplicates.
+
+    :param db: is a top level MondoDB database handle.  The
+      algorithm immediately uses it to lookup the site collection.
+    :param inv: is the obspy Inventory object of station data to save.
+    :param firstid: Set the initial value for site_id internal
+       integer id key.   If negative (the default) it will be
+       extracted from the database.   If the existing site
+       collection is huge that can be inefficient, but
+       using anything but the default should be rarely
+       needed.  If the site collection is empty and firstid
+         is negative the first id will be set to one.
+    :verbose:  print informational lines if true.  If false
+       only informs user when a duplicate is dropped.
+
+    :return:  integer giving the number of documents saved.
+    :rtype: integer
+    """
+    # This constant is used below to set endtime to a time
+    # in the far future if it is null
+    DISTANTFUTURE=UTCDateTime(2051,1,1,0,0)
+    # site is a frozen name for the collection here.  Perhaps
+    # should be a variable with a default
+    dbcol=db.site
+    if(firstid<0):
+        x=dbcol.find_one(sort=[("site_id", pymongo.DESCENDING)])
+        if x:
+            site_id=x['site_id']+1
+        else:
+            site_id=1   # default for an empty db
+    else:
+        site_id=firstid
+    if verbose:
+        print("First site_id of this run = ",site_id)
+    nsaved=0
+    nprocessed=0
+    for x in inv:
+        # Inventory object I got from webservice download
+        # makes the sta variable here a net:sta combination
+        # We can get the net code like this
+        net=x.code
+        # Each x now has a station field, BUT tests I ran
+        # say for my example that field has one entry per
+        # x.  Hence, we can get sta name like this
+        y=x.stations
+        sta=y[0].code
+        starttime=y[0].start_date
+        if starttime is None:
+            if verbose:
+                print('station ',sta,' does not have starttime define.  Set to epoch 0')
+            starttime=UTCDateTime(0.0) # epoch 0 time
+        endtime=y[0].end_date
+        if endtime is None:
+            if verbose:
+                print('station ',sta,' has no endtime defined.  Set to distant future')
+            endtime=DISTANTFUTURE
+        latitude=y[0].latitude
+        longitude=y[0].longitude
+        # stationxml files seen to put elevation in m. We
+        # always use km so need to convert
+        elevation=y[0].elevation/1000.0
+        # loc codes go may have different edepths, which
+        # obspy sets as a depth attribute.  This little
+        # function returns a dict keyed by loc with edepths
+        chans=y[0].channels
+        edepths = _extract_edepths(chans)
+        # Assume loc code of 0 is same as rest
+        #loc=_extract_loc_code(chanlist[0])
+        rec={}
+        picklestr=pickle.dumps(x)
+        all_locs=edepths.keys()
+        for loc in all_locs:
+            rec['loc']=loc
+            rec['site_edepth']=edepths[loc]
+            rec['net']=net
+            rec['sta']=sta
+            rec['site_lat']=latitude
+            rec['site_lon']=longitude
+            # This is MongoDBs way to set a geographic
+            # point - allows spatial queries.  Note longitude
+            # must be first of the pair
+            rec['coords']=[longitude,latitude]
+            rec['site_elev']=elevation
+            rec['site_starttime']=starttime.timestamp
+            rec['site_endtime']=endtime.timestamp
+        # needed and currently lacking - a way to get unique
+        # integer site_id - for now do it the easy way
+            rec['site_id']=site_id
+            rec['serialized_inventory']=picklestr
+            if _site_is_not_in_db(dbcol,rec):
+                dbcol.insert_one(rec)
+                nsaved+=1
+                if verbose:
+                    print('net:sta:loc=',net,":",sta,":",loc,
+                          " added to db")
+            else:
+                if verbose:
+                    print('net:sta:loc=',net,":",sta,":",loc,
+                          " is already in db - ignored")
+            nprocessed += 1
+            site_id += 1
+    # Tried this to create a geospatial index.   Failing
+    # in later debugging for unknown reason.   Decided it
+    # should be a done externally anyway as we don't use
+    # that feature now - thought of doing so but realized
+    # was unnecessary baggage
+    #dbcol.create_index(["coords",GEOSPHERE])
+    return [nsaved,nprocessed]
+def load_stations(dbsite,net,sta,loc='NONE',time=-1.0):
+    """
+    The site collection is assumed to have a one to one
+    mapping of net:sta:loc:site_starttime - site_endtime.
+    This method uses a restricted query to match the
+    keys given and returns a dict of coordinate data;
+    site_lat, site_lon, site_elev, site_edepth.
+    The (optional) time arg is used for a range match to find
+    period between the site startime and endtime.
+    Returns None if there is no match.
+
+    :param dbsite: is assumed to be a MongoDB collection object
+      pointing at the site collection
+    :param net:  network name to match
+    :param sta:  station name to match
+    :param loc:   optional loc code to made (empty string ok and common)
+      default ignores loc in query.
+    :param time: epoch time for requested metadata
+
+    :return coordinate data:
+    :rtype:  MondoDB Cursor object of query result.
+    """
+    query={}
+    query['net']=net
+    query['sta']=sta
+    if(loc!='NONE'):
+        query['loc']=loc
+    if(time>0.0):
+        query['site_starttime']={"$lt" : time}
+        query['site_endtime']={"$gt" : time}
+    matchsize=dbsite.count_documents(query)
+    if(matchsize==0):
+        return None
+    else:
+        stations=dbsite.find(query)
+        return stations
+def load_inventory(db,net=None,sta=None,loc=None,time=None):
+    """
+    Loads an obspy inventory object limited by one or more
+    keys.   Default is to load the entire contents of the
+    site collection.   Note the load creates an obspy
+    inventory object that is returned.  Use load_stations
+    to return the raw data used to construct an Inventory.
+
+    :param db: is the top level database handle.  Algorithm's
+      first step is to create a handle to the site collection.
+    :param net:  network name query string.  Can be a single
+      unique net code or use MongoDB's expression query
+      mechanism (e.g. "{'$gt' : 42}).  Default is all
+    :param sta: statoin name query string.  Can be a single
+      station name or a MongoDB query expression.
+    :param loc:  loc code to select.  Can be a single unique
+      location (e.g. '01') or a MongoDB expression query.
+    :param time:   limit return to stations with
+      site_startime<time<site_endtime.  Input is assumed an
+      epoch time NOT an obspy UTCDateTime. Use a conversion
+      to epoch time if necessary.
+     :return:  obspy Inventory of all stations matching the
+       query parameters
+     :rtype:  obspy Inventory
+    """
+    dbsite=db.site
+    query={}
+    if(net!=None):
+        query['net']=net
+    if(sta!=None):
+        query['sta']=sta
+    if(loc!=None):
+        query['loc']=loc
+    if(time!=None):
+        query['site_starttime']={"$lt" : time}
+        query['site_endtime']={"$gt" : time}
+    matchsize=dbsite.count_documents(query)
+    result=Inventory()
+    if(matchsize==0):
+        return None
+    else:
+        stations=dbsite.find(query)
+        for s in stations:
+            serialized=s['serialized_inventory']
+            netw=pickle.loads(serialized)
+            # It might be more efficient to build a list of
+            # Network objects but here we add them one
+            # station at a time.  Note the extend method
+            # if poorly documented in obspy
+            result.extend([netw])
+    return result
+def save_catalog(db,cat,first_source_id=-1,verbose=False):
+    """
+    Save the contents of an obspy Catalog object to MongoDB
+    source collection.  All contents are saved even with
+    no checking for existing sources with duplicate
+    data.   Like the comparable dbsave for stations,
+    save_inventory, the assumption is pre or post cleanup
+    will be preformed if duplicates are a major issue.
+
+    :param db: is the MongoDB database handle
+    :param cat: is the Catalog object to be saved
+    :param first_source_id:   number to assign as event id.
+       Successive events in cat will have this number
+       incremented by one.  If negative the largest existing
+       source_id will be used to set initial value.  If the
+       source collection is empty and this arg is negative
+       the first event id will be set to on.
+       (default is -1 for auto setting.)
+    :param verbose: Print informational data if true.
+       When false (default) it does it's work silently.
+
+    :return: integer count of number of items saved
+    """
+    # perhaps should demand db is handle to the source collection
+    # but I think the cost of this lookup is tiny
+    dbcol=db.source
+    if(first_source_id<0):
+        x=dbcol.find_one(sort=[("source_id", pymongo.DESCENDING)])
+        if x:
+            source_id=x['source_id']+1
+        else:
+            source_id=1   # default for an empty db
+    else:
+        source_id=first_source_id
+    if verbose:
+        print("First site_id of this run = ",site_id)
+    nevents=0
+    for event in cat:
+        # event variable in loop is an Event object from cat
+        o=event.preferred_origin()
+        m=event.preferred_magnitude()
+        picklestr=pickle.dumps(event)
+        rec={}
+        rec['source_id']=source_id
+        rec['source_lat']=o.latitude
+        rec['source_lon']=o.longitude
+        # It appears quakeml puts source depths in meter
+        # convert to km
+        rec['source_depth']=o.depth/1000.0
+        otime=o.time
+        # This attribute of UTCDateTime is the epoch time
+        # In mspass we only story time as epoch times
+        rec['source_time']=otime.timestamp
+        rec['magnitude']=m.mag
+        rec['magnitude_type']=m.magnitude_type
+        rec['serialized_event']=picklestr
+        dbcol.insert_one(rec)
+        source_id += 1
+        nevents += 1
+    return nevents
+
+def load_event(dbsource,source_id=-1,oidstr="Undefined"):
+    """
+    Find and return record for one event in database db.
+    In MsPASS the primary index for source data is an
+    integer key source_id.  The database is considered properly
+    structured if and only if there is a one to one relation
+    between source_id and documents in the source collection.
+    Hence, this function will throw a RuntimeError exception if
+    the passed source_id is associated with multiple documents.
+    In contrast passing an undefined source_id is not considered
+    evil but common and will result in a None return - this
+    condition is not considered an exception.   Note
+    associating waveforms with a unique source_id is considered
+    to always be an preparatory step before calling this
+    function or a large fraction of errors can be expected.
+
+    An alternate query is by the ObjectId string that
+    MongoDB guarantees to be a unique id for documents.
+    Both the source_id and oridstr strings default to null
+    condition.  That means that to query for an source_id use
+    this construct:
+        load_event(db,source_id=myevid)
+    and to query by objectid use:
+        load_event(db,oidstr=someobjectidstring)
+
+    :param dbsource:  assumed to be a MongoDB collection
+      object pointing to source collection.
+    :param source_id:   event id requested
+    :param oidstr:  alternative query by object id string
+    :return: python dict containing document associated with
+      source_id or oidstr.  Note this may contain a pickle
+      serialization of an obspy Event object if it was
+      created from web services.   If you are using
+      obspy or need more than coordinates and magnitude
+      you may want to use load_catalog instead of this
+      function.
+    :rtype: python dict for success. None if there is no match.
+    :raise:  will throw RunTimeError if multiple source_ids
+       are found for given source_id.  Will never happen for oidstr
+       since ObjectIds cannot be multiple valued.  It will also
+       throw a RuntimeError exception if both the source_id
+       and oidstr arguments are defaulted.
+    """
+    if((source_id==-1) & (oidstr=="Undefined")):
+        raise RuntimeError('load_event:  received all default parameters.  You must specify a value for either source_id or oridstr')
+    if(source_id>0):
+        query={'source_id' : source_id}
+        nevents=dbsource.count_documents(query)
+        if(nevents==0):
+            return None
+        elif(nevents>1):
+            raise RuntimeError('load_event:  fatal database problem.  Duplicate source_id found in source collection')
+        else:
+            # this is a weird construct but it works because
+            # find_one returns a cursor. We do this to return a dict
+            # instead of the ugly cursor
+            x=dbsource.find_one(query)
+            return x
+    else:
+        # We pass a string but a query by oid requires
+        # construction of the object.  Can do that from a
+        # string representation like this
+        oid=bson.objectid.ObjectId(oidstr)
+        query={'_id' : oid}
+        x=dbsource.find_one(query)
+        return x
+
+def load_catalog(dbsource,time=None,lat=None,lon=None,depth=None):
+    """
+    Loads an obspy Catalog object from the source collection.
+    Default will load the entire collection as a Catalog
+    object.  Optional MongoDB expressions can be passed
+    through optional base hypocenter parameter.
+
+    This function is mainly intended to load the entire source
+    collection as a Catalog.  Catalog has a filter mechanism
+    that duplicates anything I know how to do with a MongoDB
+    query.   Use of the MongoDB queries is only sensible if
+    the source collection is large.  There is a fair overhead
+    in pick.loads of the serialized quakexml data.
+
+    Finally, do NOT call this function unless you are sure
+    every document in the source collection was produced from
+    a web services request through the obspy mechanism to
+    construct a Catalog object from a series of quakexml
+    files.   It will throw a KeyError for 'serialized_event'
+    if that attribute is not set in all documents in the
+    source collection.
+
+    :param dbsource:  assumed to point at a MongoDB collection
+      with the name "source".
+    :param time:  Set if you want to use a MongoDB selection
+      query on origin time passed as a dict
+      (see MongoDB documention)
+    :param lat:  Set if you want to use a MongoDB selection
+      query in latitude passed as a dict
+      (see MongoDB documention)
+    :param lon:  Set if you want to use a MongoDB selection
+      query on longitude passed as a dict
+      (see MongoDB documention)
+    :param depth:  Set if you want to use a MongoDB selection
+      query on depth passed as a dict
+      (see MongoDB documention)
+
+    Note for all queries you should pass the expression to
+    be passed to MongoDB and not the key For example, to get all
+    events with depth>100 km a direct query with find
+    would use a construct like this:
+        query={'source_depth' : '{'$gt' : 100.0}'}
+    as a convenience to the user the key for the query is
+    inserted (so you don't have to remember it).  The
+    above example would be created from a call like this
+        cat=load_catalog(dbsource,depth='{'$gt' : 100.0}')
+    A great deal of functionality is possible with MongoDB,
+    particularly with $regex but simple range queries like
+    the above are simpler.
+
+    :return: full Catalog representation of source collection
+      by default.  subset if optional args are used.
+    :rtype:  obspy Catalog object.  If queries are used
+      and there is no match returns None.
+    """
+    query={}
+    if(time!=None):
+        query['source_time']=time
+    if(lat!=None):
+        query['source_lat']=lat
+    if(lon!=None):
+        query['source_lon']=lon
+    if(depth!=None):
+        query['source_depth']=depth
+    matchsize=dbsource.count_documents(query)
+    if(matchsize==0):
+        return None
+    curs=dbsource.find(query)
+    result=Catalog()
+    for x in curs:
+        pickledata=x['serialized_event']
+        event=pickle.loads(pickledata)
+        result.extend([event])
+    return result
