@@ -69,6 +69,6 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     package_dir={"": "python"},
-    packages=find_namespace_packages(where="python", include=["mspasspy.*"]),
+    packages=find_namespace_packages(where="python", include=["mspasspy", "mspasspy.*"]),
     install_requires=['pyyaml']
 )
