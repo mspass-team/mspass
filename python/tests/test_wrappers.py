@@ -1,10 +1,10 @@
-import mspasspy as msp
+import mspasspy.ccore
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 
 print('//////////////////Testing of Metadata Related Components///////////')
-pf=msp.AntelopePf('test_md.pf')
+pf=mspasspy.ccore.AntelopePf('test_md.pf')
 k=pf.keys()
 print('simple parameter keys found=',k)
 print('trying put methods')
@@ -32,17 +32,17 @@ print('testing downcast of AntelopePf to Metadata')
 md2=pf.ConvertToMetadata()
 print('type of result=',type(md2))
 print('key of result=',md2.keys())
-mdl=msp.get_mdlist(pf,'mdlist')
+mdl=mspasspy.ccore.get_mdlist(pf,'mdlist')
 print('MedadataList returned by get_mdlist=',mdl)
 print('///////////Starting tests of TimeSeries /////////////////')
-ts=msp.CoreTimeSeries()
-ts=msp.CoreTimeSeries(4)
+ts=mspasspy.ccore.CoreTimeSeries()
+ts=mspasspy.ccore.CoreTimeSeries(4)
 ts.ns=100
 ts.t0=0.0
 ts.dt=0.001
 ts.live=1
 # This is how an enum class sets a value
-ts.tref=msp.TimeReferenceType.Relative
+ts.tref=mspasspy.ccore.TimeReferenceType.Relative
 ts.s.append(1.0)
 ts.s.append(2.0)
 ts.s.append(3.0)
@@ -51,7 +51,7 @@ print('Test samples with append=',ts.s)
 for i in range(8) :
     ts.s[i]=i*0.5
 print('Test using indexing operator=',ts.s)
-ts=msp.CoreTimeSeries(100)
+ts=mspasspy.ccore.CoreTimeSeries(100)
 # makes a sine function with approximately one cycle
 for i in range(100) :
     ts.s[i]=math.sin(6.28*i*0.01)
@@ -66,8 +66,8 @@ for i in range(100) :
 print('contents of sine wave vector')
 print(ts.s)
 print('///////////Starting tests of Seismogram /////////////////')
-seis=msp.CoreSeismogram()
-seis=msp.CoreSeismogram(100)
+seis=mspasspy.ccore.CoreSeismogram()
+seis=mspasspy.ccore.CoreSeismogram(100)
 #a=np.arange(15).reshape(3,5)
 #a=np.array([[1,2,3],[4,5,6],[7,8,9],[10,11,12]],np.double)
 #a=np.array([1,2,3,4,5,6,7,8,9,10,11,12],np.double)
@@ -79,7 +79,7 @@ for i in range(3):
         ii = ii + 1
 print("3x4 data matrix")
 print(a)
-seis.u=msp.dmatrix(a)
+seis.u=mspasspy.ccore.dmatrix(a)
 print("component 0 data")
 for i in range(4):
     print(seis.u[0,i])
@@ -89,5 +89,5 @@ for i in range(4):
 print("component 2 data")
 for i in range(4):
     print(seis.u[2,i])
-#mddef=msp.MetadataDefinitions('obspy_namespace.pf',PF)
+#mddef=mspasspy.ccore.MetadataDefinitions('obspy_namespace.pf',PF)
 print("Test completed successfully")
