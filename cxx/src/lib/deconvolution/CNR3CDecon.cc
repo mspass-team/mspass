@@ -14,8 +14,7 @@ CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),shapingwavelet()
   wavelet_taper=NULL;
   data_taper=NULL;
 }
-CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : FFTDeconOperator(pf),
-        shapingwavelet(pf)
+CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : FFTDeconOperator(pf),shapingwavelet(pf)
 {
   this->read_parameters(pf);
 }
@@ -47,7 +46,19 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     of padding around both ends of the waveform being deconvolved.  Circular
     shift is used to put the result back in a rational time base. */
     int minwinsize=3*(this->winlength);
-    FFTDeconOperator::nfft=nextPowerOf2(minwinsize);
+    /* This complicated set of tests to set nfft is needed to mesh with 
+     * ShapingWavelet constructor and FFTDeconOperator api constraints created by 
+     * use in other classes in this directory that also use these */
+    int nfftneeded=nextPowerOf2(minwinsize);
+    int nfftpf=pf.get<int>("operator_nfft");
+    if(nfftneeded!=nfftpf)
+    {
+      FFTDeconOperator::change_size(nfftneeded);
+      AntelopePf pfcopy(pf);
+      pfcopy.put("operator_nfft",nfftneeded);
+      this->shapingwavelet=ShapingWavelet(pfcopy);
+    }
+    FFTDeconOperator::change_size(nextPowerOf2(minwinsize));
     ts=pf.get_double("noise_window_start");
     te=pf.get_double("noise_window_end");
     this->noise_window=TimeWindow(ts,te);
@@ -325,17 +336,21 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
 {
   if(!w.live) throw MsPASSError("CNR3CDecon::loadwavelet method received data marked dead",
 		    ErrorSeverity::Invalid);
+  if(w.ns<=0) throw MsPASSError("CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples <=0)",
+		  ErrorSeverity::Invalid);
   try{
+	  //DEBUG
+	  cerr << "Entered loadwavelet:  wavelet received has length="<<w.ns<<" and t0="<<w.t0<<endl;
     int k,kk;
     int ns_to_copy;
     this->wavelet=w;
-    if(w.ns>(this->winlength))
+    if(w.ns>(FFTDeconOperator::nfft-this->winlength))
     {
-      ns_to_copy=this->winlength;
+      ns_to_copy=FFTDeconOperator::nfft-2*this->winlength;
       stringstream ss;
       ss<<"loadwavelet method:  size mismatch.  Wavelet received has length="<<w.ns<<endl
-	      << "This is larger than processing window length of "<<this->winlength<<endl
-	      << "Wavelet length must be less than or equal processing window length"<<endl
+	      << "This is larger than 3x the processing window length of "<<this->winlength<<endl
+	      << "Wavelet length must be less than or equal to 3x processing window length"<<endl
 	      << "Truncated on the right to processing window length - results may be invalid"
 	      <<endl;
       wavelet.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
@@ -346,8 +361,9 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     wavelet.s.reserve(FFTDeconOperator::nfft);
     for(k=0;k<FFTDeconOperator::nfft;++k)wavelet.s.push_back(0.0);
     /* this retains winlength zeros at the front */
-    for(k=0,kk=this->winlength;k<w.ns;++k,++kk)wavelet.s[kk]=w.s[k];
+    for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)wavelet.s[kk]=w.s[k];
     wavelet.t0 -= operator_dt*static_cast<double>(winlength);
+    wavelet.ns=FFTDeconOperator::nfft;
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise(Seismogram& n)
@@ -406,18 +422,27 @@ Seismogram CNR3CDecon::process()
   const string base_error("CNR3CDecon::process method:  ");
   int i,j,k;
   try{
+    /* Copy wavelet because in interactive use process could be called repeatedly 
+     * without a call to a new loadwavelet - In fact that would be common for 
+     * an array method where the same wavelet was used repeatedly */
     TimeSeries work(wavelet);
+    //DEBUG
+    cerr << "Entered process - wavelet ns="<<wavelet.ns<<" t0="<<wavelet.t0<<endl;
     /* First we compute the wavelet inverse as it is used to compute
     the solution for all three components.   We could gain some efficiency
     by assuming wavelet had already been tapered, but doing it here makes
     the algorithm much clearer. */
     if(taper_data) wavelet_taper->apply(work);
+    //DEBUG - work size should be nfft testing that with print statement
+    cerr << "nfft size here="<<FFTDeconOperator::nfft<<endl;
+    ComplexArray cwvec(work.ns,work.s);
+    /*
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
-    /* Assume load method assures wavelet.ns <=nfft*/
     for(i=0;i<work.ns;++i) wvec.push_back(work.s[i]);
     for(i=work.ns;i<FFTDeconOperator::nfft;++i) wvec.push_back(0.0);
     ComplexArray cwvec(FFTDeconOperator::nfft,wvec);
+    */
     gsl_fft_complex_forward(cwvec.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     /* This computes the (regularized) denominator for the decon operator*/
@@ -436,6 +461,8 @@ Seismogram CNR3CDecon::process()
       f=df*static_cast<double>(j);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
       double namp=psnoise.amplitude(f);
+      /* Avoid divide by zero that could randomly happen with simulation data*/
+      if((namp/amp)<DBL_EPSILON) namp=amp*DBL_EPSILON;
       double snr=amp/namp;
       wavelet_snr.push_back(snr);
       if(snr<snr_regularization_floor)
@@ -446,7 +473,7 @@ Seismogram CNR3CDecon::process()
         ++nreg;
       }
     }
-    /* This is used a a QCMetric */
+    /* This is used in QCMetric */
     regularization_bandwidth_fraction=static_cast<double>(nreg)
                 / static_cast<double>(FFTDeconOperator::nfft);
     double *d0=new double[FFTDeconOperator::nfft];
@@ -457,6 +484,8 @@ Seismogram CNR3CDecon::process()
     gsl_fft_complex_forward(delta0.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
     winv=delta0/cwvec;
     Seismogram rfest(decondata);
+    vector<double> wvec;
+    wvec.reserve(FFTDeconOperator::nfft);
     /* This is the proper mspass way to preserve history */
     rfest.append_chain("process_sequence","CNR3CDecon");
     if(rfest.ns!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
@@ -469,8 +498,8 @@ Seismogram CNR3CDecon::process()
       int ntocopy=FFTDeconOperator::nfft;
       if(ntocopy>work.ns) ntocopy=work.ns;
       for(j=0;j<ntocopy;++j) wvec.push_back(work.s[j]);
-      for(j=ntocopy+1;j<FFTDeconOperator::nfft;++j)
-                   wvec.push_back(FFTDeconOperator::nfft);
+      for(j=ntocopy;j<FFTDeconOperator::nfft;++j)
+                   wvec.push_back(0.0);
       ComplexArray numerator(FFTDeconOperator::nfft,wvec);
       gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,
             wavetable,workspace);
@@ -494,15 +523,24 @@ Seismogram CNR3CDecon::process()
       signal_bandwidth_fraction[k]=static_cast<double>(nhighsnr)
                   / static_cast<double>(FFTDeconOperator::nfft/2);
       peak_snr[k]=snrmax;
+      //DEBUG
+      cerr << "component "<<k<<" sbf="<<signal_bandwidth_fraction[k]<<" snrmax="<<snrmax<<endl;
+      cerr<< "In apply numerator length="<<numerator.size()<<endl
+	      << "Denominator length="<<cwvec.size()<<endl;
       ComplexArray rftmp=numerator/cwvec;
+      //DEBUG
+      cerr<<"Trying to apply shaping wavelet of length="<<(*shapingwavelet.wavelet()).size()<<endl;
       rftmp=(*shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
           wavetable, workspace);
-      // left off here - needs circulalr shift
+      // left off here - needs circular shift
       wvec.clear();
       for(j=0;j<FFTDeconOperator::nfft;++j) wvec.push_back(rftmp[j].real());
+      //DEBUG - disable for testing
+      /*
       if(FFTDeconOperator::sample_shift!=0)
         wvec=circular_shift(wvec,-FFTDeconOperator::sample_shift);
+	*/
       for(j=0;j<FFTDeconOperator::nfft;++j)rfest.u(k,j)=wvec[j];
     }
     return rfest;
