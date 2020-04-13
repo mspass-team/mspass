@@ -508,7 +508,10 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet(const double t0parent)
      {
        CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(this->winv[i],
                   *shapingwavelet.wavelet(),dt,t0parent));
-       result+=work;
+       if(i==0)
+	   result=work;
+       else
+           result+=work;
      }
      double nrmscal=1.0/((double)nseq);
      for(int k=0;k<result.s.size();++k) result.s[k]*=nrmscal;
