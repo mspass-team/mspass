@@ -307,7 +307,7 @@ void MultiTaperSpecDivDecon::process()
     /* This makes the scaling indepndent of the choise for tiem bandwidth product*/
     double scale=damp/(static_cast<double>(nseq));
     //DEBUG
-    //cerr << "scale computed from damp="<<damp<<" and nseq="<<nseq<<" is "<<scale<<endl;
+    //cout << "scale computed from damp="<<damp<<" and nseq="<<nseq<<" is "<<scale<<endl;
     for(nptr=noise_spectrum.begin(); nptr!=noise_spectrum.end(); ++nptr)
     {
         (*nptr) *= scale;
@@ -356,7 +356,7 @@ void MultiTaperSpecDivDecon::process()
 	  }
 	  else
 	  {
-            double wlscal=noise_spectrum[j]/amp;
+            wlscal=noise_spectrum[j]/amp;
             (*z)*=wlscal;
             (*(z+1))*=wlscal;
 	  }
@@ -372,11 +372,12 @@ void MultiTaperSpecDivDecon::process()
         */
       }
       denominator.push_back(work);
+      //DEBUG
       /*
-      cerr << "Taper number "<<i<<" regularized number of points="
-          << number_regularized<<endl;
-	  */
-      //snr.clear();
+      cout << "Taper number "<<i<<" regularized number of points="
+	      << number_regularized<<endl;
+      snr.clear();
+      */
     }
     /* Probably should save these in private area for this estimator*/
     //vector<ComplexArray> rfestimates;
@@ -394,6 +395,7 @@ void MultiTaperSpecDivDecon::process()
     as a vector of vectors */
     //ComplexArray winv;
     winv.clear();
+    ao_fft.clear();
     double *d0=new double[nfft];
     for(int k=0;k<nfft;++k) d0[k]=0.0;
     d0[0]=1.0;
