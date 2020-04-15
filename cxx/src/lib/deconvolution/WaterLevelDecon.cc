@@ -14,12 +14,12 @@ int WaterLevelDecon::read_metadata(const Metadata &md)
         const string base_error("SimpleLeastTaperDecon::read_metadata method: ");
         int nfft_from_win=ComputeFFTLength(md);
         //window based nfft always overrides that extracted directly from md */
-        if(nfft_from_win!=nfft)
+        if(nfft_from_win!=FFTDeconOperator::nfft)
         {
             this->change_size(nfft_from_win);
         }
         wlv=md.get_double("water_level");
-        shapingwavelet=ShapingWavelet(md,nfft);
+        shapingwavelet=ShapingWavelet(md,FFTDeconOperator::nfft);
         return 0;
     } catch(...) {
         throw;
@@ -60,10 +60,13 @@ void WaterLevelDecon::process()
 {
 
     //apply fft to the input trace data
+    // data and wavelet sizes need to be zero padded if the are short
+    if(data.size()<nfft) for(int i=data.size();i<nfft;++i) data.push_back(0.0);
     ComplexArray d_fft(nfft,&(data[0]));
     gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);
 
     //apply fft to wavelet
+    if(wavelet.size()<nfft) for(int i=wavelet.size();i<nfft;++i) wavelet.push_back(0.0);
     ComplexArray b_fft(nfft,&(wavelet[0]));
     gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 
@@ -99,7 +102,6 @@ void WaterLevelDecon::process()
         }
     }
     regularization_fraction= ((double)nunderwater)/((double)nfft);
-    //deconvolution: RF=D./(B+wlv)
     ComplexArray rf_fft;
     rf_fft=d_fft/b_fft;
     /* Make numerator for inverse from zero lag spike */
