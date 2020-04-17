@@ -72,12 +72,8 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     package_dir={"": "python"},
-<<<<<<< HEAD
-    packages=find_namespace_packages(where="python", include=["mspasspy.*"]),
+    packages=find_namespace_packages(where="python", include=["mspasspy", "mspasspy.*"]),
     package_data={'': ['*.yaml', '*.pf']},
     include_package_data=True,
-=======
-    packages=find_namespace_packages(where="python", include=["mspasspy", "mspasspy.*"]),
->>>>>>> add mspasspy itself as a package
     install_requires=['pyyaml']
 )
