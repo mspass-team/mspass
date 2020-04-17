@@ -49,7 +49,7 @@ def dict2Metadata(d, mdef, elog):
         # We assume this is always a MongoDB ObjectId
         y=d[x]
         ys=str(y)
-        md.put_string("wfid_string",ys)  # Frozen name in C++ constructors
+        md.put_string(x, ys)  # Do not change the key
       else:
         y=d[x]
         # For some strange reason bool must appear before int.  A bool will
@@ -443,11 +443,10 @@ def Trace2TimeSeries(d, mdef, mdother=[], aliases=[]):
     dout.put("network",net)
     dout.put("channel",chan)
     dout.put("calib",calib)
-    # C++ library uses an stl vector container to contain the seismic samples
-    # pybind11 includes a wrapper for append which is equivalent to the C++ method
-    # push_back.   Hence, this loop is a copy of samples to the C++ container.
+    # Here, we do not use append, which is equivalent to the C++ method
+    # push_back, for efficiency.
     for i in range(ns):
-        dout.s.append(d.data[i])
+        dout.s[i] = d.data[i]
     # Things below here can throw exceptions.  We capture them with a feature
     # of mspass using the ErrorLogger object that is a component of the TimeSeries
     # object.  This name is posted to all error messages.
