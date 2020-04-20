@@ -1,6 +1,7 @@
 #include <cfloat>
 #include <vector>
 #include <string>
+#include "misc/blas.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/utility.h"
@@ -306,7 +307,7 @@ void MultiTaperSpecDivDecon::process()
     /* This makes the scaling indepndent of the choise for tiem bandwidth product*/
     double scale=damp/(static_cast<double>(nseq));
     //DEBUG
-    //cerr << "scale computed from damp="<<damp<<" and nseq="<<nseq<<" is "<<scale<<endl;
+    //cout << "scale computed from damp="<<damp<<" and nseq="<<nseq<<" is "<<scale<<endl;
     for(nptr=noise_spectrum.begin(); nptr!=noise_spectrum.end(); ++nptr)
     {
         (*nptr) *= scale;
@@ -317,6 +318,8 @@ void MultiTaperSpecDivDecon::process()
     the water level method.  The variant is that the level is frequency dependent
     defined by sacled noise level.
     */
+    /* We need this for amplitude scaling - depend on Parseval's theorem*/
+    double wnrm=dnrm2(wavelet.size(),&(wavelet[0]),1);
     vector<ComplexArray> denominator;
     for(i=0;i<nseq;++i)
     {
@@ -340,18 +343,20 @@ void MultiTaperSpecDivDecon::process()
         //DEBUG
         //snr.push_back(amp/noise_spectrum[j]);
 	//cerr << "j="<<j<<"amp,noiseamp "<<amp<<", "<<noise_spectrum[j]<<endl;
+	/* this normalization assumes noise_spectrum is amplitude NOT 
+	 * power spectrum values */
         if(amp<noise_spectrum[j])
         {
 	  double wlscal;
 	  /* Avoid divide by zero if amp is tiny */
-	  if(fabs(amp)<DBL_EPSILON)
+	  if(fabs(amp)/wnrm<DBL_EPSILON)
 	  {
             (*z)=noise_spectrum[j];
 	    (*(z+1))=noise_spectrum[j];
 	  }
 	  else
 	  {
-            double wlscal=noise_spectrum[j]/amp;
+            wlscal=noise_spectrum[j]/amp;
             (*z)*=wlscal;
             (*(z+1))*=wlscal;
 	  }
@@ -367,11 +372,12 @@ void MultiTaperSpecDivDecon::process()
         */
       }
       denominator.push_back(work);
+      //DEBUG
       /*
-      cerr << "Taper number "<<i<<" regularized number of points="
-          << number_regularized<<endl;
-	  */
-      //snr.clear();
+      cout << "Taper number "<<i<<" regularized number of points="
+	      << number_regularized<<endl;
+      snr.clear();
+      */
     }
     /* Probably should save these in private area for this estimator*/
     //vector<ComplexArray> rfestimates;
@@ -389,6 +395,7 @@ void MultiTaperSpecDivDecon::process()
     as a vector of vectors */
     //ComplexArray winv;
     winv.clear();
+    ao_fft.clear();
     double *d0=new double[nfft];
     for(int k=0;k<nfft;++k) d0[k]=0.0;
     d0[0]=1.0;
@@ -401,6 +408,13 @@ void MultiTaperSpecDivDecon::process()
       work=work/denominator[i];
       winv.push_back(work);
     }
+    for(i=0; i<nseq; ++i)
+    {
+        ComplexArray work(wdata[i]);
+	work=work/denominator[i];
+        ao_fft.push_back(work);
+    }
+
     /* To mesh with the API of other methods we now compute the average
     rf estimate.  We compute this as a simple average. */
     result.clear();
@@ -451,15 +465,12 @@ CoreTimeSeries MultiTaperSpecDivDecon::actual_output()
 {
     try {
       int i,k;
-      ComplexArray W(nfft,&(wavelet[0]));
-      gsl_fft_complex_forward(W.ptr(),1,nfft,wavetable,workspace);
       vector<double> ao;
       ao.reserve(nfft);
       for(k=0;k<nfft;++k)ao.push_back(0.0);
       for(i=0;i<nseq;++i)
       {
-        ComplexArray work;
-        work=winv[i]*W;
+        ComplexArray work(ao_fft[i]);
         work=(*shapingwavelet.wavelet())*work;
         gsl_fft_complex_inverse(work.ptr(),1,nfft,wavetable,workspace);
         for(k=0;k<nfft;++k) ao[k]+=work[k].real();
@@ -499,7 +510,10 @@ CoreTimeSeries MultiTaperSpecDivDecon::inverse_wavelet(const double t0parent)
      {
        CoreTimeSeries work(this->FFTDeconOperator::FourierInverse(this->winv[i],
                   *shapingwavelet.wavelet(),dt,t0parent));
-       result+=work;
+       if(i==0)
+	   result=work;
+       else
+           result+=work;
      }
      double nrmscal=1.0/((double)nseq);
      for(int k=0;k<result.s.size();++k) result.s[k]*=nrmscal;

@@ -64,10 +64,12 @@ void LeastSquareDecon::process()
 
     const string base_error("LeastSquareDecon::process:  ");
     //apply fft to the input trace data
+    if(data.size()<nfft) for(int i=data.size();i<nfft;++i) data.push_back(0.0);
     ComplexArray d_fft(nfft,&(data[0]));
     gsl_fft_complex_forward(d_fft.ptr(), 1, nfft, wavetable, workspace);
 
     //apply fft to wavelet
+    if(wavelet.size()<nfft) for(int i=wavelet.size();i<nfft;++i) wavelet.push_back(0.0);
     ComplexArray b_fft(nfft,&(wavelet[0]));
     gsl_fft_complex_forward(b_fft.ptr(), 1, nfft, wavetable, workspace);
 

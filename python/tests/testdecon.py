@@ -15,10 +15,10 @@ from mspasspy.ccore import LeastSquareDecon
 from mspasspy.ccore import MultiTaperSpecDivDecon
 from mspasspy.ccore import MultiTaperXcorDecon
 from mspasspy.ccore import AntelopePf
-from mspasspy.ccore import dmatrix
+#from mspasspy.ccore import dmatrix
 from mspasspy.ccore import CoreTimeSeries
-from mspasspy.ccore import CoreSeismogram
-from mspasspy.ccore import Seismogram
+#from mspasspy.ccore import CoreSeismogram
+#from mspasspy.ccore import Seismogram
 from mspasspy.ccore import TimeSeries
 import scipy as np
 from scipy import signal
@@ -46,7 +46,20 @@ def make_impulse_vector(lag,imp,n=500):
         d[lag[i]]=imp[i]
     return d
 
-
+def plot_wavelets(io,ao,title="Water Level"):
+    """
+    Plot ideal output(io) and actual output(ao) CoreTimeSeries
+    outputs of decon operators. Use title.
+    """
+    diff=np.ndarray(io.ns)
+    for i in range(io.ns):
+        diff[i]=ao.s[i]-io.s[i]
+    fig,(f1,f2,f3)=plt.subplots(nrows=3)
+    f1.plot(io.s)
+    f2.plot(ao.s)
+    f3.plot(diff)
+    f1.set_title(title)
+    plt.show()
 # some initial testing using only scipy
 # first make a proto source wavelet that is minimum phase
 imp=(20.0,-15.0,4.0,-1.0)
@@ -59,8 +72,10 @@ t0w=-1.0  # puts initial pulse at 0
 
 d=make_impulse_vector(lag,imp,n)
 t=np.linspace(t0w,t0w+(n-1)*dt,num=n)
-sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
-f=signal.sosfilt(sos,d)
+#sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
+#f=signal.sosfilt(sos,d)
+b,a=signal.butter(3,[10,30],btype='bandpass',fs=100)
+f=signal.lfilter(b,a,d)
 #f=signal.convolve(d,win)
 fig,(ao0,ao1)=plt.subplots(nrows=2)
 ao0.plot(t,d)
@@ -155,3 +170,29 @@ dout=mtxcop.getresult()
 d2.plot(tsig,dout)
 d2.set_title('MultiTaper Correlation Method')
 plt.show()
+# new stuff to compare actual, ideal outputs, and inverse
+# wavelets.  Start with water level.
+idealout=wlop.ideal_output()
+#plt.plot(idealout.s)
+ao=wlop.actual_output()
+#plt.plot(ao.s)
+plot_wavelets(idealout,ao,title="Water level")
+idealout=lsop.ideal_output()
+ao=lsop.actual_output()
+plot_wavelets(idealout,ao,title="Least Square")
+idealout=mtsdop.ideal_output()
+ao=mtsdop.actual_output()
+plot_wavelets(idealout,ao,title="MT spectral division")
+idealout=mtxcop.ideal_output()
+ao=mtxcop.actual_output()
+plot_wavelets(idealout,ao,title="MT correlation method")
+inv1=wlop.inverse_wavelet()
+inv2=lsop.inverse_wavelet()
+inv3=mtsdop.inverse_wavelet()
+inv4=mtxcop.inverse_wavelet()
+figinv,(f1,f2,f3,f4)=plt.subplots(nrows=4)
+f1.plot(inv1.s)
+f2.plot(inv2.s)
+f3.plot(inv3.s)
+f4.plot(inv4.s)
+f1.set_title("inverse wavelets")

@@ -23,7 +23,7 @@ shaping_wavelet_frequency 1.0
 shaping_wavelet_frequency_for_inverse 0.5
 }
 MultiTaperSpecDiv &Arr{
-damping_factor 1.0
+damping_factor 0.1
 shaping_wavelet_dt 0.05
 shaping_wavelet_type ricker
 shaping_wavelet_frequency 1.0
@@ -38,7 +38,7 @@ deconvolution_data_window_start -5.0
 deconvolution_data_window_end 30.0
 }
 MultiTaperXcor &Arr{
-damping_factor 0.001
+damping_factor 1.0
 shaping_wavelet_dt 0.05
 shaping_wavelet_type ricker
 shaping_wavelet_frequency 1.0
