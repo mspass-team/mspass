@@ -1020,6 +1020,459 @@ class Database(pymongo.database.Database):
             print("normalize_source:  updated source cross reference data in ",count,
                 " documents of wf collection")
 
+    @staticmethod
+    def _extract_edepths(chanlist):
+        """
+        Parses the list returned by obspy channels attribute
+        for a Station object and returns a dict of unique
+        edepth values keyed by loc code.  This algorithm
+        would be horribly inefficient for large lists with
+        many duplicates, but the assumption here is the list
+        will always be small
+        """
+        alllocs={}
+        for chan in chanlist:
+            alllocs[chan.location_code]=chan.depth
+        return alllocs
+
+    def _site_is_not_in_db(self, record_to_test):
+        """
+        Small helper functoin for save_inventory.
+        Tests if dict content of record_to_test is
+        in the site collection.  Inverted logic in one sense
+        as it returns true when the record is not yet in
+        the database.  Uses key of net,sta,loc,site_starttime
+        and site_endtime.  All tests are simple equality.
+        Should be ok for times as stationxml uses nearest
+        day as in css3.0.
+        """
+        dbsite = self.site
+        queryrecord={}
+        queryrecord['net']=record_to_test['net']
+        queryrecord['sta']=record_to_test['sta']
+        queryrecord['loc']=record_to_test['loc']
+        #queryrecord['site_elev']=record_to_test['site_elev']
+        #queryrecord['site_edepth']=record_to_test['site_edepth']
+        queryrecord['site_starttime']=record_to_test['site_starttime']
+        queryrecord['site_endtime']=record_to_test['site_endtime']
+        matches=dbsite.find(queryrecord)
+        # this returns a warning that count is depricated but
+        # I'm getting confusing results from google search on the
+        # topic so will use this for now
+        nrec=matches.count()
+        if(nrec<=0):
+            return True
+        else:
+            return False
+
+    def save_inventory(self, inv, firstid=-1, verbose=False):
+        """
+        Saves contents of all components of an obspy inventory
+        object to documents in the site collection.   No checking
+        for duplicates is preformed so every component of the
+        input inventory will generate a new document in collection.
+        The design depends on the using a some other mechanism to
+        sort out pure duplicates from legimate station definitions
+        to handle issues like orientation changes of components,
+        gain changes, etc.   We emphasize this point because this
+        function should be used with care for large data sets.
+        Careless application to the output of buld downloads
+        with obspy using web services could generate large numbers
+        of unnecessary duplicates.   Use this function only when
+        the inventory object(s) to be saved do not have excessive
+        numbers of duplicates.
+
+        :param inv: is the obspy Inventory object of station data to save.
+        :param firstid: Set the initial value for site_id internal
+        integer id key.   If negative (the default) it will be
+        extracted from the database.   If the existing site
+        collection is huge that can be inefficient, but
+        using anything but the default should be rarely
+        needed.  If the site collection is empty and firstid
+            is negative the first id will be set to one.
+        :verbose:  print informational lines if true.  If false
+        only informs user when a duplicate is dropped.
+
+        :return:  integer giving the number of documents saved.
+        :rtype: integer
+        """
+        # This constant is used below to set endtime to a time
+        # in the far future if it is null
+        DISTANTFUTURE=UTCDateTime(2051,1,1,0,0)
+        # site is a frozen name for the collection here.  Perhaps
+        # should be a variable with a default
+        dbcol = self.site
+        if(firstid<0):
+            x=dbcol.find_one(sort=[("site_id", pymongo.DESCENDING)])
+            if x:
+                site_id=x['site_id']+1
+            else:
+                site_id=1   # default for an empty db
+        else:
+            site_id=firstid
+        if verbose:
+            print("First site_id of this run = ",site_id)
+        nsaved=0
+        nprocessed=0
+        for x in inv:
+            # Inventory object I got from webservice download
+            # makes the sta variable here a net:sta combination
+            # We can get the net code like this
+            net=x.code
+            # Each x now has a station field, BUT tests I ran
+            # say for my example that field has one entry per
+            # x.  Hence, we can get sta name like this
+            y=x.stations
+            sta=y[0].code
+            starttime=y[0].start_date
+            if starttime is None:
+                if verbose:
+                    print('station ',sta,' does not have starttime define.  Set to epoch 0')
+                starttime=UTCDateTime(0.0) # epoch 0 time
+            endtime=y[0].end_date
+            if endtime is None:
+                if verbose:
+                    print('station ',sta,' has no endtime defined.  Set to distant future')
+                endtime=DISTANTFUTURE
+            latitude=y[0].latitude
+            longitude=y[0].longitude
+            # stationxml files seen to put elevation in m. We
+            # always use km so need to convert
+            elevation=y[0].elevation/1000.0
+            # loc codes go may have different edepths, which
+            # obspy sets as a depth attribute.  This little
+            # function returns a dict keyed by loc with edepths
+            chans=y[0].channels
+            edepths = _extract_edepths(chans)
+            # Assume loc code of 0 is same as rest
+            #loc=_extract_loc_code(chanlist[0])
+            rec={}
+            picklestr=pickle.dumps(x)
+            all_locs=edepths.keys()
+            for loc in all_locs:
+                rec['loc']=loc
+                rec['site_edepth']=edepths[loc]
+                rec['net']=net
+                rec['sta']=sta
+                rec['site_lat']=latitude
+                rec['site_lon']=longitude
+                # This is MongoDBs way to set a geographic
+                # point - allows spatial queries.  Note longitude
+                # must be first of the pair
+                rec['coords']=[longitude,latitude]
+                rec['site_elev']=elevation
+                rec['site_starttime']=starttime.timestamp
+                rec['site_endtime']=endtime.timestamp
+            # needed and currently lacking - a way to get unique
+            # integer site_id - for now do it the easy way
+                rec['site_id']=site_id
+                rec['serialized_inventory']=picklestr
+                if self._site_is_not_in_db(rec):
+                    dbcol.insert_one(rec)
+                    nsaved+=1
+                    if verbose:
+                        print('net:sta:loc=',net,":",sta,":",loc,
+                            " added to db")
+                else:
+                    if verbose:
+                        print('net:sta:loc=',net,":",sta,":",loc,
+                            " is already in db - ignored")
+                nprocessed += 1
+                site_id += 1
+        # Tried this to create a geospatial index.   Failing
+        # in later debugging for unknown reason.   Decided it
+        # should be a done externally anyway as we don't use
+        # that feature now - thought of doing so but realized
+        # was unnecessary baggage
+        #dbcol.create_index(["coords",GEOSPHERE])
+        return [nsaved,nprocessed]
+
+    def load_stations(self, net, sta, loc='NONE', time=-1.0):
+        """
+        The site collection is assumed to have a one to one
+        mapping of net:sta:loc:site_starttime - site_endtime.
+        This method uses a restricted query to match the
+        keys given and returns a dict of coordinate data;
+        site_lat, site_lon, site_elev, site_edepth.
+        The (optional) time arg is used for a range match to find
+        period between the site startime and endtime.
+        Returns None if there is no match.
+
+        :param net:  network name to match
+        :param sta:  station name to match
+        :param loc:   optional loc code to made (empty string ok and common)
+        default ignores loc in query.
+        :param time: epoch time for requested metadata
+
+        :return coordinate data:
+        :rtype:  MondoDB Cursor object of query result.
+        """
+        dbsite=self.site
+        query={}
+        query['net']=net
+        query['sta']=sta
+        if(loc!='NONE'):
+            query['loc']=loc
+        if(time>0.0):
+            query['site_starttime']={"$lt" : time}
+            query['site_endtime']={"$gt" : time}
+        matchsize=dbsite.count_documents(query)
+        if(matchsize==0):
+            return None
+        else:
+            stations=dbsite.find(query)
+            return stations
+
+    def load_inventory(self, net=None, sta=None, loc=None, time=None):
+        """
+        Loads an obspy inventory object limited by one or more
+        keys.   Default is to load the entire contents of the
+        site collection.   Note the load creates an obspy
+        inventory object that is returned.  Use load_stations
+        to return the raw data used to construct an Inventory.
+
+        :param net:  network name query string.  Can be a single
+        unique net code or use MongoDB's expression query
+        mechanism (e.g. "{'$gt' : 42}).  Default is all
+        :param sta: statoin name query string.  Can be a single
+        station name or a MongoDB query expression.
+        :param loc:  loc code to select.  Can be a single unique
+        location (e.g. '01') or a MongoDB expression query.
+        :param time:   limit return to stations with
+        site_startime<time<site_endtime.  Input is assumed an
+        epoch time NOT an obspy UTCDateTime. Use a conversion
+        to epoch time if necessary.
+        :return:  obspy Inventory of all stations matching the
+        query parameters
+        :rtype:  obspy Inventory
+        """
+        dbsite=self.site
+        query={}
+        if(net!=None):
+            query['net']=net
+        if(sta!=None):
+            query['sta']=sta
+        if(loc!=None):
+            query['loc']=loc
+        if(time!=None):
+            query['site_starttime']={"$lt" : time}
+            query['site_endtime']={"$gt" : time}
+        matchsize=dbsite.count_documents(query)
+        result=Inventory()
+        if(matchsize==0):
+            return None
+        else:
+            stations=dbsite.find(query)
+            for s in stations:
+                serialized=s['serialized_inventory']
+                netw=pickle.loads(serialized)
+                # It might be more efficient to build a list of
+                # Network objects but here we add them one
+                # station at a time.  Note the extend method
+                # if poorly documented in obspy
+                result.extend([netw])
+        return result
+
+    def save_catalog(self, cat, first_source_id=-1, verbose=False):
+        """
+        Save the contents of an obspy Catalog object to MongoDB
+        source collection.  All contents are saved even with
+        no checking for existing sources with duplicate
+        data.   Like the comparable save method for stations,
+        save_inventory, the assumption is pre or post cleanup
+        will be preformed if duplicates are a major issue.
+
+        :param cat: is the Catalog object to be saved
+        :param first_source_id:   number to assign as event id.
+        Successive events in cat will have this number
+        incremented by one.  If negative the largest existing
+        source_id will be used to set initial value.  If the
+        source collection is empty and this arg is negative
+        the first event id will be set to on.
+        (default is -1 for auto setting.)
+        :param verbose: Print informational data if true.
+        When false (default) it does it's work silently.
+
+        :return: integer count of number of items saved
+        """
+        # perhaps should demand db is handle to the source collection
+        # but I think the cost of this lookup is tiny
+        dbcol = self.source
+        if(first_source_id<0):
+            x=dbcol.find_one(sort=[("source_id", pymongo.DESCENDING)])
+            if x:
+                source_id=x['source_id']+1
+            else:
+                source_id=1   # default for an empty db
+        else:
+            source_id=first_source_id
+        if verbose:
+            print("First site_id of this run = ",site_id)
+        nevents=0
+        for event in cat:
+            # event variable in loop is an Event object from cat
+            o=event.preferred_origin()
+            m=event.preferred_magnitude()
+            picklestr=pickle.dumps(event)
+            rec={}
+            rec['source_id']=source_id
+            rec['source_lat']=o.latitude
+            rec['source_lon']=o.longitude
+            # It appears quakeml puts source depths in meter
+            # convert to km
+            rec['source_depth']=o.depth/1000.0
+            otime=o.time
+            # This attribute of UTCDateTime is the epoch time
+            # In mspass we only story time as epoch times
+            rec['source_time']=otime.timestamp
+            rec['magnitude']=m.mag
+            rec['magnitude_type']=m.magnitude_type
+            rec['serialized_event']=picklestr
+            dbcol.insert_one(rec)
+            source_id += 1
+            nevents += 1
+        return nevents
+
+    def load_event(self, source_id=-1, oidstr="Undefined"):
+        """
+        Find and return record for one event in database db.
+        In MsPASS the primary index for source data is an
+        integer key source_id.  The database is considered properly
+        structured if and only if there is a one to one relation
+        between source_id and documents in the source collection.
+        Hence, this function will throw a RuntimeError exception if
+        the passed source_id is associated with multiple documents.
+        In contrast passing an undefined source_id is not considered
+        evil but common and will result in a None return - this
+        condition is not considered an exception.   Note
+        associating waveforms with a unique source_id is considered
+        to always be an preparatory step before calling this
+        function or a large fraction of errors can be expected.
+
+        An alternate query is by the ObjectId string that
+        MongoDB guarantees to be a unique id for documents.
+        Both the source_id and oridstr strings default to null
+        condition.  That means that to query for an source_id use
+        this construct:
+            load_event(source_id=myevid)
+        and to query by objectid use:
+            load_event(oidstr=someobjectidstring)
+
+        :param source_id:   event id requested
+        :param oidstr:  alternative query by object id string
+        :return: python dict containing document associated with
+        source_id or oidstr.  Note this may contain a pickle
+        serialization of an obspy Event object if it was
+        created from web services.   If you are using
+        obspy or need more than coordinates and magnitude
+        you may want to use load_catalog instead of this
+        function.
+        :rtype: python dict for success. None if there is no match.
+        :raise:  will throw RunTimeError if multiple source_ids
+        are found for given source_id.  Will never happen for oidstr
+        since ObjectIds cannot be multiple valued.  It will also
+        throw a RuntimeError exception if both the source_id
+        and oidstr arguments are defaulted.
+        """
+        dbsource = self.source
+        if((source_id==-1) & (oidstr=="Undefined")):
+            raise RuntimeError('load_event:  received all default parameters.  You must specify a value for either source_id or oridstr')
+        if(source_id>0):
+            query={'source_id' : source_id}
+            nevents=dbsource.count_documents(query)
+            if(nevents==0):
+                return None
+            elif(nevents>1):
+                raise RuntimeError('load_event:  fatal database problem.  Duplicate source_id found in source collection')
+            else:
+                # this is a weird construct but it works because
+                # find_one returns a cursor. We do this to return a dict
+                # instead of the ugly cursor
+                x=dbsource.find_one(query)
+                return x
+        else:
+            # We pass a string but a query by oid requires
+            # construction of the object.  Can do that from a
+            # string representation like this
+            oid=bson.objectid.ObjectId(oidstr)
+            query={'_id' : oid}
+            x=dbsource.find_one(query)
+            return x
+
+    def load_catalog(self, time=None, lat=None, lon=None, depth=None):
+        """
+        Loads an obspy Catalog object from the source collection.
+        Default will load the entire collection as a Catalog
+        object.  Optional MongoDB expressions can be passed
+        through optional base hypocenter parameter.
+
+        This function is mainly intended to load the entire source
+        collection as a Catalog.  Catalog has a filter mechanism
+        that duplicates anything I know how to do with a MongoDB
+        query.   Use of the MongoDB queries is only sensible if
+        the source collection is large.  There is a fair overhead
+        in pick.loads of the serialized quakexml data.
+
+        Finally, do NOT call this function unless you are sure
+        every document in the source collection was produced from
+        a web services request through the obspy mechanism to
+        construct a Catalog object from a series of quakexml
+        files.   It will throw a KeyError for 'serialized_event'
+        if that attribute is not set in all documents in the
+        source collection.
+
+        :param time:  Set if you want to use a MongoDB selection
+        query on origin time passed as a dict
+        (see MongoDB documention)
+        :param lat:  Set if you want to use a MongoDB selection
+        query in latitude passed as a dict
+        (see MongoDB documention)
+        :param lon:  Set if you want to use a MongoDB selection
+        query on longitude passed as a dict
+        (see MongoDB documention)
+        :param depth:  Set if you want to use a MongoDB selection
+        query on depth passed as a dict
+        (see MongoDB documention)
+
+        Note for all queries you should pass the expression to
+        be passed to MongoDB and not the key For example, to get all
+        events with depth>100 km a direct query with find
+        would use a construct like this:
+            query={'source_depth' : '{'$gt' : 100.0}'}
+        as a convenience to the user the key for the query is
+        inserted (so you don't have to remember it).  The
+        above example would be created from a call like this
+            cat=load_catalog(dbsource,depth='{'$gt' : 100.0}')
+        A great deal of functionality is possible with MongoDB,
+        particularly with $regex but simple range queries like
+        the above are simpler.
+
+        :return: full Catalog representation of source collection
+        by default.  subset if optional args are used.
+        :rtype:  obspy Catalog object.  If queries are used
+        and there is no match returns None.
+        """
+        dbsource = self.source
+        query={}
+        if(time!=None):
+            query['source_time']=time
+        if(lat!=None):
+            query['source_lat']=lat
+        if(lon!=None):
+            query['source_lon']=lon
+        if(depth!=None):
+            query['source_depth']=depth
+        matchsize=dbsource.count_documents(query)
+        if(matchsize==0):
+            return None
+        curs=dbsource.find(query)
+        result=Catalog()
+        for x in curs:
+            pickledata=x['serialized_event']
+            event=pickle.loads(pickledata)
+            result.extend([event])
+        return result
+
 
 class Client(pymongo.MongoClient):
     """
@@ -1062,461 +1515,3 @@ class Client(pymongo.MongoClient):
             self, name, codec_options, read_preference,
             write_concern, read_concern)
 
-
-def _extract_edepths(chanlist):
-    """
-    Parses the list returned by obspy channels attribute
-    for a Station object and returns a dict of unique
-    edepth values keyed by loc code.  This algorithm
-    would be horribly inefficient for large lists with
-    many duplicates, but the assumption here is the list
-    will always be small
-    """
-    alllocs={}
-    for chan in chanlist:
-        alllocs[chan.location_code]=chan.depth
-    return alllocs
-
-def _site_is_not_in_db(dbsite,record_to_test):
-    """
-    Small helper functoin for save_inventory.
-    Tests if dict content of record_to_test is
-    in the site collection (assumed to be passed
-    as argument dbsite).  Inverted logic in one sense
-    as it returns true when the record is not yet in
-    the database.  Uses key of net,sta,loc,site_starttime
-    and site_endtime.  All tests are simple equality.
-    Should be ok for times as stationxml uses nearest
-    day as in css3.0.
-    """
-    queryrecord={}
-    queryrecord['net']=record_to_test['net']
-    queryrecord['sta']=record_to_test['sta']
-    queryrecord['loc']=record_to_test['loc']
-    #queryrecord['site_elev']=record_to_test['site_elev']
-    #queryrecord['site_edepth']=record_to_test['site_edepth']
-    queryrecord['site_starttime']=record_to_test['site_starttime']
-    queryrecord['site_endtime']=record_to_test['site_endtime']
-    matches=dbsite.find(queryrecord)
-    # this returns a warning that count is depricated but
-    # I'm getting confusing results from google search on the
-    # topic so will use this for now
-    nrec=matches.count()
-    if(nrec<=0):
-        return True
-    else:
-        return False
-
-
-def save_inventory(db,inv,firstid=-1,verbose=False):
-    """
-    Saves contents of all components of an obspy inventory
-    object to documents in the site collection.   No checking
-    for duplicates is preformed so every component of the
-    input inventory will generate a new document in collection.
-    The design depends on the using a some other mechanism to
-    sort out pure duplicates from legimate station definitions
-    to handle issues like orientation changes of components,
-    gain changes, etc.   We emphasize this point because this
-    function should be used with care for large data sets.
-    Careless application to the output of buld downloads
-    with obspy using web services could generate large numbers
-    of unnecessary duplicates.   Use this function only when
-    the inventory object(s) to be saved do not have excessive
-    numbers of duplicates.
-
-    :param db: is a top level MondoDB database handle.  The
-      algorithm immediately uses it to lookup the site collection.
-    :param inv: is the obspy Inventory object of station data to save.
-    :param firstid: Set the initial value for site_id internal
-       integer id key.   If negative (the default) it will be
-       extracted from the database.   If the existing site
-       collection is huge that can be inefficient, but
-       using anything but the default should be rarely
-       needed.  If the site collection is empty and firstid
-         is negative the first id will be set to one.
-    :verbose:  print informational lines if true.  If false
-       only informs user when a duplicate is dropped.
-
-    :return:  integer giving the number of documents saved.
-    :rtype: integer
-    """
-    # This constant is used below to set endtime to a time
-    # in the far future if it is null
-    DISTANTFUTURE=UTCDateTime(2051,1,1,0,0)
-    # site is a frozen name for the collection here.  Perhaps
-    # should be a variable with a default
-    dbcol=db.site
-    if(firstid<0):
-        x=dbcol.find_one(sort=[("site_id", pymongo.DESCENDING)])
-        if x:
-            site_id=x['site_id']+1
-        else:
-            site_id=1   # default for an empty db
-    else:
-        site_id=firstid
-    if verbose:
-        print("First site_id of this run = ",site_id)
-    nsaved=0
-    nprocessed=0
-    for x in inv:
-        # Inventory object I got from webservice download
-        # makes the sta variable here a net:sta combination
-        # We can get the net code like this
-        net=x.code
-        # Each x now has a station field, BUT tests I ran
-        # say for my example that field has one entry per
-        # x.  Hence, we can get sta name like this
-        y=x.stations
-        sta=y[0].code
-        starttime=y[0].start_date
-        if starttime is None:
-            if verbose:
-                print('station ',sta,' does not have starttime define.  Set to epoch 0')
-            starttime=UTCDateTime(0.0) # epoch 0 time
-        endtime=y[0].end_date
-        if endtime is None:
-            if verbose:
-                print('station ',sta,' has no endtime defined.  Set to distant future')
-            endtime=DISTANTFUTURE
-        latitude=y[0].latitude
-        longitude=y[0].longitude
-        # stationxml files seen to put elevation in m. We
-        # always use km so need to convert
-        elevation=y[0].elevation/1000.0
-        # loc codes go may have different edepths, which
-        # obspy sets as a depth attribute.  This little
-        # function returns a dict keyed by loc with edepths
-        chans=y[0].channels
-        edepths = _extract_edepths(chans)
-        # Assume loc code of 0 is same as rest
-        #loc=_extract_loc_code(chanlist[0])
-        rec={}
-        picklestr=pickle.dumps(x)
-        all_locs=edepths.keys()
-        for loc in all_locs:
-            rec['loc']=loc
-            rec['site_edepth']=edepths[loc]
-            rec['net']=net
-            rec['sta']=sta
-            rec['site_lat']=latitude
-            rec['site_lon']=longitude
-            # This is MongoDBs way to set a geographic
-            # point - allows spatial queries.  Note longitude
-            # must be first of the pair
-            rec['coords']=[longitude,latitude]
-            rec['site_elev']=elevation
-            rec['site_starttime']=starttime.timestamp
-            rec['site_endtime']=endtime.timestamp
-        # needed and currently lacking - a way to get unique
-        # integer site_id - for now do it the easy way
-            rec['site_id']=site_id
-            rec['serialized_inventory']=picklestr
-            if _site_is_not_in_db(dbcol,rec):
-                dbcol.insert_one(rec)
-                nsaved+=1
-                if verbose:
-                    print('net:sta:loc=',net,":",sta,":",loc,
-                          " added to db")
-            else:
-                if verbose:
-                    print('net:sta:loc=',net,":",sta,":",loc,
-                          " is already in db - ignored")
-            nprocessed += 1
-            site_id += 1
-    # Tried this to create a geospatial index.   Failing
-    # in later debugging for unknown reason.   Decided it
-    # should be a done externally anyway as we don't use
-    # that feature now - thought of doing so but realized
-    # was unnecessary baggage
-    #dbcol.create_index(["coords",GEOSPHERE])
-    return [nsaved,nprocessed]
-def load_stations(dbsite,net,sta,loc='NONE',time=-1.0):
-    """
-    The site collection is assumed to have a one to one
-    mapping of net:sta:loc:site_starttime - site_endtime.
-    This method uses a restricted query to match the
-    keys given and returns a dict of coordinate data;
-    site_lat, site_lon, site_elev, site_edepth.
-    The (optional) time arg is used for a range match to find
-    period between the site startime and endtime.
-    Returns None if there is no match.
-
-    :param dbsite: is assumed to be a MongoDB collection object
-      pointing at the site collection
-    :param net:  network name to match
-    :param sta:  station name to match
-    :param loc:   optional loc code to made (empty string ok and common)
-      default ignores loc in query.
-    :param time: epoch time for requested metadata
-
-    :return coordinate data:
-    :rtype:  MondoDB Cursor object of query result.
-    """
-    query={}
-    query['net']=net
-    query['sta']=sta
-    if(loc!='NONE'):
-        query['loc']=loc
-    if(time>0.0):
-        query['site_starttime']={"$lt" : time}
-        query['site_endtime']={"$gt" : time}
-    matchsize=dbsite.count_documents(query)
-    if(matchsize==0):
-        return None
-    else:
-        stations=dbsite.find(query)
-        return stations
-def load_inventory(db,net=None,sta=None,loc=None,time=None):
-    """
-    Loads an obspy inventory object limited by one or more
-    keys.   Default is to load the entire contents of the
-    site collection.   Note the load creates an obspy
-    inventory object that is returned.  Use load_stations
-    to return the raw data used to construct an Inventory.
-
-    :param db: is the top level database handle.  Algorithm's
-      first step is to create a handle to the site collection.
-    :param net:  network name query string.  Can be a single
-      unique net code or use MongoDB's expression query
-      mechanism (e.g. "{'$gt' : 42}).  Default is all
-    :param sta: statoin name query string.  Can be a single
-      station name or a MongoDB query expression.
-    :param loc:  loc code to select.  Can be a single unique
-      location (e.g. '01') or a MongoDB expression query.
-    :param time:   limit return to stations with
-      site_startime<time<site_endtime.  Input is assumed an
-      epoch time NOT an obspy UTCDateTime. Use a conversion
-      to epoch time if necessary.
-     :return:  obspy Inventory of all stations matching the
-       query parameters
-     :rtype:  obspy Inventory
-    """
-    dbsite=db.site
-    query={}
-    if(net!=None):
-        query['net']=net
-    if(sta!=None):
-        query['sta']=sta
-    if(loc!=None):
-        query['loc']=loc
-    if(time!=None):
-        query['site_starttime']={"$lt" : time}
-        query['site_endtime']={"$gt" : time}
-    matchsize=dbsite.count_documents(query)
-    result=Inventory()
-    if(matchsize==0):
-        return None
-    else:
-        stations=dbsite.find(query)
-        for s in stations:
-            serialized=s['serialized_inventory']
-            netw=pickle.loads(serialized)
-            # It might be more efficient to build a list of
-            # Network objects but here we add them one
-            # station at a time.  Note the extend method
-            # if poorly documented in obspy
-            result.extend([netw])
-    return result
-def save_catalog(db,cat,first_source_id=-1,verbose=False):
-    """
-    Save the contents of an obspy Catalog object to MongoDB
-    source collection.  All contents are saved even with
-    no checking for existing sources with duplicate
-    data.   Like the comparable dbsave for stations,
-    save_inventory, the assumption is pre or post cleanup
-    will be preformed if duplicates are a major issue.
-
-    :param db: is the MongoDB database handle
-    :param cat: is the Catalog object to be saved
-    :param first_source_id:   number to assign as event id.
-       Successive events in cat will have this number
-       incremented by one.  If negative the largest existing
-       source_id will be used to set initial value.  If the
-       source collection is empty and this arg is negative
-       the first event id will be set to on.
-       (default is -1 for auto setting.)
-    :param verbose: Print informational data if true.
-       When false (default) it does it's work silently.
-
-    :return: integer count of number of items saved
-    """
-    # perhaps should demand db is handle to the source collection
-    # but I think the cost of this lookup is tiny
-    dbcol=db.source
-    if(first_source_id<0):
-        x=dbcol.find_one(sort=[("source_id", pymongo.DESCENDING)])
-        if x:
-            source_id=x['source_id']+1
-        else:
-            source_id=1   # default for an empty db
-    else:
-        source_id=first_source_id
-    if verbose:
-        print("First site_id of this run = ",site_id)
-    nevents=0
-    for event in cat:
-        # event variable in loop is an Event object from cat
-        o=event.preferred_origin()
-        m=event.preferred_magnitude()
-        picklestr=pickle.dumps(event)
-        rec={}
-        rec['source_id']=source_id
-        rec['source_lat']=o.latitude
-        rec['source_lon']=o.longitude
-        # It appears quakeml puts source depths in meter
-        # convert to km
-        rec['source_depth']=o.depth/1000.0
-        otime=o.time
-        # This attribute of UTCDateTime is the epoch time
-        # In mspass we only story time as epoch times
-        rec['source_time']=otime.timestamp
-        rec['magnitude']=m.mag
-        rec['magnitude_type']=m.magnitude_type
-        rec['serialized_event']=picklestr
-        dbcol.insert_one(rec)
-        source_id += 1
-        nevents += 1
-    return nevents
-
-def load_event(dbsource,source_id=-1,oidstr="Undefined"):
-    """
-    Find and return record for one event in database db.
-    In MsPASS the primary index for source data is an
-    integer key source_id.  The database is considered properly
-    structured if and only if there is a one to one relation
-    between source_id and documents in the source collection.
-    Hence, this function will throw a RuntimeError exception if
-    the passed source_id is associated with multiple documents.
-    In contrast passing an undefined source_id is not considered
-    evil but common and will result in a None return - this
-    condition is not considered an exception.   Note
-    associating waveforms with a unique source_id is considered
-    to always be an preparatory step before calling this
-    function or a large fraction of errors can be expected.
-
-    An alternate query is by the ObjectId string that
-    MongoDB guarantees to be a unique id for documents.
-    Both the source_id and oridstr strings default to null
-    condition.  That means that to query for an source_id use
-    this construct:
-        load_event(db,source_id=myevid)
-    and to query by objectid use:
-        load_event(db,oidstr=someobjectidstring)
-
-    :param dbsource:  assumed to be a MongoDB collection
-      object pointing to source collection.
-    :param source_id:   event id requested
-    :param oidstr:  alternative query by object id string
-    :return: python dict containing document associated with
-      source_id or oidstr.  Note this may contain a pickle
-      serialization of an obspy Event object if it was
-      created from web services.   If you are using
-      obspy or need more than coordinates and magnitude
-      you may want to use load_catalog instead of this
-      function.
-    :rtype: python dict for success. None if there is no match.
-    :raise:  will throw RunTimeError if multiple source_ids
-       are found for given source_id.  Will never happen for oidstr
-       since ObjectIds cannot be multiple valued.  It will also
-       throw a RuntimeError exception if both the source_id
-       and oidstr arguments are defaulted.
-    """
-    if((source_id==-1) & (oidstr=="Undefined")):
-        raise RuntimeError('load_event:  received all default parameters.  You must specify a value for either source_id or oridstr')
-    if(source_id>0):
-        query={'source_id' : source_id}
-        nevents=dbsource.count_documents(query)
-        if(nevents==0):
-            return None
-        elif(nevents>1):
-            raise RuntimeError('load_event:  fatal database problem.  Duplicate source_id found in source collection')
-        else:
-            # this is a weird construct but it works because
-            # find_one returns a cursor. We do this to return a dict
-            # instead of the ugly cursor
-            x=dbsource.find_one(query)
-            return x
-    else:
-        # We pass a string but a query by oid requires
-        # construction of the object.  Can do that from a
-        # string representation like this
-        oid=bson.objectid.ObjectId(oidstr)
-        query={'_id' : oid}
-        x=dbsource.find_one(query)
-        return x
-
-def load_catalog(dbsource,time=None,lat=None,lon=None,depth=None):
-    """
-    Loads an obspy Catalog object from the source collection.
-    Default will load the entire collection as a Catalog
-    object.  Optional MongoDB expressions can be passed
-    through optional base hypocenter parameter.
-
-    This function is mainly intended to load the entire source
-    collection as a Catalog.  Catalog has a filter mechanism
-    that duplicates anything I know how to do with a MongoDB
-    query.   Use of the MongoDB queries is only sensible if
-    the source collection is large.  There is a fair overhead
-    in pick.loads of the serialized quakexml data.
-
-    Finally, do NOT call this function unless you are sure
-    every document in the source collection was produced from
-    a web services request through the obspy mechanism to
-    construct a Catalog object from a series of quakexml
-    files.   It will throw a KeyError for 'serialized_event'
-    if that attribute is not set in all documents in the
-    source collection.
-
-    :param dbsource:  assumed to point at a MongoDB collection
-      with the name "source".
-    :param time:  Set if you want to use a MongoDB selection
-      query on origin time passed as a dict
-      (see MongoDB documention)
-    :param lat:  Set if you want to use a MongoDB selection
-      query in latitude passed as a dict
-      (see MongoDB documention)
-    :param lon:  Set if you want to use a MongoDB selection
-      query on longitude passed as a dict
-      (see MongoDB documention)
-    :param depth:  Set if you want to use a MongoDB selection
-      query on depth passed as a dict
-      (see MongoDB documention)
-
-    Note for all queries you should pass the expression to
-    be passed to MongoDB and not the key For example, to get all
-    events with depth>100 km a direct query with find
-    would use a construct like this:
-        query={'source_depth' : '{'$gt' : 100.0}'}
-    as a convenience to the user the key for the query is
-    inserted (so you don't have to remember it).  The
-    above example would be created from a call like this
-        cat=load_catalog(dbsource,depth='{'$gt' : 100.0}')
-    A great deal of functionality is possible with MongoDB,
-    particularly with $regex but simple range queries like
-    the above are simpler.
-
-    :return: full Catalog representation of source collection
-      by default.  subset if optional args are used.
-    :rtype:  obspy Catalog object.  If queries are used
-      and there is no match returns None.
-    """
-    query={}
-    if(time!=None):
-        query['source_time']=time
-    if(lat!=None):
-        query['source_lat']=lat
-    if(lon!=None):
-        query['source_lon']=lon
-    if(depth!=None):
-        query['source_depth']=depth
-    matchsize=dbsource.count_documents(query)
-    if(matchsize==0):
-        return None
-    curs=dbsource.find(query)
-    result=Catalog()
-    for x in curs:
-        pickledata=x['serialized_event']
-        event=pickle.loads(pickledata)
-        result.extend([event])
-    return result
