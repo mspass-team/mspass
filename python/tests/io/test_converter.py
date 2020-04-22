@@ -54,6 +54,26 @@ def setup_function(function):
     ts1.put('npts', ts_size)
     ts1.put('sampling_rate', sampling_rate)
 
+    seismogram = Seismogram()
+    # TODO: the default of seismogram.tref is UTC which is inconsistent with the default 
+    # for TimeSeries()
+    # TODO: It would be nice to have dmatrix support numpy.ndarray as input
+    seismogram.u = dmatrix(3, ts_size)
+    for i in range(3):
+        for j in range(ts_size):
+            seismogram.u[i,j] = np.random.rand()
+    
+    seismogram.live = True
+    seismogram.dt = 1/sampling_rate
+    seismogram.t0 = 0
+    seismogram.ns = ts_size
+    # FIXME: if the following key is network, the Seismogram2Stream will error out 
+    # when calling TimeSeries2Trace internally due to the issue when mdef.is_defined(k) 
+    # returns True but k is an alias, the mdef.type(k) will error out.
+    seismogram.put('net', 'IU')
+    seismogram.put('npts', ts_size)
+    seismogram.put('sampling_rate', sampling_rate)
+
     # TODO: Ideally, these two variable should not be required. Default behavior
     # needed such that mdef will be constructed with the default yaml file, and
     # the elog can be converted to string stored in the dictionary
@@ -115,7 +135,16 @@ def test_Trace2TimeSeries():
     assert ts.get('calib') == tr1.stats['calib']
 
 def test_Seismogram2Stream():
-    pass
+    strm = Seismogram2Stream(seismogram, mdef)
+    assert strm[0].stats['delta'] == seismogram.dt
+    # FIXME: The sampling_rate defined in Metadata will overwrite 
+    # seismogram.dt after the conversion, even if the two are inconsistent.
+    assert strm[1].stats['sampling_rate'] == 1.0/seismogram.dt
+    assert strm[2].stats['npts'] == seismogram.ns
+    assert strm[0].stats['starttime'] == obspy.core.UTCDateTime(seismogram.t0)
+
+    assert strm[1].stats['network'] == seismogram.get('net')
+    assert strm[2].stats['npts'] == seismogram.get('npts')
 
 def test_Stream2Seismogram():
     # TODO: need to refine the test as well as the behavior of the function.
