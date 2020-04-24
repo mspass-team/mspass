@@ -125,6 +125,7 @@ jobs:
       install:
         - pip3 install ./ -vvv
       script:
+        - export MSPASS_HOME=$(pwd)
         - pytest --cov=mspasspy python/tests/
       after_success:
         - codecov
