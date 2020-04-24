@@ -99,7 +99,36 @@ jobs:
         local_dir: docs/build/html
         on:
           branch: master
-      
+    
+    - stage: test
+      name: "Test Python Code"
+      addons:
+        apt:
+          packages:
+            - gfortran
+            - libboost-dev
+            - libboost-serialization-dev
+            - liblapack-dev
+      compiler: gcc
+      before_install:
+        - |
+          pyenv versions
+          pyenv global 3.7
+        - pip install -U pip
+        - pip install pymongo
+        - pip install numpy 
+        - pip install obspy
+        - pip install pytest
+        - pip install mongomock
+        - pip install pytest-cov
+        - pip install codecov
+      install:
+        - pip3 install ./ -vvv
+      script:
+        - pytest --cov=mspasspy python/tests/
+      after_success:
+        - codecov
+          
 before_install:
   - |
     if [ $TRAVIS_OS_NAME == "linux" ]; then
