@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
 import os
+
 import yaml
-from pymongo import MongoClient
+import numpy as np
+
 from mspasspy.ccore import MetadataDefinitions
 from mspasspy.ccore import MDtype
-import numpy as np
-def dbsave_indexdata(filebase,dbname,ext='d3C',verbose=False):
+
+def index_data(filebase, db, ext='d3C', verbose=False):
     """
     Import function for data from antelope export_to_mspass.
 
@@ -24,8 +25,7 @@ def dbsave_indexdata(filebase,dbname,ext='d3C',verbose=False):
     :param filename: is the base name of the dataset to be read and indexed.
         The function will look for filename.yaml for the header data and
         filename.ext (Arg 3 defaulting to d3C).  
-    :param dbname: is the database name MongoDB will use to write the data 
-        read.
+    :param db: is the MongoDB database handler
     :param ext: is the file extension for the sample data (default is 'd3C').
     """
     # This loads default mspass schema 
@@ -38,8 +38,6 @@ def dbsave_indexdata(filebase,dbname,ext='d3C',verbose=False):
     fh.close()
     # Set up to add to wf collection
     # This is not general, but works of this test with mongo running under docker
-    client=MongoClient('localhost',27017)
-    db=client[dbname]
     collection=db.wf
     dfile=filebase+'.'+ext
     fh=open(dfile)
@@ -74,11 +72,11 @@ def dbsave_indexdata(filebase,dbname,ext='d3C',verbose=False):
             else:
               # These are not optional - always print these if 
               # this happens to warn user
-              print("Warning(dbsave_indexdata):  undefined type for key=",k)
+              print("Warning(index_data):  undefined type for key=",k)
               print("attribute will not be copied to database")
           except RuntimeError: 
               # as above always print this as a warning
-              print("Warning(dbsave_indexdata): key =",k," is undefined - skipped")
+              print("Warning(index_data): key =",k," is undefined - skipped")
 
         pyd['dir']=dir
         pyd['dfile']=dfile

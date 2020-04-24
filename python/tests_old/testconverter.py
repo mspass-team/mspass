@@ -1,9 +1,10 @@
 from obspy import read
+from obspy import UTCDateTime
+from obspy.clients.fdsn import Client
+
 # copy of example script for fdsn web service retrieval on obspy pages
 # avoids need for saving a data file with the repository
 print("Retrieving ANMO seismogram with obspy fdsn web service client")
-from obspy import UTCDateTime
-from obspy.clients.fdsn import Client
 client = Client("IRIS")
 t = UTCDateTime("2010-02-27T06:45:00.000")
 
@@ -14,8 +15,10 @@ d = client.get_waveforms("IU", "ANMO", "00", "LH*", t, t + 60 * 60)
 # obspy documentation
 # assume order x1,x2,x3
 
-from mspasspy import MetadataDefinitions
-from mspasspy import MDDefFormat
+from mspasspy.ccore import MetadataDefinitions
+from mspasspy.ccore import MDDefFormat
+import mspasspy.io.converter
+
 print("Loading MetadataDefinitions")
 mdef=MetadataDefinitions("obspy_namespace.pf",MDDefFormat.PF)
 print("success - setting up auxiliary metadata and alias testing")
@@ -23,18 +26,16 @@ tr=d[0]
 mdother=["Ptime","invalid"]
 aliases=["sta"]
 tr.stats["Ptime"]=1000.0
-print("Running obspy2mspass converter for TimeSeries")
-from obspy2mspass import obspy2mspass
-dout=obspy2mspass(tr,mdef,mdother,aliases)
-print("obspy2mspass completed but test generates a complaint stored in the log")
+print("Running Trace2TimeSeries converter for TimeSeries")
+dout=tr.toTimeSeries(mdef,mdother,aliases)
+print("Trace2TimeSeries completed but test generates a complaint stored in the log")
 print("This is the messsage stored in the TimeSeries log as a complaint")
 elog=dout.elog.get_error_log()
 print(elog[0].message)
 # Extension is needed here to test converter to Seismogram - under development
 print("Starting test for 3C converter")
 print("Trying simple test assuming data are cardinal (they aren't but ok for a test")
-from obspy2mspass import obspy2mspass_3c
-d3c=obspy2mspass_3c(d,mdef,cardinal=bool(1))
+d3c=d.toSeismogram(mdef,cardinal=bool(1))
 print("succeeded")
 print("Trying conversion with auxiliary metadata and no errors")
 d[0].stats["Ptime"]=1000.0
@@ -46,11 +47,11 @@ d[1].stats["hang"]=1.0
 d[1].stats["vang"]=90.0
 d[2].stats["hang"]=0.0
 d[2].stats["vang"]=0.0
-d3c=obspy2mspass_3c(d,mdef,mdo2,aliases,azimuth="hang",dip="vang")
+d3c=d.toSeismogram(mdef,mdo2,aliases,azimuth="hang",dip="vang")
 print("Success - now trying to add an invalid key to copy ")
 mdo2.append("bad")
-d3c=obspy2mspass_3c(d,mdef,mdo2,aliases,azimuth="hang",dip="vang")
-print("obspy2mspass completed but test generates a complaint stored in the log")
+d3c=d.toSeismogram(mdef,mdo2,aliases,azimuth="hang",dip="vang")
+print("Stream2Seismogram completed but test generates a complaint stored in the log")
 print("This is the messsage stored in the TimeSeries log as a complaint")
 elog=dout.elog.get_error_log()
 print(elog[0].message)

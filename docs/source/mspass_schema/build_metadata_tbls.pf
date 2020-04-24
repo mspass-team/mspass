@@ -3,7 +3,6 @@ site_lat
 site_lon
 site_elev
 site_id
-oid_site
 }
 source &Tbl{
 source_id
@@ -13,7 +12,6 @@ source_depth
 source_time
 mb
 ms
-oid_source
 }
 obspy_trace &Tbl{
 calib
@@ -30,7 +28,7 @@ sitechan &Tbl{
 chan
 hang
 vang
-chanid
+chan_id
 }
 3Cdata &Tbl{
 U11
@@ -56,9 +54,7 @@ seaz
 dist
 }
 MongoDB &Tbl{
-wfid_string
-gridfs_idstr
+wf_id
+gridfs_wf_id
 storage_mode
-oid_site
-oid_source
 }

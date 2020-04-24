@@ -81,8 +81,8 @@ Attributes:
     unique_id:  site_id
     collection: site
   - name: site_id
-    type: integer
-    concept:  unique identifier of a particular instrument/seismic station
+    type: string
+    concept:  String representation of ObjectId used to define a particular instrument/seismic station
     # this is not marked readonly as needs to be saved always in wf
     readonly:  false
     unique_id:  site_id
@@ -93,27 +93,33 @@ Attributes:
     concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
     aliases: KCMPNM sitechan.chan
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
   - name: hang
     type: double
     concept:  Azimuth (in degree) of a seismometer component - horizontal angle
     aliases: CMPAZ sitechan.hang
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
   - name: vang
     type: double
     concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
     aliases: CMPINC sitechan.vang
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
-  - name: chanid
-    type: integer
-    concept:  unique identifier of a particular component of data
+  - name: chan_id
+    type: string
+    concept:  String representation of ObjectId used to define a particular component of data
     readonly:  true
-    unique_id:  chanid
+    unique_id:  chan_id
+    collection:  sitechan
+  - name: chanid
+    type: int
+    concept:  channel id - used in CSS3.0 as the identifier of a particular component of data
+    readonly:  true
+    unique_id:  chan_id
     collection:  sitechan
   - name: LPSPOL
     type: boolean
@@ -153,18 +159,24 @@ Attributes:
     unique_id: source_id
     collection: source
   - name: source_id
-    type: integer
-    concept:  unique identifier of a particular seismic source
+    type: string
+    concept:  String representation of ObjectId used to define a particular seismic source
     # this is not marked readonly as needs to be saved always in wf
+    readonly:  false
+    unique_id:  source_id
+    collection:  source
+  - name: evid
+    type: int
+    concept:  event id - used in CSS3.0 as the identifier of a particular seismic source
     readonly:  false
     unique_id:  source_id
     collection:  source 
     alias: evid,event.evid
   - name: orid
-    type: integer
+    type: int
     concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
     readonly:  true
-    unique_id:  souce_id
+    unique_id:  source_id
     collection:  source 
     alias: origin.orid,event.orid
   - name: KEVNM
@@ -172,7 +184,7 @@ Attributes:
     concept: Event name 
     readonly: false
   - name: IEVTYP
-    type:  integer
+    type:  int
     concept:  Event type code as used in SAC
     readonly: false
 BasicTimeSeries:
@@ -226,16 +238,16 @@ Magnitude:
     type: double
     concept: Surface wave magnitude
     readonly: true
-    unique_id: evid
+    unique_id: souce_id
     collection: source
   - name: mb
     type: double
     concept: Body wave magnitude
     readonly: true
-    unique_id: evid
+    unique_id: souce_id
     collection: source
   - name: magnitude
-    type: real
+    type: double
     concept: generic magnitude attribute
     readonly: false
     aliases: MAG
@@ -265,39 +277,31 @@ SeismicPhases:
     concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
     readonly: false
   - name: seaz
-    type: real
+    type: double
     concept: Station to event azimuth
     readonly: false
     aliases: BAZ
   - name: esaz
-    type: real
+    type: double
     concept: Event to station azimuth
     readonly: false
     aliases: AZ
 MongoDb:
 # This set of parameters are essential for mspass, but are intimately linked to MongoDB
-  - name: wfid_string
+  - name: wf_id
     type: string
     concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
     readonly: false
     collection: wf
-  - name: gridfs_idstr
+  - name: gridfs_wf_id
     type: string
     concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
     readonly: false 
-    collection: gridfs_wf 
+    collection: gridfs_wf
   - name: storage_mode
     type: string
     concept: Provides storage options for seismic data samples.
     readonly: false
-  - name: oid_site
-    type: string
-    concept:  String representation of ObjectId of an entry in site collection - for linking to other collections
-    readonly:  false
-  - name: oid_source
-    type: string
-    concept:  String representation of ObjectId of an entry in source collection - for linking to other collections
-    readonly:  false
 # These are assorted attributes that can be used in wf but have not logical 
 # grouping
 Other:
@@ -307,17 +311,17 @@ Other:
     readonly: false
     aliases: idep,IDEP
   - name: DEPMIN
-    type: real
+    type: double
     concept: Maximum amplitude of a signal
     readonly: false
     aliases: depmin
   - name: DEPMAX
-    type: real
+    type: double
     concept: Minimum amplitude of a signal
     readonly: false
     aliases: depmax
   - name: DEPMEN
-    type: real
+    type: double
     concept: Mean amplitude of a signal
     readonly: false
     aliases: depmen
@@ -326,12 +330,12 @@ Other:
     concept: Julian date string as used in CSS3.0
     readonly: false
   - name: IZTYPE
-    type: integer
+    type: int
     concept: Reference time type as used by SAC
     readonly: false
     aliases: TimeReferenceType
   - name: dist
-    type: real
+    type: double
     concept: Source receiver distance
     readonly: false
     aliases: assoc.delta,GCARC
