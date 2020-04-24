@@ -39,6 +39,7 @@ extensions = [
   'sphinx.ext.autodoc',
   'm2r',
   'breathe',
+  'nbsphinx',
 ]
 
 
