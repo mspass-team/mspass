@@ -76,6 +76,7 @@ jobs:
             - libboost-serialization-dev
             - liblapack-dev
             - doxygen
+            - pandoc
       compiler: gcc
       before_install:
         - |
@@ -109,7 +110,6 @@ jobs:
             - libboost-dev
             - libboost-serialization-dev
             - liblapack-dev
-            - pandoc
       compiler: gcc
       before_install:
         - |
