@@ -79,8 +79,8 @@ bool Metadata::is_defined(const string key) const noexcept
     return false;
   }
 }
-void Metadata::append_chain(const std::string key, const std::string val, 
-                  const std::string separator) 
+void Metadata::append_chain(const std::string key, const std::string val,
+                  const std::string separator)
 {
   if(this->is_defined(key))
   {
@@ -97,7 +97,7 @@ void Metadata::append_chain(const std::string key, const std::string val,
   }
   else
   {
-    this->put(key,val); 
+    this->put(key,val);
   }
   changed_or_set.insert(key);
 }
@@ -309,5 +309,16 @@ Metadata restore_serialized_metadata(const std::string s)
     return md;
   }catch(...){throw;};
 }
-
+/* New method added Apr 2020 to change key assigned to a value - used for aliass*/
+void Metadata::change_key(const string oldkey, const string newkey)
+{
+  map<string,boost::any>::iterator mdptr;
+  mdptr=md.find(oldkey);
+  /* We silently do nothing if old is not found */
+  if(mdptr!=md.end())
+  {
+    md.insert(std::pair<string,boost::any>(newkey,mdptr->second));
+    md.erase(mdptr);
+  }
+}
 } // End mspass Namespace block
