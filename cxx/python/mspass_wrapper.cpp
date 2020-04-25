@@ -321,6 +321,7 @@ PYBIND11_MODULE(ccore,m)
     .def("is_defined",&Metadata::is_defined,"Test if a key has a defined value")
     .def("append_chain",&Metadata::append_chain,"Create or append to a string attribute that defines a chain")
     .def("clear",&Metadata::clear,"Clears contents associated with a key")
+    .def("change_key",&Metadata::change_key,"Change key to access an attribute")
     .def(py::self += py::self)
     .def(py::self + py::self)
     /* these are need to allow the class to be pickled*/
@@ -519,6 +520,8 @@ PYBIND11_MODULE(ccore,m)
     .def("unique_id_key",&mspass::MetadataDefinitions::unique_id_key,"Return the key for a unique id to fetch an attribute from a master collection (table)")
     .def("collection",&mspass::MetadataDefinitions::collection,"Return the table (collection) name for an attribute defined in a master table")
     .def("normalize_data",&mspass::MetadataDefinitions::normalize_data,"Faster method to return unique_id_key and table name")
+    .def("apply_aliases",&mspass::MetadataDefinitions::apply_aliases,"Apply a set of alias names to Metadata or child of Metadata")
+    .def("clear_aliases",&mspass::MetadataDefinitions::clear_aliases,"Clear aliases in a Metadata or child of Metadata")
     .def(py::self += py::self)
   ;
 /* These are needed for mspass extensions of Core data objects */
