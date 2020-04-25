@@ -10,7 +10,32 @@ long_val=10
 double_val=2.5
 string_val=test_string
 bool_val=1
-Same thing using operator >> 
+Trying copy constructor followed by change of key string_val to sval
+Copy completed and change_key finished
+Value now associated with key sval=test_string
+Checking if old key was cleared - also tests is_defined method
+string_val entry was cleared - success
+Trying to serialize with operator stringstream
+Succeeded - stringstream contents:
+bool_val bool 1
+double_val double 2.5
+long_val long 10
+string_val string test_string
+
+Trying same with serialize_metadata function
+Serialized completed: content 
+(should be same as stringstream output above)
+bool_val bool 1
+double_val double 2.5
+long_val long 10
+string_val string test_string
+Trying to run inverse function restore_serialized_metadata on sterialization output
+Result - should again be the same
+bool_val bool 1
+double_val double 2.5
+long_val long 10
+string_val string test_string
+Same thing using operator >> to cout
 bool_val bool 1
 double_val double 2.5
 long_val long 10
@@ -23,7 +48,6 @@ Contents of edited mdplain
 bool_val bool 1
 long_val long 10
 string_val string test_string
-
 Trying simple file read constructor
 Reading from simple.txt
 MYPAR double 2.5
@@ -42,7 +66,6 @@ simple_bool_parameter bool 1
 simple_int_parameter int 3
 simple_real_parameter double 2
 simple_string_parameter string test_string
-
 Trying assignment operator for Metadata with RTTI
 Worked
 Contents of copy (simple attributes ony)
@@ -50,7 +73,6 @@ simple_bool_parameter bool 1
 simple_int_parameter int 3
 simple_real_parameter double 2
 simple_string_parameter string test_string
-
 Trying += operator.  Merging inline and pf objects
 Trying to add simple to Metadata derived from pf
 Done - result:
@@ -68,7 +90,6 @@ testbool bool 1
 teststring string 
 x double 4.5
 y double 200
-
 Reading and writing a couple of simple parameters
 simple_real_parameter=2
 simple_int_parameter=3
@@ -88,7 +109,6 @@ test_double double 2
 test_int int 4
 test_multi_word_string string This is a string with blanks.
 test_string string foo
-
 test_double parameter in branch=2
 Testing exceptions.  First a get failure:
 Properly handled.  Message posted follows:
@@ -112,24 +132,50 @@ Posting that message to log
 Posting a set of fake messages to log
 Dump of error log
 Undefined
-10000 23098 MsPASSError Error trying to extract Metadata with key=bad_key
+10000 15635 MsPASSError Error trying to extract Metadata with key=bad_key
 No value associated with this key is set in Metadata object
 Expected an entry of type=double
 
 
-Invalid 10000 23098 test_md log_error method succeeded
+Invalid 10000 15635 test_md log_error method succeeded
 
 Undefined
-10000 23098 MsPASSError Error in Metadata get method.   Type mismatch in attem to get data with key=test_double
+10000 15635 MsPASSError Error in Metadata get method.   Type mismatch in attem to get data with key=test_double
 boost::any bad_any_cast wrote this message:  
 boost::bad_any_cast: failed conversion using boost::any_cast
 Trying to convert to data of type=int
 Actual entry has type=double
 
 
-Fatal 10000 23098 MsPASSError Fake fatal error
+Fatal 10000 15635 MsPASSError Fake fatal error
 
-Debug 10000 23098 MsPASSError Fake debug error
+Debug 10000 15635 MsPASSError Fake debug error
 
-Complaint 10000 23098 MsPASSError Fake complain error
+Complaint 10000 15635 MsPASSError Fake complain error
+
+Testing serialization of error log
+serialization finished
+Attempting to restore
+Error log restored - contents should match above
+Undefined
+10000 15635 MsPASSError Error trying to extract Metadata with key=bad_key
+No value associated with this key is set in Metadata object
+Expected an entry of type=double
+
+
+Invalid 10000 15635 test_md log_error method succeeded
+
+Undefined
+10000 15635 MsPASSError Error in Metadata get method.   Type mismatch in attem to get data with key=test_double
+boost::any bad_any_cast wrote this message:  
+boost::bad_any_cast: failed conversion using boost::any_cast
+Trying to convert to data of type=int
+Actual entry has type=double
+
+
+Fatal 10000 15635 MsPASSError Fake fatal error
+
+Debug 10000 15635 MsPASSError Fake debug error
+
+Complaint 10000 15635 MsPASSError Fake complain error
 
