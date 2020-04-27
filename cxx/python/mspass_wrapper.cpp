@@ -241,12 +241,15 @@ PYBIND11_MODULE(ccore,m)
   py::bind_vector<std::vector<double>>(m, "Vector");
 
   py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
+    .def(py::init<const SphericalCoordinate&>())
     .def_readwrite("radius", &mspass::SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &mspass::SphericalCoordinate::theta,"zonal angle of spherical coordinates")
     .def_readwrite("phi", &mspass::SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
   ;
 
   py::class_<mspass::SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
+    .def(py::init<>())
+    .def(py::init<const SlownessVector&>())
     .def(py::init<const double, const double, const double>())
     .def("mag",&SlownessVector::mag,"Return the magnitude of the slowness vector")
     .def("azimuth",&SlownessVector::azimuth,"Return the azimuth of propagation defined by this slowness vector")
@@ -289,6 +292,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   py::class_<mspass::Metadata,mspass::BasicMetadata>(m,"Metadata")
     .def(py::init<>())
+    .def(py::init<const Metadata&>())
     .def(py::init<std::ifstream&,const std::string>())
     .def("get_double",&mspass::Metadata::get_double,"Retrieve a real number by a specified key")
     .def("get_int",&mspass::Metadata::get_int,"Return an integer number by a specified key")
@@ -340,6 +344,7 @@ PYBIND11_MODULE(ccore,m)
 
   py::class_<mspass::AntelopePf,Metadata>(m,"AntelopePf")
     .def(py::init<>())
+    .def(py::init<const AntelopePf&>())
     .def(py::init<std::string>(),"Construct from a file")
     .def(py::init<std::list<string>>(),"Construct from a list of strings defining lines to be parsed")
     .def("get_tbl",&mspass::AntelopePf::get_tbl,"Fetch contents of a block of the pf file defined by Tbl&")
@@ -380,6 +385,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   py::class_<mspass::CoreTimeSeries,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
+    .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const int>())
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
@@ -393,6 +399,7 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::dmatrix>(m, "dmatrix", py::buffer_protocol())
    .def(py::init<>())
    .def(py::init<int,int>())
+   /* This is the copy constructor wrapper */
    .def(py::init([](py::buffer const b) {
             py::buffer_info info = b.request();
             if (info.format != py::format_descriptor<double>::format() || info.ndim != 2)
@@ -430,6 +437,7 @@ PYBIND11_MODULE(ccore,m)
     ;
   py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
+    .def(py::init<const CoreSeismogram&>())
     .def(py::init<const int>())
     .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const int>())
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
@@ -483,6 +491,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
     .def(py::init<>())
+    .def(py::init<const MsPASSError&>())
     .def(py::init<const std::string,const char *>())
     .def(py::init<const std::string,mspass::ErrorSeverity>())
     .def("what",&mspass::MsPASSError::what)
@@ -536,6 +545,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   py::class_<mspass::ErrorLogger>(m,"ErrorLogger","Used to post any nonfatal errors without aborting a program of family of parallel programs")
     .def(py::init<>())
+    .def(py::init<const ErrorLogger&>())
     .def(py::init<int>())
     .def("set_job_id",&mspass::ErrorLogger::set_job_id)
     .def("get_job_id",&mspass::ErrorLogger::get_job_id)
@@ -555,6 +565,7 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
                                                 (m,"Seismogram")
     .def(py::init<>())
+    .def(py::init<const Seismogram&>())
     .def(py::init<CoreSeismogram,std::string>())
     .def(py::init<BasicTimeSeries,Metadata,ErrorLogger>())
     .def(py::init<Metadata>())
@@ -613,6 +624,7 @@ PYBIND11_MODULE(ccore,m)
     ;
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
+      .def(py::init<const TimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
       .def(py::pickle(
         [](const TimeSeries &self) {
@@ -659,7 +671,9 @@ PYBIND11_MODULE(ccore,m)
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
-      .def(py::init<const mspass::MetadataDefinitions>())
+      /* We intentionally do no wrap the copy constructor as this 
+         thing should probably not be copied in a python script */
+      //.def(py::init<const mspass::MetadataDefinitions>())
       .def(py::init<const std::string>())
       .def("modified",&mspass::MongoDBConverter::modified,
          py::arg("d"), py::arg("verbose")=false,
