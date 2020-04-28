@@ -35,7 +35,7 @@ public:
       member.reserve(n);
   };
   /*! Standard copy constructor. */
-  Ensemble(const Ensemble& parent) : Metadata(dynamic_cast<Metadata&>(parent)),
+  Ensemble(const Ensemble& parent) : Metadata(dynamic_cast<const Metadata&>(parent)),
     member(parent.member){};
   /*! Standard assignment operator. */
   Ensemble& operator=(const Ensemble& parent)
@@ -71,9 +71,8 @@ public:
 
   \param newmd contains new Metadata to use for updates.
 
-  \return number of attributes updated (size of newmd)
   */
-  int update_metadata(const Metadata& newmd)
+  void update_metadata(const Metadata& newmd)
   try{
     Metadata *md;
     md=dynamic_cast<Metadata*>(this);
