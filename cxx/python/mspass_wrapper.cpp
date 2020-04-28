@@ -16,6 +16,7 @@
 #include <mspass/seismic/TimeSeries.h>
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/utility/MetadataDefinitions.h>
+#include <mspass/seismic/Ensemble.h>
 // These includes are objects only visible from the python interpreter
 #include "MongoDBConverter.h"
 #include <mspass/algorithms/algorithms.h>
@@ -23,6 +24,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/numpy.h>
+#include <pybind11/operators.h>
 
 namespace pybind11 { namespace detail {
   template <> struct type_caster<boost::any> {
@@ -87,6 +89,7 @@ using mspass::pfread;
 using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
 using mspass::MsPASSCoreTS;
+using mspass::Ensemble;
 using mspass::MongoDBConverter;
 using mspass::agc;
 using mspass::ExtractComponent;
@@ -95,8 +98,12 @@ using mspass::ExtractComponent;
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
 Upshot is we need the py::bind line at the start of the module definition.
 Note a potential issue is any vector<double> in this module will share this
-binding.  Don't think there are any collisions on the C side but worth a warning*/
+binding.  Don't think there are any collisions on the C side but worth a warning.
+ April 2020
+ Added bindings for vector of TimeSeries and Seismogram objects to support Ensembles*/
 PYBIND11_MAKE_OPAQUE(std::vector<double>);
+PYBIND11_MAKE_OPAQUE(std::vector<TimeSeries>);
+PYBIND11_MAKE_OPAQUE(std::vector<Seismogram>);
 
 /* This is what the pybind11 documentation calls a trampoline class for
 needed to handle virtual function in the abstract base class BasicMetadata. */
@@ -238,7 +245,10 @@ PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
 
-  py::bind_vector<std::vector<double>>(m, "Vector");
+  /* We need one of these for each std::vector container to make them function correctly*/
+  py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector");
+  py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
 
   py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
     .def(py::init<const SphericalCoordinate&>())
@@ -668,6 +678,36 @@ PYBIND11_MODULE(ccore,m)
        }
      ));
 
+  /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to 
+     be supported by the container.  Hence, we have two nearly identical blocks below for TimeSeries
+     and Seismogram objects.  May want to add CoreTimeSeries and CoreSeismogram objects, but for now 
+     we will only suport top level objects.
+
+     Note also the objects are stored in and std::vector container with the name member.  It appears 
+     the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
+     will be handled. */
+  py::class_<mspass::Ensemble<TimeSeries>,mspass::Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+      .def(py::init<>())
+      .def(py::init<const int >())
+      .def(py::init<const Metadata&, const int>())
+      .def(py::init<const Ensemble<TimeSeries>&>())
+      .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
+      /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+         to function properlty */
+      .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
+              "Vector of TimeSeries objects defining the ensemble")
+    ;
+  py::class_<mspass::Ensemble<Seismogram>,mspass::Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+      .def(py::init<>())
+      .def(py::init<const int >())
+      .def(py::init<const Metadata&, const int>())
+      .def(py::init<const Ensemble<Seismogram>&>())
+      .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
+      /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+         to function properlty */
+      .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
+              "Vector of Seismogram objects defining the ensemble")
+    ;
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
@@ -693,6 +733,7 @@ PYBIND11_MODULE(ccore,m)
       .def("badkeys",&mspass::MongoDBConverter::badkeys,
          "Return a python list of any keys that are not defined in input object")
     ;
+
   /* For now algorithm functions will go here.  These may eventually be
      moved to a different module. */
   m.def("agc",&mspass::agc,"Automatic gain control a Seismogram",
