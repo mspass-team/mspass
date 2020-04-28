@@ -32,13 +32,15 @@ class MsPASSCoreTS
     /*! Default constructor.   Does almost nothing. */
     MsPASSCoreTS() : elog(){hex_id="INVALID";};
     /*! Standard copy constructor. */
-    MsPASSCoreTS(const MsPASSCoreTS& parent){hex_id=parent.hex_id;};
+    MsPASSCoreTS(const MsPASSCoreTS& parent) : elog(parent.elog)
+    {hex_id=parent.hex_id;};
     /*! Standard assignment operator. */
     MsPASSCoreTS& operator=(const MsPASSCoreTS& parent)
     {
         if(this!=(&parent))
         {
             hex_id=parent.hex_id;
+            elog=parent.elog;
         }
         return *this;
     };
