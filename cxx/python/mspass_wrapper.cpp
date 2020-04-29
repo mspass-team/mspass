@@ -692,6 +692,7 @@ PYBIND11_MODULE(ccore,m)
       .def(py::init<const Metadata&, const int>())
       .def(py::init<const Ensemble<TimeSeries>&>())
       .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
+      .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
       /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
          to function properlty */
       .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
@@ -703,6 +704,7 @@ PYBIND11_MODULE(ccore,m)
       .def(py::init<const Metadata&, const int>())
       .def(py::init<const Ensemble<Seismogram>&>())
       .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
+      .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
       /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
          to function properlty */
       .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,

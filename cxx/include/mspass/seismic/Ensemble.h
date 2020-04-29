@@ -78,6 +78,23 @@ public:
     md=dynamic_cast<Metadata*>(this);
     (*md) += newmd;
   }catch(...){throw;};
+  /*! \brief copy ensemble metadata to all members.
+
+    An ensemble has global metadata, but each member is required to have
+    a metadata component.  This method takes the ensemble metadata and 
+    copies it to each of the member objects.   The operation will overwrite
+    previous key:value pairs in a member that are also present in the 
+    ensemble metadata.
+    */
+  void sync_metadata()
+  {
+      int i;
+      for(i=0;i<this->member.size();++i)
+      {
+          mspass::Metadata *mdmember=&(this->member[i]);
+          (*mdmember)+=dynamic_cast<mspass::Metadata&>(*this);
+      }
+  };
 };
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
 
