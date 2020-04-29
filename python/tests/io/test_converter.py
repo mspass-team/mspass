@@ -8,7 +8,7 @@ from mspasspy.ccore import (Metadata,
                             Seismogram,
                             TimeSeries,
                             ErrorLogger,
-                            Vector,
+                            DoubleVector,
                             dmatrix)
 from mspasspy.io.converter import (dict2Metadata, 
                                    Metadata2dict, 
@@ -46,7 +46,7 @@ def setup_function(function):
     function.md1.put('live', True)
 
     function.ts1 = TimeSeries()
-    function.ts1.s = Vector(np.random.rand(ts_size))
+    function.ts1.s = DoubleVector(np.random.rand(ts_size))
     function.ts1.live = True
     function.ts1.dt = 1/sampling_rate
     function.ts1.t0 = 0
