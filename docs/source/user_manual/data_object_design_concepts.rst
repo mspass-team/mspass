@@ -24,10 +24,7 @@ Overview
   binary code with python is that templates do not translate directly.  
   Consequently, the python interface uses two different names to define
   Ensembles of TimeSeries and Seismogram objects:  *TimeSeriesEnsemble*
-  and *ThreeComponentEnsemble* respectively. *  ThreeComponentEnemble*
-  is a bit of a mismatch in a naming convention, but we felt the name
-  was long enough already that the name seems clearer than the
-  alternative of SeismogramEnsemble. 
+  and *SeismogramEnsemble* respectively. 
 
 | The C++ objects have wrappers for python that hide the details from
   the user.   All MongoDB operations implemented with the pymongo
@@ -487,10 +484,8 @@ Scalar versus 3C data
   issues here.  First, an Ensemble is little more than a vector of data
   objects with a Metadata object to store attributes common to the
   entire ensemble.  Hence, the idea is to store global attributes in the
-  Ensemble Metadata field.   There is a "dismember" algorithm in MsPASS
-  (NOT YET IMPLEMENTED by already present in seispp and easy to
-  implement) that takes this structure apart and copies the Metadata
-  components into each member.  The vector container makes it simple to
+  Ensemble Metadata field.   
+  The vector container makes it simple to
   handle an entire group (Ensemble) with a simple loop.   e.g. here is a
   simple loop to work through an entire Ensemble (defined in this code
   segment with the symbol d) in order of the vector index:
