@@ -219,22 +219,8 @@ def Metadata2dict(md):
     result={}
     keys=md.keys()
     for k in keys:
-        typ=md.type(k)
-        if(typ=='int'):
-            ival=md.get_int(k)
-            result[k]=ival
-        elif(typ=='double'):
-            dval=md.get_double(k)
-            result[k]=dval
-        elif(typ=='bool'):
-            bval=md.get_bool(k)
-            result[k]=bval
-        else:
-            # should be a string, but we need a sanity check as 
-            # C code could insert nonstandard Metadata
-            assert("string" in typ), "Metadata2dict: Unsupported type for key %s=%s" % (k,typ)
-            sval=md.get_string(k)
-            result[k]=sval
+        val=md.get(k)
+        result[k]=val
     return result
 Metadata.todict = Metadata2dict
 
