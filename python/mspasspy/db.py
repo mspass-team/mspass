@@ -16,9 +16,10 @@ from mspasspy.ccore import (BasicTimeSeries,
                             Seismogram,
                             dmatrix,
                             TimeReferenceType,
+                            MetadataDefinitions,
                             ErrorLogger,
                             ErrorSeverity)
-from mspasspy.io.converter import dict2Metadata
+from mspasspy.io.converter import dict2Metadata, Metadata2dict
 
 from obspy import Inventory
 from obspy import UTCDateTime
@@ -81,7 +82,7 @@ class Database(pymongo.database.Database):
     This is a wrapper around the :class:`~pymongo.database.Database` with
     methods added to handle MsPASS data.
     """
-    def load3C(self, oid, mdef, smode='gridfs'):
+    def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
         """
         Loads a Seismogram object from MongoDB based on ObjectId.
 
@@ -95,7 +96,7 @@ class Database(pymongo.database.Database):
         data.   If that attribute is not found the method defined in the smode
         argument will be attempted.   When smode is gridfs, the method will
         load the Metadata from the wf collection which must include the string attribute
-        wfid_string.   It access the sample data from the gridfs_wf
+        wf_id.   It access the sample data from the gridfs_wf
         collection after creating a buffer space for the sample data.
         when smod is file the sample data is read by a C++ function that
         uses a raw binary read.
@@ -183,7 +184,7 @@ class Database(pymongo.database.Database):
                                 ErrorSeverity.Invalid)
             return derr
 
-    def save3C(self, d, mc, smode="gridfs", mmode="save"):
+    def save3C(self, d, mdef = MetadataDefinitions(), smode="gridfs", mmode="save"):
             """
             Save mspass::Seismogram object in MongoDB.
 
@@ -207,7 +208,7 @@ class Database(pymongo.database.Database):
             :param d: Seismogram object to be saved.  Not if d is marked dead (live false)
                 the method attempts to write an entry in elog to save the error
                 messages posted for that seismogram.
-            :param mc: MongoDBConverter object created for schema used by d
+            :param mdef: is a MetadataDefinitions object for schema used by d
             :param smode: mnemonic for SamplelMODE.   Options are currently supported:
             (1) 'file' - use the dir and dfile attributes to write sample
                 data as a raw dump with fwrite.  File is ALWAYS appended so user
@@ -270,7 +271,7 @@ class Database(pymongo.database.Database):
                             d.put_string('storage_mode','file')
                         elif(smode=='gridfs'):
                             fileoid=self._save_data3C_to_gridfs(d)
-                            d.put_string('gridfs_idstr',str(fileoid))
+                            d.put_string('gridfs_wf_id',str(fileoid))
                             d.put_string('storage_mode','gridfs')
                         else:
                             if(not(smode=='unchanged')):
@@ -279,11 +280,11 @@ class Database(pymongo.database.Database):
                                     "That means only Metadata for these data were saved and sample data were left unchanged\n",
                                     ErrorSeverity.Complaint)
                                 error_count+=1
-                        updict={}
-                        if(mmode=='saveall'):
-                            updict=mc.all(d,True)
-                        else:
-                            updict=mc.writeable(d,True)
+                        updict=d.todict()
+                        if(mmode=='save'):
+                            for key in list(updict):
+                                if(not mdef.writeable(key)):
+                                    del updict[key]
                         # ObjectId is dropped for now, but may want to save str representation
                         newid=wfcol.insert_one(updict).inserted_id
                         # Because we trap condition of an invalid mmode we can do just an else instead of This
@@ -291,16 +292,16 @@ class Database(pymongo.database.Database):
                         #
                         # insert_one creates a new copy so we need to post the
                         # new ObjectId
-                        d.put_string('wfid_string',str(newid))
+                        d.put_string('wf_id',str(newid))
                     else:
                         # Make sure the oid string is valid
                         oid=bson.objectid.ObjectId()
                         try:
-                            oidstr=d.get_string('wfid_string')
+                            oidstr=d.get_string('wf_id')
                             oid=bson.objectid.ObjectId(oidstr)
                         except RuntimeError:
                             d.elog.log_error("save3C","Error in attempting an update\n" +\
-                            "Required key wfid_string, which is a string representation of parent ObjectId, not found\n" +\
+                            "Required key wf_id, which is a string representation of parent ObjectId, not found\n" +\
                             "Cannot peform an update - updated data will not be saved",
                             ErrorSeverity.Invalid)
                             error_count += 1
@@ -310,50 +311,47 @@ class Database(pymongo.database.Database):
                             "Cannot perform an update - this datum will be not be saved",
                             ErrorSeverity.Invalid)
                             error_count+=1
-                        else:
                         # assume oid is valid, maybe should do a find_one first but for now handle with exception
-                            updict={}
-                            if(mmode=='updateall'):
-                                updict=mc.all(d,True)
-                            else:
-                                updict=mc.modified(d,True)
-                                # DEBUG
-                                print('number changed=',len(updict))
-                            if(len(updict)>0):
-                                try:
-                                    ur=wfcol.update_one({'_id': oid},{'$set':updict})
-                                except:
-                                    # This perhaps should be a fatal error
-                                    d.elog.log_error("save3C",
-                                        "Metadata update operation failed with MongoDB\n"+\
-                                        "All parts of this Seismogram will be dropped",
-                                        ErrorSeverity.Invalid)
+                        updict=d.todict()
+                        if(mmode=='updatemd'):
+                            for key in list(updict):
+                                if(not mdef.writeable(key)):
+                                    del updict[key]
+                        if(len(updict)>0):
+                            try:
+                                ur=wfcol.update_one({'_id': oid},{'$set':updict})
+                            except:
+                                # This perhaps should be a fatal error
+                                d.elog.log_error("save3C",
+                                    "Metadata update operation failed with MongoDB\n"+\
+                                    "All parts of this Seismogram will be dropped",
+                                    ErrorSeverity.Invalid)
+                                error_count+=1
+                                return error_count
+                            # This silently skips case when no Metadata were modified
+                            # That situation would be common if only the sample
+                            # data were changed and  no metadata operations
+                            # were performed
+                            if(ur.modified_count <=0):
+                                emess="metadata attribute update failed\n "
+                                if(mmode=="updateall"):
+                                    emess+="Sample data also will not be saved\n"
+                                    d.elog.log_error("save3C",emess,ErrorSeverity.Invalid)
                                     error_count+=1
-                                    return error_count
-                                # This silently skips case when no Metadata were modified
-                                # That situation would be common if only the sample
-                                # data were changed and  no metadata operations
-                                # were performed
-                                if(ur.modified_count <=0):
-                                    emess="metadata attribute update failed\n "
-                                    if(mmode=="updateall"):
-                                        emess+="Sample data also will not be saved\n"
-                                        d.elog.log_error("save3C",emess,ErrorSeverity.Invalid)
-                                        error_count+=1
-                            if(mmode=="updateall"):
-                                if(smode=='file'):
-                                    self._save_data3C_to_dfile(d)
-                                elif(smode=='gridfs'):
-                                #BROKEN - this needs to be changed to an update mode
-                                # Working on more primitives first, but needs to be fixed
-                                    self._save_data3C_to_gridfs(d,update=True)
-                                else:
-                                    if(not(smode=='unchanged')):
-                                        d.elog.log_error("save3C","Unrecognized value for smode="+\
-                                        smode+" Assumed to be unchanged\n"+\
-                                        "That means only Metadata for these data were saved and sample data were left unchanged",
-                                        ErrorSeverity.Suspect)
-                                        error_count+=1
+                        if(mmode=="updateall"):
+                            if(smode=='file'):
+                                self._save_data3C_to_dfile(d)
+                            elif(smode=='gridfs'):
+                            #BROKEN - this needs to be changed to an update mode
+                            # Working on more primitives first, but needs to be fixed
+                                self._save_data3C_to_gridfs(d,update=True)
+                            else:
+                                if(not(smode=='unchanged')):
+                                    d.elog.log_error("save3C","Unrecognized value for smode="+\
+                                    smode+" Assumed to be unchanged\n"+\
+                                    "That means only Metadata for these data were saved and sample data were left unchanged",
+                                    ErrorSeverity.Suspect)
+                                    error_count+=1
             except:
                 # Not sure what of if update_one can throw an exception.  docstring does not say
                 d.elog.log_error("save3C",
@@ -363,7 +361,7 @@ class Database(pymongo.database.Database):
             finally:
                 # always save the error log.  Done before exit in case any of the
                 # python functions posted errors
-                oidstr=d.get_string('wfid_string')
+                oidstr=d.get_string('wf_id')
                 self._save_elog(oidstr,d.elog)
                 return error_count
 
@@ -398,7 +396,7 @@ class Database(pymongo.database.Database):
             docentry['badness']=str(x.badness)
             docentry['error_message']=x.message
             docentry['process_id']=x.p_id
-            docentry['wfid_string']=oidstr
+            docentry['wf_id']=oidstr
             try:
                 oid=self.elog.insert_one(docentry)
                 oidlst.append(oid)
@@ -471,7 +469,7 @@ class Database(pymongo.database.Database):
         :param update: is a Boolean. When true the existing sample data will be
             deleted and then replaced by the data in d. When false (default)
             the data will be saved an given a new ObjectId saved to
-            d with key gridfs_idstr.
+            d with key gridfs_wf_id.
         :return: object_id of the document used to store the data in gridfs
             -1 if something failed.  In that condition a generic error message
             is posted to elog.    Caller should dump elog only after
@@ -483,23 +481,23 @@ class Database(pymongo.database.Database):
             gfsh=gridfs.GridFS(self,collection=fscol)
             if(update):
                 try:
-                    ids=d.get_string('gridfs_idstr')
+                    ids=d.get_string('gridfs_wf_id')
                     oldid=bson.objectid.ObjectId(ids)
                     if(gfsh.exists(oldid)):
                         gfsh.delete(oldid)
                 except RuntimeError:
                     d.elog.log_error("save_data3C_to_gridfs",
-                    "Error fetching object id defined by key gridfs_idstr",
+                    "Error fetching object id defined by key gridfs_wf_id",
                     ErrorSeverity.Complaint)
                 else:
                     d.elog.log_error("save_data3C_to_gridfs",
-                        "GridFS failed to delete data with gridfs_idstr="+ids,
+                        "GridFS failed to delete data with gridfs_wf_id="+ids,
                         ErrorSeverity.Complaint)
             ub=bytes(d.u)
             # pickle dumps returns its result as a byte stream - dump (without the s)
             # used in file writer writes to a file
             file_id = gfsh.put(pickle.dumps(ub))
-            d.put_string('gridfs_idstr',str(file_id))
+            d.put_string('gridfs_wf_id',str(file_id))
         except:
             d.elog.log_error("save_data3C_to_gridfs","IO Error",
                             ErrorSeverity.Invalid)
@@ -514,7 +512,7 @@ class Database(pymongo.database.Database):
         Constructs a Seismogram object from Metadata and sample data
         pulled from a MongoDB gridfs document.   The Metadata must contain
         a string representation of the ObjectId of the document with the
-        key gridfs_idstr.  That string is used to generate a unique ObjectId
+        key gridfs_wf_id.  That string is used to generate a unique ObjectId
         which is then used to find the unique document containing the sample
         data in the collection called gridfs_wf (optionally can be changed with
         argument fscol)
@@ -527,7 +525,7 @@ class Database(pymongo.database.Database):
 
         :param md: is the Metadata object used to drive the construction.  This
             would normally be constructed from a parent document in the wf
-            collection using dict2Metadata.  A critical key is the entry gridfs_idstr
+            collection using dict2Metadata.  A critical key is the entry gridfs_wf_id
             as described above.   Several other key:value pairs are required or
             the function will abort with the result returned as invalid (live=false).
             These are:  npts, starttime, and delta.   time_reference is a special
@@ -546,10 +544,10 @@ class Database(pymongo.database.Database):
         # First make sure we have a valid id string.  No reason to procede if
         # not the case
         try:
-            idstr=md.get_string('gridfs_idstr')
+            idstr=md.get_string('gridfs_wf_id')
         except:
             elogtmp.log_error("read3C_from_gridfs",
-                "Required attribute gridfs_idstr is not defined - null Seismogram returned",
+                "Required attribute gridfs_wf_id is not defined - null Seismogram returned",
                 ErrorSeverity.Invalid)
             dbad=Seismogram()
             dbad.elog=elogtmp

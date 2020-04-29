@@ -6,8 +6,7 @@ import pymongo
 import gridfs
 from bson.objectid import ObjectId
 
-from mspasspy.ccore import (MongoDBConverter,
-                            Seismogram,
+from mspasspy.ccore import (Seismogram,
                             dmatrix)
 from mspasspy.db import (Client,
                          Database)
@@ -65,12 +64,10 @@ class TestDatabase():
         pass
 
     def test_save3C(self):
-        # TODO: It seems the MongoDBConverter() can be replaced by Metadata2dict()
-        mc = MongoDBConverter()
         # FIXME: The 'net' key is not saved to database.
-        assert self.db.save3C(self.s1, mc, mmode='save', smode='gridfs') == 0
+        assert self.db.save3C(self.s1, mmode='save', smode='gridfs') == 0
         # FIXME: '_id' should not be used in the find method below. Need to fix the schema.
-        assert self.db.wf.count_documents({"_id": ObjectId(self.s1.get('wfid_string'))}) == 1
-        doc = self.db.wf.find({"_id": ObjectId(self.s1.get('wfid_string'))})[0]
+        assert self.db.wf.count_documents({"_id": ObjectId(self.s1.get('wf_id'))}) == 1
+        doc = self.db.wf.find({"_id": ObjectId(self.s1.get('wf_id'))})[0]
         assert doc['npts'] == self.ts_size
         assert doc['delta'] == 1/self.sampling_rate
