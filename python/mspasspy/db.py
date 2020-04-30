@@ -311,47 +311,48 @@ class Database(pymongo.database.Database):
                             "Cannot perform an update - this datum will be not be saved",
                             ErrorSeverity.Invalid)
                             error_count+=1
+                        else:
                         # assume oid is valid, maybe should do a find_one first but for now handle with exception
-                        updict=d.todict()
-                        if(mmode=='updatemd'):
-                            for key in list(updict):
-                                if(not mdef.writeable(key)):
-                                    del updict[key]
-                        if(len(updict)>0):
-                            try:
-                                ur=wfcol.update_one({'_id': oid},{'$set':updict})
-                            except:
-                                # This perhaps should be a fatal error
-                                d.elog.log_error("save3C",
-                                    "Metadata update operation failed with MongoDB\n"+\
-                                    "All parts of this Seismogram will be dropped",
-                                    ErrorSeverity.Invalid)
-                                error_count+=1
-                                return error_count
-                            # This silently skips case when no Metadata were modified
-                            # That situation would be common if only the sample
-                            # data were changed and  no metadata operations
-                            # were performed
-                            if(ur.modified_count <=0):
-                                emess="metadata attribute update failed\n "
-                                if(mmode=="updateall"):
-                                    emess+="Sample data also will not be saved\n"
-                                    d.elog.log_error("save3C",emess,ErrorSeverity.Invalid)
+                            updict=d.todict()
+                            if(mmode=='updatemd'):
+                                for key in list(updict):
+                                    if(not mdef.writeable(key)):
+                                        del updict[key]
+                            if(len(updict)>0):
+                                try:
+                                    ur=wfcol.update_one({'_id': oid},{'$set':updict})
+                                except:
+                                    # This perhaps should be a fatal error
+                                    d.elog.log_error("save3C",
+                                        "Metadata update operation failed with MongoDB\n"+\
+                                        "All parts of this Seismogram will be dropped",
+                                        ErrorSeverity.Invalid)
                                     error_count+=1
-                        if(mmode=="updateall"):
-                            if(smode=='file'):
-                                self._save_data3C_to_dfile(d)
-                            elif(smode=='gridfs'):
-                            #BROKEN - this needs to be changed to an update mode
-                            # Working on more primitives first, but needs to be fixed
-                                self._save_data3C_to_gridfs(d,update=True)
-                            else:
-                                if(not(smode=='unchanged')):
-                                    d.elog.log_error("save3C","Unrecognized value for smode="+\
-                                    smode+" Assumed to be unchanged\n"+\
-                                    "That means only Metadata for these data were saved and sample data were left unchanged",
-                                    ErrorSeverity.Suspect)
-                                    error_count+=1
+                                    return error_count
+                                # This silently skips case when no Metadata were modified
+                                # That situation would be common if only the sample
+                                # data were changed and  no metadata operations
+                                # were performed
+                                if(ur.modified_count <=0):
+                                    emess="metadata attribute update failed\n "
+                                    if(mmode=="updateall"):
+                                        emess+="Sample data also will not be saved\n"
+                                        d.elog.log_error("save3C",emess,ErrorSeverity.Invalid)
+                                        error_count+=1
+                            if(mmode=="updateall"):
+                                if(smode=='file'):
+                                    self._save_data3C_to_dfile(d)
+                                elif(smode=='gridfs'):
+                                #BROKEN - this needs to be changed to an update mode
+                                # Working on more primitives first, but needs to be fixed
+                                    self._save_data3C_to_gridfs(d,update=True)
+                                else:
+                                    if(not(smode=='unchanged')):
+                                        d.elog.log_error("save3C","Unrecognized value for smode="+\
+                                        smode+" Assumed to be unchanged\n"+\
+                                        "That means only Metadata for these data were saved and sample data were left unchanged",
+                                        ErrorSeverity.Suspect)
+                                        error_count+=1
             except:
                 # Not sure what of if update_one can throw an exception.  docstring does not say
                 d.elog.log_error("save3C",
