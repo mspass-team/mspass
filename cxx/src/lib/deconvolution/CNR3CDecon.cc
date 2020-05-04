@@ -420,7 +420,7 @@ void CNR3CDecon::loadnoise(const PowerSpectrum& d)
 Seismogram CNR3CDecon::process()
 {
   const string base_error("CNR3CDecon::process method:  ");
-  int i,j,k;
+  int j,k;
   try{
     /* Copy wavelet because in interactive use process could be called repeatedly 
      * without a call to a new loadwavelet - In fact that would be common for 
@@ -451,6 +451,8 @@ Seismogram CNR3CDecon::process()
     fNy=df*static_cast<double>(FFTDeconOperator::nfft/2);
     wavelet_snr.clear();
     int nreg(0);
+    //DEBUG
+    cout << "unscaled noise amplitude spectrum"<<endl;
     for(j=0;j<FFTDeconOperator::nfft;++j)
     {
       double *z=cwvec.ptr(j);
@@ -461,17 +463,28 @@ Seismogram CNR3CDecon::process()
       f=df*static_cast<double>(j);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
       double namp=psnoise.amplitude(f);
+      //DEBUG
+      cout << f<<" "<<namp<<" "<<amp;
       /* Avoid divide by zero that could randomly happen with simulation data*/
-      if((namp/amp)<DBL_EPSILON) namp=amp*DBL_EPSILON;
-      double snr=amp/namp;
+      double snr;
+      if((namp/amp)<DBL_EPSILON) 
+          snr=10000.0;
+      else
+          snr=amp/namp;
       wavelet_snr.push_back(snr);
       if(snr<snr_regularization_floor)
       {
-        double scale=sqrt(amp*amp+damp*damp*namp*namp);
-        *z *= scale;
-        *(z+1) *= scale;
+        //double scale=(damp*damp*namp*namp)/(amp*amp);
+        double scale=snr_regularization_floor*namp/amp;
+        //TEST - hack revert to water level with frozen value
+        //scale=0.01*snr_regularization_floor;
+        re *= scale;
+        im *= scale;
+        *z = re;
+        *(z+1) = im;
         ++nreg;
       }
+      cout <<" "<< sqrt( re*re + im*im)<<endl;
     }
     /* This is used in QCMetric */
     regularization_bandwidth_fraction=static_cast<double>(nreg)
@@ -533,14 +546,15 @@ Seismogram CNR3CDecon::process()
       rftmp=(*shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
           wavetable, workspace);
-      // left off here - needs circular shift
       wvec.clear();
       for(j=0;j<FFTDeconOperator::nfft;++j) wvec.push_back(rftmp[j].real());
-      //DEBUG - disable for testing
-      /*
+      /* DEBUG
+      cout << "sample_shift size="<<FFTDeconOperator::sample_shift<<endl
+          << "Setting to -20"<<endl;
+          */
+      FFTDeconOperator::sample_shift=600;
       if(FFTDeconOperator::sample_shift!=0)
         wvec=circular_shift(wvec,-FFTDeconOperator::sample_shift);
-	*/
       for(j=0;j<FFTDeconOperator::nfft;++j)rfest.u(k,j)=wvec[j];
     }
     return rfest;

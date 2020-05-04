@@ -12,7 +12,7 @@ dissertation.
 @author: pavlis
 """
 import sys
-sys.path.append('/home/pavlis/src/mspass/python')
+sys.path.append('/geode2/home/u070/pavlis/Carbonate/src/mspass/python')
 from mspasspy.ccore import AntelopePf
 from mspasspy.ccore import dmatrix
 from mspasspy.ccore import CoreTimeSeries
@@ -79,7 +79,7 @@ def plot3cs(d):
             y[i]=d.u[k,i]
         pltarr[k].plot(t,y)
     return
-def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[2.0,25.0]):
+def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.25,5.0]):
     """
     Helper function to add noise to ndarray d.  
     :param d: data to which noise is to be added and padded
@@ -89,7 +89,7 @@ def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[2.0,25.0]):
     nd=len(d)
     n=nd+padlength
     dnoise=nscale*randn(n)
-    sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=100)
+    sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=20.0)
     result=signal.sosfilt(sos,dnoise)
     for i in range(nd):
         result[i+padlength]+=d[i]
@@ -185,4 +185,7 @@ decon.loadwavelet(wavelet)
 decon.loadnoise(d)
 dout=decon.process()
 plot3cs(dout)
+ao=decon.actual_output()
+plt.figure()
+plt.plot(ao.s)
 plt.show()
