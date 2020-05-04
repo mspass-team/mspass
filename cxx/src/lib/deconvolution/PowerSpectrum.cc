@@ -75,7 +75,8 @@ double PowerSpectrum::amplitude(const double f) const
   else
   {
     double slope=(spectrum[filow+1]-spectrum[filow])/df;
-    return sqrt( (f-spectrum[filow])*slope);
+    double flow=f0+((double)filow)*df;
+    return sqrt(spectrum[filow]+slope*(f-flow));
   }
 }
 }  // End namespace

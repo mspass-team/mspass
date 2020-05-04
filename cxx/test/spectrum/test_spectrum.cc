@@ -52,4 +52,13 @@ int main(int argc, char **argv)
       << " "<<ps4.spectrum[i]
       << " "<<ps5.spectrum[i]<<endl;
   }
+  cout << "Testing interpolation for overloaded amplitude method"<<endl;
+  int nfreq2=2*f.size();
+  double df2=ps2.df/2.0;
+  for(i=0;i<nfreq2;++i)
+  {
+      double f2=ps2.f0+i*df2;
+      double amp=ps2.amplitude(f2);
+      cout << f2 << " "<<amp<<endl;
+  }
 }
