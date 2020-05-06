@@ -22,9 +22,9 @@ def index_data(filebase, db, ext='d3C', verbose=False):
     of a database.   Readers that want to read this raw data will 
     need to use dir, dfile, and foff to find the right file and read point.
 
-    :param filename: is the base name of the dataset to be read and indexed.
-        The function will look for filename.yaml for the header data and
-        filename.ext (Arg 3 defaulting to d3C).  
+    :param filebase: is the base name of the dataset to be read and indexed.
+        The function will look for filebase.yaml for the header data and
+        filebase.ext (Arg 3 defaulting to d3C).  
     :param db: is the MongoDB database handler
     :param ext: is the file extension for the sample data (default is 'd3C').
     """
@@ -44,6 +44,7 @@ def index_data(filebase, db, ext='d3C', verbose=False):
     # This is needed by the numpy reader 
     dtyp=np.dtype('f8')
     dir=os.path.dirname(os.path.realpath(dfile))
+    dfile = os.path.basename(os.path.realpath(dfile))
     if(verbose):
         print('Setting dir =',dir,' and dfile=',dfile,' for all input')
         print('Make sure this file exists before trying to read these data')
@@ -88,4 +89,4 @@ def index_data(filebase, db, ext='d3C', verbose=False):
         junk=np.fromfile(fh,dtype=dtyp,count=ns3c)
     if(verbose):
         print("Finished with file=",dfile)
-        print("Size of wf collection is now ",collection.count()," documents")
+        print("Size of wf collection is now ",collection.count_documents({})," documents")
