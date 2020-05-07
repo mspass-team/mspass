@@ -5,12 +5,13 @@ Tools for connecting to MongoDB.
 import math
 import pickle
 import struct
+import sys
+import traceback
 
-import gridfs
-import pymongo
-import pickle
 import bson.errors
 import bson.objectid
+import gridfs
+import pymongo
 
 from mspasspy.ccore import (BasicTimeSeries,
                             Seismogram,
@@ -139,15 +140,17 @@ class Database(pymongo.database.Database):
                 mode=smtest
                 if(not ((smtest=='gridfs')or(smtest=='file'))):
                     mode=smode
-                    elogtmp.log_error("load3C",
-                    "Required attribute storage_mode has invalid value="+smtest+\
-                    "Using default of "+smode+" passed by argument smode\n",
-                    ErrorSeverity.Complaint)
+                    elogtmp.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "Required attribute storage_mode has invalid value=" + smtest \
+                        + "Using default of "+smode+" passed by argument smode\n",
+                        ErrorSeverity.Complaint)
             except:
-                elogtmp.log_error("load3C",
-                "Required attribute storage_mode not found in document read from db\n" +\
-                "Using default of "+smode+" passed by argument smode\n",
-                ErrorSeverity.Complaint)
+                elogtmp.log_error(sys._getframe().f_code.co_name,
+                    traceback.format_exc() \
+                    + "Required attribute storage_mode not found in document read from db\n" \
+                    + "Using default of " + smode + " passed by argument smode\n",
+                    ErrorSeverity.Complaint)
             if(mode=='gridfs'):
                 # Like this function this one should never throw an exception
                 # but only post errors to d.elog
@@ -168,8 +171,9 @@ class Database(pymongo.database.Database):
                     return d
                 except:
                     derr=Seismogram()
-                    derr.elog.log_error("load3c",
-                        "Failure in file based constructor\n"+
+                    derr.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "Failure in file based constructor\n"+
                         "Most likely problem is that dir and/or defile are invalid\n",
                         ErrorSeverity.Invalid)
                     return derr
@@ -180,8 +184,10 @@ class Database(pymongo.database.Database):
             # in C++ we create an empty Seismogram and post message to
             # it's error log.
             derr=Seismogram()
-            derr.elog.log_error("load3c","Unexpected exception - debug required for a bug fix",
-                                ErrorSeverity.Invalid)
+            derr.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "Unexpected exception - debug required for a bug fix",
+                ErrorSeverity.Invalid)
             return derr
 
     def save3C(self, d, mdef = MetadataDefinitions(), smode="gridfs", mmode="save"):
@@ -243,16 +249,18 @@ class Database(pymongo.database.Database):
             error_count=0
             try:
                 if( not ((smode=='file') or (smode=='gridfs') or (smode=='unchanged'))):
-                    raise RuntimeError('save3C:  illegal value for smode='+smode)
+                    raise RuntimeError('Illegal value for smode = ' + smode)
                 if( not ((mmode=='save') or (mmode=='saveall') or (mmode=='updatemd')
                 or (mmode=='updateall') ) ):
-                    raise RuntimeError('save3C:  illegal value for mmode='+mmode)
+                    raise RuntimeError('Illegal value for mmode = ' + mmode)
                 if( (mmode=='updatemd') and (smode=='unchanged')):
-                    raise RuntimeError('save3C:  Illegal combination of mmode and smode - run help(Database.save3C)')
+                    raise RuntimeError('Illegal combination of mmode and smode')
                 if( (mmode=='updateall')and(smode=='file')):
-                    d.elog.log_error('save3C','mmode set to updateall for file mode output\n'\
+                    d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + 'mmode set to updateall for file mode output\n'\
                         + 'This will may cause stranded data in existing files\n'\
-                        + 'Consider using smode set to gridfs',ErrorSeverity.Informational)
+                        + 'Consider using smode set to gridfs', ErrorSeverity.Informational)
                     error_count+=1
             except RuntimeError:
                 raise
@@ -275,9 +283,11 @@ class Database(pymongo.database.Database):
                             d.put_string('storage_mode','gridfs')
                         else:
                             if(not(smode=='unchanged')):
-                                d.elog.log_error("save3C","Unrecognized value for smode="+\
-                                    smode+" Assumed to be unchanged\n"\
-                                    "That means only Metadata for these data were saved and sample data were left unchanged\n",
+                                d.elog.log_error(sys._getframe().f_code.co_name,
+                                    traceback.format_exc() \
+                                    + "Unrecognized value for smode = " \
+                                    + smode + " Assumed to be unchanged\n" \
+                                    + "That means only Metadata for these data were saved and sample data were left unchanged\n",
                                     ErrorSeverity.Complaint)
                                 error_count+=1
                         updict=d.todict()
@@ -300,15 +310,19 @@ class Database(pymongo.database.Database):
                             oidstr=d.get_string('wf_id')
                             oid=bson.objectid.ObjectId(oidstr)
                         except RuntimeError:
-                            d.elog.log_error("save3C","Error in attempting an update\n" +\
-                            "Required key wf_id, which is a string representation of parent ObjectId, not found\n" +\
-                            "Cannot peform an update - updated data will not be saved",
-                            ErrorSeverity.Invalid)
+                            d.elog.log_error(sys._getframe().f_code.co_name,
+                                traceback.format_exc() \
+                                + "Error in attempting an update\n" \
+                                + "Required key wf_id, which is a string representation of parent ObjectId, not found\n" \
+                                + "Cannot peform an update - updated data will not be saved",
+                                ErrorSeverity.Invalid)
                             error_count += 1
                         except bson.errors.InvalidId:
-                            d.elog.log_errore("save3C","Error in attempting an update\n" +\
-                            "ObjectId string="+oidstr+" is not a valid ObjectId string\n" +\
-                            "Cannot perform an update - this datum will be not be saved",
+                            d.elog.log_errore(sys._getframe().f_code.co_name,
+                                traceback.format_exc() \
+                                + "Error in attempting an update\n" \
+                                + "ObjectId string = " + oidstr + " is not a valid ObjectId string\n" \
+                                + "Cannot perform an update - this datum will be not be saved",
                             ErrorSeverity.Invalid)
                             error_count+=1
                         else:
@@ -323,9 +337,10 @@ class Database(pymongo.database.Database):
                                     ur=wfcol.update_one({'_id': oid},{'$set':updict})
                                 except:
                                     # This perhaps should be a fatal error
-                                    d.elog.log_error("save3C",
-                                        "Metadata update operation failed with MongoDB\n"+\
-                                        "All parts of this Seismogram will be dropped",
+                                    d.elog.log_error(sys._getframe().f_code.co_name,
+                                        traceback.format_exc() \
+                                        + "Metadata update operation failed with MongoDB\n" \
+                                        + "All parts of this Seismogram will be dropped",
                                         ErrorSeverity.Invalid)
                                     error_count+=1
                                     return error_count
@@ -348,16 +363,19 @@ class Database(pymongo.database.Database):
                                     self._save_data3C_to_gridfs(d,update=True)
                                 else:
                                     if(not(smode=='unchanged')):
-                                        d.elog.log_error("save3C","Unrecognized value for smode="+\
-                                        smode+" Assumed to be unchanged\n"+\
-                                        "That means only Metadata for these data were saved and sample data were left unchanged",
+                                        d.elog.log_error(sys._getframe().f_code.co_name,
+                                        traceback.format_exc() \
+                                        + "Unrecognized value for smode = " \
+                                        + smode + " Assumed to be unchanged\n" \
+                                        + "That means only Metadata for these data were saved and sample data were left unchanged",
                                         ErrorSeverity.Suspect)
                                         error_count+=1
             except:
                 # Not sure what of if update_one can throw an exception.  docstring does not say
-                d.elog.log_error("save3C",
-                    "something threw an unexpected exception",
-                                ErrorSeverity.Invalid)
+                d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "something threw an unexpected exception",
+                        ErrorSeverity.Invalid)
                 error_count+=1
             finally:
                 # always save the error log.  Done before exit in case any of the
@@ -402,7 +420,7 @@ class Database(pymongo.database.Database):
                 oid=self.elog.insert_one(docentry)
                 oidlst.append(oid)
             except:
-                raise RuntimeError("save_elog:  failure inserting error messages to elog collection")
+                raise RuntimeError("Failure inserting error messages to elog collection")
         return oidlst
 
     @staticmethod
@@ -426,8 +444,9 @@ class Database(pymongo.database.Database):
             dir=d.get_string('dir')
             dfile=d.get_string('dfile')
         except:
-            d.elog.log_error("save_data3C_to_dfile",
-                "Data missing dir and/or dfile - sample data were not saved",
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "Data missing dir and/or dfile - sample data were not saved",
                 ErrorSeverity.Invalid)
             return -1
         fname=dir+"/"+dfile
@@ -441,8 +460,9 @@ class Database(pymongo.database.Database):
             # solution for a minimal cose (making a copy before write)
             ub=bytes(d.u)
         except:
-            d.elog.log_error("save_data3C_to_dfile",
-                "IO error writing data to file="+fname,
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "IO error writing data to file = " + fname,
                 ErrorSeverity.Invalid)
             return -1
         else:
@@ -487,12 +507,14 @@ class Database(pymongo.database.Database):
                     if(gfsh.exists(oldid)):
                         gfsh.delete(oldid)
                 except RuntimeError:
-                    d.elog.log_error("save_data3C_to_gridfs",
-                    "Error fetching object id defined by key gridfs_wf_id",
-                    ErrorSeverity.Complaint)
+                    d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "Error fetching object id defined by key gridfs_wf_id",
+                        ErrorSeverity.Complaint)
                 else:
-                    d.elog.log_error("save_data3C_to_gridfs",
-                        "GridFS failed to delete data with gridfs_wf_id="+ids,
+                    d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "GridFS failed to delete data with gridfs_wf_id = " + ids,
                         ErrorSeverity.Complaint)
             ub=bytes(d.u)
             # pickle dumps returns its result as a byte stream - dump (without the s)
@@ -500,8 +522,10 @@ class Database(pymongo.database.Database):
             file_id = gfsh.put(pickle.dumps(ub))
             d.put_string('gridfs_wf_id',str(file_id))
         except:
-            d.elog.log_error("save_data3C_to_gridfs","IO Error",
-                            ErrorSeverity.Invalid)
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "IO Error",
+                        ErrorSeverity.Invalid)
             return -1
         else:
             return file_id
@@ -547,8 +571,9 @@ class Database(pymongo.database.Database):
         try:
             idstr=md.get_string('gridfs_wf_id')
         except:
-            elogtmp.log_error("read3C_from_gridfs",
-                "Required attribute gridfs_wf_id is not defined - null Seismogram returned",
+            elogtmp.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "Required attribute gridfs_wf_id is not defined - null Seismogram returned",
                 ErrorSeverity.Invalid)
             dbad=Seismogram()
             dbad.elog=elogtmp
@@ -558,8 +583,9 @@ class Database(pymongo.database.Database):
         except bson.errors.InvalidId:
             d=Seismogram()
             d.elog=elogtmp
-            d.elog.log_error("read_data3C_from_grifs",
-                "ObjectId string="+idstr+" appears to not be define a valid objectid",
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "ObjectId = " + idstr + " appears to not be defined a valid objectid",
                 ErrorSeverity.Invalid)
             return d
         try:
@@ -571,8 +597,9 @@ class Database(pymongo.database.Database):
             bts.dt=md.get_double('delta')
         except RuntimeError:
             d=Seismogram()
-            d.elog.log_error("read_data3C_from_grifs",
-                "One of required attributes (npts, starttime, and delta) were not defined",
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "One of required attributes (npts, starttime, and delta) were not defined",
                 ErrorSeverity.Invalid)
             return d
         d=Seismogram(bts,md,elogtmp)
@@ -590,14 +617,16 @@ class Database(pymongo.database.Database):
                     t0shift=d.get_double('t0_shift')
                     d.force_t0_shift(t0shift)
                 except:
-                    d.elog.log_error("read_data3C_from_gridfs",
-                        "read_data3C_from_gridfs(WARNING):  "+\
-                        "Data are marked relative but t0_shift is not defined",
-                            ErrorSeverity.Suspect)
+                    d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() \
+                        + "read_data3C_from_gridfs(WARNING):  " \
+                        + "Data are marked relative but t0_shift is not defined",
+                        ErrorSeverity.Suspect)
         except RuntimeError:
             d.tref=TimeReferenceType.UTC
-            d.elog.log_error("read_data3C_from_grifs",
-                "string attribute time_standard was not defined - defaulting to UTC",
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "string attribute time_standard was not defined - defaulting to UTC",
                 ErrorSeverity.Complaint)
 
         else:
@@ -613,8 +642,9 @@ class Database(pymongo.database.Database):
             for i in range(3):
                 Iden[i,i]=1.0
             d.set_transformation_matrix(A)
-            d.elog.log_error("read_data3C_from_grifs",
-                "Metadata extracted from database are missing transformation matrix definition\n" +
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                traceback.format_exc() \
+                + "Metadata extracted from database are missing transformation matrix definition\n" +
                 "Defaulting to identity matrix",ErrorSeverity.Suspect)
         # Now we actually retrieve the sample data.
         gfsh=gridfs.GridFS(self,collection=fscol)
@@ -637,10 +667,11 @@ class Database(pymongo.database.Database):
                 for j in range(d.ns):
                     d.u[i,j]=x[ii]
         else:
-            emess="Size mismatch in sample data.  Number of points in gridfs file=%d but expected %d" \
+            emess="Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
             % (len(x),(3*d.ns))
-            d.elog.log_error("read_data3C_from_gridfs",
-                emess,ErrorSeverity.Invalid)
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                        traceback.format_exc() + emess, 
+                        ErrorSeverity.Invalid)
         # Necessary step for efficiency.  Seismogram constructor here
         # incorrectly marks data copied form metadata object as changed
         # This could lead to unnecessary database transaction with updates
@@ -1375,14 +1406,14 @@ class Database(pymongo.database.Database):
         """
         dbsource = self.source
         if((source_id==-1) & (oidstr=="Undefined")):
-            raise RuntimeError('load_event:  received all default parameters.  You must specify a value for either source_id or oridstr')
+            raise RuntimeError('Received all default parameters.  You must specify a value for either source_id or oridstr')
         if(source_id>0):
             query={'source_id' : source_id}
             nevents=dbsource.count_documents(query)
             if(nevents==0):
                 return None
             elif(nevents>1):
-                raise RuntimeError('load_event:  fatal database problem.  Duplicate source_id found in source collection')
+                raise RuntimeError('Fatal database problem.  Duplicate source_id found in source collection')
             else:
                 # this is a weird construct but it works because
                 # find_one returns a cursor. We do this to return a dict
