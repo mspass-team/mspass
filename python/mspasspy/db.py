@@ -40,7 +40,7 @@ def _tmatrix_from_md(md):
 
     :return: 3x3 transformation matrix extracted from md attributes
     :rtype: dmatrix
-    :raise:   Will throw a RunTimeError if any of the tmatrix attributes are not in md
+    :raise:   Will throw a RuntimeError if any of the tmatrix attributes are not in md
     """
     A=dmatrix(3,3)
     A[0,0]=md.get_double('U11')   # names have fortran indexing but dmatrix is C
@@ -259,7 +259,7 @@ class Database(pymongo.database.Database):
                     d.elog.log_error(sys._getframe().f_code.co_name,
                         traceback.format_exc() \
                         + 'mmode set to updateall for file mode output\n'\
-                        + 'This will may cause stranded data in existing files\n'\
+                        + 'This may cause stranded data in existing files\n'\
                         + 'Consider using smode set to gridfs', ErrorSeverity.Informational)
                     error_count+=1
             except RuntimeError:
@@ -274,7 +274,10 @@ class Database(pymongo.database.Database):
                     _sync_metadata(d)
                     if( (mmode=='save') or (mmode=='saveall') ):
                         if(smode=='file'):
-                            foff=self._save_data3C_to_dfile(d)
+                            foff = self._save_data3C_to_dfile(d)
+                            if(foff == -1):
+                                error_count += 1
+                                return error_count
                             d.put_long('foff',foff)
                             d.put_string('storage_mode','file')
                         elif(smode=='gridfs'):
@@ -288,7 +291,7 @@ class Database(pymongo.database.Database):
                                     + "Unrecognized value for smode = " \
                                     + smode + " Assumed to be unchanged\n" \
                                     + "That means only Metadata for these data were saved and sample data were left unchanged\n",
-                                    ErrorSeverity.Complaint)
+                                    ErrorSeverity.Suspect)
                                 error_count+=1
                         updict=d.todict()
                         if(mmode=='save'):
@@ -317,16 +320,18 @@ class Database(pymongo.database.Database):
                                 + "Cannot peform an update - updated data will not be saved",
                                 ErrorSeverity.Invalid)
                             error_count += 1
+                            return error_count
                         except bson.errors.InvalidId:
-                            d.elog.log_errore(sys._getframe().f_code.co_name,
+                            d.elog.log_error(sys._getframe().f_code.co_name,
                                 traceback.format_exc() \
                                 + "Error in attempting an update\n" \
                                 + "ObjectId string = " + oidstr + " is not a valid ObjectId string\n" \
-                                + "Cannot perform an update - this datum will be not be saved",
-                            ErrorSeverity.Invalid)
+                                + "Cannot perform an update - this data will be not be saved",
+                                ErrorSeverity.Invalid)
                             error_count+=1
+                            return error_count
                         else:
-                        # assume oid is valid, maybe should do a find_one first but for now handle with exception
+                            # assume oid is valid, maybe should do a find_one first but for now handle with exception
                             updict=d.todict()
                             if(mmode=='updatemd'):
                                 for key in list(updict):
@@ -349,11 +354,11 @@ class Database(pymongo.database.Database):
                                 # data were changed and  no metadata operations
                                 # were performed
                                 if(ur.modified_count <=0):
-                                    emess="metadata attribute update failed\n "
-                                    if(mmode=="updateall"):
-                                        emess+="Sample data also will not be saved\n"
-                                        d.elog.log_error("save3C",emess,ErrorSeverity.Invalid)
-                                        error_count+=1
+                                    emess = "metadata attribute not changed\n "
+                                    d.elog.log_error(sys._getframe().f_code.co_name,
+                                        traceback.format_exc() + emess,
+                                        ErrorSeverity.Informational)
+                                    error_count+=1
                             if(mmode=="updateall"):
                                 if(smode=='file'):
                                     self._save_data3C_to_dfile(d)
@@ -364,11 +369,11 @@ class Database(pymongo.database.Database):
                                 else:
                                     if(not(smode=='unchanged')):
                                         d.elog.log_error(sys._getframe().f_code.co_name,
-                                        traceback.format_exc() \
-                                        + "Unrecognized value for smode = " \
-                                        + smode + " Assumed to be unchanged\n" \
-                                        + "That means only Metadata for these data were saved and sample data were left unchanged",
-                                        ErrorSeverity.Suspect)
+                                            traceback.format_exc() \
+                                            + "Unrecognized value for smode = " \
+                                            + smode + " Assumed to be unchanged\n" \
+                                            + "That means only Metadata for these data were saved and sample data were left unchanged",
+                                            ErrorSeverity.Suspect)
                                         error_count+=1
             except:
                 # Not sure what of if update_one can throw an exception.  docstring does not say
@@ -377,12 +382,11 @@ class Database(pymongo.database.Database):
                         + "something threw an unexpected exception",
                         ErrorSeverity.Invalid)
                 error_count+=1
-            finally:
-                # always save the error log.  Done before exit in case any of the
-                # python functions posted errors
-                oidstr=d.get_string('wf_id')
-                self._save_elog(oidstr,d.elog)
-                return error_count
+            # always save the error log.  Done before exit in case any of the
+            # python functions posted errors
+            oidstr=d.get_string('wf_id')
+            self._save_elog(oidstr,d.elog)
+            return error_count
 
     def _save_elog(self, oidstr, elog):
         """
@@ -467,9 +471,9 @@ class Database(pymongo.database.Database):
             return -1
         else:
             fh.write(ub)
+            return(foff)
         finally:
             fh.close()
-            return(foff)
 
     def _save_data3C_to_gridfs(self, d, fscol='gridfs_wf', update=False):
         """
@@ -1398,7 +1402,7 @@ class Database(pymongo.database.Database):
         you may want to use load_catalog instead of this
         function.
         :rtype: python dict for success. None if there is no match.
-        :raise:  will throw RunTimeError if multiple source_ids
+        :raise:  will throw RuntimeError if multiple source_ids
         are found for given source_id.  Will never happen for oidstr
         since ObjectIds cannot be multiple valued.  It will also
         throw a RuntimeError exception if both the source_id
