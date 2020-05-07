@@ -1,15 +1,17 @@
-import pytest
+
+from bson.objectid import ObjectId
+import gridfs
 import mongomock
 from mongomock.gridfs import enable_gridfs_integration
 import numpy as np
 import pymongo
-import gridfs
-from bson.objectid import ObjectId
+import pytest
 
 from mspasspy.ccore import (Seismogram,
                             dmatrix)
 from mspasspy.db import (Client,
                          Database)
+from mspasspy.io.seispp import index_data
 
 class TestClient():
     
@@ -42,6 +44,7 @@ class TestDatabase():
         client = mongomock.MongoClient('localhost')
         Database.__bases__ = (mongomock.database.Database,)
         self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
+        index_data("python/tests/data/sample", self.db)
 
         ts_size = 255    
         sampling_rate = 20.0
@@ -59,9 +62,14 @@ class TestDatabase():
         s2 = Seismogram(s1)
         s2.put('net', 'AK')
 
+        s1_file = Seismogram(s1)
+        s1_file.put('dir', 'python/tests/tmp')
+        s1_file.put('dfile', 'tmp_db_Database.test')
+
         self.ts_size = ts_size
         self.sampling_rate = sampling_rate
         self.s1 = s1
+        self.s1_file = s1_file
         self.s2 = s2
 
     def test_load3C(self):
@@ -69,6 +77,17 @@ class TestDatabase():
 
     def test_save3C(self):
         # FIXME: When something threw an unexpected exception there is no garantee that 'wf_id' is already defined.
+        with pytest.raises(RuntimeError, match=r".*value for smode.*"):
+            self.db.save3C(self.s1, smode='wrong')
+        with pytest.raises(RuntimeError, match=r".*value for mmode.*"):
+            self.db.save3C(self.s1, mmode='wrong')
+        with pytest.raises(RuntimeError, match=r".*mmode and smode.*"):
+            self.db.save3C(self.s1, smode='unchanged', mmode='updatemd')
+
+        s1tmp = Seismogram(self.s1)
+        assert self.db.save3C(s1tmp, mmode='save', smode='file') == 1
+        assert 'missing dir' in s1tmp.elog.get_error_log()[0].message
+        
         assert self.db.save3C(self.s1, mmode='save', smode='gridfs') == 0
         # FIXME: '_id' should not be used in the find method below. Need to fix the schema.
         assert self.db.wf.count_documents({"_id": ObjectId(self.s1.get('wf_id'))}) == 1
