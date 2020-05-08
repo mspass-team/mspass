@@ -3,6 +3,7 @@
 Tools for connecting to MongoDB.
 """
 import math
+import os
 import pickle
 import struct
 import sys
@@ -284,15 +285,6 @@ class Database(pymongo.database.Database):
                             fileoid=self._save_data3C_to_gridfs(d)
                             d.put_string('gridfs_wf_id',str(fileoid))
                             d.put_string('storage_mode','gridfs')
-                        else:
-                            if(not(smode=='unchanged')):
-                                d.elog.log_error(sys._getframe().f_code.co_name,
-                                    traceback.format_exc() \
-                                    + "Unrecognized value for smode = " \
-                                    + smode + " Assumed to be unchanged\n" \
-                                    + "That means only Metadata for these data were saved and sample data were left unchanged\n",
-                                    ErrorSeverity.Suspect)
-                                error_count+=1
                         updict=d.todict()
                         if(mmode=='save'):
                             for key in list(updict):
@@ -445,7 +437,7 @@ class Database(pymongo.database.Database):
         to the database to help debug data problems.
         """
         try:
-            dir=d.get_string('dir')
+            di=d.get_string('dir')
             dfile=d.get_string('dfile')
         except:
             d.elog.log_error(sys._getframe().f_code.co_name,
@@ -453,16 +445,18 @@ class Database(pymongo.database.Database):
                 + "Data missing dir and/or dfile - sample data were not saved",
                 ErrorSeverity.Invalid)
             return -1
-        fname=dir+"/"+dfile
+        fname = os.path.join(di, dfile)
         try:
-            fh=open(fname,mode='r+b')
-            foff=fh.seek(0,2)
-            # We convert the sample data to a bytearray (bytes is just an
-            # immutable bytearray) to allow raw writes.  This seems to works
-            # because u is a buffer object.   Seems a necessary evil because
-            # pybind11 wrappers and pickle are messy.  This seems a clean
-            # solution for a minimal cose (making a copy before write)
-            ub=bytes(d.u)
+            os.makedirs(os.path.dirname(fname), exist_ok=True)
+            with open(fname,mode='a+b') as fh:
+                foff=fh.seek(0,2)
+                # We convert the sample data to a bytearray (bytes is just an
+                # immutable bytearray) to allow raw writes.  This seems to works
+                # because u is a buffer object.   Seems a necessary evil because
+                # pybind11 wrappers and pickle are messy.  This seems a clean
+                # solution for a minimal cose (making a copy before write)
+                ub=bytes(d.u)
+                fh.write(ub)
         except:
             d.elog.log_error(sys._getframe().f_code.co_name,
                 traceback.format_exc() \
@@ -470,10 +464,12 @@ class Database(pymongo.database.Database):
                 ErrorSeverity.Invalid)
             return -1
         else:
-            fh.write(ub)
+            di = os.path.dirname(os.path.realpath(fname))
+            dfile = os.path.basename(os.path.realpath(fname))
+            d.put('dir', di)
+            d.put('dfile', dfile)
+            d.put('foff', foff)
             return(foff)
-        finally:
-            fh.close()
 
     def _save_data3C_to_gridfs(self, d, fscol='gridfs_wf', update=False):
         """
