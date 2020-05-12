@@ -90,6 +90,7 @@ jobs:
       install:
         - pip3 install ./ -vvv
       script:
+        - export MSPASS_HOME=$(pwd)
         - cd docs 
         - ls
         - make html
