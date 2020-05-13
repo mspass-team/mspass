@@ -195,6 +195,37 @@ def dict2Metadata(d, mdef, elog):
              + "Copying to Metadata as a string as was stored in MongoDB",
              ErrorSeverity.Complaint)
             md.put_string(x,y)
+        elif isinstance(y, obspy.core.UTCDateTime):
+          try:
+              mdt=mdef.type(x)
+              if( (mdt==MDtype.Integer) or (mdt==MDtype.Int32) or (mdt==MDtype.Long)
+                      or (mdt==MDtype.Int64) ):
+                elog.log_error("dict2Metadata","Mismatched attribute types\n"
+                 + "Attribute returned for key="+x+" is UTCDateTime but schema demands an int\n"
+                 + "Converting internally to a Julian day",ErrorSeverity.Complaint)
+                yi=y.julday
+                md.put_long(x,yi)
+              # output to float is harmless, but will create a warning
+              elif( (mdt==MDtype.Real) or (mdt==MDtype.Real32) or (mdt==MDtype.Double)):
+                yf=y.timestamp
+                md.put_double(x,yf)
+              elif(mdt==MDtype.String):
+                ys=str(y)
+                md.put_string(x,ys)
+              elif(mdt==MDtype.Boolean):
+                elog.log_error("dict2Metadata","Mismatched attribute types\n"
+                 + "Attribute returned for key="+x+" is UTCDateTime but schema demands a boolean\n"
+                 + "Attribute will not be copied - no clear conversion is possible",
+                 ErrorSeverity.Suspect)
+              else:
+                elog.log_error("dict2Metadata","MetadataDefinition returned undefined type",
+                        " for key="+x+"Attribute ignored\n",ErrorSeverity.Suspect)
+          except RuntimeError:
+            elog.log_error("dict2Metadata","key="+x+" is not defined in schema defined by MetadataDefintions\n"
+             + "Copying to Metadata as a float as was stored in MongoDB\n",
+             ErrorSeverity.Complaint)
+            yd=y.timestamp
+            md.put(x,yd)
         else:
           # python equivalent of sprintf
           emess="data with key="+x+" is unsupported type=%s\n" % type(y)

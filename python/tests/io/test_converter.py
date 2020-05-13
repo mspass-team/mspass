@@ -3,13 +3,14 @@ import numpy as np
 import obspy
 import bson.objectid
 
-from mspasspy.ccore import (Metadata,
+from mspasspy.ccore import (DoubleVector,
+                            dmatrix,
+                            ErrorLogger,
+                            MDtype,
+                            Metadata,
                             MetadataDefinitions,
                             Seismogram,
-                            TimeSeries,
-                            ErrorLogger,
-                            DoubleVector,
-                            dmatrix)
+                            TimeSeries)
 from mspasspy.io.converter import (dict2Metadata, 
                                    Metadata2dict, 
                                    TimeSeries2Trace, 
@@ -25,7 +26,10 @@ def setup_function(function):
     function.dict1 = {'network': 'IU', 'station': 'ANMO',
                       'starttime': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
                       'npts': ts_size, 'sampling_rate': sampling_rate,
-                      'channel': 'BHE', 'live': True, '_id': bson.objectid.ObjectId()}
+                      'channel': 'BHE', 
+                      'live': True, '_id': bson.objectid.ObjectId(),
+                      'jdate': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
+                      'date_str': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000)}
     function.dict2 = {'network': 'IU', 'station': 'ANMO',
                       'starttime': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
                       'npts': ts_size, 'sampling_rate': sampling_rate,
@@ -81,6 +85,7 @@ def setup_function(function):
     # the elog can be converted to string stored in the dictionary
     function.mdef = MetadataDefinitions()
     function.elog = ErrorLogger()
+    function.mdef.add('date_str', 'string date for testing', MDtype.String)
 
 def test_dict2Metadata():
     md = dict2Metadata(test_dict2Metadata.dict1, test_dict2Metadata.mdef, test_dict2Metadata.elog)
@@ -92,16 +97,13 @@ def test_dict2Metadata():
 
     assert md.get('_id') == str(test_dict2Metadata.dict1['_id'])
 
-    # TODO: UTCDateTime is not converted. This can be done by converting 
-    # UTCDateTime to string or float with str() or float() or .timestamp
-    #assert md.get('starttime') == dict1['starttime']
+    assert md.get('starttime') == test_dict2Metadata.dict1['starttime']
+    assert md.get('jdate') == test_dict2Metadata.dict1['starttime'].julday
+    assert md.get('date_str') == test_dict2Metadata.dict1['starttime']
 
-    # TODO: need to consider the case where an alias is defind in 
-    # MetadataDefinitions but not correctly find by a mdef.type()
-    # call. This issue applies to many mdef other methods, too. Ideally, 
-    # the following line should be tested. Also, this should belong to 
-    # a unit test for ccore module.
-    # assert len(elog.get_error_log()) == 0
+    assert len(test_dict2Metadata.elog.get_error_log()) == 2
+    assert 'key=live is not defined' in test_dict2Metadata.elog.get_error_log()[0].message
+    assert 'internally to a Julian day' in test_dict2Metadata.elog.get_error_log()[1].message
 
 def test_Metadata2dict():
     d = Metadata2dict(test_Metadata2dict.md1)

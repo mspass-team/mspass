@@ -117,6 +117,8 @@ mspass::MDtype MetadataDefinitions::type(const std::string key) const
 {
   const string base_error("MetadataDefinitions::type:  ");
   map<std::string,mspass::MDtype>::const_iterator tptr;
+  if(this->is_alias(key))
+    return this->unique_name(key).second;
   tptr=tmap.find(key);
   if(tptr==tmap.end())
   {
