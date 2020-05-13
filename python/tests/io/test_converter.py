@@ -29,7 +29,8 @@ def setup_function(function):
                       'channel': 'BHE', 
                       'live': True, '_id': bson.objectid.ObjectId(),
                       'jdate': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
-                      'date_str': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000)}
+                      'date_str': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
+                      'not_defined_date': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000)}
     function.dict2 = {'network': 'IU', 'station': 'ANMO',
                       'starttime': obspy.UTCDateTime(2019, 12, 31, 23, 59, 59, 915000),
                       'npts': ts_size, 'sampling_rate': sampling_rate,
@@ -101,9 +102,10 @@ def test_dict2Metadata():
     assert md.get('jdate') == test_dict2Metadata.dict1['starttime'].julday
     assert md.get('date_str') == test_dict2Metadata.dict1['starttime']
 
-    assert len(test_dict2Metadata.elog.get_error_log()) == 2
+    assert len(test_dict2Metadata.elog.get_error_log()) == 3
     assert 'key=live is not defined' in test_dict2Metadata.elog.get_error_log()[0].message
     assert 'internally to a Julian day' in test_dict2Metadata.elog.get_error_log()[1].message
+    assert 'key=not_defined_date is not defined' in test_dict2Metadata.elog.get_error_log()[2].message
 
 def test_Metadata2dict():
     d = Metadata2dict(test_Metadata2dict.md1)
