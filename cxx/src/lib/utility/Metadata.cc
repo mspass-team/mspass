@@ -190,6 +190,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
         float fval;
         string sval;
         bool bval;
+        pybind11::object poval;
         boost::any a=mdptr->second;
         /* A relic retained to help remember this construct*/
         //const std::type_info &ti = a.type();
@@ -235,6 +236,21 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
             {
                 sval=boost::any_cast<string>(a);
                 os<<sval<<endl;
+            }
+            else if(sname=="pybind11::object")
+            {
+                poval=boost::any_cast<pybind11::object>(a);
+                pybind11::gil_scoped_acquire acquire;
+                pybind11::module pickle = pybind11::module::import("pickle");
+                pybind11::module codecs = pybind11::module::import("codecs");
+                pybind11::object dumps = pickle.attr("dumps");
+                pybind11::object encode = codecs.attr("encode");
+                /* The following in Python will be codecs.encode(pickle.dumps(poval), "base64").decode() 
+                 * The complexity is to ensure the bytes string to be valid UTF-8 */
+                pybind11::object pyStr = encode(dumps(poval), "base64").attr("decode")();
+                char* bytes_object = PyUnicode_AsUTF8(pyStr.ptr());
+                os<<bytes_object<<endl;
+                pybind11::gil_scoped_release release;
             }
             else
             {
@@ -297,6 +313,21 @@ Metadata restore_serialized_metadata(const std::string s)
       {
         ss>>sval;
         md.put(key,sval);
+      }
+      else if(typ=="pybind11::object")
+      {
+        ss>>sval;
+        pybind11::str pyStr = pybind11::str(sval.c_str(), sval.size());
+        pybind11::gil_scoped_acquire acquire;
+        pybind11::module pickle = pybind11::module::import("pickle");
+        pybind11::module codecs = pybind11::module::import("codecs");
+        pybind11::object loads = pickle.attr("loads");
+        pybind11::object decode = codecs.attr("decode");
+        /* The following in Python will be pickle.loads(codecs.decode(pyStr.encode(), "base64"))
+          * The complexity is to ensure the bytes string to be valid UTF-8 */
+        pybind11::object poval = loads(decode(pyStr.attr("encode")(), "base64"));
+        md.put_object(key,poval);
+        pybind11::gil_scoped_release release;
       }
       else
       {

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <boost/any.hpp>
+#include <pybind11/pybind11.h>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/BasicMetadata.h"
 
@@ -317,6 +318,10 @@ other attributes.
   {
       this->put<string>(key,val);
   };
+  void put_object(const string key, const pybind11::object val)
+  {
+      this->put<pybind11::object>(key,val);
+  }
   void put_int(const string key,const int val)
   {
     this->put<int>(key,val);

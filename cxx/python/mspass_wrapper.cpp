@@ -41,7 +41,7 @@ namespace pybind11 { namespace detail {
       if(it != toPythonMap.end()){
         return it->second(src);
       }else{
-        std::cerr << "WARNING: Could not convert directly to Python type. Trying to cast as pybind11::object." << std::endl;
+        Py_XINCREF((boost::any_cast<pybind11::object>(src)).ptr());
         return boost::any_cast<pybind11::object>(src);
       }
     }
@@ -314,6 +314,7 @@ PYBIND11_MODULE(ccore,m)
     .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const int>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
+    .def("put",py::overload_cast<const std::string,const pybind11::object>(&Metadata::put_object))
     .def("put_double",&Metadata::put_double,"Interface class for doubles")
     .def("put_bool",&Metadata::put_bool,"Interface class for boolean")
     .def("put_string",&Metadata::put_string,"Interface class for strings")
