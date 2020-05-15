@@ -248,7 +248,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
                 /* The following in Python will be base64.b64encode(pickle.dumps(poval)).decode()
                  * The complexity is to ensure the bytes string to be valid UTF-8 */
                 pybind11::object pyStr = b64encode(dumps(poval)).attr("decode")();
-                char* bytes_object = PyUnicode_AsUTF8(pyStr.ptr());
+                const char* bytes_object = PyUnicode_AsUTF8(pyStr.ptr());
                 os<<bytes_object<<endl;
                 pybind11::gil_scoped_release release;
             }
