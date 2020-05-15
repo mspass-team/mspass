@@ -242,12 +242,12 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
                 poval=boost::any_cast<pybind11::object>(a);
                 pybind11::gil_scoped_acquire acquire;
                 pybind11::module pickle = pybind11::module::import("pickle");
-                pybind11::module codecs = pybind11::module::import("codecs");
+                pybind11::module base64 = pybind11::module::import("base64");
                 pybind11::object dumps = pickle.attr("dumps");
-                pybind11::object encode = codecs.attr("encode");
-                /* The following in Python will be codecs.encode(pickle.dumps(poval), "base64").decode() 
+                pybind11::object b64encode = base64.attr("b64encode");
+                /* The following in Python will be base64.b64encode(pickle.dumps(poval)).decode()
                  * The complexity is to ensure the bytes string to be valid UTF-8 */
-                pybind11::object pyStr = encode(dumps(poval), "base64").attr("decode")();
+                pybind11::object pyStr = b64encode(dumps(poval)).attr("decode")();
                 char* bytes_object = PyUnicode_AsUTF8(pyStr.ptr());
                 os<<bytes_object<<endl;
                 pybind11::gil_scoped_release release;
