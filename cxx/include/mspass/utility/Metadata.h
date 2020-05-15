@@ -408,6 +408,8 @@ other attributes.
     return this->clear(string(key));
   };
   */
+  /*! Return the size of the internal map container. */
+  std::size_t size();
   /*! \brief Change the keyword to access an attribute.
 
   Sometimes it is useful to change the key used to access a particular piece

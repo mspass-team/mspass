@@ -146,15 +146,19 @@ set<string> Metadata::keys() const noexcept
 }
 void Metadata::clear(const std::string key)
 {
-    map<string,boost::any>::iterator iptr;
-    iptr=md.find(key);
-    if(iptr!=md.end())
-    	md.erase(iptr);
-    /* Also need to modify this set if the key is found there */
-    set<std::string>::iterator sptr;
-    sptr=changed_or_set.find(key);
-    if(sptr!=changed_or_set.end())
-	changed_or_set.erase(sptr);
+  map<string,boost::any>::iterator iptr;
+  iptr=md.find(key);
+  if(iptr!=md.end())
+    md.erase(iptr);
+  /* Also need to modify this set if the key is found there */
+  set<std::string>::iterator sptr;
+  sptr=changed_or_set.find(key);
+  if(sptr!=changed_or_set.end())
+	  changed_or_set.erase(sptr);
+}
+std::size_t Metadata::size()
+{
+  return md.size();
 }
 
 /* Helper returns demangled name using boost demangle.  */
