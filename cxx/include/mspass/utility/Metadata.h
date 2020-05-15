@@ -410,6 +410,10 @@ other attributes.
   */
   /*! Return the size of the internal map container. */
   std::size_t size();
+  /*! Return iterator to beginning of internal map container. */
+  std::map<string,boost::any>::const_iterator  begin() const noexcept;
+  /*! Return iterator to end of internal map container. */
+  std::map<string,boost::any>::const_iterator  end() const noexcept;
   /*! \brief Change the keyword to access an attribute.
 
   Sometimes it is useful to change the key used to access a particular piece

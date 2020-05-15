@@ -160,6 +160,14 @@ std::size_t Metadata::size()
 {
   return md.size();
 }
+std::map<string,boost::any>::const_iterator  Metadata::begin() const noexcept
+{
+  return md.begin();
+}
+std::map<string,boost::any>::const_iterator  Metadata::end() const noexcept
+{
+  return md.end();
+}
 
 /* Helper returns demangled name using boost demangle.  */
 string demangled_name(const boost::any a)

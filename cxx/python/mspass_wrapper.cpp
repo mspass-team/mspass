@@ -241,6 +241,24 @@ public:
     );
   }
 };
+
+/* Special iterator data structure for python */
+struct PyMetadataIterator {
+    PyMetadataIterator(const Metadata &md, py::object ref) : md(md), ref(ref) { }
+
+    std::string next() {
+        if (index == md.end())
+            throw py::stop_iteration();
+        std::string key = index->first;
+        ++index;
+        return key;
+    }
+
+    const Metadata &md;
+    py::object ref; // keep a reference
+    std::map<std::string,boost::any>::const_iterator index = md.begin();
+};
+
 PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
@@ -300,8 +318,8 @@ PYBIND11_MODULE(ccore,m)
     .value("Boolean",MDtype::Boolean)
     .value("Invalid",MDtype::Invalid)
   ;
-  py::class_<mspass::Metadata,mspass::BasicMetadata>(m,"Metadata")
-    .def(py::init<>())
+  py::class_<mspass::Metadata,mspass::BasicMetadata> md(m,"Metadata");
+  md.def(py::init<>())
     .def(py::init<const Metadata&>())
     .def(py::init<std::ifstream&,const std::string>())
     .def("get_double",&mspass::Metadata::get_double,"Retrieve a real number by a specified key")
@@ -345,6 +363,8 @@ PYBIND11_MODULE(ccore,m)
     .def("clear",&Metadata::clear,"Clears contents associated with a key")
     .def("__delitem__",&Metadata::clear,"Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
+    .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
+    .def("__reversed__", [](const Metadata &s) -> Metadata { throw py::type_error("object is not reversible"); })
     .def("change_key",&Metadata::change_key,"Change key to access an attribute")
     .def(py::self += py::self)
     .def(py::self + py::self)
@@ -361,6 +381,9 @@ PYBIND11_MODULE(ccore,m)
      }
      ))
   ;
+  py::class_<PyMetadataIterator>(md, "Metadata_keyIterator")
+    .def("__iter__", [](PyMetadataIterator &it) -> PyMetadataIterator& { return it; })
+    .def("__next__", &PyMetadataIterator::next);
 
   py::class_<mspass::AntelopePf,Metadata>(m,"AntelopePf")
     .def(py::init<>())
