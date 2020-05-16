@@ -125,12 +125,14 @@ jobs:
         - pip install pytest-cov
         - pip install codecov
       install:
-        - pip3 install ./ -vvv
+        - python setup.py build --debug install
       script:
         - export MSPASS_HOME=$(pwd)
         - pytest --cov=mspasspy python/tests/
+      # - gcov -b -n build/temp.*/python/CMakeFiles/ccore.dir/mspass_wrapper.gcno > /dev/null
       after_success:
         - codecov
+        - bash <(curl -s https://codecov.io/bash)
           
 before_install:
   - |

@@ -8,6 +8,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set (CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
 endif ()
+message (STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 
 set (CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_FLAGS_DEBUG "-Wall -O0 -g")
@@ -17,6 +18,12 @@ set (PYBIND11_CPP_STANDARD -std=c++14)
 
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+  set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
+  message (STATUS "Enabled Coverage")
+endif ()
 
 find_package (yaml-cpp 0.5.0)
 if (NOT YAML_CPP_INCLUDE_DIR)
