@@ -364,7 +364,35 @@ PYBIND11_MODULE(ccore,m)
     .def("__delitem__",&Metadata::clear,"Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
-    .def("__reversed__", [](const Metadata &s) -> Metadata { throw py::type_error("object is not reversible"); })
+    .def("__reversed__", [](const Metadata &s) -> Metadata { 
+      throw py::type_error(std::string("'") + 
+                           boost::core::demangle(typeid(s).name()) + 
+                           "' object is not reversible"); 
+    })
+    .def("__str__", [](const Metadata &s) -> std::string { 
+      std::string strout("{");
+      for(auto index = s.begin(); index != s.end(); ++index) {
+        std::string key = index->first;
+        if(index->second.type() == typeid(py::object)) {
+          py::str val = boost::any_cast<py::object>(index->second);
+          key = key + ": " + std::string(val) + ", ";
+        }
+        else if (index->second.type() == typeid(double))
+          key = key + ": " + std::to_string(boost::any_cast<double>(index->second)) + ", ";
+        else if (index->second.type() == typeid(bool) && boost::any_cast<bool>(index->second) == true)
+          key = key + ": True, ";
+        else if (index->second.type() == typeid(bool) && boost::any_cast<bool>(index->second) == false)
+          key = key + ": False, ";
+        else if (index->second.type() == typeid(int))
+          key = key + ": " + std::to_string(boost::any_cast<int>(index->second)) + ", ";
+        else 
+          key = key + ": " + boost::any_cast<string>(index->second) + ", ";
+        strout += key;
+      }
+      strout.pop_back();
+      strout.pop_back();
+      return strout + "}";
+    })
     .def("change_key",&Metadata::change_key,"Change key to access an attribute")
     .def(py::self += py::self)
     .def(py::self + py::self)
