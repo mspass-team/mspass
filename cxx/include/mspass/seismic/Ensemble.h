@@ -88,7 +88,7 @@ public:
     */
   void sync_metadata()
   {
-      int i;
+      size_t i;
       for(i=0;i<this->member.size();++i)
       {
           mspass::Metadata *mdmember=&(this->member[i]);
