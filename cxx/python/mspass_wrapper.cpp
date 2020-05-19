@@ -5,7 +5,6 @@
 #include <functional>
 #include <boost/any.hpp>
 #include <boost/archive/text_oarchive.hpp>
-#include "misc/blas.h"
 #include <mspass/utility/MsPASSError.h>
 #include <mspass/utility/AttributeMap.h>
 #include <mspass/utility/SphericalCoordinate.h>
@@ -469,41 +468,51 @@ PYBIND11_MODULE(ccore,m)
   https://github.com/pybind/pybind11/blob/master/tests/test_buffers.cpp
   */
   py::class_<mspass::dmatrix>(m, "dmatrix", py::buffer_protocol())
-   .def(py::init<>())
-   .def(py::init<int,int>())
-   /* This is the copy constructor wrapper */
-   .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
-            py::buffer_info info = b.request();
-            if (info.ndim != 2)
-                throw std::runtime_error("dmatrix python wrapper:  Incompatible buffer dimension!");
-            auto v = new dmatrix(info.shape[0], info.shape[1]);
-            memcpy(v->get_address(0,0), info.ptr, sizeof(double) * v->rows() * v->columns());
-            return v;
-        }))
-   .def_buffer([](mspass::dmatrix &m) -> py::buffer_info {
-        return py::buffer_info(
-            m.get_address(0,0),                               /* Pointer to buffer */
-            sizeof(double),                          /* Size of one scalar */
-            py::format_descriptor<double>::format(), /* Python struct-style format descriptor */
-            2,                                      /* Number of dimensions */
-            { m.rows(), m.columns() },                 /* Buffer dimensions */
-            { sizeof(double),             /* Strides (in bytes) for each index - inverted from example*/
-              sizeof(double) * m.rows() }
-        );
-      })
+    .def(py::init<>())
+    .def(py::init<int,int>())
+    /* This is the copy constructor wrapper */
+    .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
+      py::buffer_info info = b.request();
+      if (info.ndim != 2)
+        throw std::runtime_error("dmatrix python wrapper:  Incompatible buffer dimension!");
+      auto v = new dmatrix(info.shape[0], info.shape[1]);
+      memcpy(v->get_address(0,0), info.ptr, sizeof(double) * v->rows() * v->columns());
+      return v;
+    }))
+    .def_buffer([](mspass::dmatrix &m) -> py::buffer_info {
+      return py::buffer_info(
+        m.get_address(0,0),                               /* Pointer to buffer */
+        sizeof(double),                          /* Size of one scalar */
+        py::format_descriptor<double>::format(), /* Python struct-style format descriptor */
+        2,                                      /* Number of dimensions */
+        { m.rows(), m.columns() },                 /* Buffer dimensions */
+        { sizeof(double),             /* Strides (in bytes) for each index - inverted from example*/
+          sizeof(double) * m.rows() }
+      );
+    })
     .def("rows",&dmatrix::rows,"Rows in the matrix")
     .def("columns",&dmatrix::columns,"Columns in the matrix")
     .def("zero",&dmatrix::zero,"Initialize a matrix to all zeros")
     .def(py::self += py::self,"Operator +=")
     .def(py::self -= py::self,"Operator -=")
     .def("__getitem__", [](const dmatrix &m, std::pair<int, int> i) {
-          if (i.first >= m.rows() || i.second >= m.columns())
-              throw py::index_error();
-          return m(i.first, i.second);
-      })
+      if (i.first >= m.rows() || i.second >= m.columns())
+        throw py::index_error(
+          std::string("index (") + 
+          std::to_string(i.first) + "," + std::to_string(i.second) +
+          ") is out of bounds for dmatrix with size (" + 
+          std::to_string(m.rows()) + "," + std::to_string(m.columns()) + ")"
+        );
+      return m(i.first, i.second);
+    })
     .def("__getitem__", [](dmatrix &m, int i) {
       if (i >= m.rows())
-        throw py::index_error();
+        throw py::index_error(
+          std::string("index ") + 
+          std::to_string(i) +
+          " is out of bounds for axis 1 with size " + 
+          std::to_string(m.rows())
+        );
       double* packet = m.get_address(i,0);
       std::vector<ssize_t> size;
       size.push_back(m.columns());
@@ -514,14 +523,18 @@ PYBIND11_MODULE(ccore,m)
       py::str dummyDataOwner;
       py::array row(py::dtype(py::format_descriptor<double>::format()), size,
                     stride, packet, dummyDataOwner);
-      //py::array row{m.columns(), packet, dummyDataOwner};
       return row;
     })
     .def("__getitem__", [](dmatrix &m, py::slice slice) {
       size_t start, stop, step, slicelength;
       if (!slice.compute(m.rows(), &start, &stop, &step, &slicelength))
         throw py::error_already_set();
-      double* packet = m.get_address(start,0);
+      double* packet;
+      try{
+        packet = m.get_address(start,0);
+      } catch (MsPASSError e) {
+        packet = nullptr;
+      }
       std::vector<ssize_t> size;
       size.push_back(slicelength);
       size.push_back(m.columns());
@@ -547,63 +560,39 @@ PYBIND11_MODULE(ccore,m)
     })
     .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, double v) {
       if (i.first >= m.rows() || i.second >= m.columns())
-          throw py::index_error();
+          throw py::index_error(
+            std::string("index (") + 
+            std::to_string(i.first) + "," + std::to_string(i.second) +
+            ") is out of bounds for dmatrix with size (" + 
+            std::to_string(m.rows()) + "," + std::to_string(m.columns()) + ")"
+          );
       m(i.first, i.second) = v;
     })
-    .def("__setitem__", [](dmatrix &m, int i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
-      if (i >= m.rows())
-        throw py::index_error();
-      py::buffer_info info = b.request();
-      if (info.ndim != 1)
-        throw std::runtime_error(
-          "dmatrix python wrapper:  Incompatible buffer dimension!");
-      if (info.shape[0] == m.columns())
-        //memcpy(m.get_address(i,0), info.ptr, sizeof(double) * m.columns());
-        dcopy(m.columns(), (double*)info.ptr, 1, m.get_address(i,0), m.rows());
-      else
-      {
-        throw py::value_error(
-          std::string("cannot copy array with size ") + 
-          std::to_string(info.shape[0]) + 
-          " to array with size " + 
-          std::to_string(m.columns()));
-      }
-    })
-    .def("__setitem__", [](dmatrix &m, py::slice slice, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
-      size_t start, stop, step, slicelength;
-      if (!slice.compute(m.rows(), &start, &stop, &step, &slicelength))
-        throw py::error_already_set();
-      py::buffer_info info = b.request();
-      if (info.ndim != 2)
-        throw std::runtime_error(
-          "dmatrix python wrapper:  Incompatible buffer dimension!");
-      if (slicelength == info.shape[0] && m.columns() == info.shape[1]) {
-        py::array rows = py::cast(m).attr("__getitem__")(slice);
-        auto r = b.unchecked<2>();
-        for (ssize_t i = 0; i < r.shape(0); i++)
-          for (ssize_t j = 0; j < r.shape(1); j++)
-            *static_cast<double *>(rows.mutable_data(i, j)) = *r.data(i, j);
-      }
-      else
-        throw py::value_error(
-          std::string("cannot copy matrix with size (") + 
-          std::to_string(info.shape[0]) + "," + std::to_string(info.shape[1]) +
-          ") to matrix with size (" + 
-          std::to_string(slicelength) + "," + std::to_string(m.columns()) + ")");
-    })
-    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, int> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+    .def("__setitem__", [](dmatrix &m, int i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
-    .def("__setitem__", [](dmatrix &m, std::pair<int, py::slice> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+    .def("__setitem__", [](dmatrix &m, py::slice slice, py::object const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(slice, b);
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
-    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, py::slice> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, int> i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
-    ;
+    .def("__setitem__", [](dmatrix &m, std::pair<int, py::slice> i, py::object const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, py::slice> i, py::object const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
+    })
+  ;
   py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
