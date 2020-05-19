@@ -470,6 +470,7 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::dmatrix>(m, "dmatrix", py::buffer_protocol())
     .def(py::init<>())
     .def(py::init<int,int>())
+    .def(py::init<const dmatrix&>())
     /* This is the copy constructor wrapper */
     .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
       py::buffer_info info = b.request();
