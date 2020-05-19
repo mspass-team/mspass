@@ -80,6 +80,7 @@ endif ()
 include (FortranCInterface)
 list (APPEND FORTRAN_FUNCTIONS ddot dscal daxpy dcopy)
 list (APPEND FORTRAN_FUNCTIONS dgetrf dgetri)
+list (APPEND FORTRAN_FUNCTIONS dlamch dstebz dstein)
 FortranCInterface_HEADER (include/FC.h 
   MACRO_NAMESPACE "FC_"
   SYMBOLS ${FORTRAN_FUNCTIONS}
