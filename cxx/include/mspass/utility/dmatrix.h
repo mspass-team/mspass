@@ -172,7 +172,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param other matrix to be added
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  dmatrix operator+(const dmatrix& other);
+  dmatrix operator+(const dmatrix& other) const;
   /*! Operator to add two matrices. 
 
   This operator is similar to -= but is the operator used in constructs
@@ -182,7 +182,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param other matrix to be added
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  dmatrix operator-(const dmatrix& other);
+  dmatrix operator-(const dmatrix& other) const;
   //friend class dvector;
   /*! \brief 
 

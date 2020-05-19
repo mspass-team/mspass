@@ -494,6 +494,18 @@ PYBIND11_MODULE(ccore,m)
     .def("rows",&dmatrix::rows,"Rows in the matrix")
     .def("columns",&dmatrix::columns,"Columns in the matrix")
     .def("zero",&dmatrix::zero,"Initialize a matrix to all zeros")
+    .def(py::self + py::self,"Operator +")
+    .def("__add__", [](const dmatrix &a, py::object b) {
+      return py::module::import("mspasspy.ccore").attr("dmatrix")(
+        py::cast(a).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__add__")(b));
+    })
+    .def(py::self - py::self,"Operator -")
+    .def("__sub__", [](const dmatrix &a, py::object b) {
+      return py::module::import("mspasspy.ccore").attr("dmatrix")(
+        py::cast(a).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__sub__")(b));
+    })
     .def(py::self += py::self,"Operator +=")
     .def(py::self -= py::self,"Operator -=")
     .def("__getitem__", [](const dmatrix &m, std::pair<int, int> i) {

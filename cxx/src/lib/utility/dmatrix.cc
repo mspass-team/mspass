@@ -112,7 +112,7 @@ dmatrix& dmatrix::operator-=(const dmatrix& other)
   return *this;
 }
 
-dmatrix dmatrix::operator+(const dmatrix &other) 
+dmatrix dmatrix::operator+(const dmatrix &other) const
 {
     try{
         dmatrix result(*this);
@@ -120,7 +120,7 @@ dmatrix dmatrix::operator+(const dmatrix &other)
         return result;
     }catch(...){throw;};
 }
-dmatrix dmatrix::operator-(const dmatrix &other)
+dmatrix dmatrix::operator-(const dmatrix &other) const
 {
     try{
         dmatrix result(*this);
