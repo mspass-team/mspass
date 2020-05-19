@@ -152,7 +152,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param  A is the matrix to be added to this.
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  void operator+=(const dmatrix& other);
+  dmatrix& operator+=(const dmatrix& other);
   /*! \brief Subtract one matrix to another.
 
   Matrix subtraction is a standard operation but demands the two matrices
@@ -162,7 +162,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param  other is the matrix to be subracted from to this.
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  void operator-=(const dmatrix& other);
+  dmatrix& operator-=(const dmatrix& other);
   /*! Operator to add two matrices. 
 
   This operator is similar to += but is the operator used in constructs

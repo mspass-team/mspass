@@ -92,23 +92,25 @@ dmatrix& dmatrix::operator=(const dmatrix& other)
     return *this;
 }
 
-void dmatrix::operator+=(const dmatrix& other)
- {
-int i;
+dmatrix& dmatrix::operator+=(const dmatrix& other)
+{
+  int i;
   if ((nrr!=other.nrr)||(length!=other.length))
-	throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
-for(i=0;i<length;i++)
-  ary[i]+=other.ary[i];
- }
+    throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
+  for(i=0;i<length;i++)
+    ary[i]+=other.ary[i];
+  return *this;
+}
 
-void dmatrix::operator-=(const dmatrix& other)
- {
-int i;
+dmatrix& dmatrix::operator-=(const dmatrix& other)
+{
+  int i;
   if ((nrr!=other.nrr)||(length!=other.length))
-	throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
-for(i=0;i<length;i++)
-  ary[i]-=other.ary[i];
- }
+    throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
+  for(i=0;i<length;i++)
+    ary[i]-=other.ary[i];
+  return *this;
+}
 
 dmatrix dmatrix::operator+(const dmatrix &other) 
 {
