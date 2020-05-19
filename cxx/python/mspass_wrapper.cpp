@@ -5,6 +5,7 @@
 #include <functional>
 #include <boost/any.hpp>
 #include <boost/archive/text_oarchive.hpp>
+#include "misc/blas.h"
 #include <mspass/utility/MsPASSError.h>
 #include <mspass/utility/AttributeMap.h>
 #include <mspass/utility/SphericalCoordinate.h>
@@ -386,7 +387,7 @@ PYBIND11_MODULE(ccore,m)
         else if (index->second.type() == typeid(int))
           key = key + ": " + std::to_string(boost::any_cast<int>(index->second)) + ", ";
         else 
-          key = key + ": " + boost::any_cast<string>(index->second) + ", ";
+          key = key + ": '" + boost::any_cast<string>(index->second) + "', ";
         strout += key;
       }
       strout.pop_back();
@@ -471,10 +472,10 @@ PYBIND11_MODULE(ccore,m)
    .def(py::init<>())
    .def(py::init<int,int>())
    /* This is the copy constructor wrapper */
-   .def(py::init([](py::buffer const b) {
+   .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
             py::buffer_info info = b.request();
-            if (info.format != py::format_descriptor<double>::format() || info.ndim != 2)
-                throw std::runtime_error("dmatrix python wrapper:  Incompatible buffer format!");
+            if (info.ndim != 2)
+                throw std::runtime_error("dmatrix python wrapper:  Incompatible buffer dimension!");
             auto v = new dmatrix(info.shape[0], info.shape[1]);
             memcpy(v->get_address(0,0), info.ptr, sizeof(double) * v->rows() * v->columns());
             return v;
@@ -500,11 +501,108 @@ PYBIND11_MODULE(ccore,m)
               throw py::index_error();
           return m(i.first, i.second);
       })
-      .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, double v) {
-          if (i.first >= m.rows() || i.second >= m.columns())
-              throw py::index_error();
-          m(i.first, i.second) = v;
-      })
+    .def("__getitem__", [](dmatrix &m, int i) {
+      if (i >= m.rows())
+        throw py::index_error();
+      double* packet = m.get_address(i,0);
+      std::vector<ssize_t> size;
+      size.push_back(m.columns());
+      std::vector<ssize_t> stride;
+      stride.push_back(sizeof(double) * m.rows());
+      // The following undocumented trick is from 
+      // https://github.com/pybind/pybind11/issues/323
+      py::str dummyDataOwner;
+      py::array row(py::dtype(py::format_descriptor<double>::format()), size,
+                    stride, packet, dummyDataOwner);
+      //py::array row{m.columns(), packet, dummyDataOwner};
+      return row;
+    })
+    .def("__getitem__", [](dmatrix &m, py::slice slice) {
+      size_t start, stop, step, slicelength;
+      if (!slice.compute(m.rows(), &start, &stop, &step, &slicelength))
+        throw py::error_already_set();
+      double* packet = m.get_address(start,0);
+      std::vector<ssize_t> size;
+      size.push_back(slicelength);
+      size.push_back(m.columns());
+      std::vector<ssize_t> stride;
+      stride.push_back(sizeof(double) * step);
+      stride.push_back(sizeof(double) * m.rows());
+      py::str dummyDataOwner;
+      py::array rows(py::dtype(py::format_descriptor<double>::format()), size,
+                    stride, packet, dummyDataOwner);
+      return rows;
+    })
+    .def("__getitem__", [](const dmatrix &m, std::pair<py::slice, int> i) {
+      return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
+    })
+    .def("__getitem__", [](const dmatrix &m, std::pair<int, py::slice> i) {
+      return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
+    })
+    .def("__getitem__", [](const dmatrix &m, std::pair<py::slice, py::slice> i) {
+      return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, double v) {
+      if (i.first >= m.rows() || i.second >= m.columns())
+          throw py::index_error();
+      m(i.first, i.second) = v;
+    })
+    .def("__setitem__", [](dmatrix &m, int i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+      if (i >= m.rows())
+        throw py::index_error();
+      py::buffer_info info = b.request();
+      if (info.ndim != 1)
+        throw std::runtime_error(
+          "dmatrix python wrapper:  Incompatible buffer dimension!");
+      if (info.shape[0] == m.columns())
+        //memcpy(m.get_address(i,0), info.ptr, sizeof(double) * m.columns());
+        dcopy(m.columns(), (double*)info.ptr, 1, m.get_address(i,0), m.rows());
+      else
+      {
+        throw py::value_error(
+          std::string("cannot copy array with size ") + 
+          std::to_string(info.shape[0]) + 
+          " to array with size " + 
+          std::to_string(m.columns()));
+      }
+    })
+    .def("__setitem__", [](dmatrix &m, py::slice slice, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+      size_t start, stop, step, slicelength;
+      if (!slice.compute(m.rows(), &start, &stop, &step, &slicelength))
+        throw py::error_already_set();
+      py::buffer_info info = b.request();
+      if (info.ndim != 2)
+        throw std::runtime_error(
+          "dmatrix python wrapper:  Incompatible buffer dimension!");
+      if (slicelength == info.shape[0] && m.columns() == info.shape[1]) {
+        py::array rows = py::cast(m).attr("__getitem__")(slice);
+        auto r = b.unchecked<2>();
+        for (ssize_t i = 0; i < r.shape(0); i++)
+          for (ssize_t j = 0; j < r.shape(1); j++)
+            *static_cast<double *>(rows.mutable_data(i, j)) = *r.data(i, j);
+      }
+      else
+        throw py::value_error(
+          std::string("cannot copy matrix with size (") + 
+          std::to_string(info.shape[0]) + "," + std::to_string(info.shape[1]) +
+          ") to matrix with size (" + 
+          std::to_string(slicelength) + "," + std::to_string(m.columns()) + ")");
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, int> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<int, py::slice> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
+    })
+    .def("__setitem__", [](dmatrix &m, std::pair<py::slice, py::slice> i, py::array_t<double, py::array::f_style | py::array::forcecast> const b) {
+      py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
+    })
     ;
   py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
