@@ -409,7 +409,7 @@ other attributes.
   };
   */
   /*! Return the size of the internal map container. */
-  std::size_t size();
+  std::size_t size() const noexcept;
   /*! Return iterator to beginning of internal map container. */
   std::map<string,boost::any>::const_iterator  begin() const noexcept;
   /*! Return iterator to end of internal map container. */

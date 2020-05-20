@@ -156,7 +156,7 @@ void Metadata::clear(const std::string key)
   if(sptr!=changed_or_set.end())
 	  changed_or_set.erase(sptr);
 }
-std::size_t Metadata::size()
+std::size_t Metadata::size() const noexcept
 {
   return md.size();
 }

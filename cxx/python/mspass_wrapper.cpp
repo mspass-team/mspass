@@ -53,7 +53,7 @@ namespace pybind11 { namespace detail {
       m[typeid(int)]         = [](boost::any const& x) { return PyLong_FromLong(boost::any_cast<int>(x));};
       m[typeid(double)]      = [](boost::any const& x) { return PyFloat_FromDouble(boost::any_cast<double>(x));};
       m[typeid(bool)]        = [](boost::any const& x) { return PyBool_FromLong(boost::any_cast<bool>(x));};
-      m[typeid(std::string)] = [](boost::any const& x) { return PyUnicode_FromString(boost::any_cast<std::string>(x).c_str());};
+      m[typeid(std::string)] = [](boost::any const& x) { return PyUnicode_FromStringAndSize(boost::any_cast<std::string>(x).c_str(),boost::any_cast<std::string>(x).size());};
       return m;
     }
   };
@@ -296,14 +296,6 @@ PYBIND11_MODULE(ccore,m)
 
   py::class_<mspass::BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")
     .def(py::init<>())
-    .def("get_double",&mspass::BasicMetadata::get_double,py::return_value_policy::automatic)
-    .def("get_int",&mspass::BasicMetadata::get_int)
-    .def("get_bool",&mspass::BasicMetadata::get_bool)
-    .def("get_string",&mspass::BasicMetadata::get_string)
-    .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const int>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
   ;
   py::enum_<mspass::MDtype>(m,"MDtype")
     .value("Real",MDtype::Real)
@@ -322,8 +314,13 @@ PYBIND11_MODULE(ccore,m)
   md.def(py::init<>())
     .def(py::init<const Metadata&>())
     .def(py::init<std::ifstream&,const std::string>())
+    .def(py::init([](py::dict d) {
+      auto md = new Metadata();
+      for (auto i : d)
+        md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
+      return md;
+    }))
     .def("get_double",&mspass::Metadata::get_double,"Retrieve a real number by a specified key")
-    .def("get_int",&mspass::Metadata::get_int,"Return an integer number by a specified key")
     .def("get_long",&mspass::Metadata::get_long,"Return a long integer by a specified key")
     .def("get_bool",&mspass::Metadata::get_bool,"Return a (C) boolean defined by a specified key")
     .def("get_string",&mspass::Metadata::get_string,"Return a string indexed by a specified key")
@@ -331,12 +328,12 @@ PYBIND11_MODULE(ccore,m)
     .def("__getitem__",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
     .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const int>(&BasicMetadata::put))
+    .def("put",py::overload_cast<const std::string,const long>(&Metadata::put_long))
     .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const pybind11::object>(&Metadata::put_object))
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
-    .def("__setitem__",py::overload_cast<const std::string,const int>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const long>(&Metadata::put_long))
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const pybind11::object>(&Metadata::put_object))
     .def("put_double",&Metadata::put_double,"Interface class for doubles")
@@ -369,12 +366,15 @@ PYBIND11_MODULE(ccore,m)
                            boost::core::demangle(typeid(s).name()) + 
                            "' object is not reversible"); 
     })
-    .def("__str__", [](const Metadata &s) -> std::string { 
+    .def("__str__", [](const Metadata &s) -> std::string {
+      if(s.size() == 0)
+        return "{}";
       std::string strout("{");
       for(auto index = s.begin(); index != s.end(); ++index) {
         std::string key = index->first;
+        key = std::string(py::repr(py::cast(key)));
         if(index->second.type() == typeid(py::object)) {
-          py::str val = boost::any_cast<py::object>(index->second);
+          py::str val = py::repr(boost::any_cast<py::object>(index->second));
           key = key + ": " + std::string(val) + ", ";
         }
         else if (index->second.type() == typeid(double))
@@ -383,15 +383,19 @@ PYBIND11_MODULE(ccore,m)
           key = key + ": True, ";
         else if (index->second.type() == typeid(bool) && boost::any_cast<bool>(index->second) == false)
           key = key + ": False, ";
-        else if (index->second.type() == typeid(int))
-          key = key + ": " + std::to_string(boost::any_cast<int>(index->second)) + ", ";
+        else if (index->second.type() == typeid(long))
+          key = key + ": " + std::to_string(boost::any_cast<long>(index->second)) + ", ";
         else 
-          key = key + ": '" + boost::any_cast<string>(index->second) + "', ";
+          key = key + ": " + std::string(py::repr(py::cast(boost::any_cast<string>(index->second))))+ ", ";
         strout += key;
       }
       strout.pop_back();
       strout.pop_back();
       return strout + "}";
+    })
+    .def("__repr__", [](const Metadata &s) -> std::string { 
+      std::string strout("Metadata(");
+      return strout + std::string(py::str(py::cast(s).attr("__str__")())) + ")";
     })
     .def("change_key",&Metadata::change_key,"Change key to access an attribute")
     .def(py::self += py::self)
