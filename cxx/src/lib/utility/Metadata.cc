@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <boost/core/demangle.hpp>
+#include "misc/base64.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 namespace mspass
@@ -217,7 +218,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
         string sname("string");
         if(pretty_name.find("basic_string")==std::string::npos)
             sname=pretty_name;
-        os<<mdptr->first<<" "<<sname<<" ";
+        os<<misc::base64_encode(mdptr->first.c_str(), mdptr->first.size())<<" "<<sname<<" ";
         try{
             if(sname=="int")
             {
@@ -247,7 +248,8 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
             else if(sname=="string")
             {
                 sval=boost::any_cast<string>(a);
-                os<<sval<<endl;
+                string code = misc::base64_encode(sval.c_str(), sval.size());
+                os<<code<<endl;
             }
             else if(sname=="pybind11::object")
             {
@@ -303,6 +305,7 @@ Metadata restore_serialized_metadata(const std::string s)
     string sval;
     do{
       ss>>key;
+      key = misc::base64_decode(key);
       ss>>typ;
       if(ss.eof())break;   // normal exit of this loop is here
       if(typ=="double")
@@ -324,6 +327,7 @@ Metadata restore_serialized_metadata(const std::string s)
       else if(typ=="string")
       {
         ss>>sval;
+        sval = misc::base64_decode(sval);
         md.put(key,sval);
       }
       else if(typ=="pybind11::object")
