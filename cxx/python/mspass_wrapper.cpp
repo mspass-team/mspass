@@ -314,10 +314,27 @@ PYBIND11_MODULE(ccore,m)
   md.def(py::init<>())
     .def(py::init<const Metadata&>())
     .def(py::init<std::ifstream&,const std::string>())
+    /* The order of the following type check matters. Note that due to
+     * the pybind11's asymmetric conversion behavior from bytes to string,
+     * we have to handle bytes before strings. The same applies to the 
+     * put and __setitem__ methods.
+    */
     .def(py::init([](py::dict d) {
       auto md = new Metadata();
-      for (auto i : d)
-        md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
+      for(auto i : d) {
+        if(py::isinstance<py::float_>(i.second))
+          md->put(std::string(py::str(i.first)), (i.second.cast<double>()));
+        else if(py::isinstance<py::bool_>(i.second))
+          md->put(std::string(py::str(i.first)), (i.second.cast<bool>()));
+        else if(py::isinstance<py::int_>(i.second))
+          md->put(std::string(py::str(i.first)), (i.second.cast<long>()));
+        else if(py::isinstance<py::bytes>(i.second))
+          md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
+        else if(py::isinstance<py::str>(i.second))
+          md->put(std::string(py::str(i.first)), std::string(py::str(i.second)));
+        else 
+          md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
+      }
       return md;
     }))
     .def("get_double",&mspass::Metadata::get_double,"Retrieve a real number by a specified key")
@@ -326,16 +343,50 @@ PYBIND11_MODULE(ccore,m)
     .def("get_string",&mspass::Metadata::get_string,"Return a string indexed by a specified key")
     .def("get",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
     .def("__getitem__",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
+    .def("put", [](Metadata& md, const py::bytes k, const py::object v) {
+      if(py::isinstance<py::float_>(v))
+        md.put(std::string(py::str(k)), (v.cast<double>()));
+      else if(py::isinstance<py::bool_>(v))
+        md.put(std::string(py::str(k)), (v.cast<bool>()));
+      else if(py::isinstance<py::int_>(v))
+        md.put(std::string(py::str(k)), (v.cast<long>()));
+      else if(py::isinstance<py::bytes>(v))
+        md.put_object(std::string(py::str(k)), py::reinterpret_borrow<py::object>(v));
+      else if(py::isinstance<py::str>(v))
+        md.put(std::string(py::str(k)), std::string(py::str(v)));
+      else 
+        md.put_object(std::string(py::str(k)), py::reinterpret_borrow<py::object>(v));
+    })
     .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
     .def("put",py::overload_cast<const std::string,const long>(&Metadata::put_long))
+    .def("put",[](Metadata& md, const std::string k, const py::bytes v) {
+        md.put_object(k, py::reinterpret_borrow<py::object>(v));
+    })
     .def("put",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
-    .def("put",py::overload_cast<const std::string,const pybind11::object>(&Metadata::put_object))
+    .def("put",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+    .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
+      if(py::isinstance<py::float_>(v))
+        md.put(std::string(py::str(k)), (v.cast<double>()));
+      else if(py::isinstance<py::bool_>(v))
+        md.put(std::string(py::str(k)), (v.cast<bool>()));
+      else if(py::isinstance<py::int_>(v))
+        md.put(std::string(py::str(k)), (v.cast<long>()));
+      else if(py::isinstance<py::bytes>(v))
+        md.put_object(std::string(py::str(k)), py::reinterpret_borrow<py::object>(v));
+      else if(py::isinstance<py::str>(v))
+        md.put(std::string(py::str(k)), std::string(py::str(v)));
+      else 
+        md.put_object(std::string(py::str(k)), py::reinterpret_borrow<py::object>(v));
+    })
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const long>(&Metadata::put_long))
+    .def("__setitem__",[](Metadata& md, const std::string k, const py::bytes v) {
+        md.put_object(k, py::reinterpret_borrow<py::object>(v));
+    })
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
-    .def("__setitem__",py::overload_cast<const std::string,const pybind11::object>(&Metadata::put_object))
+    .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
     .def("put_double",&Metadata::put_double,"Interface class for doubles")
     .def("put_bool",&Metadata::put_bool,"Interface class for boolean")
     .def("put_string",&Metadata::put_string,"Interface class for strings")
@@ -345,7 +396,13 @@ PYBIND11_MODULE(ccore,m)
     .def("put_int",&Metadata::put_int,"Interface class for generic ints")
     */
     .def("keys",&Metadata::keys,"Return a list of the keys of all defined attributes")
-    .def("type",&Metadata::type,"Return a demangled typename for value associated with a key")
+    .def("type",[](const Metadata &md, const std::string &key) -> std::string { 
+      std::string typ = md.type(key);
+      if(typ == "pybind11::object")
+        return py::str(boost::any_cast<pybind11::object>(md.get_any(key)).get_type());
+      else
+        return typ;
+    },"Return a demangled typename for value associated with a key")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("clear_modified",&Metadata::clear_modified,"Clear container used to mark altered Metadata")
     /*  For unknown reasons could not make this overload work.  
