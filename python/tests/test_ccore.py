@@ -5,6 +5,8 @@ import numpy as np
 import pytest
 
 from mspasspy.ccore import (dmatrix,
+                            ErrorLogger,
+                            ErrorSeverity,
                             Metadata,
                             Seismogram,
                             TimeSeries)
@@ -127,6 +129,13 @@ def test_dmatrix():
     dm[3:7,-19:-12] = 3.14
     assert (dm[3:7,-19:-12] == 3.14).all()
 
+def test_ErrorLogger():
+    errlog = ErrorLogger()
+    assert errlog.log_error('1','2', ErrorSeverity(3)) == 1
+    assert errlog[0].algorithm == '1'
+    assert errlog[0].message == '2'
+    assert errlog[0].badness == ErrorSeverity.Complaint
+    assert errlog[0].job_id == errlog.get_job_id()
 
 def test_Metadata():
     md = Metadata()

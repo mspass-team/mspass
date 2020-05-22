@@ -668,6 +668,21 @@ PYBIND11_MODULE(ccore,m)
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
+    .def("__str__", [](const dmatrix &m) -> std::string {
+      return std::string(py::str(py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__str__")()));;
+    })
+    .def("__repr__", [](const dmatrix &m) -> std::string { 
+      std::string strout("dmatrix(");
+      strout += std::string(py::str(py::cast(m).attr("__str__")())) + ")";
+      size_t pos = strout.find('\n');
+      while(pos != string::npos)
+      {
+        strout.insert(++pos, 8, ' ');
+        pos = strout.find('\n', pos);
+      }
+      return strout;
+    })
   ;
   py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
@@ -788,7 +803,11 @@ PYBIND11_MODULE(ccore,m)
     .def("log_verbose",&mspass::ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
     .def("get_error_log",&mspass::ErrorLogger::get_error_log,"Return all posted entries")
     .def("size",&mspass::ErrorLogger::size,"Return number of entries in this log")
+    .def("__len__",&mspass::ErrorLogger::size,"Return number of entries in this log")
     .def("worst_errors",&mspass::ErrorLogger::worst_errors,"Return a list of only the worst errors")
+    .def("__getitem__", [](ErrorLogger &self, size_t i) {
+      return py::cast(self).attr("get_error_log")().attr("__getitem__")(i);
+    })
   ;
   py::class_<mspass::MsPASSCoreTS>(m,
                "MsPASSCoreTS","class to extend a data object to integrate with MongoDB")
