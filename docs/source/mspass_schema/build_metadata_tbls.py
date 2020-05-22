@@ -28,16 +28,18 @@ def write_group(pf, tag,mdef):
     tbl=pf.get_tbl(tag)
     filename=tag+".csv"
     fh=open(filename,"w+")
-    fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("key","type","Mutable","Concept"))
+    fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("Key","Type","Mutable","Concept"))
     for k in tbl:
         t=mdef.type(k)
         tstr="undefined"
         if(t==MDtype.Int64):
-            tstr="integer"
+            tstr="int"
         elif(t==MDtype.Double):
-            tstr="real"
+            tstr="double"
         elif(t==MDtype.String):
             tstr="string"
+        elif(t==MDtype.Boolean):
+            tstr="boolean"
         writeable=mdef.writeable(k)
         wstr="undefined"
         if(writeable):
@@ -56,17 +58,19 @@ aliasfile="aliases.csv"
 
 mdef=MetadataDefinitions()
 fh=open(allfile,"w+")
-fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("key","type","Mutable","Concept"))
+fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % ("Key","Type","Mutable","Concept"))
 mdk=mdef.keys()
 for k in mdk:
     t=mdef.type(k)
     tstr="undefined"
     if(t==MDtype.Int64):
-        tstr="integer"
+        tstr="int"
     elif(t==MDtype.Double):
-        tstr="real"
+        tstr="double"
     elif(t==MDtype.String):
         tstr="string"
+    elif(t==MDtype.Boolean):
+        tstr="boolean"
     writeable=mdef.writeable(k)
     wstr="undefined"
     if(writeable):
@@ -76,7 +80,7 @@ for k in mdk:
     fh.write('\"%s\",\"%s\",\"%s\",\"%s\"\n' % (k,tstr,wstr,mdef.concept(k)))
 fh.close()
 fh=open(aliasfile,"w+")
-fh.write('\"%s\",\"%s\"\n' % ("Unique key","Valid aliases"))
+fh.write('\"%s\",\"%s\"\n' % ("Unique Key","Valid Aliases"))
 for k in mdk:
     aliaslist=mdef.aliases(k)
     if(len(aliaslist)>0):

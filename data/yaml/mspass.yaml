@@ -112,7 +112,7 @@ Attributes:
   - name: chan_id
     type: string
     concept:  String representation of ObjectId used to define a particular component of data
-    readonly:  true
+    readonly:  false
     unique_id:  chan_id
     collection:  sitechan
   - name: chanid
@@ -175,7 +175,7 @@ Attributes:
   - name: orid
     type: int
     concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
-    readonly:  true
+    readonly:  false
     unique_id:  source_id
     collection:  source 
     alias: origin.orid,event.orid
@@ -251,6 +251,8 @@ Magnitude:
     concept: generic magnitude attribute
     readonly: false
     aliases: MAG
+    unique_id: souce_id
+    collection: source
 External_files:
   - name: dfile
     type: string

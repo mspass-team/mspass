@@ -49,7 +49,7 @@ Seismogram::Seismogram(const Metadata& md)
    * defined we silently set the id invalid.
    */
   try{
-    string oids=this->get_string("oid_string");
+    string oids=this->get_string("wf_id");
     this->set_id(oids);
   }catch(MsPASSError& merr)
   {
