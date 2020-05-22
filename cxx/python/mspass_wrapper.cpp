@@ -452,9 +452,9 @@ PYBIND11_MODULE(ccore,m)
       strout.pop_back();
       return strout + "}";
     })
-    .def("__repr__", [](const Metadata &s) -> std::string { 
-      std::string strout("Metadata(");
-      return strout + std::string(py::str(py::cast(s).attr("__str__")())) + ")";
+    .def("__repr__", [](const Metadata &s) -> std::string {
+      return py::cast(s).attr("__class__").attr("__name__").cast<std::string>() + 
+          "(" + std::string(py::str(py::cast(s).attr("__str__")())) + ")";
     })
     .def("change_key",&Metadata::change_key,"Change key to access an attribute")
     .def(py::self += py::self)
@@ -786,11 +786,39 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::LogData>(m,"LogData","Many mspass create error and log messages with this structure")
     .def(py::init<>())
     .def(py::init<int,std::string,mspass::MsPASSError&>())
+    .def(py::init<int,std::string,std::string,mspass::ErrorSeverity>())
+    .def(py::init([](py::dict d) {
+      auto ld = new LogData();
+      for(auto i : d) {
+        if(std::string(py::str(i.first)) == "job_id")
+          ld->job_id = i.second.cast<long>();
+        else if(std::string(py::str(i.first)) == "p_id")
+          ld->p_id = i.second.cast<long>();
+        else if(std::string(py::str(i.first)) == "algorithm")
+          ld->algorithm = i.second.cast<std::string>();
+        else if(std::string(py::str(i.first)) == "message")
+          ld->message = i.second.cast<std::string>();
+        else if(std::string(py::str(i.first)) == "badness")
+          ld->badness = i.second.cast<mspass::ErrorSeverity>();
+      }
+      return ld;
+    }))
     .def_readwrite("job_id",&LogData::job_id,"Return the job id defined for this log message")
     .def_readwrite("p_id",&LogData::p_id,"Return the process id of the procedure that threw the defined message")
     .def_readwrite("algorithm",&LogData::algorithm,"Return the algorithm of the procedure that threw the defined message")
     .def_readwrite("badness",&LogData::badness,"Return a error level code")
     .def_readwrite("message",&LogData::message,"Return the actual posted message")
+    .def("__str__", [](const LogData &ld) -> std::string {
+      return std::string("{'job_id': ") + std::to_string(ld.job_id) + 
+        ", 'p_id': " + std::to_string(ld.p_id) + 
+        ", 'algorithm': " + ld.algorithm + 
+        ", 'message': " + ld.message + ", 'badness': " + 
+        std::string(py::str(py::cast(ld.badness))) + "}";
+    })
+    .def("__repr__", [](const LogData &ld) -> std::string { 
+      std::string strout("LogData(");
+      return strout + std::string(py::str(py::cast(ld).attr("__str__")())) + ")";
+    })
   ;
   py::class_<mspass::ErrorLogger>(m,"ErrorLogger","Used to post any nonfatal errors without aborting a program of family of parallel programs")
     .def(py::init<>())

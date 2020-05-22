@@ -7,6 +7,7 @@ import pytest
 from mspasspy.ccore import (dmatrix,
                             ErrorLogger,
                             ErrorSeverity,
+                            LogData,
                             Metadata,
                             Seismogram,
                             TimeSeries)
@@ -136,6 +137,14 @@ def test_ErrorLogger():
     assert errlog[0].message == '2'
     assert errlog[0].badness == ErrorSeverity.Complaint
     assert errlog[0].job_id == errlog.get_job_id()
+
+def test_LogData():
+    ld = LogData({"job_id":0, "p_id":1, "algorithm":"alg", "message":"msg", "badness":ErrorSeverity(2)})
+    assert ld.job_id == 0
+    assert ld.p_id == 1
+    assert ld.algorithm == "alg"
+    assert ld.message == "msg"
+    assert ld.badness == ErrorSeverity.Suspect
 
 def test_Metadata():
     md = Metadata()
