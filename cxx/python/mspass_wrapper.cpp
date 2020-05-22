@@ -26,6 +26,8 @@
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 
+namespace py=pybind11;
+
 namespace pybind11 { namespace detail {
   template <> struct type_caster<boost::any> {
   public:
@@ -38,30 +40,26 @@ namespace pybind11 { namespace detail {
     }
     static handle cast(boost::any src, return_value_policy /* policy */, handle /* parent */) {
       auto it = toPythonMap.find(src.type());
-      if(it != toPythonMap.end()){
+      if(it != toPythonMap.end())
         return it->second(src);
-      }else{
-        Py_XINCREF((boost::any_cast<pybind11::object>(src)).ptr());
-        return boost::any_cast<pybind11::object>(src);
-      }
+      else
+        return boost::any_cast<py::object>(src).inc_ref();
     }
   private:
     static std::map<std::type_index, std::function<handle(boost::any const&)>> toPythonMap;
     static std::map<std::type_index, std::function<handle(boost::any const&)>> createToPythonMap() {
       std::map<std::type_index, std::function<handle(boost::any const&)>> m;
-      m[typeid(long)]        = [](boost::any const& x) { return PyLong_FromLong(boost::any_cast<long>(x));};
-      m[typeid(int)]         = [](boost::any const& x) { return PyLong_FromLong(boost::any_cast<int>(x));};
-      m[typeid(double)]      = [](boost::any const& x) { return PyFloat_FromDouble(boost::any_cast<double>(x));};
-      m[typeid(bool)]        = [](boost::any const& x) { return PyBool_FromLong(boost::any_cast<bool>(x));};
-      m[typeid(std::string)] = [](boost::any const& x) { return PyUnicode_FromStringAndSize(boost::any_cast<std::string>(x).c_str(),boost::any_cast<std::string>(x).size());};
+      m[typeid(long)]        = [](boost::any const& x) { return py::cast(boost::any_cast<long>(x)).release();};
+      m[typeid(int)]         = [](boost::any const& x) { return py::cast(boost::any_cast<int>(x)).release();};
+      m[typeid(double)]      = [](boost::any const& x) { return py::cast(boost::any_cast<double>(x)).release();};
+      m[typeid(bool)]        = [](boost::any const& x) { return py::cast(boost::any_cast<bool>(x)).release();};
+      m[typeid(std::string)] = [](boost::any const& x) { return py::cast(boost::any_cast<std::string>(x)).release();};
       return m;
     }
   };
   std::map<std::type_index, std::function<handle(boost::any const&)>>
   type_caster<boost::any>::toPythonMap = type_caster<boost::any>::createToPythonMap();
 }} // namespace pybind11::detail
-
-namespace py=pybind11;
 
 using std::exception;
 using std::stringstream;
@@ -438,14 +436,19 @@ PYBIND11_MODULE(ccore,m)
         }
         else if (index->second.type() == typeid(double))
           key = key + ": " + std::to_string(boost::any_cast<double>(index->second)) + ", ";
-        else if (index->second.type() == typeid(bool) && boost::any_cast<bool>(index->second) == true)
+        else if (index->second.type() == typeid(bool) && 
+                 boost::any_cast<bool>(index->second) == true)
           key = key + ": True, ";
-        else if (index->second.type() == typeid(bool) && boost::any_cast<bool>(index->second) == false)
+        else if (index->second.type() == typeid(bool) && 
+                 boost::any_cast<bool>(index->second) == false)
           key = key + ": False, ";
         else if (index->second.type() == typeid(long))
           key = key + ": " + std::to_string(boost::any_cast<long>(index->second)) + ", ";
+        /* The py::repr function will get the double/single 
+         * quotes right based on the content of the string */
         else 
-          key = key + ": " + std::string(py::repr(py::cast(boost::any_cast<string>(index->second))))+ ", ";
+          key = key + ": " + std::string(py::repr(py::cast(
+                boost::any_cast<string>(index->second)))) + ", ";
         strout += key;
       }
       strout.pop_back();
