@@ -420,8 +420,8 @@ PYBIND11_MODULE(ccore,m)
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
     .def("__reversed__", [](const Metadata &s) -> Metadata { 
       throw py::type_error(std::string("'") + 
-                           boost::core::demangle(typeid(s).name()) + 
-                           "' object is not reversible"); 
+        py::cast(s).attr("__class__").attr("__name__").cast<std::string>() + 
+        "' object is not reversible"); 
     })
     .def("__str__", [](const Metadata &s) -> std::string {
       if(s.size() == 0)
@@ -961,29 +961,91 @@ PYBIND11_MODULE(ccore,m)
      the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
      will be handled. */
   py::class_<mspass::Ensemble<TimeSeries>,mspass::Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
-      .def(py::init<>())
-      .def(py::init<const int >())
-      .def(py::init<const Metadata&, const int>())
-      .def(py::init<const Ensemble<TimeSeries>&>())
-      .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
-      .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
-      /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
-         to function properlty */
-      .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
-              "Vector of TimeSeries objects defining the ensemble")
-    ;
+    .def(py::init<>())
+    .def(py::init<const int >())
+    .def(py::init<const Metadata&, const int>())
+    .def(py::init<const Ensemble<TimeSeries>&>())
+    .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
+    .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
+    /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+        to function properlty */
+    .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
+            "Vector of TimeSeries objects defining the ensemble")
+    .def("__getitem__", [](mspass::Ensemble<TimeSeries> &self, const int i) {
+      return self.member.at(i);
+    })
+    .def("__getitem__",&mspass::Metadata::get_any)
+    .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const int i, const TimeSeries ts) {
+      self.member.at(i) = ts;
+    })
+    /* Based on this issue: https://github.com/pybind/pybind11/issues/974 
+    * there seems to be no clean solution for the following code duplicate.
+    * Except that the following lambda function could be replaced with a 
+    * reusable function. (Some thing TODO) */
+    .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
+      if(py::isinstance<py::float_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
+      else if(py::isinstance<py::bool_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<bool>()));
+      else if(py::isinstance<py::int_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<long>()));
+      else if(py::isinstance<py::bytes>(v))
+        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+      else if(py::isinstance<py::str>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
+      else 
+        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+    })
+    .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const long>(&Metadata::put_long))
+    .def("__setitem__",[](Metadata& md, const std::string k, const py::bytes v) {
+        md.put_object(k, py::reinterpret_borrow<py::object>(v));
+    })
+    .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+  ;
   py::class_<mspass::Ensemble<Seismogram>,mspass::Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
-      .def(py::init<>())
-      .def(py::init<const int >())
-      .def(py::init<const Metadata&, const int>())
-      .def(py::init<const Ensemble<Seismogram>&>())
-      .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
-      .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
-      /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
-         to function properlty */
-      .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
-              "Vector of Seismogram objects defining the ensemble")
-    ;
+    .def(py::init<>())
+    .def(py::init<const int >())
+    .def(py::init<const Metadata&, const int>())
+    .def(py::init<const Ensemble<Seismogram>&>())
+    .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
+    .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
+    /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+        to function properlty */
+    .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
+            "Vector of Seismogram objects defining the ensemble")
+    .def("__getitem__", [](mspass::Ensemble<Seismogram> &self, const int i) {
+      return self.member.at(i);
+    })
+    .def("__getitem__",&mspass::Metadata::get_any)
+    .def("__setitem__", [](mspass::Ensemble<Seismogram> &self, const int i, const Seismogram ts) {
+      self.member.at(i) = ts;
+    })
+    .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
+      if(py::isinstance<py::float_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
+      else if(py::isinstance<py::bool_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<bool>()));
+      else if(py::isinstance<py::int_>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), (v.cast<long>()));
+      else if(py::isinstance<py::bytes>(v))
+        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+      else if(py::isinstance<py::str>(v))
+        md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
+      else 
+        md.put_object(std::string(py::str(k.attr("__str__")())), v);
+    })
+    .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const bool>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const long>(&Metadata::put_long))
+    .def("__setitem__",[](Metadata& md, const std::string k, const py::bytes v) {
+        md.put_object(k, py::reinterpret_borrow<py::object>(v));
+    })
+    .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
+    .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+  ;
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
