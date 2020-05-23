@@ -10,7 +10,10 @@ from mspasspy.ccore import (dmatrix,
                             LogData,
                             Metadata,
                             Seismogram,
-                            TimeSeries)
+                            SeismogramEnsemble,
+                            TimeSeries,
+                            TimeSeriesEnsemble,
+                            TimeReferenceType)
 
 def setup_function(function):
     pass
@@ -177,7 +180,6 @@ def test_Metadata():
             assert (md[i] == md_copy[i]).all()
         else:
             assert md[i] == md_copy[i]
-    assert md[i] == md_copy[i]
 
     md = Metadata({
         "<class 'numpy.ndarray'>": np.array([3, 4]),
@@ -191,7 +193,7 @@ def test_Metadata():
     for i in md: 
         assert md.type(i) == i
     
-    md[b'\xba\xd0']= b'\xba\xd0'
+    md[b'\xba\xd0'] = b'\xba\xd0'
     md_copy = pickle.loads(pickle.dumps(md))
     for i in md:
         if i == "<class 'numpy.ndarray'>":
@@ -205,10 +207,65 @@ def test_Metadata():
     assert not "<class 'numpy.ndarray'>" in md_copy
     assert md.keys() == md_copy.keys()
 
-    with pytest.raises(TypeError, match = 'mspass::Metadata'):
+    with pytest.raises(TypeError, match = 'Metadata'):
         reversed(md)
     
     md = Metadata({1:1,3:3})
     md_copy = Metadata({2:2,3:30})
     md += md_copy
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
+
+
+@pytest.fixture(params=[Seismogram, SeismogramEnsemble, 
+                        TimeSeries, TimeSeriesEnsemble])
+def MetadataBase(request):
+    return request.param
+def test_MetadataBase(MetadataBase):
+    md = MetadataBase()
+    assert repr(md) == MetadataBase.__name__ + '({})'
+    dic = {1:1}
+    md.put('dict', dic)
+    val = md.get('dict')
+    val[2] = 2
+    del val
+    dic[3] = 3
+    del dic
+    md['dict'][4] = 4
+    assert md['dict'] == {1: 1, 2: 2, 3: 3, 4: 4}
+
+    md = MetadataBase()
+    md["<class 'numpy.ndarray'>"]     = np.array([3, 4])
+    md["<class 'dict'>"]      = {1: 1, 2: 2}
+    md['string'] = 'str\'i"ng'
+    md["str'ing"]   = "str'ing"
+    md['double']    = 3.14
+    md['bool']      = True
+    md['long']       = 7
+    md["str\ning"]    = "str\0ing"
+    md["str\ning"]    = "str\ning"
+    md["str\ting"]  = "str\ting"
+    md["str\0ing"]  = "str\0ing"
+    md["str\\0ing"] = "str\\0ing"
+    md["<class 'bytes'>"] = b'\xba\xd0\xba\xd0'
+    md["<class 'NoneType'>"] = None
+    md[b'\xba\xd0']= b'\xba\xd0'
+    md_copy = MetadataBase(md)
+    for i in md:
+        if i == 'array' or i == "<class 'numpy.ndarray'>":
+            assert (md[i] == md_copy[i]).all()
+        else:
+            assert md[i] == md_copy[i]
+    del md["str'ing"], md["str\ning"], md["str\ting"], md["str\0ing"], md["str\\0ing"], md["b'\\xba\\xd0'"]
+    for i in md:
+        assert md.type(i) == i
+
+    md_copy = MetadataBase(md)
+    del md["<class 'numpy.ndarray'>"]
+    md_copy.clear("<class 'numpy.ndarray'>")
+    assert not "<class 'numpy.ndarray'>" in md
+    assert not "<class 'numpy.ndarray'>" in md_copy
+    assert md.keys() == md_copy.keys()
+
+    with pytest.raises(TypeError, match = MetadataBase.__name__):
+        reversed(md)
+
