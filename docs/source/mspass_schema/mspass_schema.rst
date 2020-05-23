@@ -90,8 +90,7 @@ This set of attributes are used to define location estimates or measured
 locations of seismic sources.   MsPASS does not support the concept of
 multiple location estimates for the same seismic events that is a major
 complication in the relational database schema CSS3.0 used, for example,
-in Antelope.   Each source defined by two alternative unique ids:  evid and
-oid_source defined in the table below.
+in Antelope.   Each source defined by the unique id:  source_id defined in the table below.
 
 .. csv-table:: **Source coordinate (source collection) Attributes**
     :file: source.csv
