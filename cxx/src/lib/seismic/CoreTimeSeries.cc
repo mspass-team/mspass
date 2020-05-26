@@ -63,17 +63,17 @@ CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
 }
 /*  Sum operator for CoreTimeSeries object */
 
-void CoreTimeSeries::operator+=(const CoreTimeSeries& data)
+CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
 {
-    int i,i0,iend;
-    int j,j0=0;
+    size_t i,i0,iend;
+    size_t j,j0=0;
     // Sun's compiler complains about const objects without this.
     CoreTimeSeries& d=const_cast<CoreTimeSeries&>(data);
     // Silently do nothing if d is marked dead
-    if(!d.live) return;
+    if(!d.live) return(*this);
     // Silently do nothing if d does not overlap with data to contain sum
     if( (d.endtime()<t0)
-            || (d.t0>(this->endtime())) ) return;
+            || (d.t0>(this->endtime())) ) return(*this);
     if(d.tref!=(this->tref))
         throw MsPASSError("CoreTimeSeries += operator cannot handle data with inconsistent time base\n",
                           ErrorSeverity::Invalid);
@@ -87,24 +87,25 @@ void CoreTimeSeries::operator+=(const CoreTimeSeries& data)
         i0=0;
     }
     iend=d.sample_number(this->endtime());
-    if(iend>(d.ns-1))
+    if(iend>(d.s.size()-1))
     {
-        iend=d.ns-1;
+        iend=d.s.size()-1;
     }
     //
     // IMPORTANT:  This algorithm simply assumes zero_gaps has been called
     // and/or d was checked for gaps befor calling this operatr.
     // It will produce garbage for most raw gap (sample level) marking schemes
     //
-    for(i=i0,j=j0; i<iend; ++i,++j)
+    for(i=i0,j=j0; i<=iend; ++i,++j)
         this->s[j]+=d.s[i];
+    return(*this);
 }
-double CoreTimeSeries::operator[](int i) const
+double CoreTimeSeries::operator[](size_t i) const
 {
     if(!live)
         throw MsPASSError(string("CoreTimeSeries operator[]: attempting to access data marked as dead"),
                           ErrorSeverity::Invalid);
-    if( (i<0) || (i>=ns) )
+    if( (i<0) || (i>=s.size()) )
     {
         throw MsPASSError(
             string("CoreTimeSeries operator[]:  request for sample outside range of data"),

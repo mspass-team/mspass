@@ -524,8 +524,17 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const int>())
+    .def("endtime",&mspass::CoreTimeSeries::endtime,"Return the (computed) end time of a time series")
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
+    /* This is pretty much ignoring the ns on C++ side and override 
+       it with the actual size of the underlying vector. This is needed 
+       to avoid issues of pickle from inconsistent size. */
+    .def_property("ns",[](const CoreTimeSeries &self) {
+      return self.s.size();
+    },[](CoreTimeSeries &self, size_t length) {
+      self.s.resize(length);
+    },"Number of samples in this time series")
   ;
     /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\
@@ -923,7 +932,7 @@ PYBIND11_MODULE(ccore,m)
           arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
           /*This creates a numpy array alias from the vector container
           without a move or copy of the data */
-          py::array_t<double, py::array::f_style> darr(self.ns,&(self.s[0]));
+          py::array_t<double, py::array::f_style> darr(self.s.size(),&(self.s[0]));
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
         },
         [](py::tuple t) {
@@ -943,11 +952,10 @@ PYBIND11_MODULE(ccore,m)
          make it fast */
          py::array_t<double, py::array::f_style> darr;
          darr=t[3].cast<py::array_t<double, py::array::f_style>>();
-         /* A tad dangerous assuming bts.ns matches actual size of darr, but it should
-         in this context. */
+         py::buffer_info info = darr.request();
          std::vector<double> d;
-         d.reserve(bts.ns);
-         for(int i=0;i<bts.ns;++i) d.push_back(darr.at(i));
+         d.resize(info.shape[0]);
+         memcpy(d.data(), info.ptr, sizeof(double) * d.size());
          return TimeSeries(bts,md,corets,d);;
        }
      ));

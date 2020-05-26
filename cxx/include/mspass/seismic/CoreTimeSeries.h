@@ -47,6 +47,14 @@ Standard copy constructor.
 **/
 	CoreTimeSeries(const CoreTimeSeries&);
 /*!
+Returns the end time (time associated with last data sample)
+of this data object.
+**/
+	double endtime()const noexcept
+        {
+            return(t0+dt*static_cast<double>(s.size()-1));
+        };
+/*!
 Standard assignment operator.
 **/
 	CoreTimeSeries& operator=(const CoreTimeSeries&);
@@ -54,7 +62,7 @@ Standard assignment operator.
 Summation operator.  Simple version of stack.  Aligns data before
 summing.
 **/
-	void operator+=(const CoreTimeSeries& d);
+	CoreTimeSeries& operator+=(const CoreTimeSeries& d);
 
 /*!
 Extract a sample from data vector with range checking.
@@ -67,7 +75,7 @@ this operator is simply an alterative interface to this->s[sample].
 
 \param sample is the integer sample number of data desired.
 **/
-	double operator[](int const sample) const;
+	double operator[](size_t const sample) const;
 };
 }  // End mspass namespace
 #endif //end guard
