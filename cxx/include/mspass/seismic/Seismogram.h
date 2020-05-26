@@ -64,6 +64,7 @@ public:
    \param md is the Metadata object used to drive the constructor.
 
    */
+  Seismogram(const Metadata& md);
   /*! \brief Construct from all pieces.
 
   This constructor build a Seismogram object from all the pieces that define
@@ -85,7 +86,6 @@ public:
   Seismogram(const BasicTimeSeries& b, const Metadata& m,
     const MsPASSCoreTS& corets,const bool card, const bool ortho,
     const dmatrix& tm, const dmatrix& uin);
-  Seismogram(const Metadata& md);
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::CoreSeismogram(parent), mspass::MsPASSCoreTS(parent){};
