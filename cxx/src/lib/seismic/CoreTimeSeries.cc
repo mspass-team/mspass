@@ -14,11 +14,11 @@ CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 {
     s.reserve(0);
 }
-CoreTimeSeries::CoreTimeSeries(int nsin) : BasicTimeSeries(), Metadata()
+CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
 {
     s.reserve(nsin);
     // This seems to be necessary at least for Sun's compiler
-    for(int i=0; i<nsin; ++i)s.push_back(0.0);
+    for(size_t i=0; i<nsin; ++i)s.push_back(0.0);
 }
 
 
@@ -45,7 +45,7 @@ CoreTimeSeries::CoreTimeSeries(const CoreTimeSeries& tsi) :
 CoreTimeSeries::CoreTimeSeries(const BasicTimeSeries& bd,const Metadata& md)
     : BasicTimeSeries(bd), Metadata(md)
 {
-    int i;
+    size_t i;
     this->s.reserve(this->ns);   // ns should be set by BasicTimeSeries constructor
     for(i=0; i<this->ns; ++i)
         this->s.push_back(0.0);

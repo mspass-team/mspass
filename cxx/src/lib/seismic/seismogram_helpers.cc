@@ -175,7 +175,7 @@ void HorizontalRotation(CoreSeismogram& d, double phi)
 simply rethrown.
 
 */
-CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const int component)
+CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const unsigned int component)
 {
     try {
         CoreTimeSeries ts(dynamic_cast<const BasicTimeSeries&>(tcs),

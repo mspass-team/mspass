@@ -28,9 +28,9 @@ public:
 
   \param - expected number of members.
   */
-  Ensemble(const int n){member.reserve(n);};
+  Ensemble(const size_t n){member.reserve(n);};
   /*! Partial constructor to clone metadata and set aside n slots but no data*/
-  Ensemble(const Metadata& md,const int n) : Metadata(md)
+  Ensemble(const Metadata& md,const size_t n) : Metadata(md)
   {
       member.reserve(n);
   };
@@ -57,7 +57,7 @@ public:
 
   \param n  is the member to be extracted and returned.
   */
-  Tdata& operator[](const int n) const
+  Tdata& operator[](const size_t n) const
   try{
     return(this->member[n]);
   }catch(...){throw;};

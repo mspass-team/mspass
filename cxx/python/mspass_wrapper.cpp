@@ -523,7 +523,7 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::CoreTimeSeries,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
-    .def(py::init<const int>())
+    .def(py::init<const size_t>())
     .def("endtime",&mspass::CoreTimeSeries::endtime,"Return the (computed) end time of a time series")
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
@@ -544,7 +544,7 @@ PYBIND11_MODULE(ccore,m)
   */
   py::class_<mspass::dmatrix>(m, "dmatrix", py::buffer_protocol())
     .def(py::init<>())
-    .def(py::init<int,int>())
+    .def(py::init<size_t,size_t>())
     .def(py::init<const dmatrix&>())
     /* This is the copy constructor wrapper */
     .def(py::init([](py::array_t<double, py::array::f_style | py::array::forcecast> b) {
@@ -583,36 +583,6 @@ PYBIND11_MODULE(ccore,m)
     })
     .def(py::self += py::self,"Operator +=")
     .def(py::self -= py::self,"Operator -=")
-    .def("__getitem__", [](const dmatrix &m, std::pair<int, int> i) {
-      if (i.first >= m.rows() || i.second >= m.columns())
-        throw py::index_error(
-          std::string("index (") + 
-          std::to_string(i.first) + "," + std::to_string(i.second) +
-          ") is out of bounds for dmatrix with size (" + 
-          std::to_string(m.rows()) + "," + std::to_string(m.columns()) + ")"
-        );
-      return m(i.first, i.second);
-    })
-    .def("__getitem__", [](dmatrix &m, int i) {
-      if (i >= m.rows())
-        throw py::index_error(
-          std::string("index ") + 
-          std::to_string(i) +
-          " is out of bounds for axis 1 with size " + 
-          std::to_string(m.rows())
-        );
-      double* packet = m.get_address(i,0);
-      std::vector<ssize_t> size;
-      size.push_back(m.columns());
-      std::vector<ssize_t> stride;
-      stride.push_back(sizeof(double) * m.rows());
-      // The following undocumented trick is from 
-      // https://github.com/pybind/pybind11/issues/323
-      py::str dummyDataOwner;
-      py::array row(py::dtype(py::format_descriptor<double>::format()), size,
-                    stride, packet, dummyDataOwner);
-      return row;
-    })
     .def("__getitem__", [](dmatrix &m, py::slice slice) {
       size_t start, stop, step, slicelength;
       if (!slice.compute(m.rows(), &start, &stop, &step, &slicelength))
@@ -623,16 +593,26 @@ PYBIND11_MODULE(ccore,m)
       } catch (MsPASSError e) {
         packet = nullptr;
       }
-      std::vector<ssize_t> size;
-      size.push_back(slicelength);
-      size.push_back(m.columns());
-      std::vector<ssize_t> stride;
-      stride.push_back(sizeof(double) * step);
-      stride.push_back(sizeof(double) * m.rows());
+      std::vector<ssize_t> size(2);
+      size[0] = slicelength;
+      size[1] = m.columns();
+      std::vector<ssize_t> stride(2);
+      stride[0] = sizeof(double) * step;
+      stride[1] = sizeof(double) * m.rows();
+      // The following undocumented trick is from 
+      // https://github.com/pybind/pybind11/issues/323
       py::str dummyDataOwner;
       py::array rows(py::dtype(py::format_descriptor<double>::format()), size,
                     stride, packet, dummyDataOwner);
       return rows;
+    })
+    .def("__getitem__", [](const dmatrix &m, std::pair<int, int> i) {
+      return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
+    })
+    .def("__getitem__", [](dmatrix &m, int i) {
+      return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
     })
     .def("__getitem__", [](const dmatrix &m, std::pair<py::slice, int> i) {
       return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
@@ -646,23 +626,13 @@ PYBIND11_MODULE(ccore,m)
       return py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__getitem__")(i);
     })
-    .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, double v) {
-      if (i.first >= m.rows() || i.second >= m.columns())
-          throw py::index_error(
-            std::string("index (") + 
-            std::to_string(i.first) + "," + std::to_string(i.second) +
-            ") is out of bounds for dmatrix with size (" + 
-            std::to_string(m.rows()) + "," + std::to_string(m.columns()) + ")"
-          );
-      m(i.first, i.second) = v;
-    })
     .def("__setitem__", [](dmatrix &m, int i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
-    .def("__setitem__", [](dmatrix &m, py::slice slice, py::object const b) {
+    .def("__setitem__", [](dmatrix &m, py::slice i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
-        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(slice, b);
+        PySlice_New(Py_None, Py_None, Py_None))).attr("__setitem__")(i, b);
     })
     .def("__setitem__", [](dmatrix &m, std::pair<int, int> i, py::object const b) {
       py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
@@ -699,8 +669,8 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
-    .def(py::init<const int>())
-    .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const int>())
+    .def(py::init<const size_t>())
+    .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const unsigned int>())
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
     .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
     .def("rotate",py::overload_cast<const double[3]>(&CoreSeismogram::rotate),"3D rotation defined a unit vector direction")
@@ -970,8 +940,8 @@ PYBIND11_MODULE(ccore,m)
      will be handled. */
   py::class_<mspass::Ensemble<TimeSeries>,mspass::Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
-    .def(py::init<const int >())
-    .def(py::init<const Metadata&, const int>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
     .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
@@ -979,11 +949,11 @@ PYBIND11_MODULE(ccore,m)
         to function properlty */
     .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
             "Vector of TimeSeries objects defining the ensemble")
-    .def("__getitem__", [](mspass::Ensemble<TimeSeries> &self, const int i) {
+    .def("__getitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i) {
       return self.member.at(i);
     })
     .def("__getitem__",&mspass::Metadata::get_any)
-    .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const int i, const TimeSeries ts) {
+    .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i, const TimeSeries ts) {
       self.member.at(i) = ts;
     })
     /* Based on this issue: https://github.com/pybind/pybind11/issues/974 
@@ -1015,8 +985,8 @@ PYBIND11_MODULE(ccore,m)
   ;
   py::class_<mspass::Ensemble<Seismogram>,mspass::Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
     .def(py::init<>())
-    .def(py::init<const int >())
-    .def(py::init<const Metadata&, const int>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<Seismogram>&>())
     .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
     .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
@@ -1024,11 +994,11 @@ PYBIND11_MODULE(ccore,m)
         to function properlty */
     .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
             "Vector of Seismogram objects defining the ensemble")
-    .def("__getitem__", [](mspass::Ensemble<Seismogram> &self, const int i) {
+    .def("__getitem__", [](mspass::Ensemble<Seismogram> &self, const size_t i) {
       return self.member.at(i);
     })
     .def("__getitem__",&mspass::Metadata::get_any)
-    .def("__setitem__", [](mspass::Ensemble<Seismogram> &self, const int i, const Seismogram ts) {
+    .def("__setitem__", [](mspass::Ensemble<Seismogram> &self, const size_t i, const Seismogram ts) {
       self.member.at(i) = ts;
     })
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {

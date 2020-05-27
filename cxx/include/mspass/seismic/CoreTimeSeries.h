@@ -39,7 +39,7 @@ or push_front applied to this vector will alter it's length
 so use this only if the size of the data to fill the object is
 already known.
 **/
-	CoreTimeSeries(int nsin);
+	CoreTimeSeries(size_t nsin);
 /*! Construct from components. */
         CoreTimeSeries(const BasicTimeSeries& bts,const Metadata& md);
 /*!

@@ -34,7 +34,7 @@ CoreSeismogram::CoreSeismogram() : Metadata(),u(0,0)
             else
                 tmatrix[i][j]=0.0;
 }
-CoreSeismogram::CoreSeismogram(int nsamples)
+CoreSeismogram::CoreSeismogram(size_t nsamples)
     : BasicTimeSeries(),Metadata(),u(3,nsamples)
 {
     components_are_orthogonal=true;
@@ -96,7 +96,7 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         // Names used are from mspass defintions as of Jan 2020
         dt = this->get_double("delta");
         t0 = this->get_double("starttime");
-        ns = this->get_int("npts");
+        ns = this->get_long("npts");
         tmatrix[0][0]=this->get_double("U11");
         tmatrix[1][0]=this->get_double("U21");
         tmatrix[2][0]=this->get_double("U31");
@@ -152,13 +152,15 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
 }
 
 CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
-                       const int component_to_clone)
+                       const unsigned int component_to_clone)
     : BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(ts[component_to_clone])),
      Metadata(dynamic_cast<const Metadata&>(ts[component_to_clone])),
       u()
 {
     const string base_error("CoreSeismogram constructor from 3 Time Series:  ");
-    int i,j;
+    size_t i,j;
+    /* This is needed in case ns does not match s.size(0) */
+    ns = ts[component_to_clone].s.size();
     /* beware irregular sample rates, but don' be too machevelian.
            Abort only if the mismatch is large defined as accumulated time
            over data range of this constructor is less than half a sample */
@@ -173,7 +175,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
             ddtmag=ddtmag2;
         ddtmag1=fabs(ts[0].dt-ts[2].dt);
         if(ddtmag1>ddtmag)  ddtmag=ddtmag1;
-        double ddtcum=ddtmag*((double)ts[0].ns);
+        double ddtcum=ddtmag*((double)ts[0].s.size());
         if(ddtcum>(ts[0].dt)/2.0)
         {
             stringstream ss;
@@ -213,7 +215,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
 
     // Treat the normal case specially and avoid a bunch of work unless
     // it is required
-    if( (ts[0].ns==ts[1].ns) && (ts[1].ns==ts[2].ns)
+    if( (ts[0].s.size()==ts[1].s.size()) && (ts[1].s.size()==ts[2].s.size())
             && (fabs( (t0_component[0]-t0_component[1])/dt )<1.0)
             && (fabs( (t0_component[1]-t0_component[2])/dt )<1.0))
     {
@@ -257,7 +259,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         this->t0 = t;
         for(int ic=0; ic<3; ++ic)
         {
-            for(j=0; j<ts[ic].ns; ++j)
+            for(j=0; j<ts[ic].s.size(); ++j)
             {
                 i=ts[ic].sample_number(t);
                 // silently do nothing if outside bounds.  This
@@ -303,7 +305,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
 
 void CoreSeismogram::rotate_to_standard()
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
+    size_t ns = u.size()[1];
     double *work[3];
     int i,j;
     if(components_are_cardinal) return;
@@ -445,7 +448,8 @@ Original was plain C.  Adapted to C++ for seismic processing
 */
 void CoreSeismogram::rotate(SphericalCoordinate& xsc)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
+    size_t ns = u.size()[1];
     int i;
     double theta, phi;  /* corrected angles after dealing with signs */
     double a,b,c,d;
@@ -512,7 +516,7 @@ void CoreSeismogram::rotate(SphericalCoordinate& xsc)
 }
 void CoreSeismogram::rotate(const double nu[3])
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
     SphericalCoordinate xsc=UnitVectorToSpherical(nu);
     this->rotate(xsc);
 }
@@ -522,7 +526,8 @@ void CoreSeismogram::rotate(const double nu[3])
  alters 0 and 1 components. */
 void CoreSeismogram::rotate(double phi)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
+    size_t ns = u.size()[1];
     int i,j,k;
     double a,b;
     a=cos(phi);
@@ -566,8 +571,9 @@ void CoreSeismogram::rotate(double phi)
 }
 void CoreSeismogram::transform(const double a[3][3])
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
-    int i,j,k;
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
+    size_t ns = u.size()[1];
+    size_t i,j,k;
     double *work[3];
     for(i=0; i<3; ++i) work[i] = new double[ns];
     for(i=0; i<3; ++i)
@@ -615,7 +621,7 @@ Author:  Gary Pavlis
 void CoreSeismogram::free_surface_transformation(SlownessVector uvec,
         double a0, double b0)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || !live) return; // do nothing in these situations
     double a02,b02,pslow,p2;
     double qa,qb,vpz,vpr,vsr,vsz;
     pslow=uvec.mag();
@@ -728,7 +734,7 @@ vector<double> CoreSeismogram::operator[] (const double t) const
 {
     try {
         vector<double> result;
-        int i=this->sample_number(t);
+        size_t i=this->sample_number(t);
         for(int k=0;k<3;++k)
           result.push_back(this->u(k,i));
         return result;

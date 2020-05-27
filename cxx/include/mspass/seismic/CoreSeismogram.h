@@ -68,7 +68,7 @@ Initializes data and sets aside memory for
  and the object is marked as not live.
 \param nsamples number of samples expected for holding data.
 **/
-	CoreSeismogram(const int nsamples);
+	CoreSeismogram(const size_t nsamples);
 /*!
  Construct a three component seismogram from three TimeSeries objects.
 
@@ -110,7 +110,7 @@ Initializes data and sets aside memory for
 
 **/
 	CoreSeismogram(const vector<mspass::CoreTimeSeries>& ts,
-		const int component_to_clone=0);
+		const unsigned int component_to_clone=0);
 /*! \brief Construct from Metadata definition that includes data path.
  *
  A Metadata object is sufficiently general that it can contain enough
@@ -420,6 +420,6 @@ std::shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& din,
 \return CoreTimeSeries of component requested
 **/
 mspass::CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,
-		const int component);
+		const unsigned int component);
 }  //end mspass namespace enscapsulation
 #endif  // End guard

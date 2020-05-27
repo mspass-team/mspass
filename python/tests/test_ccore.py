@@ -102,12 +102,12 @@ def test_dmatrix():
     assert (dm[19, :5:] == md[19, :5:]).all()
     assert (dm[::-7,::-11] == md[::-7,::-11]).all()
 
-    with pytest.raises(IndexError, match = 'out of bounds for dmatrix'):
-        dummy = dm[3,50]
     with pytest.raises(IndexError, match = 'out of bounds for axis 1'):
+        dummy = dm[3,50]
+    with pytest.raises(IndexError, match = 'out of bounds for axis 0'):
         dummy = dm[80]
     
-    with pytest.raises(IndexError, match = 'out of bounds for dmatrix'):
+    with pytest.raises(IndexError, match = 'out of bounds for axis 1'):
         dm[3,50] = 1.0
     with pytest.raises(IndexError, match = 'out of bounds for axis 0'):
         dm[60,50] = 1
@@ -268,4 +268,5 @@ def test_MetadataBase(MetadataBase):
 
     with pytest.raises(TypeError, match = MetadataBase.__name__):
         reversed(md)
+    
 

@@ -46,7 +46,7 @@ Data start time.  That is the time of the first sample of data.
 /*!
 Number of data samples in this data object.
 **/
-	int ns;
+	size_t ns;
 /*!
 Time reference standard for this data object.  Defined by enum Time_Reference
 this currently is only one of two things.  When set as "UTC" the time
@@ -82,7 +82,7 @@ It is common to need to ask for the time of a given sample.
 This standardizes this common operation in an obvious way.
 //\param i - sample number to compute time for.
 **/
-	double time(const int i)const noexcept
+	double time(const size_t i)const noexcept
         {
             return(t0+dt*static_cast<double>(i));
         };
@@ -93,7 +93,7 @@ not tested for validity compared to the data range.  This is the
 callers responsibility as this is a common error condition that
 should not require the overhead of an exception.
 **/
-	int sample_number(double t)const noexcept
+	size_t sample_number(double t)const noexcept
         {
             return(round((t-t0)/dt));
         };
