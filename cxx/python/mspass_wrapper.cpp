@@ -257,6 +257,15 @@ struct PyMetadataIterator {
     std::map<std::string,boost::any>::const_iterator index = md.begin();
 };
 
+/* The following is needed for the binding to access protected members */
+class Publicdmatrix : public mspass::dmatrix {
+public:
+    using mspass::dmatrix::ary;
+    using mspass::dmatrix::length;
+    using mspass::dmatrix::nrr;
+    using mspass::dmatrix::ncc;
+};
+
 PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
@@ -671,6 +680,7 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
     .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const unsigned int>())
+    .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
     .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
     .def("rotate",py::overload_cast<const double[3]>(&CoreSeismogram::rotate),"3D rotation defined a unit vector direction")
@@ -686,6 +696,25 @@ PYBIND11_MODULE(ccore,m)
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
     .def_readwrite("u",&CoreSeismogram::u)
+    .def_property("ns",[](const CoreSeismogram &self) {
+      return self.u.columns();
+    },[](CoreSeismogram &self, size_t columns) {
+      if(self.u.rows() == 0) {
+        static_cast<Publicdmatrix&>(self.u).nrr = 3;
+        static_cast<Publicdmatrix&>(self.u).ncc = columns;
+        static_cast<Publicdmatrix&>(self.u).length = 3 * columns;
+        static_cast<Publicdmatrix&>(self.u).ary.resize(static_cast<Publicdmatrix&>(self.u).length);
+      } else if(columns == 0){
+        static_cast<Publicdmatrix&>(self.u).nrr = 0;
+        static_cast<Publicdmatrix&>(self.u).ncc = 0;
+        static_cast<Publicdmatrix&>(self.u).length = 0;
+        static_cast<Publicdmatrix&>(self.u).ary.resize(0);
+      } else {
+        static_cast<Publicdmatrix&>(self.u).ncc = columns;
+        static_cast<Publicdmatrix&>(self.u).length = self.u.rows() * columns;
+        static_cast<Publicdmatrix&>(self.u).ary.resize(static_cast<Publicdmatrix&>(self.u).length);
+      }
+    },"Number of samples in this time series")
   ;
   m.def("ArrivalTimeReference",&mspass::ArrivalTimeReference,"Shifts data so t=0 is a specified arrival time",
       py::return_value_policy::copy,

@@ -344,6 +344,14 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 	bool cardinal()const {return components_are_cardinal;};
 /*! Return true if the components are orthogonal. */
 	bool orthogonal()const {return components_are_orthogonal;};
+/*!
+Returns the end time (time associated with last data sample)
+of this data object.
+**/
+	double endtime()const noexcept
+  {
+      return(t0+dt*static_cast<double>(u.columns()-1));
+  };
 
 protected:
 	/*!

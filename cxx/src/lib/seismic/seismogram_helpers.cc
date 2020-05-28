@@ -75,7 +75,7 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
     // Note an alternative approach is to pad with zeros and mark ends as
     // a gap, but here I view ends as better treated with variable
     // start and end times
-    if( (tw.start > tcso->t0)  || (tw.end<tcso->time(tcso->ns-1) ) )
+    if( (tw.start > tcso->t0)  || (tw.end<tcso->time(tcso->u.columns()-1) ) )
     {
         int jstart, jend;
         int ns_to_copy;
@@ -83,7 +83,7 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
         jstart = tcso->sample_number(tw.start);
         jend = tcso->sample_number(tw.end);
         if(jstart<0) jstart=0;
-        if(jend>=tcso->ns) jend = tcso->ns - 1;
+        if(jend>=tcso->u.columns()) jend = tcso->u.columns() - 1;
         ns_to_copy = jend - jstart + 1;
         // This is a null trace so mark it dead in this condition
         if(ns_to_copy<0)
@@ -185,7 +185,7 @@ CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const unsigned int com
         double *ptr;
         dmatrix *uptr;
         if(tcs.live)
-            for(int i=0; i<tcs.ns; ++i)
+            for(int i=0; i<tcs.u.columns(); ++i)
             {
                 uptr=const_cast<dmatrix *>(&(tcs.u));
                 ptr=uptr->get_address(component,i);
