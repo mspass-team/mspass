@@ -7,6 +7,7 @@ import pytest
 from mspasspy.ccore import (dmatrix,
                             ErrorLogger,
                             ErrorSeverity,
+                            ExtractComponent,
                             LogData,
                             Metadata,
                             Seismogram,
@@ -268,5 +269,63 @@ def test_MetadataBase(MetadataBase):
 
     with pytest.raises(TypeError, match = MetadataBase.__name__):
         reversed(md)
-    
 
+def test_TimeSeries():
+    ts = TimeSeries()
+    ts.ns = 100
+    ts.t0 = 0.0
+    ts.dt = 0.001
+    ts.live = 1
+    ts.tref = TimeReferenceType.Relative
+    ts.s.append(1.0)
+    ts.s.append(2.0)
+    ts.s.append(3.0)
+    ts.s.append(4.0)
+    ts += ts
+    for i in range(4) :
+        ts.s[i] = i * 0.5
+    ts_copy = pickle.loads(pickle.dumps(ts))
+    assert ts.s == ts_copy.s
+    assert ts.s[3] == 1.5
+    assert ts.s[103] == 8
+    assert ts.time(100) == 0.1
+    assert ts.sample_number(0.0998) == 100
+
+def test_Seismogram():
+    seis = Seismogram()
+    seis.ns = 100
+    assert seis.u.rows() == 3
+    assert seis.u.columns() == 100
+
+    seis.t0 = 0.0
+    seis.dt = 0.001
+    seis.live = 1
+    seis.tref = TimeReferenceType.Relative
+    seis.u = dmatrix(np.random.rand(3,6))
+    assert seis.ns == 6
+
+    seis.ns = 4
+    assert seis.u.columns() == 4
+
+    seis.ns = 10
+    assert (seis.u[0:3,4:10] == 0).all()
+
+    seis_copy = pickle.loads(pickle.dumps(seis))
+    assert seis_copy.t0 == seis.t0
+    assert seis_copy.dt == seis.dt
+    assert seis_copy.live == seis.live
+    assert seis_copy.tref == seis.tref
+    assert (seis_copy.u[:] == seis.u[:]).all()
+
+    seis.ns = 0
+    assert seis.u.rows() == 0
+
+def test_ExtractComponent():
+    seis = Seismogram()
+    seis.live = 1
+    seis.u = dmatrix(np.random.rand(3,6))
+    ts = []
+    for i in range(3):
+        ts.append(ExtractComponent(seis,i))
+    for i in range(3):
+        assert (ts[i].s == seis.u[i]).all()
