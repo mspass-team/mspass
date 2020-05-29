@@ -315,13 +315,13 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 
 \return 3x3 transformation matrix.
 */
-        dmatrix get_transformation_matrix() const
-        {
-            dmatrix result(3,3);
-            for(int i=0;i<3;++i)
-                for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
-            return result;
-        };
+  dmatrix get_transformation_matrix() const
+  {
+      dmatrix result(3,3);
+      for(int i=0;i<3;++i)
+          for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
+      return result;
+  };
 /*! \brief Define the transformaton matrix.
  *
  Occasionally we need to set the transformation matrix manually.
@@ -339,7 +339,18 @@ matrix when the coordinates are cardinal (i.e. ENZ).
  \exception Will throw a MsPASSError if the input matrix is
    not 3x3.
    */
-        bool set_transformation_matrix(const dmatrix& A);
+  bool set_transformation_matrix(const dmatrix& A);
+/*! \brief Define the transformaton matrix with a C style 3x3 matrix.
+
+ \param a is a C style 3x3 matrix.
+ 
+ \return true if the given transformation matrix is an identity
+   meaning components_are_cardinal gets set true. 
+   false if the test for an identity matrix fails. 
+ \exception Will throw a MsPASSError if the input matrix is
+   not 3x3.
+   */
+  bool set_transformation_matrix(const double a[3][3]);
 /*! Returns true of components are cardinal. */
 	bool cardinal()const {return components_are_cardinal;};
 /*! Return true if the components are orthogonal. */

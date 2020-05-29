@@ -12,6 +12,7 @@ from mspasspy.ccore import (dmatrix,
                             Metadata,
                             Seismogram,
                             SeismogramEnsemble,
+                            SphericalCoordinate,
                             TimeSeries,
                             TimeSeriesEnsemble,
                             TimeReferenceType)
@@ -319,6 +320,106 @@ def test_Seismogram():
 
     seis.ns = 0
     assert seis.u.rows() == 0
+
+    seis.ns = 100
+    for i in range(3):
+        for j in range(100):
+            if i == 0:
+                seis.u[i,j] = 1.0
+            else:
+                seis.u[i,j] = 0.0
+    seis.u[0,1] = 1.0; seis.u[0,2] = 1.0; seis.u[0,3] = 0.0
+    seis.u[1,1] = 1.0; seis.u[1,2] = 1.0; seis.u[1,3] = 0.0
+    seis.u[2,1] = 1.0; seis.u[2,2] = 0.0; seis.u[2,3] = 1.0
+
+    sc = SphericalCoordinate()
+    sc.phi = 0.0
+    sc.theta = np.pi/4
+    seis.rotate(sc)
+    assert all(np.isclose(seis.u[:,3], [0, -0.707107, 0.707107]))
+    seis.rotate_to_standard()
+    assert all(seis.u[:,3] == [0, 0, 1])
+    sc.phi = -np.pi/4
+    seis.u[:,3] = sc.unit_vector
+    seis.rotate(sc)
+    assert all(seis.u[:,3] == [0, 0, 1])
+    seis.rotate_to_standard()
+    assert all(np.isclose(seis.u[:,3], [0.5, -0.5, 0.707107]))
+    seis.u[:,3] = [0, 0, 1]
+
+    nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
+    seis.rotate(nu)
+    assert (np.isclose(seis.transformation_matrix, 
+            np.array([[ 0.70710678, -0.70710678,  0.        ],
+                      [ 0.40824829,  0.40824829, -0.81649658],
+                      [ 0.57735027,  0.57735027,  0.57735027]]))).all()
+    assert all(np.isclose(seis.u[:,0], [0.707107, 0.408248, 0.57735]))
+    assert all(np.isclose(seis.u[:,1], [0, 0, 1.73205]))
+    seis.rotate_to_standard()
+    assert all(np.isclose(seis.u[:,0], [1, 0, 0]))
+    assert all(np.isclose(seis.u[:,1], [1, 1, 1]))
+
+    nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
+    seis.rotate(SphericalCoordinate(nu))
+    assert (np.isclose(seis.transformation_matrix, 
+            np.array([[ 0.70710678, -0.70710678,  0.        ],
+                      [ 0.40824829,  0.40824829, -0.81649658],
+                      [ 0.57735027,  0.57735027,  0.57735027]]))).all()
+    assert all(np.isclose(seis.u[:,0], [0.707107, 0.408248, 0.57735]))
+    assert all(np.isclose(seis.u[:,1], [0, 0, 1.73205]))
+    seis.rotate_to_standard()
+    assert all(np.isclose(seis.u[:,0], [1, 0, 0]))
+    assert all(np.isclose(seis.u[:,1], [1, 1, 1]))
+    
+    sc.phi = np.pi/4
+    sc.theta = 0.0
+    seis.rotate(sc)
+    assert (np.isclose(seis.transformation_matrix, 
+            np.array([[ 0.70710678, -0.70710678,  0.],
+                      [ 0.70710678,  0.70710678,  0.],
+                      [ 0.        ,  0.        ,  1.]]))).all()
+    assert all(np.isclose(seis.u[:,0], [0.707107, 0.707107, 0]))
+    assert all(np.isclose(seis.u[:,1], [0, 1.41421, 1]))
+    assert all(np.isclose(seis.u[:,2], [0, 1.41421, 0]))
+    assert all(np.isclose(seis.u[:,3], [0, 0, 1]))
+    seis.rotate_to_standard()
+
+    a = np.zeros((3,3))
+    a[0][0] =  1.0; a[0][1] =  1.0; a[0][2]  = 1.0
+    a[1][0] = -1.0; a[1][1] =  1.0; a[1][2]  = 1.0
+    a[2][0] =  0.0; a[2][1] = -1.0; a[2][2]  = 0.0
+    seis.transform(a)
+    assert all(np.isclose(seis.u[:,0], [1, -1,  0]))
+    assert all(np.isclose(seis.u[:,1], [3,  1, -1]))
+    assert all(np.isclose(seis.u[:,2], [2,  0, -1]))
+    assert all(np.isclose(seis.u[:,3], [1,  1,  0]))
+    seis_copy = pickle.loads(pickle.dumps(seis))
+    seis_copy.rotate_to_standard()
+    assert all(np.isclose(seis_copy.u[:,0], [1, 0, 0]))
+    assert all(np.isclose(seis_copy.u[:,1], [1, 1, 1]))
+    assert all(np.isclose(seis_copy.u[:,2], [1, 1, 0]))
+    assert all(np.isclose(seis_copy.u[:,3], [0, 0, 1]))
+    seis.rotate_to_standard()
+
+    seis.rotate(np.pi/4)
+    seis.transform(a)
+    assert (np.isclose(seis.transformation_matrix, 
+            np.array([[  1.41421 ,  0.      , 1],
+                      [  0.      ,  1.41421 , 1],
+                      [ -0.707107, -0.707107, 0]]))).all()
+    assert all(np.isclose(seis.u[:,0], [1.41421, 0, -0.707107]))
+    assert all(np.isclose(seis.u[:,1], [2.41421, 2.41421, -1.41421]))
+    assert all(np.isclose(seis.u[:,2], [1.41421, 1.41421, -1.41421]))
+    assert all(np.isclose(seis.u[:,3], [1, 1, 0]))
+    seis.rotate_to_standard()
+    assert all(np.isclose(seis.u[:,0], [1, 0, 0]))
+    assert all(np.isclose(seis.u[:,1], [1, 1, 1]))
+    assert all(np.isclose(seis.u[:,2], [1, 1, 0]))
+    assert all(np.isclose(seis.u[:,3], [0, 0, 1]))
+
+    seis.transformation_matrix = a
+    assert (seis.transformation_matrix == a).all()
+
 
 def test_ExtractComponent():
     seis = Seismogram()

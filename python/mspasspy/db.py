@@ -66,7 +66,7 @@ def _sync_metadata(d):
     # Because of inheritance we can use this same function for both TimeSeries
     # and Seismogram objects
     if(isinstance(d,Seismogram)):
-        U=d.get_transformation_matrix()
+        U=d.transformation_matrix
         d.put_double('U11',U[0,0])
         d.put_double('U12',U[0,1])
         d.put_double('U13',U[0,2])
@@ -635,13 +635,13 @@ class Database(pymongo.database.Database):
         # finally need to deal with the transformation matrix
         try:
             A=_tmatrix_from_md(md)
-            d.set_transformation_matrix(A)
+            d.transformation_matrix = A
         except  RuntimeError:
             Iden=dmatrix(3,3)
             Iden.zero()
             for i in range(3):
                 Iden[i,i]=1.0
-            d.set_transformation_matrix(A)
+            d.transformation_matrix = A
             d.elog.log_error(sys._getframe().f_code.co_name,
                 traceback.format_exc() \
                 + "Metadata extracted from database are missing transformation matrix definition\n" +

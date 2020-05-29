@@ -701,6 +701,25 @@ bool CoreSeismogram::set_transformation_matrix(const dmatrix& A)
     }
     return components_are_cardinal;
 }
+bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
+{
+    for(int i=0;i<3;++i)
+        for(int j=0;j<3;++j) tmatrix[i][j]=a[i][j];
+    bool cardinal;
+    cardinal=this->tmatrix_is_cardinal();
+    if(cardinal)
+    {
+        components_are_cardinal=true;
+        components_are_orthogonal=true;
+    }
+    else
+    {
+        components_are_cardinal=false;
+        /* Not necessarily true, but small overhead cost*/
+        components_are_orthogonal=false;
+    }
+    return components_are_cardinal;
+}
 CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
 {
     if(this!=&seisin)

@@ -276,7 +276,21 @@ PYBIND11_MODULE(ccore,m)
   py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
 
   py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
+    .def(py::init<>())
     .def(py::init<const SphericalCoordinate&>())
+    .def(py::init([](py::array_t<double> uv) {
+      py::buffer_info info = uv.request();
+      if (info.ndim != 1 || info.shape[0] != 3)
+        throw py::value_error("SphericalCoordinate expects a vector of 3 elements");
+      return mspass::UnitVectorToSpherical(static_cast<double*>(info.ptr));
+    }))
+    /* The use of capsule to avoid copy is found at 
+       https://github.com/pybind/pybind11/issues/1042 */
+    .def_property_readonly("unit_vector", [](const SphericalCoordinate& self) {
+      double* v = SphericalToUnitVector(self);
+      auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
+      return py::array(3, v, capsule);
+    },"Return the unit vector equivalent to direction defined in sphereical coordinates")
     .def_readwrite("radius", &mspass::SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &mspass::SphericalCoordinate::theta,"zonal angle of spherical coordinates")
     .def_readwrite("phi", &mspass::SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
@@ -683,15 +697,38 @@ PYBIND11_MODULE(ccore,m)
     .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
     .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
-    .def("rotate",py::overload_cast<const double[3]>(&CoreSeismogram::rotate),"3D rotation defined a unit vector direction")
     .def("rotate",py::overload_cast<const double>(&CoreSeismogram::rotate),"2D rotation about the vertical axis")
-    /* The following pair of methods have adaptor issues for pybind11.
-    I think they are best implemented with wrappers in Seismogram that work
-    around the issue.  See README_Implementation_TODO */
-    //.def("transform",&CoreSeismogram::transform)
+    .def("rotate",[](CoreSeismogram &self, py::array_t<double> tm) {
+      py::buffer_info info = tm.request();
+      if (info.ndim != 1 || info.shape[0] != 3)
+        throw py::value_error("rotate expects a vector of 3 elements");
+      self.rotate(static_cast<double*>(info.ptr));
+    },"3D rotation defined a unit vector direction")
+    .def("transform", [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
+      py::buffer_info info = tm.request();
+      if (info.ndim != 2 || info.shape[0] != 3 || info.shape[1] != 3)
+        throw py::value_error("transform expects a 3x3 matrix");
+      self.transform(static_cast<double(*)[3]>(info.ptr));
+    },"Applies an arbitrary transformation matrix to the data")
     .def("free_surface_tranformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
-    .def("get_transformation_matrix",&CoreSeismogram::get_transformation_matrix,"Fetch transformation matrix as a dmatrix object")
-    .def("set_transformation_matrix",&CoreSeismogram::set_transformation_matrix,"Set transformation matrix using a dmatrix object")
+    .def_property("transformation_matrix", 
+      [](const CoreSeismogram &self){
+        dmatrix tm = self.get_transformation_matrix();
+        auto v = static_cast<Publicdmatrix&>(tm).ary;
+        std::vector<double>* c = new std::vector<double>(std::move(v));
+        auto capsule = py::capsule(c, [](void *x) { delete reinterpret_cast<std::vector<double>*>(x); });
+        std::vector<ssize_t> size(2,3);
+        std::vector<ssize_t> stride(2);
+        stride[0] = sizeof(double);
+        stride[1] = sizeof(double) * 3;
+        return py::array(py::dtype(py::format_descriptor<double>::format()), size, stride, c->data(), capsule);
+      }, 
+      [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
+        py::buffer_info info = tm.request();
+        if (info.ndim != 2 || info.shape[0] != 3 || info.shape[1] != 3)
+          throw py::value_error("transform expects a 3x3 matrix");
+        self.set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
+      },"3x3 transformation matrix")
     .def(py::self += py::self)
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
