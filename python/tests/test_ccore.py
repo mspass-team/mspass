@@ -12,6 +12,7 @@ from mspasspy.ccore import (dmatrix,
                             Metadata,
                             Seismogram,
                             SeismogramEnsemble,
+                            SlownessVector,
                             SphericalCoordinate,
                             TimeSeries,
                             TimeSeriesEnsemble,
@@ -416,6 +417,15 @@ def test_Seismogram():
     assert all(np.isclose(seis.u[:,1], [1, 1, 1]))
     assert all(np.isclose(seis.u[:,2], [1, 1, 0]))
     assert all(np.isclose(seis.u[:,3], [0, 0, 1]))
+
+    uvec = SlownessVector()
+    uvec.ux =  0.17085  # cos(-20deg)/5.5
+    uvec.uy = -0.062185 # sin(-20deg)/5.5
+    seis.free_surface_transformation(uvec, 5.0, 3.5)
+    assert (np.isclose(seis.transformation_matrix, 
+            np.array([[ -0.171012, -0.469846,  0],
+                      [  0.115793, -0.0421458, 0.445447],
+                      [ -0.597975,  0.217647,  0.228152]]))).all()
 
     seis.transformation_matrix = a
     assert (seis.transformation_matrix == a).all()
