@@ -710,7 +710,7 @@ PYBIND11_MODULE(ccore,m)
         throw py::value_error("transform expects a 3x3 matrix");
       self.transform(static_cast<double(*)[3]>(info.ptr));
     },"Applies an arbitrary transformation matrix to the data")
-    .def("free_surface_tranformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
+    .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
     .def_property("transformation_matrix", 
       [](const CoreSeismogram &self){
         dmatrix tm = self.get_transformation_matrix();
