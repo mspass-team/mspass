@@ -284,7 +284,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
 		    ErrorSeverity::Invalid);
   try{
 	  //DEBUG
-	  cerr << "Entering loaddata"<<endl;
+	  cout << "Entering loaddata"<<endl;
     int errcount;
     /* The -9999 is a magic number used to signal the test is
     coming from this variant*/
@@ -309,17 +309,26 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
       exit(-1);
     }
     //DEBUG
-    cerr<< "Entering loaddata copy section"<<endl;
-    dmatrix utmp(3,FFTDeconOperator::nfft);
-    utmp.zero();
+    cout << "data matrix on entry to this method"<<endl;
+    cout << decondata.u<<endl;
+    cout<< "Entering loaddata copy section"<<endl;
+    decondata.u=dmatrix(3,FFTDeconOperator::nfft);
+    decondata.u.zero();
     /* Offset by winlength to put zero pad at front of the data.  */
+    /* Old using memcpy - broken 
     double *toptr,*fromptr;
     toptr=utmp.get_address(0,this->winlength);
     fromptr=d.u.get_address(0,0);
     //3 for number of components not padding
     size_t bytestocopy=3*(this->winlength)*sizeof(double);
     memcpy((void*)toptr,(const void*)fromptr,bytestocopy);
-    decondata.u=utmp;
+    */
+    int k,i,ii;
+    for(k=0;k<3;++k)
+        for(i=0,ii=(this->winlength);i<(this->winlength);++i,++ii)
+        {
+            decondata.u(k,ii)=dtmp.u(k,i);
+        }
     decondata.ns=FFTDeconOperator::nfft;
     decondata.t0 -= operator_dt*static_cast<double>(winlength);
     if(nload)
@@ -340,7 +349,7 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
 		  ErrorSeverity::Invalid);
   try{
 	  //DEBUG
-	  cerr << "Entered loadwavelet:  wavelet received has length="<<w.ns<<" and t0="<<w.t0<<endl;
+	  cout << "Entered loadwavelet:  wavelet received has length="<<w.ns<<" and t0="<<w.t0<<endl;
     int k,kk;
     int ns_to_copy;
     this->wavelet=w;
@@ -372,7 +381,7 @@ void CNR3CDecon::loadnoise(Seismogram& n)
 		    ErrorSeverity::Invalid);
   try{
 	  //DEBUG
-	  cerr << "In loadnoise"<<endl;
+	  cout << "In loadnoise"<<endl;
     /* If the noise data length is larger than the operator we silenetly
     truncate it.  If less we zero pad*/
     CoreSeismogram work(n);
@@ -389,7 +398,7 @@ void CNR3CDecon::loadnoise(Seismogram& n)
         for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
     }
     //DEBUG
-    cerr<< "Trying to compute power spectra"<<endl;
+    cout << "Trying to compute power spectra"<<endl;
     /* We always compute noise as total of three component power spectra
     normalized by number of components - sum of squares */
     TimeSeries tswork;
@@ -397,18 +406,18 @@ void CNR3CDecon::loadnoise(Seismogram& n)
     {
       tswork=TimeSeries(ExtractComponent(work,k),"Invalid");
 	      //DEBUG
-	      cerr << "Computing spectrum for component "<<k<<endl;
+	      cout << "Computing spectrum for component "<<k<<endl;
       if(k==0)
         this->psnoise = this->specengine.apply(tswork);
       else
         this->psnoise += this->specengine.apply(tswork);
     }
     //DEBUG
-    cerr<< "Scaling power spectrum"<<endl;
+    cout<< "Scaling power spectrum"<<endl;
     double scl=1.0/3.0;
     for(int i=0;i<this->psnoise.nf();++i)this->psnoise.spectrum[i]*=scl;
     //DEBUG
-    cerr<< "Exiting loadnoise"<<endl;
+    cout<< "Exiting loadnoise"<<endl;
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise(const PowerSpectrum& d)
@@ -427,14 +436,14 @@ Seismogram CNR3CDecon::process()
      * an array method where the same wavelet was used repeatedly */
     TimeSeries work(wavelet);
     //DEBUG
-    cerr << "Entered process - wavelet ns="<<wavelet.ns<<" t0="<<wavelet.t0<<endl;
+    cout << "Entered process - wavelet ns="<<wavelet.ns<<" t0="<<wavelet.t0<<endl;
     /* First we compute the wavelet inverse as it is used to compute
     the solution for all three components.   We could gain some efficiency
     by assuming wavelet had already been tapered, but doing it here makes
     the algorithm much clearer. */
     if(taper_data) wavelet_taper->apply(work);
     //DEBUG - work size should be nfft testing that with print statement
-    cerr << "nfft size here="<<FFTDeconOperator::nfft<<endl;
+    cout << "nfft size here="<<FFTDeconOperator::nfft<<endl;
     ComplexArray cwvec(work.ns,work.s);
     /*
     vector<double> wvec;
@@ -513,6 +522,10 @@ Seismogram CNR3CDecon::process()
       for(j=0;j<ntocopy;++j) wvec.push_back(work.s[j]);
       for(j=ntocopy;j<FFTDeconOperator::nfft;++j)
                    wvec.push_back(0.0);
+      //DEBUG
+      cout << "Tapered data loaded as numerator in rf for component="<<k<<endl;
+      for(j=0;j<FFTDeconOperator::nfft;++j) cout<<wvec[j]<<endl;
+
       ComplexArray numerator(FFTDeconOperator::nfft,wvec);
       gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,
             wavetable,workspace);
@@ -522,6 +535,8 @@ Seismogram CNR3CDecon::process()
       double snrmax;
       snrmax=1.0;
       nhighsnr=0;
+      //DEBUG
+      cout << "f sigamp namp snr"<<endl;
       for(j=0;j<FFTDeconOperator::nfft/2;++j)
       {
         double f;
@@ -530,6 +545,8 @@ Seismogram CNR3CDecon::process()
         double sigamp=abs(z);
         double namp=psnoise.amplitude(f);
         double snr=sigamp/namp;
+        //DEBUG
+        cout << f<<" "<<sigamp<<" "<<namp<<" "<<snr<<endl;
         if(snr>snrmax) snrmax=snr;
         if(snr>band_snr_floor) ++nhighsnr;
       }
@@ -537,12 +554,12 @@ Seismogram CNR3CDecon::process()
                   / static_cast<double>(FFTDeconOperator::nfft/2);
       peak_snr[k]=snrmax;
       //DEBUG
-      cerr << "component "<<k<<" sbf="<<signal_bandwidth_fraction[k]<<" snrmax="<<snrmax<<endl;
-      cerr<< "In apply numerator length="<<numerator.size()<<endl
+      cout << "component "<<k<<" sbf="<<signal_bandwidth_fraction[k]<<" snrmax="<<snrmax<<endl;
+      cout<< "In apply numerator length="<<numerator.size()<<endl
 	      << "Denominator length="<<cwvec.size()<<endl;
       ComplexArray rftmp=numerator/cwvec;
       //DEBUG
-      cerr<<"Trying to apply shaping wavelet of length="<<(*shapingwavelet.wavelet()).size()<<endl;
+      cout<<"Trying to apply shaping wavelet of length="<<(*shapingwavelet.wavelet()).size()<<endl;
       rftmp=(*shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
           wavetable, workspace);
