@@ -12,7 +12,7 @@ dissertation.
 @author: pavlis
 """
 import sys
-sys.path.append('/geode2/home/u070/pavlis/Carbonate/src/mspass/python')
+sys.path.append('/home/pavlis/src/mspass/python')
 from mspasspy.ccore import AntelopePf
 from mspasspy.ccore import dmatrix
 from mspasspy.ccore import CoreTimeSeries
@@ -106,7 +106,8 @@ t0w=-1.0  # puts initial pulse at 0
 
 d=make_impulse_vector(lag,imp,n)
 t=np.linspace(t0w,t0w+(n-1)*dt,num=n)
-sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
+#sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
+sos=signal.butter(3,[0.25,5.0],btype='bandpass',output='sos',fs=20)
 f=signal.sosfilt(sos,d)
 #f=signal.convolve(d,win)
 fig,(ao0,ao1)=plt.subplots(nrows=2)
@@ -160,6 +161,7 @@ axarr[1,2].plot(tsig,dsig2)
 # larger seismogram with noise we add to signal
 nfullsig=2048
 nsc=5   # noise scale factor
+nsc=1   # noise scale factor
 padlength=nfullsig-nsig
 dsig0=addnoise(dsig0,nsc,padlength)
 dsig1=addnoise(dsig1,nsc,padlength)

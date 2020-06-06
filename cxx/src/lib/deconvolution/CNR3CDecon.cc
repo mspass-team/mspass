@@ -46,8 +46,8 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     of padding around both ends of the waveform being deconvolved.  Circular
     shift is used to put the result back in a rational time base. */
     int minwinsize=3*(this->winlength);
-    /* This complicated set of tests to set nfft is needed to mesh with 
-     * ShapingWavelet constructor and FFTDeconOperator api constraints created by 
+    /* This complicated set of tests to set nfft is needed to mesh with
+     * ShapingWavelet constructor and FFTDeconOperator api constraints created by
      * use in other classes in this directory that also use these */
     int nfftneeded=nextPowerOf2(minwinsize);
     int nfftpf=pf.get<int>("operator_nfft");
@@ -268,8 +268,8 @@ void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
     /* This does everything except load the wavelet from wcomp so we just
      * invoke it here. */
     this->loaddata(d,loadnoise);
-    /* We need to pull wcomp now because we alter the decondata matrix with 
-     * padding next.  We don't want that for the wavelet at this stage as 
+    /* We need to pull wcomp now because we alter the decondata matrix with
+     * padding next.  We don't want that for the wavelet at this stage as
      * the loadwavelet method handles the padding stuff and we call it after
      * windowing*/
     CoreTimeSeries wtmp(ExtractComponent(decondata,wcomp));
@@ -329,7 +329,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     }
   }catch(...){throw;};
 }
-/* Note we intentionally do not trap nfft size mismatch in this function because 
+/* Note we intentionally do not trap nfft size mismatch in this function because
  * we assume loadwavelet would be called within loaddata or after calls to loaddata
  * */
 void CNR3CDecon::loadwavelet(const TimeSeries& w)
@@ -422,8 +422,8 @@ Seismogram CNR3CDecon::process()
   const string base_error("CNR3CDecon::process method:  ");
   int j,k;
   try{
-    /* Copy wavelet because in interactive use process could be called repeatedly 
-     * without a call to a new loadwavelet - In fact that would be common for 
+    /* Copy wavelet because in interactive use process could be called repeatedly
+     * without a call to a new loadwavelet - In fact that would be common for
      * an array method where the same wavelet was used repeatedly */
     TimeSeries work(wavelet);
     //DEBUG
@@ -451,6 +451,9 @@ Seismogram CNR3CDecon::process()
     fNy=df*static_cast<double>(FFTDeconOperator::nfft/2);
     wavelet_snr.clear();
     int nreg(0);
+    //DEBUG - testing water level add on
+    double wavelet_rms=cwvec.rms();
+
     //DEBUG
     cout << "unscaled noise amplitude spectrum"<<endl;
     for(j=0;j<FFTDeconOperator::nfft;++j)
@@ -467,7 +470,7 @@ Seismogram CNR3CDecon::process()
       cout << f<<" "<<namp<<" "<<amp;
       /* Avoid divide by zero that could randomly happen with simulation data*/
       double snr;
-      if((namp/amp)<DBL_EPSILON) 
+      if((namp/amp)<DBL_EPSILON)
           snr=10000.0;
       else
           snr=amp/namp;
@@ -477,7 +480,8 @@ Seismogram CNR3CDecon::process()
         //double scale=(damp*damp*namp*namp)/(amp*amp);
         double scale=snr_regularization_floor*namp/amp;
         //TEST - hack revert to water level with frozen value
-        //scale=0.01*snr_regularization_floor;
+        //double wlv(0.001);  //frozen for test
+        //if(amp/wavelet_rms<wlv) scale=wlv*wavelet_rms/amp;
         re *= scale;
         im *= scale;
         *z = re;
