@@ -1,29 +1,28 @@
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/ProcessingHistory.h"
 using namespace mspass;
 namespace mspass
 {
-Seismogram::Seismogram(const CoreSeismogram& d, const std::string oid)
-    : CoreSeismogram(d),MsPASSCoreTS()
+Seismogram::Seismogram(const CoreSeismogram& d)
+    : CoreSeismogram(d),ProcessingHistory()
 {
-    try{
-        this->set_id(oid);
-    }catch(...){throw;};
+}
+Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
+    : CoreSeismogram(d),ProcessingHistory()
+{
+  this->set_id();
+  ProcessingHistoryRecord rec;
+  rec.status=ProcessingStatus::ORIGIN;
+  rec.algorithm=alg;
+  rec.instance="0";
+  rec.id=this->id_string();
+  this->ProcessingHistory::set_as_origin(rec);
+  this->ProcessingHistory::set_jobname(string("test"));
+  this->ProcessingHistory::set_jobid(string("test"));
 }
 Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
-        const ErrorLogger elf)
-{
-    /* Have to use this construct instead of : and a pair of
-       copy constructors for Metadata and BasicSeismogram.   Compiler
-       complains they are not a direct or virtual base for Seismogram.  */
-    this->BasicTimeSeries::operator=(b);
-    this->Metadata::operator=(m);
-    elog=elf;
-    this->set_id("INVALID");
-}
-Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
-  const MsPASSCoreTS& corets,const bool card, const bool ortho,
+  const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)
-    : CoreSeismogram(),MsPASSCoreTS(corets)
 {
   /* for reasons I couldn't figure out these couldn't appear in the copy
   constructor chain following the : above.   Compiler complained about
@@ -40,28 +39,39 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
     for(j=0;j<3;++j) tmatrix[i][j]=tm(i,j);
   this->u=uin;
 }
-Seismogram::Seismogram(const Metadata& md)
-	: CoreSeismogram(md,true),MsPASSCoreTS()
+Seismogram::Seismogram(const Metadata& md, const string jobname,
+    const string jobid, const string readername,const string algid)
+	: CoreSeismogram(md,true),ProcessingHistory()
 {
+  this->set_jobname(jobname);
+  this->set_jobid(jobid);
+
   /* We use oid_string to hold the ObjectID stored as a hex string.
    * In mspass this is best done in the calling python function
    * that already has hooks for mongo.   If that field is not
    * defined we silently set the id invalid.
    */
   try{
-    string oids=this->get_string("wf_id");
+    string oids=this->get_string("oid_string");
     this->set_id(oids);
   }catch(MsPASSError& merr)
   {
-    this->set_id("invalid");
+    /* this sets the id to a random number based uuid */
+    this->set_id();
   }
+  shared_ptr<ProcessingHistoryRecord> rec(new ProcessingHistoryRecord());
+  rec->status=ProcessingStatus::ORIGIN;
+  rec->algorithm=readername;
+  rec->instance="0";
+  rec->id=algid;
+  history_list.push_back(rec);
 }
 Seismogram& Seismogram::operator=(const Seismogram& parent)
 {
     if(this!=(&parent))
     {
         this->CoreSeismogram::operator=(parent);
-        this->MsPASSCoreTS::operator=(parent);
+        this->ProcessingHistory::operator=(parent);
     }
     return *this;
 }

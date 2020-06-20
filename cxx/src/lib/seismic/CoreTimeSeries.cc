@@ -16,9 +16,10 @@ CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 }
 CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
 {
-    s.reserve(nsin);
-    // This seems to be necessary at least for Sun's compiler
-    for(size_t i=0; i<nsin; ++i)s.push_back(0.0);
+  s.reserve(nsin);
+  /* This assumes current api where set_npts allocates and initializes s
+  to nsin zeros */
+  this->set_npts(nsin);
 }
 
 
@@ -26,7 +27,7 @@ CoreTimeSeries::CoreTimeSeries(const CoreTimeSeries& tsi) :
     BasicTimeSeries(tsi),
     Metadata(tsi)
 {
-    if(live)
+    if(mlive)
     {
         s=tsi.s;
     }
@@ -45,10 +46,10 @@ CoreTimeSeries::CoreTimeSeries(const CoreTimeSeries& tsi) :
 CoreTimeSeries::CoreTimeSeries(const BasicTimeSeries& bd,const Metadata& md)
     : BasicTimeSeries(bd), Metadata(md)
 {
-    size_t i;
-    this->s.reserve(this->ns);   // ns should be set by BasicTimeSeries constructor
-    for(i=0; i<this->ns; ++i)
-        this->s.push_back(0.0);
+  /* this assumes set_npts initializes the vector containers, s, to zeros
+  AND that BasicTimeSeries constructor initializes ns (npts) to the value
+  desired. */
+  this->set_npts(this->nsamp);
 }
 // standard assignment operator
 CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
@@ -70,17 +71,17 @@ CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
     // Sun's compiler complains about const objects without this.
     CoreTimeSeries& d=const_cast<CoreTimeSeries&>(data);
     // Silently do nothing if d is marked dead
-    if(!d.live) return(*this);
+    if(!d.mlive) return(*this);
     // Silently do nothing if d does not overlap with data to contain sum
-    if( (d.endtime()<t0)
-            || (d.t0>(this->endtime())) ) return(*this);
+    if( (d.endtime()<mt0)
+            || (d.mt0>(this->endtime())) ) return(*this);
     if(d.tref!=(this->tref))
         throw MsPASSError("CoreTimeSeries += operator cannot handle data with inconsistent time base\n",
                           ErrorSeverity::Invalid);
     //
     // First we have to determine range fo sum for d into this
     //
-    i0=d.sample_number(this->t0);
+    i0=d.sample_number(this->mt0);
     if(i0<0)
     {
         j=-i0;
@@ -100,9 +101,69 @@ CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
         this->s[j]+=d.s[i];
     return(*this);
 }
+
+void CoreTimeSeries::set_dt(const double sample_interval)
+{
+  this->BasicTimeSeries::set_dt(sample_interval);
+  /* This is the unique name - we always set it. */
+  this->put("delta",sample_interval);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("dt");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,sample_interval);
+    }
+  }
+}
+void CoreTimeSeries::set_t0(const double t0in)
+{
+  this->BasicTimeSeries::set_t0(t0in);
+  /* This is the unique name - we always set it. */
+  this->put("starttime",t0in);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("t0");
+  aliases.insert("time");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,t0in);
+    }
+  }
+}
+void CoreTimeSeries::set_npts(const size_t npts)
+{
+  this->BasicTimeSeries::set_npts(npts);
+  /* This is the unique name - we always set it. */
+  this->put("npts",npts);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("nsamp");
+  aliases.insert("wfdisc.nsamp");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,npts);
+    }
+  }
+  /* this method has the further complication that npts sets the size of the
+  data buffer.  We clear it an initialize it to 0 to be consistent with
+  how constructors handle this. */
+  this->s.clear();
+  for(size_t i=0;i<npts;++i)this->s.push_back(0.0);
+}
+
 double CoreTimeSeries::operator[](size_t i) const
 {
-    if(!live)
+    if(!mlive)
         throw MsPASSError(string("CoreTimeSeries operator[]: attempting to access data marked as dead"),
                           ErrorSeverity::Invalid);
     if( (i<0) || (i>=s.size()) )

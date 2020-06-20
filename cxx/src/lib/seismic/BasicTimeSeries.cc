@@ -9,19 +9,19 @@ void BasicTimeSeries::ator(double tshift)
 {
     if(tref==TimeReferenceType::Relative) return;
     t0shift=tshift;
-    t0 -= tshift;
+    mt0 -= tshift;
 }
 // inverse of ator -- note minus becomes plus
 // everything else is nearly identical
 void BasicTimeSeries::rtoa(double tshift)
 {
     if(tref==TimeReferenceType::UTC) return;
-    t0 += tshift;
+    mt0 += tshift;
 }
 void BasicTimeSeries::rtoa()
 {
     /* dead traces should to totally ignored */
-    if(!(this->live)) return;
+    if(!(this->mlive)) return;
     const string base_error("BasicTimeSeries::rtoa() t0shift for conversion is not defined.");
     if(tref==TimeReferenceType::UTC) return;
     /* A rather odd test for a nonzero.   We use 100 s assuming no active
@@ -30,7 +30,7 @@ void BasicTimeSeries::rtoa()
      * the first 2 minutes of 1960.*/
     if(t0shift_is_valid || (t0shift>100.0) )
     {
-        t0 += t0shift;
+        mt0 += t0shift;
         tref=TimeReferenceType::UTC;
         t0shift_is_valid=false;
     }
@@ -40,21 +40,21 @@ void BasicTimeSeries::rtoa()
 
 BasicTimeSeries::BasicTimeSeries()
 {
-    t0=0.0;
+    mt0=0.0;
     tref=TimeReferenceType::Relative;
-    live=false;
-    dt=1.0;
-    ns=0;
+    mlive=false;
+    mdt=1.0;
+    nsamp=0;
     t0shift=0.0;
     t0shift_is_valid=false;
 }
 BasicTimeSeries::BasicTimeSeries(const BasicTimeSeries& tsin)
 {
-    t0=tsin.t0;
+    mt0=tsin.mt0;
     tref=tsin.tref;
-    live=tsin.live;
-    dt=tsin.dt;
-    ns=tsin.ns;
+    mlive=tsin.mlive;
+    mdt=tsin.mdt;
+    nsamp=tsin.nsamp;
     t0shift=tsin.t0shift;
     t0shift_is_valid=tsin.t0shift_is_valid;
 }
@@ -62,11 +62,11 @@ BasicTimeSeries& BasicTimeSeries::operator=(const BasicTimeSeries& parent)
 {
     if (this!=&parent)
     {
-        t0=parent.t0;
+        mt0=parent.mt0;
         tref=parent.tref;
-        live=parent.live;
-        dt=parent.dt;
-        ns=parent.ns;
+        mlive=parent.mlive;
+        mdt=parent.mdt;
+        nsamp=parent.nsamp;
         t0shift=parent.t0shift;
         t0shift_is_valid=parent.t0shift_is_valid;
     }
@@ -77,7 +77,7 @@ void BasicTimeSeries::shift(double dt)
     try {
         double oldt0shift=t0shift;
         this->rtoa();
-        this->ator(oldt0shift+dt);
+        this->ator(oldt0shift+mdt);
     } catch(...) {
         throw;
     };
