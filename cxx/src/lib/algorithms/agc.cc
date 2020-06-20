@@ -7,36 +7,37 @@ using namespace std;
 using namespace mspass;
 namespace mspass{
 using namespace mspass;
-/* This uses the same algorithm as seismic unix BUT with a vector ssq 
+/* This uses the same algorithm as seismic unix BUT with a vector ssq
  * instead of the scalar form.   Returns a gain function a the same sample
  * rate as teh original data with the gain factor applied to each 3c sample.
  * The gain is averaged over scale twin ramping on and off using the same
  * cumulative approach used in seismic unix algorithm. */
 /* This function uses the same algorith as seismic unix BUT with a vector ssq
-   instead of the scalar form used for a simple time series.  Returns a 
+   instead of the scalar form used for a simple time series.  Returns a
    gain function at the same sample rate as the original data.  The original
-   data can then be restored by scaling each vector sample by 1/gain at 
+   data can then be restored by scaling each vector sample by 1/gain at
    each sample.   */
-TimeSeries agc(Seismogram& d, const double twin) noexcept
+TimeSeries agc(Seismogram& d, const double twin)
 {
     try{
-        dmatrix agcdata(3,d.ns);
+        /* First deal with the processing history */
+        dmatrix agcdata(3,d.npts());
         double val,rms,ssq,gain,lastgain;
-        int i,k;
-        TimeSeries gf(dynamic_cast<BasicTimeSeries& >(d),
+        size_t i,k;
+        CoreTimeSeries gf(dynamic_cast<BasicTimeSeries& >(d),
                 dynamic_cast<Metadata&>(d));
-        gf.t0=d.t0+gf.dt;
+        gf.set_t0(d.t0()+gf.dt());
         gf.s.clear();
         int nwin,iwagc;
-        nwin=round(twin/(d.dt));
+        nwin=round(twin/(d.dt()));
         iwagc=nwin/2;
-        if(iwagc<=0) 
+        if(iwagc<=0)
         {
             d.elog.log_error("agc","Illegal gain time window - resolves to less than one sample",
                 ErrorSeverity::Invalid);
             return TimeSeries();
         }
-        if(iwagc>d.ns) iwagc=d.ns;
+        if(iwagc>d.npts()) iwagc=d.npts();
         /* First compute sum of squares in initial wondow to establish the
          * initial scale */
         for(i=0,ssq=0.0;i<iwagc;++i)
@@ -53,7 +54,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
         if(rms>0.0)
         {
             gain=1.0/sqrt(rms);
-            for(k=0;k<3;++k) 
+            for(k=0;k<3;++k)
             {
                 agcdata(k,0) = gain*d.u(k,0);
             }
@@ -73,7 +74,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
                 ++normalization;
             }
             rms=ssq/((double)normalization);
-            if(rms>0.0) 
+            if(rms>0.0)
             {
                 lastgain=gain;
                 gain=1.0/sqrt(rms);
@@ -91,7 +92,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
             for(k=0;k<3;++k) agcdata(k,i) = gain*d.u(k,i);
         }
         int isave;
-        for(i=iwagc+1,isave=iwagc+1;i<d.ns-iwagc;++i,++isave)
+        for(i=iwagc+1,isave=iwagc+1;i<d.npts()-iwagc;++i,++isave)
         {
            for(k=0;k<3;++k)
            {
@@ -101,7 +102,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
                ssq-=val*val;
            }
            rms=ssq/((double)normalization);
-            if(rms>0.0) 
+            if(rms>0.0)
             {
                 lastgain=gain;
                 gain=1.0/sqrt(rms);
@@ -119,7 +120,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
             for(k=0;k<3;++k) agcdata(k,i) = gain*d.u(k,i);
         }
         /* ramping off */
-        for(i=isave;i<d.ns;++i)
+        for(i=isave;i<d.npts();++i)
         {
             for(k=0;k<3;++k)
             {
@@ -128,7 +129,7 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
                 --normalization;
             }
             rms=ssq/((double)normalization);
-            if(rms>0.0) 
+            if(rms>0.0)
             {
                 lastgain=gain;
                 gain=1.0/sqrt(rms);
@@ -146,8 +147,8 @@ TimeSeries agc(Seismogram& d, const double twin) noexcept
             for(k=0;k<3;++k) agcdata(k,i) = gain*d.u(k,i);
         }
         d.u=agcdata;
-        gf.live=true;
-        gf.ns=gf.s.size();
+        gf.set_live();
+        gf.set_npts(gf.s.size());
         return gf;
     }catch(...){
         string uxperr("Something threw an unexpected exception");
