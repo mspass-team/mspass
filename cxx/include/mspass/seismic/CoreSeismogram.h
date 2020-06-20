@@ -196,7 +196,7 @@ Initializes data and sets aside memory for
 
 	\param t0in is the new data sample interval to be used.
 	*/
-	virtual void set_t0(const double t0in);
+	void set_t0(const double t0in);
 /*!
  Standard assignment operator.
 **/
