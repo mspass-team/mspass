@@ -1,12 +1,11 @@
 #include <math.h>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/TimeWindow.h"
-#include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
 using namespace std;
 namespace mspass {
 using namespace mspass;
-typedef Ensemble<CoreTimeSeries> TimeSeriesEnsemble;
 /* This file is very very similar to a related set of procedures found
 in the file three_component_helpers.cc.  Future efforts could merge
 them into a template version standardizes what these do.
@@ -42,7 +41,7 @@ Arguments:
 
 */
 
-shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
+shared_ptr<TimeSeries> ArrivalTimeReference(TimeSeries& tcsi,
         string arrival_time_key,
         TimeWindow tw)
 {
@@ -57,20 +56,20 @@ shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
     {
         throw MsPASSError(base_error_message
                           + arrival_time_key
-                          + string(" not found in CoreTimeSeries object"),
+                          + string(" not found in TimeSeries object"),
                           ErrorSeverity::Invalid);
     }
     // We have to check this condition because ator will do nothing if
     // time is already relative and this condition cannot be tolerated
     // here as we have no idea what the time standard might be otherwise
-    if(tcsi.tref == TimeReferenceType::Relative)
+    if(tcsi.time_is_relative())
         throw MsPASSError(string("ArrivalTimeReference:  ")
                           + string("received data in relative time units\n")
                           + string("Cannot proceed as timing is ambiguous"),
                           ErrorSeverity::Invalid);
 
     // start with a clone of the original
-    shared_ptr<CoreTimeSeries> tcso(new CoreTimeSeries(tcsi));
+    shared_ptr<TimeSeries> tcso(new TimeSeries(tcsi));
     tcso->ator(atime);  // shifts to arrival time relative time reference
 
     // Extracting a subset of the data is not needed when the requested
@@ -78,7 +77,7 @@ shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
     // Note an alternative approach is to pad with zeros and mark ends as
     // a gap, but here I view ends as better treated with variable
     // start and end times
-    if( (tw.start > tcso->t0)  || (tw.end<tcso->time(tcso->ns-1) ) )
+    if( (tw.start > tcso->t0())  || (tw.end<tcso->time(tcso->npts()-1) ) )
     {
         int jstart, jend;
         int ns_to_copy;
@@ -86,27 +85,29 @@ shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
         jstart = tcso->sample_number(tw.start);
         jend = tcso->sample_number(tw.end);
         if(jstart<0) jstart=0;
-        if(jend>=tcso->ns) jend = tcso->ns - 1;
+        if(jend>=tcso->npts()) jend = tcso->npts() - 1;
         ns_to_copy = jend - jstart + 1;
         if(ns_to_copy<=0)
         {
-            tcso->live=false;
+            tcso->kill();
             tcso->s.clear();
             return(tcso);
         }
-        tcso->s.resize(ns_to_copy);
-        tcso->ns=ns_to_copy;
+        tcso->set_npts(ns_to_copy);
+        // This assumes set_npts initializes the s buffer so we use operator[]
+        // instead of push_back
         for(j=0,jj=jstart; j<ns_to_copy; ++j,++jj)
             tcso->s[j]=tcsi.s[jj];
+        /* This was the way t0 was set with the old api
         tcso->t0 += (tcso->dt)*static_cast<double>(jstart);
-        //
-        // This is necessary to allow for a rtoa (relative
-        // to UTC time) conversion later.  Both of these
-        // Modified somewhat for an older version that was deleted
-        // by mistake in the previous version.
-        // Before updating endtime was optional.  Now it is always
-        // done.
-        //
+
+        this is the new */
+        double newt0;
+        newt0=tcso->t0() + (tcso->dt())*static_cast<double>(jstart);
+        tcso->set_t0(newt0);
+        /* This same block of code appeared in the parallel function for
+        CoreSeismogram.   I don't think this is necessary with the new api, but
+        as in that file I'm retaining it in case that is incorrect glp, 6/7/2020
         if(jstart>0)
         {
             double stime=atime+tcso->t0;
@@ -114,6 +115,7 @@ shared_ptr<CoreTimeSeries> ArrivalTimeReference(CoreTimeSeries& tcsi,
             // this one may not really be necessary
             tcso->put("endtime",atime+tcso->endtime());
         }
+        */
     }
     return(tcso);
 }
@@ -123,7 +125,7 @@ processing function throws an exception the error is printed and the
 object is simply not copied to the output ensemble.
 
 This procedure is retained, but probably should be depricated to only
-be used on error logging children of CoreTimeSeries that can post an
+be used on error logging children of TimeSeries that can post an
 error like the one handled here to an error log.  Retained for now
 as this functionality is essential. */
 shared_ptr <TimeSeriesEnsemble> ArrivalTimeReference(TimeSeriesEnsemble& tcei,
@@ -139,8 +141,8 @@ shared_ptr <TimeSeriesEnsemble> ArrivalTimeReference(TimeSeriesEnsemble& tcei,
     tceo->member.reserve(nmembers);  // reserve this many slots for efficiency
     // We have to use a loop instead of for_each as I don't see how
     // else to handle errors cleanly here.
-    vector<CoreTimeSeries>::iterator indata;
-    shared_ptr<CoreTimeSeries> tcs;
+    vector<TimeSeries>::iterator indata;
+    shared_ptr<TimeSeries> tcs;
     for(indata=tcei.member.begin(); indata!=tcei.member.end(); ++indata)
     {
         try {
@@ -149,7 +151,7 @@ shared_ptr <TimeSeriesEnsemble> ArrivalTimeReference(TimeSeriesEnsemble& tcei,
             tceo->member.push_back(*tcs);
         } catch ( MsPASSError& serr)
         {
-            tcs->live=false;
+            tcs->kill();
             tceo->member.push_back(*tcs);
             cerr << "Warning:  ArrivalTimeReference threw this error for current seismogram"<<endl;
             serr.log_error();
