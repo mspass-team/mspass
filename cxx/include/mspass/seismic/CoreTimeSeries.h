@@ -46,13 +46,66 @@ already known.
 Standard copy constructor.
 **/
 	CoreTimeSeries(const CoreTimeSeries&);
+	/* These overload virtual methods in BasicTimeSeries. */
+	/*! \brief Set the sample interval.
+
+  This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined dt in Metadata.   That is handled by
+	first setting the internal dt value and then going through a fixed list
+	of valid alias keys for dt.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	\param sample_interval is the new data sample interval to be used.
+	*/
+  void set_dt(const double sample_interval);
+	/*! \brief Set the number of samples attribute for data.
+
+	This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined npts in Metadata.   That is handled by
+	first setting the internal npts value (actually ns) and then going through a fixed list
+	of valid alias keys for npts.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	This attribute has an additional complication compared to other setter
+	that are overrides from BasicTimeSeries.   That is, the number of points
+	define the data buffer size to hold the sample data.   To guarantee
+	the buffer size and the internal remain consistent this method clears
+	any existing content of the vector s and initializes npts points to 0.0.
+	Note this means if one is using this to assemble a data object in pieces
+	you MUST call this method before loading any data or it will be cleared
+	and you will mysteriously find the data are all zeros.
+
+	\param npts is the new number of points to set.
+	*/
+	void set_npts(const size_t npts);
+	/*! \brief Set the data start time.
+
+	This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined npts in Metadata.   That is handled by
+	first setting the internal t0 value and then going through a fixed list
+	of valid alias keys for it.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	This is a dangerous method to use on real data as it can mess up the time
+	if not handled correctly.   It should be used only when that sharp knife is
+	needed such as in assembling data outside of constructors in a test program.
+
+	\param t0in is the new data sample interval to be used.
+	*/
+	void set_t0(const double t0in);
 /*!
 Returns the end time (time associated with last data sample)
 of this data object.
 **/
 	double endtime()const noexcept
         {
-            return(t0+dt*static_cast<double>(s.size()-1));
+            return(mt0+mdt*static_cast<double>(s.size()-1));
         };
 /*!
 Standard assignment operator.

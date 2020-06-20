@@ -19,44 +19,22 @@ enum class TimeReferenceType {
 /*! \brief Base class for time series objects.
 
 This is a mostly abstract class defining data and methods shared by all
-data objects that are time series.  To this library time series means
+data objects that are time series.  In MsPASS time series means
 data sampled on a 1d, uniform grid defined by a sample rate, start time,
 and number of samples.  Derived types can be scalar, vector, complex, or
 any data that is uniformly sampled.
+
+The seispp version of this class had public attributes for key data are
+essential for defining any time series data (e.g. sample interval).
+This was revised in MsPASS to use getters and putters to provide a cleaner
+interface to python with pybind11.
 
 \author Gary L. Pavlis
 **/
 class BasicTimeSeries
 {
 public:
-/*!
-Boolean defining if a data object has valid data or is to be ignored.
-Data processing often requires data to be marked bad but keep the original
-data around in case an error was made.  This boolean allows this capability.
-**/
-	bool live;
-/*!
-Sample interval.
-**/
-	double dt;
-/*!
-Data start time.  That is the time of the first sample of data.
-**/
-	double t0;
-/*!
-Number of data samples in this data object.
-**/
-	size_t ns;
-/*!
-Time reference standard for this data object.  Defined by enum Time_Reference
-this currently is only one of two things.  When set as "UTC" the time
-standard is an epoch time.  When set as "relative" time has no relationship
-to any external standard but are relative to some arbitrary reference that must
-ascertained by the algorithm by some other means (in seispp this is normally
-done through a metadata object).  A classic example is multichannel data where
-channels have a time relative to a shot time.
-**/
-	TimeReferenceType tref;
+
 /*!
 Default constructor. Does essentially nothing since a BasicTimeSeries
 object has no data.  Does initialize data to avoid run time checkers
@@ -82,9 +60,9 @@ It is common to need to ask for the time of a given sample.
 This standardizes this common operation in an obvious way.
 //\param i - sample number to compute time for.
 **/
-	double time(const size_t i)const noexcept
+	double time(const size_t i)const
         {
-            return(t0+dt*static_cast<double>(i));
+            return(mt0+mdt*static_cast<double>(i));
         };
 /*!
 Inverse of time function.  That is,  it returns the integer position
@@ -93,9 +71,9 @@ not tested for validity compared to the data range.  This is the
 callers responsibility as this is a common error condition that
 should not require the overhead of an exception.
 **/
-	size_t sample_number(double t)const noexcept
+	size_t sample_number(double t)const
         {
-            return(round((t-t0)/dt));
+            return(round((t-mt0)/mdt));
         };
 /*!
 Returns the end time (time associated with last data sample)
@@ -103,7 +81,7 @@ of this data object.
 **/
 	double endtime()const noexcept
         {
-            return(t0+dt*static_cast<double>(ns-1));
+            return(mt0+mdt*static_cast<double>(nsamp-1));
         };
 /*! Return true if a time shift has been applied to the data.
  * Never true if data were never in an absolute time frame (i.e.UTC)*/
@@ -178,10 +156,139 @@ NOTE:  This method is maintained only for backward compatibility.   May be depri
   zero will be shifted left because relative time is t-t0.
   */
   virtual void shift(const double dt);
+	/*! Returns true of data are marked valid (live).  */
+	bool live()const{return this->mlive;};
+	/*! Return true if the data have been marked bad (killed) - inverse of live()*/
+  bool dead()const{return !(this->mlive);};
+	/*! Mark these data bad. */
+	void kill(){this->mlive=false;};
+	/*! Inverse of kill - marks data live overriding anything set before. Use to
+	resurrect data improperly killed (useful only for interactive editing) or
+	creating data pieces outside constructors. */
+	void set_live(){this->mlive=true;};
+	/*! Return the data sample interval. */
+  double dt()const {return this->mdt;};
+	/*! Test if the time standard is UTC. */
+	bool time_is_UTC()const
+	{
+		if(tref==TimeReferenceType::UTC)
+		  return true;
+		else
+		  return false;
+	};
+	bool time_is_relative()const
+	{
+		if(tref==TimeReferenceType::Relative)
+		  return true;
+		else
+		  return false;
+	};
+	TimeReferenceType timetype()const
+	{
+		return this->tref;
+	}
+	/*! Return sample rate. */
+	double samprate()const
+	{
+		return 1.0/mdt;
+	}
+	/*! Return the number of points in the data series. */
+  size_t npts()const {return nsamp;};
+	/*! Return time of first data sample.  An epoch time or relative time depending
+	on TimeReferenceType private variable tref*/
+  double t0()const {return this->mt0;};
+	/*! \brief Set the sample interval.
+
+	This is a simple setter for the sample interval attribute.  It is virtual
+	because children may want to do more than just set the attribute in this
+	base class.  In MsPASS that means keeping the Metadata attributes that
+	define sample interval in sync with the data.   Aliases further complicate
+	that issue so it is not trivial.   Other data objects that could be
+	derived form this base could have similar issues.
+
+	\param sample_interval is the new data sample interval to be used.
+	*/
+  virtual void set_dt(const double sample_interval)
+	{
+		mdt=sample_interval;
+	};
+	/*! \brief Set the number of samples attribute for data.
+
+	This is a simple setter for the number of samples attribute.  It is virtual
+	because children may want to do more than just set the attribute in this
+	base class.  In MsPASS that means keeping the Metadata attributes that
+	define the number of points in sync with the data.   Aliases further complicate
+	that issue so it is not trivial.   Other data objects that could be
+	derived form this base could have similar issues.
+
+	\param npts is the new number of points to set.
+	*/
+	virtual void set_npts(const size_t npts)
+	{
+		nsamp=npts;
+	};
+	/*! \brief Set the data start time.
+
+	This is a simple setter for the start time attribute.  It is virtual
+	because children may want to do more than just set the attribute in this
+	base class.  In MsPASS that means keeping the Metadata attributes that
+	define t0 in sync with the data.   Aliases further complicate
+	that issue so it is not trivial.   Other data objects that could be
+	derived form this base could have similar issues.
+
+	\param t0in is the new data sample interval to be used.
+	*/
+	virtual void set_t0(const double t0in)
+	{
+		mt0=t0in;
+	};
+	/*! \brief Force the time standard.
+
+  Time series data may have multiple concepts of what the time standard is.
+	In MsPASS the allowed values currently are UTC and relative defined by
+	the TimeReferenceType enum class.   Other implementations might need to use
+	some other standard (e.g. raw gps time is not utc).  This method allows
+	forcing a standard.  It is not recommended for normal use, but only as a
+	brutal solution for assembling a data object outside normal constructors.
+
+	\param newtref is the new time standard to set for these data.
+	*/
+	void set_tref(const TimeReferenceType newtref)
+	{
+		tref=newtref;
+	};
 /*! Standard assignment operator. */
   BasicTimeSeries& operator=(const BasicTimeSeries& parent);
 
-private:
+protected:
+	/*!
+	Boolean defining if a data object has valid data or is to be ignored.
+	Data processing often requires data to be marked bad but keep the original
+	data around in case an error was made.  This boolean allows this capability.
+	**/
+		bool mlive;
+	/*!
+	Sample interval.
+	**/
+		double mdt;
+	/*!
+	Data start time.  That is the time of the first sample of data.
+	**/
+		double mt0;
+	/*!
+	Number of data samples in this data object.
+	**/
+		size_t nsamp;
+		/*!
+		Time reference standard for this data object.  Defined by enum Time_Reference
+		this currently is only one of two things.  When set as "UTC" the time
+		standard is an epoch time.  When set as "relative" time has no relationship
+		to any external standard but are relative to some arbitrary reference that must
+		ascertained by the algorithm by some other means (in seispp this is normally
+		done through a metadata object).  A classic example is multichannel data where
+		channels have a time relative to a shot time.
+		**/
+		TimeReferenceType tref;
     /* We actually test for t0shift two ways.  If this is true we always accept it.
      * If false we check for nonzero t0shift and override if necessary.
      * */
@@ -189,14 +296,15 @@ private:
     /*When ator or rtoa are called this variable defines the conversion back
      * and forth.  The shift method should be used to change it. */
     double t0shift;
+private:
 		friend boost::serialization::access;
     template<class Archive>
        void serialize(Archive& ar,const unsigned int version)
     {
-      ar & live;
-      ar & dt;
-			ar & ns;
-			ar & t0;
+      ar & mlive;
+      ar & mdt;
+			ar & nsamp;
+			ar & mt0;
 			ar & tref;
 			ar & t0shift_is_valid;
 			ar & t0shift;

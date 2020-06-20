@@ -1,66 +1,89 @@
 #ifndef _TIMESERIES_H_
 #define _TIMESERIES_H_
 #include "mspass/seismic/CoreTimeSeries.h"
-#include "mspass/utility/MsPASSCoreTS.h"
+#include "mspass/utility/ProcessingHistory.h"
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_serialize.hpp>
 namespace mspass{
   /*! \brief Implemntation of TimeSeries for MsPASS.
 
   This is the working version of a three-component TimeSeries object used
   in the MsPASS framework.   It extends CoreTimeSeries by adding
-  common MsPASS components (MsPASSCORETS).  It may evolve with additional
+  common MsPASS components (ProcessingHistory).  It may evolve with additional
   special features.  */
-class TimeSeries : public CoreTimeSeries, public MsPASSCoreTS
+class TimeSeries : public mspass::CoreTimeSeries,
+   public mspass::ProcessingHistory
 {
 public:
+  ErrorLogger elog;
   /*! Default constructor.   Only runs subclass default constructors. */
-  TimeSeries() : CoreTimeSeries(),MsPASSCoreTS(){};
-  /*! Partial copy constructor.
+  TimeSeries() : mspass::CoreTimeSeries(),mspass::ProcessingHistory(){};
+  /*!  \brief Construct from lower level CoreTimeSeries.
 
-   Most of this class is defined by the CoreTimeSeries class, but at present for
-   mspass extension we need the objectid for mongdb.  This passes the object id
-   as a string of hex digits.
+  In MsPASS CoreTimeSeries has the primary functions that define the
+  concept of a a single channel seismogram.   TimeSeries implements
+  mspass specific features needed to mesh with the mspass processing system.
+  This constructor clones only the CoreTimeSeries components and initializes
+  the ProcessingHistory with the default constructor leaving the history
+  in an empty state.   Users should call methods in ProcessingHistory to
+  initiate a valid history chain.   Processing can continue if left in
+  that state, but the history chain will have an undefined origin.  Job
+  information will also be lost if not initialized (see BasicProcessingHistory)
 
-   \param d is the main CoreTimeSeries to be copied.
-   \param oid is the objectid specified as a hex string.
+  \param d is the data to be copied to create the new TimeSeries object.  Note
+   that means a deep copy wherein the data vector is copied.
    */
-  TimeSeries(const mspass::CoreTimeSeries& d, const std::string oid);
-  /*! Extended partial copy constructor.
+  TimeSeries(const mspass::CoreTimeSeries& d);
+  /*! Contruct from a core time series and initialize history as origin.
 
-  A TimeSeries object is created from several pieces.   It can be
-  useful at times to create a partial clone that copies everything
-  but the actual data.   This version clones all components that are
-  not data.  Note whenever this constructor is called the object id
-  will automatically be invalid since by definition the object
-  created is not stored in the MongoDB database.
+  This constructor is a variant of a similar one built only from a
+  CoreTimeSeries.  This constuctor is intended to be used mainly on
+  simulation data created by some mechanism (e.g. a python procedure).
+  It is more rigid that the simple one arg constructor as it will
+  create a top level history record.   The record will mark the result
+  as an origin with an id set as a uuid created by a random number
+  generator (boost implementation).  The jobname and jobid are
+  frozen as "test". Use a different constructor and/or reset job info
+  if more flexibility is desired.  Use of this constructor
+  is recommended only for test python programs that do not need to
+  interact with MongoDB.
 
-  \param b - BasicTimeSeries component to use to construct data.
-  \param m - Metadata componet to use to construct data (no test are
-    made to verify any attributes stored here are consistent with b.
-  \param e - ErrorLogger content.  If these data are derived from a
-    parent that has an error log (ErrorLogger) that may not be empty
-    it can be useful to copy the log.   This argument has a default
-    that passes an empty ErrorLog object.   The idea is calling this
-    constructor with only two parameters will not copy the error log.
-    */
-  TimeSeries(const BasicTimeSeries& b,const Metadata& m,
-          const ErrorLogger elf=ErrorLogger());
+  \param is core data to be cloned
+  \param alg is the algorithm name to set for the origin history record.
+  */
+  TimeSeries(const mspass::CoreTimeSeries& d, const std::string alg);
 /*! Special constructor for pickle interface.
 
 The pickle interface required by spark presented problems for MsPASS.  The
-complicated data objects of TimeSeries and Seismogram have to be serialized
+complicated data objects of TimeSeries and TimeSeries have to be serialized
 in pieces.   This constructor is only used in the function called
 indirectly by pickle.load.   It essentially contains a TimeSeries dismembered
 into the pieces that can be the serialized independently.   The
 parameters are each associated with one of those required pieces and
 are simply copied to build a valid TimeSeries object in the pickle.load
 function */
-  TimeSeries(const BasicTimeSeries& b,const Metadata& m,
-                  const MsPASSCoreTS& mcts,const vector<double>& d);
+  TimeSeries(const mspass::BasicTimeSeries& b,const mspass::Metadata& m,
+                  const mspass::ProcessingHistory& mcts,const std::vector<double>& d);
   /*! Standard copy constructor. */
   TimeSeries(const TimeSeries& parent)
-    : CoreTimeSeries(parent), MsPASSCoreTS(parent){};
+    : mspass::CoreTimeSeries(parent), mspass::ProcessingHistory(parent){};
   /*! Standard assignment operator. */
   TimeSeries& operator=(const TimeSeries& parent);
+  /*! Return sring representation of the unique id for this object. */
+  std::string id_string() const
+  {
+    return boost::uuids::to_string(id);
+  };
+  /*! PUtter for id. */
+  void set_id(const std::string newid)
+  {
+    boost::uuids::string_generator gen;
+    id=gen(newid);
+  };
+private:
+  boost::uuids::uuid id;
 };
 }//END mspass namespace
 #endif
