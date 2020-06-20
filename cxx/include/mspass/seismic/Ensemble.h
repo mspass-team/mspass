@@ -2,7 +2,7 @@
 #define _MSPASS_ENSEMBLE_H_
 #include <vector>
 #include "mspass/seismic/TimeSeries.h"
-#include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/Seismogram.h"
 //#include "mspass/seismic/Seismogram.h"
 namespace mspass{
 template <typename Tdata> class Ensemble : public Metadata
@@ -81,9 +81,9 @@ public:
   /*! \brief copy ensemble metadata to all members.
 
     An ensemble has global metadata, but each member is required to have
-    a metadata component.  This method takes the ensemble metadata and 
+    a metadata component.  This method takes the ensemble metadata and
     copies it to each of the member objects.   The operation will overwrite
-    previous key:value pairs in a member that are also present in the 
+    previous key:value pairs in a member that are also present in the
     ensemble metadata.
     */
   void sync_metadata()
@@ -96,9 +96,13 @@ public:
       }
   };
 };
+/*! Useful alias for Ensemble<TimeSeries> */
+typedef Ensemble<TimeSeries> TimeSeriesEnsemble;
+/*! Useful alias for Ensemble<Seismogram> */
+typedef Ensemble<Seismogram> ThreeComponentEnsemble;
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
 
- An arrival time reference means that the time is set to relative and 
+ An arrival time reference means that the time is set to relative and
  zero is defined as an arrival time extracted from the metadata area of
  each member object.
 
