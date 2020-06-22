@@ -86,7 +86,9 @@ using mspass::ErrorLogger;
 using mspass::pfread;
 using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
-using mspass::MsPASSCoreTS;
+using mspass::ProcessingHistoryRecord;
+using mspass::BasicProcessingHistory;
+using mspass::ProcessingHistory;
 using mspass::Ensemble;
 using mspass::MongoDBConverter;
 using mspass::agc;
@@ -218,9 +220,7 @@ public:
     PYBIND11_OVERLOAD(
       void,
       mspass::BasicTimeSeries,
-      rtoa,
-
-    );
+      rtoa);
   }
   void shift(const double dt)
   {
@@ -230,12 +230,57 @@ public:
       shift,
       dt);
   }
-  double time_reference() const
+  void set_dt(const double sample_interval)
   {
     PYBIND11_OVERLOAD(
-      double,
+      void,
       mspass::BasicTimeSeries,
-      time_reference,
+      set_dt,
+      sample_interval);
+  }
+  void set_npts(const size_t npts)
+  {
+    PYBIND11_OVERLOAD(
+      void,
+      mspass::BasicTimeSeries,
+      set_npts,
+      npts);
+  }
+  void set_t0(const double d0in)
+  {
+    PYBIND11_OVERLOAD(
+      void,
+      mspass::BasicTimeSeries,
+      set_t0,
+      d0in);
+  }
+};
+
+/* Trampoline class for BasicProcessingHistory - new for 2020 API change */
+class PyBasicProcessingHistory : public BasicProcessingHistory
+{
+public:
+  using BasicProcessingHistory::BasicProcessingHistory;
+  /* BasicTimeSeries has virtual methods that are not pure because
+  forms that contain gap handlers need additional functionality.
+  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
+  i.e. omit the PURE part of the name*/
+  /* Disabled for now - this virtual method should have a different form
+  because we are using shared_ptr.  Probably should be pythonic return.
+  std::list<std::string> algorithms_applied()
+  {
+    PYBIND11_OVERLOAD(
+      std::list<std::string>,
+      mspass::BasicProcessingHistory,
+      algorithms_applied);
+  }
+  */
+  size_t current_stage() override
+  {
+    PYBIND11_OVERLOAD_PURE(
+      size_t,
+      mspass::BasicProcessingHistory,
+      current_stage,  //exta comma needed for reasons given in pybind docs
     );
   }
 };
@@ -284,7 +329,7 @@ PYBIND11_MODULE(ccore,m)
         throw py::value_error("SphericalCoordinate expects a vector of 3 elements");
       return mspass::UnitVectorToSpherical(static_cast<double*>(info.ptr));
     }))
-    /* The use of capsule to avoid copy is found at 
+    /* The use of capsule to avoid copy is found at
        https://github.com/pybind/pybind11/issues/1042 */
     .def_property_readonly("unit_vector", [](const SphericalCoordinate& self) {
       double* v = SphericalToUnitVector(self);
@@ -337,7 +382,7 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<std::ifstream&,const std::string>())
     /* The order of the following type check matters. Note that due to
      * the pybind11's asymmetric conversion behavior from bytes to string,
-     * we have to handle bytes before strings. The same applies to the 
+     * we have to handle bytes before strings. The same applies to the
      * put and __setitem__ methods.
     */
     .def(py::init([](py::dict d) {
@@ -353,7 +398,7 @@ PYBIND11_MODULE(ccore,m)
           md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
         else if(py::isinstance<py::str>(i.second))
           md->put(std::string(py::str(i.first)), std::string(py::str(i.second)));
-        else 
+        else
           md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
       }
       return md;
@@ -375,7 +420,7 @@ PYBIND11_MODULE(ccore,m)
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
       else if(py::isinstance<py::str>(v))
         md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else 
+      else
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
     })
     .def("put",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
@@ -397,7 +442,7 @@ PYBIND11_MODULE(ccore,m)
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
       else if(py::isinstance<py::str>(v))
         md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else 
+      else
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
     })
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
@@ -417,7 +462,7 @@ PYBIND11_MODULE(ccore,m)
     .def("put_int",&Metadata::put_int,"Interface class for generic ints")
     */
     .def("keys",&Metadata::keys,"Return a list of the keys of all defined attributes")
-    .def("type",[](const Metadata &md, const std::string &key) -> std::string { 
+    .def("type",[](const Metadata &md, const std::string &key) -> std::string {
       std::string typ = md.type(key);
       if(typ == "pybind11::object")
         return py::str(boost::any_cast<pybind11::object>(md.get_any(key)).get_type());
@@ -428,9 +473,9 @@ PYBIND11_MODULE(ccore,m)
     },"Return a demangled typename for value associated with a key")
     .def("modified",&Metadata::modified,"Return a list of all attributes that have been changes since construction")
     .def("clear_modified",&Metadata::clear_modified,"Clear container used to mark altered Metadata")
-    /*  For unknown reasons could not make this overload work.  
+    /*  For unknown reasons could not make this overload work.
      *  Ended up commenting out char * section of C++ code - baggage in python
-     *  anyway.  
+     *  anyway.
     .def("is_defined",py::overload_cast<const std::string>(&Metadata::is_defined))
     .def("is_defined",py::overload_cast<const char *>(&Metadata::is_defined))
     */
@@ -441,10 +486,10 @@ PYBIND11_MODULE(ccore,m)
     .def("__delitem__",&Metadata::clear,"Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
-    .def("__reversed__", [](const Metadata &s) -> Metadata { 
-      throw py::type_error(std::string("'") + 
-        py::cast(s).attr("__class__").attr("__name__").cast<std::string>() + 
-        "' object is not reversible"); 
+    .def("__reversed__", [](const Metadata &s) -> Metadata {
+      throw py::type_error(std::string("'") +
+        py::cast(s).attr("__class__").attr("__name__").cast<std::string>() +
+        "' object is not reversible");
     })
     .def("__str__", [](const Metadata &s) -> std::string {
       if(s.size() == 0)
@@ -459,17 +504,17 @@ PYBIND11_MODULE(ccore,m)
         }
         else if (index->second.type() == typeid(double))
           key = key + ": " + std::to_string(boost::any_cast<double>(index->second)) + ", ";
-        else if (index->second.type() == typeid(bool) && 
+        else if (index->second.type() == typeid(bool) &&
                  boost::any_cast<bool>(index->second) == true)
           key = key + ": True, ";
-        else if (index->second.type() == typeid(bool) && 
+        else if (index->second.type() == typeid(bool) &&
                  boost::any_cast<bool>(index->second) == false)
           key = key + ": False, ";
         else if (index->second.type() == typeid(long))
           key = key + ": " + std::to_string(boost::any_cast<long>(index->second)) + ", ";
-        /* The py::repr function will get the double/single 
+        /* The py::repr function will get the double/single
          * quotes right based on the content of the string */
-        else 
+        else
           key = key + ": " + std::string(py::repr(py::cast(
                 boost::any_cast<string>(index->second)))) + ", ";
         strout += key;
@@ -479,7 +524,7 @@ PYBIND11_MODULE(ccore,m)
       return strout + "}";
     })
     .def("__repr__", [](const Metadata &s) -> std::string {
-      return py::cast(s).attr("__class__").attr("__name__").cast<std::string>() + 
+      return py::cast(s).attr("__class__").attr("__name__").cast<std::string>() +
           "(" + std::string(py::str(py::cast(s).attr("__str__")())) + ")";
     })
     .def("change_key",&Metadata::change_key,"Change key to access an attribute")
@@ -524,12 +569,16 @@ PYBIND11_MODULE(ccore,m)
     .value("Relative",TimeReferenceType::Relative)
     .value("UTC",TimeReferenceType::UTC)
   ;
-
+/* Intentionally ommit the following from python bindings:
+  timetype method
+  set_tref
+  */
   py::class_<mspass::BasicTimeSeries,PyBasicTimeSeries>(m,"BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
     .def(py::init<>())
     .def("time",&mspass::BasicTimeSeries::time,"Return the computed time for a sample number (integer)")
     .def("sample_number",&mspass::BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
     .def("endtime",&mspass::BasicTimeSeries::endtime,"Return the (computed) end time of a time series")
+    .def("shifted",&mspass::BasicTimeSeries::shifted,"Return True if the data have been time shifted to relative time")
     .def("rtoa",py::overload_cast<const double>(&mspass::BasicTimeSeries::rtoa))
     .def("rtoa",py::overload_cast<>(&mspass::BasicTimeSeries::rtoa))
     .def("ator",&mspass::BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
@@ -537,27 +586,32 @@ PYBIND11_MODULE(ccore,m)
     .def("time_reference",&mspass::BasicTimeSeries::time_reference,"Return time standard")
     .def("shifted",&mspass::BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
     .def("force_t0_shift",&mspass::BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")
-    .def_readwrite("live",&BasicTimeSeries::live,"True of data is valid, false if invalid")
-    .def_readwrite("dt",&BasicTimeSeries::dt,"Sample interval")
-    .def_readwrite("t0",&BasicTimeSeries::t0,"Time of sample 0")
-    .def_readwrite("ns",&BasicTimeSeries::ns,"Number of samples in this time series")
-    .def_readwrite("tref",&BasicTimeSeries::tref,"Defines time standard for this time series")
+    .def("live",&mspass::BasicTimeSeries::live,"Return True if the data are marked valid (not dead)")
+    .def("dead",&mspass::BasicTimeSeries::dead,"Return true if the data are marked bad and should not be used")
+    .def("kill",&mspass::BasicTimeSeries::kill,"Mark this data object bad = dead")
+    .def("set_live",&mspass::BasicTimeSeries::set_live,"Undo a kill (mark data ok)")
+    .def("dt",&mspass::BasicTimeSeries::dt,"Return the sample interval (normally in second)")
+    .def("samprate",&mspass::BasicTimeSeries::samprate,"Return the sample rate (usually in Hz)")
+    .def("time_is_UTC",&mspass::BasicTimeSeries::time_is_UTC,"Return true if t0 is a UTC epoch time")
+    .def("time_is_relative",&mspass::BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
+    .def("npts",&mspass::BasicTimeSeries::npts,"Return the number of time samples in this object")
+    .def("t0",&mspass::BasicTimeSeries::t0,"Return the time of the first sample of data in this time series (negative of time 0")
+    .def("set_dt",&mspass::BasicTimeSeries::set_dt,"Set the data time sample interval")
+    .def("set_npts",&mspass::BasicTimeSeries::set_npts,"Set the number of data samples in this object")
+    .def("set_t0",&mspass::BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
   ;
   py::class_<mspass::CoreTimeSeries,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const size_t>())
-    .def("endtime",&mspass::CoreTimeSeries::endtime,"Return the (computed) end time of a time series")
+    .def("set_dt",&CoreTimeSeries::set_dt,
+      "Set data sample interval (overrides BasicTimeSeries virtual method)")
+    .def("set_npts",&CoreTimeSeries::set_dt,
+      "Set data number of samples (overrides BasicTimeSeries virtual method)")
+    .def("set_t0",&CoreTimeSeries::set_dt,
+      "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
-    /* This is pretty much ignoring the ns on C++ side and override 
-       it with the actual size of the underlying vector. This is needed 
-       to avoid issues of pickle from inconsistent size. */
-    .def_property("ns",[](const CoreTimeSeries &self) {
-      return self.s.size();
-    },[](CoreTimeSeries &self, size_t length) {
-      self.s.resize(length);
-    },"Number of samples in this time series")
   ;
     /* We need this definition to bind dmatrix to a numpy array as described
   in this section of pybind11 documentation:\
@@ -622,7 +676,7 @@ PYBIND11_MODULE(ccore,m)
       std::vector<ssize_t> stride(2);
       stride[0] = sizeof(double) * step;
       stride[1] = sizeof(double) * m.rows();
-      // The following undocumented trick is from 
+      // The following undocumented trick is from
       // https://github.com/pybind/pybind11/issues/323
       py::str dummyDataOwner;
       py::array rows(py::dtype(py::format_descriptor<double>::format()), size,
@@ -677,7 +731,7 @@ PYBIND11_MODULE(ccore,m)
       return std::string(py::str(py::cast(m).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__str__")()));;
     })
-    .def("__repr__", [](const dmatrix &m) -> std::string { 
+    .def("__repr__", [](const dmatrix &m) -> std::string {
       std::string strout("dmatrix(");
       strout += std::string(py::str(py::cast(m).attr("__str__")())) + ")";
       size_t pos = strout.find('\n');
@@ -694,6 +748,13 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
     .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const unsigned int>())
+    .def(py::init<const mspass::Metadata&,const bool>(),"Construct from Metadata with read from file option")
+    .def("set_dt",&CoreSeismogram::set_dt,
+      "Set data sample interval (overrides BasicTimeSeries virtual method)")
+    .def("set_npts",&CoreSeismogram::set_dt,
+      "Set data number of samples (overrides BasicTimeSeries virtual method)")
+    .def("set_t0",&CoreSeismogram::set_dt,
+      "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
     .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
@@ -711,7 +772,7 @@ PYBIND11_MODULE(ccore,m)
       self.transform(static_cast<double(*)[3]>(info.ptr));
     },"Applies an arbitrary transformation matrix to the data")
     .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
-    .def_property("transformation_matrix", 
+    .def_property("transformation_matrix",
       [](const CoreSeismogram &self){
         dmatrix tm = self.get_transformation_matrix();
         auto v = static_cast<Publicdmatrix&>(tm).ary;
@@ -722,7 +783,7 @@ PYBIND11_MODULE(ccore,m)
         stride[0] = sizeof(double);
         stride[1] = sizeof(double) * 3;
         return py::array(py::dtype(py::format_descriptor<double>::format()), size, stride, c->data(), capsule);
-      }, 
+      },
       [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
         py::buffer_info info = tm.request();
         if (info.ndim != 2 || info.shape[0] != 3 || info.shape[1] != 3)
@@ -733,6 +794,7 @@ PYBIND11_MODULE(ccore,m)
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
     .def_readwrite("u",&CoreSeismogram::u)
+    /*
     .def_property("ns",[](const CoreSeismogram &self) {
       return self.u.columns();
     },[](CoreSeismogram &self, size_t columns) {
@@ -752,13 +814,19 @@ PYBIND11_MODULE(ccore,m)
         static_cast<Publicdmatrix&>(self.u).ary.resize(static_cast<Publicdmatrix&>(self.u).length);
       }
     },"Number of samples in this time series")
+    */
   ;
+  /* this is now overloaded - need to figure out how to do that.   Disabled
+  temporarily to get the rest of the 2020 api change stuff to build.
+  glp - 4/22/2020
+
   m.def("ArrivalTimeReference",&mspass::ArrivalTimeReference,"Shifts data so t=0 is a specified arrival time",
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("key"),
       py::arg("window")
   );
+  */
   m.def("ExtractComponent",&mspass::ExtractComponent,
   	"Extract component as a TimeSeries object",
       py::return_value_policy::copy,
@@ -857,13 +925,13 @@ PYBIND11_MODULE(ccore,m)
     .def_readwrite("badness",&LogData::badness,"Return a error level code")
     .def_readwrite("message",&LogData::message,"Return the actual posted message")
     .def("__str__", [](const LogData &ld) -> std::string {
-      return std::string("{'job_id': ") + std::to_string(ld.job_id) + 
-        ", 'p_id': " + std::to_string(ld.p_id) + 
-        ", 'algorithm': " + ld.algorithm + 
-        ", 'message': " + ld.message + ", 'badness': " + 
+      return std::string("{'job_id': ") + std::to_string(ld.job_id) +
+        ", 'p_id': " + std::to_string(ld.p_id) +
+        ", 'algorithm': " + ld.algorithm +
+        ", 'message': " + ld.message + ", 'badness': " +
         std::string(py::str(py::cast(ld.badness))) + "}";
     })
-    .def("__repr__", [](const LogData &ld) -> std::string { 
+    .def("__repr__", [](const LogData &ld) -> std::string {
       std::string strout("LogData(");
       return strout + std::string(py::str(py::cast(ld).attr("__str__")())) + ")";
     })
@@ -885,19 +953,77 @@ PYBIND11_MODULE(ccore,m)
       return py::cast(self).attr("get_error_log")().attr("__getitem__")(i);
     })
   ;
-  py::class_<mspass::MsPASSCoreTS>(m,
-               "MsPASSCoreTS","class to extend a data object to integrate with MongoDB")
+  /* New classes in 2020 API revision - object level history preservation -
+  OUCH needs trampoline class and definition of BasicProcessingHistory - INCOMPLETE - remove when done*/
+  py::class_<mspass::ProcessingHistoryRecord>(m,"ProcessingHistoryRecord",
+        "Concise data structure used to hold processing history data")
     .def(py::init<>())
-    .def("set_id",&mspass::MsPASSCoreTS::set_id,"Set the mongodb unique id to associate with this object")
-    .def("get_id",&mspass::MsPASSCoreTS::get_id,"Return the mongodb uniqueid associated with a data object")
-    .def_readwrite("elog",&mspass::MsPASSCoreTS::elog,"Error logger object");
-  py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::MsPASSCoreTS>
+    .def(py::init<const ProcessingHistoryRecord&>())
+    .def_readwrite("status",&mspass::ProcessingHistoryRecord::status,
+      "Define the state of processing of the object at this stage (finite set defined by a C++ enum class)")
+    .def_readwrite("algorithm",&mspass::ProcessingHistoryRecord::algorithm,
+      "Unique name of a processing algorithm")
+    .def_readwrite("instance",&mspass::ProcessingHistoryRecord::instance,
+      "Qualifier to define a particular instance of an algorithm with a variation of parameters")
+    .def_readwrite("id",&mspass::ProcessingHistoryRecord::id,"Unique id string defining this object at this stage of processing")
+    /* Temporary disable - generating an error for undetermined reason
+    .def_readwrite("inputs",&mspass::ProcessingHistoryRecord::inputs,
+      "Vector of one history chains from one or more parent objects")
+      */
+  ;
+  py::class_<mspass::BasicProcessingHistory,PyBasicProcessingHistory>
+      (m,"ProcessingHistory","Base class - hold job history data")
+    .def(py::init<>())
+    //.def(py::init<const BasicProcessingHistory&>())
+    .def("jobid",&mspass::BasicProcessingHistory::jobid,
+      "Return job id string")
+    .def("jobname",&mspass::BasicProcessingHistory::jobname,
+      "Return job name string defining main python script driving this processing chain")
+    .def("set_jobid",&mspass::BasicProcessingHistory::set_jobid,
+      "Set a unique id so jobname + id is unique")
+    .def("set_jobname",&mspass::BasicProcessingHistory::set_jobname,
+      "Set the base job name defining the main python script for this run")
+  ;
+  py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
+    (m,"ProcessingHistory","Used to save object level processing history.")
+    .def(py::init<>())
+    .def(py::init<const ProcessingHistory&>())
+    .def("is_raw",&mspass::ProcessingHistory::is_raw,
+      "Return True if the data are raw data with no previous processing")
+    .def("is_volatile",&mspass::ProcessingHistory::is_volatile,
+      "Return True if the data are unsaved, partially processed data")
+    .def("is_saved",&mspass::ProcessingHistory::is_saved,
+      "Return True if the data are saved and history can be cleared")
+    .def("current_stage",&mspass::ProcessingHistory::current_stage,
+      "Return count of the number of processing steps applied so far")
+    .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
+      "Load data defining this as the top of a processing history chain")
+    .def("new_stage",&mspass::ProcessingHistory::new_stage,
+      "Load data defining the current processing stage")
+    .def("reset",&mspass::ProcessingHistory::reset,
+      "Reset the history chain after a save - used to start a new history chain after an intermediate save")
+    .def("clear",&mspass::ProcessingHistory::clear,
+      "Clear this history chain - use with caution")
+    .def("history",&mspass::ProcessingHistory::history,
+      "Return a pointer to the current processing chain - handle with care")
+  ;
+  py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
     .def(py::init<const Seismogram&>())
-    .def(py::init<CoreSeismogram,std::string>())
-    .def(py::init<BasicTimeSeries,Metadata,ErrorLogger>())
-    .def(py::init<Metadata>())
+    .def(py::init<const CoreSeismogram&>())
+    .def(py::init<const CoreSeismogram&,const std::string>())
+    //.def(py::init<const BasicTimeSeries&>())
+    .def(py::init<const BasicTimeSeries&,const Metadata&,
+      const ProcessingHistory&,const bool,const bool, const dmatrix&,const dmatrix&>())
+    .def(py::init<const Metadata,std::string,std::string,std::string,std::string>())
+    .def("id_string",&mspass::Seismogram::id_string,
+      "Return the unique id string for this object")
+    .def("set_id",py::overload_cast<>(&mspass::Seismogram::set_id),
+         "Set a new unique id for this object from internal random number generator")
+    .def("set_id",py::overload_cast<const std::string>(&mspass::Seismogram::set_id),
+         "Set a new unique id for this object from string (usually mongdb objectid string)")
+  /* TEMPORARILY DISABLED - hack to get wrappers to compile
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -908,16 +1034,16 @@ PYBIND11_MODULE(ccore,m)
         arbts << dynamic_cast<const BasicTimeSeries&>(self);
         stringstream sscorets;
         boost::archive::text_oarchive arcorets(sscorets);
-        arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
-        /* these are behind getter/setters */
+        arcorets<<dynamic_cast<const ProcessingHistory&>(self);
+        // these are behind getter/setters
         bool cardinal=self.cardinal();
         bool orthogonal=self.orthogonal();
         dmatrix tmatrix=self.get_transformation_matrix();
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<tmatrix;
-        /* This is a very slow solution, but using the axiom make it work
-        before you make it fast*/
+        // This is a very slow solution, but using the axiom make it work
+        //before you make it fast
         stringstream ssu;
         boost::archive::text_oarchive aru(ssu);
         aru<<self.u;
@@ -935,7 +1061,7 @@ PYBIND11_MODULE(ccore,m)
        arbts>>bts;
        stringstream sscorets(t[2].cast<std::string>());
        boost::archive::text_iarchive arcorets(sscorets);
-       MsPASSCoreTS corets;
+       ProcessingHistory corets;
        arcorets>>corets;
        bool cardinal=t[3].cast<bool>();
        bool orthogonal=t[4].cast<bool>();
@@ -950,11 +1076,19 @@ PYBIND11_MODULE(ccore,m)
        return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
      }
      ))
+     */  //End temp disable
     ;
-    py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::MsPASSCoreTS>(m,"TimeSeries","mspass scalar time series data object")
+    py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
+      .def("id_string",&mspass::TimeSeries::id_string,
+        "Return the unique id string for this object")
+        .def("set_id",py::overload_cast<>(&mspass::TimeSeries::set_id),
+             "Set a new unique id for this object from internal random number generator")
+        .def("set_id",py::overload_cast<const std::string>(&mspass::TimeSeries::set_id),
+             "Set a new unique id for this object from string (usually mongdb objectid string)")
+  /* TEMPORARILY DISABLED - hack to get wrapper code to compile
       .def(py::pickle(
         [](const TimeSeries &self) {
           string sbuf;
@@ -965,9 +1099,9 @@ PYBIND11_MODULE(ccore,m)
           arbts << dynamic_cast<const BasicTimeSeries&>(self);
           stringstream sscorets;
           boost::archive::text_oarchive arcorets(sscorets);
-          arcorets<<dynamic_cast<const MsPASSCoreTS&>(self);
-          /*This creates a numpy array alias from the vector container
-          without a move or copy of the data */
+          arcorets<<dynamic_cast<const ProcessingHistory&>(self);
+          //This creates a numpy array alias from the vector container
+          //without a move or copy of the data
           py::array_t<double, py::array::f_style> darr(self.s.size(),&(self.s[0]));
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
         },
@@ -981,11 +1115,11 @@ PYBIND11_MODULE(ccore,m)
          arbts>>bts;
          stringstream sscorets(t[2].cast<std::string>());
          boost::archive::text_iarchive arcorets(sscorets);
-         MsPASSCoreTS corets;
+         ProcessingHistory corets;
          arcorets>>corets;
-         /* There might be a faster way to do this than a copy like
-         this but for now this, like Seismogram, is make it work before you
-         make it fast */
+         // There might be a faster way to do this than a copy like
+         //this but for now this, like Seismogram, is make it work before you
+         //make it fast
          py::array_t<double, py::array::f_style> darr;
          darr=t[3].cast<py::array_t<double, py::array::f_style>>();
          py::buffer_info info = darr.request();
@@ -994,14 +1128,14 @@ PYBIND11_MODULE(ccore,m)
          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
          return TimeSeries(bts,md,corets,d);;
        }
-     ));
-
-  /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to 
+     )) */ // End temp disable
+     ;
+  /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to
      be supported by the container.  Hence, we have two nearly identical blocks below for TimeSeries
-     and Seismogram objects.  May want to add CoreTimeSeries and CoreSeismogram objects, but for now 
+     and Seismogram objects.  May want to add CoreTimeSeries and CoreSeismogram objects, but for now
      we will only suport top level objects.
 
-     Note also the objects are stored in and std::vector container with the name member.  It appears 
+     Note also the objects are stored in and std::vector container with the name member.  It appears
      the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
      will be handled. */
   py::class_<mspass::Ensemble<TimeSeries>,mspass::Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
@@ -1022,9 +1156,9 @@ PYBIND11_MODULE(ccore,m)
     .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i, const TimeSeries ts) {
       self.member.at(i) = ts;
     })
-    /* Based on this issue: https://github.com/pybind/pybind11/issues/974 
+    /* Based on this issue: https://github.com/pybind/pybind11/issues/974
     * there seems to be no clean solution for the following code duplicate.
-    * Except that the following lambda function could be replaced with a 
+    * Except that the following lambda function could be replaced with a
     * reusable function. (Some thing TODO) */
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
       if(py::isinstance<py::float_>(v))
@@ -1037,7 +1171,7 @@ PYBIND11_MODULE(ccore,m)
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
       else if(py::isinstance<py::str>(v))
         md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else 
+      else
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
     })
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
@@ -1078,7 +1212,7 @@ PYBIND11_MODULE(ccore,m)
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
       else if(py::isinstance<py::str>(v))
         md.put(std::string(py::str(k.attr("__str__")())), std::string(py::str(v)));
-      else 
+      else
         md.put_object(std::string(py::str(k.attr("__str__")())), v);
     })
     .def("__setitem__",py::overload_cast<const std::string,const double>(&BasicMetadata::put))
@@ -1093,7 +1227,7 @@ PYBIND11_MODULE(ccore,m)
   /* This object is in a separate pair of files in this directory.  */
   py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
       .def(py::init<>())
-      /* We intentionally do no wrap the copy constructor as this 
+      /* We intentionally do no wrap the copy constructor as this
          thing should probably not be copied in a python script */
       //.def(py::init<const mspass::MetadataDefinitions>())
       .def(py::init<const std::string>())

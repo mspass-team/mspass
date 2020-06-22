@@ -76,12 +76,18 @@ function */
   {
     return boost::uuids::to_string(id);
   };
-  /*! PUtter for id. */
+  /*! Set id from a string - commonly MongoDB objectid string*/
   void set_id(const std::string newid)
   {
     boost::uuids::string_generator gen;
     id=gen(newid);
   };
+  /*! Set id from a random number generator - normal for transient data.*/
+  void set_id()
+  {
+    boost::uuids::random_generator gen;
+    id=gen();
+  }
 private:
   boost::uuids::uuid id;
 };

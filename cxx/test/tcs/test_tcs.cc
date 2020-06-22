@@ -21,7 +21,7 @@ int main(int argc, char **argv)
         cout << "Testing space allocating constructor"<<endl;
 	CoreSeismogram s2(100);
         cout << "Success"<<endl;
-	// Initialize the contents of s2 and apply a rotation 
+	// Initialize the contents of s2 and apply a rotation
 	// matrix
 	cout << "trying rotation" << endl;
 	for(i=0;i<3;++i)
@@ -31,9 +31,9 @@ int main(int argc, char **argv)
 			else
 				s2.u(i,j)=0.0;
 		}
-        s2.live=true;
-        s2.ns=100;
-        s2.t0=0.0;
+  s2.set_live();
+  s2.set_npts(100);
+  s2.set_t0(0.0);
 	SphericalCoordinate sc;
 	sc.phi=0.0;
 	sc.theta=M_PI_4;
@@ -84,9 +84,9 @@ int main(int argc, char **argv)
 			else
 				s3.u(i,j)=0.0;
 		}
-        s3.live=true;
-        s3.ns=100;
-        s3.t0=0.0;
+  s3.set_live();
+  s3.set_npts(100);
+  s3.set_t0(0.0);
 	// set some other vectors used in test below
 	s3.u(0,1)=1.0;
 	s3.u(1,1)=1.0;
