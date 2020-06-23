@@ -103,22 +103,34 @@ with serialization.
   /*! Return sring representation of the unique id for this object. */
   std::string id_string() const
   {
-    return boost::uuids::to_string(id);
+    return id;
   };
   /*! Set id from a string - commonly MongoDB objectid string*/
-  void set_id(const string newid)
+  void set_id(const std::string newid)
   {
-    boost::uuids::string_generator gen;
-    id=gen(newid);
+    id=newid;
   };
   /*! Set id from a random number generator - normal for transient data.*/
   void set_id()
   {
     boost::uuids::random_generator gen;
-    id=gen();
-  }
+    boost::uuids::uuid uuidval;
+    uuidval=gen();
+    id=boost::uuids::to_string(uuidval);
+  };
+  /*! Return true if the id set is a MongoDB ObjectID string representation. */
+  bool is_objectid()
+  {
+    /* Use a magic test that an object id string is 12 bytes.  An alternative
+    would be a boolean or enum for id type, but for simplicity we'll just
+    use this magic number.  A bit fragile if mongochanges the definition.*/
+    if(id.size()==12)
+      return true;
+    else
+      return false;
+  };
 private:
-  boost::uuids::uuid id;
+  std::string id;
 };
 }//END mspass namespace
 #endif
