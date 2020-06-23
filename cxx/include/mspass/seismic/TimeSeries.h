@@ -17,7 +17,6 @@ class TimeSeries : public mspass::CoreTimeSeries,
    public mspass::ProcessingHistory
 {
 public:
-  ErrorLogger elog;
   /*! Default constructor.   Only runs subclass default constructors. */
   TimeSeries() : mspass::CoreTimeSeries(),mspass::ProcessingHistory(){};
   /*!  \brief Construct from lower level CoreTimeSeries.
