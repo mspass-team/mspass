@@ -265,16 +265,6 @@ public:
   forms that contain gap handlers need additional functionality.
   We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
   i.e. omit the PURE part of the name*/
-  /* Disabled for now - this virtual method should have a different form
-  because we are using shared_ptr.  Probably should be pythonic return.
-  std::list<std::string> algorithms_applied()
-  {
-    PYBIND11_OVERLOAD(
-      std::list<std::string>,
-      mspass::BasicProcessingHistory,
-      algorithms_applied);
-  }
-  */
   size_t current_stage() override
   {
     PYBIND11_OVERLOAD_PURE(
@@ -816,17 +806,25 @@ PYBIND11_MODULE(ccore,m)
     },"Number of samples in this time series")
     */
   ;
-  /* this is now overloaded - need to figure out how to do that.   Disabled
-  temporarily to get the rest of the 2020 api change stuff to build.
-  glp - 4/22/2020
 
-  m.def("ArrivalTimeReference",&mspass::ArrivalTimeReference,"Shifts data so t=0 is a specified arrival time",
+  m.def("ArrivalTimeReference",
+      py::overload_cast<mspass::Seismogram&,std::string,mspass::TimeWindow>
+          (&mspass::ArrivalTimeReference),
+          "Shifts data so t=0 is a specified arrival time",
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("key"),
       py::arg("window")
   );
-  */
+  m.def("ArrivalTimeReference",
+      py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,std::string,mspass::TimeWindow>
+          (&mspass::ArrivalTimeReference),
+          "Shifts data so t=0 is a specified arrival time",
+      py::return_value_policy::copy,
+      py::arg("d"),
+      py::arg("key"),
+      py::arg("window")
+  );
   m.def("ExtractComponent",&mspass::ExtractComponent,
   	"Extract component as a TimeSeries object",
       py::return_value_policy::copy,
@@ -998,6 +996,8 @@ PYBIND11_MODULE(ccore,m)
       "Return count of the number of processing steps applied so far")
     .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
       "Load data defining this as the top of a processing history chain")
+    .def("set_as_saved",&mspass::ProcessingHistory::set_as_saved,
+      "Load data defining this as the end of chain that was or will soon be saved")
     .def("new_stage",&mspass::ProcessingHistory::new_stage,
       "Load data defining the current processing stage")
     .def("reset",&mspass::ProcessingHistory::reset,
