@@ -139,6 +139,32 @@ void ProcessingHistory::set_as_origin(const ProcessingHistoryRecord& rec)
         ErrorSeverity::Invalid);
   }
 }
+size_t ProcessingHistory::set_as_saved(const ProcessingHistoryRecord& rec)
+{
+  const string base_error("ProcessingHistory::set_as_saved:  ");
+  switch(rec.status)
+  {
+    case ProcessingStatus::SAVED:
+      break;
+    default:
+      throw MsPASSError(base_error
+        + "ProcessingHistoryRecord pass does not have status marked as SAVED",
+        ErrorSeverity::Invalid);
+  };
+  this->new_stage(rec);
+  /* This is a fragile way to test if the id is an objectid.  It is valid in
+  2020 version of mongodb but if they ever change the definition of an object id
+  this is trouble.  It doesn't actually throw an exception bust posts a
+  warning to the elog.   */
+  if(rec.id.size() != 12)
+  {
+    MsPASSError mpe(base_error
+      + "id field does not appear to be a mongodb objectid string",
+       ErrorSeverity::Complaint);
+    elog.log_error(mpe);
+  }
+  return history_list.size();
+}
 void ProcessingHistory::reset(const ProcessingHistoryRecord& rec)
 {
   history_list.clear();
