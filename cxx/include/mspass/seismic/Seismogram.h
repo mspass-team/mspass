@@ -16,7 +16,6 @@ class Seismogram : public mspass::CoreSeismogram,
    public mspass::ProcessingHistory
 {
 public:
-  ErrorLogger elog;
   /*! Default constructor.   Only runs subclass default constructors. */
   Seismogram() : mspass::CoreSeismogram(),mspass::ProcessingHistory(){};
   /*! \brief Construct from lower level CoreSeismogram.
