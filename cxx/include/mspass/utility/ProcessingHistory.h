@@ -296,6 +296,12 @@ public:
   setting the status attribute correctly.
 
   \param rec defines the input for the first history record.
+
+  \exception Will throw an exception if the rec data does not have the
+    status value set as raw or origin.  It will also throw an exception if
+    the history chain is not empty when this method is called.  Intermediate
+    saves should call clear before calling this method.  An empty condition
+    should be a given for readers.
   */
   void set_as_origin(const ProcessingHistoryRecord& rec);
   /*! \brief Define current object as a derived from a processing algorithm.
@@ -305,10 +311,33 @@ public:
   It appends the passed record to the processing history data structure stored
   within this object.
 
+  \param rec defines the defining data for this processing stage.
+
   \return count of processing level (root is 0 and increments for each
     processing stage (new child)
+
     */
   size_t new_stage(const ProcessingHistoryRecord& rec);
+  /*! \brief Add a record showing this data has been saved to storage.
+
+  Writer should first save data for an object to some external storage
+  before calling this method.   The rec passed must have the status
+  defined as saved and the id set as an object id or this function will
+  throw an exception.  Note a nonfatal error will be posted to the
+  elog data (type ErrorLogger that is a member of this class) if the
+  id field of rec does not appear to be a MongoDB object id string
+  representation. The test used is not robust as it just tests for a
+  length matching mongo's implementationd detail of exactly 12.
+
+  \param rec is the data defining the save (objectid is critical)
+  \return number of stages in the processing log after rec was posted.
+  \exception Will throw a MsPASSError if the status is not marked save  and
+    not save rec.  It will also throw a MsPASSError set as a warning if
+    the id does not appear to be a MongoDB object id string.   The data in
+    rec will still be saved when the warning error is thrown, however, so
+    a handler should deal with this appropriately.
+  */
+  size_t set_as_saved(const ProcessingHistoryRecord& rec);
   list<shared_ptr<ProcessingHistoryRecord>> history()
   {
     return this->history_list;
