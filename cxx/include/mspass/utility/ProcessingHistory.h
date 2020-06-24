@@ -3,7 +3,6 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <memory>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/ErrorLogger.h"
@@ -111,63 +110,74 @@ public:
   For some algorithms there may be only one input (e.g. time invariant filters)
   while other many have many (e.g. a stack).
   */
-  std::vector<std::shared_ptr
-    <std::list<mspass::ProcessingHistoryRecord>>> inputs;
+  std::vector<std::list<mspass::ProcessingHistoryRecord>> inputs;
   /*! Default constructor.  Creates object with no data. */
   ProcessingHistoryRecord();
   /*! Standard copy constructor.  This copies the uuid set in id. */
   ProcessingHistoryRecord(const ProcessingHistoryRecord& parent);
   ProcessingHistoryRecord& operator=(const ProcessingHistoryRecord& parent);
 };
-/* these typedefs are convenience for internal use in these templates to
-make the ugly multiple layer container code clearer.   Hence we end and
-begin the mspass namespace inside this file. */
-//} // intermediate end to mspass namespace
-//typedef HRecPtr std::shared_ptr<mspass::ProcessingHistoryRecord>;
-//typedef HistoryList std::list<HRecPtr>;
-// Restart mspass namespace
-//namespace mspass{
-//template <typename Tdata>
-//  size_t ProcessingHistoryRecord::set_inputs(const mspass::Ensemble<Tdata>& d)
-//{
-  /* Note this method could have been implemented with a call to the
-  overloaded std::vector version, but it would create an extra copy
-  operation so decided to have this very similar parallel code. */
-  //try{
-    //vector<Tdata>::const_iterator dptr;
-    //for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
-    //{
-      //HistoryList h_to_save=dptr->ProcessingHistory::history();
-      //HRecPtr h(new HRecPtr(h_to_save));
-      //this->inputs.push_back(h);
-    //}
-    //return this->history.size();
-  //}catch(...){throw;};
-//};
+/*! Procedure to set inputs vector defined by an Ensemble object.
+
+Ensembles are the generalization in MsPaSS of a "gather" as used in
+seismic reflection processing.  An Ensemble is just a vector of data objects.
+This procedure assumes the member of the ensemble have ProcessingHistory
+as a base class so they can access the history mechanism datta in MsPaSS.
+The algorithm simply copies all history data from each live member to
+the inputs vector of ProcessingHistoryRecord.
+
+Do not use this procedure if the algorithm receiving the Ensemble can
+ignore members of the Ensemble and mark them dead.  e.g. a robust
+stacker might use a trimmed mean that discards some data without an
+explicit kill.   Use the procedure that works on the atomic object, Tdata,
+instead in such a situation.
+
+\param rec is the output ProcessingHistoryRecord where history will be
+  copied to inputs.  (note the operation is append.  If inputs has
+  previous content the new data will be appended)
+\param d is Ensemble which is to be defined as input.
+*/
 /*
 template <typename Tdata>
-     size_t ProcessingHistory::set_inputs(const std::vector<Tdata>& d)
+  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::Ensemble<Tdata>& d)
 {
   try{
-    for(dptr=d.begin();dptr!=d.end();++dptr)
+    vector<Tdata>::const_iterator dptr;
+    for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
     {
-      HistoryList h_to_save=dptr->ProcessingHistory::history();
-      HRecPtr h(new HRecPtr(h_to_save));
-      this->inputs.push_back(h);
+      // Ignore any data not defined as live
+      if(dptr->live())
+      {
+        list<ProcessingHistoryRecord> h dptr->ProcessingHistory::history();
+        // do nothing if the container is empty
+        if(h.size()>0)rec.inputs.push_back(h);
+      }
     }
-    return this->history.size();
+    return rec.inputs.size();
   }catch(...){throw;};
 };
 */
-/*
-template <typename Tdata> size_t ProcessingHistory::set_inputs(const Tdata& d)
-{
-  HistoryList h_to_save=d.history();
-  HRecPtr h(new HRecPtr(h_to_save));
-  this->inputs.push_back(h);
-  return this->history.size();
-};
+/*! Append history data from a data object to inputs vector.
+
+ProcessingHistoryRecord use a vector container of a linked list of
+other ProcessingHistoryRecord objects to define the inputs to an algorithm.
+This procedure appends new data to that vector container defined by d.
+
+\param rec is the output record (normally under construction)
+\param d is the data to define as an input.
 */
+
+template <typename Tdata>
+    size_t append_input(ProcessingHistoryRecord& rec,const Tdata& d)
+{
+  if(d.live())
+  {
+    list<ProcessingHistoryRecord> h;
+    h=d.history();
+    rec.inputs.push_back(h);
+  }
+  return rec.inputs.size();
+};
 /*! Base class defining core concepts.  */
 class  BasicProcessingHistory
 {
@@ -270,13 +280,27 @@ applied to produce any final output.   Names imply the following meanings:
 class ProcessingHistory : public BasicProcessingHistory
 {
 public:
+  /*! Error log.
+
+  ProcessingHistory "has an" ErrorLogger.   It was a design choice to put
+  elog as an attribute of ProcessingHistory rather than as a direct attribute
+  of data objects because we assume top level data objects in MsPASS have
+  MsPASS features.  This is a common MsPASS feature for handling errors so
+  it was convenient to put it here.  It makes sense that errors are part of
+  the processing history.
+  */
   mspass::ErrorLogger elog;
+  /*! Default constructor. */
   ProcessingHistory();
+  /*! Standard copy constructor. */
   ProcessingHistory(const ProcessingHistory& parent);
-  //std::list<std::string> algorithms_applied() const;
+  /*! Return true if the current data is in state defined as "raw" - see class description*/
   bool is_raw();
+  /*! Return true if the current data is in state defined as "origin" - see class description*/
   bool is_origin();
+  /*! Return true if the current data is in state defined as "volatile" - see class description*/
   bool is_volatile();
+  /*! Return true if the current data is in state defined as "saved" - see class description*/
   bool is_saved();
   /*! \brief Return number of processing stages that have been applied to this object.
 
@@ -338,7 +362,7 @@ public:
     a handler should deal with this appropriately.
   */
   size_t set_as_saved(const ProcessingHistoryRecord& rec);
-  list<shared_ptr<ProcessingHistoryRecord>> history()
+  list<ProcessingHistoryRecord> history() const
   {
     return this->history_list;
   };
@@ -378,7 +402,7 @@ the process of reconstructing history is a complicated process we don't
 want to add as baggage to regular data.  Hence, tools to reconstruct history
 (provenance) are expected to extend this class. */
 protected:
-  list<shared_ptr<ProcessingHistoryRecord>> history_list;
+  list<ProcessingHistoryRecord> history_list;
 private:
   /* this is set undefined when empty and is copied from the latest record
   when new_stage is called */

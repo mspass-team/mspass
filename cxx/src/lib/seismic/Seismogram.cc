@@ -59,11 +59,11 @@ Seismogram::Seismogram(const Metadata& md, const string jobname,
     /* this sets the id to a random number based uuid */
     this->set_id();
   }
-  shared_ptr<ProcessingHistoryRecord> rec(new ProcessingHistoryRecord());
-  rec->status=ProcessingStatus::ORIGIN;
-  rec->algorithm=readername;
-  rec->instance="0";
-  rec->id=algid;
+  ProcessingHistoryRecord rec;
+  rec.status=ProcessingStatus::ORIGIN;
+  rec.algorithm=readername;
+  rec.instance="0";
+  rec.id=algid;
   history_list.push_back(rec);
 }
 Seismogram& Seismogram::operator=(const Seismogram& parent)

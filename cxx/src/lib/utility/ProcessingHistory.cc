@@ -108,8 +108,7 @@ size_t ProcessingHistory::current_stage()
 
 size_t ProcessingHistory::new_stage(const ProcessingHistoryRecord& rec)
 {
-  shared_ptr<ProcessingHistoryRecord> ptr(new ProcessingHistoryRecord(rec));
-  history_list.push_back(ptr);
+  history_list.push_back(rec);
   status=rec.status;
   return history_list.size();
 };
