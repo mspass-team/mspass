@@ -1267,4 +1267,30 @@ PYBIND11_MODULE(ccore,m)
     py::arg("d"),
     py::arg("twin") )
   ;
+  /* These are a pair of (four actually - overloaded) procedures to aid
+  python programs in building history chains.  See C++ doxygen definitions */
+  m.def("append_input",&mspass::append_input<TimeSeries>,
+    "Use the history chain of a TimeSeries to define it as an input for an algorithm to define ProcessingHistory",
+    py::return_value_policy::copy,
+    py::arg("rec"),
+    py::arg("d") )
+  ;
+  m.def("append_input",&mspass::append_input<Seismogram>,
+    "Use the history chain of a Seismogram to define it as an input for an algorithm to define ProcessingHistory",
+    py::return_value_policy::copy,
+    py::arg("rec"),
+    py::arg("d") )
+  ;
+  m.def("set_inputs",&mspass::set_inputs<TimeSeries>,
+    "Set inputs in a history chain when inputs are an Ensemble of TimeSeries objects",
+    py::return_value_policy::copy,
+    py::arg("rec"),
+    py::arg("d") )
+  ;
+  m.def("set_inputs",&mspass::set_inputs<Seismogram>,
+    "Set inputs in a history chain when inputs are an Ensemble of Seismogram objects",
+    py::return_value_policy::copy,
+    py::arg("rec"),
+    py::arg("d") )
+  ;
 }
