@@ -18,11 +18,11 @@ using namespace mspass;
 // done inline in seispp.h, but it is complication enough I put
 // it here
 //
-CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata(),u(0,0)
+CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata()
 {
   /* mlive and tref are set in BasicTimeSeries so we don't use putters for
   them here.   These three initialize Metadata properly for these attributes*/
-    this->set_dt(0.0);
+    this->set_dt(1.0);
     this->set_t0(0.0);
     this->set_npts(0);
     components_are_orthogonal=true;
@@ -35,11 +35,11 @@ CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata(),u(0,0)
                 tmatrix[i][j]=0.0;
 }
 CoreSeismogram::CoreSeismogram(size_t nsamples)
-    : BasicTimeSeries(),Metadata(),u(3,nsamples)
+    : BasicTimeSeries(),Metadata()
 {
-  this->set_dt(0.0);
+  this->set_dt(1.0);
   this->set_t0(0.0);
-  this->set_npts(0);
+  this->set_npts(nsamples);
   components_are_orthogonal=true;
   components_are_cardinal=true;
   for(int i=0; i<3; ++i)
