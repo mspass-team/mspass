@@ -2,12 +2,18 @@
 using namespace mspass;
 namespace mspass
 {
-TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string oid)
+TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string alg)
     : CoreTimeSeries(d)
 {
-    try{
-        this->set_id(oid);
-    }catch(...){throw;};
+  this->set_id();
+  ProcessingHistoryRecord rec;
+  rec.status=ProcessingStatus::ORIGIN;
+  rec.algorithm=alg;
+  rec.instance="0";
+  rec.id=this->id_string();
+  this->ProcessingHistory::set_as_origin(rec);
+  this->ProcessingHistory::set_jobname(string("test"));
+  this->ProcessingHistory::set_jobid(string("test"));
 }
 /* this is kind of a weird construct because the pieces are assembled
 out of the regular order of an object created by inheritance.  I hope

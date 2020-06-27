@@ -31,7 +31,7 @@ original data.
 This function does not throw an exception, but can post errors to the
 ErrorLogger object that is a member of Seismogram.
 */
-TimeSeries agc(const Seismogram& d,const double twin);
+TimeSeries agc(Seismogram& d,const double twin);
 /*! \brief Extracts a requested time window of data from a parent Seismogram object.
 
 It is common to need to extract a smaller segment of data from a larger

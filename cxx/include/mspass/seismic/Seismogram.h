@@ -96,7 +96,8 @@ with serialization.
       const string readername=string("load3C"),
         const string algid=string("0"));
   /*! Standard copy constructor. */
-  Seismogram(const Seismogram& parent);
+  Seismogram(const Seismogram& parent)
+    : mspass::CoreSeismogram(parent), mspass::ProcessingHistory(parent){};
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
   /*! Return sring representation of the unique id for this object. */
