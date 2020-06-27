@@ -7,16 +7,26 @@ Overview
 ~~~~~~~~
 
 | The core data objects in MsPASS were designed to encapsulate the most
-  atomic objects in seismology waveform process:  scalar (i.e. single
-  channel) signals, and three component signals.   The versions of these
+  atomic objects in seismology waveform processing:  scalar (i.e. single
+  channel) signals, and three-component signals.   The versions of these
   you as a user should normally interact with are two objects defined in
   MsPASS as *TimeSeries* and *Seismogram* respectively.  
 
 | These data objects were designed to simply interactions with MongoDB. 
   MongoDB is completely flexible in attributes names handled by the
-  database.  We manage the attribute names and data types through an
-  interfacing object we call *MetadataDefinitions* that is a required in
-  most python database interactions.
+  database.  In all cases, the components of a data object should be conceptualized
+  as four distinct components handled separately and discussed in more detail
+  below:
+.# The waveform data (normally largest in size).
+
+.# A generalization of the traditional concept of a trace header.  These
+are accessible as simple name value pairs but the value can be anything.
+It is a bit like a python dictionary, but implemented with standard C++.
+
+.# An error logger that provides a generic mechanism to post error messages
+in a parallel processing environment.
+
+.# An optional object-level processing history mechanism.
 
 | Data objects are grouped in memory with a generic concept called an
   *Ensemble*.   The implementation in C++ uses a template to define a
@@ -24,11 +34,11 @@ Overview
   binary code with python is that templates do not translate directly.  
   Consequently, the python interface uses two different names to define
   Ensembles of TimeSeries and Seismogram objects:  *TimeSeriesEnsemble*
-  and *SeismogramEnsemble* respectively. 
+  and *SeismogramEnsemble* respectively.
 
-| The C++ objects have wrappers for python that hide the details from
+| The C++ objects have wrappers for python that hide implementation details from
   the user.   All MongoDB operations implemented with the pymongo
-  package using these wrappers.   Numerical operations on the sample
+  package using these wrappers.   Compute intensive numerical operations on the sample
   data should either be written in C/C++ with their own wrappers or
   exploit numpy/scipy numerical routines.   The later is possible
   because the wrappers make the data arrays look like numpy arrays.  
@@ -67,7 +77,9 @@ History
    treat SEISPP as a prototype.
 -  Extend the Metadata object (see below) to provide support for more
    types (objects) than the lowest common denominator of floats, ints,
-   strings, and booleans handled by SEISPP.  
+   strings, and booleans handled by SEISPP. 
+-  Reduce the number of public attributes to make the code less prone to
+   user errors.   Note the word "reduce" not "eliminate" as many books advise. 
 
 | MsPASS has hooks to and leans heavily on
   `obspy <https://github.com/obspy/obspy/wiki>`__.   We chose, however,
@@ -103,7 +115,7 @@ Overview - Inheritance Relationships
   Seismogram objects are defined to understand the core concepts
   described in sections that follow.  We assume the reader has some
   understanding of the concepts of inheritance in object oriented
-  code.   The inheritance structure use we best understood as derived
+  code.   The inheritance structure is best understood as derived
   from the SEISPP prototype (see history above).  We aimed to rebranch
   and prune SEISPP  based on the experience from 15 years of development
   for SEISPP.
@@ -116,17 +128,21 @@ Overview - Inheritance Relationships
 
 | Notice that both CoreSeismogram and CoreTime series have a common
   inheritance from three base classes:  *BasicTimeSeries,
-  BasicMetadata,* and *MsPASSCoreTS*.   Python supports multiple
+  BasicMetadata,* and *ProcessingHistory*.   Python supports multiple
   inheritance and the wrappers make dynamic casting within the hierarchy
   automatic.  e.g. a *Seismogram* object can be passed directly to a
   python function that does only Metadata operations and it will be
-  handled seamlessly because python does no enforce type signatures on
-  functions.  CoreTimeSeries and CoreSeismogram should be though of a
-  core data that is independent of MsPASS.   Common features need by
-  both objects to interact with MsPASS are inherited from
-  MsPASSCoreTS.    A key point is that future users could chose to prune
-  the MsPASSCoreTS component and build on CoreTimeSeries and
-  CoreSeismogram and have no dependence upon MsPASS to build a
+  handled seamlessly because python does not enforce type signatures on
+  functions.  CoreTimeSeries and CoreSeismogram should be thought of a
+  defining core concepts independent from MsPASS.  All MsPASS specific
+  components are inherited from ProcessingHistory.   ProcessingHistory
+  implements two important concepts that were a design goal of MsPASS:
+  (a) a mechanism to preserve the processing history of a piece of data
+  to facilitate more reproducible science results, and (b) a parallel safe
+  error logging mechanism.  A key point of the design of this class
+  hierarchy is that future users could chose to prune
+  the ProcessingHistory component and reuse CoreTimeSeries and
+  CoreSeismogram to build a
   completely different framework. 
 
 | The remainder of this section discusses the individual components in
@@ -148,8 +164,8 @@ saying all time series data have the following elements:
    to sample number).
 #. Data processing always requires the time series have a **finite
    length**.   Hence, our definition of a time series directly supports
-   windowed data of a specific length (public attribute *ns* - mnemonic
-   abbreviation for number of samples).  This definition does not
+   windowed data of a specific length.   The getter for this attribute
+   is npts() and the setter is set_npts(int).  This definition does not
    preclude an extension to modern continuous data sets that are too
    large to fit in memory, but that is an extension we don't currently
    support. 
@@ -159,7 +175,7 @@ saying all time series data have the following elements:
    gaps, power failures, instrument failures, time tears, and with older
    data gaps created by station servicing.  MsPASS has stub API
    definitions for data with gaps, but these are currently not
-   implementations.   Since the main goal of MsPASS is to provide a
+   implemented.   Since the main goal of MsPASS is to provide a
    framework for efficient processing of large data sets, we pass the
    job of finding and/or fixing data gaps to other packages or
    algorithms using MsPASS with a "when in doubt throw it out" approach
@@ -167,16 +183,19 @@ saying all time series data have the following elements:
    obpsy and Antelope and provide possible path to solution for users
    needing more extensive gap processing functionality.
 
-| BasicTimeSeries uses public attributes to define the base properties
-  discussed in the points above and has methods that are common to any
-  data with these properties.  (e.g. a time(n) method returns the
-  computed time for sample number n.)   An unusual attribute borrowed
-  from reflection processing is the boolean variable with the name
-  *live*.   Data not marked live (live == false) should normally be
-  passed through a processing chain, but will always be dropped by
-  database writers.  Other public attributes are public for convenience,
-  but changing any of them must be done with caution.  
-
+| BasicTimeSeries has seven internal attributes that are accessible via
+  getters and (when absolutely necessary) can be set by the user with setters.
+  Most are best understood from the class documentation, but one is worth
+  noting here.  A concept we borrowed from seismic reflection is the idea
+  of marking data dead or alive; a boolean concept.   There are methods to
+  ask if the data are alive or dead (live() and dead() respectively) and
+  setters to force live (set_live()) or dead (kill()).   An important
+  thing to note is that an algorithm should always test if a data object
+  is defined as live.  Some algorithms may choose to simply pass data marked
+  dead along without changing or removing it from the workflow.
+  Failure to test for the live condition can cause mysterious aborts when
+  an algorithm attempts to process invalid data.
+  
 Handling Time
 ^^^^^^^^^^^^^
 
@@ -197,7 +216,7 @@ Handling Time
    IZTYPE==IA or ITn.  We intentionally do not limit what this standard
    actually defines as how the data are handled depends only on the
    choice of UTC versus Relative.  The ASSUMPTION is that if an
-   algorithm needs to know the detail of "relative to what?" means, that
+   algorithm needs to know the answer to the question, "Relative to what?", that
    detail will be defined in a Metadata attribute.
 #. When tref is TimeReferenceType::UTC (TimeReferenceType.UTC in python)
    all times are assumed to be an absolute time standard defined by
@@ -219,6 +238,12 @@ Handling Time
   always stored in raw form as UTC time stamps (e.g. see the SEED
   standard).  UTC is a fixed standard while Relative could have other
   meanings.
+
+| The enum class syntax to define tref is awkward at best.  Consequently, we
+  provide two convenience methods that have been wrapped for use in python as
+  as well as C++ code:  (a) time_is_relative() returns true if the time base is
+  relative, and (b) time_is_UTC() returns true if the time standard is UTC.
+
 | BasicTimeSeries defines two methods to convert between these two time
   standards:  rtoa (Relative to Absolute) and ator (Absolute to
   Relative).  Be aware the library has internal checks to avoid an
@@ -244,7 +269,7 @@ Metadata and MetadataDefinitions
   to store comparable information.   That approach allows metadata
   attributes to be extracted from a flexible container addressable by a
   key word and that can contain any valid data.   For example, a typical
-  obspy script will contain a line like the following to fetch the station 
+  obspy script will contain a line like the following to fetch the station
   name from a Trace object :code:`d`. 
 
 .. code-block:: python
@@ -260,19 +285,65 @@ Metadata and MetadataDefinitions
   data much like a python dictionary.   The current implementation uses
   the `any <https://theboostcpplibraries.com/boost.any>`__ library that
   is part of the widely used boost library.   In a C++ program Metadata
-  can contain any data that, to quote the documentation, is "copy
-  constructable".  The python interface, however, is much more
-  restrictive for a number of reasons.  The most important, however, is
-  that to interact cleanly with MongoDB we elected to limit the set of
-  allowed types for Metadata attributes to those supported as distinct
-  types in the python MongoDB API.   That list is defined
-  `here <https://docs.mongodb.com/manual/reference/bson-types/>`__.  In
-  principle, MongoDB can support generic "array" and "object" types that
-  could contain serialized containers, but currently MsPASS only
-  supports core types in all database engines:  real numbers (float or
+  can contain any data that, to quote the documentation from boost, is "copy
+  constructable".  Thus Metadata acts much like a python dict in put
+  operation and get operations within a python program.
+
+| The flexibility of either a python dict or Metadata present a serious
+  potential for unexpected results or crashes if not managed.   Any algorithm
+  implemented in a lower level language like C/C++ or FORTRAN and exposed to
+  python through wrappers is subject to crashing from type collisions.
+  The fundamental problem is that python is relatively cavalier about type
+  while both C/C++ are "strongly typed".  MongoDB storage of attributes
+  can be treated as dogmatic or agnostic about type depending on that
+  language API used.  In MsPASS all database operations are currently done
+  through python, so Metadata or python dict data can be saved and restored
+  seamlessly with little concern about enforcing the type of an attribute.
+  Problems arise when data loaded as Metadata from MongoDB are passed to
+  algorithms that demand an attribute have a particular type that is not,
+  in fact, the type python guessed or received from storage in MongoDB.
+  Consider this example:
+
+.. code-block:: python
+
+  d={'time':10}
+  type(d['time'])
+
+| The interpreter will respond to the second line with:  <class 'int'>.
+  If a program wanted to use the time attribute and expected a real number
+  it may crash or produce unexpected results.
+
+| In designing MsPASS we were faced with how to cleanly manage this mismatch
+  in language behavior without being too heavy handed and end up making
+  a framework too ponderous to use? Our design sets these requirements:
+
+.# Within an individual application managing the namespace of attributes
+   and type associations should be as flexible as possible to facilitate
+   adapting legacy code to MsPASS.   We provide a flexible aliasing method to
+   map between attribute namespaces to make this possible.  Any such application,
+   however, must exercise care in any alias mapping to avoid type mismatch.
+   We expect such mapping would normally be done in python wrappers.
+
+.# Attributes stored in the database should have predictable types whenever
+   possible.   We use a class called MetadataDefinitions described below
+   to manage the attribute namespace is a way that is not especially heavy handed.
+   We enforce mapping aliases to unique names on database writes, but make
+   mapping inputs to alias names optional on inputs.
+
+.# Care with type is most important in interactions with C/C++ and FORTRAN
+   implementations.   Pure python code can be pretty loose on type at the
+   cost of efficiency.   Python is thus the language of choice for working
+   out a prototype, but when bottlenecks are found key sections may need to
+   be implemented in a compiled language.
+
+| The MsPASS C++ api for Metadata has methods that are dogmatic about type
+  and methods that can take anything.  Core support is for provided for
+  types supported by all database engines:  real numbers (float or
   double), integers (32 or 64 bit), strings (currently assumed to be
-  UTF-8), and booleans.   This creates some rigidity in the python API
-  to a Metadata.   There are four "getters" seen in the following
+  UTF-8), and booleans.  These functions are dogmatic and strongly
+  enforce type throwing a RuntimeError exception if there is a mismatch.
+
+| There are four strongly-typed "getters" seen in the following
   contrived code segment:
 
 .. code-block:: python
@@ -283,7 +354,7 @@ Metadata and MetadataDefinitions
    s=d.get_string("sta")  # example fetching a UTF-8 string
    b=d.get_bool("LPSPOL") # boolean for positive polarity used in SAC
 
-| There are parallel "putter":
+| There are parallel strongly-typed "putters":
 
 .. code-block:: python
 
@@ -292,31 +363,29 @@ Metadata and MetadataDefinitions
    d.put_string("sta",s)
    d.put_bool("LPSPOL",True)
 
-| Mapping the C++ Metadata container to python was a challenge because
-  of a fundamental difference in an axiom of the two languages:   python
-  has a loose definition of "type" while C/C++ are "strongly typed".  
-  To understand the difference note that all C/C++ code REQUIRES all
-  variables to be declared before use with a type specification while
-  python has no concept of "declaration" in the language at all.  In
-  python the same variable name can change from a simple integer to some
-  much more complicated type like an obspy Trace object.  Similar usage
-  in a C program will always fail to compile.   To assure consistency on
-  this issue the Metadata container will throw an exception
-  (RuntimeError in python and MsPASSError in C++) if a user tries to
-  extract a parameter with the wrong type.   For example:
+| A more flexible although potentially more dangerous element of the API
+  are generic getters and setters that will take any valid python object.
+  For example, if the variable "name_list" below was a python list of
+  something like seismic station names one can use this construct:
 
 .. code-block:: python
 
-   d.put("sta","AAK")
-   s=d.get_string("sta")  # this succeeds because sta was set a string
-   x-d.get_double("sta")  # this will throw an exception because "sta" was not set as a real number.
+   d.put("names",name_list)
 
-| This effectively creates a strong typing layer between python and the
-  C libraries to prevent type collisions that would otherwise be too
-  easy to create.   A related feature in MsPASS described in the next
-  section, which we call MetadataDefinitions, can be thought of as a
-  referee that can be used to guarantee type consistency of any
-  key:value pair that is to be read from or written to MongoDB. 
+| and restore get it back with
+
+.. code-block:: python
+
+   x=d.get("names")
+
+| A basic rule is to use the strongly typed API for attributes need by
+  algorithms implemented in compiled languages and use generic object
+  attributes with care.
+
+| An important footnote to this section is that a mspass::Metadata object
+  can be constructed directly from a python dict.   That is used, for example,
+  in MongoDB database readers because a MongoDB "document" is returned as a
+  python dict in MongoDB's python API.
 
 MetadataDefinitions and MongoDBConverter objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -359,7 +428,11 @@ MetadataDefinitions and MongoDBConverter objects
   possible to build a specialized configuration to build a
   MetadataDefinitions object that could be used to translate between the
   SAC or SEGY namespaces and mspass. 
-| A closely related object has the name *MongoDBConverter*. The
+
+| IAN:  I THINK THIS PARAGRAPH SHOULD BE REMOVED AND WE SHOULD CONSIDER
+  DEPRICATING MongoDBConverter. CONFIRM AND EITHER WRITE WHAT YOU SEE AS
+  THE USE NOW OF THIS OBJECT OR DELTE THIS PARAGRAPH.
+  A closely related object has the name *MongoDBConverter*. The
   *MongoDBConverter* caches a copy of the *MetadataDefinitions* it
   loads (usually behind the scenes).  It has methods that provide an
   interface between the C++ objects and python that simplify database
@@ -375,8 +448,11 @@ Scalar versus 3C data
   on the standard concept for storing scalar data that has been around
   since the earliest days of digital seismic data in the oil and gas
   industry.  That is, the sample values are stored in a continuous block
-  of memory that we abstract as an array/vector.   The index for the
-  array serves as a proxy for time (*time* method in BasicTimeSeries).  
+  of memory that can be treated mathematically as a vector.   The index for the
+  vector serves as a proxy for time (the *time* method in BasicTimeSeries
+  can be used to convert an index to a time defined as a double).  Note
+  that integer index uses the C convention starting at 0 and not 1 as in FORTRAN,
+  linear algebra, and many signal processing books.
   We use a C++ `standard template library vector
   container <http://www.cplusplus.com/reference/vector/vector/>`__ to
   hold the sample data accessible through the public variable s.  The
@@ -400,21 +476,22 @@ Scalar versus 3C data
    number.   A 3C shot gather than can be indexed conveniently with
    three array indexes.  A complication in that approach is that which
    index is used for which of the three concept required for a gather of
-   3C data  is completely undefined.   Furthermore, for a generic system
+   3C data is not standarized.   Furthermore, for a generic system
    like mspass the multichannel model does not map cleanly into passive
    array data because a collection of 3C seismograms may have irregular
    size, may have variable sample rates,  and may come from variable
    instrumentation.  Hence, a simple matrix or array model would be very
-   limiting.
-#. Traditional multichannel data have synchronous time sampling.  
+   limiting and create some cumbersome constructs.
+#. Traditional multichannel data processing emerged from a
+   world were instruments used synchronous time sampling.  
    Seismic reflection processing always assumes during processing that
    time computed from sample numbers is accurate to within one sample.  
    Furthermore, the stock assumption is that all data have sample 0 at
-   shot time;  that assumption allows the conceptual model of a matrix
-   to represent scalar, multichannel data.  That is not necessarily true
+   shot time.  That assumption allows the conceptual model of a matrix
+   to represent scalar, multichannel data.  That assumption is not necessarily true
    in passive array data and raw processing requires efforts to make
    sure the time of all samples can be computed accurately and time
-   aligned.  Alignment for a single stations is normally automatic
+   aligned.  Alignment for a single station is normally automatic
    although some instruments have measurable, constant phase lags at the
    single sample level.  The bigger issue for all modern data is that
    the raw data are rarely stored in a multiplexed multichannel format,
@@ -429,9 +506,10 @@ Scalar versus 3C data
    component data as Stream objects with exactly three members in the
    container.  
 
-| We handle three component data in MsPASS by using a matrix, which we
-  define with the symbol "u" following the convention in Aki and
-  Richards, to store the data for a given *Seismogram*.   There are two
+| We handle three component data in MsPASS by using a matrix to store the data
+  for a given *Seismogram*.   The data are directly accessible through a public
+  variable called u following the standard symbol used in the old testament
+  of seismology by Aki and Richards.  There are two
   choices of the order of indices for this matrix.  A *Seismogram*
   defines index 0(1) as the channel number and index 1(2) as the time
   index.  The following python code section illustrates this more
@@ -443,13 +521,13 @@ Scalar versus 3C data
    d=Seismogram(100)  # Create an empty Seismogram with storage for 100 time steps initialized to all zeros
    d.u(0,50)=1.0      # Create a delta function at time t0+dt*50 in channel 0
 
-| Note we use the C (an python) convention for indexing starting at 0.  
+| Note as with scalar data we use the C (and python) convention for indexing starting at 0.  
   In the C++ API the matrix u is defined with a lightweight
   implementation of a matrix as the data object.   That detail is
-  largely irrelevant to python programmers as the matrix is equivalenced
-  to a numpy matrix by the wrappers.   Hence, python programmers
+  largely irrelevant to python programmers as the matrix is made to act like
+  a numpy matrix by the wrappers.   Hence, python programmers
   familiar with numpy can manipulate the data in the u matrix with all
-  the tools of numpy. 
+  the tools of numpy noting that the data are in what numpy calls FORTRAN order. 
 | The Seismogram object has a minimal set of methods that the authors
   consider core concepts defining a three component seismogram.  We
   limit these to coordinate transformations of the components.   There
@@ -461,9 +539,8 @@ Scalar versus 3C data
   *components_are_orthogonal* is true after any sequence of orthogonal
   transformations and *components_are_cardinal* is true when the
   components are in the standard ENZ directions.    
-| FIX BEFORE RELEASE:   ENSEMBLE WRAPPERS HAVE NOT YET BEEN DEFINED OR
-  TESTED
-| Ensembles of TimeSeries and Seismogram data are handled with a more
+
+| Ensembles of TimeSeries and Seismogram data are handled internally with a more
   elaborate standard template library container.   For readers familiar
   with C++ the generic definition of an Ensemble is the following class
   definition created by stripping the comments from the definition in
@@ -484,7 +561,7 @@ Scalar versus 3C data
   issues here.  First, an Ensemble is little more than a vector of data
   objects with a Metadata object to store attributes common to the
   entire ensemble.  Hence, the idea is to store global attributes in the
-  Ensemble Metadata field.   
+  Ensemble Metadata field.  
   The vector container makes it simple to
   handle an entire group (Ensemble) with a simple loop.   e.g. here is a
   simple loop to work through an entire Ensemble (defined in this code
@@ -496,7 +573,7 @@ Scalar versus 3C data
    for i in range(n):
      somefunction(d.member[i])    # pass member i to somefunction
 
-MsPASSCoreTS and Core versus Top-level Data Objects
+ProcessingHistory and Core versus Top-level Data Objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | The class hierarchy diagrams above show there are CoreTimeSeries and
@@ -506,29 +583,119 @@ MsPASSCoreTS and Core versus Top-level Data Objects
   consider using the core objects as base for other ways of handling
   seismic data.  
 
-| All mspass specific elements of our implementation are in MsPASSCoreTS
-  which is a parent for both TimeSeries and Seismogram objects.  
-  MsPASSCoreTS has two elements:
+| All mspass specific elements of our implementation are in ProcessingHistory
+  class which is a parent for both TimeSeries and Seismogram objects.  
+  ProcessingHistory implements two concepts:
 
-#. In MsPASS we use MongoDB for data management.   In MongoDB the lowest
-   common denominator to identify a particular "document" in the
-   database is the
-   `ObjectID <https://docs.mongodb.com/manual/reference/method/ObjectId/>`__. 
-   We store a representation of the ObjectID that was used to create any
-   data object read from the database.   The *Metadata* object has a
-   mechanism that keeps track of which attributes have been altered from
-   the original.   That feature can be exploited for pure *Metadata*
-   operations to only update the changed attributes and retain the
-   original data.   When the sample data are altered the user is
-   responsible for deciding if the original waveform data are to be
-   retained and the new data added or updated in place.   The ObjectID
-   is critical for managing any update.  
-#. MsPASSCoreTS contains an error logging object.   The purpose of this
+#. ProcessingHistory, as the name implies, can (optionally) store the
+   a complete record of the chain of processing steps applied to a
+   data object to put it in it's current state.   The complete history has
+   two completely different components described in more detail below:
+   (a) global job information designed to allow extracting the full
+   instance of the job stream under which a given data object was produced,
+   and (b) a chain of parent waveforms and algorithms that modified them
+   to get the data in the current state.  Maintaining processing history
+   is a complicated process that can lead to memory bloat in complex processing
+   if not managed carefully.  For this reason this feature can be easily
+   disabled, but it is highly recommended unless there is a proven problem.
+
+#. Processing History contains an error logging object.   The purpose of this
    object is to contain a log of any errors or informative messages
    created during the processing of the data.  All processing modules
-   need to be designed with global error handlers so that they never
+   in MsPASS are designed with global error handlers so that they never
    abort, but in worst case post a log message that tags a fatal
-   error.   More details on this feature are given in the next section.
+   error.   In our design we considered making the ErrorLogger a base class
+   for Seismogram and TimeSeries, but it does not satisfy the basic rule of
+   making a concept a base class if the child "is a" ErrorLogger.  It could
+   have been made an attribute in each of TimeSeries and Seismogram definitions,
+   but we viewed the concept of an ErrorLogger mateched that idea that a
+   ProcessingHistory "has a" ErrorLogger. More details on the
+   ErrorLogger feature are given below.
+
+Object Level History Design Concepts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As summarized above the concept we wanted to capture in the history mechanism
+was a means to preserve the chain of processing events that were applied to
+get a piece of data in a current state.  Our design assumes this can be
+history can be described by a inverted tree structure.  That is most workflows would
+merge many pieces of data (a reduce operation in map-reduce) to produce
+a given output.  The process chain could then be viewed as tree growth with time
+running backward.  The leaves are the data sources.  Each growth season is one
+processing stage.  As time moves backward the tree shrinks from many branches to
+a single shoot that is the current data state.   The structure we use, however,
+is more flexible than real tree growth.   Many-to-many mixes of data will produce
+a tree that does not look at all like the plant forms of nature, but we hope
+the notion of growth seasons, branch, and trees is useful to help understand
+how this works.
+
+To reconstruct the steps applied to data to produce an output the
+following foundational data is required:
+
+.# We need to identify the top of the inverted tree (the leaves) that are the
+   parent data to the workflow.  For seismic data that means the parent time
+   series data extracted from a data center with web services or assembled and
+   indexed on local, random access (i.e. MsPASS knows nothing about magnetic
+   tapes) storage media.
+
+.# MsPASS assumes all algorithms can be reduced to the equivalent of an
+   abstraction of a function call.  We assume the algorithm takes input data of one
+   standard type and emits data of the same or different standard type. ("type"
+   in this context means TimeSeries, Seismogram, or an obspy Trace object)
+   The history mechanism needs to clarify what the primary input and output
+   types are.
+
+.# Most algorithms have one to a large number of tunable parameters that
+   determine their behavior.  The history needs to preserve the full
+   parametric information to reproduce the original behavior.
+
+.# The same algorithm may be run with different parameters and behave very
+   differently (e.g. a bandpass filter with different
+   passbands).  The history mechanism needs to distinguish these different
+   instances while linking them to the same parent processing algorithm.
+
+.# Some algorithms (e.g. what is commonly called a stacker in seismic reflection
+   processing) merge many pieces of data to produce one or more outputs.  A
+   CMP stacker, for example, would take an array of normal moveout corrected
+   data and average them sample-by-sample to produce one output for each
+   gather passed to the processor.  This is a many to one reducer.  There are
+   more complicate examples like the plane wave decomposition both Wang and
+   Pavlis developed in the mid 2010s.  That algorithm takes
+   full event gathers, which for USArray could have thousands of seismograms,
+   as inputs, and produces an output of many seismograms that are
+   approximate plane wave components at a set of "pseudostation" points.
+   The details of that algorithm are not the point, but it is a type example
+   of a reducer that is a many-to-many operation.   The history mechanism
+   must be able to describe all forms of input and output from one-to-one
+   to many-to-many.
+
+.# Data have an origin that is assumed to be reproducible (e.g. download
+   from a data center) but during processing intermediate results are
+   by definition volatile.   Intermediate saves of final results need to be defined
+   by some mechanism to show the result were saved at that stage.  The
+   final result needs a way to verify it was successfully saved to storage.
+
+.# Although saving intermediate results is frequently necessary, the process of saving the
+   data must not break the full history chain.
+
+.# The history mechanism must work for normal logical branching and looping
+   scenario possible with a python script.
+
+.# Naive preservation of history data could cause a huge overload in memory
+   usage and processing time.  The design then needs to make the implementation
+   as lightweight in memory as possible and be as efficient as possible.
+
+| The above is admittedly a long list of functional requirements.  Our
+  ProcessingHistory object achieves those requirements with two important
+  costs:  (1)  it adds a nontrivial overhead that at the time of this writing
+  is not known, and (2) any algorithm that aims to preserve processing history
+  needs to obey some rules and work in the social environment of the
+  MsPASS framework.   MsPASS algorithms can all implement history preservation
+  as an option.   User's interested in adapting their own code to the
+  framework will need to learn the social norms (i.e. the API for ProcessingHistory
+  and how it can be used to automate the process).   We expect to eventually
+  produce a document on adapting algorithms to MsPASS that will cover this
+  subject.
 
 Error Logging Concepts
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -590,6 +757,5 @@ Error Logging Concepts
   ObjectID of the data in the wf collection. 
 
 .. |TimeSeries Inheritance| image:: /doxygen/html/classmspass_1_1_time_series.png
-   
+
 .. |Seismogram Inheritance| image:: /doxygen/html/classmspass_1_1_seismogram.png
-   
