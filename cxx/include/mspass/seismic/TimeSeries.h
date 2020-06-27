@@ -34,7 +34,7 @@ public:
   \param d is the data to be copied to create the new TimeSeries object.  Note
    that means a deep copy wherein the data vector is copied.
    */
-  TimeSeries(const mspass::CoreTimeSeries& d);
+  TimeSeries(const mspass::CoreTimeSeries& d) : mspass::CoreTimeSeries(d),mspass::ProcessingHistory(){};
   /*! Contruct from a core time series and initialize history as origin.
 
   This constructor is a variant of a similar one built only from a
