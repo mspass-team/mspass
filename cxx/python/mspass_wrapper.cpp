@@ -257,14 +257,15 @@ public:
 };
 
 /* Trampoline class for BasicProcessingHistory - new for 2020 API change */
+
 class PyBasicProcessingHistory : public BasicProcessingHistory
 {
 public:
   using BasicProcessingHistory::BasicProcessingHistory;
-  /* BasicTimeSeries has virtual methods that are not pure because
-  forms that contain gap handlers need additional functionality.
-  We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
-  i.e. omit the PURE part of the name*/
+  // BasicTimeSeries has virtual methods that are not pure because
+  //forms that contain gap handlers need additional functionality.
+  //We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
+//  i.e. omit the PURE part of the name
   size_t current_stage() override
   {
     PYBIND11_OVERLOAD_PURE(
@@ -274,6 +275,7 @@ public:
     );
   }
 };
+
 
 /* Special iterator data structure for python */
 struct PyMetadataIterator {
@@ -831,15 +833,6 @@ PYBIND11_MODULE(ccore,m)
       py::arg("tcs"),
       py::arg("component")
   );
-  /*
-  m.def("ExtractComponent",
-        py::overload_cast<mspass::CoreSeismogram&,int>(&mspass::ExtractComponent),
-  	"Extract component as a TimeSeries object",
-      py::return_value_policy::copy,
-      py::arg("tcs"),
-      py::arg("component")
-  );
-  */
    py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
     .value("Fatal",ErrorSeverity::Fatal)
     .value("Invalid",ErrorSeverity::Invalid)
@@ -951,8 +944,7 @@ PYBIND11_MODULE(ccore,m)
       return py::cast(self).attr("get_error_log")().attr("__getitem__")(i);
     })
   ;
-  /* New classes in 2020 API revision - object level history preservation -
-  OUCH needs trampoline class and definition of BasicProcessingHistory - INCOMPLETE - remove when done*/
+  /* New classes in 2020 API revision - object level history preservation */
   py::class_<mspass::ProcessingHistoryRecord>(m,"ProcessingHistoryRecord",
         "Concise data structure used to hold processing history data")
     .def(py::init<>())
@@ -964,15 +956,18 @@ PYBIND11_MODULE(ccore,m)
     .def_readwrite("instance",&mspass::ProcessingHistoryRecord::instance,
       "Qualifier to define a particular instance of an algorithm with a variation of parameters")
     .def_readwrite("id",&mspass::ProcessingHistoryRecord::id,"Unique id string defining this object at this stage of processing")
-    /* Temporary disable - generating an error for undetermined reason
+    /* Disable python access to inputs vector.   pybind11 generated errors and
+    seems a bad idea anyway.   Better to use helper procedures set_inputs and
+    append_input to create or update this attribute.
     .def_readwrite("inputs",&mspass::ProcessingHistoryRecord::inputs,
       "Vector of one history chains from one or more parent objects")
       */
   ;
+
   py::class_<mspass::BasicProcessingHistory,PyBasicProcessingHistory>
-      (m,"ProcessingHistory","Base class - hold job history data")
+  //py::class_<mspass::BasicProcessingHistory>
+      (m,"BasicProcessingHistory","Base class - hold job history data")
     .def(py::init<>())
-    //.def(py::init<const BasicProcessingHistory&>())
     .def("jobid",&mspass::BasicProcessingHistory::jobid,
       "Return job id string")
     .def("jobname",&mspass::BasicProcessingHistory::jobname,
@@ -982,6 +977,8 @@ PYBIND11_MODULE(ccore,m)
     .def("set_jobname",&mspass::BasicProcessingHistory::set_jobname,
       "Set the base job name defining the main python script for this run")
   ;
+
+
   py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
     (m,"ProcessingHistory","Used to save object level processing history.")
     .def(py::init<>())
@@ -1007,6 +1004,8 @@ PYBIND11_MODULE(ccore,m)
     .def("history",&mspass::ProcessingHistory::history,
       "Return a pointer to the current processing chain - handle with care")
   ;
+
+
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
@@ -1023,6 +1022,7 @@ PYBIND11_MODULE(ccore,m)
          "Set a new unique id for this object from internal random number generator")
     .def("set_id",py::overload_cast<const std::string>(&mspass::Seismogram::set_id),
          "Set a new unique id for this object from string (usually mongdb objectid string)")
+
   /* TEMPORARILY DISABLED - hack to get wrappers to compile
     .def(py::pickle(
       [](const Seismogram &self) {
@@ -1078,6 +1078,7 @@ PYBIND11_MODULE(ccore,m)
      ))
      */  //End temp disable
     ;
+
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
@@ -1088,6 +1089,7 @@ PYBIND11_MODULE(ccore,m)
              "Set a new unique id for this object from internal random number generator")
         .def("set_id",py::overload_cast<const std::string>(&mspass::TimeSeries::set_id),
              "Set a new unique id for this object from string (usually mongdb objectid string)")
+
   /* TEMPORARILY DISABLED - hack to get wrapper code to compile
       .def(py::pickle(
         [](const TimeSeries &self) {
@@ -1145,8 +1147,8 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
     .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
-    /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
-        to function properlty */
+    // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+    //    to function properlty
     .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
             "Vector of TimeSeries objects defining the ensemble")
     .def("__getitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i) {
@@ -1156,10 +1158,10 @@ PYBIND11_MODULE(ccore,m)
     .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i, const TimeSeries ts) {
       self.member.at(i) = ts;
     })
-    /* Based on this issue: https://github.com/pybind/pybind11/issues/974
-    * there seems to be no clean solution for the following code duplicate.
-    * Except that the following lambda function could be replaced with a
-    * reusable function. (Some thing TODO) */
+    // Based on this issue: https://github.com/pybind/pybind11/issues/974
+    // there seems to be no clean solution for the following code duplicate.
+    // Except that the following lambda function could be replaced with a
+    // reusable function. (Some thing TODO)
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
       if(py::isinstance<py::float_>(v))
         md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
@@ -1190,8 +1192,8 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const Ensemble<Seismogram>&>())
     .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
     .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
-    /* Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
-        to function properlty */
+    // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
+    //    to function properlty
     .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
             "Vector of Seismogram objects defining the ensemble")
     .def("__getitem__", [](mspass::Ensemble<Seismogram> &self, const size_t i) {
@@ -1250,8 +1252,6 @@ PYBIND11_MODULE(ccore,m)
          "Return a python list of any keys that are not defined in input object")
     ;
 
-  /* For now algorithm functions will go here.  These may eventually be
-     moved to a different module. */
   m.def("agc",&mspass::agc,"Automatic gain control a Seismogram",
     py::return_value_policy::copy,
     py::arg("d"),
@@ -1269,6 +1269,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   /* These are a pair of (four actually - overloaded) procedures to aid
   python programs in building history chains.  See C++ doxygen definitions */
+
   m.def("append_input",&mspass::append_input<TimeSeries>,
     "Use the history chain of a TimeSeries to define it as an input for an algorithm to define ProcessingHistory",
     py::return_value_policy::copy,
@@ -1293,4 +1294,5 @@ PYBIND11_MODULE(ccore,m)
     py::arg("rec"),
     py::arg("d") )
   ;
+
 }
