@@ -598,9 +598,9 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const size_t>())
     .def("set_dt",&CoreTimeSeries::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
-    .def("set_npts",&CoreTimeSeries::set_dt,
+    .def("set_npts",&CoreTimeSeries::set_npts,
       "Set data number of samples (overrides BasicTimeSeries virtual method)")
-    .def("set_t0",&CoreTimeSeries::set_dt,
+    .def("set_t0",&CoreTimeSeries::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def(py::self += py::self)
     .def_readwrite("s",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
@@ -743,9 +743,9 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<const mspass::Metadata&,const bool>(),"Construct from Metadata with read from file option")
     .def("set_dt",&CoreSeismogram::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
-    .def("set_npts",&CoreSeismogram::set_dt,
+    .def("set_npts",&CoreSeismogram::set_npts,
       "Set data number of samples (overrides BasicTimeSeries virtual method)")
-    .def("set_t0",&CoreSeismogram::set_dt,
+    .def("set_t0",&CoreSeismogram::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
@@ -1088,7 +1088,6 @@ PYBIND11_MODULE(ccore,m)
         .def("set_id",py::overload_cast<const std::string>(&mspass::TimeSeries::set_id),
              "Set a new unique id for this object from string (usually mongdb objectid string)")
 
-  /* TEMPORARILY DISABLED - hack to get wrapper code to compile
       .def(py::pickle(
         [](const TimeSeries &self) {
           string sbuf;
@@ -1128,7 +1127,7 @@ PYBIND11_MODULE(ccore,m)
          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
          return TimeSeries(bts,md,corets,d);;
        }
-     )) */ // End temp disable
+     ))
      ;
   /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to
      be supported by the container.  Hence, we have two nearly identical blocks below for TimeSeries
