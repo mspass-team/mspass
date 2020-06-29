@@ -1023,7 +1023,6 @@ PYBIND11_MODULE(ccore,m)
     .def("set_id",py::overload_cast<const std::string>(&mspass::Seismogram::set_id),
          "Set a new unique id for this object from string (usually mongdb objectid string)")
 
-  /* TEMPORARILY DISABLED - hack to get wrappers to compile
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1076,7 +1075,6 @@ PYBIND11_MODULE(ccore,m)
        return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
      }
      ))
-     */  //End temp disable
     ;
 
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")

@@ -116,6 +116,17 @@ public:
   /*! Standard copy constructor.  This copies the uuid set in id. */
   ProcessingHistoryRecord(const ProcessingHistoryRecord& parent);
   ProcessingHistoryRecord& operator=(const ProcessingHistoryRecord& parent);
+private:
+  friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & status;
+      ar & algorithm;
+      ar & instance;
+      ar & id;
+      ar & inputs;
+    }
 };
 /*! Procedure to set inputs vector defined by an Ensemble object.
 
@@ -239,6 +250,14 @@ public:
 protected:
   std::string jid;
   std::string jnm;
+private:
+  friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & jid;
+      ar & jnm;
+    };
 };
 /*! \brief Lightweight class to preserve procesing chain of atomic objects.
 
@@ -407,6 +426,14 @@ private:
   /* this is set undefined when empty and is copied from the latest record
   when new_stage is called */
   ProcessingStatus status;
+  friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & boost::serialization::base_object<BasicProcessingHistory>(*this);
+      ar & status;
+      ar & history_list;
+    };
 };
 
 } // End mspass namespace
