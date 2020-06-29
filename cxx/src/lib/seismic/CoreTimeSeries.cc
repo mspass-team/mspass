@@ -140,8 +140,9 @@ void CoreTimeSeries::set_t0(const double t0in)
 void CoreTimeSeries::set_npts(const size_t npts)
 {
   this->BasicTimeSeries::set_npts(npts);
-  /* This is the unique name - we always set it. */
-  this->put("npts",npts);
+  /* This is the unique name - we always set it. Cast is necessary to
+  avoid type mismatch in python for unsigned*/
+  this->put("npts",(long int)npts);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
