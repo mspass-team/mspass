@@ -101,7 +101,7 @@ std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
 
 \return TimeSeries of component requested
 **/
-mspass::TimeSeries ExtractComponent(const Seismogram& tcs,
+mspass::CoreTimeSeries ExtractComponent(const Seismogram& tcs,
 		const unsigned int component);
 /* Enemble algorithms */
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
