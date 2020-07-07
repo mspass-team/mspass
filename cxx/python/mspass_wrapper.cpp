@@ -86,7 +86,6 @@ using mspass::ErrorLogger;
 using mspass::pfread;
 using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
-using mspass::ProcessingHistoryRecord;
 using mspass::BasicProcessingHistory;
 using mspass::ProcessingHistory;
 using mspass::Ensemble;
@@ -262,16 +261,12 @@ class PyBasicProcessingHistory : public BasicProcessingHistory
 {
 public:
   using BasicProcessingHistory::BasicProcessingHistory;
-  // BasicTimeSeries has virtual methods that are not pure because
-  //forms that contain gap handlers need additional functionality.
-  //We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
-//  i.e. omit the PURE part of the name
-  size_t current_stage() override
+  size_t number_of_stages() override
   {
-    PYBIND11_OVERLOAD_PURE(
+    PYBIND11_OVERLOAD(
       size_t,
       mspass::BasicProcessingHistory,
-      current_stage,  //exta comma needed for reasons given in pybind docs
+      number_of_stages,  //exta comma needed for reasons given in pybind docs
     );
   }
 };
@@ -945,23 +940,12 @@ PYBIND11_MODULE(ccore,m)
     })
   ;
   /* New classes in 2020 API revision - object level history preservation */
-  py::class_<mspass::ProcessingHistoryRecord>(m,"ProcessingHistoryRecord",
-        "Concise data structure used to hold processing history data")
-    .def(py::init<>())
-    .def(py::init<const ProcessingHistoryRecord&>())
-    .def_readwrite("status",&mspass::ProcessingHistoryRecord::status,
-      "Define the state of processing of the object at this stage (finite set defined by a C++ enum class)")
-    .def_readwrite("algorithm",&mspass::ProcessingHistoryRecord::algorithm,
-      "Unique name of a processing algorithm")
-    .def_readwrite("instance",&mspass::ProcessingHistoryRecord::instance,
-      "Qualifier to define a particular instance of an algorithm with a variation of parameters")
-    .def_readwrite("id",&mspass::ProcessingHistoryRecord::id,"Unique id string defining this object at this stage of processing")
-    /* Disable python access to inputs vector.   pybind11 generated errors and
-    seems a bad idea anyway.   Better to use helper procedures set_inputs and
-    append_input to create or update this attribute.
-    .def_readwrite("inputs",&mspass::ProcessingHistoryRecord::inputs,
-      "Vector of one history chains from one or more parent objects")
-      */
+  py::enum_<mspass::ProcessingStatus>(m,"ProcessingStatus")
+    .value("RAW",mspass::ProcessingStatus::RAW)
+    .value("ORIGIN",mspass::ProcessingStatus::ORIGIN)
+    .value("VOLATILE",mspass::ProcessingStatus::VOLATILE)
+    .value("SAVED",mspass::ProcessingStatus::SAVED)
+    .value("UNDEFINED",mspass::ProcessingStatus::UNDEFINED)
   ;
 
   py::class_<mspass::BasicProcessingHistory,PyBasicProcessingHistory>
@@ -982,47 +966,62 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
     (m,"ProcessingHistory","Used to save object level processing history.")
     .def(py::init<>())
+    .def(py::init<const std::string,const std::string>())
     .def(py::init<const ProcessingHistory&>())
     .def("is_raw",&mspass::ProcessingHistory::is_raw,
       "Return True if the data are raw data with no previous processing")
+    .def("is_origin",&mspass::ProcessingHistory::is_origin,
+       "Return True if the data are marked as an origin - commonly an intermediate save")
     .def("is_volatile",&mspass::ProcessingHistory::is_volatile,
       "Return True if the data are unsaved, partially processed data")
     .def("is_saved",&mspass::ProcessingHistory::is_saved,
       "Return True if the data are saved and history can be cleared")
-    .def("current_stage",&mspass::ProcessingHistory::current_stage,
+    .def("number_of_stages",&mspass::ProcessingHistory::number_of_stages,
       "Return count of the number of processing steps applied so far")
+    //.def("current_stage",&mspass::ProcessingHistory::current_stage,
+    //  "Return the data defining the current stage as ProcessingHistoryRecord")
     .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
       "Load data defining this as the top of a processing history chain")
-    .def("set_as_saved",&mspass::ProcessingHistory::set_as_saved,
+      // Here need an alias set_as_raw that make set_as_origin define as raw
+    .def("new_reduction",&mspass::ProcessingHistory::new_reduction,
+      "Set up history chain to define the current data as result of reduction - output form mulitple inputs")
+    .def("new_map",&mspass::ProcessingHistory::new_map,
+      "Set history chain to define the current data as a one-to-one map from parent")
+    .def("add_one_input",&mspass::ProcessingHistory::add_one_input,
+      "Companion to new_reduction used to add a single input datum after call to new_reduction")
+    .def("add_many_inputs",&mspass::ProcessingHistory::add_many_inputs,
+      "Companion to new_reduction used to add a single input datum after call to new_reduction")
+    .def("map_as_saved",&mspass::ProcessingHistory::map_as_saved,
       "Load data defining this as the end of chain that was or will soon be saved")
-    .def("new_stage",&mspass::ProcessingHistory::new_stage,
-      "Load data defining the current processing stage")
-    .def("reset",&mspass::ProcessingHistory::reset,
-      "Reset the history chain after a save - used to start a new history chain after an intermediate save")
     .def("clear",&mspass::ProcessingHistory::clear,
       "Clear this history chain - use with caution")
-    .def("history",&mspass::ProcessingHistory::history,
-      "Return a pointer to the current processing chain - handle with care")
+    .def("stage",&mspass::ProcessingHistory::stage,
+      "Return the current stage number (counter of processing stages applied in this run)")
+    .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
+    .def("newid",&mspass::ProcessingHistory::newid,"Create a new uuid for current data")
+    .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
+    .def("algorithm_history",&mspass::ProcessingHistory::algorithm_history,
+      "Return a list of all algorithms applied so far to produce current data object")
+    .def("data_processed_by",&mspass::ProcessingHistory::data_processed_by,
+      "Return a list of the uuids of all data processed by a specified algorithm instance")
+    .def("inputs",&mspass::ProcessingHistory::inputs,
+      "Return a list of uuids of all data that were inputs to defined uuid (current or any ancestor)")
   ;
 
 
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
-    .def(py::init<const Seismogram&>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const CoreSeismogram&,const std::string>())
-    //.def(py::init<const BasicTimeSeries&>())
-    .def(py::init<const BasicTimeSeries&,const Metadata&,
-      const ProcessingHistory&,const bool,const bool, const dmatrix&,const dmatrix&>())
-    .def(py::init<const Metadata,std::string,std::string,std::string,std::string>())
-    .def("id_string",&mspass::Seismogram::id_string,
-      "Return the unique id string for this object")
-    .def("set_id",py::overload_cast<>(&mspass::Seismogram::set_id),
-         "Set a new unique id for this object from internal random number generator")
-    .def("set_id",py::overload_cast<const std::string>(&mspass::Seismogram::set_id),
-         "Set a new unique id for this object from string (usually mongdb objectid string)")
-
+    /* Don't think we really want to expose this to python if we don't need to
+    .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
+      const ProcessingHistory&, const ErrorLogger&,
+      const bool,const bool, const dmatrix&,const dmatrix&>())
+      */
+    .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
+    .def(py::init<const Seismogram&>())
+/*
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1075,19 +1074,20 @@ PYBIND11_MODULE(ccore,m)
        return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
      }
      ))
+     */
     ;
 
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
+      .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
-      .def("id_string",&mspass::TimeSeries::id_string,
-        "Return the unique id string for this object")
-        .def("set_id",py::overload_cast<>(&mspass::TimeSeries::set_id),
-             "Set a new unique id for this object from internal random number generator")
-        .def("set_id",py::overload_cast<const std::string>(&mspass::TimeSeries::set_id),
-             "Set a new unique id for this object from string (usually mongdb objectid string)")
-
+      // Not sure this constructor needs to be exposed to python
+      /*
+      .def(py::init<const mspass::BasicTimeSeries&,const mspass::Metadata&,
+        const ProcessingHistory&, const std::vector&)
+        */
+/*
       .def(py::pickle(
         [](const TimeSeries &self) {
           string sbuf;
@@ -1128,6 +1128,7 @@ PYBIND11_MODULE(ccore,m)
          return TimeSeries(bts,md,corets,d);;
        }
      ))
+     */
      ;
   /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to
      be supported by the container.  Hence, we have two nearly identical blocks below for TimeSeries
@@ -1266,7 +1267,7 @@ PYBIND11_MODULE(ccore,m)
   ;
   /* These are a pair of (four actually - overloaded) procedures to aid
   python programs in building history chains.  See C++ doxygen definitions */
-
+/* Temporarily disabled
   m.def("append_input",&mspass::append_input<TimeSeries>,
     "Use the history chain of a TimeSeries to define it as an input for an algorithm to define ProcessingHistory",
     py::return_value_policy::copy,
@@ -1291,5 +1292,6 @@ PYBIND11_MODULE(ccore,m)
     py::arg("rec"),
     py::arg("d") )
   ;
+  */
 
 }

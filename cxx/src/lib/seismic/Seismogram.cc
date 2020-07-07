@@ -10,13 +10,10 @@ Seismogram::Seismogram(const CoreSeismogram& d)
 Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
     : CoreSeismogram(d),ProcessingHistory()
 {
-  this->set_id();
-  ProcessingHistoryRecord rec;
-  rec.status=ProcessingStatus::ORIGIN;
-  rec.algorithm=alg;
-  rec.instance="0";
-  rec.id=this->id_string();
-  this->ProcessingHistory::set_as_origin(rec);
+  /* Not sure this is a good idea, but will give each instance
+  created by this constructor a uuid.*/
+  string id=this->newid();
+  this->ProcessingHistory::set_as_origin(alg,id,id,AtomicType::SEISMOGRAM,false);
   this->ProcessingHistory::set_jobname(string("test"));
   this->ProcessingHistory::set_jobid(string("test"));
 }
@@ -32,6 +29,8 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   bts=mspass::BasicTimeSeries::operator=(b);
   Metadata mdthis=dynamic_cast<Metadata&>(*this);
   mdthis=mspass::Metadata::operator=(m);
+  ProcessingHistory histhis=dynamic_cast<ProcessingHistory&>(*this);
+  histhis=mspass::ProcessingHistory::operator=(his);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;
@@ -43,28 +42,36 @@ Seismogram::Seismogram(const Metadata& md, const string jobname,
     const string jobid, const string readername,const string algid)
 	: CoreSeismogram(md,true),ProcessingHistory()
 {
+  const string algname("SeismogramMDConstructor");
   this->set_jobname(jobname);
   this->set_jobid(jobid);
 
-  /* We use oid_string to hold the ObjectID stored as a hex string.
-   * In mspass this is best done in the calling python function
-   * that already has hooks for mongo.   If that field is not
-   * defined we silently set the id invalid.
+  /* We try to read uuid from the metadata used in creation with the
+  CoreSeismogram constructor.   If it isn't found we generate it from
+  the random number generator and post a complaint.
    */
+  string thisid;
   try{
-    string oids=this->get_string("oid_string");
-    this->set_id(oids);
+    string thisid=this->get_string("uuid");
+    this->set_id(thisid);
   }catch(MsPASSError& merr)
   {
     /* this sets the id to a random number based uuid */
-    this->set_id();
+    thisid=this->newid();
+    this->elog.log_error(algname,"uuid not defined.\nSet by constructor to"
+          +thisid,ErrorSeverity::Complaint);
   }
-  ProcessingHistoryRecord rec;
-  rec.status=ProcessingStatus::ORIGIN;
-  rec.algorithm=readername;
-  rec.instance="0";
-  rec.id=algid;
-  history_list.push_back(rec);
+  bool mark_as_raw;
+  try{
+    mark_as_raw=this->get_bool("rawdata");
+  } catch(MsPASSError& merr)
+  {
+    this->elog.log_error(algname,"rawdata boolean not found - default to false",
+      ErrorSeverity::Complaint);
+    mark_as_raw=false;
+  }
+  this->ProcessingHistory::set_as_origin(readername,algid,thisid,
+        AtomicType::SEISMOGRAM,mark_as_raw);
 }
 Seismogram& Seismogram::operator=(const Seismogram& parent)
 {

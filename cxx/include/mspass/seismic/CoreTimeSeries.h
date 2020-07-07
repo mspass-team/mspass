@@ -99,14 +99,17 @@ Standard copy constructor.
 	\param t0in is the new data sample interval to be used.
 	*/
 	void set_t0(const double t0in);
-/*!
+/* Depricated in 2020 API change - no longer needed with new BasicTimeSeries.
 Returns the end time (time associated with last data sample)
 of this data object.
-**/
+
+*/
+/*
 	double endtime()const noexcept
         {
             return(mt0+mdt*static_cast<double>(s.size()-1));
         };
+*/
 /*!
 Standard assignment operator.
 **/

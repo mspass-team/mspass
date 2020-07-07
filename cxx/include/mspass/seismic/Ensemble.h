@@ -119,6 +119,7 @@ instead in such a situation.
   previous content the new data will be appended)
 \param d is Ensemble which is to be defined as input.
 */
+/* Disable temporarily - needs a revision to match new history approach
 template <typename Tdata>
   size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::Ensemble<Tdata>& d)
 {
@@ -136,5 +137,6 @@ template <typename Tdata>
     return rec.inputs.size();
   }catch(...){throw;};
 };
+*/
 }  // End mspass namespace encapsulation
 #endif  //  End guard

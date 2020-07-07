@@ -2,10 +2,6 @@
 #define _TIMESERIES_H_
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/ProcessingHistory.h"
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/uuid_serialize.hpp>
 namespace mspass{
   /*! \brief Implemntation of TimeSeries for MsPASS.
 
@@ -34,7 +30,8 @@ public:
   \param d is the data to be copied to create the new TimeSeries object.  Note
    that means a deep copy wherein the data vector is copied.
    */
-  TimeSeries(const mspass::CoreTimeSeries& d) : mspass::CoreTimeSeries(d),mspass::ProcessingHistory(){};
+  TimeSeries(const mspass::CoreTimeSeries& d)
+    : mspass::CoreTimeSeries(d),mspass::ProcessingHistory(){};
   /*! Contruct from a core time series and initialize history as origin.
 
   This constructor is a variant of a similar one built only from a
@@ -64,44 +61,12 @@ parameters are each associated with one of those required pieces and
 are simply copied to build a valid TimeSeries object in the pickle.load
 function */
   TimeSeries(const mspass::BasicTimeSeries& b,const mspass::Metadata& m,
-                  const mspass::ProcessingHistory& mcts,const std::vector<double>& d);
+          const mspass::ProcessingHistory& mcts, const std::vector<double>& d);
   /*! Standard copy constructor. */
   TimeSeries(const TimeSeries& parent)
     : mspass::CoreTimeSeries(parent), mspass::ProcessingHistory(parent){};
   /*! Standard assignment operator. */
   TimeSeries& operator=(const TimeSeries& parent);
-  /*! Return sring representation of the unique id for this object. */
-  std::string id_string() const
-  {
-    return id;
-  };
-  /*! Set id from a string - commonly MongoDB objectid string*/
-  void set_id(const std::string newid)
-  {
-    id=newid;
-  };
-  /*! Set id from a random number generator - normal for transient data.*/
-  void set_id()
-  {
-    boost::uuids::random_generator gen;
-    boost::uuids::uuid uuidval;
-    uuidval=gen();
-    id=boost::uuids::to_string(uuidval);
-  };
-  /*! Return true if the id set is a MongoDB ObjectID string representation. */
-  bool is_objectid()
-  {
-    /* Use a magic test that an object id string is 12 bytes.  An alternative
-    would be a boolean or enum for id type, but for simplicity we'll just
-    use this magic number.  A bit fragile if mongochanges the definition.*/
-    if(id.size()==12)
-      return true;
-    else
-      return false;
-  };
-private:
-  std::string id;
-//boost::uuids::uuid id;
 };
 }//END mspass namespace
 #endif
