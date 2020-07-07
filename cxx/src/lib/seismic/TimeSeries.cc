@@ -3,15 +3,12 @@ using namespace mspass;
 namespace mspass
 {
 TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string alg)
-    : CoreTimeSeries(d)
+    : CoreTimeSeries(d),ProcessingHistory()
 {
-  this->set_id();
-  ProcessingHistoryRecord rec;
-  rec.status=ProcessingStatus::ORIGIN;
-  rec.algorithm=alg;
-  rec.instance="0";
-  rec.id=this->id_string();
-  this->ProcessingHistory::set_as_origin(rec);
+  /* Not sure this is a good idea, but will give each instance
+  created by this constructor a uuid.*/
+  string id=this->newid();
+  this->ProcessingHistory::set_as_origin(alg,id,id,AtomicType::SEISMOGRAM,false);
   this->ProcessingHistory::set_jobname(string("test"));
   this->ProcessingHistory::set_jobid(string("test"));
 }
@@ -28,7 +25,6 @@ TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
 {
     if(this!=(&parent))
     {
-        this->Metadata::operator=(parent);
         this->CoreTimeSeries::operator=(parent);
         this->ProcessingHistory::operator=(parent);
     }

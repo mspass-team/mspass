@@ -3,12 +3,17 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <map>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_serialize.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include "mspass/utility/ErrorLogger.h"
 //#include "mspass/seismic/Ensemble.h"
 namespace mspass{
-/* This enum class is used to define status of processing of a datum.
+/*! This enum class is used to define status of processing of a datum.
 We use this mechanism to help keep the history data from creating memory
 bloat.   It is alwo helpul to build a linked list of a chain of data
 that have to be handled somewhat differently. See documentation for
@@ -21,35 +26,25 @@ enum class ProcessingStatus
   SAVED,
   UNDEFINED
 };
-/*! \brief Contains minimal history data to define a processing stage.
+/*! \brief Atomic data type definition for mspass
 
-This class is the lowest level data structure used to define a processing
-step.   A "step" can be a reader, a writer, or some algorithm that alters or
-creates new data.   Readers and writers begin and terminate a processing chain.
-algorithms are assumed to input one or many objects of a common type that
-contain an instance of ProcessingHistory (defined below).   Algorithms
-can emit multiple data objects, but they are expected to tag each one with
-an instance of this class/struct.
-
-This class is really a struct.   Python wrappers may want to define
-getters and putters to simplify python code.  In particular, the enum
-class produces awkward constucts in python so the wrappers will want to
-define putters for status that create less obscure code.   They
-probably should be the same method names used in ProcessingHistory.
+MsPASS has the concept of atomic types.  One part of that definition is that
+such a class must implement this history mechanism.  This enum class will need
+to be expanded if new types are added, but the design goal is to make
+extension relatively easy - add the data implementation that inherits
+ProcessingHistory and add an entry for that type here.
 */
-//template <typename Tdata> class ProcessingHistoryRecord
-class ProcessingHistoryRecord
+enum class AtomicType
+{
+  SEISMOGRAM,
+  TIMESERIES,
+  UNDEFINED
+};
+
+class ProcessDefinition
 {
 public:
 
-  /*! \brief Define the status of the current object.
-
-  Data can be defined in a variety of states that impact how we save
-  th processing chain.   We use an enum class, ProcessingStatus, to
-  define states the history mechanism should handle.   See the
-  ProcessingHistory class for more details on how this is used.
-  */
-  ProcessingStatus status;
   /*! \brief Name of this algorithm.
 
   We use the concept that every processing algorithm has a name keyword
@@ -58,137 +53,67 @@ public:
   behavior.
   */
   std::string algorithm;
-  /* \brief Defines a particular instance of an algorithm.
+  /*! id string to identify this instance of algorithm.
 
-  We define a particular instance of an algorithm by either a name
-  key in combination with an instance defined by this attribute.
-  The instance attribute is a string for flexibility.   When run
-  under control of mspass the instance string would normally be the
-  ObjectID string representation of the document containing the input
-  parameters for this instance of algorithm.  For research prototypes or
-  quick and dirty tests it can be just a counter defined manually in
-  some input file (e.g.   filter 1, filter 2, filter 3 would define three
-  instance of the algorithm with the tag "filer".  */
-  std::string instance;
-  /*! \brief Unique id that defines the current object.
-
-  Data objects in MsPASS use this class to define the state of each
-  object through the chain of processes and data used to produce it.
-  To do that right each data object needs a unique id.  This defines the
-  id of the one object this particular record is associated with on
-  creation.  That is, whenever a new object is created in MsPASS using
-  the history feature one of these records will be created for each data
-  object that is defined as atomic.   This string defines unique key for
-  the object it could be connected to with the this pointer.  The parents of
-  the current object are defined by the inputs data structure below.
-
-  In the current implementation id is string representation of a uuid
-  maintained by each atomic object.  We use a string because a major
-  complication to keep this data structure from consuming large amounts
-  of memory is that id can be one of two things:  readers can define this
-  id as one of two things:  (1) for data marked RAW id is the ObjectID of the
-  parent data in the wf collection, and (2) when set as READER_ORIGIN id
-  is the string represntation of the ObjectID of the history record
-  created when the parent waveform was saved.  That allows the partially
-  processed waveform to be deleted from the database while the history is
-  retained.   For the same reason the Metadata components of the raw waveforms
-  that define woth the RAW objectid is must also not be deleted or the
-  top level origin of any output will be lost.
-  */
+  Only assumption is that the combination of algorithm and id provide
+  a unique specification of a particular instance of an algorithm.  That
+  means some algorithm and a particular set of control parameters that
+  control the outcome of the algorithm.  In MsPASS this is usually the
+  ObjectID string of saved parameters in MongoDB, but users can use any
+  method they wish to describe a unique combination of parameters and an
+  algorithm implementation. */
   std::string id;
-
-  //size_t set_inputs(const mspass::Ensemble<Tdata>& d);
-  //size_t set_inputs(const std::vector<Tdata>& d);
-  //size_t set_inputs(const Tdata& d);
-  /*! \brief Defines all parents of this object.
-
-  We save processing history by a chain (linked list) of sets of these
-  objects.  (We don't actually use a set container because we view
-  vectors as a more familiar concept to seismologists who might want to
-  understand this code.)   The vector contains the records extracted from
-  each parent used to construct the object that is at the end of the chain.
-  For some algorithms there may be only one input (e.g. time invariant filters)
-  while other many have many (e.g. a stack).
-  */
-  std::vector<std::list<mspass::ProcessingHistoryRecord>> inputs;
-  /*! Default constructor.  Creates object with no data. */
-  ProcessingHistoryRecord();
-  /*! Standard copy constructor.  This copies the uuid set in id. */
-  ProcessingHistoryRecord(const ProcessingHistoryRecord& parent);
-  ProcessingHistoryRecord& operator=(const ProcessingHistoryRecord& parent);
+  ProcessDefinition()
+  {
+    algorithm="UNDEFINED";
+    id="UNDEFINED";
+  }
+  ProcessDefinition(const std::string alg,const std::string algid)
+  {
+    algorithm=alg;
+    id=algid;
+  };
+  /* These could probably be defaulted but best to be explicit*/
+  /*! Standard copy constructor.*/
+  ProcessDefinition(const ProcessDefinition& parent)
+  {
+    algorithm=parent.algorithm;
+    id=parent.id;
+  };
+  /*! Standard assignment operator. */
+  ProcessDefinition& operator=(const ProcessDefinition& parent)
+  {
+    if(this!=(&parent))
+    {
+      algorithm=parent.algorithm;
+      id=parent.id;
+    }
+    return *this;
+  };
 private:
   friend boost::serialization::access;
     template<class Archive>
        void serialize(Archive& ar,const unsigned int version)
     {
-      ar & status;
       ar & algorithm;
-      ar & instance;
       ar & id;
-      ar & inputs;
     }
 };
-/*! Procedure to set inputs vector defined by an Ensemble object.
+/*! \brief Compare operator for ProcessDefinition.
 
-Ensembles are the generalization in MsPaSS of a "gather" as used in
-seismic reflection processing.  An Ensemble is just a vector of data objects.
-This procedure assumes the member of the ensemble have ProcessingHistory
-as a base class so they can access the history mechanism datta in MsPaSS.
-The algorithm simply copies all history data from each live member to
-the inputs vector of ProcessingHistoryRecord.
-
-Do not use this procedure if the algorithm receiving the Ensemble can
-ignore members of the Ensemble and mark them dead.  e.g. a robust
-stacker might use a trimmed mean that discards some data without an
-explicit kill.   Use the procedure that works on the atomic object, Tdata,
-instead in such a situation.
-
-\param rec is the output ProcessingHistoryRecord where history will be
-  copied to inputs.  (note the operation is append.  If inputs has
-  previous content the new data will be appended)
-\param d is Ensemble which is to be defined as input.
+We use a multimap to produce a backward reference of all uuids that
+were the output of a given algorithm instance.   This operator assumes
+the id of the ProcessDefinition alone defines a unique key.
 */
-/*
-template <typename Tdata>
-  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::Ensemble<Tdata>& d)
+class AlgorithmCompare
 {
-  try{
-    vector<Tdata>::const_iterator dptr;
-    for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
-    {
-      // Ignore any data not defined as live
-      if(dptr->live())
-      {
-        list<ProcessingHistoryRecord> h dptr->ProcessingHistory::history();
-        // do nothing if the container is empty
-        if(h.size()>0)rec.inputs.push_back(h);
-      }
-    }
-    return rec.inputs.size();
-  }catch(...){throw;};
-};
-*/
-/*! Append history data from a data object to inputs vector.
-
-ProcessingHistoryRecord use a vector container of a linked list of
-other ProcessingHistoryRecord objects to define the inputs to an algorithm.
-This procedure appends new data to that vector container defined by d.
-
-\param rec is the output record (normally under construction)
-\param d is the data to define as an input.
-*/
-
-template <typename Tdata>
-    size_t append_input(ProcessingHistoryRecord& rec,const Tdata& d)
-{
-  if(d.live())
+public:
+  bool operator()(const ProcessDefinition p1, const ProcessDefinition p2) const
   {
-    list<ProcessingHistoryRecord> h;
-    h=d.history();
-    rec.inputs.push_back(h);
-  }
-  return rec.inputs.size();
+    return(p1.id < p2.id);
+  };
 };
+
 /*! Base class defining core concepts.  */
 class  BasicProcessingHistory
 {
@@ -198,30 +123,25 @@ public:
     jid=std::string();
     jnm=std::string();
   };
+  BasicProcessingHistory(const std::string jobname,const std::string jobid)
+  {
+    jid=jobid;
+    jnm=jobname;
+  };
   BasicProcessingHistory(const BasicProcessingHistory& parent)
   {
     jid=parent.jid;
     jnm=parent.jnm;
   };
-  /*! Return a list of algorithm name tags that have been applied.
 
-  All concrete implementations of this base will need to supply a list of
-  name tags that define the algorithms applied to the data to produce the
-  current state.  Implementations will need to store more than these names.
-  The linked list returned must define the order the algorithms are applied.
-  The same algorithm may appear sequentially with or without a change in
-  parameters that define it's properties.   Classes that implement this
-  virtual will want to deal with such ambiguities.
-  */
-  //virtual std::list<std::string> algorithms_applied() const =0;
   /*! Return number or processing algorithms applied to produce these data.
 
   Implementations of this method need to return a count of the number of
   processing steps that have been applied to put the data in the current state.
-  Note that computing this number is complicated by the fact that most data
-  processing is not completed in a single run, but with multiple "jobs".
+  This method could be made pure, but for convenience the base class always
+  returns 0 since it does not implement the actual history mechanism.
   */
-  virtual size_t current_stage()=0;
+  virtual size_t number_of_stages(){return 0;};
   std::string jobid()
   {
     return jid;
@@ -259,6 +179,31 @@ private:
       ar & jnm;
     };
 };
+/*! \brief Holds properties of data used as input to algorithm that created this object.
+
+The implementation here uses a multimap to define parents of each uuid
+in a history chain.   This class is used mainly internally for ProcessingHistory
+to maintain that data.   It will be visible to C++ programs but will not
+be visible in python.  One of these entries is created for each parent
+data used to create the current data.
+*/
+class NodeData
+{
+public:
+  /*! status definition of the parent. */
+  mspass::ProcessingStatus status;
+  /*! uuid of the parent. */
+  std::string uuid;
+  /*! This enum can be used to track changes in data type.  */
+  mspass::AtomicType type;
+  /*! Integer count of the number of processing steps applied to create this parent.*/
+  int stage;
+  /* These standard elements could be defaulted, but we implement them
+  explicitly for clarity - implemented in the cc file. */
+  NodeData();
+  NodeData(const NodeData& parent);
+  NodeData& operator=(const NodeData& parent);
+};
 /*! \brief Lightweight class to preserve procesing chain of atomic objects.
 
 This class is intended to be used as a parent for any data object in
@@ -271,11 +216,33 @@ arrange to save the data contained in it to history collection in MongoDB.
 Note that actually doing the inverse is a different problem that
 are expected to be implemented as extesions of this class to be used in
 special programs used to reconstrut a data workflow and the processing chain
-applied to produce any final output.   Names imply the following meanings:
+applied to produce any final output.
+
+The design was complicated by the need to keep the history data from causing
+memory bloat.  A careless implementation could be prone to that problem
+even for modest chains, but we were particularly worried about iterative
+algorithms that could conceivably multiply the size of out of control.
+There was also the fundamental problem of dealing with transient versus
+data stored in longer term storage instead of just in memory. Our
+implementation was simplified by using the concept of a unique id with
+a Universal Unique IDentifier. (UUID)  Our history mechanism assumes
+each data object has a uuid assigned to it on creation by an implementation
+id of the one object this particular record is associated with on
+dependent mechanism.  That is, whenever a new object is created in MsPASS using
+the history feature one of these records will be created for each data
+object that is defined as atomic.   This string defines unique key for
+the object it could be connected to with the this pointer.  The parents of
+the current object are defined by the inputs data structure below.
+
+In the current implementation id is string representation of a uuid
+maintained by each atomic object.  We use a string to maximize flexibility
+at a minor cost for storage.
+
+Names used imply the following concepts:
  raw - means the data is new input to mspass (raw data from data center,
    field experiment, or simulation).  That tag means now prior history
    can be reconstructed.
- origin - top-level ancestory of current data.  The top of a processing
+ origin - top-level ancestor of current data.  The top of a processing
    chain is always tagged as an origin.  A top level can also be "raw" but not necessarily.
    In particular, readers that load partially processed data should mark
    the data read as an origin, but not raw.
@@ -285,32 +252,36 @@ applied to produce any final output.   Names imply the following meanings:
     chain.  A stage becomes a potential root only when it is saved by
     a writer where the writer will mark that position as a save.  Considered
     calling this a branch, but that doesn't capture the concept right since
-    we require this mechanism to have not directly define splits into multiple
-    outputs.  Those are possible, but not captured by this algorithm.
-    Similarly parent/child might work, but that also has doesn't capture the
-    one to one constraint as parents can have multiple children.
+    we require this mechanism to correctly perserve splits into multiple
+    outputs. We preserve that cleanly for each data object.  That is, the
+    implementation make it easy to reconstruct the history of a single
+    final data object, but reconstructing interlinks between objects in an
+    overall processing flow will be a challenge.  That was a necessary
+    compomise to avoid memory bloat.  The history is properly viewed as
+    a tree branching from a single root (the final output) to leaves that
+    define all it's parents.
 
   The concepts of raw, origin, and stage are implemented with the
   enum class defined above called ProcessingStatus.  Each history record
   has that as an attribute, but each call to new_stage updates a copy
   kept inside this object to simplify the python wrappers.
+
+
 */
 
 class ProcessingHistory : public BasicProcessingHistory
 {
 public:
-  /*! Error log.
-
-  ProcessingHistory "has an" ErrorLogger.   It was a design choice to put
-  elog as an attribute of ProcessingHistory rather than as a direct attribute
-  of data objects because we assume top level data objects in MsPASS have
-  MsPASS features.  This is a common MsPASS feature for handling errors so
-  it was convenient to put it here.  It makes sense that errors are part of
-  the processing history.
-  */
-  mspass::ErrorLogger elog;
+  ErrorLogger elog;
   /*! Default constructor. */
   ProcessingHistory();
+  /*! Construct and fill in BasicProcessingHistory job attributes.
+
+  \param jobnm - set as jobname
+  \param jid - set as jobid
+  */
+  ProcessingHistory(const std::string jobnm,const std::string jid)
+    : BasicProcessingHistory(jobnm,jid){};
   /*! Standard copy constructor. */
   ProcessingHistory(const ProcessingHistory& parent);
   /*! Return true if the current data is in state defined as "raw" - see class description*/
@@ -329,91 +300,326 @@ public:
   avoid infinite loops with a loop limit parameter.  This method returns
   how many times something has been done to alter the associated data.
   It returns 0 if the data are raw.
+
+  Important note is that the number return is the number of processing steps
+  since the last save.   Because a save operation is assumed to save the
+  history chain then flush it there is not easy way at present to keep track
+  of the total number of stages.  If we really need this functionality it
+  could be easily retrofitted with another private variable that is not
+  reset when the clear method is called.
   */
-  size_t current_stage() override;
-  /*! Set as a top level history origin.
+  size_t number_of_stages() override;
+  /*! Set to define this as the top origin of a history chain.
 
   This method should be called when a new object is created to initialize the
   history as an origin.  Note again an origin may be raw but not all origins
-  are define as raw.   The caller should distinguish this subtlety by
-  setting the status attribute correctly.
+  are define as raw.   This interface controls that through the boolean
+  define_as_raw (false by default).   python wrappers should define an
+  alternate set_as_raw method that calls this method with define_as_raw
+  set true.
 
-  \param rec defines the input for the first history record.
+  It is VERY IMPORTANT to realize that the uuid argument passed to this
+  method is if fundamental importance.   That
+  string is assumed to be a uuid that can be linked to either a parent
+  data object read from storage and/or linked to a history chain saved by
+  a prior run.  It becomes the current_id for the data to which this
+  object is a parent. This method also always does two things that define how
+  the contents can be used.  current_stage is ALWAYS set 0.  We distinguish
+  a pure origin from an intermediate save ONLY by the status value saved in
+  the history chain. That is, only uuids with status set to RAW are viewed
+  as guaranteed to be stored.   A record marked ORIGIN is assumed to passed
+  through save operation.   To retrieve the history chain from multiple
+  runs the pieces have to be pieced together by history data stored in
+  MongoDB.
 
-  \exception Will throw an exception if the rec data does not have the
-    status value set as raw or origin.  It will also throw an exception if
-    the history chain is not empty when this method is called.  Intermediate
-    saves should call clear before calling this method.  An empty condition
-    should be a given for readers.
+  The contents of the history data structures should be empty when this
+  method is called.  That would be the norm for any constructor except
+  those that make a deep copy. If unsure the clear method should be called
+  before this method is called.  If it isn't empty it will be cleared anyway
+  and a complaint message will be posted to elog.
+
+  \param alg is the algorithm names to assign to the origin node.  This
+    would normally be a reader name, but it could be a synthetic generator.
+  \param algid is an id designator to uniquely define an instance of algorithm.
+    Note that algid must itself be a unique keyword or the history chains
+    will get scrambled.
+  \param uuid unique if for this data object (see note above)
+  \param typ defines the data type (C++ class) "this" points to.  It might
+    be possible to determine this dynamically, but a design choice was to
+    only allow registered classes through this mechanism.  i.e. the enum
+    class typ implements has a finite number of C++ classes it accepts.
+    The type must be a child ProcessingHistory.
+  \param define_as_raw sets status as RAW if true and ORIGIN otherwise.
+
+  \exception  Never throws an exception BUT this method will post a complaint
+  to elog if the history data structures are not empty and it the clear
+  method needs to be called internally.
   */
-  void set_as_origin(const ProcessingHistoryRecord& rec);
-  /*! \brief Define current object as a derived from a processing algorithm.
+  void set_as_origin(const string alg,const string algid,
+    const string uuid,const AtomicType typ, bool define_as_raw=false);
+  /*! Define history chain for an algorithm with multiple inputs.
 
-  All algorithms set up to preserve processing history should call this method
-  when a new copy is created before applying that particular algorithm.
-  It appends the passed record to the processing history data structure stored
-  within this object.
+  Use this method to define the history chain for an algorithm that has
+  multiple inputs for each output.  Each output needs to call this method
+  to build the connections that define how all inputs link to the the
+  new data being created by the algorithm that calls this method.   We \
+  call it reduction because it loosly matches the idea of reduce in map-reduce,
+  but don't take that too literally - this method has nothing directly to do
+  with reduce in Spark.
 
-  \param rec defines the defining data for this processing stage.
+  Normally, it makes sense to have the boolean create_newid true so it is
+  guaranteed the current_id is unique.  There is little cost in creating a new
+  one if there is any doubt the current_id is not a duplicate.  The false option
+  is there only for rare cases where the current id value needs to be preserved.
 
-  \return count of processing level (root is 0 and increments for each
-    processing stage (new child)
+  Note the vector of data passed is raw pointers for efficiency to avoid
+  excessive copying.   For normal use this should not create memory leaks
+  but make sure you don't try to free what the pointers point to or problems are
+  guaranteed.  It is VERY IMPORTANT to realize that all the pointers are
+  presumed to point to the ProcessingHistory component of a set of larger data
+  object (Seismogram or TimeSeries).  The parents do not all have be a common
+  type as if they have valid history data within them their current type
+  will be defined.
 
-    */
-  size_t new_stage(const ProcessingHistoryRecord& rec);
-  /*! \brief Add a record showing this data has been saved to storage.
+  This method ALWAYS marks the status as VOLATILE.
 
-  Writer should first save data for an object to some external storage
-  before calling this method.   The rec passed must have the status
-  defined as saved and the id set as an object id or this function will
-  throw an exception.  Note a nonfatal error will be posted to the
-  elog data (type ErrorLogger that is a member of this class) if the
-  id field of rec does not appear to be a MongoDB object id string
-  representation. The test used is not robust as it just tests for a
-  length matching mongo's implementationd detail of exactly 12.
-
-  \param rec is the data defining the save (objectid is critical)
-  \return number of stages in the processing log after rec was posted.
-  \exception Will throw a MsPASSError if the status is not marked save  and
-    not save rec.  It will also throw a MsPASSError set as a warning if
-    the id does not appear to be a MongoDB object id string.   The data in
-    rec will still be saved when the warning error is thrown, however, so
-    a handler should deal with this appropriately.
+  \param alg is the algorithm names to assign to the origin node.  This
+    would normally be name defining the algorithm that makes sense to a human.
+  \param algid is an id designator to uniquely define an instance of algorithm.
+    Note that algid must itself be a unique keyword or the history chains
+    will get scrambled.  alg is mostly carried as baggage to make output
+    more easily comprehended without additional lookups.
+  \param typ defines the data type (C++ class) the algorithm that is generating
+    this data will create.
+  \param create_newid is a boolean defining how the current id is handled.
+    As described above, if true the method will call newid and set that
+     as the current id of this data object.  If false the current value is
+     left intact.
+  \return a string representation of the uuid of the data to which this
+    ProcessingHistory is now attached.
   */
-  size_t set_as_saved(const ProcessingHistoryRecord& rec);
-  list<ProcessingHistoryRecord> history() const
+  string new_reduction(const string alg,const string algid,
+    const AtomicType typ,const vector<ProcessingHistory*> parents,
+      const bool create_newid=true);
+  /*! \brief Add one datum as an input for current data.
+
+  This method MUST ONLY be called after a call to new_reduction in the
+  situation were additional inputs need to be defined that were not
+  available at the time new_reduction was called.   An example might be
+  a stack that was created within the scope of "algorithm" and then used in
+  some way to create the output data.   In any case it differs fundamentally
+  from new_reduction in that it does not touch attributes that define the
+  current state of "this".  It simply says this is another input to the
+  data "this" contains.
+
+  \param data_to_add is the ProcessingHistory of the data object to be
+   defined as input.  Note the type of the data to which it is linked
+   will be saved as the base of the input chain from data_to_add.  It can
+   be different from the type of "this".
+  */
+  void add_one_input(const ProcessingHistory& data_to_add);
+  /*! \brief Define several data objects as inputs.
+
+  This method acts like add_one_input in that it alters only the inputs
+  chain.   In fact it is nothing more than a loop over the components of
+  the vector calling add_one_input for each component.
+
+  \param d is the vector of data to define as inputs
+  */
+  void add_many_inputs(const vector<ProcessingHistory*>& d);
+  /*! \brief Define this algorithm as a one-to-one map.
+
+  Many algorithms define a one-to-one map where each one input data object
+  creates one output data object. This class allows the input and output to
+  be different data types but it is the correct method to call only if the
+  one atomic data type is used to produce another (possibly different)
+  atomic data type.
+
+  \param alg is the algorithm names to assign to the origin node.  This
+    would normally be name defining the algorithm that makes sense to a human.
+  \param algid is an id designator to uniquely define an instance of algorithm.
+    Note that algid must itself be a unique keyword or the history chains
+    will get scrambled.  alg is mostly carried as baggage to make output
+    more easily comprehended without additional lookups.
+  \param typ defines the data type (C++ class) the algorithm that is generating
+    this data will create.
+  \param parent is reference to the ProcessingHistory section of the parent
+    data object (in mspass currently limited to TimeSeries and Seismogram).
+    Note input type is defined by the base of the processing chain parent.
+  \param newstatus is how the status marking for the output.  Normal (default)
+    would be VOLATILE.  This argument was included mainly for flexibility in
+    case we wanted to extend the allowed entries in ProcessingStatus.
+  \param use_parent_history is a boolean that like newstatus is there only to
+    allow reuse of the new_map code for map_as_saved.   The default of false
+    should be used for efficiency but we include the option for flexibility -
+    a deep copy approach is safer but slower.
+  */
+  std::string new_map(const std::string alg,const std::string algid,const AtomicType typ,
+      const ProcessingHistory& parent,
+        const ProcessingStatus newstatus=ProcessingStatus::VOLATILE,
+          const bool use_parent_history=false);
+  /*! \brief Prepare the current data for saving.
+
+  Saving data is treated as a special form of map operation.   That is because
+  a save by our definition is always a one-to-one operation with an index entry
+  for each atomic object.  This method pushes a new entry in the history chain
+  tagged by the algorithm/algid field for the writer.  It differs from new_map
+  in the important sense that the uuid is not changed.   The record this
+  sets in the nodes multimap will then have the same uuid for the key as the
+  that in NodeData.   That along with the status set SAVED can be used
+  downstream to recognize save records.
+
+  It is VERY IMPORTANT for use of this method to realize this method saves
+  nothing.  It only preps the history chain data so calls that follow
+  will retrieve the right information to reconstruct the full history chain.
+  Writers should follow this sequence:
+    1.  call map_as_saved with the writer name for algorithm definition
+    2.  save the data and history chain to MongoDB.
+    3.  be sure you have a copy of the uuid string of the data just saved and
+        call the clear method.
+    4.  call the set_as_origin method using the uuid saved with the algorithm/id
+        the same as used for earlier call to map_as_saved.   This makes the
+        put ProcessingHistory in a state identical to that produced by a reader.
+
+  \param alg is the algorithm names to assign to the ouput.  This
+    would normally be name defining the writer.
+  \param algid is an id designator to uniquely define an instance of algorithm.
+    Note that algid must itself be a unique keyword or the history chains
+    will get scrambled.  alg is mostly carried as baggage to make output
+    more easily comprehended without additional lookups.  Note one model to
+    distinguish records of actual save and redefinition of the data as an
+    origin (see above) is to use a different id for the call to map_as_saved
+    and later call to set_as_origin.  This code doesn't care, but that is
+    an implementation detail in how this will work with MongoDB.
+  \param typ defines the data type (C++ class) that was just saved.
+  */
+  std::string map_as_saved(const std::string alg,const std::string algid,
+    const AtomicType typ);
+
+  void clear();
+  /*! Retrieve the nodes multimap that defines the tree stucture branches.
+
+  This method does more than just get the protected multimap called nodes.
+  It copies the map and then pushes the "current" contents to the map
+  before returning the copy.  This allows the data defines as current to
+  not be pushed into the tree until they are needed.   */
+  std::multimap<std::string,mspass::NodeData> get_nodes() const;
+  /*! Retrieve the process data multimap.
+
+  This method does more than just get the protected multimap called process_data.
+  It copies the map and then pushes the "current" contents to the map
+  before returning the copy.  This allows the data it defines as current to
+  not be pushed into the tree until they are needed.   */
+  std::multimap<mspass::ProcessDefinition,std::string,AlgorithmCompare>
+      get_process_data() const;
+  /*! Return the current stage count for this object.
+
+  We maintain a counter of the number of processing steps that have been
+  applied to produce this data object.   This simple method returns that
+  counter.   With this implementation this is identical to number_of_stages.
+  We retain it in the API in the event we want to implement an accumulating
+  counter.
+  */
+  int stage()
   {
-    return this->history_list;
+    return current_stage;
   };
-  /*! Clear the history data and initialize top level to rec data.
-
-  In designing this class we recognized early on that the structure was
-  subject to serious memory bloat problems when averaging large data sets.
-  (see github issue 43 section for the design history).   To reduce memory
-  the idea is to save older history in MongoDB and then reset the history
-  chain of each object to reduce memory use.  To do that first call the
-  history method, save the data returned to MongoDD retaining the objectid of
-  the stored document, building a ProcessingHistoryRecord with that id,
-  and then calling this method to clear the history chain and set the origin
-  as the record just saved.
-
-  WARNING:  normal users should call this method only if the clearly
-  understand it's implication.  Without a db store previous history will
-  be lost.
-
-  \param rec is the new top level history record after clearing contents.
-  */
-  void reset(const ProcessingHistoryRecord& rec);
-  /*! Just clear the history record.
-
-  This method is dangerous, but is a sharp knife that might be necessary
-  sometimes.  It simply clears the history chain.   A call to history,
-  clear, and set_as_origin are equivalent to the reset method defined above.
-  */
-  void clear()
+  /*! Return the current status definition (an enum). */
+  ProcessingStatus status()
   {
-    history_list.clear();
-  }
+    return current_status;
+  };
+  /*! Return the id of this object set for this history  chain.
+
+  We maintain the uuid for a data object inside this class.  This method
+  fetches the string representation of the uuid of this data object.
+  */
+  std::string id()
+  {
+    return current_id;
+  };
+  /*! Create a new id.
+
+  This creates a new uuid - how is an implementation detail but here we use
+  boost's random number generator uuid generator that has some absurdly small
+  probability of generating two equal ids.   It returns the string representation
+  of the id created. */
+  std::string newid();
+  /*! Return the number of inputs for a specified uuid.
+
+  In a number of contexts it can be useful to know the number of inputs
+  defined for the current object.  This returns that count.
+  */
+  int number_inputs()const;
+  /*! Return the number of inputs defined for any data in the process chain.
+
+  This overloaded version of number_inputs asks for the number of inputs
+  defined for an arbitrary uuid.  This is useful only if backtracing
+  the ancestory of a child.
+
+  \param uuidstr is the uuid string to check in the ancestory record.
+  */
+  int number_inputs(const std::string uuidstr)const;
+
+  /*! Set the uuid manually.
+
+  It may occasionally be necessary to create a uuid by some other mechanism.
+  This allows that, but this method should be used with caution and only if
+  you understand the consequences.
+
+  \param newid is string definition to use for the id.
+  */
+  void set_id(const std::string newid);
+  /* These are a set of low level getters for minimal find operations
+  on history.  The intent is that more complex finds would use
+  combinations of calls to these getters to build more complete
+  reconstructions. */
+  /*! \brief Return a list of algorithms applied to produce this data.
+
+  The list of algorithms returned format is implementation dependent.
+  Here the unique id for an algorithm is an id string, but id strings
+  are not useful to humans.  Hence, the return here is a list of names
+  in the format algorithm:id where : is that character inserted
+  to produce a single string (e.g. "agc:1234").   Warning:  the
+  list is NOT in process order, but weak order defined for the multimap
+  container.   We don't include more complex algorithms to reduce the
+  complexity of this low level object.  */
+  list<std::string> algorithm_history() const;
+  /*! \brief Return uuids of all data handled by a given processing algorithm that
+  are parents of this object.
+
+  This method is an extended version of algorithm_history.   It returns a list
+  of uuids matching the algorithm id passed as an argument.  Note for
+  interactive data exploration a typical usage would be to call algoritym_history
+  to get ids and then call this method to get the uuids with which it is
+  associated.  For linear workflows the return will be equivalent to all
+  inputs passed through that algorithm.  For iterative algorithms the list
+  can be much longer as each pass will be post new uuids for the same
+  algorithm.
+
+  \param alg is the algorithm name to search for. (Note:  ignored in this
+    implementation but will make any application more readable.)
+  \param algid is the id string used to uniquely define a algorithm instance.
+
+  \return list of uuids handled by that instance of that algorithm.  Silently
+    returns an empty list if there is no match
+  */
+  list<std::string> data_processed_by(const std::string alg,
+      const std::string algid) const;
+  /*! \brief Return a list of data that define the inputs to a give uuids.
+
+  This low level getter returns the NodeData objects that define the inputs
+  to the uuid of some piece of data that was used as input at some stage
+  for the current object.   An exception is thrown if uuid is not found.
+
+  \param id_to_find is the uuid for which input data is desired.
+
+  \return list of NodeData that define the inputs.  Will silently return
+    empty list if the key is not found.
+
+  */
+  std::list<mspass::NodeData> inputs(const std::string id_to_find) const;
+
   /*! Assignment operator.  */
   ProcessingHistory& operator=(const ProcessingHistory& parent);
 /* We make this protected to simplify expected extensions.  In particular,
@@ -421,20 +627,64 @@ the process of reconstructing history is a complicated process we don't
 want to add as baggage to regular data.  Hence, tools to reconstruct history
 (provenance) are expected to extend this class. */
 protected:
-  list<ProcessingHistoryRecord> history_list;
+  /* This map defines connections of each data object to others.  Key is the
+  uuid of a given object and the leaves define the inputs used to create it. */
+  std::multimap<std::string,mspass::NodeData> nodes;
+  /* This map connects each algorithm to uuids it created linked to the
+  current data.  Note the indexing is reversed from nodes.  This
+  is used to find uuids that a given algorithm produced.  Note the
+  comparison function required for weak ordering is defined above. */
+  std::multimap<mspass::ProcessDefinition,std::string,AlgorithmCompare> process_data;
 private:
-  /* this is set undefined when empty and is copied from the latest record
-  when new_stage is called */
-  ProcessingStatus status;
-  friend boost::serialization::access;
-    template<class Archive>
-       void serialize(Archive& ar,const unsigned int version)
-    {
-      ar & boost::serialization::base_object<BasicProcessingHistory>(*this);
-      ar & status;
-      ar & history_list;
-    };
-};
+  /*  This set of private variables are the values of attributes for
+  the same concepts in the NodeData struct/class.   We break them out as
+  single variables because they are not always set lumped together.  Hence
+  there are also separate getters and setters for each. */
+  ProcessingStatus current_status;
+  /* uuid of current data object - keys to the kingdom here. */
+  std::string current_id;
+  int current_stage;
+  AtomicType mytype;
+  /* These are lumped because they are always used together here */
+  ProcessDefinition current_pdef;
 
+  friend boost::serialization::access;
+  template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+  {
+      ar & boost::serialization::base_object<BasicProcessingHistory>(*this);
+      ar & nodes;
+      ar & process_data;
+      ar & current_status;
+      ar & current_id;
+      ar & current_stage;
+      ar & mytype;
+      ar & current_pdef;
+  };
+};
+/*! Append history data from a data object to inputs vector.
+
+This is a convenience template that is a wrapper for add_one_input used
+as in some contexts in combination with new_reduction.   It handles
+automatically ignoring dead data and the casting operation to ProcessingHistory.
+It will only work if d can be dynamically cast to a ProcessingHistory.
+That means it will work for Seismogram and TimeSeries objects but not
+CoreSeismogram or CoreTimeSeries.
+
+\param d is the data to define as an input.
+\param his is the history data to append this record to - IMPORTANT this
+  function blindly assumes this function is called ONLY after a call to
+  his.new_reduction.
+*/
+
+template <typename Tdata>
+    void append_input(const Tdata& d, ProcessingHistory& his)
+{
+  if(d.live())
+  {
+    ProcessingHistory *ptr=dynamic_cast<const ProcessingHistory*>(&d);
+    his.add_one_input(*ptr);
+  }
+};
 } // End mspass namespace
 #endif

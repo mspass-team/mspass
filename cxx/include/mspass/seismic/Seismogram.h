@@ -2,10 +2,8 @@
 #define _SEISMOGRAM_H_
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/ProcessingHistory.h"
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/uuid_serialize.hpp>
+#include "mspass/utility/ErrorLogger.h"
+
 namespace mspass{
 /*! \brief Implemntation of Seismogram for MsPASS.
 
@@ -56,7 +54,7 @@ public:
 This constructor build a Seismogram object from all the pieces that define
 this highest level object in mspass.   This constructor is planned to
 be hidden from python programmers and not exposed with pybind11 wrappers
-because is has some potentially undesirable side effects if now used
+because is has some potentially undesirable side effects if not used
 carefully.  The primary purpose of this constructor is for serialization
 and deserializaton in spark with pickle.  The pickle interface is
 purely in C for this function so again python programmers don't need
@@ -70,8 +68,9 @@ internally as a 2d C array, but we use the dmatrix to mesh
 with serialization.
 */
   Seismogram(const mspass::BasicTimeSeries& b, const mspass::Metadata& m,
-    const mspass::ProcessingHistory& his,const bool card, const bool ortho,
-      const mspass::dmatrix& tm, const mspass::dmatrix& uin);
+    const mspass::ProcessingHistory& his,
+      const bool card, const bool ortho,
+        const mspass::dmatrix& tm, const mspass::dmatrix& uin);
   /*! Constructor driven by a Metadata object.
 
   The flexibilityof Metadata makes it helpful at times to build a Seismogram
@@ -97,40 +96,10 @@ with serialization.
         const string algid=string("0"));
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
-    : mspass::CoreSeismogram(parent), mspass::ProcessingHistory(parent){};
+    : mspass::CoreSeismogram(parent), mspass::ProcessingHistory(parent)
+  {};
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
-  /*! Return sring representation of the unique id for this object. */
-  std::string id_string() const
-  {
-    return id;
-  };
-  /*! Set id from a string - commonly MongoDB objectid string*/
-  void set_id(const std::string newid)
-  {
-    id=newid;
-  };
-  /*! Set id from a random number generator - normal for transient data.*/
-  void set_id()
-  {
-    boost::uuids::random_generator gen;
-    boost::uuids::uuid uuidval;
-    uuidval=gen();
-    id=boost::uuids::to_string(uuidval);
-  };
-  /*! Return true if the id set is a MongoDB ObjectID string representation. */
-  bool is_objectid()
-  {
-    /* Use a magic test that an object id string is 12 bytes.  An alternative
-    would be a boolean or enum for id type, but for simplicity we'll just
-    use this magic number.  A bit fragile if mongochanges the definition.*/
-    if(id.size()==12)
-      return true;
-    else
-      return false;
-  };
-private:
-  std::string id;
 };
 }//END mspass namespace
 #endif
