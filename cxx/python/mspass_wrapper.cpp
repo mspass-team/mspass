@@ -1049,7 +1049,6 @@ PYBIND11_MODULE(ccore,m)
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def(py::init<const Seismogram&>())
-/*
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1102,7 +1101,6 @@ PYBIND11_MODULE(ccore,m)
        return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
      }
      ))
-     */
     ;
 
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
@@ -1115,7 +1113,7 @@ PYBIND11_MODULE(ccore,m)
       .def(py::init<const mspass::BasicTimeSeries&,const mspass::Metadata&,
         const ProcessingHistory&, const std::vector&)
         */
-/*
+
       .def(py::pickle(
         [](const TimeSeries &self) {
           string sbuf;
@@ -1156,7 +1154,6 @@ PYBIND11_MODULE(ccore,m)
          return TimeSeries(bts,md,corets,d);;
        }
      ))
-     */
      ;
   /* Wrappers for Ensemble containers. With pybind11 we need to explicitly declare the types to
      be supported by the container.  Hence, we have two nearly identical blocks below for TimeSeries
