@@ -4,6 +4,8 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/serialization.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -203,6 +205,16 @@ public:
   NodeData();
   NodeData(const NodeData& parent);
   NodeData& operator=(const NodeData& parent);
+private:
+  friend boost::serialization::access;
+    template<class Archive>
+       void serialize(Archive& ar,const unsigned int version)
+    {
+      ar & status;
+      ar & uuid;
+      ar & type;
+      ar & stage;
+    };
 };
 /*! \brief Lightweight class to preserve procesing chain of atomic objects.
 
