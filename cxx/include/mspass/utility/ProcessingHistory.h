@@ -200,6 +200,25 @@ public:
   mspass::AtomicType type;
   /*! Integer count of the number of processing steps applied to create this parent.*/
   int stage;
+  /*! \brief Name of algorithm algorithm applied at this stage.
+
+  We use the concept that every processing algorithm has a name keyword
+  that togther with an id and/or instance defines a unique definition of
+  the algorithm and a set of input parameters that define the algorithm's
+  behavior.  Note this is the algorithm that creates the uuid also
+  stored in this struct (class)
+  */
+  std::string algorithm;
+  /*! id string to identify this instance of algorithm.
+
+  Only assumption is that the combination of algorithm and id provide
+  a unique specification of a particular instance of an algorithm.  That
+  means some algorithm and a particular set of control parameters that
+  control the outcome of the algorithm.  In MsPASS this is usually the
+  ObjectID string of saved parameters in MongoDB, but users can use any
+  method they wish to describe a unique combination of parameters and an
+  algorithm implementation. */
+  std::string algid;
   /* These standard elements could be defaulted, but we implement them
   explicitly for clarity - implemented in the cc file. */
   NodeData();
@@ -214,6 +233,8 @@ private:
       ar & uuid;
       ar & type;
       ar & stage;
+      ar & algorithm;
+      ar & algid;
     };
 };
 /*! \brief Lightweight class to preserve procesing chain of atomic objects.
@@ -582,47 +603,12 @@ public:
   \param newid is string definition to use for the id.
   */
   void set_id(const std::string newid);
-  /* These are a set of low level getters for minimal find operations
-  on history.  The intent is that more complex finds would use
-  combinations of calls to these getters to build more complete
-  reconstructions. */
-  /*! \brief Return a list of algorithms applied to produce this data.
 
-  The list of algorithms returned format is implementation dependent.
-  Here the unique id for an algorithm is an id string, but id strings
-  are not useful to humans.  Hence, the return here is a list of names
-  in the format algorithm:id where : is that character inserted
-  to produce a single string (e.g. "agc:1234").   Warning:  the
-  list is NOT in process order, but weak order defined for the multimap
-  container.   We don't include more complex algorithms to reduce the
-  complexity of this low level object.  */
-  list<std::string> algorithm_history() const;
-  /*! \brief Return uuids of all data handled by a given processing algorithm that
-  are parents of this object.
-
-  This method is an extended version of algorithm_history.   It returns a list
-  of uuids matching the algorithm id passed as an argument.  Note for
-  interactive data exploration a typical usage would be to call algoritym_history
-  to get ids and then call this method to get the uuids with which it is
-  associated.  For linear workflows the return will be equivalent to all
-  inputs passed through that algorithm.  For iterative algorithms the list
-  can be much longer as each pass will be post new uuids for the same
-  algorithm.
-
-  \param alg is the algorithm name to search for. (Note:  ignored in this
-    implementation but will make any application more readable.)
-  \param algid is the id string used to uniquely define a algorithm instance.
-
-  \return list of uuids handled by that instance of that algorithm.  Silently
-    returns an empty list if there is no match
-  */
-  list<std::string> data_processed_by(const std::string alg,
-      const std::string algid) const;
   /*! \brief Return a list of data that define the inputs to a give uuids.
 
   This low level getter returns the NodeData objects that define the inputs
   to the uuid of some piece of data that was used as input at some stage
-  for the current object.   An exception is thrown if uuid is not found.
+  for the current object.  
 
   \param id_to_find is the uuid for which input data is desired.
 
@@ -642,11 +628,6 @@ protected:
   /* This map defines connections of each data object to others.  Key is the
   uuid of a given object and the leaves define the inputs used to create it. */
   std::multimap<std::string,mspass::NodeData> nodes;
-  /* This map connects each algorithm to uuids it created linked to the
-  current data.  Note the indexing is reversed from nodes.  This
-  is used to find uuids that a given algorithm produced.  Note the
-  comparison function required for weak ordering is defined above. */
-  std::multimap<mspass::ProcessDefinition,std::string,AlgorithmCompare> process_data;
 private:
   /*  This set of private variables are the values of attributes for
   the same concepts in the NodeData struct/class.   We break them out as
@@ -657,8 +638,9 @@ private:
   std::string current_id;
   int current_stage;
   AtomicType mytype;
-  /* These are lumped because they are always used together here */
-  ProcessDefinition current_pdef;
+  std::string algorithm;
+  std::string algid;
+
 
   friend boost::serialization::access;
   template<class Archive>
@@ -666,14 +648,16 @@ private:
   {
       ar & boost::serialization::base_object<BasicProcessingHistory>(*this);
       ar & nodes;
-      ar & process_data;
       ar & current_status;
       ar & current_id;
       ar & current_stage;
       ar & mytype;
-      ar & current_pdef;
+      ar & algorithm;
+      ar & algid;
   };
 };
+/* function prototypes of helpers */
+
 /*! Append history data from a data object to inputs vector.
 
 This is a convenience template that is a wrapper for add_one_input used
@@ -698,5 +682,45 @@ template <typename Tdata>
     his.add_one_input(*ptr);
   }
 };
+/* this pair of functions did things that were methods in an earlier
+prototype.  What they do is still useful but making them functions
+reduced the baggage in the ProcessingHistory class. */
+
+/*! \brief Return a list of algorithms applied to produce this data.
+
+It is often useful to know just the chain of processes that were applied
+to produce a data object without the details of the entire tree of
+what inputs where processed by what algorithm.  This function cracks
+the history chain and returns just such a list as a chain of tuples.
+Each tuple has the structure:  stage, algorithm, algid.   The returned
+list is sorted by stage alone.  If multiple algorithms were applied at the
+same level (stage) the order of the list will be random in algorithm and algid.
+
+\param h is the history chain to be dumped (normally a dynamic cast from a
+  Seismogram or TimeSeries object)
+ */
+std::list<std::tuple<int,std::string,std::string>>
+                           algorithm_history(const ProcessingHistory& h);
+/*! \brief Return uuids of all data handled by a given processing algorithm that
+are parents of this object.
+
+This method is an extended version of algorithm_history.   It returns a list
+of uuids matching the algorithm id passed as an argument.  Note for
+interactive data exploration a typical usage would be to call algorithm_history
+to alg and algid pair of interest and then call this method to get the uuids with
+which it is associated.  For linear workflows the return will be equivalent to all
+inputs passed through that algorithm.  For iterative algorithms the list
+can be much longer as each pass will be post new uuids for the same
+algorithm.
+
+\param alg is the algorithm name to search for. (Note:  ignored in this
+  implementation but will make any application more readable.)
+\param algid is the id string used to uniquely define a algorithm instance.
+
+\return list of uuids handled by that instance of that algorithm.  Silently
+  returns an empty list if there is no match
+*/
+std::list<std::string> algorithm_outputs(const ProcessingHistory& h,
+  const std::string alg, const std::string algid);
 } // End mspass namespace
 #endif

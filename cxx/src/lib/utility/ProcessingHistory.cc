@@ -1,3 +1,7 @@
+#include <map>
+#include <set>
+#include <list>
+#include <algorithm>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ProcessingHistory.h"
 
@@ -38,7 +42,8 @@ NodeData::NodeData()
   type=AtomicType::UNDEFINED;
   stage=-1;   //Invalid value could be used as a hint of uninitialized data
 }
-NodeData::NodeData(const NodeData& parent) : uuid(parent.uuid)
+NodeData::NodeData(const NodeData& parent)
+       : uuid(parent.uuid),algorithm(parent.algorithm),algid(parent.algid)
 {
   status=parent.status;
   type=parent.type;
@@ -52,6 +57,8 @@ NodeData& NodeData::operator=(const NodeData& parent)
     type=parent.type;
     stage=parent.stage;
     uuid=parent.uuid;
+    algorithm=parent.algorithm;
+    algid=parent.algid;
   }
   return *this;
 }
@@ -63,12 +70,12 @@ ProcessingHistory::ProcessingHistory():elog()
   current_id="UNDEFINED";
   current_stage=-1;  //illegal value that could be used as signal for uninitalized
   mytype=AtomicType::UNDEFINED;
-  current_pdef.algorithm="UNDEFINED";
-  current_pdef.id="UNDEFINED";
+  algorithm="UNDEFINED";
+  algid="UNDEFINED";
 }
 ProcessingHistory::ProcessingHistory(const ProcessingHistory& parent)
   : BasicProcessingHistory(parent),elog(parent.elog),nodes(parent.nodes),
-      process_data(parent.process_data),current_pdef(parent.current_pdef)
+      algorithm(parent.algorithm),algid(parent.algid)
 {
   current_status=parent.current_status;
   current_id=parent.current_id;
@@ -116,13 +123,13 @@ all the methods named "map" something.    A corollary is that when an object
 is an origin the multimaps must be empty. */
 /* Note we don't distinguish raw and origin here - rec must define it one
 way or the other. */
-void ProcessingHistory::set_as_origin(const string alg,const string algid,
+void ProcessingHistory::set_as_origin(const string alg,const string algid_in,
   const string uuid,const AtomicType typ, bool define_as_raw)
 {
   const string base_error("ProcessingHistory::set_as_origin:  ");
-  if( (nodes.size()>0) || (process_data.size()>0) )
+  if( nodes.size()>0 )
   {
-    elog.log_error(alg+":"+algid,
+    elog.log_error(alg+":"+algid_in,
       base_error + "Illegal usage.  History chain was not empty.   Calling clear method and continuing",
        ErrorSeverity::Complaint);
     this->clear();
@@ -135,14 +142,14 @@ void ProcessingHistory::set_as_origin(const string alg,const string algid,
   {
     current_status=ProcessingStatus::ORIGIN;
   }
-  current_pdef.algorithm=alg;
-  current_pdef.id=algid;
+  algorithm=alg;
+  algid=algid_in;
   current_id=uuid;
   mytype=typ;
   /* Origin/raw are always defined as stage 0 even after a save. */
   current_stage=0;
 }
-string ProcessingHistory::new_reduction(const string alg,const string algid,
+string ProcessingHistory::new_reduction(const string alg,const string algid_in,
   const AtomicType typ,const vector<ProcessingHistory*> parents,
     const bool create_newid)
 {
@@ -153,7 +160,7 @@ string ProcessingHistory::new_reduction(const string alg,const string algid,
   /* This works because the get methods used here return a deep copy from
   each parent with their current data pushed to define the base of the
   chain.  Because we are bringing in history from other data we also
-  have clear the nodes and process_data areas before inserting parent
+  have clear the nodes multimap before inserting parent
   data to avoid duplicates - it would be very error prone to require caller
   to clear before calling this method*/
   this->clear();
@@ -167,17 +174,11 @@ string ProcessingHistory::new_reduction(const string alg,const string algid,
     {
       this->nodes.insert(*nptr);
     }
-    multimap<ProcessDefinition,string,AlgorithmCompare>
-          parent_process_data(parents[i]->get_process_data());
-    for(pptr=parent_process_data.begin();pptr!=parent_process_data.end();++pptr)
-    {
-      this->process_data.insert(*pptr);
-    }
   }
   /* Now reset the current contents to make it the base of the history tree */
   ++current_stage;
-  current_pdef.algorithm=alg;
-  current_pdef.id=algid;
+  algorithm=alg;
+  algid=algid_in;
   // note this is output type - inputs can be variable and defined by nodes
   mytype=typ;
   current_status=ProcessingStatus::VOLATILE;
@@ -190,15 +191,10 @@ become corrupted.*/
 void ProcessingHistory::add_one_input(const ProcessingHistory& data_to_add)
 {
   multimap<string,NodeData>::iterator nptr;
-  multimap<ProcessDefinition,string,AlgorithmCompare>::iterator pptr;
   multimap<string,NodeData> newhistory = data_to_add.get_nodes();
   if(newhistory.size()>0)
   for(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)
     this->nodes.insert(*nptr);
-  multimap<ProcessDefinition,string,AlgorithmCompare>
-                  newpds=data_to_add.get_process_data();
-  for(pptr=newpds.begin();pptr!=newpds.end();++pptr)
-    this->process_data.insert(*pptr);
 }
 /* This one also doesn't change the current contents because it is just a
  front end to a loop calling add_one_input for each vector component */
@@ -220,7 +216,7 @@ for a map we have to make a decision about how to handle the parent copy.
 By default we assume we have to make a deep copy - the safest algorithm.
 When optional use_parent_history is false we simply append to current
 history data - more dangerous but also more efficent.*/
-string ProcessingHistory::new_map(const string alg,const string algid,
+string ProcessingHistory::new_map(const string alg,const string algid_in,
   const AtomicType typ,const ProcessingHistory& parent,
   const ProcessingStatus newstatus,bool use_parent_history)
 {
@@ -231,7 +227,6 @@ string ProcessingHistory::new_map(const string alg,const string algid,
     data to the history chain so we don't have to do that. */
     this->clear();
     nodes=parent.get_nodes();
-    process_data=parent.get_process_data();
   }
   else
   {
@@ -241,14 +236,15 @@ string ProcessingHistory::new_map(const string alg,const string algid,
     nd.uuid=current_id;
     nd.type=typ;
     nd.stage=current_stage;
+    nd.algorithm=algorithm;
+    nd.algid=algid;
     pair<string,NodeData> pn(current_id,nd);
     this->nodes.insert(pn);
-    pair<ProcessDefinition,string> ppd(current_pdef,current_id);
-    this->process_data.insert(ppd);
   }
   /* We always need a new id here for this object we are handling as the child */
   current_id=this->newid();
-  current_pdef=ProcessDefinition(alg,algid);
+  algorithm=alg;
+  algid=algid_in;
   current_status=newstatus;   //Probably should default in include file to VOLATILE
   ++current_stage;
   mytype=typ;
@@ -256,7 +252,7 @@ string ProcessingHistory::new_map(const string alg,const string algid,
 }
 /* Note we always trust that the parent history data is ok in this case
 assuming this would only be called immediately after a save.*/
-string ProcessingHistory::map_as_saved(const string alg,const string algid,
+string ProcessingHistory::map_as_saved(const string alg,const string algid_in,
   const AtomicType typ)
 {
   /* This is essentially pushing current data to the end of the history chain.*/
@@ -265,17 +261,18 @@ string ProcessingHistory::map_as_saved(const string alg,const string algid,
   nd.uuid=current_id;
   nd.type=typ;
   nd.stage=current_stage;
+  nd.algorithm=algorithm;
+  nd.algid=algid_in;
   pair<string,NodeData> pn(current_id,nd);
   this->nodes.insert(pn);
-  pair<ProcessDefinition,string> ppd(current_pdef,current_id);
-  this->process_data.insert(ppd);
   /* Now we reset current to define it as the saver.  Then calls to the
   getters for the multimap will properly insert this data as the end of the
   chain.  Note a key difference from new_map is we don't create a new uuid.
   I don't think that will cause an ambiguity, but it might be better to
   just create a new one here - will do it this way unless that proves a problem
   as the equality of the two might be a useful test for other purposes */
-  current_pdef=ProcessDefinition(alg,algid);
+  algorithm=alg;
+  algid=algid_in;
   current_status=ProcessingStatus::SAVED;
   ++current_stage;
   mytype=typ;
@@ -289,19 +286,13 @@ multimap<string,NodeData> ProcessingHistory::get_nodes() const
   nd.uuid=this->current_id;
   nd.type=this->mytype;
   nd.stage=this->current_stage;
+  nd.algorithm=algorithm;
+  nd.algid=algid;
   pair<string,NodeData> pn(current_id,nd);
   /* Get deep copy of current nodes data and then insert the current data into
   it before returning*/
   multimap<string,NodeData> result(this->nodes);
   result.insert(pn);
-  return result;
-}
-multimap<ProcessDefinition,string,AlgorithmCompare>
-        ProcessingHistory::get_process_data() const
-{
-  multimap<ProcessDefinition,string,AlgorithmCompare> result(this->process_data);
-  pair<ProcessDefinition,string> ppd(this->current_pdef,current_id);
-  result.insert(ppd);
   return result;
 }
 
@@ -331,70 +322,7 @@ void ProcessingHistory::set_id(const string newid)
   this->current_id=newid;
 }
 
-list<string> ProcessingHistory::algorithm_history() const
-{
-  list<string> result;
-  /*The multimap has no method to get unique keys. We use an increment
-  algorithm because we don't expect the size of the map for each key to
-  be huge.  Books recommend using upper_bound to jump forward if the map is
-  huge.  */
-  multimap<ProcessDefinition,string,AlgorithmCompare>::const_iterator mptr;
-  string testid;
-  string thisalg;
-  size_t ii(0);   //counter
-  for(mptr=process_data.begin();mptr!=process_data.end();++mptr)
-  {
-    if(ii==0)
-    {
-      testid=mptr->first.id;
-      thisalg=mptr->first.algorithm;
-    }
-    else
-    {
-      if((mptr->first.id)==testid)
-      {
-        ++ii;
-      }
-      else
-      {
-        /* this is a slow way to do this - creation on each instance, but
-        the chatter on the web suggests clearing a stringstring has platform
-        dependencies.  Since I don't expect this method to be called millions
-        of times this should be a minor issue, but it is definitely an inefficiency.*/
-        stringstream ss;
-        ss<<testid<<":"<<thisalg<<":"<<ii;
-        result.push_back(ss.str());
-        testid==mptr->first.id;
-        thisalg=mptr->first.algorithm;
-        ii=1;   //1 because mptr is currently pointing to next block
-      }
-    }
-  }
-  /* Save last block*/
-  stringstream ssfinal;
-  ssfinal<<testid<<":"<<thisalg<<":"<<ii;
-  result.push_back(ssfinal.str());
-  return result;
-};
-list<string> ProcessingHistory::data_processed_by(const string alg,const string algid) const
-{
-  list<string> result;
-  ProcessDefinition test;
-  test.algorithm=alg;
-  test.id=algid;
-  // return empty list immediately if there is no match
-  if(process_data.count(test)<=0) return result;
 
-  pair<multimap<ProcessDefinition,string,AlgorithmCompare>::const_iterator,
-       multimap<ProcessDefinition,string,AlgorithmCompare>::const_iterator> rng;
-  rng=process_data.equal_range(test);
-  multimap<ProcessDefinition,string,AlgorithmCompare>::const_iterator mptr;
-  for(mptr=rng.first;mptr!=rng.second;++mptr)
-  {
-    result.push_back(mptr->second);
-  }
-  return result;
-}
 list<NodeData> ProcessingHistory::inputs(const std::string id_to_find) const
 {
   list<NodeData> result;
@@ -418,13 +346,83 @@ ProcessingHistory& ProcessingHistory::operator=(const ProcessingHistory& parent)
   {
     this->BasicProcessingHistory::operator=(parent);
     nodes=parent.nodes;
-    process_data=parent.process_data;
     current_status=parent.current_status;
     current_id=parent.current_id;
     current_stage=parent.current_stage;
     mytype=parent.mytype;
-    current_pdef=parent.current_pdef;
+    algorithm=parent.algorithm;
+    algid=parent.algid;
   }
   return *this;
 }
+//// End ProcessingHistory methods //////
+/* This pair of functions in an earlier version were members of
+ProcessingHistory.   They were made functions to reduce unnecessary baggage
+in the low level ProcessingHistory object that is a base class of all
+atomic data in mspass */
+/* This is used for sorting tuple in set below */
+typedef std::tuple<int,std::string,std::string> Algdata;
+class sort_by_stage
+{
+public:
+  bool operator()(const Algdata A, const Algdata B) const
+  {
+    int i=std::get<0>(A);
+    int j=std::get<0>(B);
+    return i<j;
+  };
+};
+
+/* This function uses a completely different algorithm than the prototype
+that was once a method.   It also returns a lsit of tuples while the original
+only returned a list of names.  The order of the tuple returned is:
+stage : algorithm : algid
+
+Note the list is sorted into ascending order by stage*/
+list<Algdata> algorithm_history(const ProcessingHistory& h)
+{
+  /* We use this set container to sort out unique combinations of the
+  tuple of 3 pieces of NodeData that form the ouput.   */
+  std::set<Algdata> algset;
+  multimap<string,NodeData> hmap=h.get_nodes();
+  multimap<string,NodeData>::iterator mptr;
+  for(mptr=hmap.begin();mptr!=hmap.end();++mptr)
+  {
+    NodeData n=mptr->second;  //created only to make this more readable
+    Algdata work(n.stage,n.algorithm,n.algid);
+    /* Intentionally ignore the return of insert.   We expect
+    it to return true and false for different elements */
+    algset.insert(work);
+  }
+  /* This sort is creating a mysterious compilation so will
+  temporarily disable it to work on testing main class */
+  //std::sort(algset.begin(),algset.end(),sort_by_stage);
+  list<Algdata> result;
+  set<Algdata>::iterator aptr;
+  for(aptr=algset.begin();aptr!=algset.end();++aptr)
+  {
+    result.push_back(*aptr);
+  }
+  return result;
+}
+/* this also uses a completely differnet algorithm than that prototype
+that was a method.  This is a simple linear scan pulling all uuids that
+match alg and algid.  The original method had a different name
+(data_processed_by) that only made sense if the function were a member.
+This function does the same thing but has a different name that
+hopefully is closer to describing what it does */
+list<string> algorithm_outputs(const ProcessingHistory& h, const string alg,
+     const string aid)
+{
+  list<string> result;
+  multimap<string,NodeData> hmap=h.get_nodes();
+  multimap<string,NodeData>::iterator hptr;
+  for(hptr=hmap.begin();hptr!=hmap.end();++hptr)
+  {
+    NodeData n=hptr->second;
+    if( (alg==n.algorithm) && (aid==n.algid)) result.push_back(hptr->first);
+  }
+  return result;
+}
+
 }//End mspass namespace encapsulation
