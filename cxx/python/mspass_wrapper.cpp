@@ -1028,10 +1028,6 @@ PYBIND11_MODULE(ccore,m)
     .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
     .def("newid",&mspass::ProcessingHistory::newid,"Create a new uuid for current data")
     .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
-    .def("algorithm_history",&mspass::ProcessingHistory::algorithm_history,
-      "Return a list of all algorithms applied so far to produce current data object")
-    .def("data_processed_by",&mspass::ProcessingHistory::data_processed_by,
-      "Return a list of the uuids of all data processed by a specified algorithm instance")
     .def("inputs",&mspass::ProcessingHistory::inputs,
       "Return a list of uuids of all data that were inputs to defined uuid (current or any ancestor)")
   ;
@@ -1275,6 +1271,20 @@ PYBIND11_MODULE(ccore,m)
          "Return a python list of any keys that are not defined in input object")
     ;
 
+  /* this pair of functions are potentially useful for interactive queries of
+  ProcessingHistory data */
+  m.def("algorithm_history",&mspass::algorithm_history,
+    "Return a list of algorithms applied to produce current data object",
+    py::return_value_policy::copy,
+    py::arg("h"))
+  ;
+  m.def("algorithm_outputs",&mspass::algorithm_outputs,
+    "Return a list of uuids of data created by a specified algorithm",
+    py::return_value_policy::copy,
+    py::arg("h"),
+    py::arg("algorithm"),
+    py::arg("algid") )
+  ;
   m.def("agc",&mspass::agc,"Automatic gain control a Seismogram",
     py::return_value_policy::copy,
     py::arg("d"),
