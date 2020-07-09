@@ -43,78 +43,6 @@ enum class AtomicType
   UNDEFINED
 };
 
-class ProcessDefinition
-{
-public:
-
-  /*! \brief Name of this algorithm.
-
-  We use the concept that every processing algorithm has a name keyword
-  that togther with an id and/or instance defines a unique definition of
-  the algorithm and a set of input parameters that define the algorithm's
-  behavior.
-  */
-  std::string algorithm;
-  /*! id string to identify this instance of algorithm.
-
-  Only assumption is that the combination of algorithm and id provide
-  a unique specification of a particular instance of an algorithm.  That
-  means some algorithm and a particular set of control parameters that
-  control the outcome of the algorithm.  In MsPASS this is usually the
-  ObjectID string of saved parameters in MongoDB, but users can use any
-  method they wish to describe a unique combination of parameters and an
-  algorithm implementation. */
-  std::string id;
-  ProcessDefinition()
-  {
-    algorithm="UNDEFINED";
-    id="UNDEFINED";
-  }
-  ProcessDefinition(const std::string alg,const std::string algid)
-  {
-    algorithm=alg;
-    id=algid;
-  };
-  /* These could probably be defaulted but best to be explicit*/
-  /*! Standard copy constructor.*/
-  ProcessDefinition(const ProcessDefinition& parent)
-  {
-    algorithm=parent.algorithm;
-    id=parent.id;
-  };
-  /*! Standard assignment operator. */
-  ProcessDefinition& operator=(const ProcessDefinition& parent)
-  {
-    if(this!=(&parent))
-    {
-      algorithm=parent.algorithm;
-      id=parent.id;
-    }
-    return *this;
-  };
-private:
-  friend boost::serialization::access;
-    template<class Archive>
-       void serialize(Archive& ar,const unsigned int version)
-    {
-      ar & algorithm;
-      ar & id;
-    }
-};
-/*! \brief Compare operator for ProcessDefinition.
-
-We use a multimap to produce a backward reference of all uuids that
-were the output of a given algorithm instance.   This operator assumes
-the id of the ProcessDefinition alone defines a unique key.
-*/
-class AlgorithmCompare
-{
-public:
-  bool operator()(const ProcessDefinition p1, const ProcessDefinition p2) const
-  {
-    return(p1.id < p2.id);
-  };
-};
 
 /*! Base class defining core concepts.  */
 class  BasicProcessingHistory
@@ -460,13 +388,16 @@ public:
   \param d is the vector of data to define as inputs
   */
   void add_many_inputs(const vector<ProcessingHistory*>& d);
-  /*! \brief Define this algorithm as a one-to-one map.
+    /*! \brief Define this algorithm as a one-to-one map of same type data.
 
   Many algorithms define a one-to-one map where each one input data object
-  creates one output data object. This class allows the input and output to
-  be different data types but it is the correct method to call only if the
-  one atomic data type is used to produce another (possibly different)
-  atomic data type.
+  creates one output data object.  This (overloaded) version of this method
+  is most appropriate when input and output are the same type and the
+  history chain (ProcessingHistory) is what the new algorithm will
+  alter to make the result when it finishes.   Use the overloaded
+  version with a separate ProcessingHistory copy if the current object's
+  data are not correct.   In this algorithm the chain for this algorithm
+  is simply appended with new definitions.
 
   \param alg is the algorithm names to assign to the origin node.  This
     would normally be name defining the algorithm that makes sense to a human.
@@ -476,21 +407,46 @@ public:
     more easily comprehended without additional lookups.
   \param typ defines the data type (C++ class) the algorithm that is generating
     this data will create.
-  \param parent is reference to the ProcessingHistory section of the parent
-    data object (in mspass currently limited to TimeSeries and Seismogram).
-    Note input type is defined by the base of the processing chain parent.
   \param newstatus is how the status marking for the output.  Normal (default)
     would be VOLATILE.  This argument was included mainly for flexibility in
     case we wanted to extend the allowed entries in ProcessingStatus.
-  \param use_parent_history is a boolean that like newstatus is there only to
-    allow reuse of the new_map code for map_as_saved.   The default of false
-    should be used for efficiency but we include the option for flexibility -
-    a deep copy approach is safer but slower.
   */
-  std::string new_map(const std::string alg,const std::string algid,const AtomicType typ,
-      const ProcessingHistory& parent,
-        const ProcessingStatus newstatus=ProcessingStatus::VOLATILE,
-          const bool use_parent_history=false);
+  std::string new_map(const std::string alg,const std::string algid,
+    const AtomicType typ,
+        const ProcessingStatus newstatus=ProcessingStatus::VOLATILE);
+  /*! \brief Define this algorithm as a one-to-one map.
+
+  Many algorithms define a one-to-one map where each one input data object
+  creates one output data object. This class allows the input and output to
+  be different data types requiring only that one input will map to one
+  output.  It differs from  the overloaded method with fewer arguments
+  in that it should be used if you need to clear and refresh the history
+  chain for any reason.   Known examples are creating simulation waveforms
+  for testing within a workflow that have no prior history data loaded but
+  which clone some properties of another piece of data.   This method should
+  be used in any situation where the history chain in the current data is wrong
+  but the contents are the linked to some other process chain.   It is
+  supplied to cover odd cases, but use will likely be rare.
+
+  \param alg is the algorithm names to assign to the origin node.  This
+    would normally be name defining the algorithm that makes sense to a human.
+  \param algid is an id designator to uniquely define an instance of algorithm.
+    Note that algid must itself be a unique keyword or the history chains
+    will get scrambled.  alg is mostly carried as baggage to make output
+    more easily comprehended without additional lookups.
+  \param typ defines the data type (C++ class) the algorithm that is generating
+    this data will create.
+  \param data_to_clone is reference to the ProcessingHistory section of a parent
+    data object that should be used to override the existing history chain.
+  \param newstatus is how the status marking for the output.  Normal (default)
+    would be VOLATILE.  This argument was included mainly for flexibility in
+    case we wanted to extend the allowed entries in ProcessingStatus.
+  */
+  std::string new_map(const std::string alg,const std::string algid,
+    const AtomicType typ,
+      const ProcessingHistory& data_to_clone,
+        const ProcessingStatus newstatus=ProcessingStatus::VOLATILE);
+
   /*! \brief Prepare the current data for saving.
 
   Saving data is treated as a special form of map operation.   That is because
@@ -537,14 +493,7 @@ public:
   before returning the copy.  This allows the data defines as current to
   not be pushed into the tree until they are needed.   */
   std::multimap<std::string,mspass::NodeData> get_nodes() const;
-  /*! Retrieve the process data multimap.
 
-  This method does more than just get the protected multimap called process_data.
-  It copies the map and then pushes the "current" contents to the map
-  before returning the copy.  This allows the data it defines as current to
-  not be pushed into the tree until they are needed.   */
-  std::multimap<mspass::ProcessDefinition,std::string,AlgorithmCompare>
-      get_process_data() const;
   /*! Return the current stage count for this object.
 
   We maintain a counter of the number of processing steps that have been
@@ -608,7 +557,7 @@ public:
 
   This low level getter returns the NodeData objects that define the inputs
   to the uuid of some piece of data that was used as input at some stage
-  for the current object.  
+  for the current object.
 
   \param id_to_find is the uuid for which input data is desired.
 

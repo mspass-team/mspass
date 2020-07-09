@@ -976,6 +976,12 @@ PYBIND11_MODULE(ccore,m)
     .value("UNDEFINED",mspass::ProcessingStatus::UNDEFINED)
   ;
 
+  py::enum_<mspass::AtomicType>(m,"AtomicType")
+    .value("TIMESERIES",mspass::AtomicType::TIMESERIES)
+    .value("SEISMOGRAM",mspass::AtomicType::SEISMOGRAM)
+    .value("UNDEFINED",mspass::AtomicType::UNDEFINED)
+  ;
+
   py::class_<mspass::BasicProcessingHistory,PyBasicProcessingHistory>
   //py::class_<mspass::BasicProcessingHistory>
       (m,"BasicProcessingHistory","Base class - hold job history data")
@@ -1006,19 +1012,25 @@ PYBIND11_MODULE(ccore,m)
       "Return True if the data are saved and history can be cleared")
     .def("number_of_stages",&mspass::ProcessingHistory::number_of_stages,
       "Return count of the number of processing steps applied so far")
-    //.def("current_stage",&mspass::ProcessingHistory::current_stage,
-    //  "Return the data defining the current stage as ProcessingHistoryRecord")
     .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
       "Load data defining this as the top of a processing history chain")
       // Here need an alias set_as_raw that make set_as_origin define as raw
     .def("new_reduction",&mspass::ProcessingHistory::new_reduction,
       "Set up history chain to define the current data as result of reduction - output form mulitple inputs")
-    .def("new_map",&mspass::ProcessingHistory::new_map,
-      "Set history chain to define the current data as a one-to-one map from parent")
+
     .def("add_one_input",&mspass::ProcessingHistory::add_one_input,
       "Companion to new_reduction used to add a single input datum after call to new_reduction")
     .def("add_many_inputs",&mspass::ProcessingHistory::add_many_inputs,
       "Companion to new_reduction used to add a single input datum after call to new_reduction")
+    .def("new_map",py::overload_cast<const std::string,const std::string,
+      const mspass::AtomicType,const mspass::ProcessingStatus>
+        (&mspass::ProcessingHistory::new_map),
+      "Set history chain to define the current data as a one-to-one map from parent")
+    .def("new_map",py::overload_cast<const std::string,const std::string,
+      const mspass::AtomicType,const ProcessingHistory&,
+      const mspass::ProcessingStatus>
+        (&mspass::ProcessingHistory::new_map),
+      "Set history chain to define the current data as a one-to-one map from parent")
     .def("map_as_saved",&mspass::ProcessingHistory::map_as_saved,
       "Load data defining this as the end of chain that was or will soon be saved")
     .def("clear",&mspass::ProcessingHistory::clear,
