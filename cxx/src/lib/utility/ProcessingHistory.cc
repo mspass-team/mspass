@@ -165,7 +165,6 @@ string ProcessingHistory::new_reduction(const string alg,const string algid_in,
   to clear before calling this method*/
   this->clear();
   multimap<string,NodeData>::const_iterator nptr;
-  multimap<ProcessDefinition,string,AlgorithmCompare>::const_iterator pptr;
   size_t i;
   for(i=0;i<parents.size();++i)
   {
@@ -208,39 +207,43 @@ void ProcessingHistory::add_many_inputs(const vector<ProcessingHistory*>& d)
     this->add_one_input(*ptr);
   }
 }
-/* This method always creates a new id which is the return.  If the user
-unintentionally creates a new uuid before calling this method the
-history chain will be broken.  We may need to build safeties to prevent that.
+/* This pair of methods always creates a new id which is the return.
+Be careful not to mix that up with the uuid of the parent.
 
-for a map we have to make a decision about how to handle the parent copy.
-By default we assume we have to make a deep copy - the safest algorithm.
-When optional use_parent_history is false we simply append to current
-history data - more dangerous but also more efficent.*/
+There are two overloaded versions of this method.
+
+*/
 string ProcessingHistory::new_map(const string alg,const string algid_in,
-  const AtomicType typ,const ProcessingHistory& parent,
-  const ProcessingStatus newstatus,bool use_parent_history)
+  const AtomicType typ, const ProcessingStatus newstatus)
 {
-  /* Clear and make a copy of the parent's history when asked */
-  if(use_parent_history)
-  {
-    /* In this mode these getters automatically push the parent's current
-    data to the history chain so we don't have to do that. */
-    this->clear();
-    nodes=parent.get_nodes();
-  }
-  else
-  {
-    /* In this case we have to push current data to the history chain */
-    NodeData nd;
-    nd.status=ProcessingStatus::VOLATILE;
-    nd.uuid=current_id;
-    nd.type=typ;
-    nd.stage=current_stage;
-    nd.algorithm=algorithm;
-    nd.algid=algid;
-    pair<string,NodeData> pn(current_id,nd);
-    this->nodes.insert(pn);
-  }
+  /* In this case we have to push current data to the history chain */
+  NodeData nd;
+  nd.status=current_status;
+  nd.uuid=current_id;
+  nd.type=typ;
+  nd.stage=current_stage;
+  nd.algorithm=algorithm;
+  nd.algid=algid;
+  pair<string,NodeData> pn(current_id,nd);
+  this->nodes.insert(pn);
+  /* We always need a new id here for this object we are handling as the child */
+  current_id=this->newid();
+  algorithm=alg;
+  algid=algid_in;
+  current_status=newstatus;   //Probably should default in include file to VOLATILE
+  ++current_stage;
+  mytype=typ;
+  return current_id;
+}
+string ProcessingHistory::new_map(const string alg,const string algid_in,
+  const AtomicType typ,const ProcessingHistory& copy_to_clone,
+  const ProcessingStatus newstatus)
+{
+  /* We must be sure the chain is empty before we push the clone's data there*/
+  this->clear();
+  /* this works because get_nodes pushes the current data to the nodes
+  multimap.  */
+  nodes=copy_to_clone.get_nodes();
   /* We always need a new id here for this object we are handling as the child */
   current_id=this->newid();
   algorithm=alg;
