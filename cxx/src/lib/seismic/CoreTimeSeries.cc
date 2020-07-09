@@ -13,10 +13,15 @@ using namespace mspass;
 CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 {
     s.reserve(0);
+    this->set_dt(1.0);
+    this->set_t0(0.0);
+    this->set_npts(0);
 }
 CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
 {
   s.reserve(nsin);
+  this->set_dt(1.0);
+  this->set_t0(0.0);
   /* This assumes current api where set_npts allocates and initializes s
   to nsin zeros */
   this->set_npts(nsin);

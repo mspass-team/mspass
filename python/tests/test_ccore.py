@@ -225,7 +225,7 @@ def MetadataBase(request):
     return request.param
 def test_MetadataBase(MetadataBase):
     md = MetadataBase()
-    assert repr(md) == MetadataBase.__name__ + '({})'
+    assert MetadataBase.__name__ + "({" in  repr(md)
     dic = {1:1}
     md.put('dict', dic)
     val = md.get('dict')
@@ -260,7 +260,8 @@ def test_MetadataBase(MetadataBase):
             assert md[i] == md_copy[i]
     del md["str'ing"], md["str\ning"], md["str\ting"], md["str\0ing"], md["str\\0ing"], md["b'\\xba\\xd0'"]
     for i in md:
-        assert md.type(i) == i
+        if i != 'delta' and i != 'npts' and i != 'starttime':
+            assert md.type(i) == i
 
     md_copy = MetadataBase(md)
     del md["<class 'numpy.ndarray'>"]
@@ -274,7 +275,7 @@ def test_MetadataBase(MetadataBase):
 
 def test_TimeSeries():
     ts = TimeSeries()
-    ts.ns = 100
+    ts.npts = 100
     ts.t0 = 0.0
     ts.dt = 0.001
     ts.live = 1
@@ -295,7 +296,7 @@ def test_TimeSeries():
 
 def test_Seismogram():
     seis = Seismogram()
-    seis.ns = 100
+    seis.npts = 100
     assert seis.u.rows() == 3
     assert seis.u.columns() == 100
 
@@ -303,13 +304,13 @@ def test_Seismogram():
     seis.dt = 0.001
     seis.live = 1
     seis.tref = TimeReferenceType.Relative
-    seis.u = dmatrix(np.random.rand(3,6))
-    assert seis.ns == 6
+    #seis.u = dmatrix(np.random.rand(3,6))
+    #assert seis.npts == 6
 
-    seis.ns = 4
+    seis.npts = 4
     assert seis.u.columns() == 4
 
-    seis.ns = 10
+    seis.npts = 10
     assert (seis.u[0:3,4:10] == 0).all()
 
     seis_copy = pickle.loads(pickle.dumps(seis))
@@ -319,10 +320,10 @@ def test_Seismogram():
     assert seis_copy.tref == seis.tref
     assert (seis_copy.u[:] == seis.u[:]).all()
 
-    seis.ns = 0
+    seis.npts = 0
     assert seis.u.rows() == 0
 
-    seis.ns = 100
+    seis.npts = 100
     for i in range(3):
         for j in range(100):
             if i == 0:
@@ -435,6 +436,7 @@ def test_ExtractComponent():
     seis = Seismogram()
     seis.live = 1
     seis.u = dmatrix(np.random.rand(3,6))
+    seis.npts = 6
     ts = []
     for i in range(3):
         ts.append(ExtractComponent(seis,i))

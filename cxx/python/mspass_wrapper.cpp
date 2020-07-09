@@ -582,10 +582,38 @@ PYBIND11_MODULE(ccore,m)
     .def("time_is_UTC",&mspass::BasicTimeSeries::time_is_UTC,"Return true if t0 is a UTC epoch time")
     .def("time_is_relative",&mspass::BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
     .def("npts",&mspass::BasicTimeSeries::npts,"Return the number of time samples in this object")
-    .def("t0",&mspass::BasicTimeSeries::t0,"Return the time of the first sample of data in this time series (negative of time 0")
+    .def("t0",&mspass::BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
     .def("set_dt",&mspass::BasicTimeSeries::set_dt,"Set the data time sample interval")
     .def("set_npts",&mspass::BasicTimeSeries::set_npts,"Set the number of data samples in this object")
     .def("set_t0",&mspass::BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
+    .def_property("npts",[](const mspass::BasicTimeSeries &self) {
+        return self.npts();
+      },[](mspass::BasicTimeSeries &self, size_t npts) {
+        self.set_npts(npts);
+      },"Number of samples in this object")
+    .def_property("t0",[](const mspass::BasicTimeSeries &self) {
+        return self.t0();
+      },[](mspass::BasicTimeSeries &self, double t0) {
+        self.set_t0(t0);
+      },"The time of the first sample of data in this object")
+    .def_property("dt",[](const mspass::BasicTimeSeries &self) {
+        return self.dt();
+      },[](mspass::BasicTimeSeries &self, double dt) {
+        self.set_dt(dt);
+      },"The sample interval (normally in second)")
+    .def_property("live",[](const mspass::BasicTimeSeries &self) {
+        return self.live();
+      },[](mspass::BasicTimeSeries &self, bool b) {
+        if(b)
+          self.set_live();
+        else
+          self.kill();
+      },"Whether the data is valid or not")
+    .def_property("tref",[](const mspass::BasicTimeSeries &self) {
+        return self.timetype();
+      },[](mspass::BasicTimeSeries &self, TimeReferenceType tref) {
+        self.set_tref(tref);
+      },"Time reference standard for this data object")
   ;
   py::class_<mspass::CoreTimeSeries,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
