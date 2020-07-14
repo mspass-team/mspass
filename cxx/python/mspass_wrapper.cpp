@@ -995,13 +995,24 @@ PYBIND11_MODULE(ccore,m)
     .def("set_jobname",&mspass::BasicProcessingHistory::set_jobname,
       "Set the base job name defining the main python script for this run")
   ;
-
-
+  py::class_<mspass::NodeData>
+    (m,"Data structure used in ProcessingHistory to processing tree node data")
+    .def(py::init<>())
+    .def(py::init<const mspass::NodeData&>())
+    .def_readwrite("status",&mspass::NodeData::status,"ProcessingStatus value at this node")
+    .def_readwrite("uuid",&mspass::NodeData::uuid,"uuid of data stage associated with this node")
+    .def_readwrite("algorithm",&mspass::NodeData::algorithm,"algorithm that created data linked to this node position")
+    .def_readwrite("algig",&mspass::NodeData::algid,
+      "id defining an instance of a particular algorithm (defines what parameter choices were used)")
+    .def_readwrite("stage",&mspass::NodeData::stage,
+      "Processing stage counter for this node of the processing tree")
+    .def_readwrite("type",&mspass::NodeData::type,"Type of data this process handled as this input")
+  ;
   py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
     (m,"ProcessingHistory","Used to save object level processing history.")
     .def(py::init<>())
     .def(py::init<const std::string,const std::string>())
-    .def(py::init<const ProcessingHistory&>())
+    .def(py::init<const mspass::ProcessingHistory&>())
     .def("is_raw",&mspass::ProcessingHistory::is_raw,
       "Return True if the data are raw data with no previous processing")
     .def("is_origin",&mspass::ProcessingHistory::is_origin,
@@ -1042,6 +1053,12 @@ PYBIND11_MODULE(ccore,m)
     .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
     .def("inputs",&mspass::ProcessingHistory::inputs,
       "Return a list of uuids of all data that were inputs to defined uuid (current or any ancestor)")
+    /* Temporarily commented out - for some mysterious reason pybind11 balks at these two overloads
+    .def("number_inputs",py::overload_cast<const std::string>(&mspass::ProcessingHistory::number_inputs),
+      "Return the number of inputs used to generate a specified uuid of the process chain")
+    .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs),
+      "Return the number of inputs used to create the current data")
+      */
   ;
 
 
