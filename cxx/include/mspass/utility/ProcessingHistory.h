@@ -42,6 +42,26 @@ enum class AtomicType
   TIMESERIES,
   UNDEFINED
 };
+/*! \brief Special definition of uuid for a saved record.
+
+We found in the implementation of this that an issue in the use of uuids and
+a multimap to define the history tree was both endpoints of any chain were
+problematic.  i.e. the root of the tree (end of the chain) and the leaves.
+Leaves defined by two alternative properties:  ProcessingStatus RAW or ORIGIN
+or uuid of the key equal to the uuid attribute in the NodeData struct (class).
+The head data (= root of the tree in this case) have two cases.  During
+normal processing the head is defined by the current_id value and the
+NodeData attributes stored in the private area of ProcessingHistory.
+We found, however, that SAVED had to be treated specially because of the
+design goal where the normal procedure would be to flush the history
+record after a save.  To do that and have everything else work we adopted
+a solution where map_as_saved writes a special record to the multimap
+with the key defined by this const string.   This works correctly only
+if a writer immediately clears the history record after it is saved.
+If not, duplicate values with this key will appear in the nodes multimap
+and the history chain will become ambiguous (two trees emerging from the
+same root).*/
+const string SAVED_ID_KEY("NODEDATA_AT_SAVE");
 
 
 /*! Base class defining core concepts.  */
@@ -152,6 +172,8 @@ public:
   NodeData();
   NodeData(const NodeData& parent);
   NodeData& operator=(const NodeData& parent);
+  bool operator==(const NodeData& other);
+  bool operator!=(const NodeData& other);
 private:
   friend boost::serialization::access;
     template<class Archive>
@@ -241,18 +263,25 @@ public:
   \param jobnm - set as jobname
   \param jid - set as jobid
   */
-  ProcessingHistory(const std::string jobnm,const std::string jid)
-    : BasicProcessingHistory(jobnm,jid){};
+  ProcessingHistory(const std::string jobnm,const std::string jid);
   /*! Standard copy constructor. */
   ProcessingHistory(const ProcessingHistory& parent);
+  /*! Return true if the processing chain is empty.
+
+  This method provides a standard test for an invalid, empty processing chain.
+  Constructors except the copy constructor will all put this object in
+  an invalid state that will cause this method to return true.  Only if
+  the chain is initialized properly with a call to set_as_origin will
+  this method return a false. */
+  bool is_empty() const;
   /*! Return true if the current data is in state defined as "raw" - see class description*/
-  bool is_raw();
+  bool is_raw()const;
   /*! Return true if the current data is in state defined as "origin" - see class description*/
-  bool is_origin();
+  bool is_origin() const;
   /*! Return true if the current data is in state defined as "volatile" - see class description*/
-  bool is_volatile();
+  bool is_volatile() const;
   /*! Return true if the current data is in state defined as "saved" - see class description*/
-  bool is_saved();
+  bool is_saved() const;
   /*! \brief Return number of processing stages that have been applied to this object.
 
   One might want to know how many processing steps have been previously applied
@@ -502,12 +531,12 @@ public:
   We retain it in the API in the event we want to implement an accumulating
   counter.
   */
-  int stage()
+  int stage() const
   {
     return current_stage;
   };
   /*! Return the current status definition (an enum). */
-  ProcessingStatus status()
+  ProcessingStatus status() const
   {
     return current_status;
   };
@@ -516,10 +545,22 @@ public:
   We maintain the uuid for a data object inside this class.  This method
   fetches the string representation of the uuid of this data object.
   */
-  std::string id()
+  std::string id() const
   {
     return current_id;
   };
+  pair<std::string,std::string> create_by() const
+  {
+    pair<std::string,std::string> result(algorithm,algid);
+    return result;
+  }
+  /*! Return all the attributes of current.
+
+  This is a convenience method strictly for the C++ interface (it too
+  nonpythonic to be useful to wrap for python).  It returns a NodeData
+  class containing the attributes of the head of the chain.  Like the
+  getters above that is needed to save that data. */
+  NodeData current_nodedata() const;
   /*! Create a new id.
 
   This creates a new uuid - how is an implementation detail but here we use
@@ -527,7 +568,7 @@ public:
   probability of generating two equal ids.   It returns the string representation
   of the id created. */
   std::string newid();
-  /*! Return the number of inputs for a specified uuid.
+  /*! Return the number of inputs used to create current data.
 
   In a number of contexts it can be useful to know the number of inputs
   defined for the current object.  This returns that count.
@@ -575,7 +616,8 @@ want to add as baggage to regular data.  Hence, tools to reconstruct history
 (provenance) are expected to extend this class. */
 protected:
   /* This map defines connections of each data object to others.  Key is the
-  uuid of a given object and the leaves define the inputs used to create it. */
+  uuid of a given object and the values (second) associated with
+  that key are the inputs used to create the data defined by the key uuid */
   std::multimap<std::string,mspass::NodeData> nodes;
 private:
   /*  This set of private variables are the values of attributes for
@@ -583,7 +625,7 @@ private:
   single variables because they are not always set lumped together.  Hence
   there are also separate getters and setters for each. */
   ProcessingStatus current_status;
-  /* uuid of current data object - keys to the kingdom here. */
+  /* uuid of current data object */
   std::string current_id;
   int current_stage;
   AtomicType mytype;
@@ -603,6 +645,7 @@ private:
       ar & mytype;
       ar & algorithm;
       ar & algid;
+      ar & elog;
   };
 };
 /* function prototypes of helpers */
