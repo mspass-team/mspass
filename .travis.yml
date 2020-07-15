@@ -148,6 +148,6 @@ install:
   - cmake ..
   - make -j 8
 script:
-  - make test
+  - ctest --output-on-failure
       
 
