@@ -80,6 +80,7 @@ def plot3cs(d):
         pltarr[k].plot(t,y)
     return
 def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.25,5.0]):
+#def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[2.0,5.0]):
     """
     Helper function to add noise to ndarray d.  
     :param d: data to which noise is to be added and padded
@@ -91,9 +92,27 @@ def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.25,5.0]):
     dnoise=nscale*randn(n)
     sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=20.0)
     result=signal.sosfilt(sos,dnoise)
+    # uncomment to use white noise
+    result=dnoise;
     for i in range(nd):
         result[i+padlength]+=d[i]
     return result
+def make_wavelet_noise_data(nscale=0.1,ns=2048,padlength=512,
+        dt=0.05,npoles=3,corners=[0.08,0.8]):
+    wtmp=CoreTimeSeries(ns)
+    wn=TimeSeries(wtmp,'invalid')
+    wn.t0=0.0
+    wn.dt=dt
+    wn.tref=TimeReferenceType.Relative
+    wn.ns=ns
+    wn.live=True
+    nd=ns+2*padlength
+    y=nscale*randn(nd)
+    sos=signal.butter(npoles,corners,btype='bandpass',output='sos',fs=1.0/dt)
+    y=signal.sosfilt(sos,y)
+    for i in range(ns):
+        wn.s[i]=y[i+padlength]
+    return(wn)
 ###MAIN#############
 # This is creates the same source wavelet as testdecon.  Could be made
 # a library,but that is for later
@@ -106,7 +125,8 @@ t0w=-1.0  # puts initial pulse at 0
 
 d=make_impulse_vector(lag,imp,n)
 t=np.linspace(t0w,t0w+(n-1)*dt,num=n)
-sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
+#sos=signal.butter(3,[10,30],btype='bandpass',output='sos',fs=100)
+sos=signal.butter(3,[2.0,6.0],btype='bandpass',output='sos',fs=20)
 f=signal.sosfilt(sos,d)
 #f=signal.convolve(d,win)
 fig,(ao0,ao1)=plt.subplots(nrows=2)
@@ -160,10 +180,13 @@ axarr[1,2].plot(tsig,dsig2)
 # larger seismogram with noise we add to signal
 nfullsig=2048
 nsc=5   # noise scale factor
+#nsc=0.1
 padlength=nfullsig-nsig
 dsig0=addnoise(dsig0,nsc,padlength)
 dsig1=addnoise(dsig1,nsc,padlength)
 dsig2=addnoise(dsig2,nsc,padlength)
+tsigfull=np.linspace(t0,t0+(nfullsig-1)*dt,num=nfullsig)
+
 # This creates a data matrix to build a 3C seismogram object
 u=vectors2dmatrix([dsig0,dsig1,dsig2])
 dtmp=CoreSeismogram(nsig)
@@ -181,11 +204,18 @@ plot3cs(d)
 pf=AntelopePf('CNR3CDecon.pf')
 decon=CNR3CDecon(pf)
 decon.loaddata(d,False)
+decon.loadnoise_data(d)
+# Use defaults for initial test
+nwavelet=make_wavelet_noise_data(corners=[0.25,5.0])
+decon.loadnoise_wavelet(nwavelet)
 decon.loadwavelet(wavelet)
-decon.loadnoise(d)
 dout=decon.process()
 plot3cs(dout)
 ao=decon.actual_output()
-plt.figure()
-plt.plot(ao.s)
+io=decon.ideal_output()
+fig3,(f1,f2)=plt.subplots(nrows=2)
+f1.plot(io.s)
+f1.set_title('Ideal output')
+f2.plot(ao.s)
+f2.set_title('Actual output')
 plt.show()
