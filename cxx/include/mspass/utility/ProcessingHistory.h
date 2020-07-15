@@ -670,7 +670,7 @@ template <typename Tdata>
 {
   if(d.live())
   {
-    ProcessingHistory *ptr=dynamic_cast<const ProcessingHistory*>(&d);
+    const ProcessingHistory *ptr=dynamic_cast<const ProcessingHistory*>(&d);
     his.add_one_input(*ptr);
   }
 };
