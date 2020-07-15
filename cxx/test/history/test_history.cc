@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include "mspass/utility/ProcessingHistory.h"
-#include "GTree.h"
+
 using namespace std;
 using namespace mspass;
 /* Translates ProcessingStatus to word for printing */
