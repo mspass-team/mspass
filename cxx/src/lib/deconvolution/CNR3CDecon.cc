@@ -57,7 +57,7 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
 {
   try{
     string stmp;
-    stmp=pf.get_double("algorithm");
+    stmp=pf.get_string("algorithm");
     if(stmp=="generalized_water_level")
     {
       algorithm=CNR3C_algorithms::generalized_water_level;
