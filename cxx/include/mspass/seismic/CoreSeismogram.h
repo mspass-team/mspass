@@ -180,6 +180,13 @@ Initializes data and sets aside memory for
 	\param npts is the new number of points to set.
 	*/
 	void set_npts(const size_t npts);
+	/*! \brief Sync the number of samples attribute with actual data size.
+
+	This method syncs the npts attribute with the actual size of the dmatrix u.
+	It also syncs aliases in the same way as the set_npts method.
+
+	*/
+	void sync_npts();
 	/*! \brief Set the data start time.
 
 	This method is complicated by the need to sync the changed value with

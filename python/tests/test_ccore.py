@@ -284,6 +284,9 @@ def test_TimeSeries():
     ts.s.append(2.0)
     ts.s.append(3.0)
     ts.s.append(4.0)
+    ts.sync_npts()
+    assert ts.npts == 104
+    assert ts.npts == ts['npts']
     ts += ts
     for i in range(4) :
         ts.s[i] = i * 0.5
@@ -304,8 +307,11 @@ def test_Seismogram():
     seis.dt = 0.001
     seis.live = 1
     seis.tref = TimeReferenceType.Relative
-    #seis.u = dmatrix(np.random.rand(3,6))
-    #assert seis.npts == 6
+    seis.u = dmatrix(np.random.rand(3,6))
+    assert seis.npts != 6
+    seis.sync_npts()
+    assert seis.npts == 6
+    assert seis.npts == seis['npts']
 
     seis.npts = 4
     assert seis.u.columns() == 4

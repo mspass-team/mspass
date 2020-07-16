@@ -623,6 +623,8 @@ PYBIND11_MODULE(ccore,m)
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreTimeSeries::set_npts,
       "Set data number of samples (overrides BasicTimeSeries virtual method)")
+    .def("sync_npts",&CoreTimeSeries::sync_npts,
+      "Sync number of samples with data")
     .def("set_t0",&CoreTimeSeries::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def(py::self += py::self)
@@ -768,6 +770,8 @@ PYBIND11_MODULE(ccore,m)
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreSeismogram::set_npts,
       "Set data number of samples (overrides BasicTimeSeries virtual method)")
+    .def("sync_npts",&CoreSeismogram::sync_npts,
+      "Sync number of samples with data")
     .def("set_t0",&CoreSeismogram::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")

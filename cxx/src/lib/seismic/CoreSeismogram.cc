@@ -809,13 +809,34 @@ void CoreSeismogram::set_npts(const size_t npts)
   {
     if(this->is_defined(*aptr))
     {
-      this->put(*aptr,npts);
+      this->put(*aptr,(long int)npts);
     }
   }
   /* this method has the further complication that npts sets the size of the
   data matrix.   Here we resize the matrix and initialize it to 0s.*/
   this->u=dmatrix(3,npts);
   this->u.zero();
+}
+void CoreSeismogram::sync_npts()
+{
+  if(nsamp != this->u.columns()) {
+    this->BasicTimeSeries::set_npts(this->u.columns());
+    /* This is the unique name - we always set it.  The weird
+    cast is necessary to avoid type mismatch with unsigned*/
+    this->put("npts",(long int)nsamp);
+    /* these are hard coded aliases for sample_interval */
+    std::set<string> aliases;
+    std::set<string>::iterator aptr;
+    aliases.insert("nsamp");
+    aliases.insert("wfdisc.nsamp");
+    for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+    {
+        if(this->is_defined(*aptr))
+        {
+          this->put(*aptr,(long int)nsamp);
+        }
+    }
+  }
 }
 
 vector<double> CoreSeismogram::operator[] (const int i)const

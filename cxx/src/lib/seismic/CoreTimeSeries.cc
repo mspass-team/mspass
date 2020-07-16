@@ -157,7 +157,7 @@ void CoreTimeSeries::set_npts(const size_t npts)
   {
     if(this->is_defined(*aptr))
     {
-      this->put(*aptr,npts);
+      this->put(*aptr,(long int)npts);
     }
   }
   /* this method has the further complication that npts sets the size of the
@@ -165,6 +165,27 @@ void CoreTimeSeries::set_npts(const size_t npts)
   how constructors handle this. */
   this->s.clear();
   for(size_t i=0;i<npts;++i)this->s.push_back(0.0);
+}
+void CoreTimeSeries::sync_npts()
+{
+  if(nsamp != this->s.size()) {
+    this->BasicTimeSeries::set_npts(this->s.size());
+    /* This is the unique name - we always set it.  The weird
+    cast is necessary to avoid type mismatch with unsigned*/
+    this->put("npts",(long int)nsamp);
+    /* these are hard coded aliases for sample_interval */
+    std::set<string> aliases;
+    std::set<string>::iterator aptr;
+    aliases.insert("nsamp");
+    aliases.insert("wfdisc.nsamp");
+    for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+    {
+        if(this->is_defined(*aptr))
+        {
+          this->put(*aptr,(long int)nsamp);
+        }
+    }
+  }
 }
 
 double CoreTimeSeries::operator[](size_t i) const
