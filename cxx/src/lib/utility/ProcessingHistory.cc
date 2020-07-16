@@ -2,6 +2,7 @@
 #include <set>
 #include <list>
 #include <algorithm>
+#include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ProcessingHistory.h"
 
