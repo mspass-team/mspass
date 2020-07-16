@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <iostream>
+#include <sstream>
 #include "mspass/utility/ProcessingHistory.h"
 
 using namespace std;
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
     /* First a clean test of new reduction with 4 completely independent
     inputs that simulate the normal expected flow*/
     ProcessingHistory vecph[4];
-    for(size_t k;k<4;++k)
+    for(size_t k=0;k<4;++k)
     {
       stringstream ss;
       ss << "fakeid_"<<k;
