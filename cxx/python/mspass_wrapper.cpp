@@ -26,6 +26,8 @@
 #include <pybind11/numpy.h>
 #include <pybind11/operators.h>
 
+#define MSPASS_COMMA ,
+
 namespace py=pybind11;
 
 namespace pybind11 { namespace detail {
@@ -59,6 +61,26 @@ namespace pybind11 { namespace detail {
   };
   std::map<std::type_index, std::function<handle(boost::any const&)>>
   type_caster<boost::any>::toPythonMap = type_caster<boost::any>::createToPythonMap();
+
+  template <class T, class U> struct type_caster<std::multimap<T,U>> {
+  public:
+    PYBIND11_TYPE_CASTER(std::multimap<T MSPASS_COMMA U>, _("std::multimap<T MSPASS_COMMA U>"));
+    bool load(handle src, bool) {
+      /*Always return false since we are not converting
+        any PyObject into std::multimap.
+        */
+      return false;
+    }
+    static handle cast(std::multimap<T,U> src, return_value_policy /* policy */, handle /* parent */) {
+      py::dict d;
+      for (auto it=src.begin(); it!=src.end(); ++it) {
+        if(d.attr("get")((*it).first).is(py::none()))
+          d.attr("__setitem__")((*it).first, py::list());
+        d.attr("__getitem__")((*it).first).attr("append")((*it).second);
+      }
+      return d.release();
+    }
+  };
 }} // namespace pybind11::detail
 
 using std::exception;
@@ -1000,13 +1022,13 @@ PYBIND11_MODULE(ccore,m)
       "Set the base job name defining the main python script for this run")
   ;
   py::class_<mspass::NodeData>
-    (m,"Data structure used in ProcessingHistory to processing tree node data")
+    (m,"NodeData","Data structure used in ProcessingHistory to processing tree node data")
     .def(py::init<>())
     .def(py::init<const mspass::NodeData&>())
     .def_readwrite("status",&mspass::NodeData::status,"ProcessingStatus value at this node")
     .def_readwrite("uuid",&mspass::NodeData::uuid,"uuid of data stage associated with this node")
     .def_readwrite("algorithm",&mspass::NodeData::algorithm,"algorithm that created data linked to this node position")
-    .def_readwrite("algig",&mspass::NodeData::algid,
+    .def_readwrite("algid",&mspass::NodeData::algid,
       "id defining an instance of a particular algorithm (defines what parameter choices were used)")
     .def_readwrite("stage",&mspass::NodeData::stage,
       "Processing stage counter for this node of the processing tree")
@@ -1017,6 +1039,8 @@ PYBIND11_MODULE(ccore,m)
     .def(py::init<>())
     .def(py::init<const std::string,const std::string>())
     .def(py::init<const mspass::ProcessingHistory&>())
+    .def("is_empty",&mspass::ProcessingHistory::is_empty,
+      "Return true if the processing chain is empty")
     .def("is_raw",&mspass::ProcessingHistory::is_raw,
       "Return True if the data are raw data with no previous processing")
     .def("is_origin",&mspass::ProcessingHistory::is_origin,
@@ -1028,11 +1052,24 @@ PYBIND11_MODULE(ccore,m)
     .def("number_of_stages",&mspass::ProcessingHistory::number_of_stages,
       "Return count of the number of processing steps applied so far")
     .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
-      "Load data defining this as the top of a processing history chain")
-      // Here need an alias set_as_raw that make set_as_origin define as raw
+      "Load data defining this as the top of a processing history chain",
+      py::arg("alg"),
+      py::arg("algid"),
+      py::arg("uuid"),
+      py::arg("type"),
+      py::arg("define_as_raw") = false)
+    .def("set_as_raw",[](ProcessingHistory &self, const string alg,const string algid,
+      const string uuid,const mspass::AtomicType typ){
+        self.set_as_origin(alg, algid, uuid, typ, true);
+      },
+      "Load data defining this as the raw input of a processing history chain")
     .def("new_reduction",&mspass::ProcessingHistory::new_reduction,
-      "Set up history chain to define the current data as result of reduction - output form mulitple inputs")
-
+      "Set up history chain to define the current data as result of reduction - output form mulitple inputs",
+      py::arg("alg"),
+      py::arg("algid"),
+      py::arg("type"),
+      py::arg("parents"),
+      py::arg("create_newid") = true)
     .def("add_one_input",&mspass::ProcessingHistory::add_one_input,
       "Companion to new_reduction used to add a single input datum after call to new_reduction")
     .def("add_many_inputs",&mspass::ProcessingHistory::add_many_inputs,
@@ -1040,16 +1077,27 @@ PYBIND11_MODULE(ccore,m)
     .def("new_map",py::overload_cast<const std::string,const std::string,
       const mspass::AtomicType,const mspass::ProcessingStatus>
         (&mspass::ProcessingHistory::new_map),
-      "Set history chain to define the current data as a one-to-one map from parent")
+      "Set history chain to define the current data as a one-to-one map from parent",
+      py::arg("alg"),
+      py::arg("algid"),
+      py::arg("type"),
+      py::arg("newstatus") = mspass::ProcessingStatus::VOLATILE)
     .def("new_map",py::overload_cast<const std::string,const std::string,
       const mspass::AtomicType,const ProcessingHistory&,
       const mspass::ProcessingStatus>
         (&mspass::ProcessingHistory::new_map),
-      "Set history chain to define the current data as a one-to-one map from parent")
+      "Set history chain to define the current data as a one-to-one map from parent",
+      py::arg("alg"),
+      py::arg("algid"),
+      py::arg("type"),
+      py::arg("data_to_clone"),
+      py::arg("newstatus") = mspass::ProcessingStatus::VOLATILE)
     .def("map_as_saved",&mspass::ProcessingHistory::map_as_saved,
       "Load data defining this as the end of chain that was or will soon be saved")
     .def("clear",&mspass::ProcessingHistory::clear,
       "Clear this history chain - use with caution")
+    .def("get_nodes", &mspass::ProcessingHistory::get_nodes,
+      "Retrieve the nodes multimap that defines the tree stucture branches")
     .def("stage",&mspass::ProcessingHistory::stage,
       "Return the current stage number (counter of processing stages applied in this run)")
     .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
@@ -1057,14 +1105,11 @@ PYBIND11_MODULE(ccore,m)
     .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
     .def("inputs",&mspass::ProcessingHistory::inputs,
       "Return a list of uuids of all data that were inputs to defined uuid (current or any ancestor)")
-    /* Temporarily commented out - for some mysterious reason pybind11 balks at these two overloads
-    .def("number_inputs",py::overload_cast<const std::string>(&mspass::ProcessingHistory::number_inputs),
+    .def("number_inputs",py::overload_cast<const std::string>(&mspass::ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to generate a specified uuid of the process chain")
-    .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs),
+    .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to create the current data")
-      */
   ;
-
 
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")

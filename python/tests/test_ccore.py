@@ -4,12 +4,14 @@ import pickle
 import numpy as np
 import pytest
 
-from mspasspy.ccore import (dmatrix,
+from mspasspy.ccore import (AtomicType,
+                            dmatrix,
                             ErrorLogger,
                             ErrorSeverity,
                             ExtractComponent,
                             LogData,
                             Metadata,
+                            ProcessingHistory,
                             Seismogram,
                             SeismogramEnsemble,
                             SlownessVector,
@@ -448,3 +450,31 @@ def test_ExtractComponent():
         ts.append(ExtractComponent(seis,i))
     for i in range(3):
         assert (ts[i].s == seis.u[i]).all()
+
+
+def test_ProcessingHistory():
+    ph = ProcessingHistory()
+    ph.set_jobname("testjob")
+    ph.set_jobid("999")
+    ph2 = ProcessingHistory(ph)
+    assert ph.jobname() == ph2.jobname()
+    assert ph.jobid() == ph2.jobid()
+
+    ph.set_as_raw("fakeinput","0","fakeuuid1",AtomicType.SEISMOGRAM)
+    ph.new_map("onetoone","0",AtomicType.SEISMOGRAM)
+    assert len(ph.get_nodes()) == 1
+
+    phred = ProcessingHistory(ph)
+    ph_list = []
+    for i in range(4):
+        ph_list.append(ProcessingHistory())
+        ph_list[i].set_as_raw("fakedataset", "0", "fakeid_"+str(i), AtomicType.SEISMOGRAM)
+        ph_list[i].new_map("onetoone", "0", AtomicType.SEISMOGRAM)
+    phred.new_reduction("testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
+    dic = phred.get_nodes()
+    rec = 0
+    for i in dic.keys():
+        for j in dic[i]:
+            print(i, " : ", j.uuid, " , ", j.status)
+            rec+=1
+    assert rec == 8
