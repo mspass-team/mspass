@@ -223,7 +223,7 @@ at a minor cost for storage.
 
 Names used imply the following concepts:
  raw - means the data is new input to mspass (raw data from data center,
-   field experiment, or simulation).  That tag means now prior history
+   field experiment, or simulation).  That tag means no prior history
    can be reconstructed.
  origin - top-level ancestor of current data.  The top of a processing
    chain is always tagged as an origin.  A top level can also be "raw" but not necessarily.
