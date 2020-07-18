@@ -823,9 +823,13 @@ py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored 
        "Load data defining wavelet by one data component")
   .def("loaddata",py::overload_cast<mspass::Seismogram&,const bool>(&mspass::CNR3CDecon::loaddata),
        "Load data only with optional noise")
-  .def("loadnoise",py::overload_cast<Seismogram&>(&mspass::CNR3CDecon::loadnoise),
+  .def("loadnoise_data",py::overload_cast<const Seismogram&>(&mspass::CNR3CDecon::loadnoise_data),
        "Load noise to use for regularization from a seismogram")
-  .def("loadnoise",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise),
+  .def("loadnoise_data",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise_data),
+       "Load noise to use for regularization from a seismogram")
+  .def("loadnoise_wavelet",py::overload_cast<const TimeSeries&>(&mspass::CNR3CDecon::loadnoise_wavelet),
+       "Load noise to use for regularization from a seismogram")
+  .def("loadnoise_wavelet",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise_wavelet),
        "Load noise to use for regularization from a seismogram")
   .def("loadwavelet",&mspass::CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
   .def("process",&mspass::CNR3CDecon::process,"Process data previously loaded")

@@ -81,6 +81,9 @@ void LeastSquareDecon::process()
     double b_rms=b_fft.rms();
     ComplexArray denom(conj_b_fft*b_fft);
     double theta(b_rms*damp);
+    /* This is like normal equation form for damped inverse so theta as computed
+    needs to be squared */
+    theta=theta*theta;
     for(int k=0;k<nfft;++k)
     {
       double *ptr;

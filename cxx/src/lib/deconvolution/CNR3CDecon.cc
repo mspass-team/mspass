@@ -1,4 +1,5 @@
 #include <string.h>  //needed for memcpy
+#include <algorithm>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/deconvolution/CNR3CDecon.h"
 #include "mspass/seismic/TimeSeries.h"
@@ -6,15 +7,41 @@
 #include "mspass/algorithms/algorithms.h"
 using namespace std;
 using namespace mspass;
+/* This enum is file scope to intentionally exclude it from python wrappers.
+It is used internally to define the algorithm the processor is to run.
+I (glp) chose that approach over the inheritance approach used in the scalar
+methods as an artistic choice.   It is a matter of opinion which approach
+is better.  This makes one symbol do multiple things with changes done in
+the parameter setup as opposed to having to select the right symbolic name
+to construct.  Anyway, this enum defines algorithms that can be chosen for
+processing.
+*/
+enum class CNR3C_algorithms{
+    generalized_water_level,
+    colored_noise_damping
+};
 namespace mspass{
-CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),shapingwavelet()
+CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),specengine(),
+  shapingwavelet(),psnoise(),psnoise_data(),decondata(),wavelet()
 {
+  algorithm=CNR3C_algorithms::undefined;
+  operator_dt=1.0;
+  winlength=0;
+  processing_window=TimeWindow(0.0,1.0);
+  noise_window=TimeWindow(0.0,1.0);
   damp=0.0;
+  noise_floor=0.0001;
+  snr_regularization_floor=1.5;
   taper_data=false;
-  wavelet_taper=NULL;
-  data_taper=NULL;
+  for(int k=0;k<3;++k)
+  {
+    signal_bandwidth_fraction[k]=0.0;
+    peak_snr[k]=0.0;
+  }
 }
-CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : FFTDeconOperator(pf),shapingwavelet(pf)
+CNR3CDecon::CNR3CDecon(const AntelopePf& pf)
+   : FFTDeconOperator(pf),specengine(),shapingwavelet(pf),psnoise(),
+      psnoise_data(),decondata(),wavelet()
 {
   this->read_parameters(pf);
 }
@@ -22,8 +49,6 @@ CNR3CDecon::CNR3CDecon(const AntelopePf& pf) : FFTDeconOperator(pf),shapingwavel
 void CNR3CDecon::change_parameters(const BasicMetadata& basemd)
 {
     try{
-      if(wavelet_taper!=NULL) delete wavelet_taper;
-      if(data_taper!=NULL) delete data_taper;
       AntelopePf pf=dynamic_cast<const AntelopePf&>(basemd);
       this->read_parameters(pf);
     }catch(...){throw;};
@@ -31,7 +56,25 @@ void CNR3CDecon::change_parameters(const BasicMetadata& basemd)
 void CNR3CDecon::read_parameters(const AntelopePf& pf)
 {
   try{
+    string stmp;
+    stmp=pf.get_string("algorithm");
+    if(stmp=="generalized_water_level")
+    {
+      algorithm=CNR3C_algorithms::generalized_water_level;
+    }
+    else if(stmp=="colored_noise_damping")
+    {
+      algorithm=CNR3C_algorithms::colored_noise_damping;
+    }
+    else
+    {
+      throw MsPASSError("CNR3CDecon::read_parameters:  invalid value for parameter algorithm="
+        + stmp,ErrorSeverity::Invalid);
+    }
     this->damp=pf.get_double("damping_factor");
+    /* Note this paramter is used for both the damping method and the
+    generalized_water_level */
+    this->noise_floor=pf.get_double("noise_floor");
     this->snr_regularization_floor=pf.get_double("snr_regularization_floor");
     this->operator_dt=pf.get_double("target_sample_interval");
     double ts,te;
@@ -77,13 +120,13 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      wavelet_taper=new LinearTaper(f0,f1,t1,t0);
+      wavelet_taper=shared_ptr<LinearTaper>(new LinearTaper(f0,f1,t1,t0));
       pfbranch=pfb.get_branch("data_taper");
       f0=pfbranch.get_double("front0");
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      data_taper=new LinearTaper(f0,f1,t1,t0);
+      data_taper=shared_ptr<LinearTaper>(new LinearTaper(f0,f1,t1,t0));
       taper_data=true;
     }
     else if(sval=="cosine")
@@ -95,13 +138,13 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      wavelet_taper=new CosineTaper(f0,f1,t1,t0);
+      wavelet_taper=shared_ptr<CosineTaper>(new CosineTaper(f0,f1,t1,t0));
       pfbranch=pfb.get_branch("data_taper");
       f0=pfbranch.get_double("front0");
       f1=pfbranch.get_double("front1");
       t1=pfbranch.get_double("tail1");
       t0=pfbranch.get_double("tail0");
-      data_taper=new CosineTaper(f0,f1,t1,t0);
+      data_taper=shared_ptr<CosineTaper>(new CosineTaper(f0,f1,t1,t0));
       taper_data=true;
     }
     else if(sval=="vector")
@@ -118,7 +161,7 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
         sscanf(tptr->c_str(),"%lf",&val);
         tdataread.push_back(val);
       }
-      wavelet_taper=new VectorTaper(tdataread);
+      wavelet_taper=shared_ptr<VectorTaper>(new VectorTaper(tdataread));
       tdataread.clear();
       tdl.clear();
       tdl=pfbranch.get_tbl("data_taper_vector");
@@ -129,13 +172,13 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
         sscanf(tptr->c_str(),"%lf",&val);
         tdataread.push_back(val);
       }
-      data_taper=new VectorTaper(tdataread);
+      data_taper=shared_ptr<VectorTaper>(new VectorTaper(tdataread));
       taper_data=true;
     }
     else
     {
-      wavelet_taper=NULL;
-      data_taper=NULL;
+      //wavelet_taper=NULL;
+      //data_taper=NULL;
       taper_data=false;
     }
 
@@ -145,17 +188,22 @@ CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   processing_window(parent.processing_window),
   noise_window(parent.noise_window),
   specengine(parent.specengine),
+  shapingwavelet(parent.shapingwavelet),
   psnoise(parent.psnoise),
+  psnoise_data(parent.psnoise_data),
   decondata(parent.decondata),
   wavelet(parent.wavelet),
-  shapingwavelet(parent.shapingwavelet),
+  wavelet_taper(parent.wavelet_taper),
+  data_taper(parent.data_taper),
   ao_fft(parent.ao_fft),
   wavelet_snr(parent.wavelet_snr)
 {
+  algorithm=parent.algorithm;
   taper_data=parent.taper_data;
   operator_dt=parent.operator_dt;
   winlength=parent.winlength;
   damp=parent.damp;
+  noise_floor=parent.noise_floor;
   snr_regularization_floor=parent.snr_regularization_floor;
   band_snr_floor=parent.band_snr_floor;
   regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
@@ -169,10 +217,12 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
 {
   if(this!=(&parent))
   {
+    algorithm=parent.algorithm;
     processing_window=parent.processing_window;
     noise_window=parent.noise_window;
     specengine=parent.specengine;
     psnoise=parent.psnoise;
+    psnoise_data=parent.psnoise_data;
     decondata=parent.decondata;
     wavelet=parent.wavelet;
     shapingwavelet=parent.shapingwavelet;
@@ -182,6 +232,7 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     operator_dt=parent.operator_dt;
     winlength=parent.winlength;
     damp=parent.damp;
+    noise_floor=parent.noise_floor;
     snr_regularization_floor=parent.snr_regularization_floor;
     band_snr_floor=parent.band_snr_floor;
     regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
@@ -190,14 +241,16 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
       signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
       peak_snr[k]=parent.peak_snr[k];
     }
+    wavelet_taper=parent.wavelet_taper;
+    data_taper=parent.data_taper;
 
   }
   return *this;
 }
 CNR3CDecon::~CNR3CDecon()
 {
-  if(wavelet_taper!=NULL) delete wavelet_taper;
-  if(data_taper!=NULL) delete data_taper;
+  //if(wavelet_taper!=NULL) delete wavelet_taper;
+  //if(data_taper!=NULL) delete data_taper;
 }
 /* Small helper to test for common possible input data issues.
 If return is nonzero errors were encountered.   Can be retrieved
@@ -283,8 +336,6 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
   if(!d.live) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
-	  //DEBUG
-	  cerr << "Entering loaddata"<<endl;
     int errcount;
     /* The -9999 is a magic number used to signal the test is
     coming from this variant*/
@@ -308,24 +359,21 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
 	      << "Debug exit to avoid seg fault"<<endl;
       exit(-1);
     }
-    //DEBUG
-    cerr<< "Entering loaddata copy section"<<endl;
-    dmatrix utmp(3,FFTDeconOperator::nfft);
-    utmp.zero();
+    decondata.u=dmatrix(3,FFTDeconOperator::nfft);
+    decondata.u.zero();
     /* Offset by winlength to put zero pad at front of the data.  */
-    double *toptr,*fromptr;
-    toptr=utmp.get_address(0,this->winlength);
-    fromptr=d.u.get_address(0,0);
-    //3 for number of components not padding
-    size_t bytestocopy=3*(this->winlength)*sizeof(double);
-    memcpy((void*)toptr,(const void*)fromptr,bytestocopy);
-    decondata.u=utmp;
+    int k,i,ii;
+    for(k=0;k<3;++k)
+        for(i=0,ii=(this->winlength);i<(this->winlength);++i,++ii)
+        {
+            decondata.u(k,ii)=dtmp.u(k,i);
+        }
     decondata.ns=FFTDeconOperator::nfft;
     decondata.t0 -= operator_dt*static_cast<double>(winlength);
     if(nload)
     {
       Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
-      this->loadnoise(ntmp);
+      this->loadnoise_data(ntmp);
     }
   }catch(...){throw;};
 }
@@ -339,8 +387,6 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
   if(w.ns<=0) throw MsPASSError("CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples <=0)",
 		  ErrorSeverity::Invalid);
   try{
-	  //DEBUG
-	  cerr << "Entered loadwavelet:  wavelet received has length="<<w.ns<<" and t0="<<w.t0<<endl;
     int k,kk;
     int ns_to_copy;
     this->wavelet=w;
@@ -357,22 +403,30 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     }
     else
       ns_to_copy=w.ns;
-    wavelet.s.clear();
-    wavelet.s.reserve(FFTDeconOperator::nfft);
-    for(k=0;k<FFTDeconOperator::nfft;++k)wavelet.s.push_back(0.0);
+    this->wavelet.s.clear();
+    this->wavelet.s.reserve(FFTDeconOperator::nfft);
+    for(k=0;k<FFTDeconOperator::nfft;++k)this->wavelet.s.push_back(0.0);
     /* this retains winlength zeros at the front */
-    for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)wavelet.s[kk]=w.s[k];
-    wavelet.t0 -= operator_dt*static_cast<double>(winlength);
-    wavelet.ns=FFTDeconOperator::nfft;
+    for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)this->wavelet.s[kk]=w.s[k];
+    this->wavelet.t0 -= operator_dt*static_cast<double>(winlength);
+    this->wavelet.ns=FFTDeconOperator::nfft;
+    switch(algorithm)
+    {
+      /* Note all the algorithms here alter wavelet by applying a taper */
+      case CNR3C_algorithms::generalized_water_level:
+        compute_gwl_inverse();
+        break;
+      case CNR3C_algorithms::colored_noise_damping:
+      default:
+        compute_gdamp_inverse();
+    };
   }catch(...){throw;};
 }
-void CNR3CDecon::loadnoise(Seismogram& n)
+void CNR3CDecon::loadnoise_data(const Seismogram& n)
 {
-  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise method received data marked dead",
+  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise_data method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
-	  //DEBUG
-	  cerr << "In loadnoise"<<endl;
     /* If the noise data length is larger than the operator we silenetly
     truncate it.  If less we zero pad*/
     CoreSeismogram work(n);
@@ -388,75 +442,82 @@ void CNR3CDecon::loadnoise(Seismogram& n)
       for(int i=0;i<n.ns;++i)
         for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
     }
-    //DEBUG
-    cerr<< "Trying to compute power spectra"<<endl;
     /* We always compute noise as total of three component power spectra
     normalized by number of components - sum of squares */
     TimeSeries tswork;
     for(int k=0;k<3;++k)
     {
       tswork=TimeSeries(ExtractComponent(work,k),"Invalid");
-	      //DEBUG
-	      cerr << "Computing spectrum for component "<<k<<endl;
       if(k==0)
-        this->psnoise = this->specengine.apply(tswork);
+        this->psnoise_data = this->specengine.apply(tswork);
       else
-        this->psnoise += this->specengine.apply(tswork);
+        this->psnoise_data += this->specengine.apply(tswork);
     }
-    //DEBUG
-    cerr<< "Scaling power spectrum"<<endl;
+    /* We define total power as the average on all three
+    componens */
     double scl=1.0/3.0;
-    for(int i=0;i<this->psnoise.nf();++i)this->psnoise.spectrum[i]*=scl;
-    //DEBUG
-    cerr<< "Exiting loadnoise"<<endl;
+    for(int i=0;i<this->psnoise_data.nf();++i)
+         this->psnoise_data.spectrum[i]*=scl;
   }catch(...){throw;};
 }
-void CNR3CDecon::loadnoise(const PowerSpectrum& d)
+void CNR3CDecon::loadnoise_data(const PowerSpectrum& d)
+{
+  try{
+    psnoise_data=d;
+  }catch(...){throw;};
+}
+
+void CNR3CDecon::loadnoise_wavelet(const TimeSeries& n)
+{
+  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received data marked dead",
+		    ErrorSeverity::Invalid);
+  try{
+    /* If the noise data length is larger than the operator we silenetly
+    truncate it.  If less we zero pad*/
+    CoreTimeSeries work(n);
+    if(n.ns>FFTDeconOperator::nfft)
+    {
+      TimeWindow twork(n.t0,n.time(FFTDeconOperator::nfft-1));
+      work=WindowData(dynamic_cast<const CoreTimeSeries&>(n),twork);
+    }
+    else if(n.ns<=FFTDeconOperator::nfft)
+    {
+      work.s.reserve(FFTDeconOperator::nfft);
+      for(int i=0;i<n.ns;++i)
+        work.s.push_back(n.s[i]);
+      for(int i=n.ns;i<FFTDeconOperator::nfft;++i) work.s.push_back(0.0);
+    }
+    psnoise=this->specengine.apply(TimeSeries(work,"INVALID"));
+  }catch(...){throw;};
+}
+
+void CNR3CDecon::loadnoise_wavelet(const PowerSpectrum& d)
 {
   try{
     psnoise=d;
   }catch(...){throw;};
 }
-Seismogram CNR3CDecon::process()
+/* Note this is intentionally not a reference to assure this is a copy */
+void CNR3CDecon::compute_gwl_inverse()
 {
-  const string base_error("CNR3CDecon::process method:  ");
-  int j,k;
   try{
-    /* Copy wavelet because in interactive use process could be called repeatedly
-     * without a call to a new loadwavelet - In fact that would be common for
-     * an array method where the same wavelet was used repeatedly */
-    TimeSeries work(wavelet);
-    //DEBUG
-    cerr << "Entered process - wavelet ns="<<wavelet.ns<<" t0="<<wavelet.t0<<endl;
-    /* First we compute the wavelet inverse as it is used to compute
-    the solution for all three components.   We could gain some efficiency
-    by assuming wavelet had already been tapered, but doing it here makes
-    the algorithm much clearer. */
-    if(taper_data) wavelet_taper->apply(work);
-    //DEBUG - work size should be nfft testing that with print statement
-    cerr << "nfft size here="<<FFTDeconOperator::nfft<<endl;
-    ComplexArray cwvec(work.ns,work.s);
-    /*
-    vector<double> wvec;
-    wvec.reserve(FFTDeconOperator::nfft);
-    for(i=0;i<work.ns;++i) wvec.push_back(work.s[i]);
-    for(i=work.ns;i<FFTDeconOperator::nfft;++i) wvec.push_back(0.0);
-    ComplexArray cwvec(FFTDeconOperator::nfft,wvec);
-    */
+    if(taper_data) wavelet_taper->apply(this->wavelet);
+    ComplexArray cwvec(this->wavelet.ns,this->wavelet.s);
     gsl_fft_complex_forward(cwvec.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     /* This computes the (regularized) denominator for the decon operator*/
     double df,fNy;
     df=1.0/(operator_dt*static_cast<double>(FFTDeconOperator::nfft));
     fNy=df*static_cast<double>(FFTDeconOperator::nfft/2);
+    /* We need largest noise amplitude to establish a relative noise floor.
+    We use this std::algorithm to find it in the spectrum vector */
+    vector<double>::iterator maxnoise;
+    maxnoise=max_element(psnoise.spectrum.begin(),psnoise.spectrum.end());
+    //spectrum is power, we need amplitude so sqrt here
+    double scaled_noise_floor=noise_floor*sqrt(*maxnoise);
     wavelet_snr.clear();
     int nreg(0);
-    //DEBUG - testing water level add on
-    double wavelet_rms=cwvec.rms();
-
-    //DEBUG
-    cout << "unscaled noise amplitude spectrum"<<endl;
-    for(j=0;j<FFTDeconOperator::nfft;++j)
+    for(int j=0;j<FFTDeconOperator::nfft;++j)
     {
       double *z=cwvec.ptr(j);
       double re=(*z);
@@ -466,8 +527,6 @@ Seismogram CNR3CDecon::process()
       f=df*static_cast<double>(j);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
       double namp=psnoise.amplitude(f);
-      //DEBUG
-      cout << f<<" "<<namp<<" "<<amp;
       /* Avoid divide by zero that could randomly happen with simulation data*/
       double snr;
       if((namp/amp)<DBL_EPSILON)
@@ -477,18 +536,21 @@ Seismogram CNR3CDecon::process()
       wavelet_snr.push_back(snr);
       if(snr<snr_regularization_floor)
       {
-        //double scale=(damp*damp*namp*namp)/(amp*amp);
-        double scale=snr_regularization_floor*namp/amp;
-        //TEST - hack revert to water level with frozen value
-        //double wlv(0.001);  //frozen for test
-        //if(amp/wavelet_rms<wlv) scale=wlv*wavelet_rms/amp;
+        double scale;
+        if(namp<scaled_noise_floor)
+        {
+          scale=snr_regularization_floor*scaled_noise_floor/amp;
+        }
+        else
+        {
+          scale=snr_regularization_floor*namp/amp;
+        }
         re *= scale;
         im *= scale;
         *z = re;
         *(z+1) = im;
         ++nreg;
       }
-      cout <<" "<< sqrt( re*re + im*im)<<endl;
     }
     /* This is used in QCMetric */
     regularization_bandwidth_fraction=static_cast<double>(nreg)
@@ -500,15 +562,85 @@ Seismogram CNR3CDecon::process()
     delete [] d0;
     gsl_fft_complex_forward(delta0.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
     winv=delta0/cwvec;
+  }catch(...){throw;};
+}
+/* Note this is intentionally not a reference to assure this is a copy */
+void CNR3CDecon::compute_gdamp_inverse()
+{
+  try{
+    if(taper_data) wavelet_taper->apply(this->wavelet);
+    /* Assume if we got here wavelet.ns == nfft*/
+    ComplexArray b_fft(this->wavelet.ns,this->wavelet.s);
+    gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,
+          wavetable,workspace);
+    ComplexArray conj_b_fft(b_fft);
+    conj_b_fft.conj();
+    ComplexArray denom(conj_b_fft*b_fft);
+    /* Compute scaling constants for noise based on noise_floor and the
+    noise spectrum */
+    double df,fNy;
+    df=1.0/(operator_dt*static_cast<double>(FFTDeconOperator::nfft));
+    fNy=df*static_cast<double>(FFTDeconOperator::nfft/2);
+    /* We need largest noise amplitude to establish a relative noise floor.
+    We use this std::algorithm to find it in the spectrum vector */
+    vector<double>::iterator maxnoise;
+    maxnoise=max_element(psnoise.spectrum.begin(),psnoise.spectrum.end());
+    //Spectrum is power but need amplitude in this context so sqrt here
+    double scaled_noise_floor=noise_floor*sqrt(*maxnoise);
+
+    for(int k=0;k<nfft;++k)
+    {
+      double *ptr;
+      ptr=denom.ptr(k);
+      double f;
+      f=df*static_cast<double>(k);
+      if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
+      double namp=psnoise.amplitude(f);
+      double theta;
+      if(namp>scaled_noise_floor)
+      {
+        theta=damp*namp;
+      }
+      else
+      {
+        theta=damp*scaled_noise_floor;
+      }
+      /* This uses a normal equation form so theta must be squared to
+      be a form of the standard damped least squares inverse */
+      theta=theta*theta;
+      /* ptr points to the real part - an oddity of this interface */
+      *ptr += theta;
+    }
+    double *d0=new double[FFTDeconOperator::nfft];
+    for(int k=0;k<FFTDeconOperator::nfft;++k) d0[k]=0.0;
+    d0[0]=1.0;
+    ComplexArray delta0(FFTDeconOperator::nfft,d0);
+    delete [] d0;
+    gsl_fft_complex_forward(delta0.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
+    winv=(conj_b_fft*delta0)/denom;
+  }catch(...){throw;};
+}
+Seismogram CNR3CDecon::process()
+{
+  const string base_error("CNR3CDecon::process method:  ");
+  int j,k;
+  try{
     Seismogram rfest(decondata);
+    /* This is used to apply a shift to the fft outputs to put signals
+    at relative time 0 */
+    int t0_shift;
+    t0_shift= round((-rfest.t0)/rfest.dt);
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* This is the proper mspass way to preserve history */
     rfest.append_chain("process_sequence","CNR3CDecon");
     if(rfest.ns!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
     int nhighsnr;
+    double df;
+    df=1.0/(operator_dt*static_cast<double>(FFTDeconOperator::nfft));
     for(k=0;k<3;++k)
     {
+      TimeSeries work;
       work=TimeSeries(ExtractComponent(decondata,k),"Invalid");
       if(taper_data) data_taper->apply(work);
       wvec.clear();
@@ -517,6 +649,7 @@ Seismogram CNR3CDecon::process()
       for(j=0;j<ntocopy;++j) wvec.push_back(work.s[j]);
       for(j=ntocopy;j<FFTDeconOperator::nfft;++j)
                    wvec.push_back(0.0);
+
       ComplexArray numerator(FFTDeconOperator::nfft,wvec);
       gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,
             wavetable,workspace);
@@ -540,25 +673,18 @@ Seismogram CNR3CDecon::process()
       signal_bandwidth_fraction[k]=static_cast<double>(nhighsnr)
                   / static_cast<double>(FFTDeconOperator::nfft/2);
       peak_snr[k]=snrmax;
-      //DEBUG
-      cerr << "component "<<k<<" sbf="<<signal_bandwidth_fraction[k]<<" snrmax="<<snrmax<<endl;
-      cerr<< "In apply numerator length="<<numerator.size()<<endl
-	      << "Denominator length="<<cwvec.size()<<endl;
-      ComplexArray rftmp=numerator/cwvec;
-      //DEBUG
-      cerr<<"Trying to apply shaping wavelet of length="<<(*shapingwavelet.wavelet()).size()<<endl;
+      ComplexArray rftmp=numerator*winv;
       rftmp=(*shapingwavelet.wavelet())*rftmp;
       gsl_fft_complex_inverse(rftmp.ptr(), 1, FFTDeconOperator::nfft,
           wavetable, workspace);
       wvec.clear();
       for(j=0;j<FFTDeconOperator::nfft;++j) wvec.push_back(rftmp[j].real());
-      /* DEBUG
-      cout << "sample_shift size="<<FFTDeconOperator::sample_shift<<endl
-          << "Setting to -20"<<endl;
-          */
-      FFTDeconOperator::sample_shift=600;
-      if(FFTDeconOperator::sample_shift!=0)
-        wvec=circular_shift(wvec,-FFTDeconOperator::sample_shift);
+      /* Note we used a time domain shift instead of using a linear phase
+      shift in the frequency domain because time domain operator has a lower
+      operation count than the frequency domain algorithm and is thus more
+      efficient.*/
+      if(t0_shift!=0)
+        wvec=circular_shift(wvec,t0_shift);
       for(j=0;j<FFTDeconOperator::nfft;++j)rfest.u(k,j)=wvec[j];
     }
     return rfest;
