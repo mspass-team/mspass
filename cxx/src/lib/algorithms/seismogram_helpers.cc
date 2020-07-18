@@ -1,10 +1,11 @@
 #include <math.h>
 #include "mspass/utility/MsPASSError.h"
-#include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/Ensemble.h"
 namespace mspass {
 using namespace mspass;
-/* This file contains helper procedures for CoreSeismogram objects.  Most
-are truly procedural and take a CoreSeismogram object or a Ensemble
+/* This file contains helper procedures for Seismogram objects.  Most
+are truly procedural and take a Seismogram object or a Ensemble
 object and return one or the other.
 
 This file was modified from code developed earlier in antelope contrib.   Most
@@ -16,7 +17,7 @@ Author:  Gary L. Pavlis
 */
 
 
-/* This function converts a CoreSeismogram from an absolute time standard to
+/* This function converts a Seismogram from an absolute time standard to
 an arrival time reference frame using an arrival time stored in the
 metadata area of the object and referenced by a variable keyword.
 A time window is relative time units defines the portion to be extracted.
@@ -37,7 +38,7 @@ Arguments:
 
 */
 
-shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
+shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
         string arrival_time_key,
         TimeWindow tw)
 {
@@ -52,30 +53,28 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
     {
         throw MsPASSError(base_error_message
                           + arrival_time_key
-                          + string(" not found in CoreSeismogram object"),
+                          + string(" not found in Seismogram object"),
                           ErrorSeverity::Invalid);
     }
     // We have to check this condition because ator will do nothing if
     // time is already relative and this condition cannot be tolerated
     // here as we have no idea what the time standard might be otherwise
-    if(tcsi.tref == TimeReferenceType::Relative)
+    if(tcsi.time_is_relative())
         throw MsPASSError(string("ArrivalTimeReference:  ")
                           + string("received data in relative time units\n")
                           + string("Cannot proceed as timing is ambiguous"),
                           ErrorSeverity::Invalid);
-
     // start with a clone of the original
-    shared_ptr<CoreSeismogram> tcso(new CoreSeismogram(tcsi));
+    shared_ptr<Seismogram> tcso(new Seismogram(tcsi));
     tcso->ator(atime);  // shifts to arrival time relative time reference
     // Simply return a copy of traces marked dead
-    if(!(tcso->live)) return(tcso);
-
-    // Extracting a subset of the data is not needed when the requested
-    // time window encloses all the data
-    // Note an alternative approach is to pad with zeros and mark ends as
-    // a gap, but here I view ends as better treated with variable
-    // start and end times
-    if( (tw.start > tcso->t0)  || (tw.end<tcso->time(tcso->ns-1) ) )
+    if(tcso->dead()) return(tcso);
+    /* this section does nothing if the time window requested exceeds the
+    data extent, BUT ensembles of such data will have irregular start and
+    end times.  Presume all code will handle that case as the norm in
+    passive array data, but might be confusing if applied to active source
+    data.  */
+    if( (tw.start > tcso->t0())  || (tw.end<tcso->time(tcso->u.columns()-1) ) )
     {
         int jstart, jend;
         int ns_to_copy;
@@ -83,15 +82,15 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
         jstart = tcso->sample_number(tw.start);
         jend = tcso->sample_number(tw.end);
         if(jstart<0) jstart=0;
-        if(jend>=tcso->ns) jend = tcso->ns - 1;
+        if(jend>=tcso->u.columns()) jend = tcso->u.columns() - 1;
         ns_to_copy = jend - jstart + 1;
         // This is a null trace so mark it dead in this condition
         if(ns_to_copy<0)
         {
             ns_to_copy=0;
-            tcso->live=false;
+            tcso->kill();
             tcso->u=dmatrix(1,1);
-            tcso->ns=0;
+            tcso->set_npts(0);
         }
         else
         {
@@ -99,22 +98,31 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
             // clearer and the performance hit should not be serious
             // old advice:  make it work before you make it fast
             tcso->u = dmatrix(3,ns_to_copy);
-            tcso->ns=ns_to_copy;
+            tcso->set_npts(ns_to_copy);
             for(i=0; i<3; ++i)
                 for(j=0,jj=jstart; j<ns_to_copy; ++j,++jj)
                     tcso->u(i,j)=tcsi.u(i,jj);
-            tcso->t0 += (tcso->dt)*static_cast<double>(jstart);
+            //old api form
+            //tcso->t0 += (tcso->dt)*static_cast<double>(jstart);
+            double newt0;
+            newt0=tcso->t0() + (tcso->dt())*static_cast<double>(jstart);
+            tcso->set_t0(newt0);
+            /* Don't think the block below is needed for new api, but will retain this
+            code commented out until I know for sure glp-6/7/2020*/
+            // start of old
             //
             // This is necessary to allow for a rtoa (relative
             // to absolute time) conversion later.
             //
+            /*
             if(jstart>0)
             {
-                double stime=atime+tcso->t0;
+                double stime=atime+tcso->t0();
                 tcso->put("time",stime);
                 // this one may not really be necessary
                 tcso->put("endtime",atime+tcso->endtime());
             }
+            end of old */
         }
     }
     return(tcso);
@@ -123,37 +131,37 @@ shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& tcsi,
 special thing it does is handle exceptions.  When the single object
 processing function throws an exception the error is printed and the
 object is simply not copied to the output ensemble */
-shared_ptr<Ensemble<CoreSeismogram>> ArrivalTimeReference(Ensemble<CoreSeismogram>& tcei,
+shared_ptr<Ensemble<Seismogram>> ArrivalTimeReference(Ensemble<Seismogram>& tcei,
         string arrival_time_key,
         TimeWindow tw)
 {
     int nmembers=tcei.member.size();
     // use the special constructor to only clone the metadata and
     // set aside slots for the new ensemble.
-    shared_ptr<Ensemble<CoreSeismogram>>
-    tceo(new Ensemble<CoreSeismogram>(dynamic_cast<Metadata&>(tcei),
+    shared_ptr<Ensemble<Seismogram>>
+    tceo(new Ensemble<Seismogram>(dynamic_cast<Metadata&>(tcei),
                                     nmembers));
     tceo->member.reserve(nmembers);  // reserve this many slots for efficiency
     // We have to use a loop instead of for_each as I don't see how
     // else to handle errors cleanly here.
-    vector<CoreSeismogram>::iterator indata;
+    vector<Seismogram>::iterator indata;
     for(indata=tcei.member.begin(); indata!=tcei.member.end(); ++indata)
     {
         try {
-            shared_ptr<CoreSeismogram>
+            shared_ptr<Seismogram>
             tcs(ArrivalTimeReference(*indata,arrival_time_key,tw));
             tceo->member.push_back(*tcs);
         } catch ( MsPASSError& serr)
         {
             serr.log_error();
-            cerr << "This CoreSeismogram was not copied to output ensemble"<<endl;
+            cerr << "This Seismogram was not copied to output ensemble"<<endl;
         }
     }
     return(tceo);
 }
 
 /* This is a procedural form of one of the rotate method and is a bit redundant. */
-void HorizontalRotation(CoreSeismogram& d, double phi)
+void HorizontalRotation(Seismogram& d, double phi)
 {
     double tmatrix[3][3];
     double a,b;
@@ -175,7 +183,8 @@ void HorizontalRotation(CoreSeismogram& d, double phi)
 simply rethrown.
 
 */
-CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const int component)
+// FIXME: ExtractComponent will discard any history records in Seismogram 
+CoreTimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
 {
     try {
         CoreTimeSeries ts(dynamic_cast<const BasicTimeSeries&>(tcs),
@@ -184,8 +193,8 @@ CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,const int component)
         ts.s.clear();
         double *ptr;
         dmatrix *uptr;
-        if(tcs.live)
-            for(int i=0; i<tcs.ns; ++i)
+        if(tcs.live())
+            for(size_t i=0; i<tcs.u.columns(); ++i)
             {
                 uptr=const_cast<dmatrix *>(&(tcs.u));
                 ptr=uptr->get_address(component,i);

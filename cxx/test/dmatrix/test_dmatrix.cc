@@ -36,7 +36,7 @@ int main(int argc, char **argv)
         cout << "Number of rows in A="<<A.rows()<<endl;
         cout << "This should be the output of the size operator as a dvector"
             <<endl;
-        vector<int> sizeA;
+        vector<size_t> sizeA;
         sizeA=A.size();
         cout << "Number rows="<<sizeA[0]<<" Number of columns="<<sizeA[1]<<endl;
         cout << "Success:  testing tr procedure"<<endl;

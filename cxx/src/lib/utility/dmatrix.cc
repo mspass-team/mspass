@@ -10,7 +10,7 @@ dmatrix::dmatrix()
   length=0;
   ary.reserve(0);
 }
-dmatrix::dmatrix(const int nr, const int nc)
+dmatrix::dmatrix(const size_t nr, const size_t nc)
 {
   nrr=nr;
   ncc=nc;
@@ -39,7 +39,7 @@ dmatrix::~dmatrix()
 //if(ary!=NULL) delete [] ary;
 }
 
-double dmatrix::operator()(const int rowindex, const int colindex) const
+double dmatrix::operator()(const size_t rowindex, const size_t colindex) const
 {
   int out_of_range=0;
   if (rowindex>=nrr) out_of_range=1;
@@ -51,7 +51,7 @@ double dmatrix::operator()(const int rowindex, const int colindex) const
   double result=ary[rowindex+(nrr)*(colindex)];
   return result;
 }
-double& dmatrix::operator()(const int rowindex, const int colindex) 
+double& dmatrix::operator()(const size_t rowindex, const size_t colindex) 
 {
   int out_of_range=0;
   if (rowindex>=nrr) out_of_range=1;
@@ -66,7 +66,7 @@ double& dmatrix::operator()(const int rowindex, const int colindex)
 // subtle difference here.  This one returns a pointer to the 
 // requested element
 //
-double* dmatrix::get_address(int rowindex, int colindex) const
+double* dmatrix::get_address(size_t rowindex, size_t colindex) 
 {
   double *ptr;
   int out_of_range=0;
@@ -96,25 +96,27 @@ dmatrix& dmatrix::operator=(const dmatrix& other)
     return *this;
 }
 
-void dmatrix::operator+=(const dmatrix& other)
- {
-int i;
+dmatrix& dmatrix::operator+=(const dmatrix& other)
+{
+  size_t i;
   if ((nrr!=other.nrr)||(length!=other.length))
-	throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
-for(i=0;i<length;i++)
-  ary[i]+=other.ary[i];
- }
+    throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
+  for(i=0;i<length;i++)
+    ary[i]+=other.ary[i];
+  return *this;
+}
 
-void dmatrix::operator-=(const dmatrix& other)
- {
-int i;
+dmatrix& dmatrix::operator-=(const dmatrix& other)
+{
+  size_t i;
   if ((nrr!=other.nrr)||(length!=other.length))
-	throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
-for(i=0;i<length;i++)
-  ary[i]-=other.ary[i];
- }
+    throw dmatrix_size_error(nrr, ncc, other.nrr, other.length);
+  for(i=0;i<length;i++)
+    ary[i]-=other.ary[i];
+  return *this;
+}
 
-dmatrix dmatrix::operator+(const dmatrix &other) 
+dmatrix dmatrix::operator+(const dmatrix &other) const
 {
     try{
         dmatrix result(*this);
@@ -122,7 +124,7 @@ dmatrix dmatrix::operator+(const dmatrix &other)
         return result;
     }catch(...){throw;};
 }
-dmatrix dmatrix::operator-(const dmatrix &other)
+dmatrix dmatrix::operator-(const dmatrix &other) const
 {
     try{
         dmatrix result(*this);
@@ -134,7 +136,7 @@ dmatrix dmatrix::operator-(const dmatrix &other)
 
 dmatrix operator*(const dmatrix& x1,const dmatrix& b) 
 {
-	int i,j;
+	size_t i,j;
         /* The computed length in last arg to the error object is a relic*/
 	if(x1.columns()!=b.rows())
 		throw dmatrix_size_error(x1.rows(), x1.columns(), 
@@ -156,9 +158,9 @@ dmatrix operator*(const dmatrix& x1,const dmatrix& b)
 
 dmatrix operator*(const double& x, const dmatrix &zx) noexcept
 {
-  int i;
+  size_t i;
   dmatrix tempmat(zx.rows(),zx.columns());
-  int lenary=zx.rows()*zx.columns();
+  size_t lenary=zx.rows()*zx.columns();
   double *zptr,*dptr;
   zptr=const_cast<dmatrix&>(zx).get_address(0,0);
   dptr=tempmat.get_address(0,0);
@@ -185,7 +187,7 @@ dmatrix dmatrix::operator* (const double& x) noexcept
 
 dmatrix tr(const dmatrix& x1) noexcept
 {
-  int i,j;
+  size_t i,j;
   dmatrix temp(x1.columns(),x1.rows());
   for(i=0; i<x1.rows(); i++)
      for(j=0; j<x1.columns();j++)
@@ -198,7 +200,7 @@ dmatrix tr(const dmatrix& x1) noexcept
 
 ostream& operator<<(ostream& os, dmatrix& x1)
 {
-  int i,j;
+  size_t i,j;
   for(i=0;i<x1.rows();i++)
   {
   for(j=0;j<x1.columns();j++) os << " "<< x1(i,j);
@@ -210,22 +212,22 @@ ostream& operator<<(ostream& os, dmatrix& x1)
 
 void dmatrix::zero()
 {
-    for(int i=0;i<length;++i) ary[i]=0.0;
+    for(size_t i=0;i<length;++i) ary[i]=0.0;
 }
-vector<int> dmatrix::size() const
+vector<size_t> dmatrix::size() const
 {
-	vector<int> sz;
-        sz.push_back(nrr);
-        sz.push_back(ncc);
+	vector<size_t> sz;
+  sz.push_back(nrr);
+  sz.push_back(ncc);
 	return(sz);
 }
 // simpler versions of same
 
-int dmatrix::rows() const
+size_t dmatrix::rows() const
 {
 	return(nrr);
 }
-int dmatrix::columns() const
+size_t dmatrix::columns() const
 {
 	return(ncc);
 }
@@ -247,9 +249,9 @@ dvector::dvector(const dvector& other)
 	ncc=1;
 	nrr=other.nrr;
 	length=other.length;
-        ary=other.ary;
+  ary=other.ary;
 }
-double &dvector::operator()(const int rowindex) 
+double &dvector::operator()(const size_t rowindex) 
 {
   if (rowindex>=nrr)
 	throw dmatrix_index_error(nrr,1,rowindex,1);
@@ -257,10 +259,10 @@ double &dvector::operator()(const int rowindex)
 }		
 dvector operator*(const dmatrix& x1,const dvector& b)
 {
-	int i;
-        int nrx1=x1.rows();
-        int ncx1=x1.columns();
-        int nrb=const_cast<dvector&>(b).rows();
+	size_t i;
+  size_t nrx1=x1.rows();
+  size_t ncx1=x1.columns();
+  size_t nrb=const_cast<dvector&>(b).rows();
 	if(ncx1!=nrb)
 		throw dmatrix_size_error(nrx1, ncx1, nrb, 1);
 	dvector prod(nrx1);

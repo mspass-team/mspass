@@ -1,29 +1,25 @@
 #include "mspass/seismic/Seismogram.h"
+#include "mspass/utility/ProcessingHistory.h"
 using namespace mspass;
 namespace mspass
 {
-Seismogram::Seismogram(const CoreSeismogram& d, const std::string oid)
-    : CoreSeismogram(d),MsPASSCoreTS()
+Seismogram::Seismogram(const CoreSeismogram& d)
+    : CoreSeismogram(d),ProcessingHistory()
 {
-    try{
-        this->set_id(oid);
-    }catch(...){throw;};
+}
+Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
+    : CoreSeismogram(d),ProcessingHistory()
+{
+  /* Not sure this is a good idea, but will give each instance
+  created by this constructor a uuid.*/
+  string id=this->newid();
+  this->ProcessingHistory::set_as_origin(alg,id,id,AtomicType::SEISMOGRAM,false);
+  this->ProcessingHistory::set_jobname(string("test"));
+  this->ProcessingHistory::set_jobid(string("test"));
 }
 Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
-        const ErrorLogger elf)
-{
-    /* Have to use this construct instead of : and a pair of
-       copy constructors for Metadata and BasicSeismogram.   Compiler
-       complains they are not a direct or virtual base for Seismogram.  */
-    this->BasicTimeSeries::operator=(b);
-    this->Metadata::operator=(m);
-    elog=elf;
-    this->set_id("INVALID");
-}
-Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
-  const MsPASSCoreTS& corets,const bool card, const bool ortho,
+  const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)
-    : CoreSeismogram(),MsPASSCoreTS(corets)
 {
   /* for reasons I couldn't figure out these couldn't appear in the copy
   constructor chain following the : above.   Compiler complained about
@@ -33,6 +29,8 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   bts=mspass::BasicTimeSeries::operator=(b);
   Metadata mdthis=dynamic_cast<Metadata&>(*this);
   mdthis=mspass::Metadata::operator=(m);
+  ProcessingHistory histhis=dynamic_cast<ProcessingHistory&>(*this);
+  histhis=mspass::ProcessingHistory::operator=(his);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;
@@ -40,28 +38,47 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
     for(j=0;j<3;++j) tmatrix[i][j]=tm(i,j);
   this->u=uin;
 }
-Seismogram::Seismogram(const Metadata& md)
-	: CoreSeismogram(md,true),MsPASSCoreTS()
+Seismogram::Seismogram(const Metadata& md, const string jobname,
+    const string jobid, const string readername,const string algid)
+	: CoreSeismogram(md,true),ProcessingHistory()
 {
-  /* We use oid_string to hold the ObjectID stored as a hex string.
-   * In mspass this is best done in the calling python function
-   * that already has hooks for mongo.   If that field is not
-   * defined we silently set the id invalid.
+  const string algname("SeismogramMDConstructor");
+  this->set_jobname(jobname);
+  this->set_jobid(jobid);
+
+  /* We try to read uuid from the metadata used in creation with the
+  CoreSeismogram constructor.   If it isn't found we generate it from
+  the random number generator and post a complaint.
    */
+  string thisid;
   try{
-    string oids=this->get_string("oid_string");
-    this->set_id(oids);
+    string thisid=this->get_string("uuid");
+    this->set_id(thisid);
   }catch(MsPASSError& merr)
   {
-    this->set_id("invalid");
+    /* this sets the id to a random number based uuid */
+    thisid=this->newid();
+    this->elog.log_error(algname,"uuid not defined.\nSet by constructor to"
+          +thisid,ErrorSeverity::Complaint);
   }
+  bool mark_as_raw;
+  try{
+    mark_as_raw=this->get_bool("rawdata");
+  } catch(MsPASSError& merr)
+  {
+    this->elog.log_error(algname,"rawdata boolean not found - default to false",
+      ErrorSeverity::Complaint);
+    mark_as_raw=false;
+  }
+  this->ProcessingHistory::set_as_origin(readername,algid,thisid,
+        AtomicType::SEISMOGRAM,mark_as_raw);
 }
 Seismogram& Seismogram::operator=(const Seismogram& parent)
 {
     if(this!=(&parent))
     {
         this->CoreSeismogram::operator=(parent);
-        this->MsPASSCoreTS::operator=(parent);
+        this->ProcessingHistory::operator=(parent);
     }
     return *this;
 }

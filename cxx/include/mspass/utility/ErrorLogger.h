@@ -27,6 +27,14 @@ public:
   \param merr is parsed to fill the message and severity fields.
   Note p_id is always fetched with the system call getpid in the constructor.*/
   LogData(const int jid, const std::string alg,const mspass::MsPASSError& merr);
+  /*! Normal constuctor from strings.
+
+  \param jid is the value to assign to job_id.
+  \param alg is assigned to algorithm attribute.
+  \param msg is the error message.
+  \param lvl is the error severity.
+  Note p_id is always fetched with the system call getpid in the constructor.*/
+  LogData(const int jid, const std::string alg, const std::string msg, const mspass::ErrorSeverity lvl);
   friend ostream& operator<<(ostream&, LogData&);
 private:
   friend boost::serialization::access;

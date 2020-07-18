@@ -2,8 +2,7 @@
 #define _MSPASS_ENSEMBLE_H_
 #include <vector>
 #include "mspass/seismic/TimeSeries.h"
-#include "mspass/seismic/CoreSeismogram.h"
-//#include "mspass/seismic/Seismogram.h"
+#include "mspass/seismic/Seismogram.h"
 namespace mspass{
 template <typename Tdata> class Ensemble : public Metadata
 {
@@ -28,14 +27,14 @@ public:
 
   \param - expected number of members.
   */
-  Ensemble(const int n){member.reserve(n);};
+  Ensemble(const size_t n){member.reserve(n);};
   /*! Partial constructor to clone metadata and set aside n slots but no data*/
-  Ensemble(const Metadata& md,const int n) : Metadata(md)
+  Ensemble(const Metadata& md,const size_t n) : Metadata(md)
   {
       member.reserve(n);
   };
   /*! Standard copy constructor. */
-  Ensemble(const Ensemble& parent) : Metadata(dynamic_cast<Metadata&>(parent)),
+  Ensemble(const Ensemble& parent) : Metadata(dynamic_cast<const Metadata&>(parent)),
     member(parent.member){};
   /*! Standard assignment operator. */
   Ensemble& operator=(const Ensemble& parent)
@@ -57,7 +56,7 @@ public:
 
   \param n  is the member to be extracted and returned.
   */
-  Tdata& operator[](const int n) const
+  Tdata& operator[](const size_t n) const
   try{
     return(this->member[n]);
   }catch(...){throw;};
@@ -71,32 +70,73 @@ public:
 
   \param newmd contains new Metadata to use for updates.
 
-  \return number of attributes updated (size of newmd)
   */
-  int update_metadata(const Metadata& newmd)
+  void update_metadata(const Metadata& newmd)
   try{
     Metadata *md;
     md=dynamic_cast<Metadata*>(this);
     (*md) += newmd;
   }catch(...){throw;};
+  /*! \brief copy ensemble metadata to all members.
+
+    An ensemble has global metadata, but each member is required to have
+    a metadata component.  This method takes the ensemble metadata and
+    copies it to each of the member objects.   The operation will overwrite
+    previous key:value pairs in a member that are also present in the
+    ensemble metadata.
+    */
+  void sync_metadata()
+  {
+      size_t i;
+      for(i=0;i<this->member.size();++i)
+      {
+          mspass::Metadata *mdmember=&(this->member[i]);
+          (*mdmember)+=dynamic_cast<mspass::Metadata&>(*this);
+      }
+  };
 };
-/*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
+/*! Useful alias for Ensemble<TimeSeries> */
+typedef Ensemble<TimeSeries> TimeSeriesEnsemble;
+/*! Useful alias for Ensemble<Seismogram> */
+typedef Ensemble<Seismogram> ThreeComponentEnsemble;
+/*! Procedure to set inputs vector defined by an Ensemble object.
 
- An arrival time reference means that the time is set to relative and 
- zero is defined as an arrival time extracted from the metadata area of
- each member object.
+Ensembles are the generalization in MsPaSS of a "gather" as used in
+seismic reflection processing.  An Ensemble is just a vector of data objects.
+This procedure assumes the member of the ensemble have ProcessingHistory
+as a base class so they can access the history mechanism datta in MsPaSS.
+The algorithm simply copies all history data from each live member to
+the inputs vector of ProcessingHistoryRecord.
 
-\exception SeisppError for errors in extracting required information from metadata area.
+Do not use this procedure if the algorithm receiving the Ensemble can
+ignore members of the Ensemble and mark them dead.  e.g. a robust
+stacker might use a trimmed mean that discards some data without an
+explicit kill.   Use the procedure that works on the atomic object, Tdata,
+instead in such a situation.
 
-\param din  is input gather
-\param key is the metadata key used to find the arrival time to use as a reference.
-\param tw is a TimeWindow object that defines the window of data to extract around
-    the desired arrival time.
-**/
-/*
-typedef mspass::Ensemble<Seismogram> ThreeComponentEnsemble;
-std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
-  (ThreeComponentEnsemble& din,std::string key, TimeWindow tw);
-  */
+\param rec is the output ProcessingHistoryRecord where history will be
+  copied to inputs.  (note the operation is append.  If inputs has
+  previous content the new data will be appended)
+\param d is Ensemble which is to be defined as input.
+*/
+/* Disable temporarily - needs a revision to match new history approach
+template <typename Tdata>
+  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::Ensemble<Tdata>& d)
+{
+  try{
+    for(size_t i=0;i<d.member.size();++i)
+    {
+      // Ignore any data not defined as live
+      if(d.member[i].live())
+      {
+        list<ProcessingHistoryRecord> h(d.member[i].history());
+        // do nothing if the container is empty
+        if(h.size()>0)rec.inputs.push_back(h);
+      }
+    }
+    return rec.inputs.size();
+  }catch(...){throw;};
+};
+*/
 }  // End mspass namespace encapsulation
 #endif  //  End guard

@@ -2,43 +2,31 @@
 using namespace mspass;
 namespace mspass
 {
-TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string oid)
-    : CoreTimeSeries(d)
+TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string alg)
+    : CoreTimeSeries(d),ProcessingHistory()
 {
-    try{
-        this->set_id(oid);
-    }catch(...){throw;};
-}
-TimeSeries::TimeSeries(const BasicTimeSeries& b, const Metadata& m,
-        const ErrorLogger elf)
-{
-    /* Have to use this construct instead of : and a pair of
-       copy constructors for Metadata and BasicTimeSeries.   Compiler
-       complains they are not a direct or virtual base for TimeSeries.  */
-    this->BasicTimeSeries::operator=(b);
-    this->Metadata::operator=(m);
-    elog=elf;
-    this->set_id("INVALID");
+  /* Not sure this is a good idea, but will give each instance
+  created by this constructor a uuid.*/
+  string id=this->newid();
+  this->ProcessingHistory::set_as_origin(alg,id,id,AtomicType::SEISMOGRAM,false);
+  this->ProcessingHistory::set_jobname(string("test"));
+  this->ProcessingHistory::set_jobid(string("test"));
 }
 /* this is kind of a weird construct because the pieces are assembled
 out of the regular order of an object created by inheritance.  I hope
 that does not cause problems. */
 TimeSeries::TimeSeries(const BasicTimeSeries& b, const Metadata& m,
-  const MsPASSCoreTS& mcts,const vector<double>& d)
-     : MsPASSCoreTS(mcts)
+  const ProcessingHistory& his,const vector<double>& d)
+    : CoreTimeSeries(b,m),ProcessingHistory(his)
 {
-  /* This seems necessary due to ambiguities of multiple inheritance. */
-  this->BasicTimeSeries::operator=(b);
-  this->Metadata::operator=(m);
   this->s=d;
 }
 TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
 {
     if(this!=(&parent))
     {
-        this->Metadata::operator=(parent);
         this->CoreTimeSeries::operator=(parent);
-        this->MsPASSCoreTS::operator=(parent);
+        this->ProcessingHistory::operator=(parent);
     }
     return *this;
 }

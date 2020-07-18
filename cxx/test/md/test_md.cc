@@ -40,6 +40,16 @@ int main(int argc, char **argv)
                 cout << "double_val="<<mdplain.get<double>("double_val")<<endl;
                 cout << "string_val="<<mdplain.get<string>("string_val")<<endl;
                 cout << "bool_val="<<mdplain.get<bool>("bool_val")<<endl;
+                cout << "Trying copy constructor followed by change of key string_val to sval"<<endl;
+                Metadata mdctmp(mdplain);
+                mdctmp.change_key("string_val","sval");
+                cout << "Copy completed and change_key finished"<<endl;
+                cout << "Value now associated with key sval="<<mdctmp.get<string>("sval")<<endl;
+                cout << "Checking if old key was cleared - also tests is_defined method"<<endl;
+                if(mdctmp.is_defined("string_val"))
+                    cout << "BAD - string_val key is still defined - fix this bug"<<endl;
+                else
+                    cout << "string_val entry was cleared - success"<<endl;
 		ostringstream ss;
 		cout << "Trying to serialize with operator stringstream"<<endl;
 		ss << mdplain;

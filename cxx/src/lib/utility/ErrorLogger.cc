@@ -12,6 +12,14 @@ LogData::LogData(const int jid, const std::string alg,
   message=merr.message;
   badness=merr.badness;
 }
+LogData::LogData(const int jid, const std::string alg, const std::string msg, const mspass::ErrorSeverity lvl)
+{
+  job_id=jid;
+  p_id=getpid();
+  algorithm=alg;
+  message=msg;
+  badness=lvl;
+}
 ostream& operator<<(ostream& ofs, LogData& ld)
 {
   switch(ld.badness)
@@ -66,7 +74,7 @@ int ErrorLogger::log_error(const mspass::MsPASSError& merr)
 int ErrorLogger::log_error(const std::string alg, const std::string mess,
   const mspass::ErrorSeverity level=ErrorSeverity::Invalid)
 {
-  LogData thislog(this->job_id,alg,mess);
+  LogData thislog(this->job_id,alg,mess,level);
   allmessages.push_back(thislog);
   return allmessages.size();
 }

@@ -117,6 +117,8 @@ mspass::MDtype MetadataDefinitions::type(const std::string key) const
 {
   const string base_error("MetadataDefinitions::type:  ");
   map<std::string,mspass::MDtype>::const_iterator tptr;
+  if(this->is_alias(key))
+    return this->unique_name(key).second;
   tptr=tmap.find(key);
   if(tptr==tmap.end())
   {
@@ -297,7 +299,7 @@ bool MetadataDefinitions::writeable(const string key) const
   }
   else
   {
-    /* A bit confusing layout here.  We land here if the 
+    /* A bit confusing layout here.  We land here if the
      * key was marked read only and was not an alias.  */
     return false;
   }
@@ -510,5 +512,48 @@ void MetadataDefinitions::yaml_reader(const string fname)
     throw MsPASSError(eyaml.what(),ErrorSeverity::Invalid);
   }
   catch(...){throw;};
+}
+/* New methods added April 2020 to improve support for aliases*/
+std::list<string> MetadataDefinitions::apply_aliases
+        (Metadata& d, const std::list<string> aliaslist)
+{
+  list<string> failures;
+  list<string>::const_iterator aptr;
+  std::pair<string,MDtype> nmpair;
+  for(aptr=aliaslist.begin();aptr!=aliaslist.end();++aptr)
+  {
+    if(this->is_alias(*aptr))
+    {
+      nmpair=this->unique_name(*aptr);
+      string ukey=nmpair.first;
+      /* Silently skip any aliases not defined.  That assures that if the
+      name had already been changed to this alias it will be prserved. */
+      if(d.is_defined(ukey))
+      {
+        d.change_key(ukey,*aptr);
+      }
+    }
+    else
+    {
+      failures.push_back(*aptr);
+    }
+  }
+  return failures;
+}
+void MetadataDefinitions::clear_aliases(Metadata& d)
+{
+  std::set<string> keys;
+  keys=d.keys();
+  std::set<string>::iterator kptr;
+  std::pair<string,MDtype> nmpair;
+  for (kptr=keys.begin();kptr!=keys.end();++kptr)
+  {
+    if(this->is_alias(*kptr))
+    {
+      nmpair=this->unique_name(*kptr);
+      string ukey=nmpair.first;
+      d.change_key(*kptr,ukey);
+    }
+  }
 }
 }

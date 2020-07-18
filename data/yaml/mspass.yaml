@@ -43,7 +43,7 @@ Attributes:
   - name: sta
     type: string
     concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-    aliases: station site.sta sitchan.sta wf.sta
+    aliases: station site.sta sitechan.sta wf.sta KSTNM
     readonly: true
     unique_id:  site_id
     collection: site
@@ -81,8 +81,8 @@ Attributes:
     unique_id:  site_id
     collection: site
   - name: site_id
-    type: integer
-    concept:  unique identifier of a particular instrument/seismic station
+    type: string
+    concept:  String representation of ObjectId used to define a particular instrument/seismic station
     # this is not marked readonly as needs to be saved always in wf
     readonly:  false
     unique_id:  site_id
@@ -91,30 +91,40 @@ Attributes:
   - name: chan
     type: string
     concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
-    aliases: KCMPNM sitchan.chan
+    aliases: channel KCMPNM sitechan.chan
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
   - name: hang
     type: double
     concept:  Azimuth (in degree) of a seismometer component - horizontal angle
     aliases: CMPAZ sitechan.hang
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
   - name: vang
     type: double
     concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
     aliases: CMPINC sitechan.vang
     readonly: true
-    unique_id: chanid
+    unique_id: chan_id
     collection: sitechan
-  - name: chanid
-    type: integer
-    concept:  unique identifier of a particular component of data
-    readonly:  true
-    unique_id:  chanid
+  - name: chan_id
+    type: string
+    concept:  String representation of ObjectId used to define a particular component of data
+    readonly:  false
+    unique_id:  chan_id
     collection:  sitechan
+  - name: chanid
+    type: int
+    concept:  channel id - used in CSS3.0 as the identifier of a particular component of data
+    readonly:  true
+    unique_id:  chan_id
+    collection:  sitechan
+  - name: LPSPOL
+    type: boolean
+    concept: True of channel components have positive polarity (SAC)
+    readonly: false
 # These are attributes for source data.   This schema does not support multiple
 # source locations for a single seismic event.   We use source for the table name
 # instead of event or origin to avoid make that clear.   An event-origin
@@ -149,20 +159,34 @@ Attributes:
     unique_id: source_id
     collection: source
   - name: source_id
-    type: integer
-    concept:  unique identifier of a particular seismic source
+    type: string
+    concept:  String representation of ObjectId used to define a particular seismic source
     # this is not marked readonly as needs to be saved always in wf
+    readonly:  false
+    unique_id:  source_id
+    collection:  source
+  - name: evid
+    type: int
+    concept:  event id - used in CSS3.0 as the identifier of a particular seismic source
     readonly:  false
     unique_id:  source_id
     collection:  source 
     alias: evid,event.evid
   - name: orid
-    type: integer
+    type: int
     concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
-    readonly:  true
-    unique_id:  souce_id
+    readonly:  false
+    unique_id:  source_id
     collection:  source 
     alias: origin.orid,event.orid
+  - name: KEVNM
+    type: string
+    concept: Event name 
+    readonly: false
+  - name: IEVTYP
+    type:  int
+    concept:  Event type code as used in SAC
+    readonly: false
 BasicTimeSeries:
   - name: time_standard
     type: string
@@ -214,13 +238,20 @@ Magnitude:
     type: double
     concept: Surface wave magnitude
     readonly: true
-    unique_id: evid
+    unique_id: souce_id
     collection: source
   - name: mb
     type: double
     concept: Body wave magnitude
     readonly: true
-    unique_id: evid
+    unique_id: souce_id
+    collection: source
+  - name: magnitude
+    type: double
+    concept: generic magnitude attribute
+    readonly: false
+    aliases: MAG
+    unique_id: souce_id
     collection: source
 External_files:
   - name: dfile
@@ -247,27 +278,70 @@ SeismicPhases:
     type: string
     concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
     readonly: false
+  - name: seaz
+    type: double
+    concept: Station to event azimuth
+    readonly: false
+    aliases: BAZ
+  - name: esaz
+    type: double
+    concept: Event to station azimuth
+    readonly: false
+    aliases: AZ
 MongoDb:
 # This set of parameters are essential for mspass, but are intimately linked to MongoDB
-  - name: wfid_string
+  - name: wf_id
     type: string
     concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
     readonly: false
     collection: wf
-  - name: gridfs_idstr
+  - name: gridfs_wf_id
     type: string
     concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
     readonly: false 
-    collection: gridfs_wf 
+    collection: gridfs_wf
   - name: storage_mode
     type: string
     concept: Provides storage options for seismic data samples.
     readonly: false
-  - name: oid_site
+# These are assorted attributes that can be used in wf but have not logical 
+# grouping
+Other:
+  - name: units
+    type:  string
+    concept:  Physical units of sample data (nm/s is normal assumed default)
+    readonly: false
+    aliases: idep,IDEP
+  - name: DEPMIN
+    type: double
+    concept: Maximum amplitude of a signal
+    readonly: false
+    aliases: depmin
+  - name: DEPMAX
+    type: double
+    concept: Minimum amplitude of a signal
+    readonly: false
+    aliases: depmax
+  - name: DEPMEN
+    type: double
+    concept: Mean amplitude of a signal
+    readonly: false
+    aliases: depmen
+  - name: jdate
+    type: int
+    concept: Julian date string as used in CSS3.0
+    readonly: false
+  - name: IZTYPE
+    type: int
+    concept: Reference time type as used by SAC
+    readonly: false
+    aliases: TimeReferenceType
+  - name: dist
+    type: double
+    concept: Source receiver distance
+    readonly: false
+    aliases: assoc.delta,GCARC
+  - name: distance_units
     type: string
-    concept:  String representation of ObjectId of an entry in site collection - for linking to other collections
-    readonly:  false
-  - name: oid_source
-    type: string
-    concept:  String representation of ObjectId of an entry in source collection - for linking to other collections
-    readonly:  false
+    concept: Units of dist attribute
+    readonly: false

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <boost/any.hpp>
+#include <pybind11/pybind11.h>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/BasicMetadata.h"
 
@@ -317,6 +318,10 @@ other attributes.
   {
       this->put<string>(key,val);
   };
+  void put_object(const string key, const pybind11::object val)
+  {
+      this->put<pybind11::object>(key,val);
+  }
   void put_int(const string key,const int val)
   {
     this->put<int>(key,val);
@@ -339,28 +344,28 @@ other attributes.
   };
   /*! Create or append to a chained string.
    *
-   A chain conceptually is identical to a list of string data.  
-   We implement it in Metadata because sometimes (e.g. MongoDB 
-   interaction and some constructs like the unix shell PATH variable) 
+   A chain conceptually is identical to a list of string data.
+   We implement it in Metadata because sometimes (e.g. MongoDB
+   interaction and some constructs like the unix shell PATH variable)
    handling a full scale container like list<std::string> would be
    awkward.   If more extensive capability like that is needed it would
-   be better to add a class that inherits Metadata and does so.  
+   be better to add a class that inherits Metadata and does so.
    AntelopePf more or less does this, for example, handling Tbl sections.
-   In any case, this usage is more for one word strings separated by 
-   a common separator:  e.g. path=/usr/local/bin:/bin uses : as 
-   the separator.   /usr/local/bin and /bin are the chain.  
+   In any case, this usage is more for one word strings separated by
+   a common separator:  e.g. path=/usr/local/bin:/bin uses : as
+   the separator.   /usr/local/bin and /bin are the chain.
 
    If the key related to the chain does not yet exist it is silently
-   created.  If it already exists and we append to it. 
+   created.  If it already exists and we append to it.
 
    \param key is the key that defines the string.
    \param val is the the new string to append to the chain
    \param separator is the string used for a separator (default ":")
 
-   \exception MsPASSError will be thrown if data is found in key 
-     and it is not of type string. 
+   \exception MsPASSError will be thrown if data is found in key
+     and it is not of type string.
    */
-  void append_chain(const std::string key, const std::string val, 
+  void append_chain(const std::string key, const std::string val,
 		  const std::string separator=string(":"));
 
   /*! Return the keys of all altered Metadata values. */
@@ -403,8 +408,28 @@ other attributes.
     return this->clear(string(key));
   };
   */
-  /*! Clear data associated with a particular key. */
-  friend ostringstream& operator<<(ostringstream&, Metadata&);
+  /*! Return the size of the internal map container. */
+  std::size_t size() const noexcept;
+  /*! Return iterator to beginning of internal map container. */
+  std::map<string,boost::any>::const_iterator  begin() const noexcept;
+  /*! Return iterator to end of internal map container. */
+  std::map<string,boost::any>::const_iterator  end() const noexcept;
+  /*! \brief Change the keyword to access an attribute.
+
+  Sometimes it is useful to change the key used to access a particular piece
+  of data.   Doing so, for example, is one way to implement an alias
+  (alternative name) for something.  The entry for the old key is
+  copied to a entry accessible by the new key.   The entry for old is
+  then deleted.  This avoids downstream inconsistencies a the cost of
+  possible failures from the translation.  This method always returns
+  and will silently do nothing if old is not defined.  Note it also
+  ignores readonly and will rename entries marked such.
+
+  \param oldkey is the key to search for to be changed
+  \param newkey is the new key to use for the replacement.
+  */
+  void change_key(const std::string oldkey, const std::string newkey);
+  friend std::ostringstream& operator<<(std::ostringstream&, mspass::Metadata&);
 protected:
   map<string,boost::any> md;
   /* The keys of any entry changed will be contained here.   */

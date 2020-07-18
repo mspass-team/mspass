@@ -32,8 +32,8 @@ Basic constructor for this error object.
 \param ir row index requested
 \param ic column index requested
 */
-	dmatrix_index_error(const int nrmax, 
-                const int ncmax, const int ir, const int ic)
+	dmatrix_index_error(const size_t nrmax, 
+                const size_t ncmax, const size_t ir, const size_t ic)
 		{row = ir; column=ic; nrr=nrmax; ncc=ncmax;};
 /*! Writes the error message to standard error.
 */
@@ -53,8 +53,8 @@ Basic constructor for this error object.
         /* necessary baggage for some compilers - empty destructor */
         ~dmatrix_index_error() throw(){};
 private:
-	int row,column;
-	int nrr, ncc;
+	size_t row,column;
+	size_t nrr, ncc;
 };
 /*! \brief Convenience class for dmatrix use errors. 
 
@@ -72,8 +72,8 @@ Basic constructor for this error object.
 \param nr1 number of rows in matrix 2
 \param nc1 number of columns in matrix 2
 */
-	dmatrix_size_error (const int nr1, const int nc1, 
-           const int nr2, const int nc2)
+	dmatrix_size_error (const size_t nr1, const size_t nc1, 
+           const size_t nr2, const size_t nc2)
 	{nrow1=nr1; ncol1=nc1;nrow2=nr2;ncol2=nc2;};
 /*! Writes the error message to standard error.*/
 	virtual void log_error()
@@ -97,7 +97,7 @@ Basic constructor for this error object.
         /* necessary baggage for some compilers - empty destructor */
         ~dmatrix_size_error() throw(){};
 private:
-	int nrow1, ncol1, nrow2, ncol2;
+	size_t nrow1, ncol1, nrow2, ncol2;
 };
 /*! \brief Lightweight, simple matrix object. 
  
@@ -125,7 +125,7 @@ zeros.
 \param nr number of rows to allocate for this matrix.
 \param nc number of columns to allocate for this matrix.
 */
-  dmatrix(const int nr, const int nc);
+  dmatrix(const size_t nr, const size_t nc);
 /*! Standard copy constructor.  */
   dmatrix(const dmatrix& other);
 /*! Destructor - releases any matrix memory. */
@@ -139,8 +139,8 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
 \returns value of matrix element at position (rowindex,colindex)
 \exception dmatrix_index_error is thrown if request is out of range
 */
-  double operator()(const int rowindex, const int colindex) const; 
-  double& operator()(int r,int c);
+  double operator()(const size_t rowindex, const size_t colindex) const; 
+  double& operator()(size_t r,size_t c);
 /*! Standard assignment operator */
   dmatrix& operator=(const dmatrix& other);
   /*! \brief Add one matrix to another.
@@ -152,7 +152,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param  A is the matrix to be added to this.
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  void operator+=(const dmatrix& other);
+  dmatrix& operator+=(const dmatrix& other);
   /*! \brief Subtract one matrix to another.
 
   Matrix subtraction is a standard operation but demands the two matrices
@@ -162,7 +162,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param  other is the matrix to be subracted from to this.
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  void operator-=(const dmatrix& other);
+  dmatrix& operator-=(const dmatrix& other);
   /*! Operator to add two matrices. 
 
   This operator is similar to += but is the operator used in constructs
@@ -172,7 +172,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param other matrix to be added
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  dmatrix operator+(const dmatrix& other);
+  dmatrix operator+(const dmatrix& other) const;
   /*! Operator to add two matrices. 
 
   This operator is similar to -= but is the operator used in constructs
@@ -182,7 +182,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param other matrix to be added
   \exception throws a dmatrix_size_error if other and this are not the same size.
   */
-  dmatrix operator-(const dmatrix& other);
+  dmatrix operator-(const dmatrix& other) const;
   //friend class dvector;
   /*! \brief 
 
@@ -237,7 +237,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \exception dmatrix_size_error will be throw if r or c are outside 
     matrix dimensions. 
     */
-  double* get_address(int r, int c) const;
+  double* get_address(size_t r, size_t c);
   /*! \brief Text output operator.
 
   Output is ascii data written in the matrix layout.  Note this can create
@@ -247,21 +247,21 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   */
   friend ostream& operator<<(ostream& os, dmatrix& A);
   /*! Return number of rows in this matrix. */
-  int rows() const;
+  size_t rows() const;
   /*! Return number of columns in this matrix. */
-  int columns() const;
+  size_t columns() const;
   /*! \brief Return a vector with 2 elements giving the size.
 
   This function returns an std::vector with 2 elements with size information.
   first component is rows, second is columns.  This simulates
   the matlab size function. */
-  vector<int> size() const;
+  vector<size_t> size() const;
   /*! Initialize a matrix to all zeros. */
   void zero();
 protected:
    vector<double> ary;   // initial size of container 0
-   int length;
-   int nrr, ncc;
+   size_t length;
+   size_t nrr, ncc;
 private:
    friend class boost::serialization::access;
    template<class Archive>void serialize(Archive & ar,
@@ -285,13 +285,13 @@ public:
         /*! Default constructor creates an empty vector. */
 	dvector():dmatrix(){};
         /*! Create a (zero initialized) vector of length nrv. */
-	dvector(int nrv) : dmatrix(nrv,1){};
+	dvector(size_t nrv) : dmatrix(nrv,1){};
         /*! Copy constructor. */
 	dvector(const dvector& other);
         /*! Standard assignment operator. */
 	dvector& operator=(const dvector& other);
         /*! Extract component rowindex. */
-	double &operator()(int rowindex);
+	double &operator()(size_t rowindex);
         /*! Matrix vector multiple operator. 
         
         This operator is used for constructs like y=Ax where x is a 

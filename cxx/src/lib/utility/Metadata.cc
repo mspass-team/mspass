@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <boost/core/demangle.hpp>
+#include "misc/base64.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
 namespace mspass
@@ -79,8 +80,8 @@ bool Metadata::is_defined(const string key) const noexcept
     return false;
   }
 }
-void Metadata::append_chain(const std::string key, const std::string val, 
-                  const std::string separator) 
+void Metadata::append_chain(const std::string key, const std::string val,
+                  const std::string separator)
 {
   if(this->is_defined(key))
   {
@@ -97,7 +98,7 @@ void Metadata::append_chain(const std::string key, const std::string val,
   }
   else
   {
-    this->put(key,val); 
+    this->put(key,val);
   }
   changed_or_set.insert(key);
 }
@@ -146,15 +147,27 @@ set<string> Metadata::keys() const noexcept
 }
 void Metadata::clear(const std::string key)
 {
-    map<string,boost::any>::iterator iptr;
-    iptr=md.find(key);
-    if(iptr!=md.end())
-    	md.erase(iptr);
-    /* Also need to modify this set if the key is found there */
-    set<std::string>::iterator sptr;
-    sptr=changed_or_set.find(key);
-    if(sptr!=changed_or_set.end())
-	changed_or_set.erase(sptr);
+  map<string,boost::any>::iterator iptr;
+  iptr=md.find(key);
+  if(iptr!=md.end())
+    md.erase(iptr);
+  /* Also need to modify this set if the key is found there */
+  set<std::string>::iterator sptr;
+  sptr=changed_or_set.find(key);
+  if(sptr!=changed_or_set.end())
+	  changed_or_set.erase(sptr);
+}
+std::size_t Metadata::size() const noexcept
+{
+  return md.size();
+}
+std::map<string,boost::any>::const_iterator  Metadata::begin() const noexcept
+{
+  return md.begin();
+}
+std::map<string,boost::any>::const_iterator  Metadata::end() const noexcept
+{
+  return md.end();
 }
 
 /* Helper returns demangled name using boost demangle.  */
@@ -190,6 +203,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
         float fval;
         string sval;
         bool bval;
+        pybind11::object poval;
         boost::any a=mdptr->second;
         /* A relic retained to help remember this construct*/
         //const std::type_info &ti = a.type();
@@ -204,7 +218,7 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
         string sname("string");
         if(pretty_name.find("basic_string")==std::string::npos)
             sname=pretty_name;
-        os<<mdptr->first<<" "<<sname<<" ";
+        os<<misc::base64_encode(mdptr->first.c_str(), mdptr->first.size())<<" "<<sname<<" ";
         try{
             if(sname=="int")
             {
@@ -234,7 +248,22 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
             else if(sname=="string")
             {
                 sval=boost::any_cast<string>(a);
-                os<<sval<<endl;
+                string code = misc::base64_encode(sval.c_str(), sval.size());
+                os<<code<<endl;
+            }
+            else if(sname=="pybind11::object")
+            {
+                poval=boost::any_cast<pybind11::object>(a);
+                pybind11::gil_scoped_acquire acquire;
+                pybind11::module pickle = pybind11::module::import("pickle");
+                pybind11::module base64 = pybind11::module::import("base64");
+                pybind11::object dumps = pickle.attr("dumps");
+                pybind11::object b64encode = base64.attr("b64encode");
+                /* The following in Python will be base64.b64encode(pickle.dumps(poval)).decode()
+                 * The complexity is to ensure the bytes string to be valid UTF-8 */
+                pybind11::object pyStr = b64encode(dumps(poval)).attr("decode")();
+                os<<pyStr.cast<std::string>()<<endl;
+                pybind11::gil_scoped_release release;
             }
             else
             {
@@ -275,6 +304,7 @@ Metadata restore_serialized_metadata(const std::string s)
     string sval;
     do{
       ss>>key;
+      key = misc::base64_decode(key);
       ss>>typ;
       if(ss.eof())break;   // normal exit of this loop is here
       if(typ=="double")
@@ -296,7 +326,23 @@ Metadata restore_serialized_metadata(const std::string s)
       else if(typ=="string")
       {
         ss>>sval;
+        sval = misc::base64_decode(sval);
         md.put(key,sval);
+      }
+      else if(typ=="pybind11::object")
+      {
+        ss>>sval;
+        pybind11::str pyStr = pybind11::str(sval.c_str(), sval.size());
+        pybind11::gil_scoped_acquire acquire;
+        pybind11::module pickle = pybind11::module::import("pickle");
+        pybind11::module codecs = pybind11::module::import("codecs");
+        pybind11::object loads = pickle.attr("loads");
+        pybind11::object decode = codecs.attr("decode");
+        /* The following in Python will be pickle.loads(codecs.decode(pyStr.encode(), "base64"))
+          * The complexity is to ensure the bytes string to be valid UTF-8 */
+        pybind11::object poval = loads(decode(pyStr.attr("encode")(), "base64"));
+        md.put_object(key,poval);
+        pybind11::gil_scoped_release release;
       }
       else
       {
@@ -309,5 +355,16 @@ Metadata restore_serialized_metadata(const std::string s)
     return md;
   }catch(...){throw;};
 }
-
+/* New method added Apr 2020 to change key assigned to a value - used for aliass*/
+void Metadata::change_key(const string oldkey, const string newkey)
+{
+  map<string,boost::any>::iterator mdptr;
+  mdptr=md.find(oldkey);
+  /* We silently do nothing if old is not found */
+  if(mdptr!=md.end())
+  {
+    md.insert(std::pair<string,boost::any>(newkey,mdptr->second));
+    md.erase(mdptr);
+  }
+}
 } // End mspass Namespace block

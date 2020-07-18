@@ -18,13 +18,13 @@ using namespace mspass;
 // done inline in seispp.h, but it is complication enough I put
 // it here
 //
-CoreSeismogram::CoreSeismogram() : Metadata(),u(0,0)
+CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata()
 {
-    live = false;
-    dt=0.0;
-    t0=0.0;
-    ns=0;
-    tref=TimeReferenceType::UTC;
+  /* mlive and tref are set in BasicTimeSeries so we don't use putters for
+  them here.   These three initialize Metadata properly for these attributes*/
+    this->set_dt(1.0);
+    this->set_t0(0.0);
+    this->set_npts(0);
     components_are_orthogonal=true;
     components_are_cardinal=true;
     for(int i=0; i<3; ++i)
@@ -34,17 +34,20 @@ CoreSeismogram::CoreSeismogram() : Metadata(),u(0,0)
             else
                 tmatrix[i][j]=0.0;
 }
-CoreSeismogram::CoreSeismogram(int nsamples)
-    : BasicTimeSeries(),Metadata(),u(3,nsamples)
+CoreSeismogram::CoreSeismogram(size_t nsamples)
+    : BasicTimeSeries(),Metadata()
 {
-    components_are_orthogonal=true;
-    components_are_cardinal=true;
-    for(int i=0; i<3; ++i)
-        for(int j=0; j<3; ++j)
-            if(i==j)
-                tmatrix[i][i]=1.0;
-            else
-                tmatrix[i][j]=0.0;
+  this->set_dt(1.0);
+  this->set_t0(0.0);
+  this->set_npts(nsamples);
+  components_are_orthogonal=true;
+  components_are_cardinal=true;
+  for(int i=0; i<3; ++i)
+    for(int j=0; j<3; ++j)
+      if(i==j)
+        tmatrix[i][i]=1.0;
+      else
+        tmatrix[i][j]=0.0;
 }
 
 CoreSeismogram::CoreSeismogram(const CoreSeismogram& t3c) :
@@ -91,12 +94,17 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
     double *inbuffer;
 
     components_are_orthogonal=true;
-    live=false;
+    mlive=false;
     try {
-        // Names used are from mspass defintions as of Jan 2020
-        dt = this->get_double("delta");
-        t0 = this->get_double("starttime");
-        ns = this->get_int("npts");
+        /* Names used are from mspass defintions as of Jan 2020.
+        We don't need to call the set methods for these attributes as they
+        would add the overhead of setting delta, startime, and npts to the
+        same value passed. */
+        this->mdt = this->get_double("delta");
+        this->mt0 = this->get_double("starttime");
+        this->nsamp = this->get_long("npts");
+        /* Assume the data t0 is UTC. */
+        this->set_tref(TimeReferenceType::UTC);
         tmatrix[0][0]=this->get_double("U11");
         tmatrix[1][0]=this->get_double("U21");
         tmatrix[2][0]=this->get_double("U31");
@@ -111,7 +119,7 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
           components_are_orthogonal=true;
         else
           components_are_orthogonal=false;  //May be wrong but cost is tiny
-        u=dmatrix(3,ns);
+        u=dmatrix(3,nsamp);
         if(load_data)
         {
             dir = this->get_string("dir");
@@ -120,7 +128,7 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
             string fname=dir+"/"+dfile;
             if((fp=fopen(fname.c_str(),"r")) == NULL)
                 throw(MsPASSError(string("Open failure for file ")+fname,
-					ErrorSeverity::Invalid));
+					             ErrorSeverity::Invalid));
             if (foff>0)fseek(fp,foff,SEEK_SET);
             /* The older seispp code allowed byte swapping here.   For
             efficiency we don't support that here and assume can do a
@@ -128,7 +136,7 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
             other types is needed this will need to be extended.  Here
             we just point fread at the internal u array. */
             inbuffer = this->u.get_address(0,0);
-            unsigned int nt=3*this->ns;
+            unsigned int nt=3*this->nsamp;
             if(fread((void *)(inbuffer),sizeof(double),nt,fp)
                     != nt )
             {
@@ -136,7 +144,7 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
                       ErrorSeverity::Invalid));
             }
             fclose(fp);
-	    live=true;
+	          mlive=true;
 	    }
         else
         {
@@ -152,34 +160,39 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
 }
 
 CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
-                       const int component_to_clone)
+                       const unsigned int component_to_clone)
     : BasicTimeSeries(dynamic_cast<const BasicTimeSeries&>(ts[component_to_clone])),
      Metadata(dynamic_cast<const Metadata&>(ts[component_to_clone])),
       u()
 {
     const string base_error("CoreSeismogram constructor from 3 Time Series:  ");
-    int i,j;
+    size_t i,j;
+    /* This is needed in case nsamp does not match s.size(0) */
+    size_t nstest = ts[component_to_clone].s.size();
+    if(nsamp!=nstest) this->nsamp=nstest;
+    /* this method allocates u and sets the proper metadata for npts*/
+    this->set_npts(this->nsamp);
     /* beware irregular sample rates, but don' be too machevelian.
            Abort only if the mismatch is large defined as accumulated time
            over data range of this constructor is less than half a sample */
-    if( (ts[0].dt!=ts[1].dt) || (ts[1].dt!=ts[2].dt) )
+    if( (ts[0].dt()!=ts[1].dt()) || (ts[1].dt()!=ts[2].dt()) )
     {
-        double ddtmag1=fabs(ts[0].dt-ts[1].dt);
-        double ddtmag2=fabs(ts[1].dt-ts[2].dt);
+        double ddtmag1=fabs(ts[0].dt()-ts[1].dt());
+        double ddtmag2=fabs(ts[1].dt()-ts[2].dt());
         double ddtmag;
         if(ddtmag1>ddtmag1)
             ddtmag=ddtmag1;
         else
             ddtmag=ddtmag2;
-        ddtmag1=fabs(ts[0].dt-ts[2].dt);
+        ddtmag1=fabs(ts[0].dt()-ts[2].dt());
         if(ddtmag1>ddtmag)  ddtmag=ddtmag1;
-        double ddtcum=ddtmag*((double)ts[0].ns);
-        if(ddtcum>(ts[0].dt)/2.0)
+        double ddtcum=ddtmag*((double)ts[0].s.size());
+        if(ddtcum>(ts[0].dt())/2.0)
         {
             stringstream ss;
             ss << base_error
                << "Sample intervals of components are not consistent"<<endl;
-            for(int ie=0; ie<3; ++ie) ss << "Component "<<ie<<" dt="<<ts[ie].dt<<" ";
+            for(int ie=0; ie<3; ++ie) ss << "Component "<<ie<<" dt="<<ts[ie].dt()<<" ";
             ss<<endl;
             throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
         }
@@ -207,20 +220,22 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         ss << "Message posted by Metadata::get_double:  "<<mde.what()<<endl;
     }
     // These are loaded just for convenience
-    t0_component[0]=ts[0].t0;
-    t0_component[1]=ts[1].t0;
-    t0_component[2]=ts[2].t0;
+    t0_component[0]=ts[0].t0();
+    t0_component[1]=ts[1].t0();
+    t0_component[2]=ts[2].t0();
 
     // Treat the normal case specially and avoid a bunch of work unless
     // it is required
-    if( (ts[0].ns==ts[1].ns) && (ts[1].ns==ts[2].ns)
-            && (fabs( (t0_component[0]-t0_component[1])/dt )<1.0)
-            && (fabs( (t0_component[1]-t0_component[2])/dt )<1.0))
+    if( (ts[0].s.size()==ts[1].s.size()) && (ts[1].s.size()==ts[2].s.size())
+            && (fabs( (t0_component[0]-t0_component[1])/dt() )<1.0)
+            && (fabs( (t0_component[1]-t0_component[2])/dt() )<1.0))
     {
-        this->u=dmatrix(3,ns);
+        /* Older code had this.   No longer needed with logic above that
+        calls set_npts.  that method creates and initialized the u dmatrix*/
+        //this->u=dmatrix(3,nsamp);
         // Load data by a simple copy operation
         /* This is a simple loop version
-        for(j=0;j<ns;++ns)
+        for(j=0;j<nsamp;++nsamp)
         {
         	this->u(0,j)=ts[0].s[j];
         	this->u(1,j)=ts[1].s[j];
@@ -230,9 +245,9 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         // This is a vector version that I'll use because it will
         // be faster albeit infinitely more obscure and
         // intrinsically more dangerous
-        dcopy(ns,&(ts[0].s[0]),1,u.get_address(0,0),3);
-        dcopy(ns,&(ts[1].s[0]),1,u.get_address(1,0),3);
-        dcopy(ns,&(ts[2].s[0]),1,u.get_address(2,0),3);
+        dcopy(nsamp,&(ts[0].s[0]),1,u.get_address(0,0),3);
+        dcopy(nsamp,&(ts[1].s[0]),1,u.get_address(1,0),3);
+        dcopy(nsamp,&(ts[2].s[0]),1,u.get_address(2,0),3);
     }
     else
     {
@@ -245,26 +260,29 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         tsmax=max(tsmax,t0_component[2]);
         temin=min(ts[0].endtime(),ts[1].endtime());
         temin=min(temin,ts[2].endtime());
-        ns=round((temin-tsmax)/dt);
-        if(ns<=0) throw MsPASSError(base_error
-                                        +"Irregular time windows of components have no overlap",
-                                        ErrorSeverity::Invalid);
-        this->u=dmatrix(3,ns);
+        nstest=round((temin-tsmax)/mdt);
+        if(nsamp<=0)
+          throw MsPASSError(base_error
+                +"Irregular time windows of components have no overlap",
+                        ErrorSeverity::Invalid);
+        else
+          this->set_npts(nstest);
         // Now load the data.  Use the time and sample number methods
         // to simplify process
         double t;
         t=tsmax;
-        this->t0 = t;
+        this->set_t0(t);
+        double delta=this->dt();
         for(int ic=0; ic<3; ++ic)
         {
-            for(j=0; j<ts[ic].ns; ++j)
+            for(j=0; j<ts[ic].s.size(); ++j)
             {
                 i=ts[ic].sample_number(t);
                 // silently do nothing if outside bounds.  This
                 // perhaps should be an error as it shouldn't really
                 // happen with the above algorithm, but safety is good
-                if( (i>=0) && (i<ns) ) this->u(ic,j)=ts[ic].s[i];
-                t += (this->dt);
+                if( (i>=0) && (i<nsamp) ) this->u(ic,j)=ts[ic].s[i];
+                t += delta;
             }
         }
     }
@@ -303,11 +321,13 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
 
 void CoreSeismogram::rotate_to_standard()
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || this->dead()) return; // do nothing in these situations
     double *work[3];
     int i,j;
     if(components_are_cardinal) return;
-    for(j=0; j<3; ++j) work[j]=new double[ns];
+    /* We assume nsamp is the number of samples = number of columns in u - we don't
+    check here for efficiency */
+    for(j=0; j<3; ++j) work[j]=new double[nsamp];
     if(components_are_orthogonal)
     {
         //
@@ -318,12 +338,12 @@ void CoreSeismogram::rotate_to_standard()
         for(i=0; i<3; ++i)
         {
             // x has a stride of 3 because we store in fortran order in x
-            dcopy(ns,u.get_address(0,0),3,work[i],1);
-            dscal(ns,tmatrix[0][i],work[i],1);
-            daxpy(ns,tmatrix[1][i],u.get_address(1,0),3,work[i],1);
-            daxpy(ns,tmatrix[2][i],u.get_address(2,0),3,work[i],1);
+            dcopy(nsamp,u.get_address(0,0),3,work[i],1);
+            dscal(nsamp,tmatrix[0][i],work[i],1);
+            daxpy(nsamp,tmatrix[1][i],u.get_address(1,0),3,work[i],1);
+            daxpy(nsamp,tmatrix[2][i],u.get_address(2,0),3,work[i],1);
         }
-        for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+        for(i=0; i<3; ++i) dcopy(nsamp,work[i],1,u.get_address(i,0),3);
     }
     else
     {
@@ -384,12 +404,12 @@ void CoreSeismogram::rotate_to_standard()
 
         for(i=0; i<3; ++i)
         {
-            dcopy(ns,u.get_address(0,0),3,work[i],1);
-            dscal(ns,tmatrix[i][0],work[i],1);
-            daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
-            daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
+            dcopy(nsamp,u.get_address(0,0),3,work[i],1);
+            dscal(nsamp,tmatrix[i][0],work[i],1);
+            daxpy(nsamp,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+            daxpy(nsamp,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
         }
-        for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+        for(i=0; i<3; ++i) dcopy(nsamp,work[i],1,u.get_address(i,0),3);
         components_are_orthogonal = true;
     }
     //
@@ -445,7 +465,11 @@ Original was plain C.  Adapted to C++ for seismic processing
 */
 void CoreSeismogram::rotate(SphericalCoordinate& xsc)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || dead()) return; // do nothing in these situations
+
+    //Earlier version had a reset of the nsamp variable here - we need to trust
+    //that is correct here for efficiency.  We the new API it would be hard
+    //to have that happen. without a serious blunder
     int i;
     double theta, phi;  /* corrected angles after dealing with signs */
     double a,b,c,d;
@@ -458,7 +482,7 @@ void CoreSeismogram::rotate(SphericalCoordinate& xsc)
     {
         //This will be left handed
         tmatrix[2][2] = -1.0;
-        dscal(ns,-1.0,u.get_address(2,0),3);
+        dscal(nsamp,-1.0,u.get_address(2,0),3);
         return;
     }
 
@@ -498,21 +522,21 @@ void CoreSeismogram::rotate(SphericalCoordinate& xsc)
 
     /* Now multiply the data by this transformation matrix.  */
     double *work[3];
-    for(i=0; i<3; ++i)work[i] = new double[ns];
+    for(i=0; i<3; ++i)work[i] = new double[nsamp];
     for(i=0; i<3; ++i)
     {
-        dcopy(ns,u.get_address(0,0),3,work[i],1);
-        dscal(ns,tmatrix[i][0],work[i],1);
-        daxpy(ns,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
-        daxpy(ns,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
+        dcopy(nsamp,u.get_address(0,0),3,work[i],1);
+        dscal(nsamp,tmatrix[i][0],work[i],1);
+        daxpy(nsamp,tmatrix[i][1],u.get_address(1,0),3,work[i],1);
+        daxpy(nsamp,tmatrix[i][2],u.get_address(2,0),3,work[i],1);
     }
-    for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<3; ++i) dcopy(nsamp,work[i],1,u.get_address(i,0),3);
     components_are_cardinal=false;
     for(i=0; i<3; ++i) delete [] work[i];
 }
 void CoreSeismogram::rotate(const double nu[3])
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || this->dead()) return; // do nothing in these situations
     SphericalCoordinate xsc=UnitVectorToSpherical(nu);
     this->rotate(xsc);
 }
@@ -522,7 +546,7 @@ void CoreSeismogram::rotate(const double nu[3])
  alters 0 and 1 components. */
 void CoreSeismogram::rotate(double phi)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || dead()) return; // do nothing in these situations
     int i,j,k;
     double a,b;
     a=cos(phi);
@@ -542,14 +566,14 @@ void CoreSeismogram::rotate(double phi)
      Not trick in this i only goes to 2 because 3 component
      is an identity.*/
     double *work[2];
-    for(i=0; i<2; ++i)work[i] = new double[ns];
+    for(i=0; i<2; ++i)work[i] = new double[nsamp];
     for(i=0; i<2; ++i)
     {
-        dcopy(ns,u.get_address(0,0),3,work[i],1);
-        dscal(ns,tmnew[i][0],work[i],1);
-        daxpy(ns,tmnew[i][1],u.get_address(1,0),3,work[i],1);
+        dcopy(nsamp,u.get_address(0,0),3,work[i],1);
+        dscal(nsamp,tmnew[i][0],work[i],1);
+        daxpy(nsamp,tmnew[i][1],u.get_address(1,0),3,work[i],1);
     }
-    for(i=0; i<2; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<2; ++i) dcopy(nsamp,work[i],1,u.get_address(i,0),3);
     double tm_tmp[3][3];
     double prod;
     for(i=0; i<3; ++i)
@@ -566,18 +590,20 @@ void CoreSeismogram::rotate(double phi)
 }
 void CoreSeismogram::transform(const double a[3][3])
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
-    int i,j,k;
+    if( (u.size()[1]<=0) || dead()) return; // do nothing in these situations
+    /* Older version had this - we need to trust ns is already u.columns().  */
+    //size_t ns = u.size()[1];
+    size_t i,j,k;
     double *work[3];
-    for(i=0; i<3; ++i) work[i] = new double[ns];
+    for(i=0; i<3; ++i) work[i] = new double[nsamp];
     for(i=0; i<3; ++i)
     {
-        dcopy(ns,u.get_address(0,0),3,work[i],1);
-        dscal(ns,a[i][0],work[i],1);
-        daxpy(ns,a[i][1],u.get_address(1,0),3,work[i],1);
-        daxpy(ns,a[i][2],u.get_address(2,0),3,work[i],1);
+        dcopy(nsamp,u.get_address(0,0),3,work[i],1);
+        dscal(nsamp,a[i][0],work[i],1);
+        daxpy(nsamp,a[i][1],u.get_address(1,0),3,work[i],1);
+        daxpy(nsamp,a[i][2],u.get_address(2,0),3,work[i],1);
     }
-    for(i=0; i<3; ++i) dcopy(ns,work[i],1,u.get_address(i,0),3);
+    for(i=0; i<3; ++i) dcopy(nsamp,work[i],1,u.get_address(i,0),3);
     for(i=0; i<3; ++i) delete [] work[i];
     /* Hand code this rather than use dmatrix or other library.
        Probably dumb, but this is just a 3x3 system.  This
@@ -615,7 +641,7 @@ Author:  Gary Pavlis
 void CoreSeismogram::free_surface_transformation(SlownessVector uvec,
         double a0, double b0)
 {
-    if( (ns<=0) || !live) return; // do nothing in these situations
+    if( (u.size()[1]<=0) || dead()) return; // do nothing in these situations
     double a02,b02,pslow,p2;
     double qa,qb,vpz,vpr,vsr,vsz;
     pslow=uvec.mag();
@@ -695,6 +721,25 @@ bool CoreSeismogram::set_transformation_matrix(const dmatrix& A)
     }
     return components_are_cardinal;
 }
+bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
+{
+    for(int i=0;i<3;++i)
+        for(int j=0;j<3;++j) tmatrix[i][j]=a[i][j];
+    bool cardinal;
+    cardinal=this->tmatrix_is_cardinal();
+    if(cardinal)
+    {
+        components_are_cardinal=true;
+        components_are_orthogonal=true;
+    }
+    else
+    {
+        components_are_cardinal=false;
+        /* Not necessarily true, but small overhead cost*/
+        components_are_orthogonal=false;
+    }
+    return components_are_cardinal;
+}
 CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
 {
     if(this!=&seisin)
@@ -714,6 +759,86 @@ CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
     }
     return(*this);
 }
+void CoreSeismogram::set_dt(const double sample_interval)
+{
+  this->BasicTimeSeries::set_dt(sample_interval);
+  /* This is the unique name - we always set it. */
+  this->put("delta",sample_interval);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("dt");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,sample_interval);
+    }
+  }
+}
+void CoreSeismogram::set_t0(const double t0in)
+{
+  this->BasicTimeSeries::set_t0(t0in);
+  /* This is the unique name - we always set it. */
+  this->put("starttime",t0in);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("t0");
+  aliases.insert("time");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,t0in);
+    }
+  }
+}
+void CoreSeismogram::set_npts(const size_t npts)
+{
+  this->BasicTimeSeries::set_npts(npts);
+  /* This is the unique name - we always set it.  The weird
+  cast is necessary to avoid type mismatch with unsigned*/
+  this->put("npts",(long int)npts);
+  /* these are hard coded aliases for sample_interval */
+  std::set<string> aliases;
+  std::set<string>::iterator aptr;
+  aliases.insert("nsamp");
+  aliases.insert("wfdisc.nsamp");
+  for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+  {
+    if(this->is_defined(*aptr))
+    {
+      this->put(*aptr,(long int)npts);
+    }
+  }
+  /* this method has the further complication that npts sets the size of the
+  data matrix.   Here we resize the matrix and initialize it to 0s.*/
+  this->u=dmatrix(3,npts);
+  this->u.zero();
+}
+void CoreSeismogram::sync_npts()
+{
+  if(nsamp != this->u.columns()) {
+    this->BasicTimeSeries::set_npts(this->u.columns());
+    /* This is the unique name - we always set it.  The weird
+    cast is necessary to avoid type mismatch with unsigned*/
+    this->put("npts",(long int)nsamp);
+    /* these are hard coded aliases for sample_interval */
+    std::set<string> aliases;
+    std::set<string>::iterator aptr;
+    aliases.insert("nsamp");
+    aliases.insert("wfdisc.nsamp");
+    for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
+    {
+        if(this->is_defined(*aptr))
+        {
+          this->put(*aptr,(long int)nsamp);
+        }
+    }
+  }
+}
+
 vector<double> CoreSeismogram::operator[] (const int i)const
 {
     try {
@@ -728,7 +853,7 @@ vector<double> CoreSeismogram::operator[] (const double t) const
 {
     try {
         vector<double> result;
-        int i=this->sample_number(t);
+        size_t i=this->sample_number(t);
         for(int k=0;k<3;++k)
           result.push_back(this->u(k,i));
         return result;

@@ -1,12 +1,12 @@
-mspasspy.mongodb
-================
+mspasspy.io
+=================
 
-.. automodule:: mspasspy.mongodb.normalize
+.. automodule:: mspasspy.io.converter
     :members:
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: mspasspy.mongodb.io
+.. automodule:: mspasspy.io.seispp
     :members:
     :undoc-members:
     :show-inheritance:

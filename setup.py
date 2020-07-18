@@ -7,9 +7,12 @@ import subprocess
 from setuptools import setup, Extension, find_namespace_packages
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
+from distutils import dir_util
 
 setup_path = os.path.abspath(__file__)
 os.chdir(os.path.normpath(os.path.join(setup_path, os.pardir)))
+
+dir_util.copy_tree("data", "python/mspasspy/data")
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir='cxx'):
@@ -69,6 +72,8 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     package_dir={"": "python"},
-    packages=find_namespace_packages(where="python", include=["mspasspy.*"]),
+    packages=find_namespace_packages(where="python", include=["mspasspy", "mspasspy.*"]),
+    package_data={'': ['*.yaml', '*.pf']},
+    include_package_data=True,
     install_requires=['pyyaml']
 )

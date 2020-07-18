@@ -9,7 +9,7 @@
 #include "mspass/utility/SphericalCoordinate.h"
 #include "mspass/seismic/SlownessVector.h"
 #include "mspass/seismic/TimeWindow.h"
-#include "mspass/seismic/Ensemble.h"
+//#include "mspass/seismic/Ensemble.h"
 namespace mspass{
 
 /* A Seismogram is viewed as a special collection of Time Series
@@ -68,7 +68,7 @@ Initializes data and sets aside memory for
  and the object is marked as not live.
 \param nsamples number of samples expected for holding data.
 **/
-	CoreSeismogram(const int nsamples);
+	CoreSeismogram(const size_t nsamples);
 /*!
  Construct a three component seismogram from three TimeSeries objects.
 
@@ -110,31 +110,31 @@ Initializes data and sets aside memory for
 
 **/
 	CoreSeismogram(const vector<mspass::CoreTimeSeries>& ts,
-		const int component_to_clone=0);
+		const unsigned int component_to_clone=0);
 /*! \brief Construct from Metadata definition that includes data path.
  *
  A Metadata object is sufficiently general that it can contain enough
- information to contruct an object from attributes contained in it. 
- This constuctor uses that approach, with the actual loading of data 
+ information to contruct an object from attributes contained in it.
+ This constuctor uses that approach, with the actual loading of data
  being an option (on by default).   In mspass this is constructor is
- used to load data with Metadata constructed from MongoDB and then 
+ used to load data with Metadata constructed from MongoDB and then
  using the path created from two parameters (dir and dfile used as
- in css3.0 wfdisc) to read data.   The API is general but the 
+ in css3.0 wfdisc) to read data.   The API is general but the
  implementation in mspass is very rigid.   It blindly assumes the
- data being read are binary doubles in the right byte order and 
+ data being read are binary doubles in the right byte order and
  ordered in the native order for dmatrix (Fortran order).  i.e.
  the constuctor does a raw fread of ns*3 doubles into the internal
- array used in the dmatrix implementation. 
+ array used in the dmatrix implementation.
 
  \param md is the Metadata used for the construction.  It MUST contain
  all of the following or it will fail:  delta, starttime,npts,U11,U21,
- U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.  
+ U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.
 
- \param load_data if true (default) a file name is constructed from 
- dir+"/"+dfile, the file is openned, fseek is called to foff, 
+ \param load_data if true (default) a file name is constructed from
+ dir+"/"+dfile, the file is openned, fseek is called to foff,
  data are read with fread, and the file is closed.  If false a dmatrix
  for u is still created of size 3xns, but the matrix is only initialized
- to all zeros.  
+ to all zeros.
 
  \exception  Will throw a MsPASSError if required metadata are missing.
  */
@@ -144,6 +144,66 @@ Initializes data and sets aside memory for
 **/
 
 	CoreSeismogram(const CoreSeismogram&);
+	/* These overload virtual methods in BasicTimeSeries. */
+	/*! \brief Set the sample interval.
+
+	This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined dt in Metadata.   That is handled by
+	first setting the internal dt value and then going through a fixed list
+	of valid alias keys for dt.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	\param sample_interval is the new data sample interval to be used.
+	*/
+	void set_dt(const double sample_interval);
+	/*! \brief Set the number of samples attribute for data.
+
+	This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined npts in Metadata.   That is handled by
+	first setting the internal npts value (actually ns) and then going through a fixed list
+	of valid alias keys for npts.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	This attribute has an additional complication compared to other setter
+	that are overrides from BasicTimeSeries.   That is, the number of points
+	define the data buffer size to hold the sample data.   To guarantee
+	the buffer size and the internal remain consistent this method clears
+	any existing content of the dmatrix u and initializes the 3xnpts matrix to 0s.
+	Note this means if one is using this to assemble a data object in pieces
+	you MUST call this method before loading any data or it will be cleared
+	and you will mysteriously find the data are all zeros.
+
+	\param npts is the new number of points to set.
+	*/
+	void set_npts(const size_t npts);
+	/*! \brief Sync the number of samples attribute with actual data size.
+
+	This method syncs the npts attribute with the actual size of the dmatrix u.
+	It also syncs aliases in the same way as the set_npts method.
+
+	*/
+	void sync_npts();
+	/*! \brief Set the data start time.
+
+	This method is complicated by the need to sync the changed value with
+	Metadata.   That is further complicated by the need to support aliases
+	for the keys used to defined npts in Metadata.   That is handled by
+	first setting the internal t0 value and then going through a fixed list
+	of valid alias keys for it.  Any that exist are changed.   If
+	none were previously defined the unique name (see documentation) is
+	added to Metadata.
+
+	This is a dangerous method to use on real data as it can mess up the time
+	if not handled correctly.   It should be used only when that sharp knife is
+	needed such as in assembling data outside of constructors in a test program.
+
+	\param t0in is the new data sample interval to be used.
+	*/
+	void set_t0(const double t0in);
 /*!
  Standard assignment operator.
 **/
@@ -315,35 +375,54 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 
 \return 3x3 transformation matrix.
 */
-        dmatrix get_transformation_matrix() const
-        {
-            dmatrix result(3,3);
-            for(int i=0;i<3;++i)
-                for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
-            return result;
-        };
+  dmatrix get_transformation_matrix() const
+  {
+      dmatrix result(3,3);
+      for(int i=0;i<3;++i)
+          for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
+      return result;
+  };
 /*! \brief Define the transformaton matrix.
  *
  Occasionally we need to set the transformation matrix manually.
- The type example is input with a format where the component 
- directions are embedded.  We use a dmatrix as it is more 
- easily wrapped for python than the raw C 2D array which 
- really doesn't translate well between the languages.   
+ The type example is input with a format where the component
+ directions are embedded.  We use a dmatrix as it is more
+ easily wrapped for python than the raw C 2D array which
+ really doesn't translate well between the languages.
 
  \param A is the 3X3 matrix copied to the internal transformation
    matrix array.
- 
+
  \return true if the given transformation matrix is an identity
-   meaning components_are_cardinal gets set true. 
-   false if the test for an identity matrix fails. 
+   meaning components_are_cardinal gets set true.
+   false if the test for an identity matrix fails.
  \exception Will throw a MsPASSError if the input matrix is
    not 3x3.
    */
-        bool set_transformation_matrix(const dmatrix& A);
+  bool set_transformation_matrix(const dmatrix& A);
+/*! \brief Define the transformaton matrix with a C style 3x3 matrix.
+
+ \param a is a C style 3x3 matrix.
+
+ \return true if the given transformation matrix is an identity
+   meaning components_are_cardinal gets set true.
+   false if the test for an identity matrix fails.
+ \exception Will throw a MsPASSError if the input matrix is
+   not 3x3.
+   */
+  bool set_transformation_matrix(const double a[3][3]);
 /*! Returns true of components are cardinal. */
 	bool cardinal()const {return components_are_cardinal;};
 /*! Return true if the components are orthogonal. */
 	bool orthogonal()const {return components_are_orthogonal;};
+/*!
+Returns the end time (time associated with last data sample)
+of this data object.
+**/
+	double endtime()const noexcept
+  {
+      return(mt0+mdt*static_cast<double>(u.columns()-1));
+  };
 
 protected:
 	/*!
@@ -379,47 +458,5 @@ private:
            matrix is an identity matrix. */
   bool tmatrix_is_cardinal();
 };
-//
-////////////////////////////////////////////////////
-//  Start helper function prototypes
-///////////////////////////////////////////////////
-//
-/*! \brief Return a new CoreSeismogram in an arrival time (relative) refernce frame.
-
- An arrival time reference means that the time is set to relative and
- zero is defined as an arrival time extracted from the metadata area of
- the object.  The key used to extract the arrival time used for the
- conversion is passed as a variable as this requires some flexibility.
- To preserve the absolute time standard in this conversion the 0 time
- computed from the arrival time field is used to compute the absolute
- time of the start of the output seismogram as atime+t0.  This result
- is stored in the metadata field keyed by the word "time".  This allows
- one to convert the data back to an absolute time standard if they so
- desire, but it is less flexible than the input key method.
-
-\exception SeisppError for errors in extracting required information from metadata area.
-
-\param din  is input seismogram
-\param key is the metadata key used to find the arrival time to use as a reference.
-\param tw is a TimeWindow object that defines the window of data to extract around
-    the desired arrival time.
-**/
-std::shared_ptr<CoreSeismogram> ArrivalTimeReference(CoreSeismogram& din,
-	std::string key, mspass::TimeWindow tw);
-/*!
- Extract one component from a CoreSeismogram and
- create a CoreTimeSeries object from it.
-
- Copies all Metadata from parent CoreSeismogram to build a CoreTimeSeries
- object.  Note that process will often leave relics like transformation
- matrix components.
-
-\param tcs is the CoreSeismogram to convert.
-\param component is the component to extract (0, 1, or 2)
-
-\return CoreTimeSeries of component requested
-**/
-mspass::CoreTimeSeries ExtractComponent(const CoreSeismogram& tcs,
-		const int component);
 }  //end mspass namespace enscapsulation
 #endif  // End guard

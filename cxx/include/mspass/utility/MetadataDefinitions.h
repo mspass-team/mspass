@@ -91,8 +91,8 @@ public:
    *
    This asks the inverse question to has_alias.  That is, it yields
    true of the key is registered as a valid alias.  It returns false
-   if the key is not defined at all.   Note it will yield false if 
-   the key is a registered unique name and not an alias. 
+   if the key is not defined at all.   Note it will yield false if
+   the key is a registered unique name and not an alias.
    */
   bool is_alias(const std::string key) const;
   list<std::string> aliases(const std::string key) const;
@@ -221,6 +221,38 @@ public:
   */
 
   std::pair<std::string,std::string> normalize_data(const string key) const;
+  /*! \brief Apply a set of aliases to data.
+
+  This method should be called in processing workflows to apply a series
+  of defined aliases to data.  The method uses the is_alias method to
+  verify if an alias name is valid.  It will not change the key if the name is
+  not defined as a valid alias.   The keys that fail that test will be
+  posted to the std::list that is returned.   Callers should test the
+  size of the return and if it is not empty take appropriate action.
+
+    \param d is the data to alter (usually actually a TimeSeries of Seismogram)
+    \param aliaslist is a list of aliases names to apply.
+
+    \return std::list of srings of failed changes.  Callers should
+     test the size of this return and take action if needed.
+    */
+std::list<std::string> apply_aliases(mspass::Metadata& d,
+          const std::list<std::string> aliaslist);
+  /*! \brief Restore any aliases to unique names.
+
+  Aliases are needed to support legacy packages, but can cause downstream
+  problem if left intact.  This method clears any aliases and sets them
+  to the unique_name defined by this object.
+
+  \param d is data to be altered.  Normally a Seismogram of TimeSeries but
+    can be a raw Metadata object.
+
+  \return ErrorLogger containing any problems encountered.  This function
+   always returns and treats any problems as nonfatal errors and posts
+   a log entry into this returned object. Caller should test the size of
+   the return and handle or ignore errors as appropriate.
+   */
+  void clear_aliases(mspass::Metadata& d);
   /*! Standard assignment operator. */
   MetadataDefinitions& operator=(const MetadataDefinitions& other);
   /*!\brief Accumulate additional definitions.
