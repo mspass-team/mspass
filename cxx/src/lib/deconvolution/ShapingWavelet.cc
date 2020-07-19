@@ -159,8 +159,8 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft)
     wavelet_name=string("data");
     /* Silently handle this default condition that allows calling the
      * constructor without the nfft argument */
-    if(nfft<=0) nfft=d.ns;
-    dt=d.dt;
+    if(nfft<=0) nfft=d.npts();
+    dt=d.dt();
     df=1.0/(dt*((double)nfft));
     /* This is prone to an off by one error */
     double t0;
@@ -170,10 +170,11 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft)
         t0=-(double)(nfft/2);
     t0 *= dt;
     /* A basic sanity check on d */
-    if(d.tref==TimeReferenceType::UTC) throw MsPASSError(base_error
+    if(d.time_is_UTC())
+      throw MsPASSError(base_error
                 + "Shaping wavelet must be defined in relative time centered on 0",
                  ErrorSeverity::Invalid);
-    if( (d.endtime()<t0) || (d.t0>(-t0)) )
+    if( (d.endtime()<t0) || (d.t0()>(-t0)) )
         throw MsPASSError(base_error + "Input wavelet time span is illegal\n"
             + "Wavelet must be centered on 0 reference time",
             ErrorSeverity::Invalid);
@@ -185,7 +186,7 @@ ShapingWavelet::ShapingWavelet(CoreTimeSeries d, int nfft)
     for(i=0; i<nfft; ++i) dwork.push_back(0.0);
     /* We loop over
      * we skip through d vector until we insert */
-    for(i=0; i<d.ns; ++i)
+    for(i=0; i<d.npts(); ++i)
     {
         double t;
         t=t0+dt*((double)i);
@@ -228,11 +229,19 @@ CoreTimeSeries ShapingWavelet::impulse_response()
         gsl_fft_complex_wavetable_free (wavetable);
         gsl_fft_complex_workspace_free (workspace);
         CoreTimeSeries result(nfft);
+        /* old API
         result.tref=TimeReferenceType::Relative;
         result.ns=nfft;
         result.dt=dt;
         result.t0 = dt*(-(double)nfft/2);
         result.live=true;
+        */
+
+        result.set_tref(TimeReferenceType::Relative);
+        result.set_npts(nfft);
+        result.set_dt(dt);
+        result.set_t0(dt*(-(double)nfft/2));
+        result.set_live();
         /* Unfold the fft output */
         int k,shift;
         shift=nfft/2;

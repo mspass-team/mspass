@@ -66,7 +66,7 @@ double& dmatrix::operator()(const size_t rowindex, const size_t colindex)
 // subtle difference here.  This one returns a pointer to the 
 // requested element
 //
-double* dmatrix::get_address(size_t rowindex, size_t colindex) 
+double* dmatrix::get_address(size_t rowindex, size_t colindex) const
 {
   double *ptr;
   int out_of_range=0;

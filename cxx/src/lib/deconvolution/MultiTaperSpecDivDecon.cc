@@ -75,7 +75,7 @@ int MultiTaperSpecDivDecon::read_metadata(const Metadata &md,bool refresh)
         if(nseq>nseqtest || (nseq<1))
         {
             cerr << base_error << "(WARNING) Illegal value for number_tapers parameter="<<nseq
-                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)=" 
+                 << endl << "Resetting to maximum of 2*(time_bandwidth_product)="
 		 << nseqtest<<endl;
             nseq=nseqtest;
             cerr << nseq<<endl;
@@ -343,7 +343,7 @@ void MultiTaperSpecDivDecon::process()
         //DEBUG
         //snr.push_back(amp/noise_spectrum[j]);
 	//cerr << "j="<<j<<"amp,noiseamp "<<amp<<", "<<noise_spectrum[j]<<endl;
-	/* this normalization assumes noise_spectrum is amplitude NOT 
+	/* this normalization assumes noise_spectrum is amplitude NOT
 	 * power spectrum values */
         if(amp<noise_spectrum[j])
         {
@@ -486,12 +486,21 @@ CoreTimeSeries MultiTaperSpecDivDecon::actual_output()
       retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */
       double dt=this->shapingwavelet.sample_interval();
       /* t0 is time of sample zero - hence normally negative*/
+      /* Old API
       result.t0=dt*(-(double)i0);
       result.dt=dt;
       result.live=true;
       result.tref=TimeReferenceType::Relative;
       result.s=ao;
       result.ns=nfft;
+      */
+
+      result.set_t0(dt*(-(double)i0));
+      result.set_dt(dt);
+      result.set_live();
+      result.set_npts(nfft);
+      result.set_tref(TimeReferenceType::Relative);
+      result.s=ao;
       return result;
     } catch(...) {
         throw;

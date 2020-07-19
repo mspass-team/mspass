@@ -54,13 +54,13 @@ int LinearTaper::apply(TimeSeries& d)
     }
     int is;
     double t,wt;
-    for(t=d.t0;t<t0head;t+=d.dt)
+    for(t=d.t0();t<t0head;t+=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns) d.s[is]=0.0;
+      if(is>=0 && is<d.npts()) d.s[is]=0.0;
     }
     rampslope=1.0/(t1head-t0head);
-    for(t=t0head;t<t1head;t+=d.dt)
+    for(t=t0head;t<t1head;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -72,24 +72,24 @@ int LinearTaper::apply(TimeSeries& d)
   }
   if(tail)
   {
-    if(d.t0>t0tail)
+    if(d.t0()>t0tail)
     {
       stringstream ss;
       ss<<"LinearTaper::apply:  inconsistent tail taper parameters"<<endl
-        <<"Data start time="<<d.t0<<" is after the end of the tail taper = "
+        <<"Data start time="<<d.t0()<<" is after the end of the tail taper = "
         <<t0tail<<endl<<"Data vector was not altered"<<endl;
       d.elog.log_error("LinearTaper",ss.str(),ErrorSeverity::Complaint);
       return -1;
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t>=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns) d.s[is]=0.0;
+      if(is>=0 && is<d.npts()) d.s[is]=0.0;
     }
     rampslope=1.0/(t0tail-t1tail);
-    for(t=t0tail;t>=t1tail;t-=d.dt)
+    for(t=t0tail;t>=t1tail;t-=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -118,16 +118,16 @@ int LinearTaper::apply( Seismogram& d)
     }
     int is;
     double t,wt;
-    for(t=d.t0;t<t0head;t+=d.dt)
+    for(t=d.t0();t<t0head;t+=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns)
+      if(is>=0 && is<d.npts())
       {
         for(k=0;k<3;++k)d.u(k,is)=0.0;
       }
     }
     rampslope=1.0/(t1head-t0head);
-    for(t=t0head;t<t1head;t+=d.dt)
+    for(t=t0head;t<t1head;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -139,11 +139,11 @@ int LinearTaper::apply( Seismogram& d)
   }
   if(tail)
   {
-    if(d.t0>t0tail)
+    if(d.t0()>t0tail)
     {
       stringstream ss;
       ss<<"LinearTaper::apply:  inconsistent tail taper parameters"<<endl
-        <<"Data start time="<<d.t0<<" is after the end of the tail taper = "
+        <<"Data start time="<<d.t0()<<" is after the end of the tail taper = "
         <<t0tail<<endl<<"Data vector was not altered"<<endl;
       MsPASSError merr(ss.str(),ErrorSeverity::Complaint);
       d.elog.log_error("LinearTaper",ss.str(),ErrorSeverity::Complaint);
@@ -151,16 +151,16 @@ int LinearTaper::apply( Seismogram& d)
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t>=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns)
+      if(is>=0 && is<d.npts())
       {
         for(k=0;k<3;++k) d.u(k,is)=0.0;
       }
     }
     rampslope=1.0/(t0tail-t1tail);
-    for(t=t0tail;t>=t1tail;t-=d.dt)
+    for(t=t0tail;t>=t1tail;t-=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -237,12 +237,12 @@ int CosineTaper::apply( TimeSeries& d)
     }
     int is;
     double t,wt;
-    for(t=d.t0;t<t0head;t+=d.dt)
+    for(t=d.t0();t<t0head;t+=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns) d.s[is]=0.0;
+      if(is>=0 && is<d.npts()) d.s[is]=0.0;
     }
-    for(t=t0head;t<t1head;t+=d.dt)
+    for(t=t0head;t<t1head;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -254,26 +254,26 @@ int CosineTaper::apply( TimeSeries& d)
   }
   if(tail)
   {
-    if(d.t0>t0tail)
+    if(d.t0()>t0tail)
     {
       stringstream ss;
       ss<<"CosineTaper::apply:  inconsistent tail taper parameters"<<endl
-        <<"Data start time="<<d.t0<<" is after the end of the tail taper = "
+        <<"Data start time="<<d.t0()<<" is after the end of the tail taper = "
         <<t0tail<<endl<<"Data vector was not altered"<<endl;
       d.elog.log_error("CosineTaper",ss.str(),ErrorSeverity::Complaint);
       return -1;
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t>=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns)
+      if(is>=0 && is<d.npts())
       {
         d.s[is]=0.0;
       }
     }
-    for(t=t1tail;t<t0tail;t+=d.dt)
+    for(t=t1tail;t<t0tail;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -300,15 +300,15 @@ int CosineTaper::apply( Seismogram& d)
     }
     int is;
     double t,wt;
-    for(t=d.t0;t<t0head;t+=d.dt)
+    for(t=d.t0();t<t0head;t+=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns)
+      if(is>=0 && is<d.npts())
       {
         for(int k=0;k<3;++k)d.u(k,is)=0.0;
       }
     }
-    for(t=t0head;t<t1head;t+=d.dt)
+    for(t=t0head;t<t1head;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -320,26 +320,26 @@ int CosineTaper::apply( Seismogram& d)
   }
   if(tail)
   {
-    if(d.t0>t0tail)
+    if(d.t0()>t0tail)
     {
       stringstream ss;
       ss<<"CosineTaper::apply:  inconsistent tail taper parameters"<<endl
-        <<"Data start time="<<d.t0<<" is after the end of the tail taper = "
+        <<"Data start time="<<d.t0()<<" is after the end of the tail taper = "
         <<t0tail<<endl<<"Data vector was not altered"<<endl;
       d.elog.log_error("CosineTaper",ss.str(),ErrorSeverity::Complaint);
       return -1;
     }
     int is;
     double t,wt;
-    for(t=d.endtime();t>=t0tail;t-=d.dt)
+    for(t=d.endtime();t>=t0tail;t-=d.dt())
     {
       is=d.sample_number(t);
-      if(is>=0 && is<d.ns)
+      if(is>=0 && is<d.npts())
       {
         for(int k=0;k<3;++k) d.u(k,is)=0.0;
       }
     }
-    for(t=t1tail;t<t0tail;t+=d.dt)
+    for(t=t1tail;t<t0tail;t+=d.dt())
     {
       is=d.sample_number(t);
       if(is>=0)
@@ -369,17 +369,17 @@ int VectorTaper::apply( TimeSeries& d)
 {
   if(all)
   {
-    if(d.ns!=taper.size())
+    if(d.npts()!=taper.size())
     {
       stringstream ss;
       ss<<"VectorTaper apply method:  size mismatch with data"<<endl
-        <<"operator taper size="<<taper.size()<<" but data vector length="<<d.ns
+        <<"operator taper size="<<taper.size()<<" but data vector length="<<d.npts()
         <<endl
         <<"This operator requires these lengths to match"<<endl;
       d.elog.log_error("VectorTaper",ss.str(),ErrorSeverity::Complaint);
       return -1;
     }
-    for(int i=0;i<d.ns;++i) d.s[i] *= taper[i];
+    for(int i=0;i<d.npts();++i) d.s[i] *= taper[i];
     return 0;
   }
   else
@@ -389,17 +389,17 @@ int VectorTaper::apply( Seismogram& d)
 {
   if(all)
   {
-    if(d.ns!=taper.size())
+    if(d.npts()!=taper.size())
     {
       stringstream ss;
       ss<<"VectorTaper apply method:  size mismatch with data"<<endl
-        <<"operator taper size="<<taper.size()<<" but data vector length="<<d.ns
+        <<"operator taper size="<<taper.size()<<" but data vector length="<<d.npts()
         <<endl
         <<"This operator requires these lengths to match"<<endl;
       d.elog.log_error("VectorTaper",ss.str(),ErrorSeverity::Complaint);
       return -1;
     }
-    for(int i=0;i<d.ns;++i)
+    for(int i=0;i<d.npts();++i)
     {
       double wt=taper[i];
       for(int k=0;k<3;++k)

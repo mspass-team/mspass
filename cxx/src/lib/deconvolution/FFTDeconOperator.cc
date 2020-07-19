@@ -139,12 +139,19 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray& winv, const 
     for(int k=0; k<winv_work.size(); ++k) result.s.push_back(winv_work[k].real());
     /* This applies tshift */
     result.s=circular_shift(result.s,i0);
-    result.t0=dt*(-(double)i0)+t0parent;
     //result.t0=dt*((double)i0);
+    /* Old API
+    result.t0=dt*(-(double)i0)+t0parent;
     result.dt=dt;
     result.live=true;
     result.tref=TimeReferenceType::Relative;
     result.ns=nfft;
+    */
+    result.set_t0(dt*(-(double)i0)+t0parent);
+    result.set_dt(dt);
+    result.set_live();
+    result.set_npts(nfft);
+    result.set_tref(TimeReferenceType::Relative);
     return result;
   }catch(...){throw;};
 }

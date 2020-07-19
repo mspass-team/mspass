@@ -261,7 +261,7 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
   const double DTSKEW(0.0001);
   const string base_error("TestSeismogramInput:  ");
   int error_count(0);
-  if(d.tref!=TimeReferenceType::Relative)
+  if(d.time_is_relative())
   {
     stringstream ss;
     ss<<base_error<<"Data received are using UTC standard; must be Relative"<<endl;
@@ -277,21 +277,21 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
     d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
     ++error_count;
   }
-  if((abs(d.dt-operator_dt)/operator_dt)>DTSKEW)
+  if((abs(d.dt()-operator_dt)/operator_dt)>DTSKEW)
   {
     stringstream ss;
     ss<<base_error<<"Mismatched sample intervals.  "<<
     "Each operator instantance requires a fixed sample interval"<<endl
     <<"operator sample interval="<<operator_dt<<" but data sample interval="
-    <<d.dt<<endl;
+    <<d.dt()<<endl;
     d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
     ++error_count;
   }
-  if(this->processing_window.start<d.t0 || this->processing_window.end>d.endtime())
+  if(this->processing_window.start<d.t0() || this->processing_window.end>d.endtime())
   {
     stringstream ss;
     ss<<base_error<<"Data time window mistmatch."<<endl
-	    <<"Data span relative time range ="<<d.t0<<" to "<<d.endtime()<<endl
+	    <<"Data span relative time range ="<<d.t0()<<" to "<<d.endtime()<<endl
 	    <<"Processing window range of "<<this->processing_window.start
       	    << " to " <<this->processing_window.start<<" is not inside data range"<<endl;
     d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
@@ -299,12 +299,12 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
   }
   if(loadnoise)
   {
-    if(this->noise_window.start<d.t0 || this->noise_window.end>d.endtime())
+    if(this->noise_window.start<d.t0() || this->noise_window.end>d.endtime())
     {
       stringstream ss;
       ss<<base_error<<"Noise time window mistmatch."<<endl
-            <<"Data span relative time range ="<<d.t0<<" to "<<d.endtime()<<endl
-            <<"Noise window range of "<<this->noise_window.start<<d.t0
+            <<"Data span relative time range ="<<d.t0()<<" to "<<d.endtime()<<endl
+            <<"Noise window range of "<<this->noise_window.start<<d.t0()
             << " to " <<this->noise_window.start<<" is not inside data range"<<endl;
 
       d.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
@@ -316,7 +316,7 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
 void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
 {
   try{
-    if(!d.live) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
+    if(d.dead()) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
 		    ErrorSeverity::Invalid);
     /* This does everything except load the wavelet from wcomp so we just
      * invoke it here. */
@@ -333,7 +333,7 @@ void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
 }
 void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
 {
-  if(!d.live) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
+  if(d.dead()) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
     int errcount;
@@ -368,8 +368,10 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
         {
             decondata.u(k,ii)=dtmp.u(k,i);
         }
-    decondata.ns=FFTDeconOperator::nfft;
-    decondata.t0 -= operator_dt*static_cast<double>(winlength);
+    decondata.set_npts(FFTDeconOperator::nfft);
+    double newt0=decondata.t0() - operator_dt*static_cast<double>(winlength);
+    decondata.set_t0(newt0);
+    //decondata.t0 -= operator_dt*static_cast<double>(winlength);
     if(nload)
     {
       Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
@@ -382,19 +384,19 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
  * */
 void CNR3CDecon::loadwavelet(const TimeSeries& w)
 {
-  if(!w.live) throw MsPASSError("CNR3CDecon::loadwavelet method received data marked dead",
+  if(w.dead()) throw MsPASSError("CNR3CDecon::loadwavelet method received data marked dead",
 		    ErrorSeverity::Invalid);
-  if(w.ns<=0) throw MsPASSError("CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples <=0)",
+  if(w.npts()<=0) throw MsPASSError("CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples <=0)",
 		  ErrorSeverity::Invalid);
   try{
     int k,kk;
     int ns_to_copy;
     this->wavelet=w;
-    if(w.ns>(FFTDeconOperator::nfft-this->winlength))
+    if(w.npts()>(FFTDeconOperator::nfft-this->winlength))
     {
       ns_to_copy=FFTDeconOperator::nfft-2*this->winlength;
       stringstream ss;
-      ss<<"loadwavelet method:  size mismatch.  Wavelet received has length="<<w.ns<<endl
+      ss<<"loadwavelet method:  size mismatch.  Wavelet received has length="<<w.npts()<<endl
 	      << "This is larger than 3x the processing window length of "<<this->winlength<<endl
 	      << "Wavelet length must be less than or equal to 3x processing window length"<<endl
 	      << "Truncated on the right to processing window length - results may be invalid"
@@ -402,14 +404,18 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
       wavelet.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
     }
     else
-      ns_to_copy=w.ns;
+      ns_to_copy=w.npts();
     this->wavelet.s.clear();
     this->wavelet.s.reserve(FFTDeconOperator::nfft);
     for(k=0;k<FFTDeconOperator::nfft;++k)this->wavelet.s.push_back(0.0);
     /* this retains winlength zeros at the front */
     for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)this->wavelet.s[kk]=w.s[k];
-    this->wavelet.t0 -= operator_dt*static_cast<double>(winlength);
-    this->wavelet.ns=FFTDeconOperator::nfft;
+    //this->wavelet.t0 -= operator_dt*static_cast<double>(winlength);
+    //this->wavelet.ns=FFTDeconOperator::nfft;
+    double newt0;
+    newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
+    this->wavelet.set_t0(newt0);
+    this->wavelet.set_npts(FFTDeconOperator::nfft);
     switch(algorithm)
     {
       /* Note all the algorithms here alter wavelet by applying a taper */
@@ -424,22 +430,22 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
 }
 void CNR3CDecon::loadnoise_data(const Seismogram& n)
 {
-  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise_data method received data marked dead",
+  if(n.dead()) throw MsPASSError("CNR3CDecon::loadnoise_data method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
     /* If the noise data length is larger than the operator we silenetly
     truncate it.  If less we zero pad*/
     CoreSeismogram work(n);
-    if(n.ns>FFTDeconOperator::nfft)
+    if(n.npts()>FFTDeconOperator::nfft)
     {
-      TimeWindow twork(n.t0,n.time(FFTDeconOperator::nfft-1));
+      TimeWindow twork(n.t0(),n.time(FFTDeconOperator::nfft-1));
       work=WindowData3C(n,twork);
     }
-    else if(n.ns<=FFTDeconOperator::nfft)
+    else if(n.npts()<=FFTDeconOperator::nfft)
     {
       work.u=dmatrix(3,FFTDeconOperator::nfft);
       work.u.zero();
-      for(int i=0;i<n.ns;++i)
+      for(int i=0;i<n.npts();++i)
         for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
     }
     /* We always compute noise as total of three component power spectra
@@ -469,23 +475,23 @@ void CNR3CDecon::loadnoise_data(const PowerSpectrum& d)
 
 void CNR3CDecon::loadnoise_wavelet(const TimeSeries& n)
 {
-  if(!n.live) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received data marked dead",
+  if(n.dead()) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
     /* If the noise data length is larger than the operator we silenetly
     truncate it.  If less we zero pad*/
     CoreTimeSeries work(n);
-    if(n.ns>FFTDeconOperator::nfft)
+    if(n.npts()>FFTDeconOperator::nfft)
     {
-      TimeWindow twork(n.t0,n.time(FFTDeconOperator::nfft-1));
+      TimeWindow twork(n.t0(),n.time(FFTDeconOperator::nfft-1));
       work=WindowData(dynamic_cast<const CoreTimeSeries&>(n),twork);
     }
-    else if(n.ns<=FFTDeconOperator::nfft)
+    else if(n.npts()<=FFTDeconOperator::nfft)
     {
       work.s.reserve(FFTDeconOperator::nfft);
-      for(int i=0;i<n.ns;++i)
+      for(int i=0;i<n.npts();++i)
         work.s.push_back(n.s[i]);
-      for(int i=n.ns;i<FFTDeconOperator::nfft;++i) work.s.push_back(0.0);
+      for(int i=n.npts();i<FFTDeconOperator::nfft;++i) work.s.push_back(0.0);
     }
     psnoise=this->specengine.apply(TimeSeries(work,"INVALID"));
   }catch(...){throw;};
@@ -502,7 +508,7 @@ void CNR3CDecon::compute_gwl_inverse()
 {
   try{
     if(taper_data) wavelet_taper->apply(this->wavelet);
-    ComplexArray cwvec(this->wavelet.ns,this->wavelet.s);
+    ComplexArray cwvec(this->wavelet.npts(),this->wavelet.s);
     gsl_fft_complex_forward(cwvec.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     /* This computes the (regularized) denominator for the decon operator*/
@@ -569,8 +575,8 @@ void CNR3CDecon::compute_gdamp_inverse()
 {
   try{
     if(taper_data) wavelet_taper->apply(this->wavelet);
-    /* Assume if we got here wavelet.ns == nfft*/
-    ComplexArray b_fft(this->wavelet.ns,this->wavelet.s);
+    /* Assume if we got here wavelet.npts() == nfft*/
+    ComplexArray b_fft(this->wavelet.npts(),this->wavelet.s);
     gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     ComplexArray conj_b_fft(b_fft);
@@ -629,12 +635,12 @@ Seismogram CNR3CDecon::process()
     /* This is used to apply a shift to the fft outputs to put signals
     at relative time 0 */
     int t0_shift;
-    t0_shift= round((-rfest.t0)/rfest.dt);
+    t0_shift= round((-rfest.t0())/rfest.dt());
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* This is the proper mspass way to preserve history */
     rfest.append_chain("process_sequence","CNR3CDecon");
-    if(rfest.ns!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
+    if(rfest.npts()!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
     int nhighsnr;
     double df;
     df=1.0/(operator_dt*static_cast<double>(FFTDeconOperator::nfft));
@@ -645,7 +651,7 @@ Seismogram CNR3CDecon::process()
       if(taper_data) data_taper->apply(work);
       wvec.clear();
       int ntocopy=FFTDeconOperator::nfft;
-      if(ntocopy>work.ns) ntocopy=work.ns;
+      if(ntocopy>work.npts()) ntocopy=work.npts();
       for(j=0;j<ntocopy;++j) wvec.push_back(work.s[j]);
       for(j=ntocopy;j<FFTDeconOperator::nfft;++j)
                    wvec.push_back(0.0);
@@ -718,12 +724,12 @@ TimeSeries CNR3CDecon::actual_output()
       TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
       /* Force these even though they are likely already defined as
       in the parent wavelet TimeSeries. */
-      result.t0=operator_dt*(-(double)i0);
-      result.dt=this->operator_dt;
-      result.live=true;
-      result.tref=TimeReferenceType::Relative;
+      result.set_live();
       result.s=ao;
-      result.ns=FFTDeconOperator::nfft;
+      result.set_t0(operator_dt*(-(double)i0));
+      result.set_dt(this->operator_dt);
+      result.set_tref(TimeReferenceType::Relative);
+      result.set_npts(FFTDeconOperator::nfft);
       return result;
   } catch(...) {
       throw;
@@ -732,10 +738,10 @@ TimeSeries CNR3CDecon::actual_output()
 TimeSeries CNR3CDecon::inverse_wavelet(double tshift)
 {
   try {
-    /* Using the time shift of wavelet.t0 may be a bad idea here.  Will
+    /* Using the time shift of wavelet.t0() may be a bad idea here.  Will
     need to sort that out in debugging behaviour*/
     CoreTimeSeries invcore(this->FFTDeconOperator::FourierInverse(this->winv,
-        *shapingwavelet.wavelet(),operator_dt,wavelet.t0));
+        *shapingwavelet.wavelet(),operator_dt,wavelet.t0()));
     TimeSeries result(invcore,"Invalid");
     /* Copy the error log from wavelet and post some information parameters
     to metadata */

@@ -2,6 +2,7 @@
 #include "mspass/deconvolution/wavelet.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/deconvolution/MTPowerSpectrumEngine.h"
+/* Hack test */
 using namespace std;
 using namespace mspass;
 int main(int argc, char **argv)
@@ -33,12 +34,12 @@ int main(int argc, char **argv)
     cout << f[i]<<" "<<G[i]<<endl;
   }
   cout << "Trying TimeSeries apply method"<<endl;
-  TimeSeries ts;
-  ts.t0=0;
-  ts.dt=0.01;
-  ts.tref=TimeReferenceType::Relative;
-  ts.ns=200;
-  ts.live=true;
+  TimeSeries ts(200);
+  ts.set_t0(0.0);
+  ts.set_dt(0.01);
+  ts.set_tref(TimeReferenceType::Relative);
+  ts.set_npts(200);
+  ts.set_live();
   ts.s=g;
   PowerSpectrum ps2,ps4,ps5;
   ps2=mtpse2.apply(ts);

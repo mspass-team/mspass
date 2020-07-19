@@ -87,13 +87,13 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const mspass::TimeSeries& d)
     const string algorithm("MTPowerSpectrumEngine");
     /* We need to define this here to allow posting problems to elog.*/
     PowerSpectrum result;
-    int dsize=d.ns;
+    int dsize=d.npts();
     vector<double> work;
-    deltaf=this->set_df(d.dt);
+    deltaf=this->set_df(d.dt());
     if(dsize<taperlen)
     {
       stringstream ss;
-      ss<<"Received data window of length="<<d.ns<<" samples"<<endl
+      ss<<"Received data window of length="<<d.npts()<<" samples"<<endl
          << "Operator length="<<taperlen<<endl
          << "Results may be unreliable"<<endl;
       result.elog.log_error(algorithm,string(ss.str()),ErrorSeverity::Suspect);
@@ -104,7 +104,7 @@ PowerSpectrum MTPowerSpectrumEngine::apply(const mspass::TimeSeries& d)
     else if(dsize>taperlen)
     {
       stringstream ss;
-      ss<<"Received data window of length="<<d.ns<<" samples"<<endl
+      ss<<"Received data window of length="<<d.npts()<<" samples"<<endl
          << "Operator length="<<taperlen<<endl
          << "Results may be unreliable because data will be truncated to taper length"<<endl;
       result.elog.log_error(algorithm,ss.str(),ErrorSeverity::Suspect);

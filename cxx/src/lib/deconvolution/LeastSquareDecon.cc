@@ -145,12 +145,21 @@ CoreTimeSeries LeastSquareDecon::actual_output()
         /* Getting dt from here is unquestionably a flaw in the api, but will
         retain for now.   Perhaps should a copy of dt in the ScalarDecon object. */
         double dt=this->shapingwavelet.sample_interval();
+        /* Old API
         result.t0= (-dt*((double)i0));
         result.dt=dt;
         result.live=true;
         result.tref=TimeReferenceType::Relative;
         result.s=ao;
         result.ns=nfft;
+        */
+
+        result.set_t0(-dt*((double)i0));
+        result.set_dt(dt);
+        result.set_live();
+        result.set_npts(nfft);
+        result.set_tref(TimeReferenceType::Relative);
+        result.s=ao;
         return result;
     } catch(...) {
         throw;

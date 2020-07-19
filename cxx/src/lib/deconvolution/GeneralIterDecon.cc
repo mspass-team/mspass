@@ -243,7 +243,7 @@ void GeneralIterDecon::construct_weight_penalty_function(const Metadata& md)
             int i0=ir.sample_number(0.0);
             double peakirval=ir.s[i0];
             double halfmax=peakirval/2.0;
-            for(i=i0; i<ir.ns; ++i)
+            for(i=i0; i<ir.npts(); ++i)
             {
                 if(ir.s[i]<halfmax) break;
             }
@@ -297,7 +297,7 @@ int GeneralIterDecon::load(const CoreSeismogram& draw, TimeWindow dwin_in)
         not allow lags at the edges (defined by a construction parameter wavelet_pad)
         */
         d_all=WindowData3C(draw,dwin);
-        ndwin=d_all.ns;
+        ndwin=d_all.npts();
         return 0;
     } catch(...) {
         throw;
@@ -308,7 +308,7 @@ int GeneralIterDecon::loadnoise(const CoreSeismogram& draw, TimeWindow nwin_in)
     try {
         nwin=nwin_in;
         n=WindowData3C(draw,nwin);
-        nnwin=n.ns;
+        nnwin=n.npts();
         double ret=this->compute_resid_linf_floor();
         if(ret>0)
             return 0;
@@ -421,17 +421,17 @@ CoreTimeSeries trim(const CoreTimeSeries& d,double floor=0.005)
         /* First till work with absolute values of d.s from t=0 to end */
         int i,ii,k,kk;
         int i0=d.sample_number(0.0);
-        for(i=i0; i<d.ns; ++i)work.push_back(fabs(d.s[i]));
+        for(i=i0; i<d.npts(); ++i)work.push_back(fabs(d.s[i]));
         /* Establish a smoother width from first zero crossing or small
                  * absolute amplitude.*/
         double peakamp=work[0];
-        for(i=i0; i<d.ns; ++i)
+        for(i=i0; i<d.npts(); ++i)
         {
             if(d.s[i]<0.0)break;
             if((fabs(d.s[i])/peakamp)<0.001) break;
         }
         /* This should never happen, but is an escape valve. */
-        if(i==(d.ns-1)) return d;
+        if(i==(d.npts()-1)) return d;
         ii=i-i0;
         const int minimum_smoother_width(5);
         int smoother_width=ii-1;
@@ -467,7 +467,7 @@ CoreTimeSeries trim(const CoreTimeSeries& d,double floor=0.005)
                  << "Trim floor argument specified="<<floor<<endl;
             return d;  // In this situation just return the original
         }
-        double winsize=(static_cast<double>(half_width))*d.dt;
+        double winsize=(static_cast<double>(half_width))*d.dt();
         TimeWindow cutwin(-winsize,winsize);
         return(WindowData(d,cutwin));
     } catch(...) {
@@ -514,7 +514,7 @@ void GeneralIterDecon::process()
             preprocessor->process();
             vector<double> deconout(preprocessor->getresult());
             int copysize=deconout.size();
-            if(copysize>d_decon.ns) copysize=d_decon.ns;
+            if(copysize>d_decon.npts()) copysize=d_decon.npts();
             cblas_dcopy(copysize,&(deconout[0]),1,uwork.get_address(k,0),3);
         }
         d_decon.u=uwork;
@@ -526,14 +526,14 @@ void GeneralIterDecon::process()
         data in the longer time window.   Note for efficiency may want to
         convert this to a frequency domain convolution if it proves to be
         a bottleneck */
-	double dt;
-	dt=this->shapingwavelet.sample_interval();
-        //TimeSeries winv=this->preprocessor->inverse_wavelet(tshift,d_decon.t0);
+	//double dt;
+	//dt=this->shapingwavelet.sample_interval();
+        //TimeSeries winv=this->preprocessor->inverse_wavelet(tshift,d_decon.t0());
 //DEBUG
-//cerr << "inverse wavelet tshift="<<tshift/5.0<<" d_decon.to="<<d_decon.t0<<endl;
-        //TimeSeries winv=this->preprocessor->inverse_wavelet(tshift/5.0,d_decon.t0);
-        //TimeSeries winv=this->preprocessor->inverse_wavelet(0.0,d_decon.t0);
-        CoreTimeSeries winv=this->preprocessor->inverse_wavelet(d_decon.t0);
+//cerr << "inverse wavelet tshift="<<tshift/5.0<<" d_decon.to="<<d_decon.t0()<<endl;
+        //TimeSeries winv=this->preprocessor->inverse_wavelet(tshift/5.0,d_decon.t0());
+        //TimeSeries winv=this->preprocessor->inverse_wavelet(0.0,d_decon.t0());
+        CoreTimeSeries winv=this->preprocessor->inverse_wavelet(d_decon.t0());
 // This is a test - need a more elegant solution if it works.  Remove me
 // when finished with this test
 //if(d_decon.t0!=0) winv.t0 -= d_decon.t0;
@@ -575,7 +575,7 @@ void GeneralIterDecon::process()
                <<endl;
             throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
         }
-        /* These two signals should be trimmed by winv.ns on both ends to remove
+        /* These two signals should be trimmed by winv.npts() on both ends to remove
         sections that are pure edge transients.
         REMOVE me when that is done*/
 
@@ -583,11 +583,11 @@ void GeneralIterDecon::process()
         /* Replace n by convolution with inverse wavelet to get the levels correct */
         n=sparse_convolve(winv,n);
         TimeWindow trimwin;
-        trimwin.start=n.t0+(n.dt)*((double)(winv.ns));
-        trimwin.end=n.endtime()-(n.dt)*((double)(winv.ns));
+        trimwin.start=n.t0()+(n.dt())*((double)(winv.npts()));
+        trimwin.end=n.endtime()-(n.dt())*((double)(winv.npts()));
         n=WindowData3C(n,trimwin);
-        double nfloor;
-        nfloor=compute_resid_linf_floor();
+        //double nfloor;
+        //nfloor=compute_resid_linf_floor();
         //DEBUG - for debug always print this.  Should be a verbose option
         //cerr << "Computed noise floor="<<nfloor<<endl;
 
@@ -596,14 +596,14 @@ void GeneralIterDecon::process()
         int i,k;
         lag_weights.clear();
         vector<double> amps,wamps;  //raw and weighted amplitudes
-        amps.reserve(r.ns);
-        wamps.reserve(r.ns);
+        amps.reserve(r.npts());
+        wamps.reserve(r.npts());
         /* We need these iterators repeatedly in the main loop below */
         vector<double>::iterator amax;
-        for(i=0; i<r.ns; ++i)lag_weights.push_back(1.0);
+        for(i=0; i<r.npts(); ++i)lag_weights.push_back(1.0);
 //DEBUG - temporarily disabled for testing
         //for(i=0; i<wavelet_pad; ++i) lag_weights[i]=0.0;
-        //for(i=0; i<wavelet_pad; ++i) lag_weights[r.ns-i-1]=0.0;
+        //for(i=0; i<wavelet_pad; ++i) lag_weights[r.npts()-i-1]=0.0;
         /* These are initial values of convergence parameters */
         lw_linf_initial=1.0;
         lw_l2_initial=1.0;
@@ -706,13 +706,13 @@ CoreSeismogram GeneralIterDecon::getresult()
 	lags in the spikes list container to be at correct time in result */
 	double dt0;
 	int delta_col;
-	dt0=result.t0-r.t0;
-	delta_col=round(dt0/r.dt);
+	dt0=result.t0()-r.t0();
+	delta_col=round(dt0/r.dt());
         list<ThreeCSpike>::iterator sptr;
         int k,resultcol;
         for(sptr=spikes.begin(); sptr!=spikes.end(); ++sptr)
         {
-            if(((sptr->col)<0)||((sptr->col)>=result.ns)) throw MsPASSError(base_error
+            if(((sptr->col)<0)||((sptr->col)>=result.npts())) throw MsPASSError(base_error
                         + "Coding error - spike lag is outside output data range"
                       ,ErrorSeverity::Fatal);
 	    resultcol=(sptr->col)-delta_col;

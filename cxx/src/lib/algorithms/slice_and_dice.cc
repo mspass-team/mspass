@@ -41,7 +41,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
   int outns=ie-is+1;
-	Seismogram result(parent);
+	CoreSeismogram result(parent);
   result.u=dmatrix(3,outns);
 	result.set_npts(outns);
 	result.set_t0(tw.start);
@@ -95,7 +95,7 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
   int outns=ie-is+1;
-	TimeSeries result(parent);
+	CoreTimeSeries result(parent);
 	result.s.clear();
 	result.s.reserve(outns);
 	result.set_npts(outns);
