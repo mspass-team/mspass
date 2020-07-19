@@ -34,19 +34,19 @@ int main(int argc, char **argv)
   vector<dmatrix> seisout;
   cout << "test_taper starting - building working data objects"<<endl;
   TimeSeries ts;
-  ts.t0=0;
-  ts.dt=1.0;
-  ts.tref=TimeReferenceType::Relative;
-  ts.ns=200;
-  ts.live=true;
+  ts.set_t0(0.0);
+  ts.set_dt(1.0);
+  ts.set_tref(TimeReferenceType::Relative);
+  ts.set_live();
   ts.s.reserve(200);
   for(i=0;i<200;++i)ts.s.push_back(1.0);
   CoreSeismogram dtmp(200);
   Seismogram seis0(dtmp,string("test"));
-  seis0.t0=0.0;
-  seis0.dt=1.0;
-  seis0.tref=TimeReferenceType::Relative;
-  seis0.ns=200;
+  seis0.set_t0(0.0);
+  seis0.set_dt(1.0);
+  seis0.set_tref(TimeReferenceType::Relative);
+  /* this assume set_npts will realloc u matrix*/
+  seis0.set_npts(200);
   for(i=0;i<200;++i)
     for(k=0;k<3;++k) seis0.u(k,i)=(double)(k+1);
   cout << "Setup finished - Starting tests of tapers"<<endl
@@ -88,8 +88,8 @@ int main(int argc, char **argv)
   tsout.push_back(ts3.s);
   seisout.push_back(seis3.u);
   cout << "Intentional error to test error logging functions"<<endl;
-  seis3.t0=10000.0;
-  ts3.t0=10000.0;
+  seis3.set_t0(10000.0);
+  ts3.set_t0(10000.0);
   cout << "Both of the following should show an informational error"<<endl;
   iret=tfull.apply(ts3);
   cout << "TimeSeries apply method completed returning "<<iret<<endl;
@@ -136,8 +136,8 @@ int main(int argc, char **argv)
   tsout.push_back(ts3.s);
   seisout.push_back(seis3.u);
   cout << "Intentional error to test error logging functions"<<endl;
-  seis3.t0=10000.0;
-  ts3.t0=10000.0;
+  seis3.set_t0(10000.0);
+  ts3.set_t0(10000.0);
   cout << "Both of the following should show an informational error"<<endl;
   iret=tcfull.apply(ts3);
   cout << "TimeSeries apply method completed returning "<<iret<<endl;
