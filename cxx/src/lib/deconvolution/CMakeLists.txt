@@ -2,6 +2,8 @@ FILE(GLOB sources_deconvolution *.cc *.c)
 include_directories(
   ${Boost_INCLUDE_DIRS}
   ${GSL_INCLUDE_DIRS}
+  ${pylib11_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
   ${PROJECT_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/include)
 
