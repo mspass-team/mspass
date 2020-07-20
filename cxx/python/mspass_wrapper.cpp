@@ -1138,6 +1138,7 @@ PYBIND11_MODULE(ccore,m)
       "Return the number of inputs used to generate a specified uuid of the process chain")
     .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to create the current data")
+    .def_readwrite("elog",&ProcessingHistory::elog)
     .def("__str__", [](const ProcessingHistory &ph) -> std::string {
       return std::string(py::str(py::cast(ph.current_nodedata())));
     })
