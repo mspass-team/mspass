@@ -110,6 +110,7 @@ using mspass::MDDefFormat;
 using mspass::MetadataDefinitions;
 using mspass::BasicProcessingHistory;
 using mspass::ProcessingHistory;
+using mspass::NodeData;
 using mspass::Ensemble;
 using mspass::MongoDBConverter;
 using mspass::agc;
@@ -967,8 +968,8 @@ PYBIND11_MODULE(ccore,m)
     .def("__str__", [](const LogData &ld) -> std::string {
       return std::string("{'job_id': ") + std::to_string(ld.job_id) +
         ", 'p_id': " + std::to_string(ld.p_id) +
-        ", 'algorithm': " + ld.algorithm +
-        ", 'message': " + ld.message + ", 'badness': " +
+        ", 'algorithm': " + std::string(py::repr(py::cast(ld.algorithm))) +
+        ", 'message': " + std::string(py::repr(py::cast(ld.message))) + ", 'badness': " +
         std::string(py::str(py::cast(ld.badness))) + "}";
     })
     .def("__repr__", [](const LogData &ld) -> std::string {
@@ -1033,6 +1034,34 @@ PYBIND11_MODULE(ccore,m)
     .def_readwrite("stage",&mspass::NodeData::stage,
       "Processing stage counter for this node of the processing tree")
     .def_readwrite("type",&mspass::NodeData::type,"Type of data this process handled as this input")
+    .def("__str__", [](const NodeData &nd) -> std::string {
+      return std::string("{'status': ") + std::string(py::str(py::cast(nd.status))) +
+        ", 'uuid': " + std::string(py::repr(py::cast(nd.uuid))) +
+        ", 'algorithm': " + std::string(py::repr(py::cast(nd.algorithm))) +
+        ", 'algid': " + std::string(py::repr(py::cast(nd.algid))) + 
+        ", 'stage': " + std::to_string(nd.stage) +
+        ", 'type': " + std::string(py::str(py::cast(nd.type))) +
+        "}";
+    })
+    .def("__repr__", [](const NodeData &nd) -> std::string {
+      std::string strout("NodeData(");
+      return strout + std::string(py::str(py::cast(nd).attr("__str__")())) + ")";
+    })
+    .def(py::pickle(
+      [](const NodeData &self) {
+        stringstream ssnd;
+        boost::archive::text_oarchive arnd(ssnd);
+        arnd<<self;
+        return py::make_tuple(ssnd.str());
+      },
+      [](py::tuple t) {
+        stringstream ssnd(t[0].cast<std::string>());
+        boost::archive::text_iarchive arnd(ssnd);
+        NodeData nd;
+        arnd>>nd;
+        return nd;
+      }
+     ))
   ;
   py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
     (m,"ProcessingHistory","Used to save object level processing history.")
@@ -1109,11 +1138,34 @@ PYBIND11_MODULE(ccore,m)
       "Return the number of inputs used to generate a specified uuid of the process chain")
     .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to create the current data")
+    .def("__str__", [](const ProcessingHistory &ph) -> std::string {
+      return std::string(py::str(py::cast(ph.current_nodedata())));
+    })
+    .def("__repr__", [](const ProcessingHistory &ph) -> std::string {
+      std::string strout("ProcessingHistory(");
+      return strout + std::string(py::str(py::cast(ph).attr("__str__")())) + ")";
+    })
+    .def(py::pickle(
+      [](const ProcessingHistory &self) {
+        stringstream ssph;
+        boost::archive::text_oarchive arph(ssph);
+        arph<<self;
+        return py::make_tuple(ssph.str());
+      },
+      [](py::tuple t) {
+        stringstream ssph(t[0].cast<std::string>());
+        boost::archive::text_iarchive arph(ssph);
+        ProcessingHistory ph;
+        arph>>ph;
+        return ph;
+      }
+     ))
   ;
 
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
+    .def(py::init<const Seismogram&>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const CoreSeismogram&,const std::string>())
     /* Don't think we really want to expose this to python if we don't need to
@@ -1122,7 +1174,6 @@ PYBIND11_MODULE(ccore,m)
       const bool,const bool, const dmatrix&,const dmatrix&>())
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
-    .def(py::init<const Seismogram&>())
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1179,8 +1230,8 @@ PYBIND11_MODULE(ccore,m)
 
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
-      .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const TimeSeries&>())
+      .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
       // Not sure this constructor needs to be exposed to python
       /*
