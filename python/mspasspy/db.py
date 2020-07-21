@@ -56,9 +56,6 @@ def _tmatrix_from_md(md):
     return A
 
 def _sync_metadata(d):
-    d.put_long('npts',d.ns)
-    d.put_double('starttime',d.t0)
-    d.put_double('delta',d.dt)
     if(d.tref == TimeReferenceType.Relative):
         d.put_string('time_standard','relative')
     else:
