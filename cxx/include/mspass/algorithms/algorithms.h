@@ -55,7 +55,7 @@ time window of data.  This function accomplishes this in a nifty method that
 takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
-\return new Seismgram object derived from  parent but windowed by input
+\return new CoreTimeSeries object derived from  parent but windowed by input
       time window range.
 
 \exception MsPASSError object if the requested time window is not inside data range
@@ -63,7 +63,7 @@ handling time.
 \param parent is the larger CoreTimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
+CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw);
 /* This set of procedures are ancessors of seismogram_helpers.   They 
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.
