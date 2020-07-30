@@ -137,11 +137,12 @@ ao1.set_title('source wavelet')
 #plt.show()
 wtmp=CoreTimeSeries(n)
 wavelet=TimeSeries(wtmp,'invalid')
-wavelet.t0=t0w
-wavelet.dt=dt
-wavelet.tref=TimeReferenceType.Relative
-wavelet.ns=n
-wavelet.live=True
+wavelet.set_t0(t0w)
+wavelet.set_dt(dt)
+# This isn't necessary at the moment because relative is the default
+#wavelet.set_tref(TimeReferenceType.Relative)
+wavelet.set_npts(n)
+wavelet.set_live()
 for i in range(n):
     wavelet.s[i]=f[i]
 
@@ -193,11 +194,12 @@ dtmp=CoreSeismogram(nsig)
 d=Seismogram(dtmp,'undefined')
 t0=t0-dt*padlength
 d.u=u
-d.ns=nfullsig
-d.t0=t0
-d.dt=dt
-d.tref=TimeReferenceType.Relative
-d.live=True
+d.set_npts(nfullsig)
+d.set_t0(t0)
+d.set_dt(dt)
+# assume relative is default
+#d.set_tref(TimeReferenceType.Relative)
+d.set_live()
 plot3cs(d)
 #plt.show()
 
