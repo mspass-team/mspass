@@ -1486,6 +1486,7 @@ PYBIND11_MODULE(ccore,m)
       .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
   ;
   */
+
 py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
   .def(py::init<>())
   .def(py::init<const mspass::AntelopePf&>())
@@ -1510,7 +1511,6 @@ py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored 
   .def("inverse_wavelet",&mspass::CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
   .def("QCMetrics",&mspass::CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
 ;
-
 
   /* This object is in a separate pair of files in this directory.  */
 py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
