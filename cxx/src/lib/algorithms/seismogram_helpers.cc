@@ -97,7 +97,8 @@ shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& tcsi,
             // This is not the fastest way to do this, but it is
             // clearer and the performance hit should not be serious
             // old advice:  make it work before you make it fast
-            tcso->u = dmatrix(3,ns_to_copy);
+            // this is not needed in new api because set_npts does this
+            //tcso->u = dmatrix(3,ns_to_copy);
             tcso->set_npts(ns_to_copy);
             for(i=0; i<3; ++i)
                 for(j=0,jj=jstart; j<ns_to_copy; ++j,++jj)
@@ -183,7 +184,7 @@ void HorizontalRotation(Seismogram& d, double phi)
 simply rethrown.
 
 */
-// FIXME: ExtractComponent will discard any history records in Seismogram 
+// FIXME: ExtractComponent will discard any history records in Seismogram
 CoreTimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
 {
     try {

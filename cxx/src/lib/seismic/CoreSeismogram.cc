@@ -171,7 +171,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     size_t nstest = ts[component_to_clone].s.size();
     if(nsamp!=nstest) this->nsamp=nstest;
     /* this method allocates u and sets the proper metadata for npts*/
-    this->set_npts(this->nsamp);
+    this->CoreSeismogram::set_npts(this->nsamp);
     /* beware irregular sample rates, but don' be too machevelian.
            Abort only if the mismatch is large defined as accumulated time
            over data range of this constructor is less than half a sample */
@@ -266,7 +266,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
                 +"Irregular time windows of components have no overlap",
                         ErrorSeverity::Invalid);
         else
-          this->set_npts(nstest);
+          this->CoreSeismogram::set_npts(nstest);
         // Now load the data.  Use the time and sample number methods
         // to simplify process
         double t;

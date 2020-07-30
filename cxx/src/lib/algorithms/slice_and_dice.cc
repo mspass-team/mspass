@@ -42,7 +42,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
   }
   int outns=ie-is+1;
 	CoreSeismogram result(parent);
-  result.u=dmatrix(3,outns);
+  //result.u=dmatrix(3,outns);
 	result.set_npts(outns);
 	result.set_t0(tw.start);
   // Perhaps should do this with blas or memcpy for efficiency
@@ -96,12 +96,16 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
   }
   int outns=ie-is+1;
 	CoreTimeSeries result(parent);
+	/* No longer needed with api change. set_npts does this
 	result.s.clear();
 	result.s.reserve(outns);
+	*/
 	result.set_npts(outns);
 	result.set_t0(tw.start);
 
-  for(int i=is;i>outns;++i) result.s.push_back(parent.s[i]);
+  //for(int i=is;i>outns;++i) result.s.push_back(parent.s[i]);
+	int i,ii;
+	for(i=is,ii=0;i<ie;++i,++ii)result.s[ii]=parent.s[i];
   return(result);
 }
 } // end mspass namespace
