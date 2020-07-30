@@ -359,8 +359,12 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
 	      << "Debug exit to avoid seg fault"<<endl;
       exit(-1);
     }
+    /* In the old api this was necessary - no longer so because set_npts does
+    this operation
     decondata.u=dmatrix(3,FFTDeconOperator::nfft);
     decondata.u.zero();
+    */
+    decondata.set_npts(FFTDeconOperator::nfft);
     /* Offset by winlength to put zero pad at front of the data.  */
     int k,i,ii;
     for(k=0;k<3;++k)
@@ -368,7 +372,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
         {
             decondata.u(k,ii)=dtmp.u(k,i);
         }
-    decondata.set_npts(FFTDeconOperator::nfft);
+
     double newt0=decondata.t0() - operator_dt*static_cast<double>(winlength);
     decondata.set_t0(newt0);
     //decondata.t0 -= operator_dt*static_cast<double>(winlength);
@@ -405,9 +409,13 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     }
     else
       ns_to_copy=w.npts();
+    /* These were in the old api but are no longer needed because set_npts
+    does this operation
     this->wavelet.s.clear();
     this->wavelet.s.reserve(FFTDeconOperator::nfft);
     for(k=0;k<FFTDeconOperator::nfft;++k)this->wavelet.s.push_back(0.0);
+    */
+    this->wavelet.set_npts(FFTDeconOperator::nfft);
     /* this retains winlength zeros at the front */
     for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)this->wavelet.s[kk]=w.s[k];
     //this->wavelet.t0 -= operator_dt*static_cast<double>(winlength);
@@ -415,7 +423,7 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     double newt0;
     newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
     this->wavelet.set_t0(newt0);
-    this->wavelet.set_npts(FFTDeconOperator::nfft);
+
     switch(algorithm)
     {
       /* Note all the algorithms here alter wavelet by applying a taper */
@@ -722,14 +730,19 @@ TimeSeries CNR3CDecon::actual_output()
       int i0=FFTDeconOperator::nfft/2;
       ao=circular_shift(ao,i0);
       TimeSeries result(wavelet);  // Use this to clone metadata and elog from wavelet
+      result.set_npts(FFTDeconOperator::nfft);
       /* Force these even though they are likely already defined as
       in the parent wavelet TimeSeries. */
       result.set_live();
-      result.s=ao;
+      //result.s=ao;
       result.set_t0(operator_dt*(-(double)i0));
       result.set_dt(this->operator_dt);
       result.set_tref(TimeReferenceType::Relative);
-      result.set_npts(FFTDeconOperator::nfft);
+      /* set_npts always initializes the s buffer so it is more efficient to
+      copy ao elements rather than what was here before:
+        result.s=ao;
+        */
+      for(int k=0;k<FFTDeconOperator::nfft;++k) result.s[k]=ao[k];
       return result;
   } catch(...) {
       throw;

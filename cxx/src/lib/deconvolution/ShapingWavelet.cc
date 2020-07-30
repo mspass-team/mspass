@@ -245,10 +245,11 @@ CoreTimeSeries ShapingWavelet::impulse_response()
         /* Unfold the fft output */
         int k,shift;
         shift=nfft/2;
-        // Need this because constructor fills initially with nfft zeros
+        // Need this because constructor fills initially with nfft zeros and
+        // we use this approach to unfold the fft output
         result.s.clear();
-	for(k=0;k<nfft;++k) result.s.push_back(iwf[k].real());
-	result.s=circular_shift(result.s,shift);
+	      for(k=0;k<nfft;++k) result.s.push_back(iwf[k].real());
+	      result.s=circular_shift(result.s,shift);
         return result;
     } catch(...) {
         throw;

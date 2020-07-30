@@ -135,23 +135,17 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray& winv, const 
     winv_work *= sw;
     gsl_fft_complex_inverse(winv_work.ptr(),1,nfft,wavetable,workspace);
     CoreTimeSeries result;
-    result.s.reserve(nfft);
-    for(int k=0; k<winv_work.size(); ++k) result.s.push_back(winv_work[k].real());
-    /* This applies tshift */
-    result.s=circular_shift(result.s,i0);
-    //result.t0=dt*((double)i0);
-    /* Old API
-    result.t0=dt*(-(double)i0)+t0parent;
-    result.dt=dt;
-    result.live=true;
-    result.tref=TimeReferenceType::Relative;
-    result.ns=nfft;
-    */
     result.set_t0(dt*(-(double)i0)+t0parent);
     result.set_dt(dt);
     result.set_live();
+    /* Note this new api method initializes s all zeros so we need only set
+    the values not use push back below */
     result.set_npts(nfft);
     result.set_tref(TimeReferenceType::Relative);
+    //for(int k=0; k<winv_work.size(); ++k) result.s.push_back(winv_work[k].real());
+    for(int k=0; k<winv_work.size(); ++k) result.s[k]=winv_work[k].real();
+    /* This applies tshift */
+    result.s=circular_shift(result.s,i0);
     return result;
   }catch(...){throw;};
 }

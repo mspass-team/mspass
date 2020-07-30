@@ -167,7 +167,7 @@ CoreTimeSeries WaterLevelDecon::actual_output()
         result.set_live();
         result.set_tref(TimeReferenceType::Relative);
         result.set_npts(nfft);
-        result.s=ao;
+        for(int k=0;k<nfft;++k)result.s[k]=ao[k];;
         return result;
     } catch(...) {
         throw;
