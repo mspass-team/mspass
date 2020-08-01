@@ -27,7 +27,21 @@ public:
     ScalarDecon(const mspass::Metadata& md);
     ScalarDecon(const std::vector<double>& d, const std::vector<double>& w);
     ScalarDecon(const ScalarDecon& parent);
+    /*! \brief Load all data required for decon.
+
+    This method loads both the data vector and wavelet estimates as
+    simple std::vectors.  Timing must be maintained externally.  This or
+    the pair of methods loaddata and loadwavelet must be called before process.
+    This method has a slight advantage in efficiency over successive calls to
+    loaddata and loadwavelet for several reasons, but the difference is small.
+
+    \return always returns 0
+    */
     int load(const std::vector<double> &wavelet,const std::vector<double> &data);
+    /*! Load only the data vector.*/
+    int loaddata(const std::vector<double> &data);
+    /*! Load only the wavelet estimate.*/
+    int loadwavelet(const std::vector<double> &wavelet);
     virtual void process()=0;
     ~ScalarDecon() {};
     ScalarDecon& operator=(const ScalarDecon& parent);
