@@ -1185,6 +1185,7 @@ PYBIND11_MODULE(ccore,m)
       "Return the number of inputs used to generate a specified uuid of the process chain")
     .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to create the current data")
+    .def_readwrite("elog",&mspass::ProcessingHistory::elog,"Error logging object handle")
   ;
 
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
@@ -1199,6 +1200,8 @@ PYBIND11_MODULE(ccore,m)
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def(py::init<const Seismogram&>())
+    .def("load_history",&mspass::Seismogram::load_history,
+       "Load ProcessingHistory from another data object that contains relevant history")
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1258,6 +1261,8 @@ PYBIND11_MODULE(ccore,m)
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
+      .def("load_history",&mspass::TimeSeries::load_history,
+         "Load ProcessingHistory from another data object that contains relevant history")
       // Not sure this constructor needs to be exposed to python
       /*
       .def(py::init<const mspass::BasicTimeSeries&,const mspass::Metadata&,
@@ -1404,6 +1409,8 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
       .def("load",&mspass::ScalarDecon::load,
         py::arg("w"),py::arg("d"),"Load data and wavelet to use to construct deconvolutions operator")
+      .def("loaddata",&mspass::ScalarDecon::loaddata,py::arg("d"))
+      .def("loadwavelet",&mspass::ScalarDecon::loadwavelet,py::arg("w"))
       .def("process",&mspass::ScalarDecon::process)
       .def("getresult",&mspass::ScalarDecon::getresult,
               "Fetch vector of deconvolved data - after calling process")
@@ -1566,6 +1573,11 @@ py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator f
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
+  ;
+  m.def("circular_shift",&mspass::circular_shift,"Time-domain circular shift operator",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("i0") )
   ;
   /* These are a pair of (four actually - overloaded) procedures to aid
   python programs in building history chains.  See C++ doxygen definitions */
