@@ -15,7 +15,9 @@ FFTDeconOperator::FFTDeconOperator(const Metadata& md)
 {
   try {
     const string base_error("FFTDeconOperator Metadata constructor:  ");
-    nfft=md.get_int("operator_nfft");
+    int nfftpf=md.get_int("operator_nfft");
+    /* We force a power of 2 algorithm for efficiency and always round up*/
+    this->nfft=nextPowerOf2(nfftpf);
 	/* We compute the sample shift from the window start time and dt.  This assures
 	 * the output will be phase shifted so zero lag is at the zero position of the
 	 * array.   Necessary because operators using this object internally only return
