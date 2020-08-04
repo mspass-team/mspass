@@ -10,11 +10,15 @@ In the Fourier world circular vectors are an important thing
 to deal with because the fft is intimately connected with circlular
 things.   This routine can be used, for example, to time shift the
 time domain version of a signal after it was processed with an fft.
+The shifting here is done for a time domain vector.  the same operation
+can be achieved in the frequency by the standard linear phase shift theorem.
 
 \param d - is the input vector to be shifted
 \param i0 - is the wrap point.   On exit sample i0 of d will be sample 0.
   Note that negative i0 puts the wrap point at i0 points from the left.
   (Warning - this is C convention sample number)
+
+\return - time shifted signal (same length as input d)
 */
 vector<double>  circular_shift(const vector<double>& d,const int i0)
 {
