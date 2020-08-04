@@ -261,7 +261,7 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
   const double DTSKEW(0.0001);
   const string base_error("TestSeismogramInput:  ");
   int error_count(0);
-  if(d.time_is_relative())
+  if(d.time_is_UTC())
   {
     stringstream ss;
     ss<<base_error<<"Data received are using UTC standard; must be Relative"<<endl;
@@ -344,7 +344,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     {
       stringstream ss;
       ss<<"CNR3CDecon::loaddata:  "<<errcount<<" errors were detected in this call"
-        <<endl<<"Check error log for input Seismogram has detailed error messages"<<endl
+        <<endl<<"Check error log of input Seismogram for detailed error messages"<<endl
         << "Operator does not contain valid data for processing"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
