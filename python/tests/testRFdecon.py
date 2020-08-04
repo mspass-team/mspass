@@ -1,32 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 18 07:28:55 2020
+Test program for RFdecon function that is designed for using spark 
+for receiver function deconvolution.   This may or may not be put in 
+mspass repository.   More likely pieces will be assimilated for a 
+jupyter notebook tutorial.
 
-This is a test program for CNR3CDecon (Colored noise three component deconvolution).
-It is a variant of testdecon necessary because the api to CNR3CDecon is 
-fundamentally different than the other decon methods that are children of
-ScalarDecon.   CNR3CDecon is intimately linked to mspass while the others
-were adapted from code originally developed by Yinzhi Wang for his PhD
-dissertation.   
-@author: pavlis
+Created on Mon Aug  3 06:24:22 2020
+
+@author: Gary Pavlis
 """
-import sys
-sys.path.append('/home/pavlis/src/mspass/python')
-from mspasspy.ccore import AntelopePf
-from mspasspy.ccore import dmatrix
-from mspasspy.ccore import CoreTimeSeries
-from mspasspy.ccore import CoreSeismogram
-from mspasspy.ccore import Seismogram
-from mspasspy.ccore import TimeSeries
-from mspasspy.ccore import TimeReferenceType
-from mspasspy.ccore import CNR3CDecon
+
 import numpy as np
 from scipy import signal
 from scipy import randn
 #from scipy import signal
 import matplotlib.pyplot as plt
-
+import mspasspy.ccore as mspass
+from RFdeconProcessor import RFdeconProcessor
+from RFdeconProcessor import RFdecon
+# These were copied from testcnr3c.py 
 def make_impulse_vector(lag,imp,n=500):
     """
     Computes a (sparse) vector of impulse functions at a specified set of
@@ -58,7 +51,7 @@ def vectors2dmatrix(d):
     n=len(d[0]);
     if((len(d[1])!=n) | (len(d[2])!=n)):
         raise RuntimeError("vector2dmatrix:  input vectors have irregular sizes - must be equal length")
-    u=dmatrix(3,n)
+    u=mspass.dmatrix(3,n)
     for i in range(3):
         for j in range(n):
             u[i,j]=d[i][j]
@@ -99,11 +92,11 @@ def addnoise(d,nscale=1.0,padlength=1024,npoles=3,corners=[0.25,5.0]):
     return result
 def make_wavelet_noise_data(nscale=0.1,ns=2048,padlength=512,
         dt=0.05,npoles=3,corners=[0.08,0.8]):
-    wtmp=CoreTimeSeries(ns)
-    wn=TimeSeries(wtmp,'invalid')
+    wtmp=mspass.CoreTimeSeries(ns)
+    wn=mspass.TimeSeries(wtmp,'invalid')
     wn.t0=0.0
     wn.dt=dt
-    wn.tref=TimeReferenceType.Relative
+    wn.tref=mspass.TimeReferenceType.Relative
     wn.live=True
     nd=ns+2*padlength
     y=nscale*randn(nd)
@@ -114,7 +107,8 @@ def make_wavelet_noise_data(nscale=0.1,ns=2048,padlength=512,
     return(wn)
 ###MAIN#############
 # This is creates the same source wavelet as testdecon.  Could be made
-# a library,but that is for later
+# a library,but that is for later.
+# The simulation here is identical to testcn3c.py 
 
 imp=(20.0,-15.0,4.0,-1.0)
 lag=(20,24,35,45)
@@ -134,12 +128,12 @@ ao0.set_title('impulse sequence')
 ao1.plot(t,f)
 ao1.set_title('source wavelet')
 #plt.show()
-wtmp=CoreTimeSeries(n)
-wavelet=TimeSeries(wtmp,'invalid')
+wtmp=mspass.CoreTimeSeries(n)
+wavelet=mspass.TimeSeries(wtmp,'invalid')
 wavelet.set_t0(t0w)
 wavelet.set_dt(dt)
 # This isn't necessary at the moment because relative is the default
-#wavelet.set_tref(TimeReferenceType.Relative)
+#wavelet.set_tref(mspass.TimeReferenceType.Relative)
 wavelet.set_npts(n)
 wavelet.set_live()
 for i in range(n):
@@ -189,35 +183,23 @@ tsigfull=np.linspace(t0,t0+(nfullsig-1)*dt,num=nfullsig)
 
 # This creates a data matrix to build a 3C seismogram object
 u=vectors2dmatrix([dsig0,dsig1,dsig2])
-dtmp=CoreSeismogram(nsig)
-d=Seismogram(dtmp,'undefined')
+dtmp=mspass.CoreSeismogram(nsig)
+d=mspass.Seismogram(dtmp,'undefined')
 t0=t0-dt*padlength
 d.set_npts(nfullsig)
 d.u=u
 d.set_t0(t0)
 d.set_dt(dt)
 # assume relative is default
-#d.set_tref(TimeReferenceType.Relative)
+#d.set_tref(mspass.TimeReferenceType.Relative)
 d.set_live()
-d.tref=TimeReferenceType.Relative
+d.tref=mspass.TimeReferenceType.Relative
 plot3cs(d)
-#plt.show()
-
-pf=AntelopePf('CNR3CDecon.pf')
-decon=CNR3CDecon(pf)
-decon.loaddata(d,False)
-decon.loadnoise_data(d)
-# Use defaults for initial test
-nwavelet=make_wavelet_noise_data(corners=[0.25,5.0])
-decon.loadnoise_wavelet(nwavelet)
-decon.loadwavelet(wavelet)
-dout=decon.process()
-plot3cs(dout)
-ao=decon.actual_output()
-io=decon.ideal_output()
-fig3,(f1,f2)=plt.subplots(nrows=2)
-f1.plot(io.s)
-f1.set_title('Ideal output')
-f2.plot(ao.s)
-f2.set_title('Actual output')
+plt.show()
+processor=RFdeconProcessor(alg="LeastSquares")
+# With this test the 3C data are not RFs but different sequences 
+# convolved with a common source wavelet.  Deconvolve with the wavelet
+# tests the raw_vector input for RFdecon
+ddata=RFdecon(processor,d,wavelet=wavelet.s)
+plot3cs(ddata)
 plt.show()

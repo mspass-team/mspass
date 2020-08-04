@@ -51,8 +51,8 @@ def plot_wavelets(io,ao,title="Water Level"):
     Plot ideal output(io) and actual output(ao) CoreTimeSeries
     outputs of decon operators. Use title.
     """
-    diff=np.ndarray(io.ns)
-    for i in range(io.ns):
+    diff=np.ndarray(io.npts)
+    for i in range(io.npts):
         diff[i]=ao.s[i]-io.s[i]
     fig,(f1,f2,f3)=plt.subplots(nrows=3)
     f1.plot(io.s)
@@ -196,3 +196,4 @@ f2.plot(inv2.s)
 f3.plot(inv3.s)
 f4.plot(inv4.s)
 f1.set_title("inverse wavelets")
+plt.show()

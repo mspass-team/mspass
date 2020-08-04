@@ -36,6 +36,8 @@ time_bandwidth_product 2.5
 number_tapers 4
 deconvolution_data_window_start -5.0
 deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
 }
 MultiTaperXcor &Arr{
 damping_factor 0.01
@@ -51,4 +53,6 @@ time_bandwidth_product 2.5
 number_tapers 4
 deconvolution_data_window_start -5.0
 deconvolution_data_window_end 30.0
+noise_window_start -35.0
+noise_window_end -5.0
 }
