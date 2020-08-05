@@ -153,7 +153,7 @@ class RFdeconProcessor:
         # Return immediately for methods that ignore noise.  
         # Note we do this silenetly assuming the function wrapper below 
         # will post an error to elog for the output to handle this nonfatal error
-        if(self.algorthm=="LeastSquares" or self.algorithm=="WaterLevel"):
+        if(self.algorithm=="LeastSquares" or self.algorithm=="WaterLevel"):
             return
         if(dtype=="raw_vector" and window):
             raise RuntimeError("RFdeconProcessor.loadnoise:  "
@@ -167,8 +167,8 @@ class RFdeconProcessor:
         # that requires noise data (i.e. multitaper) and the window 
         # options is desired
         if(window):
-            tws=self.md.get_double("noise_data_window_start")
-            twe=self.md.get_double("noise_data_window_start")
+            tws=self.md.get_double("noise_window_start")
+            twe=self.md.get_double("noise_window_end")
             win=mspass.TimeWindow(tws,twe)
             if(dtype=="Seismogram"):
                 ts=mspass.ExtractComponent(n,component)
@@ -373,7 +373,7 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
                 processor.loadnoise(d,window=True,component=ncomp)
     except RuntimeError as err:
         d.kill()
-        d.elog.log_error('WindowData',err.repr(err),mspass.ErrorSeverity.Invalid)
+        d.elog.log_error('WindowData',repr(err),mspass.ErrorSeverity.Invalid)
         return d
     # We window data before computing RF estimates for efficiency
     # Otherwise we would call the window operator 3 times below
@@ -384,12 +384,12 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
         result.load_history(d)
     except RuntimeError as err:
         d.kill()
-        d.elog.log_error('WindowData',err.repr(err),mspass.ErrorSeverity.Invalid)
+        d.elog.log_error('WindowData',repr(err),mspass.ErrorSeverity.Invalid)
         return d
     npts=result.npts
     try:
         for k in range(3):
-            processor.loaddata(d,component=k)
+            processor.loaddata(result,component=k)
             x=processor.process()
             # overwrite this component's data in the result Seismogram
             # Use some caution handling any size mismatch

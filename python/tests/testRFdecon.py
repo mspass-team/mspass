@@ -195,11 +195,21 @@ d.set_dt(dt)
 d.set_live()
 d.tref=mspass.TimeReferenceType.Relative
 plot3cs(d)
-plt.show()
-processor=RFdeconProcessor(alg="LeastSquares")
+#plt.show()
+#processor=RFdeconProcessor(alg="LeastSquares")
+#processor=RFdeconProcessor(alg="WaterLevel")
+#processor=RFdeconProcessor(alg="MultiTaperXcor")
+processor=RFdeconProcessor(alg="MultiTaperSpecDiv")
 # With this test the 3C data are not RFs but different sequences 
 # convolved with a common source wavelet.  Deconvolve with the wavelet
 # tests the raw_vector input for RFdecon
 ddata=RFdecon(processor,d,wavelet=wavelet.s)
 plot3cs(ddata)
+ao=processor.actual_output()
+io=processor.ideal_output()
+fig3,axarr=plt.subplots(nrows=2)
+axarr[0].plot(ao.s)
+axarr[0].set_title('Actual output')
+axarr[1].plot(io.s)
+axarr[1].set_title('Ideal output')
 plt.show()
