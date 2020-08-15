@@ -50,9 +50,10 @@ History
   objects in MsPASS are the second generation of a set of data objects
   developed by one of the authors (Pavlis) over a period of more than 15
   years.   The original implementation was developed as a component of
-  Antelope.  It was distribured via the open source additions to
+  Antelope.  It was distributed via the open source additions to
   Antelope distributed through the `Antelope user's
-  group <https://github.com/antelopeusersgroup/antelope_contrib>`__ and referred to as SEISPP.   The bulk of
+  group
+  <https://github.com/antelopeusersgroup/antelope_contrib>`__ and referred to as SEISPP.   The bulk of
   the original code can be found
   `here <https://github.com/antelopeusersgroup/antelope_contrib/tree/master/lib/seismic/libseispp>`__
   in github, and doxygen generated pages comparable to those found with
@@ -80,6 +81,10 @@ History
    strings, and booleans handled by SEISPP. 
 -  Reduce the number of public attributes to make the code less prone to
    user errors.   Note the word "reduce" not "eliminate" as many books advise. 
+   The general rule is simple parameter type attributes are only accessible
+   through getters and putters while the normally larger main data components
+   are public.  That was done to improve performance and allow things like
+   numpy operations on data vectors.
 
 | MsPASS has hooks to and leans heavily on
   `obspy <https://github.com/obspy/obspy/wiki>`__.   We chose, however,
@@ -90,7 +95,7 @@ History
 #. obspy handles what we call Metadata through set of python objects
    that have to be maintained separately and we think unnecessarily
    complicate the API.   We aimed instead to simplify the management of
-   Metadata much as possible.  Our goal was to make the system more like
+   Metadata as much as possible.  Our goal was to make the system more like
    seismic reflection processing systems that manage the same problem
    through a simple namespace wherein metadata can be fetched with
    simple keys.   We aimed to hide any hierarchic structures (e.g
@@ -156,7 +161,7 @@ questions:  What is a time series?   Our design answers this question by
 saying all time series data have the following elements:
 
 #. We define a time series as data that has a **fixed sample rate**.  
-   Some extend this to arbitrary x-y data, but we view that as wrong. 
+   Some people extend this definiion to arbitrary x-y data, but we view that as wrong. 
    Standard textbooks on signal processing focus exclusively on
    uniformly sampled data.  With that assumption the time of any sample
    is virtual and does not need to be stored.  Hence, the base object
@@ -210,7 +215,7 @@ Handling Time
    in python) the computed times are some relatively small number from
    some well defined time mark.   The most common relative standard is
    the implicit time standard used in all seismic reflection data:  shot
-   time.   SAC users will recognize this ideas as the case when
+   time.   SAC users will recognize this idea as the case when
    IZTYPE==IO.   Another important one used in MsPASS is an arrival time
    reference, which is a generalization of the case in SAC with
    IZTYPE==IA or ITn.  We intentionally do not limit what this standard
@@ -337,7 +342,7 @@ Metadata and MetadataDefinitions
    be implemented in a compiled language.
 
 | The MsPASS C++ api for Metadata has methods that are dogmatic about type
-  and methods that can take anything.  Core support is for provided for
+  and methods that can take anything.  Core support is provided for
   types supported by all database engines:  real numbers (float or
   double), integers (32 or 64 bit), strings (currently assumed to be
   UTF-8), and booleans.  These functions are dogmatic and strongly
@@ -349,8 +354,8 @@ Metadata and MetadataDefinitions
 .. code-block:: python
 
    # Assume d is a Seismogram or TimeSeries which automatically casts to a Metadata in the python API use here
-   x=d.get_double("t0")   # example fetching a floating point number - here a start time
-   n=d.get_int("nsamp")   # example fetching an integer
+   x=d.get_double("t0_shift")   # example fetching a floating point number - here a time shift
+   n=d.get_int("evid")   # example feching integer - here an event id
    s=d.get_string("sta")  # example fetching a UTF-8 string
    b=d.get_bool("LPSPOL") # boolean for positive polarity used in SAC
 
@@ -358,8 +363,8 @@ Metadata and MetadataDefinitions
 
 .. code-block:: python
 
-   d.put_double("to",x)
-   d.put_int("nsamp",n)
+   d.put_double("t0_shift",x)
+   d.put_int("evid",n)
    d.put_string("sta",s)
    d.put_bool("LPSPOL",True)
 
@@ -419,8 +424,8 @@ MetadataDefinitions and MongoDBConverter objects
 
 .. code-block:: python
 
-   from mspasspy import MetadataDefinitions
-   mdef=MetadataDefinitions()
+   import mspasspy.ccore as mspass
+   mdef=mspass.MetadataDefinitions()
 
 | This loads the default namespace.   Alternatives are possible, but
   should be used only for specialized applications algorithms that
@@ -450,8 +455,8 @@ Scalar versus 3C data
   industry.  That is, the sample values are stored in a continuous block
   of memory that can be treated mathematically as a vector.   The index for the
   vector serves as a proxy for time (the *time* method in BasicTimeSeries
-  can be used to convert an index to a time defined as a double).  Note
-  that integer index uses the C convention starting at 0 and not 1 as in FORTRAN,
+  can be used to convert an index to a time defined as a double).  Note in mspass
+  the integer index always uses the C convention starting at 0 and not 1 as in FORTRAN,
   linear algebra, and many signal processing books.
   We use a C++ `standard template library vector
   container <http://www.cplusplus.com/reference/vector/vector/>`__ to
@@ -469,7 +474,7 @@ Scalar versus 3C data
 
 #.  Most modern seismic reflection systems provide some support for
    three-component data.   In reflection processing scalar, multichannel
-   raw data are often conceptually treated as a matrix with one array
+   raw data are often treated coceptually as a matrix with one array
    dimension defining the time variable and the other index defined by
    the channel number. When three component data are recorded the
    component orientation can be defined implicitly by a component index
@@ -481,14 +486,15 @@ Scalar versus 3C data
    array data because a collection of 3C seismograms may have irregular
    size, may have variable sample rates,  and may come from variable
    instrumentation.  Hence, a simple matrix or array model would be very
-   limiting and create some cumbersome constructs.
+   limiting and is known to create some cumbersome constructs.
 #. Traditional multichannel data processing emerged from a
    world were instruments used synchronous time sampling.  
    Seismic reflection processing always assumes during processing that
    time computed from sample numbers is accurate to within one sample.  
    Furthermore, the stock assumption is that all data have sample 0 at
-   shot time.  That assumption allows the conceptual model of a matrix
-   to represent scalar, multichannel data.  That assumption is not necessarily true
+   shot time.  That assumption in a necessary condition
+   for the conceptual model of a matrix as a mathematical representation
+   of scalar, multichannel data to be valid.  That assumption is not necessarily true
    in passive array data and raw processing requires efforts to make
    sure the time of all samples can be computed accurately and time
    aligned.  Alignment for a single station is normally automatic
@@ -508,8 +514,8 @@ Scalar versus 3C data
 
 | We handle three component data in MsPASS by using a matrix to store the data
   for a given *Seismogram*.   The data are directly accessible through a public
-  variable called u following the standard symbol used in the old testament
-  of seismology by Aki and Richards.  There are two
+  variable called u that is mnemonic for the standard symbol used in the
+  old testament of seismology by Aki and Richards.  There are two
   choices of the order of indices for this matrix.  A *Seismogram*
   defines index 0(1) as the channel number and index 1(2) as the time
   index.  The following python code section illustrates this more
@@ -519,7 +525,7 @@ Scalar versus 3C data
 
    from mspasspy import Seismogram
    d=Seismogram(100)  # Create an empty Seismogram with storage for 100 time steps initialized to all zeros
-   d.u(0,50)=1.0      # Create a delta function at time t0+dt*50 in channel 0
+   d.u(0,50)=1.0      # Create a delta function at time t0+dt*50 in component 0
 
 | Note as with scalar data we use the C (and python) convention for indexing starting at 0.  
   In the C++ API the matrix u is defined with a lightweight
@@ -541,7 +547,7 @@ Scalar versus 3C data
   components are in the standard ENZ directions.    
 
 | Ensembles of TimeSeries and Seismogram data are handled internally with a more
-  elaborate standard template library container.   For readers familiar
+  elaborate C++ standard template library container.   For readers familiar
   with C++ the generic definition of an Ensemble is the following class
   definition created by stripping the comments from the definition in
   Ensemble.h:
@@ -566,6 +572,8 @@ Scalar versus 3C data
   handle an entire group (Ensemble) with a simple loop.   e.g. here is a
   simple loop to work through an entire Ensemble (defined in this code
   segment with the symbol d) in order of the vector index:
+  (WARNING:  this doesn't work for multiple reasons - needs repair of
+  both wrapper and this documentaiton)
 
 .. code-block:: python
 
@@ -576,16 +584,21 @@ Scalar versus 3C data
 ProcessingHistory and Core versus Top-level Data Objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| The class hierarchy diagrams above show there are CoreTimeSeries and
-  CoreSeismogram objects that are parents of TimeSeries and Seismogram
-  respectively.   That design was aimed to make the Core objects more
+| The class hierarchy diagrams above illustrate the relationship of what
+  we call CoreTimeSeries and CoreSeismogram objects to those we
+  call TimeSeries and Seismogram respectively.   That
+  design was aimed to make the Core objects more
   readily extendible to other uses than MsPASS.   We encourage users to
-  consider using the core objects as base for other ways of handling
-  seismic data.  
+  consider using the core objects as base classes for other ways of handling
+  any time of time series data that match the concepts defined above.  
 
-| All mspass specific elements of our implementation are in ProcessingHistory
-  class which is a parent for both TimeSeries and Seismogram objects.  
-  ProcessingHistory implements two concepts:
+| The primary distinction between CoreTimeSeries and CoreSeismogram and their
+  higher level representation as TimeSeries and Seismogram is the addition
+  of a class heirarchy designed to store a record of the chain of proocessing
+  steps applied to each object   Both the higher level objects add the
+  class called **ProcessingHistory** as parents.
+  ProcessingHistory implements two concepts that add functionality to the Core
+  objects:
 
 #. ProcessingHistory, as the name implies, can (optionally) store the
    a complete record of the chain of processing steps applied to a
@@ -602,14 +615,16 @@ ProcessingHistory and Core versus Top-level Data Objects
 #. Processing History contains an error logging object.   The purpose of this
    object is to contain a log of any errors or informative messages
    created during the processing of the data.  All processing modules
-   in MsPASS are designed with global error handlers so that they never
+   in MsPASS are designed with global error handlers so that they should never
    abort, but in worst case post a log message that tags a fatal
-   error.   In our design we considered making the ErrorLogger a base class
+   error.   (Note if any properly structured mspass enabled
+   processing function aborts, this means by definition it is a bug.)
+   In our design we considered making the ErrorLogger a base class
    for Seismogram and TimeSeries, but it does not satisfy the basic rule of
    making a concept a base class if the child "is a" ErrorLogger.  It could
    have been made an attribute in each of TimeSeries and Seismogram definitions,
-   but we viewed the concept of an ErrorLogger mateched that idea that a
-   ProcessingHistory "has a" ErrorLogger. More details on the
+   but we concluded the concept of an ErrorLogger matched that idea that
+   ProcessingHistory "has an" ErrorLogger. More details on the
    ErrorLogger feature are given below.
 
 Object Level History Design Concepts
@@ -618,12 +633,12 @@ Object Level History Design Concepts
 As summarized above the concept we wanted to capture in the history mechanism
 was a means to preserve the chain of processing events that were applied to
 get a piece of data in a current state.  Our design assumes this can be
-history can be described by a inverted tree structure.  That is most workflows would
+history can be described by an inverted tree structure.  That is most workflows would
 merge many pieces of data (a reduce operation in map-reduce) to produce
 a given output.  The process chain could then be viewed as tree growth with time
 running backward.  The leaves are the data sources.  Each growth season is one
-processing stage.  As time moves backward the tree shrinks from many branches to
-a single shoot that is the current data state.   The structure we use, however,
+processing stage.  As time moves forward the tree shrinks from many branches to
+a single trunk that is the current data state.   The structure we use, however,
 is more flexible than real tree growth.   Many-to-many mixes of data will produce
 a tree that does not look at all like the plant forms of nature, but we hope
 the notion of growth seasons, branch, and trees is useful to help understand
@@ -632,7 +647,7 @@ how this works.
 To reconstruct the steps applied to data to produce an output the
 following foundational data is required:
 
-.# We need to identify the top of the inverted tree (the leaves) that are the
+.# We need to associate the top of the inverted tree (the leaves) that are the
    parent data to the workflow.  For seismic data that means the parent time
    series data extracted from a data center with web services or assembled and
    indexed on local, random access (i.e. MsPASS knows nothing about magnetic
@@ -642,7 +657,7 @@ following foundational data is required:
    abstraction of a function call.  We assume the algorithm takes input data of one
    standard type and emits data of the same or different standard type. ("type"
    in this context means TimeSeries, Seismogram, or an obspy Trace object)
-   The history mechanism needs to clarify what the primary input and output
+   The history mechanism is designed to preserver what the primary input and output
    types are.
 
 .# Most algorithms have one to a large number of tunable parameters that
@@ -678,12 +693,18 @@ following foundational data is required:
 .# Although saving intermediate results is frequently necessary, the process of saving the
    data must not break the full history chain.
 
-.# The history mechanism must work for normal logical branching and looping
+.# The history mechanism must work for any normal logical branching and looping
    scenario possible with a python script.
 
 .# Naive preservation of history data could cause a huge overload in memory
    usage and processing time.  The design then needs to make the implementation
-   as lightweight in memory as possible and be as efficient as possible.
+   as lightweight in memory and computational overhead as possible.  The
+   implementation needs to minimize memory usage as some algorithms
+   require other inputs that are not small.  Notably, the API was designd to support
+   input that could be described by any python class. The a key concept is that our
+   definition of "parameters" is broader than just a set of numbers.  It means
+   any data that is not one of the atomic types (currently TimeSeries and Seismogram
+   objects) is considered a parameter.
 
 | The above is admittedly a long list of functional requirements.  Our
   ProcessingHistory object achieves those requirements with two important
@@ -695,13 +716,13 @@ following foundational data is required:
   framework will need to learn the social norms (i.e. the API for ProcessingHistory
   and how it can be used to automate the process).   We expect to eventually
   produce a document on adapting algorithms to MsPASS that will cover this
-  subject.
+  subject. **Needs a link to a related document on ProcessingHistory API **
 
 Error Logging Concepts
 ^^^^^^^^^^^^^^^^^^^^^^
 
 | When processing large volumes of data errors are inevitable and
-  handling them clearly is an essential part of any processing
+  handling them cleanly is an essential part of any processing
   framework.   This is particularly challenging with a system like Spark
   where a data set gets fragmented and handled by (potentially) many
   processors.   A poorly designed error handling system could abort an
@@ -711,8 +732,9 @@ Error Logging Concepts
 | To handle this problem MsPASS uses a novel *ErrorLogger* object.  Any
   data processing module in MsPASS should NEVER exit on any error
   condition except one from which the operating system cannot recover. 
+  (e.g. a disk write error)
   All C++ and python processing modules need to have appropriate error
-  handles (i.e. try/catch in C++ and try/except in python) to keep a
+  handlers (i.e. try/catch in C++ and try/except in python) to keep a
   single error from prematurely killing a large processing job.   We
   recommend all error handlers in processing functions post a message
   that can help debug the error.   Error messages should be registered
@@ -737,20 +759,27 @@ Error Logging Concepts
   except RuntimeError:
     d.elog.log_error("rotate_to_standard method failure - transformation matrix may be singular",
       ErrorSeverity.Invalid)
-    d.live=False   # note in python just be False not false
+    d.kill()  
 
 | To understand the code above assume the symbol d is a *Seismogram*
   object with a singular transformation matrix created, for example, by
   incorrectly building the object with two redundant east-west
   components.   The rotate_to_standard method tries to compute a matrix
   inverse of the transformation matrix, which will generate an
-  exception.   This code catches that exception with a python
-  RuntimeError.  In this simple case we compose our own error message
+  exception.   This example catches that exception with a python
+  RuntimeError.  RuntimeError is a standard exception defined in python
+  for a generic "something went wrong" error.   (For C++ programmers
+  the python wrapper code maps any exception derived from std::exception to
+  a python RuntimeError.   All C++ code created by the original developers
+  only throw error classes that are children of std::exception.   Hence,
+  any mspass errors should be handled by a RuntimeError handler.)
+  In this simple case we compose our own error message
   and post it to the *ErrorLogger* attached to this data (d.elog).  The
-  ErrorSeverity.Invalid implies the data are bad so the last line sets
-  the live boolean false.   In contrast, the call to log_verbose, like
+  ErrorSeverity.Invalid implies the data are bad so the last line calls
+  the kill method to tell any downstream processes the data are
+  invalid.   In contrast, the call to log_verbose, like
   the name suggests, writes a pure informational message.  
-| All that would be usless baggage except the MongoDB database writers
+| All the above would be useless baggage except the MongoDB database writers
   (Create and Update in CRUD) automatically save any elog entries in a
   separate database collection called elog.   The saved messages can be
   linked back to the data with which they are associated through the
