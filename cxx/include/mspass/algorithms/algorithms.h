@@ -44,23 +44,23 @@ handling time.
 
 \exception MsPASSError object if the requested time window is not inside data range
 
-\param parent is the larger CoreSeismogram object to be windowed
+\param parent is the larger Seismogram object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw);
-/*! \brief Extracts a requested time window of data from a parent CoreTimeSeries object.
+Seismogram WindowData3C(const Seismogram& parent, const TimeWindow& tw);
+/*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
 It is common to need to extract a smaller segment of data from a larger
 time window of data.  This function accomplishes this in a nifty method that
 takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
-\return new CoreTimeSeries object derived from  parent but windowed by input
+\return new Seismgram object derived from  parent but windowed by input
       time window range.
 
 \exception MsPASSError object if the requested time window is not inside data range
 
-\param parent is the larger CoreTimeSeries object to be windowed
+\param parent is the larger TimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
 TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
