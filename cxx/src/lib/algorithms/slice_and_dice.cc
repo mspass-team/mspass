@@ -1,8 +1,8 @@
 #include <sstream>
-#include "mspass/seismic/CoreTimeSeries.h"
-#include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Seismogram.h"
 namespace mspass {
-/*! \brief Extracts a requested time window of data from a parent CoreSeismogram object.
+/*! \brief Extracts a requested time window of data from a parent Seismogram object.
 
 It is common to need to extract a smaller segment of data from a larger
 time window of data.  This function accomplishes this in a nifty method that
@@ -14,17 +14,17 @@ handling time.
 
 \exception MsPASSError object if the requested time window is not inside data range
 
-\param parent is the larger CoreSeismogram object to be windowed
+\param parent is the larger Seismogram object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
+Seismogram WindowData3C(const Seismogram& parent, const TimeWindow& tw)
 {
 	// Always silently do nothing if marked dead
 	if(parent.dead())
 	{
-		// return(CoreSeismogram()) doesn't work
+		// return(Seismogram()) doesn't work
 		// with g++.  Have to us this long form
-		CoreSeismogram tmp;
+		Seismogram tmp;
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
@@ -41,8 +41,8 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
   int outns=ie-is+1;
-	CoreSeismogram result(parent);
-  //result.u=dmatrix(3,outns);
+	Seismogram result(parent);
+  result.u=dmatrix(3,outns);
 	result.set_npts(outns);
 	result.set_t0(tw.start);
   // Perhaps should do this with blas or memcpy for efficiency
@@ -55,7 +55,7 @@ CoreSeismogram WindowData3C(const CoreSeismogram& parent, const TimeWindow& tw)
       }
   return(result);
 }
-/*! \brief Extracts a requested time window of data from a parent CoreTimeSeries object.
+/*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
 It is common to need to extract a smaller segment of data from a larger
 time window of data.  This function accomplishes this in a nifty method that
@@ -67,17 +67,17 @@ handling time.
 
 \exception MsPASSError object if the requested time window is not inside data range
 
-\param parent is the larger CoreTimeSeries object to be windowed
+\param parent is the larger TimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
+TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw)
 {
 	// Always silently do nothing if marked dead
 	if(parent.dead())
 	{
-		// return(CoreTimeSeries()) doesn't work
+		// return(TimeSeries()) doesn't work
 		// with g++.  Have to us this long form
-		CoreTimeSeries tmp;
+		TimeSeries tmp;
 		return(tmp);
 	}
   int is=parent.sample_number(tw.start);
@@ -95,17 +95,13 @@ CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw)
       throw MsPASSError(mess.str(),ErrorSeverity::Invalid);
   }
   int outns=ie-is+1;
-	CoreTimeSeries result(parent);
-	/* No longer needed with api change. set_npts does this
+	TimeSeries result(parent);
 	result.s.clear();
 	result.s.reserve(outns);
-	*/
 	result.set_npts(outns);
 	result.set_t0(tw.start);
 
-  //for(int i=is;i>outns;++i) result.s.push_back(parent.s[i]);
-	int i,ii;
-	for(i=is,ii=0;i<ie;++i,++ii)result.s[ii]=parent.s[i];
+  for(int i=is;i>outns;++i) result.s.push_back(parent.s[i]);
   return(result);
 }
 } // end mspass namespace
