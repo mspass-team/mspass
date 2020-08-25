@@ -150,8 +150,7 @@ TimeSeries agc(Seismogram& d, const double twin)
         }
         d.u=agcdata;
         gf.set_live();
-        //Old api set ns attribute here. 
-        //gf.set_npts(gf.s.size());
+        gf.set_npts(gf.s.size());
         return gf;
     }catch(...){
         string uxperr("Something threw an unexpected exception");

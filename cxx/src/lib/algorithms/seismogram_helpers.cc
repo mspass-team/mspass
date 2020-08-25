@@ -184,7 +184,7 @@ void HorizontalRotation(Seismogram& d, double phi)
 simply rethrown.
 
 */
-// FIXME: ExtractComponent will discard any history records in Seismogram
+// FIXME: ExtractComponent will discard any history records in Seismogram 
 CoreTimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
 {
     try {

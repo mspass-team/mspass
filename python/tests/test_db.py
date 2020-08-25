@@ -57,7 +57,7 @@ class TestDatabase():
         s1.live = True
         s1.dt = 1/sampling_rate
         s1.t0 = 0
-        s1.ns = ts_size
+        s1.npts = ts_size
         s1.put('net', 'IU')
 
         s2 = Seismogram(s1)

@@ -63,7 +63,7 @@ handling time.
 \param parent is the larger CoreTimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-CoreTimeSeries WindowData(const CoreTimeSeries& parent, const TimeWindow& tw);
+TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
 /* This set of procedures are ancessors of seismogram_helpers.   They 
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.

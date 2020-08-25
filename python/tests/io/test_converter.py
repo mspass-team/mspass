@@ -55,7 +55,7 @@ def setup_function(function):
     function.ts1.live = True
     function.ts1.dt = 1/sampling_rate
     function.ts1.t0 = 0
-    function.ts1.ns = ts_size
+    function.ts1.npts = ts_size
     # TODO: need to bind the constructor that can do TimeSeries(md1)
     function.ts1.put('net', 'IU')
     function.ts1.put('npts', ts_size)
@@ -73,7 +73,7 @@ def setup_function(function):
     function.seismogram.live = True
     function.seismogram.dt = 1/sampling_rate
     function.seismogram.t0 = 0
-    function.seismogram.ns = ts_size
+    function.seismogram.npts = ts_size
     # FIXME: if the following key is network, the Seismogram2Stream will error out 
     # when calling TimeSeries2Trace internally due to the issue when mdef.is_defined(k) 
     # returns True but k is an alias, the mdef.type(k) will error out.
@@ -84,28 +84,23 @@ def setup_function(function):
     # TODO: Ideally, these two variable should not be required. Default behavior
     # needed such that mdef will be constructed with the default yaml file, and
     # the elog can be converted to string stored in the dictionary
-    function.mdef = MetadataDefinitions()
-    function.elog = ErrorLogger()
-    function.mdef.add('date_str', 'string date for testing', MDtype.String)
+    # function.mdef = MetadataDefinitions()
+    # function.elog = ErrorLogger()
+    # function.mdef.add('date_str', 'string date for testing', MDtype.String)
 
 def test_dict2Metadata():
-    md = dict2Metadata(test_dict2Metadata.dict1, test_dict2Metadata.mdef, test_dict2Metadata.elog)
+    md = dict2Metadata(test_dict2Metadata.dict1)
     assert md.get('network') == test_dict2Metadata.dict1['network']
     assert md.get('station') == test_dict2Metadata.dict1['station']
     assert md.get('npts') == test_dict2Metadata.dict1['npts']
     assert md.get('sampling_rate') == test_dict2Metadata.dict1['sampling_rate']
     assert md.get('channel') == test_dict2Metadata.dict1['channel']
 
-    assert md.get('_id') == str(test_dict2Metadata.dict1['_id'])
+    assert md.get('_id') == test_dict2Metadata.dict1['_id']
 
     assert md.get('starttime') == test_dict2Metadata.dict1['starttime']
-    assert md.get('jdate') == test_dict2Metadata.dict1['starttime'].julday
-    assert md.get('date_str') == test_dict2Metadata.dict1['starttime']
-
-    assert len(test_dict2Metadata.elog.get_error_log()) == 3
-    assert 'key=live is not defined' in test_dict2Metadata.elog.get_error_log()[0].message
-    assert 'internally to a Julian day' in test_dict2Metadata.elog.get_error_log()[1].message
-    assert 'key=not_defined_date is not defined' in test_dict2Metadata.elog.get_error_log()[2].message
+    assert md.get('jdate') == test_dict2Metadata.dict1['jdate']
+    assert md.get('date_str') == test_dict2Metadata.dict1['date_str']
 
 def test_Metadata2dict():
     d = Metadata2dict(test_Metadata2dict.md1)
@@ -115,10 +110,10 @@ def test_Metadata2dict():
     assert test_Metadata2dict.md1.get('sampling_rate') == d['sampling_rate']
 
 def test_TimeSeries2Trace():
-    tr = TimeSeries2Trace(test_TimeSeries2Trace.ts1, test_TimeSeries2Trace.mdef)
+    tr = TimeSeries2Trace(test_TimeSeries2Trace.ts1)
     assert tr.stats['delta'] == test_TimeSeries2Trace.ts1.dt
     assert tr.stats['sampling_rate'] == 1.0/test_TimeSeries2Trace.ts1.dt
-    assert tr.stats['npts'] == test_TimeSeries2Trace.ts1.ns
+    assert tr.stats['npts'] == test_TimeSeries2Trace.ts1.npts
     assert tr.stats['starttime'] == obspy.core.UTCDateTime(test_TimeSeries2Trace.ts1.t0)
 
     assert tr.stats['net'] == test_TimeSeries2Trace.ts1.get('net')
@@ -128,12 +123,12 @@ def test_TimeSeries2Trace():
 def test_Trace2TimeSeries():
     # TODO: aliases handling is not tested. Not clear what the
     #  expected behavior should be. 
-    ts = Trace2TimeSeries(test_Trace2TimeSeries.tr1, test_Trace2TimeSeries.mdef)
+    ts = Trace2TimeSeries(test_Trace2TimeSeries.tr1)
     assert all(ts.s == test_Trace2TimeSeries.tr1.data)
     assert ts.live == True
     assert ts.dt == test_Trace2TimeSeries.tr1.stats.delta
     assert ts.t0 == test_Trace2TimeSeries.tr1.stats.starttime.timestamp
-    assert ts.ns == test_Trace2TimeSeries.tr1.stats.npts
+    assert ts.npts == test_Trace2TimeSeries.tr1.stats.npts
 
     assert ts.get('network') == test_Trace2TimeSeries.tr1.stats['network']
     assert ts.get('station') == test_Trace2TimeSeries.tr1.stats['station']
@@ -141,12 +136,12 @@ def test_Trace2TimeSeries():
     assert ts.get('calib') == test_Trace2TimeSeries.tr1.stats['calib']
 
 def test_Seismogram2Stream():
-    strm = Seismogram2Stream(test_Seismogram2Stream.seismogram, test_Seismogram2Stream.mdef)
+    strm = Seismogram2Stream(test_Seismogram2Stream.seismogram)
     assert strm[0].stats['delta'] == test_Seismogram2Stream.seismogram.dt
     # FIXME: The sampling_rate defined in Metadata will overwrite 
     # seismogram.dt after the conversion, even if the two are inconsistent.
     assert strm[1].stats['sampling_rate'] == 1.0/test_Seismogram2Stream.seismogram.dt
-    assert strm[2].stats['npts'] == test_Seismogram2Stream.seismogram.ns
+    assert strm[2].stats['npts'] == test_Seismogram2Stream.seismogram.npts
     assert strm[0].stats['starttime'] == obspy.core.UTCDateTime(test_Seismogram2Stream.seismogram.t0)
 
     assert strm[1].stats['network'] == test_Seismogram2Stream.seismogram.get('net')
@@ -155,7 +150,7 @@ def test_Seismogram2Stream():
 def test_Stream2Seismogram():
     # TODO: need to refine the test as well as the behavior of the function.
     # Right now when cardinal is false, azimuth and dip needs to be defined. 
-    seis = Stream2Seismogram(test_Stream2Seismogram.stream, test_Stream2Seismogram.mdef, cardinal = True)
+    seis = Stream2Seismogram(test_Stream2Seismogram.stream, cardinal = True)
     assert all(np.array(seis.u)[0] == test_Stream2Seismogram.stream[0].data)
     assert all(np.array(seis.u)[1] == test_Stream2Seismogram.stream[1].data)
     assert all(np.array(seis.u)[2] == test_Stream2Seismogram.stream[2].data)

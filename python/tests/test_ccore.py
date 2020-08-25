@@ -153,6 +153,7 @@ def test_LogData():
     assert ld.algorithm == "alg"
     assert ld.message == "msg"
     assert ld.badness == ErrorSeverity.Suspect
+    assert str(ld) == str(LogData(eval(str(ld))))
 
 def test_Metadata():
     md = Metadata()
@@ -452,22 +453,27 @@ def test_ExtractComponent():
         assert (ts[i].s == seis.u[i]).all()
 
 
-def test_ProcessingHistory():
-    ph = ProcessingHistory()
+
+@pytest.fixture(params=[ProcessingHistory,
+                        Seismogram,  
+                        TimeSeries])
+def ProcessingHistoryBase(request):
+    return request.param
+def test_ProcessingHistoryBase(ProcessingHistoryBase):
+    ph = ProcessingHistoryBase()
     ph.set_jobname("testjob")
     ph.set_jobid("999")
-    ph2 = ProcessingHistory(ph)
+    ph2 = ProcessingHistoryBase(ph)
     assert ph.jobname() == ph2.jobname()
     assert ph.jobid() == ph2.jobid()
 
     ph.set_as_raw("fakeinput","0","fakeuuid1",AtomicType.SEISMOGRAM)
     ph.new_map("onetoone","0",AtomicType.SEISMOGRAM)
     assert len(ph.get_nodes()) == 1
-
-    phred = ProcessingHistory(ph)
+    phred = ProcessingHistoryBase(ph)
     ph_list = []
     for i in range(4):
-        ph_list.append(ProcessingHistory())
+        ph_list.append(ProcessingHistoryBase())
         ph_list[i].set_as_raw("fakedataset", "0", "fakeid_"+str(i), AtomicType.SEISMOGRAM)
         ph_list[i].new_map("onetoone", "0", AtomicType.SEISMOGRAM)
     phred.new_reduction("testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
@@ -478,3 +484,6 @@ def test_ProcessingHistory():
             print(i, " : ", j.uuid, " , ", j.status)
             rec+=1
     assert rec == 8
+
+    phred_copy = pickle.loads(pickle.dumps(phred))
+    assert str(phred.get_nodes()) == str(phred_copy.get_nodes())

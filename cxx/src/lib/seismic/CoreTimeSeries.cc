@@ -19,7 +19,6 @@ CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 }
 CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
 {
-  //s.reserve(nsin);
   this->set_dt(1.0);
   this->set_t0(0.0);
   /* This assumes current api where set_npts allocates and initializes s

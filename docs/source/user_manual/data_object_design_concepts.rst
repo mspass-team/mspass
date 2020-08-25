@@ -657,7 +657,7 @@ following foundational data is required:
    abstraction of a function call.  We assume the algorithm takes input data of one
    standard type and emits data of the same or different standard type. ("type"
    in this context means TimeSeries, Seismogram, or an obspy Trace object)
-   The history mechanism is designed to preserver what the primary input and output
+   The history mechanism is designed to preserve what the primary input and output
    types are.
 
 .# Most algorithms have one to a large number of tunable parameters that
@@ -692,7 +692,6 @@ following foundational data is required:
 
 .# Although saving intermediate results is frequently necessary, the process of saving the
    data must not break the full history chain.
-
 .# The history mechanism must work for any normal logical branching and looping
    scenario possible with a python script.
 
