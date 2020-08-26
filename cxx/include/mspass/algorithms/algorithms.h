@@ -119,5 +119,24 @@ mspass::CoreTimeSeries ExtractComponent(const Seismogram& tcs,
 **/
 std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
   (ThreeComponentEnsemble& din,std::string key, TimeWindow tw);
+/*! \brief Sparse time domain convolution.
+
+Sometimes with modeling we have an data series (d) that is sparse 
+that we want to convolve with a wavelet to produce a simulation data 
+for deconvolution.   This small function implements a sparse convolution 
+algorithm in the time domain.  It uses a daxpy sum only summing components 
+of d testing nonzero.  
+
+Note if d is not sparse this reduces to normal convolution with a daxpy 
+algorithm.  The cost is marginally higher than a dense time domain 
+convolution, especially if the size of the wavelet is larger since then 
+the sum over the size of the wavelet will dominate over the single test
+for zeros in d.
+
+\param wavelet is the wavelet to be convolved with d (not sparse)
+\param d is the sparse data vector (dominated by zeros). 
+*/
+CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet,
+        const CoreSeismogram& d);
 }//End mspass namespace encapsulation
 #endif

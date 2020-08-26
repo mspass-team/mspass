@@ -100,6 +100,15 @@ with serialization.
   {};
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
+  /*! \brief Load just the ProcessingHistory data from another data source.
+
+  Some algorithms don't handle processing history.   In those situations it
+  can prove helpful to manage ProcessingHistory separately and load the
+  history data through this method.
+
+  \param h is the ProcessingHistory data to copy into this Seismogram.
+  */  
+  void load_history(const mspass::ProcessingHistory& h);
 };
 }//END mspass namespace
 #endif

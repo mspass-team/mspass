@@ -2,6 +2,7 @@
 
 include_directories(
   ${Boost_INCLUDE_DIRS}
+  ${GSL_INCLUDE_DIRS}
   ${pylib11_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
