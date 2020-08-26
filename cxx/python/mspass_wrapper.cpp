@@ -1242,6 +1242,7 @@ PYBIND11_MODULE(ccore,m)
   py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
+    .def(py::init<const Seismogram&>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const CoreSeismogram&,const std::string>())
     /* Don't think we really want to expose this to python if we don't need to
@@ -1250,17 +1251,8 @@ PYBIND11_MODULE(ccore,m)
       const bool,const bool, const dmatrix&,const dmatrix&>())
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
-    .def(py::init<const Seismogram&>())
     .def("load_history",&mspass::Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
-    .def(py::init<const CoreSeismogram&>())
-    .def(py::init<const CoreSeismogram&,const std::string>())
-    /* Don't think we really want to expose this to python if we don't need to
-    .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
-      const ProcessingHistory&, const ErrorLogger&,
-      const bool,const bool, const dmatrix&,const dmatrix&>())
-      */
-    .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
     .def(py::pickle(
       [](const Seismogram &self) {
         string sbuf;
@@ -1317,7 +1309,6 @@ PYBIND11_MODULE(ccore,m)
 
     py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
-      .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
@@ -1328,7 +1319,6 @@ PYBIND11_MODULE(ccore,m)
       .def(py::init<const mspass::BasicTimeSeries&,const mspass::Metadata&,
         const ProcessingHistory&, const std::vector&)
         */
-
       .def(py::pickle(
         [](const TimeSeries &self) {
           string sbuf;
