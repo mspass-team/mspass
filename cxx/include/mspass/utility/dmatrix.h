@@ -237,7 +237,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \exception dmatrix_size_error will be throw if r or c are outside 
     matrix dimensions. 
     */
-  double* get_address(size_t r, size_t c);
+  double* get_address(size_t r, size_t c) const;
   /*! \brief Text output operator.
 
   Output is ascii data written in the matrix layout.  Note this can create

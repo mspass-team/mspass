@@ -30,4 +30,8 @@ TimeSeries& TimeSeries::operator=(const TimeSeries& parent)
     }
     return *this;
 }
+void TimeSeries::load_history(const ProcessingHistory& h)
+{
+  this->ProcessingHistory::operator=(h);
+}
 }// end mspass namespace

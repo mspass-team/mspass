@@ -99,11 +99,11 @@ public:
   the size of the log after insertion.
   */
   int log_verbose(const std::string alg, const std::string mess);
-  std::list<LogData> get_error_log(){return allmessages;};
-  int size(){return allmessages.size();};
+  std::list<LogData> get_error_log()const{return allmessages;};
+  int size()const{return allmessages.size();};
   ErrorLogger& operator=(const ErrorLogger& parent);
   /*! Return an std::list container with most serious error level marked. */
-  std::list<LogData> worst_errors();
+  std::list<LogData> worst_errors()const;
 private:
   int job_id;
   std::list<LogData> allmessages;

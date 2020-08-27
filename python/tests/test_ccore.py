@@ -453,6 +453,7 @@ def test_ExtractComponent():
         assert (ts[i].s == seis.u[i]).all()
 
 
+
 @pytest.fixture(params=[ProcessingHistory,
                         Seismogram,  
                         TimeSeries])
@@ -469,7 +470,6 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph.set_as_raw("fakeinput","0","fakeuuid1",AtomicType.SEISMOGRAM)
     ph.new_map("onetoone","0",AtomicType.SEISMOGRAM)
     assert len(ph.get_nodes()) == 1
-
     phred = ProcessingHistoryBase(ph)
     ph_list = []
     for i in range(4):

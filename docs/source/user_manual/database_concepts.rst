@@ -9,13 +9,13 @@ NonSQL Database
 | MsPASS uses a NonSQL database called MongoDB.   NonSQL is a generic
   name today for a database system that does not utilize the structure
   query language (SQL).  SQL is the standard language for interacting
-  with relational database systems like Oracle, MySQL, PostGRES, etc.  
+  with relational database systems like Oracle, MySQL, PostGRES, etc.
   One type of NonSQL database is a "document database".  MongoDB is
   classified as a document database.   Readers unfamiliar with the
   concept of a document database are referred to online sources which
   are far better than anything we could produce.   A good starting point
   is the `MongoDB tutorial
-  introduction <https://docs.mongodb.com/manual/introduction/>`__.  
+  introduction <https://docs.mongodb.com/manual/introduction/>`__.
   Another good source is `this
   one <https://www.tutorialspoint.com/mongodb/index.htm>`__ on
   tutorialspoint.
@@ -26,18 +26,30 @@ Schema
 Overview
 ~~~~~~~~~~
 
-Wikepedia defines a database schema as follow: 
+Wikepedia defines a database schema as follow:
 
-| The term "`schema <https://en.wiktionary.org/wiki/schema>`__" refers
-  to the organization of data as a blueprint of how the database is
-  constructed (divided into database tables in the case of `relational
-  databases <https://en.wikipedia.org/wiki/Relational_databases>`__). 
-  As this definition states in a relational database like CSS3.0 the
-  schema defines a set of tables, attributes, and a how they are
-  linked.   MsPASS uses a "nonSQL database", which means the interaction
-  is not with Structured Query Language (SQL).   We use a particular
-  form of nonSQL database called a "document database" as implemented in
-  the open source package `MongoDB <https://www.mongodb.com/>`__. 
+| The term "`schema <https://en.wiktionary.org/wiki/schema>`__"
+  refers to the organization of data as a blueprint of how the database
+  is constructed (divided into database tables in the case of `relational
+  databases <https://en.wikipedia.org/wiki/Relational_databases>`__)
+  the schema defines a set of attributes, tables (relations), and how
+  they can be linked (joined).
+
+As this definition states in a relational database like CSS3.0 the
+schema defines a set of attributes, tables (relations) and a how they are
+linked (joined).   MsPASS uses a "nonSQL database", which means the interaction
+is not with Structured Query Language (SQL).   We use a particular
+form of nonSQL database called a "document database" as implemented in
+the open source package `MongoDB <https://www.mongodb.com/>`__.
+The top-level concept for understanding what MongoDB is name-value pairs.
+One way of thinking of MongoDB is that it only implements each attribute
+as a name-value pair:  the name is the key that defines the concept and
+the attribute is the thing that defines that concept.  The thing can
+be something as simple as an integer number or as elaborate as any python
+object.  Table (relations) are replaced with that concept of a "document"
+that is conceptually similar but operationally very different.
+A document is a collection of name-value pairs that is conceptually
+similar to a single tuple in a table (relation).
 
 Design Concepts
 ~~~~~~~~~~~~~~~~~
@@ -51,7 +63,7 @@ following design goals:
    Spark.   Nonetheless, the design needs to minimize database
    transaction within a workflow.   Our aim was to try to limit database
    transaction to reading input data, saving intermediate results, and
-   saving a final result.  
+   saving a final result.
 #. *KISS (Keep It Simple Stupid).* Experience has shown clearly that
    complex relational schemas like CSS3.0 have many, sometimes subtle,
    issues that confound beginners.  A case in point is that large
@@ -68,13 +80,13 @@ following design goals:
    differences is what attributes (Metadata) are required.
 #. *Provide a clean mechanism to manage static metadata.* MsPASS is a
    system designed to process a "data set", which means the data are
-   preassembled, validated, and then passed into a processing chain.  
+   preassembled, validated, and then passed into a processing chain.
    The first two steps (assembly and validation) are standalone tasks
    that require assembly of waveform data and a heterogenous collection
    of metadata from a range of sources.   Much of that problem has been
    the focus of extensive development work by IRIS and the FDSN.   We
    thus provide tools for importing datasets through web services that
-   have become the current, standard exchange for data and Metadata.  
+   have become the current, standard exchange for data and Metadata.
    The complexity of the Metadata is the reason that development effort
    has been far from trivial.   A primary issue is that some attributes
    change with nearly every seismogram (e.g. the start time of a
@@ -83,15 +95,15 @@ following design goals:
    orientation).  We aimed for a balance to efficiently manage static
    data while avoiding all the things that can go wrong that have to be
    handled by network operators and the PIs of shorter term
-   deployments. 
+   deployments.
 #. *Extensible.* A DBMS cannot be too rigid, or it will create
    barriers to progress.  This is especially important to MsPASS as our
    objective is to produce a system for seismic research, not a
    production system for repetitive processing of the similar data.
    (Seismic reflection processing and seismic network catalog
-   preparation are the two examples of repetitive processing in
+   preparation are two examples of repetitive processing in
    seismology.)  A goals was to provide a mechanism for users to extend
-   the database with little to no impact on the core system. 
+   the database with little to no impact on the core system.
 
 | On the other hand, we have explicitly avoided worrying about problems
   we concluded were already solved.  These are:
@@ -100,21 +112,25 @@ following design goals:
    operational seismic networks of all scales is preparation of a
    catalog of seismic events and linking that information to data used
    to generate the event location and source parameters.  There are
-   multiple commericial and government supported systems for solving
+   multiple commercial and government supported systems for solving
    this problem.   We thus treat catalog data as an import problem.
 #. *Real time processing*.   Although there are elements of MsPASS that
-   are amenable to near real time processng of streaming data, we view
+   are amenable to near real time processing of streaming data, we view
    real time processing as another solved problem outside the scope of
-   this system.  
+   this system.
 
 Collections
 ~~~~~~~~~~~~~
+*Overview*.  In MongoDB a *collection* is roughly equivalent to a table (relation)
+in a relational database.  Each collection holds one or more *documents*.
+A single document is roughly equivalent to a tuple in a relational database.
+In this section we describe how we group documents into collections defined
+in MsPASS.   These collections and the attributes they contain are the
+*schema* for MsPASS.
 
-*wf*.  The wf collection (reminder:  a "collection" is roughly
-equivalent to a table in a relational database and "document" is roughly
-equivalent to a row (tuple) in a relation/table) is THE core table in
-MsPASS.  All seismogram read operations access ONLY the wf collection. 
-Writers can and are more complicated because they may have to deal with
+*wf*.  The wf collection is THE core table in
+MsPASS.  All seismogram read operations access ONLY the wf collection.
+Writers are more complicated because they may have to deal with
 newly generated attributes and potentially fundamental changes in the
 nature of the waveform we want to index.  *e.g.*, a stack can become
 completely inconsistent with the concept of a station name and may
@@ -123,22 +139,56 @@ the parent seismograms that created the stack.   We thus define this
 rule that all users need to recognize in designing a MsPASS workflow:
 
 | **Rule 1**.  All required attributes to run a workflow must exist in the
-  wf collection before starting the job.  
+  wf collection before starting the job.
 
 | An abstract way of saying this is that at the start of processing the
   input data must obey what MongoDB calls an
   `embedded <https://docs.mongodb.com/manual/core/data-model-design/>`__
-  data model.  On the oher hand, the full system has support for
+  data model.  To many seismologists a less abstract way of saying this is
+  that the database contents must define all required header attributes
+  needed for the processing. On the other hand, the full system has support for
   *normalized* data managed by collections like site and source (see
   below - note the list of normalization collections is expected to
-  evolve as MsPASS is developed). 
+  evolve as MsPASS is developed).
 
-| This model was chosen exactly due to design issues 1 and 2 above: 
+| This model was chosen exactly due to design issues 1 and 2 above:
   data processing is efficient because database transactions are limited
   to the initial loading of data into the system, and the model
-  statisfies the KISS principle because within a processing chain
+  satisfies the KISS principle because within a processing chain
   attributes look like header data accessible by simple name:value pair
   getters and putters.
+
+| Users must also realize that the sample data in Seismogram or TimeSeries objects
+  be constructed from *wf* documents in one of two ways.  First, the sample data
+  can be stored in the more conventional method of CSS3.0 based systems
+  as external files.   In this case, we use the same construct as CSS3.0 where
+  the correct information is defined by three attribures:  *dir*, *dfile*, and
+  *foff*.   Unlike CSS3.0 MsPASS currently requires external file data to be
+  stored as native 64 bit floating point numbers.   We force that restriction
+  for efficiency as the Seismogram *u* variable and the TimeSeries *s*
+  variable can then be read and written with fread and fwrite respectively from
+  the raw buffers.  The alternative (second) method for storing sample data
+  in MsPASS is through a mechanism called *gridfs* in MongoDB.  When this
+  method is used (it is the default) the waveform sample data are managed
+  by file system like handles inside MongoDB.  That process is largely hidden
+  from the user, but the most important thing the user must recognize is
+  that when this method is used the sample data are stored in the same
+  disk area where MongoDB stores it's other data.  Details about the
+  interaction this method requires with the gridfs_wf collection are given below.
+
+| *gridfs_wf*.  This collection is best thought of as an auxiliary
+  collection that comes into play when the (default) *gridfs* approach
+  is used to store waveform sample data.  Each document in *gridfs_wf*
+  has a one-to-one relation with a related document in *wf*.  The
+  entry in *wf* is treated as the master since all processing in MsPASS is
+  driven by the *wf* collection.   The gridfs attributes needed to load
+  waveform data stored through *gridfs_wf* are linked to *wf* through
+  a MongoDB object id.  Specifically, *wf* documents with data stored in
+  gridfs use the attribute name *gridfs_wf_id* to hold the ObjectID of the
+  document in *gridfs_wf* that defines the waveform data.  Readers
+  thus need to either join gridfs_wf and wf with the gridfs_wf_id key or
+  run a large number find transactions to connect the proper wf and gridfs_wf
+  documents.
 
 | *elog*.   The elog collection holds log messages that should
   automatically be posted and saved in a MsPASS workflow.  The elog
@@ -167,7 +217,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   well for bulletin preparation but creates a dilemma for processed
   waveforms;  the concept of a "station name" is meaningless for many
   types of processed waveform.  Two type examples, are a phased array
-  beam and Common Conversion Point (CCP) stacks of receiver functions.  
+  beam and Common Conversion Point (CCP) stacks of receiver functions.
   On the other hand, many such processed waveforms have a space concept
   that needs to be preserved.  Hence, the location information in the
   collection may relate to some more abstract point like  piercing point
@@ -175,7 +225,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   tag (siteid) as well as the ObjectId that is automatically generated
   (and required) by MongoDb.   wf documents can index a location in site
   either through the siteid, or the ObjectId of an entry in the
-  collection (the choice is implementation dependent).   
+  collection (the choice is implementation dependent).
 
 | A spatial query to link anything to a point in the site collection has
   two complexities:  (1) all spatial queries require a uncertainty
@@ -201,19 +251,30 @@ rule that all users need to recognize in designing a MsPASS workflow:
 | **Rule 2**. The site collection only contains points in space relevant to
   the data set.   Assembly of a working data set requires linking
   required points in site to wf documents as required and defining the
-  coordinates with the proper wf keys.  
+  coordinates with the proper wf keys.
 
 | As an example, to begin processing on a set of raw waveforms imported
   from the FDSN the wf collection would normally need to be normalized
   with data from site to set geographic locations of the instrument that
-  generated each wf entry:  *site_lat, site_lon,* and *site_elev*.  
+  generated each wf entry:  *site_lat, site_lon,* and *site_elev*.
   Partially processed wf entries may require the definition of
   additional geospatial points in site.
+
+| Managing response information for seismic instruments is a related problem.
+  We handle it through site, but recognize that response information has
+  issues similar to that discussed above for the simpler concept of a
+  station name.  That is, response data is not always required or even
+  necessary for the workflow (e.g. in reflection processing most algorithms
+  assume all data have a common instrument response and algorithm only cares
+  that they are matched.).  We treat response data as a raw waveform attribute
+  that can optionally be utilized by obspy tools.  The site collection
+  can contain an optional pickled version of the obspy Inventory object
+  that can be used by algorithms to implement response corrections.
 
 | *source*. The source collection has much in common with site, but
   has two fundamental differences:  (1) the origin time of each source
   needs to be specified, and (2) multiple estimates are frequently
-  available for the same source.  
+  available for the same source.
 
 | The origin time issue is a more multifaceted problem that it might
   first appear.  The first is that MongoDB, like ArcGIS, is map-centric
@@ -223,7 +284,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   source_depth*, and *source_time*) requires a multistage query that can
   potentially be very slow for a large data set.   Hence, Rule 2 could
   be restated as Rule 3 with "site collection" replaced everythere by
-  "source collection". 
+  "source collection".
 
 | The other issue that distinguishes origin time is that it's accuracy
   is data dependent.   With earthquake it is always estimated by an
@@ -243,7 +304,7 @@ rule that all users need to recognize in designing a MsPASS workflow:
   estimates of the same event.   The CSS3.0 has an elaborate mechanism
   for dealing with this issue involving three closely related tables
   (relations):  event, origin, assoc, and arrival.   The approach we
-  take in MsPASS is to treat that issue as somebody else's problem.  
+  take in MsPASS is to treat that issue as somebody else's problem.
   Thus, for the same reason as above we state rule 3 which is very
   similar to rule 2:
 
@@ -252,39 +313,29 @@ rule that all users need to recognize in designing a MsPASS workflow:
   *source_lat, source_lon, source_depth*, and *source_time*).  Linking
   each document in a wf collection to the desired point in the source
   collection is a preprocessing step to define a valid dataset.
-  
-| *history*. | An important requirement to create a reproducible result from data is a mechanism to create a full history that can be used to recreate a workflow.  The same mechanism provides a way for you to know the sequence of processing algorithms that have been applied with what tunable parameters to produce results stored in the database.  
 
-A properly constructed algorithm to be used in MsPASS will register itself at the start of the (python) script that drives the workflow.   The registration process will create an document in the history collection for each algorithm whether the workflow is actually run or not.  The structure of an individual history document is easiest to see from this example:
+| The consequences to the user is that associating each document in *wf* with
+  the correct source information must be understood as a processing step.
+  Once a MsPASS workflow is initiated it can and should assume the source
+  information loaded is the best available.   We also emphasize that for
+  efficiency preprocessing needs to load source coordinates (or any other
+  required source information like uncertainties) as attributes in the
+  *wf* collection copied from *site*.  That is required because algorithms
+  in a MsPASS workflow can and should always avoid database transactions
+  within the workflow other than saving intermediate or final results to
+  the *wf* collection.
 
-.. code-block:: json
-
-  '_id': ObjectId('5e3fecc021d9d7571de83241')
-  'jobid': 5
-  'testsimple':
-    'algorithm': 'testsimple'
-    'param_type': 'dict'
-    'params': 
-      'foo': 'bar'
-      'testint': 10
-      'testfloat': 2.0
-  'testpfalg': 
-    'algorithm': 'testpfalg'
-    'param_type': 'AntelopePf'
-    'params': {'simple_string_parameter': 'test_string', 'simple_real_parameter': 2.0, 
-    ...} 
-
-
-The example shows that each history document is indexed by a jobid that is assigned to the run when the registration process is completed.  The '_id' key is an alternative created by MongoDB that provides a unique key for any document.  That is followed in this example by two subdocuments posted in the order in which they were registered.  The key to each subducument ('testsimple' and 'testpfalg' for this example) are the names of the algorithm applied.   In this case they are artificial but a more typical might be a sequence like: 'filter','WindowData', 'deconvolution'. The subdocument keyed by each algorithm name has three field: 
-
-1.  algorithm - duplicates the subdocument key
-2. param_type defines the format of the params section
-#. params is a block that is a dump of the parameters passed to the algorithm.
-
-param_type can currently be either 'dict' or 'AntelopePf' although other formats may eventually be supported.  Use 'dict' to define simple command line arguments.  The normal expectation is they define the arguments passed to a function that is called in the processing script.  In python all arguments have a name keyword which would be the key to the dict and the value passed would be the other half of the key:value pair.  The 'AntelopePf' format is much more complicated.  We translate the structure of the text file that would be the originating Pf file into a (possibly nested) dict that is saved as the value attached to 'params'.  The user should not normally be concerned about this detail as utility functions are provided to translate this complicated dict structure to the structure of the original antelope pf file. 
-
+| *history*. | An important requirement to create a reproducible result from
+  data is a mechanism to create a full history that can be used to recreate
+  a workflow.  The same mechanism provides a way for you to know the sequence
+  of processing algorithms that have been applied with what tunable parameters
+  to produce results stored in the database.  The history collection stores this
+  information.   Most users should never need to interact directly with this
+  collection so we omit any details of the history collection contents from
+  this manual.  Users should, however, understand the concepts described
+  in - link to new document in this manual on ProcessingHistory concepts --
 
 | *global*.  Not yet implemented, but something we need.  Should be a
   place to hold global attributes.  Examples might be unit definitions,
   space tolerance for site information, space-time tolerance for events,
-  and an alternative to yaml storage of data stored now in mspass.yaml.   
+  and an alternative to yaml storage of data stored now in mspass.yaml.

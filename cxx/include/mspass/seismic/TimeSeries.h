@@ -67,6 +67,7 @@ function */
     : mspass::CoreTimeSeries(parent), mspass::ProcessingHistory(parent){};
   /*! Standard assignment operator. */
   TimeSeries& operator=(const TimeSeries& parent);
+  void load_history(const ProcessingHistory& h);
 };
 }//END mspass namespace
 #endif

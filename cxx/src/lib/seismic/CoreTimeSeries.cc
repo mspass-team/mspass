@@ -19,12 +19,11 @@ CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
 }
 CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
 {
-  s.reserve(nsin);
   this->set_dt(1.0);
   this->set_t0(0.0);
   /* This assumes current api where set_npts allocates and initializes s
   to nsin zeros */
-  this->set_npts(nsin);
+  this->CoreTimeSeries::set_npts(nsin);
 }
 
 
@@ -54,7 +53,7 @@ CoreTimeSeries::CoreTimeSeries(const BasicTimeSeries& bd,const Metadata& md)
   /* this assumes set_npts initializes the vector containers, s, to zeros
   AND that BasicTimeSeries constructor initializes ns (npts) to the value
   desired. */
-  this->set_npts(this->nsamp);
+  this->CoreTimeSeries::set_npts(this->nsamp);
 }
 // standard assignment operator
 CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
@@ -164,6 +163,7 @@ void CoreTimeSeries::set_npts(const size_t npts)
   data buffer.  We clear it an initialize it to 0 to be consistent with
   how constructors handle this. */
   this->s.clear();
+  this->s.reserve(npts);
   for(size_t i=0;i<npts;++i)this->s.push_back(0.0);
 }
 void CoreTimeSeries::sync_npts()

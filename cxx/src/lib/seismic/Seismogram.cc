@@ -82,4 +82,8 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
     }
     return *this;
 }
+void Seismogram::load_history(const ProcessingHistory& h)
+{
+  this->ProcessingHistory::operator=(h);
+}
 }// end mspass namespace

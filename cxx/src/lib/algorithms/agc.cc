@@ -27,6 +27,8 @@ TimeSeries agc(Seismogram& d, const double twin)
         CoreTimeSeries gf(dynamic_cast<BasicTimeSeries& >(d),
                 dynamic_cast<Metadata&>(d));
         gf.set_t0(d.t0()+gf.dt());
+        gf.set_npts(d.npts());
+        /* this is inefficient but needed to mesh with older push_back algorithm. */
         gf.s.clear();
         int nwin,iwagc;
         nwin=round(twin/(d.dt()));

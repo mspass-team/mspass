@@ -6,4 +6,4 @@ include_directories(
   ${PYTHON_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include/)
 
-target_link_libraries(test_tcs PRIVATE mspass)
+target_link_libraries(test_tcs PRIVATE mspass ${Boost_LIBRARIES})

@@ -64,7 +64,7 @@ handling time.
 \param tw defines the data range to be extracted from parent.
 */
 TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
-/* This set of procedures are ancessors of seismogram_helpers.   They 
+/* This set of procedures are ancessors of seismogram_helpers.   They
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.
 
@@ -121,25 +121,41 @@ std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
   (ThreeComponentEnsemble& din,std::string key, TimeWindow tw);
 /*! \brief Extract one component from a 3C ensemble.
  *
- This function creates an ensemble of TimeSeries objects that are 
- a specified component extracted from an ensemble of 3C objects.  
+ This function creates an ensemble of TimeSeries objects that are
+ a specified component extracted from an ensemble of 3C objects.
  It clones the metadata of the parent for the output ensemble metadata.
- Each member is created by a call to the (overloaded) function that 
- extracts a component from each member of the parent.   That function 
- currently also clones the metadata.  That is notable as there are 
+ Each member is created by a call to the (overloaded) function that
+ extracts a component from each member of the parent.   That function
+ currently also clones the metadata.  That is notable as there are
  metadata components that make sense only on each side of the transformation.
- A notable problem at this writing is that the Seismogram converter 
- does not set hang and vang in the output.  This might cause downstream 
+ A notable problem at this writing is that the Seismogram converter
+ does not set hang and vang in the output.  This might cause downstream
  problems - REMOVE THIS COMMENT WHEN THAT IS FIXED.
 
  \param d - is the input ensemble.
  \param comp - is the component number to extract.
 
  \return Ensemble<TimeSeries> of component comp data.
- \exception Will throw a MsPASSError exception if the ensemble 
+ \exception Will throw a MsPASSError exception if the ensemble
    input is incompatible or the component number is not 0,1, or 2.
    */
 Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
-                const unsigned int comp);
+	const unsigned int comp);
+/*! \brief Sparse time domain convolution.
+Sometimes with modeling we have an data series (d) that is sparse
+that we want to convolve with a wavelet to produce a simulation data
+for deconvolution.   This small function implements a sparse convolution
+algorithm in the time domain.  It uses a daxpy sum only summing components
+of d testing nonzero.
+Note if d is not sparse this reduces to normal convolution with a daxpy
+algorithm.  The cost is marginally higher than a dense time domain
+convolution, especially if the size of the wavelet is larger since then
+the sum over the size of the wavelet will dominate over the single test
+for zeros in d.
+\param wavelet is the wavelet to be convolved with d (not sparse)
+\param d is the sparse data vector (dominated by zeros).
+*/
+CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet,
+				const CoreSeismogram& d);
 }//End mspass namespace encapsulation
 #endif
