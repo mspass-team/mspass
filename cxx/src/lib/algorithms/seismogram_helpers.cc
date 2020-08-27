@@ -179,40 +179,43 @@ void HorizontalRotation(Seismogram& d, double phi)
     tmatrix[2][2]=1.0;
     d.transform(tmatrix);
 }
-/* Extracts one component from a 3c seismogram returning the
- result as a TimeSeries object.  Any exceptions are
-simply rethrown.
 
-*/
-// FIXME: ExtractComponent will discard any history records in Seismogram 
-CoreTimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
+TimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
 {
-    try {
-        CoreTimeSeries ts(dynamic_cast<const BasicTimeSeries&>(tcs),
-                                  dynamic_cast<const Metadata&>(tcs));
-        /* Important - need to clear vector or we get nothing */
-        ts.s.clear();
-        double *ptr;
-        dmatrix *uptr;
-        if(tcs.live())
-            for(size_t i=0; i<tcs.u.columns(); ++i)
-            {
-                uptr=const_cast<dmatrix *>(&(tcs.u));
-                ptr=uptr->get_address(component,i);
-                ts.s.push_back(*ptr);
-            }
-        return(ts);
-    }
-    catch (...)
+  /* No need to test for negative because we use an unsigned */
+  if(component>=3) throw MsPASSError("ExtractComponent: illegal component number - must be 0, 1, or 2",
+      ErrorSeverity::Invalid);
+  /* Return a null seismogram if tcs is marked dead */
+  if(tcs.dead()) return TimeSeries();
+  try{
+    vector<double> scomp;
+    for(size_t i=0;i<tcs.u.columns();++i)
     {
-        throw;
+      scomp.push_back(tcs.u(component,i));
     }
+    TimeSeries result(dynamic_cast<const BasicTimeSeries&>(tcs),
+      dynamic_cast<const Metadata&>(tcs),
+        dynamic_cast<const ProcessingHistory&>(tcs),
+          scomp);
+    /*we hard code some ProcessingHistory here with the algid defining the
+    component number extracted.   This model should work for any algorithm that
+    has only one argument that can be represented as a string.  We do do
+    nothing of the history is empty. */
+    if(!result.is_empty())
+    {
+      stringstream ss;
+      ss<<"component="<<component;
+      result.new_map("ExtractComponent",ss.str(),AtomicType::TIMESERIES,
+         ProcessingStatus::VOLATILE);
+    }
+    return result;
+  }catch(...){throw;};
 }
 Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
 		const unsigned int comp)
 {
   //Using size_t = unsigned int means we don't need to check negative comp
-  if(comp>=3) 
+  if(comp>=3)
     throw MsPASSError("ExtractComponent(Ensmble): illegal component number - must be 0,1, or 2",
 		    ErrorSeverity::Invalid);
   try{
@@ -222,18 +225,8 @@ Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
     vector<Seismogram>::const_iterator dptr;
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
     {
-      CoreTimeSeries ts;
-      ts=ExtractComponent(*dptr,comp);
-      TimeSeries dts(ts);  // creates empty ProcessingHistory
-      /*this is a horrible way to do this as it will be very inefficient 
-       * if applied to CoreSeismogram data, but the only way I can see to 
-       * do this without a lot of related revisions.   Not crazy because 
-       * this function is not expected to be applied to massive data sets of
-       * CoreSeismogram objects.  Point is if parent is made of CoreSeismograms
-       * this will ignore the errors thown.*/
-      try{
-        dts.mspass::ProcessingHistory::operator=(*dptr);
-      }catch(...){};
+      TimeSeries dts;
+      dts=ExtractComponent(*dptr,comp);
       result.member.push_back(dts);
     }
     return result;

@@ -88,20 +88,28 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
 **/
 std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
 	std::string key, mspass::TimeWindow tw);
-/*!
- Extract one component from a Seismogram and
- create a TimeSeries object from it.
+/*! \brief Extract one component from a Seismogram and create a TimeSeries object from it.
 
  Copies all Metadata from parent Seismogram to build a TimeSeries
- object.  Note that process will often leave relics like transformation
- matrix components.
+ object.  This will often leave relics of the transformation matrix
+ components in the header so be aware.  If the processing history section
+ is not marked as empty new_map will be called to record this algorithm
+ was involked.   The algid saved is internally set to the form
+ "component=n" where n is 0, 1, or 2.  With one simple argument the baggage of
+ maintaining that detail seems unnecessary.   This is a variant that
+ may cause problems downstream so I'm noting that to be aware as this
+ system develops.
+
 
 \param tcs is the Seismogram to convert.
 \param component is the component to extract (0, 1, or 2)
 
+\expeption This function will throw a MsPASSError if the component number is
+  illegal
+
 \return TimeSeries of component requested
 **/
-mspass::CoreTimeSeries ExtractComponent(const Seismogram& tcs,
+mspass::TimeSeries ExtractComponent(const Seismogram& tcs,
 		const unsigned int component);
 /* Enemble algorithms */
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
