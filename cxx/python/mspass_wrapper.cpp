@@ -877,10 +877,21 @@ PYBIND11_MODULE(ccore,m)
       py::arg("key"),
       py::arg("window")
   );
-  m.def("ExtractComponent",&mspass::ExtractComponent,
+  /* overload_cast would not work on this name because of a strange limitation with templated functions
+   * used for the Ensemble definition.   */
+  m.def("ExtractComponent",static_cast<mspass::CoreTimeSeries(*)(const mspass::Seismogram&,const unsigned int)>(&mspass::ExtractComponent),
   	"Extract component as a TimeSeries object",
       py::return_value_policy::copy,
       py::arg("tcs"),
+      py::arg("component")
+  );
+  m.def("EnsembleComponent",static_cast<mspass::Ensemble<TimeSeries>(*)(const mspass::Ensemble<Seismogram>&,const unsigned int)>(&mspass::ExtractComponent),
+  /*
+  m.def("ExtractComponent",py::overload_cast<const mspass::Ensemble<Seismogram>,const size_t>(&mspass::ExtractComponent),
+  */
+  	"Extract one component from a 3C ensemble",
+      py::return_value_policy::copy,
+      py::arg("d"),
       py::arg("component")
   );
    py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")

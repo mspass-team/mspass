@@ -207,5 +207,37 @@ CoreTimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int compone
         throw;
     }
 }
+Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
+		const unsigned int comp)
+{
+  //Using size_t = unsigned int means we don't need to check negative comp
+  if(comp>=3) 
+    throw MsPASSError("ExtractComponent(Ensmble): illegal component number - must be 0,1, or 2",
+		    ErrorSeverity::Invalid);
+  try{
+    mspass::Ensemble<TimeSeries> result;
+    result.mspass::Metadata::operator=(d);
+    result.member.reserve(d.member.size());
+    vector<Seismogram>::const_iterator dptr;
+    for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
+    {
+      CoreTimeSeries ts;
+      ts=ExtractComponent(*dptr,comp);
+      TimeSeries dts(ts);  // creates empty ProcessingHistory
+      /*this is a horrible way to do this as it will be very inefficient 
+       * if applied to CoreSeismogram data, but the only way I can see to 
+       * do this without a lot of related revisions.   Not crazy because 
+       * this function is not expected to be applied to massive data sets of
+       * CoreSeismogram objects.  Point is if parent is made of CoreSeismograms
+       * this will ignore the errors thown.*/
+      try{
+        dts.mspass::ProcessingHistory::operator=(*dptr);
+      }catch(...){};
+      result.member.push_back(dts);
+    }
+    return result;
+  } catch(...){throw;};
+};
+
 
 } // end mspass namespace encapsulation

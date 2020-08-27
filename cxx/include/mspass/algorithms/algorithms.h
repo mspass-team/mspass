@@ -119,5 +119,27 @@ mspass::CoreTimeSeries ExtractComponent(const Seismogram& tcs,
 **/
 std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
   (ThreeComponentEnsemble& din,std::string key, TimeWindow tw);
+/*! \brief Extract one component from a 3C ensemble.
+ *
+ This function creates an ensemble of TimeSeries objects that are 
+ a specified component extracted from an ensemble of 3C objects.  
+ It clones the metadata of the parent for the output ensemble metadata.
+ Each member is created by a call to the (overloaded) function that 
+ extracts a component from each member of the parent.   That function 
+ currently also clones the metadata.  That is notable as there are 
+ metadata components that make sense only on each side of the transformation.
+ A notable problem at this writing is that the Seismogram converter 
+ does not set hang and vang in the output.  This might cause downstream 
+ problems - REMOVE THIS COMMENT WHEN THAT IS FIXED.
+
+ \param d - is the input ensemble.
+ \param comp - is the component number to extract.
+
+ \return Ensemble<TimeSeries> of component comp data.
+ \exception Will throw a MsPASSError exception if the ensemble 
+   input is incompatible or the component number is not 0,1, or 2.
+   */
+Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
+                const unsigned int comp);
 }//End mspass namespace encapsulation
 #endif
