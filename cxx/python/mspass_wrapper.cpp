@@ -20,6 +20,7 @@
 // These includes are objects only visible from the python interpreter
 #include "MongoDBConverter.h"
 #include <mspass/algorithms/algorithms.h>
+#include <mspass/algorithms/amplitudes.h>
 //Deconvolution algorithms are in a separate directory
 #include <mspass/deconvolution/WaterLevelDecon.h>
 #include <mspass/deconvolution/LeastSquareDecon.h>
@@ -1125,7 +1126,7 @@ PYBIND11_MODULE(ccore,m)
       return std::string("{'status': ") + std::string(py::str(py::cast(nd.status))) +
         ", 'uuid': " + std::string(py::repr(py::cast(nd.uuid))) +
         ", 'algorithm': " + std::string(py::repr(py::cast(nd.algorithm))) +
-        ", 'algid': " + std::string(py::repr(py::cast(nd.algid))) + 
+        ", 'algid': " + std::string(py::repr(py::cast(nd.algid))) +
         ", 'stage': " + std::to_string(nd.stage) +
         ", 'type': " + std::string(py::str(py::cast(nd.type))) +
         "}";
@@ -1639,6 +1640,83 @@ py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator f
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("i0") )
+  ;
+  /* Amplitude functions - overloads */
+  m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::PeakAmplitude),
+    "Compute amplitude as largest absolute amplitude",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("PeakAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::PeakAmplitude),
+    "Compute amplitude as largest vector amplitude",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("RMSAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::RMSAmplitude),
+    "Compute amplitude from rms of signal",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("RMSAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::RMSAmplitude),
+    "Compute amplitude as rms on all 3 components",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("MADAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::MADAmplitude),
+    "Compute amplitude from median absolute deviation (MAD) of signal",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("MADAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::MADAmplitude),
+    "Compute amplitude as median of vector amplitudes",
+    py::return_value_policy::copy,py::arg("d") )
+  ;
+  m.def("PerfAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&mspass::PerfAmplitude),
+    "Compute amplitude of signal using clip percentage metric",
+    py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
+  ;
+  m.def("PerfAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&mspass::PerfAmplitude),
+    "Compute amplitude of signal using clip percentage metric",
+    py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
+  ;
+  py::enum_<mspass::ScalingMethod>(m,"ScalingMethod")
+    .value("Peak",mspass::ScalingMethod::Peak)
+    .value("RMS",mspass::ScalingMethod::RMS)
+    .value("ClipPerc",mspass::ScalingMethod::ClipPerc)
+    .value("MAD",mspass::ScalingMethod::MAD)
+  ;
+  /* We give the python names for these functions a trailing underscore as
+  a standard hit they are not to be used directly - should be hidden behing
+  python functions that simply the api and (more importantly) add an optional
+  history preservation. */
+  m.def("_scale",py::overload_cast<mspass::Seismogram&,const mspass::ScalingMethod,const double>(&mspass::scale<Seismogram>),
+    "Scale a Seismogram object with a chosen amplitude metric",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level") )
+  ;
+  m.def("_scale",py::overload_cast<mspass::TimeSeries&,const mspass::ScalingMethod,const double>(&mspass::scale<TimeSeries>),
+    "Scale a TimeSeries object with a chosen amplitude metric",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level") )
+  ;
+  m.def("_scale_ensemble_members",py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,
+          const mspass::ScalingMethod&, const double>(&mspass::scale_ensemble_members<mspass::Seismogram>),
+    "Scale each member of a SeismogramEnsemble individually by selected metric",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level") )
+  ;
+  m.def("_scale_ensemble_members",py::overload_cast<mspass::Ensemble<mspass::TimeSeries>&,
+          const mspass::ScalingMethod&, const double>(&mspass::scale_ensemble_members<mspass::TimeSeries>),
+    "Scale each member of a TimeSeriesEnsemble individually by selected metric",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level") )
+  ;
+  m.def("_scale_ensemble",py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,
+          const mspass::ScalingMethod&, const double, const bool>(&mspass::scale_ensemble<mspass::Seismogram>),
+    "Apply a uniform scale to a SeismogramEnsemble using average member estimates by a selected method",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
+  ;
+  m.def("_scale_ensemble",py::overload_cast<mspass::Ensemble<mspass::TimeSeries>&,
+          const mspass::ScalingMethod&, const double, const bool>(&mspass::scale_ensemble<mspass::TimeSeries>),
+    "Apply a uniform scale to a TimeSeriesEnsemble using average member estimates by a selected method",
+    py::return_value_policy::copy,
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
   ;
   /* These are a pair of (four actually - overloaded) procedures to aid
   python programs in building history chains.  See C++ doxygen definitions */
