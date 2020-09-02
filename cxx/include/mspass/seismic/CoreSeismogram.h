@@ -209,6 +209,8 @@ Initializes data and sets aside memory for
 **/
 	CoreSeismogram& operator
 		= (const CoreSeismogram&);
+/*! Multiply data by a scalar. */
+  CoreSeismogram& operator*=(const double);
 /*!
  Extract a sample from data vector.
 

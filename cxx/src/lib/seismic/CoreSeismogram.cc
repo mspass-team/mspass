@@ -759,6 +759,17 @@ CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
     }
     return(*this);
 }
+CoreSeismogram& CoreSeismogram::operator*=(const double scale)
+{
+  /* do nothing to empty data or data marked dead*/
+  if((this->npts()==0) || (this->dead())) return(*this);
+  /* We can use this dscal blas function because dmatrix puts all the data
+  in a continguous block. Beware if there is am implementation change for
+  the matrix data*/
+  double *ptr=this->u.get_address(0,0);
+  dscal(3*this->npts(),scale,ptr,1);
+  return(*this);
+}
 void CoreSeismogram::set_dt(const double sample_interval)
 {
   this->BasicTimeSeries::set_dt(sample_interval);

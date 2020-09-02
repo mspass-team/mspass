@@ -126,7 +126,8 @@ Summation operator.  Simple version of stack.  Aligns data before
 summing.
 **/
 	CoreTimeSeries& operator+=(const CoreTimeSeries& d);
-
+/*! Multiply data by a scalar. */
+	CoreTimeSeries& operator*=(const double);
 /*!
 Extract a sample from data vector with range checking.
 Because the data vector is public in this interface

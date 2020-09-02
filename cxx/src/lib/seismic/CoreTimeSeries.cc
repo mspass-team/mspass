@@ -1,4 +1,5 @@
 #include <vector>
+#include "misc/blas.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/Metadata.h"
@@ -105,7 +106,11 @@ CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
         this->s[j]+=d.s[i];
     return(*this);
 }
-
+CoreTimeSeries& CoreTimeSeries::operator*=(const double scale)
+{
+  dscal(this->npts(),scale,&(this->s[0]),1);
+  return *this;
+}
 void CoreTimeSeries::set_dt(const double sample_interval)
 {
   this->BasicTimeSeries::set_dt(sample_interval);
