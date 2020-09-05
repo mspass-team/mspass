@@ -61,25 +61,25 @@ template <typename Tdata> double scale(Tdata& d,const ScalingMethod method,
       case ScalingMethod::Peak:
         amplitude=PeakAmplitude(d);
         dscale = level/amplitude;
-        newcalib *= dscale;
+        newcalib /= dscale;
         break;
       case ScalingMethod::ClipPerc:
         amplitude=PerfAmplitude(d,level);
         /* for this scaling we use level as perf and output level is frozen
         to be scaled to order unity*/
         dscale = 1.0/amplitude;
-        newcalib *= dscale;
+        newcalib /= dscale;
         break;
       case ScalingMethod::MAD:
         amplitude=MADAmplitude(d);
         dscale = level/amplitude;
-        newcalib *= dscale;
+        newcalib /= dscale;
         break;
       case ScalingMethod::RMS:
       default:
         amplitude=RMSAmplitude(d);
         dscale = level/amplitude;
-        newcalib *= dscale;
+        newcalib /= dscale;
     };
     d *= dscale;
     d.put(scale_factor_key,newcalib);
@@ -156,26 +156,22 @@ template <typename Tdata> double scale_ensemble(mspass::Ensemble<Tdata>& d,
     size_t nlive(0);
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
     {
-      double amplitude,dscale,newcalib;
+      double amplitude;
       if(dptr->dead()) continue;
       switch(method)
       {
         case ScalingMethod::Peak:
-          amplitude=PeakAmplitude(d);
+          amplitude=PeakAmplitude(*dptr);
           break;
         case ScalingMethod::ClipPerc:
-          amplitude=PerfAmplitude(d,level);
+          amplitude=PerfAmplitude(*dptr,level);
           break;
         case ScalingMethod::MAD:
-          amplitude=MADAmplitude(d);
-          dscale = level/amplitude;
-          newcalib *= dscale;
+          amplitude=MADAmplitude(*dptr);
           break;
         case ScalingMethod::RMS:
         default:
-          amplitude=RMSAmplitude(d);
-          dscale = level/amplitude;
-          newcalib *= dscale;
+          amplitude=RMSAmplitude(*dptr);
       };
       ++nlive;
       amps.push_back(log(amplitude));
@@ -191,6 +187,7 @@ template <typename Tdata> double scale_ensemble(mspass::Ensemble<Tdata>& d,
     {
       avgamp=ampstats.median();
     }
+
     /* restore to a value instead of natural log*/
     avgamp=exp(avgamp);
     double dscale=level/avgamp;
@@ -209,8 +206,8 @@ template <typename Tdata> double scale_ensemble(mspass::Ensemble<Tdata>& d,
         {
           calib=1.0;
         }
-        calib*=dscale;
-        d.put(scale_factor_key,calib);
+        calib/=dscale;
+        dptr->put(scale_factor_key,calib);
       }
     }
     return avgamp;

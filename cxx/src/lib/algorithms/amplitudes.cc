@@ -12,8 +12,11 @@ a generic algorithm defined in seispp.h */
 double PeakAmplitude(const CoreTimeSeries& d)
 {
 	if(d.dead() || ((d.npts())<=0)) return(0.0);
-	vector<double>::const_iterator amp;
-	amp=max_element(d.s.begin(),d.s.end());
+	vector<double> work(d.s);
+	vector<double>::iterator dptr,amp;
+	/* We want maximum absolute value of the amplitude */
+	for(dptr=work.begin();dptr!=work.end();++dptr) (*dptr)=fabs(*dptr);
+	amp=max_element(work.begin(),work.end());
 	return(*amp);
 }
 double PeakAmplitude(const CoreSeismogram& d)
@@ -26,6 +29,7 @@ double PeakAmplitude(const CoreSeismogram& d)
 	ampvec=0.0;
 	for(j=0;j<d.npts();++j)
 	{
+		ampval=0.0;
 		// Pointer arithmetic a bit brutal, but done
 		// for speed to avoid 3 calls to operator ()
 		ptr=d.u.get_address(0,j);
@@ -55,7 +59,7 @@ double RMSAmplitude(const CoreSeismogram& d)
 	ptr=d.u.get_address(0,0);
 	size_t n=3*d.npts();
 	for(size_t k=0;k<n;++k,++ptr) sumsq += (*ptr)*(*ptr);
-	return sqrt(sumsq/n);
+	return sqrt(sumsq/d.npts());
 }
 double PerfAmplitude(const CoreTimeSeries& d, const double perf)
 {
@@ -65,8 +69,8 @@ double PerfAmplitude(const CoreTimeSeries& d, const double perf)
 	for(ptr=amps.begin();ptr!=amps.end();++ptr) *ptr = fabs(*ptr);
 	sort(amps.begin(),amps.end());
 	size_t n=amps.size();
-	double rperf=round(perf*static_cast<double>(n));
-	return amps[static_cast<size_t>(rperf)];
+	size_t iperf=static_cast<size_t>(perf*static_cast<double>(n));
+	return amps[iperf];
 }
 double PerfAmplitude(const CoreSeismogram& d,const double perf)
 {
@@ -79,8 +83,9 @@ double PerfAmplitude(const CoreSeismogram& d,const double perf)
 	}
 	sort(amps.begin(),amps.end());
 	size_t n=amps.size();
-	double rperf=round(perf*static_cast<double>(n));
-	return amps[static_cast<size_t>(rperf)];
+	/* n-1 because C arrays start at 0 */
+	size_t iperf=static_cast<size_t>(perf*static_cast<double>(n));
+	return amps[iperf];
 }
 /* This pair could be made a template, but they are so simple
 it is clearer to keep them here with the related functions */
@@ -88,7 +93,7 @@ double MADAmplitude(const CoreTimeSeries& d)
 {
 	return PerfAmplitude(d,0.5);
 }
-double MADamplitude(const Seismogram& d)
+double MADAmplitude(const CoreSeismogram& d)
 {
 	return PerfAmplitude(d,0.5);
 }
