@@ -220,12 +220,14 @@ def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
     # windows.   this logic is potentially confusing.  the else
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
+    figure_handles=[]
     if(isinstance(d,mspass.SeismogramEnsemble)):
         # We always plot 3C data as 3 windows.  We extract each
         # component and then call this function with a trivial
         # recursion - only call itself once and only once
         title3c=title
         for i in range(3):
+            pyplot.figure(i)
             dcomp=mspass.EnsembleComponent(d,i)
             if(title!=None):
                 title3c='%s:%d' % (title,i)
@@ -236,7 +238,7 @@ def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
                     image_raw(section,t0,dt,ranges,cmap)
                 if(title3c!=None):
                     pyplot.title(title3c)
-                pyplot.show()
+                figure_handles.append(pyplot.gcf())
             except RuntimeError as err:
                 print(err)
                 return None
@@ -260,11 +262,11 @@ def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
                 image_raw(section,t0,dt,ranges,cmap)
             if(title!=None):
                 pyplot.title(title)
-            pyplot.show()
+            figure_handles.append(pyplot.gcf())
         except RuntimeError as err:
                 print(err)
                 return None
-    return pyplot.gcf()
+    return figure_handles
 def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
               title=None):
     """
@@ -279,7 +281,9 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
         # component and then call this function with a trivial
         # recursion - only call itself once and only once
         title3c=title
+        figure_handles=[]
         for i in range(3):
+            pyplot.figure(i)
             dcomp=mspass.EnsembleComponent(d,i)
             if(title!=None):
                 title3c='%s:%d' % (title,i)
@@ -288,7 +292,7 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
                 image_raw(section,t0,dt,ranges,cmap,aspect,vmin,vmax)
                 if(title3c!=None):
                     pyplot.title(title3c)
-                pyplot.show()
+                figure_handles.append(pyplot.gcf())
             except RuntimeError as err:
                 print(err)
                 return None
@@ -310,11 +314,11 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
             image_raw(section,t0,dt,ranges,cmap,aspect,vmin,vmax)
             if(title!=None):
                 pyplot.title(title)
-            pyplot.show()
+            figure_handles.append(pyplot.gcf())
         except RuntimeError as err:
                 print(err)
                 return None
-    return pyplot.gcf()
+    return figure_handles
 
 class SectionPlotter:
     """
@@ -377,7 +381,7 @@ class SectionPlotter:
         # as it may duplicate the call to change_style at the end, BUT
         # if the default changes these initial values do not need to be
         # changed
-        self._style='colored_wtva'
+        self._style='wtvaimg'
         self._use_variable_area=True
         self._fill_color='k'  #black in matplotlib
         self._color_background=True
@@ -390,7 +394,7 @@ class SectionPlotter:
         self._vmin=None
         self._vmax=None
         # use change_style to simply default style
-        self.change_style('colored_wtva')
+        self.change_style('wtvaimg')
     def change_style(self,newstyle,fill_color='k',color_map='seismic'):
         """
         Use this method to change the plot style.   Options are described
@@ -407,16 +411,16 @@ class SectionPlotter:
             the positive quadrants colored by the color defined by the fill_color
             parameter.   If fill_color is passed as None a RuntimeError will
             be thrown.
-          image - data are displayed as an image with the color_map parameter
+          img - data are displayed as an image with the color_map parameter
             defining the matplotlib color map used to map amplitudes into
             a given color.   Note as with wtva the data are presumed to be
             scaled to be of order 1.  color_map must not be None, which it
             can be if the plot was changed from a previous style like wtva,
             or a RuntimeError exception will be thrown.
-          colored_wtva is like wtva but the wtva plot is drawn on top of an
-            image plot.  Since this is the union of wtva and image a RuntimeError
+          wtvaimg is like wtva but the wtva plot is drawn on top of an
+            image plot.  Since this is the union of wtva and img a RuntimeError
             exception will be throw if either color_map or fill_color are null.
-          wiggletrace will produce a standard line graph of each input as a
+          wt will produce a standard line graph of each input as a
             black line (that feature is currently frozen).   color_map and
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
@@ -430,26 +434,26 @@ class SectionPlotter:
             self._color_map=None
             self._fill_color=fill_color
             self._use_variable_area=True
-        elif(newstyle=='colored_wtva'):
+        elif(newstyle=='wtvaimg'):
             if(color_map==None):
-                raise RuntimeError("SectionPlotter.change_style: colored_wtva style requires a color_map definition - received a None")
+                raise RuntimeError("SectionPlotter.change_style: wtvaimg style requires a color_map definition - received a None")
             if(fill_color==None):
-                raise RuntimeError("SectionPlotter.change_style: colored_wtva style requires a fill_color definition - received a None")
-            self._style='colored_wtva'
+                raise RuntimeError("SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None")
+            self._style='wtvaimg'
             self._color_background=True
             self._fill_color=fill_color
             self._color_map=color_map
             self._use_variable_area=True
-        elif(newstyle=='image'):
+        elif(newstyle=='img'):
             if(color_map==None):
-                raise RuntimeError("SectionPlotter.change_style: image style requires a color_map definition - received a None")
-            self._style='image'
+                raise RuntimeError("SectionPlotter.change_style: img style requires a color_map definition - received a None")
+            self._style='img'
             self._color_background=True
             self._fill_color=None
             self._use_variable_area=False
             self._color_map=color_map
-        elif(newstyle=='wiggletrace'):
-            self._style='wiggletrace'
+        elif(newstyle=='wt'):
+            self._style='wt'
             self._color_background=False
             self._color_map=None
             self._fill_color=None
@@ -465,17 +469,18 @@ class SectionPlotter:
             TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
             If d is any other type the method will throw a RuntimeError exception.
 
-        :Returns: a matplotlib.pylot plot handle.
+        :Returns: an array of one or 3 (only for SeismogramEnsemble dat)
+          matplotlib.pylot.gcf() plot handle(s).
         :rtype: The plot handle is what matplotlib.pyplot calls a gcf.  It
           is the return of pyplot.gcf() and can be used to alter some properties
           of the figure.  See matplotlib documentation.
         """
         # these are all handled by the same function with argument combinations defined by
         # change_style determining the behavior.
-        if(self._style=='wtva' or self._style=='colored_wtva' or self._style=='wiggletrace'):
+        if(self._style=='wtva' or self._style=='wtvaimg' or self._style=='wt'):
             handle=wtvaplot(d,self._ranges,self.scale,self._fill_color,self.normalize,self._color_map,self.title)
             return handle
-        elif(self._style=='image'):
+        elif(self._style=='img'):
             handle=imageplot(d,self._ranges,self._color_map,self._aspect,self._vmin,self._vmax,self.title)
             return handle
         else:
@@ -510,7 +515,7 @@ class SeismicPlotter:
         has a few common optional parameters to set at construction 
         time.  Note style is intentionally not a constructor 
         parameter because of parameter interdependence.  The default
-        plot style is colored_wtva.  Use change_style to use a different 
+        plot style is wtvaimg.  Use change_style to use a different 
         plotting style.
         
         :param scale:  optoinal scale factor to apply to data before plotting
@@ -533,7 +538,7 @@ class SeismicPlotter:
         # as it may duplicate the call to change_style at the end, BUT
         # if the default changes these initial values do not need to be
         # changed
-        self._style='colored_wtva'
+        self._style='wtvaimg'
         self._fill_color='k'  #black in matplotlib
         self._color_map='seismic'
         # these are options to raw codes adapted from  fatiando a terra
@@ -550,7 +555,7 @@ class SeismicPlotter:
         self._RANGE_RATIO_TEST=0.0001 # Should be smaller than 1/screem horizontal pixel maximum size
         self._default_single_ts_aspect=0.25
         # use change_style to simply default style
-        self.change_style('colored_wtva')
+        self.change_style('wtvaimg')
     def change_style(self,newstyle,fill_color='k',color_map='seismic'):
         """
         Use this method to change the plot style.   Options are described
@@ -567,16 +572,16 @@ class SeismicPlotter:
             the positive quadrants colored by the color defined by the fill_color
             parameter.   If fill_color is passed as None a RuntimeError will
             be thrown.
-          image - data are displayed as an image with the color_map parameter
+          img - data are displayed as an image with the color_map parameter
             defining the matplotlib color map used to map amplitudes into
             a given color.   Note as with wtva the data are presumed to be
             scaled to be of order 1.  color_map must not be None, which it
             can be if the plot was changed from a previous style like wtva,
             or a RuntimeError exception will be thrown.
-          colored_wtva is like wtva but the wtva plot is drawn on top of an
-            image plot.  Since this is the union of wtva and image a RuntimeError
+          wtvaimg is like wtva but the wtva plot is drawn on top of an
+            image plot.  Since this is the union of wtva and img a RuntimeError
             exception will be throw if either color_map or fill_color are null.
-          wiggletrace will produce a standard line graph of each input as a
+          wt will produce a standard line graph of each input as a
             black line (that feature is currently frozen).   color_map and
             fill_color are ignored for this style so no exceptions should
             occur when the method is called with this value of newstyle.
@@ -588,22 +593,22 @@ class SeismicPlotter:
             # force this when set this way
             self._color_map=None
             self._fill_color=fill_color
-        elif(newstyle=='colored_wtva'):
+        elif(newstyle=='wtvaimg'):
             if(color_map==None):
-                raise RuntimeError("SectionPlotter.change_style: colored_wtva style requires a color_map definition - received a None")
+                raise RuntimeError("SectionPlotter.change_style: wtvaimg style requires a color_map definition - received a None")
             if(fill_color==None):
-                raise RuntimeError("SectionPlotter.change_style: colored_wtva style requires a fill_color definition - received a None")
-            self._style='colored_wtva'
+                raise RuntimeError("SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None")
+            self._style='wtvaimg'
             self._fill_color=fill_color
             self._color_map=color_map
-        elif(newstyle=='image'):
+        elif(newstyle=='img'):
             if(color_map==None):
-                raise RuntimeError("SectionPlotter.change_style: image style requires a color_map definition - received a None")
-            self._style='image'
+                raise RuntimeError("SectionPlotter.change_style: img style requires a color_map definition - received a None")
+            self._style='img'
             self._fill_color=None
             self._color_map=color_map
-        elif(newstyle=='wiggletrace'):
-            self._style='wiggletrace'
+        elif(newstyle=='wt'):
+            self._style='wt'
             self._color_map=None
             self._fill_color=None
         else:
@@ -623,12 +628,12 @@ class SeismicPlotter:
     def plot(self,d):
         if(self._style=='wtva'):
             self._wtva(d,fill=True)
-        elif(self._style=='wiggletrace'):
+        elif(self._style=='wt'):
             self._wtva(d,fill=False)
-        elif(self._style=='colored_wtva'):
+        elif(self._style=='wtvaimg'):
             self._wtva(d,fill=True)
             self._imageplot(d)
-        elif(self._style=='image'):
+        elif(self._style=='img'):
             self._imageplot(d)
         else:
             raise RuntimeError('SeismicPlotter.plot:  internal style definition='+self._style+' is invalid\nThis should not happen')
