@@ -190,7 +190,7 @@ template <class T> T VectorStatistics<T>::quantile(size_t n)
 		stringstream ss;
 		ss << "VectorStatistics::quantile method:  asked for 1-quantile number "
 		  << n<<" but data vecotor length is only "<<d.size()<<endl;
-		throw mspass::MsPASSError(ss.str,mspass::ErrorSeverity::Invalid);
+		throw mspass::MsPASSError(ss.str(),mspass::ErrorSeverity::Invalid);
 	}
 }
 } /* End mspass namespace encapsulation */
