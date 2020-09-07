@@ -1,12 +1,7 @@
 import numpy
 from matplotlib import pyplot
-# this obnoxious thing is needed for testing for now
-import sys
-sys.path.append('/home/pavlis/src/mspass/python')
 import mspasspy.ccore as mspass
-from mspasspy.ccore import TimeSeriesEnsemble
-from mspasspy.ccore import SeismogramEnsemble
-
+import mspasspy.algorithms as alg
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1., color='k',
                    normalize=False):
@@ -276,12 +271,12 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
     # windows.   this logic is potentially confusing.  the else
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
+    figure_handles=[]
     if(isinstance(d,mspass.SeismogramEnsemble)):
         # We always plot 3C data as 3 windows.  We extract each
         # component and then call this function with a trivial
         # recursion - only call itself once and only once
         title3c=title
-        figure_handles=[]
         for i in range(3):
             pyplot.figure(i)
             dcomp=mspass.EnsembleComponent(d,i)
@@ -548,8 +543,7 @@ class SeismicPlotter:
         self._aspect=None
         self._vmin=None
         self._vmax=None
-        # IN FLUX - these are added for SeismicPlotter and not in SectionPlotter
-        self._gain=1.0
+        # These are added for SeismicPlotter and not in SectionPlotter
         self._plot_topdown=False
         # Internal constants
         self._RANGE_RATIO_TEST=0.0001 # Should be smaller than 1/screem horizontal pixel maximum size
@@ -626,17 +620,41 @@ class SeismicPlotter:
         """
         self._plot_topdown=False
     def plot(self,d):
+        # make copy always to prevent unintentional scaling of input data
+        if(self.normalize):
+            d2plot=self._deepcopy(d)
+            self._normalize(d2plot)
+        else:
+            d2plot=d   # always a shallow copy in python
         if(self._style=='wtva'):
-            self._wtva(d,fill=True)
+            self._wtva(d2plot,fill=True)
         elif(self._style=='wt'):
-            self._wtva(d,fill=False)
+            self._wtva(d2plot,fill=False)
         elif(self._style=='wtvaimg'):
-            self._wtva(d,fill=True)
-            self._imageplot(d)
+            self._wtva(d2plot,fill=True)
+            self._imageplot(d2plot)
         elif(self._style=='img'):
-            self._imageplot(d)
+            self._imageplot(d2plot)
         else:
             raise RuntimeError('SeismicPlotter.plot:  internal style definition='+self._style+' is invalid\nThis should not happen')
+    def _deepcopy(self,d):
+        """
+        Private helper method for immediately above.   Necessary because 
+        copy.deepcopy doesn't work with our pybind11 wrappers. There may be a
+        fix, but for now we have to use copy constructors specific to each 
+        object type.   
+        """
+        if(isinstance(d,mspass.TimeSeries)):
+            return mspass.TimeSeries(d)
+        elif(isinstance(d,mspass.Seismogram)):
+            return mspass.Seismogram(d)
+        elif(isinstance(d,mspass.TimeSeriesEnsemble)):
+            return mspass.TimeSeriesEnsemble(d)
+        elif(isinstance(d,mspass.SeismogramEnsemble)):
+            return mspass.SeismogramEnsemble(d)
+        else:
+            raise RuntimeError("SeismicPlotter._deepcopy:  received and unsupported data type=",type(d))
+        
     def set_topdown(self):
         """
         Call this method to have datat plotted from top down.  Default plots
@@ -646,11 +664,12 @@ class SeismicPlotter:
         """
         self._plot_topdown=True
     # These are private methods used internally
-    def _normalize(self,d,perf=0.95):
+    def _normalize(self,d):
         """
-        Computes gain value to normalized data by all sample values.  Uses the
-        seismic unix idea of percentage above the clip level passed as perf.
-        Use perf=100 for no clipping.
+        Normalizes data (d) using mspass.scale function.  for ensembles that 
+        is peak normalization to level self.scale by section. For 
+        Seismograms each component will be normalized independently. 
+        For TimeSeries the peak is adjusted to self.scale.  
 
         :param d:  input data to be scanned (must be one of mspass supported
         data objects or will throw an exception)
@@ -660,13 +679,13 @@ class SeismicPlotter:
         # to sort absolute values and return perf level - should use faster
         # max value when perf is 100%
         if(isinstance(d,mspass.SeismogramEnsemble)):
-            self._gain=1.0
+            alg.scale(d,scale_by_section=True,level=self.scale)
         elif(isinstance(d,mspass.TimeSeriesEnsemble)):
-            self._gain=1.0
+            alg.scale(d,scale_by_section=True,level=self.scale)
         elif(isinstance(d,mspass.TimeSeries)):
-            self._gain=1.0
+            alg.scale(d,level=self.scale)
         elif(isinstance(d,mspass.Seismogram)):
-            self._gain=1.0
+            alg.scale(d,level=self.scale)
         else:
             raise RuntimeError('SeismicPlotter._normalize:  Received unsupported data type=',type(d))
     def _add_3C_titles(self):
@@ -817,9 +836,8 @@ class SeismicPlotter:
             y=numpy.array(d.member[i].s)  # Make a copy - fast method with numpy
             # Fast and easy way to add offset with overloaded operator -= and +=
             if(self._plot_topdown):
-                if(i==0):
-                    offset=ndata-1
-                y +=offset
+                offset=ndata-i-1
+                y += offset
             else:
                 y+=i
                 offset=i
@@ -905,6 +923,7 @@ class SeismicPlotter:
         # imshow handles topdown or updown order with this parameter
         if(self._plot_topdown):
             origin_position='upper'
+            extent=(tmin,tmax,float(ndata)-0.5,-0.5)
         else:
             origin_position='lower'
         pyplot.imshow(work, aspect=aspect, cmap=self._color_map, origin=origin_position,
