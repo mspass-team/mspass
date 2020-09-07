@@ -1,0 +1,45 @@
+operator_nfft 4096
+#damping_factor 1000.0
+damping_factor 1.0
+snr_regularization_floor 2.0
+target_sample_interval 0.05
+deconvolution_data_window_start -2.0
+deconvolution_data_window_end 30.0
+time_bandwidth_product 4.5
+number_tapers 8
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 0.5
+noise_window_start -30.0
+noise_window_end -5.0
+
+taper_type cosine
+CosineTaper &Arr{
+  data_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 27.0
+    tail0 29.5
+  }
+  wavelet_taper &Arr{
+   front0 -0.75
+   front1 -0.25
+   tail1 2.5
+   tail0 3.0
+  }
+}
+LinearTaper &Arr{
+  data_taper &Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 27.0
+    tail0 29.5
+  }
+  wavelet_taper &Arr{
+   front0 -0.75
+   front1 -0.25
+   tail1 2.5
+   tail0 3.0
+  }
+}
