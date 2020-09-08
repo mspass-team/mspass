@@ -440,7 +440,9 @@ PYBIND11_MODULE(ccore,m)
   ;
 
   py::class_<mspass::TimeWindow>(m,"TimeWindow","Simple description of a time window")
+    .def(py::init<>(),"Default constructor")
     .def(py::init<const double, const double>(),"Construct from start and end time")
+    .def(py::init<const TimeWindow&>(),"Copy constuctor")
     .def("shift",&TimeWindow::shift,"Shift the reference time by a specified number of seconds")
     .def("length",&TimeWindow::length,"Return the size of the window in seconds")
     .def_readwrite("start",&TimeWindow::start,"Start time of the window")
@@ -1626,12 +1628,12 @@ py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator f
     py::arg("d"),
     py::arg("twin") )
   ;
-  m.def("WindowData",&mspass::WindowData,"Reduce data to window inside original",
+  m.def("_WindowData",&mspass::WindowData,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
-  m.def("WindowData3C",&mspass::WindowData3C,"Reduce data to window inside original",
+  m.def("_WindowData3C",&mspass::WindowData3C,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
