@@ -231,3 +231,84 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
         else:
           ensemble_error_post(d,algname,message,mspass.ErrorSeverity.Invalid) 
         
+def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
+    """
+    Cut data defined by a TimeWindow object.
+    
+    Cutting a smaller waveform segment from a larger waveform segment 
+    is a very common seismic data processing task.   The function is 
+    a python wrapper to adapt C++ code that accomplishes that task 
+    to the MsPASS framework. 
+    
+    Note this function uses one model for being bombproof with a map 
+    operation.  Any exception that makes the result invalid will cause
+    an error message to be posted to the elog attribute of the input 
+    datum AND the function returns a None.   Callers should test for 
+    validity of output before trying to use the result or something else
+    will almost certainly abort the job downstream. 
+    
+    :param d: is the input data.  d must be either a TimeSeries or Seismogram 
+      object or the function will log an error to d and return a None.
+    :param twin: is a mspass.TimeWindow defining window to be cut
+    :param t0shift: is an optional time shift to apply to the time window. 
+      This parameter is convenient to avoid conversions to relative time. 
+      A typical example would be to set t0shift to an arrival time and let 
+      the window define time relative to that arrival time.  Default is None
+      which cause the function to assume twin is to be used directly.  
+    :param preserve_history: boolean to enable or disable saving object 
+      level history.  Default is False.   Note if this feature is enabled
+      and the input data history chain is empty the function will log an 
+      error to the returned data and not update the history chain.
+    :param instance: is instance key to pass to processing history chain.
+      If None (the default) and preserve_history is true the processing
+      history chain will not be updated and a complaint error posted to 
+      d.elog.   
+     
+    :return: copy of d with sample range reduced to twin range.  Returns 
+      an empty version of the parent data type (default constructor) if 
+      the input is marked dead
+    """
+    twcut=mspass.TimeWindow(twin)
+    if(t0shift!=None):
+        twcut.shift(t0shift)
+    try:
+        if(isinstance(d,mspass.TimeSeries)):
+            if(d.dead()):
+                return mspass.TimeSeries()
+            dcut=mspass._WindowData(d,twcut)
+            if(preserve_history):
+                if(instance==None):
+                    dcut.elog.log_error("WindowData",
+                      "Undefined instance argument - cannot save history data",
+                      mspass.ErrorSeverity.Complaint)
+                elif(dcut.is_empty()):
+                    dcut.elog.log_error("WindowData",
+                     "Error log is empty.  Cannot be extended without a top level entry",
+                     mspass.ErrorSeverity.Complaint)
+                else:
+                    dcut.new_map("WindowData",instance,mspass.AtomicType.TIMESERIES,
+                              mspass.ProcessingStatus.VOLATILE)
+            return dcut
+        elif(isinstance(d,mspass.Seismogram)):
+            if(d.dead()):
+                return mspass.Seismogram()
+            dcut=mspass._WindowData3C(d,twcut)
+            if(preserve_history):
+                if(instance==None):
+                    d.elog("WindowData",
+                      "Undefined instance argument - cannot save history data",
+                      mspass.ErrorSeverity.Complaint)
+                elif(dcut.is_empty()):
+                    dcut.elog("WindowData",
+                     "Error log is empty.  Cannot be extended without a top level entry",
+                     mspass.ErrorSeverity.Complaint)
+                else:
+                    dcut.new_map("WindowData",instance,mspass.AtomicType.SEISMOGRAM,
+                              mspass.ProcessingStatus.VOLATILE)
+            return dcut
+        else:
+            raise RuntimeError("WindowData:  Invalid input data type received")
+    except RuntimeError as err:
+        d.log_error("WindowData",str(err),mspass.ErrorSeverity.Invalid)
+        return None
+
