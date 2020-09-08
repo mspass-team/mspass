@@ -171,3 +171,43 @@ def test_scale():
         calib=enscpy.member[i].get_double("calib")
         print('member number ',i,' calib is ',calib)
         assert(round(calib)==800.0)
+def test_windowdata():
+    npts=1000
+    ts=mspass.TimeSeries()
+    setbasics(ts,npts)
+    for i in range(npts):
+        ts.s[i]=float(i)
+    t3c=mspass.Seismogram()
+    setbasics(t3c,npts)
+    for k in range(3):
+        for i in range(npts):
+            t3c.u[k,i]=100*(k+1)+float(i)
+    
+    win=mspass.TimeWindow(2,3)
+    d=WindowData(ts,win)
+    print('t y')
+    for j in range(d.npts):
+        print(d.time(j),d.s[j])
+    assert(len(d.s) == 11)
+    assert(d.t0==2.0)
+    assert(d.endtime() == 3.0)
+    d=WindowData(t3c,win)
+    print('t x0 x1 x2')
+    for j in range(d.npts):
+        print(d.time(j),d.u[0,j],d.u[1,j],d.u[2,j])
+    assert(d.u.columns() == 11)
+    assert(d.t0==2.0)
+    assert(d.endtime() == 3.0)
+    print('testing error handling')
+    t3c.kill()
+    d=WindowData(t3c,win)
+    assert(d.npts == 0 and (not d.live))
+    d=WindowData(ts,win,preserve_history=True)
+    print('Error message posted')
+    print(d.elog.get_error_log())
+    assert(d.elog.size() == 1)
+    # this still throws an error but the message will be different
+    d=WindowData(ts,win,preserve_history=True,instance='0')
+    print('Error message posted')
+    print(d.elog.get_error_log())
+    assert(d.elog.size() == 1)
