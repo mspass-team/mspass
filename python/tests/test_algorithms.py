@@ -189,14 +189,14 @@ def test_windowdata():
     print('t y')
     for j in range(d.npts):
         print(d.time(j),d.s[j])
-    assert(len(d.s) == 11)
+    assert(len(d.s) == 101)
     assert(d.t0==2.0)
     assert(d.endtime() == 3.0)
     d=WindowData(t3c,win)
     print('t x0 x1 x2')
     for j in range(d.npts):
         print(d.time(j),d.u[0,j],d.u[1,j],d.u[2,j])
-    assert(d.u.columns() == 11)
+    assert(d.u.columns() == 101)
     assert(d.t0==2.0)
     assert(d.endtime() == 3.0)
     print('testing error handling')
