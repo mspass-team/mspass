@@ -11,6 +11,7 @@ import pytest
 
 import mspasspy.ccore as mspass
 from mspasspy.algorithms import scale
+from mspasspy.algorithms import WindowData
 
 
 # Build a simple CoreTimeSeries and CoreSeismogram with 
