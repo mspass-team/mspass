@@ -985,13 +985,15 @@ PYBIND11_MODULE(ccore,m)
   py::class_<std::exception>(m,"std_exception")
     .def("what",&std::exception::what)
   ;
-  py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
+  py::class_<mspass::MsPASSError,std::exception>(m,"_MsPASSError")
     .def(py::init<>())
     .def(py::init<const MsPASSError&>())
     .def(py::init<const std::string,const char *>())
     .def(py::init<const std::string,mspass::ErrorSeverity>())
     .def("what",&mspass::MsPASSError::what)
+    .def("severity",&mspass::MsPASSError::severity)
   ;
+  py::register_exception<mspass::MsPASSError>(m,"MsPASSError");
   m.def("pfread",&mspass::pfread,"parameter file reader",
       py::return_value_policy::copy,
       py::arg("pffile")
