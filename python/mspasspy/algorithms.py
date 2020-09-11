@@ -274,7 +274,10 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
     try:
         if(isinstance(d,mspass.TimeSeries)):
             if(d.dead()):
-                return mspass.TimeSeries()
+                # Functions like this should return a copy of the original 
+                # if it was marked dead - this allows preservation of
+                # history data to allow recording why data were killed
+                return d
             dcut=mspass._WindowData(d,twcut)
             if(preserve_history):
                 if(instance==None):
@@ -291,7 +294,8 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
             return dcut
         elif(isinstance(d,mspass.Seismogram)):
             if(d.dead()):
-                return mspass.Seismogram()
+                # As above return original if dead
+                return d
             dcut=mspass._WindowData3C(d,twcut)
             if(preserve_history):
                 if(instance==None):
