@@ -1,4 +1,3 @@
-
 """
 Functions for converting to and from MsPASS data types.
 """
@@ -12,7 +11,9 @@ from mspasspy.ccore import (CoreSeismogram,
                             Metadata,
                             Seismogram,
                             TimeReferenceType,
-                            TimeSeries)
+                            TimeSeries,
+                            TimeSeriesEnsemble,
+                            SeismogramEnsemble)
 
 
 def dict2Metadata(dic):
@@ -29,7 +30,9 @@ def dict2Metadata(dic):
     :rtype: :class:`~mspasspy.ccore.Metadata`
     """
     return Metadata(dic)
-#dict.toMetadata = dict2Metadata
+
+
+# dict.toMetadata = dict2Metadata
 
 def Metadata2dict(md):
     """
@@ -45,7 +48,10 @@ def Metadata2dict(md):
     :rtype: dict
     """
     return dict(md)
+
+
 Metadata.todict = Metadata2dict
+
 
 def TimeSeries2Trace(ts):
     """
@@ -73,17 +79,20 @@ def TimeSeries2Trace(ts):
     :rtype: :class:`~obspy.core.trace.Trace`
     """
     dresult = obspy.core.Trace()
+    dresult.dead_mspass = True
     # Silently return an empty trace object if the data are marked dead now
     if not ts.live:
         return dresult
-     # We first deal with attributes in BasicTimeSeries that have to
-     # be translated into an obspy stats dictionary like object
+    # We first deal with attributes in BasicTimeSeries that have to
+    # be translated into an obspy stats dictionary like object
+    dresult.dead_mspass = False
     dresult.stats['delta'] = ts.dt
     dresult.stats['npts'] = ts.npts
     dresult.stats['starttime'] = obspy.core.UTCDateTime(ts.t0)
-     # These are required by obspy but optional in mspass.  Hence, we have
-     # to extract them with caution.  Note defaults are identical to
-     # Trace constructor
+    # todo relative time attribute
+    # These are required by obspy but optional in mspass.  Hence, we have
+    # to extract them with caution.  Note defaults are identical to
+    # Trace constructor
     if ts.is_defined('net'):
         dresult.stats['network'] = ts.get_string('net')
     else:
@@ -121,9 +130,13 @@ def TimeSeries2Trace(ts):
     for i in range(ts.npts):
         dresult.data[i] = ts.s[i]
     return dresult
+
+
 TimeSeries.toTrace = TimeSeries2Trace
 
+
 def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[90.0, 90.0, 0.0]):
+    # fixme hang and vang parameters
     """
     Convert a mspass::Seismogram object to an obspy::Stream with 3 components split apart.
 
@@ -158,9 +171,11 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
     :rtype: :class:`obspy.core.stream.Stream`
     """
     dresult = obspy.core.Stream()
+    dresult.dead_mspass = True
     # Note this logic will silently return an empty Stream object if the
     # data are marked dead
     if sg.live:
+        dresult.dead_mspass = False
         uuids = sg.id()
         logstuff = sg.elog
         for i in range(3):
@@ -174,8 +189,16 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
             tsex.elog = logstuff
             dobspy = TimeSeries2Trace(tsex)
             dresult.append(dobspy)
+    else:
+        for i in range(3):
+            tc = obspy.core.Trace()
+            tc.dead_mspass = True
+            dresult.append(tc)
     return dresult
+
+
 Seismogram.toStream = Seismogram2Stream
+
 
 def Trace2TimeSeries(trace):
     """
@@ -197,6 +220,11 @@ def Trace2TimeSeries(trace):
     # obspy only understands UTC time as a standard so we just set it
     dout.tref = TimeReferenceType.UTC
     dout.live = True
+    try:
+        if trace.dead_mspass:
+            dout.live = False
+    except AttributeError:
+        pass
     t0utc = trace.stats.starttime
     dout.t0 = t0utc.timestamp
     for k in trace.stats:
@@ -207,7 +235,10 @@ def Trace2TimeSeries(trace):
     for i in range(ns):
         dout.s[i] = trace.data[i]
     return dout
+
+
 obspy.core.Trace.toTimeSeries = Trace2TimeSeries
+
 
 def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'):
     """
@@ -255,17 +286,31 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
     # First make sure we have exactly 3 components
     assert len(st) == 3, "Stream length must be EXACTLY 3 for 3-components"
     assert 0 <= master < 3, "master argument must be 0, 1, or 2"
+
+    # if all traces are dead in a stream, it should be converted to a dead seismogram
+    try:
+        size = len(st)
+        for i in range(len(st)):
+            if st[i].dead_mspass:
+                size -= 1
+        if size == 0:
+            res = Seismogram()
+            res.live = False
+            return res
+    except AttributeError:
+        pass
+
     # Complicated logic here, but the point is to make sure the azimuth
     # attribute is set. The cardinal part is to override the test if
     # we can assume he components are ENZ
     if not cardinal:
         if azimuth not in st[0].stats or azimuth not in st[1].stats or azimuth not in st[2].stats:
-            raise RuntimeError("Stream2Seismogram:  Required attribute "+
-                                azimuth+" must be in mdother list")
+            raise RuntimeError("Stream2Seismogram:  Required attribute " +
+                               azimuth + " must be in mdother list")
     if not cardinal:
         if dip not in st[0].stats or dip not in st[1].stats or dip not in st[2].stats:
-            raise RuntimeError("Stream2Seismogram:  Required attribute "+
-                                dip+" must be in mdother list")
+            raise RuntimeError("Stream2Seismogram:  Required attribute " +
+                               dip + " must be in mdother list")
     # Outer exception handler to handle range of possible errors in
     # converting each component.  Note we pass an empty list for mdother
     # and aliases except the master
@@ -295,5 +340,53 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
     # All errors returned by this constructor currenlty leave the data INVALID
     # so handler should discard anything with an error
     dout = CoreSeismogram(bundle, master)
-    return Seismogram(dout, 'INVALID')
+    res = Seismogram(dout, 'INVALID')
+    res.live = True
+    return res
+
+
 obspy.core.Stream.toSeismogram = Stream2Seismogram
+
+
+def TimeSeriesEnsemble2Stream(tse):
+    res = obspy.core.Stream()
+    for ts in tse.member:
+        res.append(TimeSeries2Trace(ts))
+    return res
+
+
+TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
+
+
+def Stream2TimeSeriesEnsemble(stream):
+    size = len(stream)
+    tse = TimeSeriesEnsemble()
+    for i in range(size):
+        tse.member.append(Trace2TimeSeries(stream[i]))
+        # potential dead loss problem is resolved by saving the info in converted objects
+    return tse
+
+
+obspy.core.Stream.toTimeSeriesEnsemble = Stream2TimeSeriesEnsemble
+
+
+def SeismogramEnsemble2Stream(sge):
+    res = obspy.core.Stream()
+    for sg in sge.member:
+        res += Seismogram2Stream(sg)
+    return res
+
+
+SeismogramEnsemble.toStream = SeismogramEnsemble2Stream
+
+
+def Stream2SeismogramEnsemble(stream):
+    size = len(stream)
+    res = SeismogramEnsemble()
+    for i in range(int(size / 3)):
+        res.member.append(Stream2Seismogram(stream[i * 3:i * 3 + 3], cardinal=True))
+        # fixme cardinal
+    return res
+
+
+obspy.core.Stream.toSeismogramEnsemble = Stream2SeismogramEnsemble
