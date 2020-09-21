@@ -32,7 +32,7 @@ ENV PYSPARK_PYTHON python3
 ENV DOCKERIZE_VERSION v0.6.1
 ENV DOCKERIZE_URL https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
 
-ENV APACHE_MIRROR http://ftp.ps.pl/pub/apache
+ENV APACHE_MIRROR https://archive.apache.org/dist
 ENV SPARK_URL ${APACHE_MIRROR}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz
 
 
