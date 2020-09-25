@@ -115,5 +115,35 @@ private:
     ar & allmessages;
   };
 };
+
+/*! \brief Full test of error log for data validity.
+
+This template can only work on mspass atomic data (TimeSeries and
+Seismogram objects).  It assumes the data have an attribute elog that
+is an ErrorLogger object containing the data's error log.
+It returns immediately if the data are already marked dead.  Otherwise
+it runs the worst_errors method on elog.   If the log is empty it returns
+false as that implies no errors have been logged.   If there are entries
+it looks for Invalid or Fatal entries and returns true only if there are
+any entries of that level of severity.  i.e. it returns false if the only
+errors are things like Complaint or less.
+*/
+template <typename Tdata> bool data_are_valid(const Tdata& d)
+{
+  if(d.dead()) return false;
+  list<LogData> welog;
+  welog=d.elog.worst_errors();
+  /*The return will be empty if there are no errors logged*/
+  if(welog.size()<=0) return true;
+  LogData ld;
+  /* Worst errors can return a list of multiple entries.  For
+  fatal or invalid id should never be more than one, but this is
+  a clean way to extract the first member of the list if it isn't empty*/
+  ld=*(welog.begin());
+  if(ld.badness == ErrorSeverity::Fatal || ld.badness == ErrorSeverity::Invalid)
+      return false;
+  else
+      return true;
+}
 } // End mspass namespace
 #endif
