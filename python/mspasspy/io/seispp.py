@@ -5,6 +5,7 @@ import numpy as np
 
 from mspasspy.ccore import MetadataDefinitions
 from mspasspy.ccore import MDtype
+from mspasspy.ccore import MsPASSError
 
 def index_data(filebase, db, ext='d3C', verbose=False):
     """
@@ -75,7 +76,7 @@ def index_data(filebase, db, ext='d3C', verbose=False):
               # this happens to warn user
               print("Warning(index_data):  undefined type for key=",k)
               print("attribute will not be copied to database")
-          except RuntimeError: 
+          except MsPASSError: 
               # as above always print this as a warning
               print("Warning(index_data): key =",k," is undefined - skipped")
 

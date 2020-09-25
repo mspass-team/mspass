@@ -202,7 +202,7 @@ def test_windowdata():
     print('testing error handling')
     t3c.kill()
     d=WindowData(t3c,win)
-    assert(d.npts == 0 and (not d.live))
+    assert(d.npts == 1000 and (not d.live))
     d=WindowData(ts,win,preserve_history=True)
     print('Error message posted')
     print(d.elog.get_error_log())

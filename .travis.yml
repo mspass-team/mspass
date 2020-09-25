@@ -64,6 +64,7 @@ jobs:
             - gcc
             - boost
           update: true
+      if: type = cron
     
     - stage: deploy
       name: "Deploy to GitHub Pages"
