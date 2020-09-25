@@ -981,19 +981,42 @@ PYBIND11_MODULE(ccore,m)
     .value("Debug",ErrorSeverity::Debug)
     .value("Informational",ErrorSeverity::Informational)
   ;
-
+/*
   py::class_<std::exception>(m,"std_exception")
     .def("what",&std::exception::what)
   ;
-  py::class_<mspass::MsPASSError,std::exception>(m,"_MsPASSError")
+  */
+  py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
     .def(py::init<>())
     .def(py::init<const MsPASSError&>())
     .def(py::init<const std::string,const char *>())
     .def(py::init<const std::string,mspass::ErrorSeverity>())
     .def("what",&mspass::MsPASSError::what)
+    .def("_message",&mspass::MsPASSError::core_message)
     .def("severity",&mspass::MsPASSError::severity)
   ;
-  py::register_exception<mspass::MsPASSError>(m,"MsPASSError");
+  //py::register_exception<mspass::MsPASSError>(m,"MsPASSError");
+  static py::exception<mspass::MsPASSError> exc(m, "MsPASSError");
+  py::register_exception_translator([](std::exception_ptr p) {
+    try {
+        if (p) std::rethrow_exception(p);
+    } catch (const mspass::MsPASSError &e) {
+        exc(e.what());
+    }
+  });
+
+  /* this set of functions are companions to MsPASSError needed as a
+  workaround for problem that MsPASSError method are not visible to
+  error handlers for a caught MsPASSError exception. */
+  m.def("error_says_data_bad",&mspass::error_says_data_bad,
+    "Test if what message from MsPASSError defines data as invalid and should be killed")
+  ;
+  m.def("error_severity_string",&mspass::parse_message_error_severity,
+    "Return a string defining error severity of a MsPASSError exception")
+  ;
+  m.def("error_severity",&mspass::message_error_severity,
+    "Return an ErrorSeverity object defining severity of a MsPASSError being handled")
+  ;
   m.def("pfread",&mspass::pfread,"parameter file reader",
       py::return_value_policy::copy,
       py::arg("pffile")
