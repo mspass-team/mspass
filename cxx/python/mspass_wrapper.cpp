@@ -986,7 +986,7 @@ PYBIND11_MODULE(ccore,m)
     .def("what",&std::exception::what)
   ;
   */
-  py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
+  /* py::class_<mspass::MsPASSError,std::exception>(m,"MsPASSError")
     .def(py::init<>())
     .def(py::init<const MsPASSError&>())
     .def(py::init<const std::string,const char *>())
@@ -994,16 +994,16 @@ PYBIND11_MODULE(ccore,m)
     .def("what",&mspass::MsPASSError::what)
     .def("_message",&mspass::MsPASSError::core_message)
     .def("severity",&mspass::MsPASSError::severity)
-  ;
-  //py::register_exception<mspass::MsPASSError>(m,"MsPASSError");
-  static py::exception<mspass::MsPASSError> exc(m, "MsPASSError");
+  ; */
+  py::register_exception<mspass::MsPASSError>(m,"MsPASSError");
+/*   static py::exception<mspass::MsPASSError> exc(m, "MsPASSError");
   py::register_exception_translator([](std::exception_ptr p) {
     try {
         if (p) std::rethrow_exception(p);
     } catch (const mspass::MsPASSError &e) {
         exc(e.what());
     }
-  });
+  }); */
 
   /* this set of functions are companions to MsPASSError needed as a
   workaround for problem that MsPASSError method are not visible to

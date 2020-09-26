@@ -104,7 +104,7 @@ void log_error(ostream& ofs)
 	even get to the badness attribute.   See the cc code for the implementation
 	detail.
   */
-  const char * what() const throw();
+  const char * what() const noexcept;
 	/*! Return error severity as the enum value. */
 	ErrorSeverity severity() const {return badness;};
 	/*! Return only the raw message string. */
