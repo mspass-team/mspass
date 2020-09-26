@@ -45,6 +45,7 @@ public:
 	MsPASSError(){
 		message="MsPASS library error\n";
 		badness=ErrorSeverity::Fatal;
+		full_message.assign(message + ":" + severity2string(badness));
 	};
 /*! \brief Construct from a std::string with badness defined by keywords in a string.
 
@@ -62,6 +63,7 @@ the error class.  This uses that approach.
 		/* this small helper function parses s to conver to the
 		enum class of badness*/
 		badness=string2severity(s);
+		full_message.assign(message + ":" + severity2string(badness));
 	};
 /*! Construct from a string with enum defining severity.
 
@@ -75,12 +77,14 @@ the enum allows simpler usage for most errors.
         {
             message=mess;
             badness=s;
+			full_message.assign(message + ":" + severity2string(badness));
         };
 /*! Construct from a char * and severity enum.
 **/
 	MsPASSError(const char *mess,const ErrorSeverity s){
 		message=string(mess);
 		badness=s;
+		full_message.assign(message + ":" + severity2string(badness));
 	};
 /*!
  Sends error message thrown by MsPASS library functions to standard error.
@@ -98,13 +102,12 @@ void log_error(ostream& ofs)
   from seisp.  Idea copied from:
   http://www.cplusplus.com/doc/tutorial/exceptions/
 
-	This method is implemented in MsPASSError.cc because for now
-	it is not trivial.   pybind11 limitations make it problematic for
+	pybind11 limitations make it problematic for
 	python error handlers to get the output of the severity method or
 	even get to the badness attribute.   See the cc code for the implementation
 	detail.
   */
-  const char * what() const noexcept;
+  const char * what() const noexcept{return full_message.c_str();};
 	/*! Return error severity as the enum value. */
 	ErrorSeverity severity() const {return badness;};
 	/*! Return only the raw message string. */
@@ -116,6 +119,8 @@ protected:
 		string message;
 		/*! Defines the severity of this error - see enum class above */
 		ErrorSeverity badness;
+		/*! Holds the full error message that includes badness. This is returned by the what method */
+		string full_message;
 };
 /* Helper function prototypes.  The following set of functions proved necessary
 because of a limitation in pybind11.  It appears there is no easy way to bind

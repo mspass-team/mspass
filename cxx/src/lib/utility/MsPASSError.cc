@@ -1,4 +1,5 @@
 #include <cstring>
+#include <string>
 #include "mspass/utility/MsPASSError.h"
 namespace mspass{
 using namespace std;
@@ -58,13 +59,6 @@ string severity2string(const mspass::ErrorSeverity es)
     default:
       return string("Fatal");
   };
-}
-const char* MsPASSError::what() const noexcept
-{
-  string s2ret(message + ":" + severity2string(badness));
-  char * cstr = new char [s2ret.length()+1];
-  std::strcpy (cstr, s2ret.c_str());
-  return cstr;
 }
 /* This set of functions are used to provide the patch for pybind11 handling
 of exceptions.  python error handlers aren't able to access the badness
