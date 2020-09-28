@@ -1002,21 +1002,20 @@ PYBIND11_MODULE(ccore,m)
      to add the feature we need:
      https://stackoverflow.com/questions/62087383/how-can-you-bind-exceptions-with-custom-fields-and-constructors-in-pybind11-and
   */
-  py::class_<mspass::MsPASSError> mspe(m,"_MsPASSError");
-  mspe.def(py::init<>())
-      .def(py::init<const MsPASSError&>())
-      .def(py::init<const std::string,const char *>())
-      .def(py::init<const std::string,mspass::ErrorSeverity>())
-      .def("what",&mspass::MsPASSError::what)
-      .def("_message",&mspass::MsPASSError::core_message)
-      .def("severity",&mspass::MsPASSError::severity)
-      .def("__str__", [](const MsPASSError &e) -> std::string {
-        return std::string(e.what());
-      })
-      .def("__repr__", [](const MsPASSError &e) -> std::string {
-        std::string strout("_MsPASSError(");
-        return strout + std::string(py::str(py::cast(e).attr("__str__")())) + ")";
-      })
+  py::class_<mspass::MsPASSError> (m,"_MsPASSError")
+    .def(py::init<>())
+    .def(py::init<const MsPASSError&>())
+    .def(py::init<const std::string,const char *>())
+    .def(py::init<const std::string,mspass::ErrorSeverity>())
+    .def("what",&mspass::MsPASSError::what)
+    .def("severity",&mspass::MsPASSError::severity)
+    .def("__str__", [](const MsPASSError &e) -> std::string {
+      return std::string(e.what());
+    })
+    .def("__repr__", [](const MsPASSError &e) -> std::string {
+      std::string strout("_MsPASSError(");
+      return strout + std::string(py::str(py::cast(e).attr("__str__")())) + ")";
+    })
   ;
   static py::exception<mspass::MsPASSError> exc(m, "MsPASSError");
   py::register_exception_translator([](std::exception_ptr p) {
@@ -1026,7 +1025,6 @@ PYBIND11_MODULE(ccore,m)
         py::object py_e = py::cast(e);
         py::object error_type = py::module::import("mspasspy.ccore").attr("MsPASSError");
         PyErr_SetObject(error_type.ptr(), py_e.ptr());
-        //py_e.inc_ref();
     }
   });
 

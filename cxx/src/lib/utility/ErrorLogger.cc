@@ -9,7 +9,7 @@ LogData::LogData(const int jid, const std::string alg,
   job_id=jid;
   p_id=getpid();
   algorithm=alg;
-  message=merr.core_message();
+  message=merr.what();
   badness=merr.severity();
 }
 LogData::LogData(const int jid, const std::string alg, const std::string msg, const mspass::ErrorSeverity lvl)
