@@ -400,6 +400,7 @@ public:
 PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
+  py::module m_util = m.def_submodule("util", "A submodule for utility functions of ccore");
 
   /* We need one of these for each std::vector container to make them function correctly*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
@@ -1031,20 +1032,20 @@ PYBIND11_MODULE(ccore,m)
   /* this set of functions are companions to MsPASSError needed as a
   workaround for problem that MsPASSError method are not visible to
   error handlers for a caught MsPASSError exception. */
-  m.def("error_says_data_bad",&mspass::error_says_data_bad,
+  m_util.def("error_says_data_bad",&mspass::error_says_data_bad,
     "Test if what message from MsPASSError defines data as invalid and should be killed")
   ;
-  m.def("error_severity_string",&mspass::parse_message_error_severity,
+  m_util.def("error_severity_string",&mspass::parse_message_error_severity,
     "Return a string defining error severity of a MsPASSError exception")
   ;
-  m.def("error_severity",&mspass::message_error_severity,
+  m_util.def("error_severity",&mspass::message_error_severity,
     "Return an ErrorSeverity object defining severity of a MsPASSError being handled")
   ;
-  m.def("pfread",&mspass::pfread,"parameter file reader",
+  m_util.def("pfread",&mspass::pfread,"parameter file reader",
       py::return_value_policy::copy,
       py::arg("pffile")
   );
-  m.def("get_mdlist",&mspass::get_mdlist,"retrieve list with keys and types",
+  m_util.def("get_mdlist",&mspass::get_mdlist,"retrieve list with keys and types",
     py::return_value_policy::copy
   );
   py::enum_<mspass::MDDefFormat>(m,"MDDefFormat")
@@ -1659,12 +1660,12 @@ py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator f
 
   /* this pair of functions are potentially useful for interactive queries of
   ProcessingHistory data */
-  m.def("algorithm_history",&mspass::algorithm_history,
+  m_util.def("algorithm_history",&mspass::algorithm_history,
     "Return a list of algorithms applied to produce current data object",
     py::return_value_policy::copy,
     py::arg("h"))
   ;
-  m.def("algorithm_outputs",&mspass::algorithm_outputs,
+  m_util.def("algorithm_outputs",&mspass::algorithm_outputs,
     "Return a list of uuids of data created by a specified algorithm",
     py::return_value_policy::copy,
     py::arg("h"),
