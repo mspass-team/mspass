@@ -11,6 +11,9 @@ from mspasspy.ccore import (AtomicType,
                             ExtractComponent,
                             LogData,
                             Metadata,
+                            MetadataDefinitions,
+                            MsPASSError,
+                            _MsPASSError,
                             ProcessingHistory,
                             Seismogram,
                             SeismogramEnsemble,
@@ -487,3 +490,16 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
 
     phred_copy = pickle.loads(pickle.dumps(phred))
     assert str(phred.get_nodes()) == str(phred_copy.get_nodes())
+
+def test_MsPASSError():
+    with pytest.raises(MsPASSError, match = "bad file"):
+        x = MetadataDefinitions('foo')
+    try:
+        x = MetadataDefinitions('foo')
+    except MsPASSError as err:
+        assert err.args[0].severity() == ErrorSeverity.Invalid
+    try: 
+        raise MsPASSError(_MsPASSError('test error', ErrorSeverity.Informational))
+    except MsPASSError as err: 
+        assert err.args[0].what() == 'test error'
+        assert err.args[0].severity() == ErrorSeverity.Informational
