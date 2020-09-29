@@ -403,46 +403,56 @@ public:
 */
 static PyObject *MsPASSError_tp_str(PyObject *selfPtr)
 {
-	py::str ret;
-	try {
-		py::handle self(selfPtr);
-		py::tuple args = self.attr("args");
-		ret = py::str(args[0]);
-	} catch (py::error_already_set &e) {
-		ret = "";
-	}
-	/* ret will go out of scope when returning, therefore increase its reference
-	count, and transfer it to the caller (like PyObject_Str). */
-	ret.inc_ref();
-	return ret.ptr();
+  py::str ret;
+  try {
+    py::handle self(selfPtr);
+    py::tuple args = self.attr("args");
+    ret = py::str(args[0]);
+  } catch (py::error_already_set &e) {
+    ret = "";
+  }
+  /* ret will go out of scope when returning, therefore increase its reference
+  count, and transfer it to the caller (like PyObject_Str). */
+  ret.inc_ref();
+  return ret.ptr();
 }
 
 static PyObject *MsPASSError_get_message(PyObject *selfPtr, void *closure)
 {
-	return MsPASSError_tp_str(selfPtr);
+  return MsPASSError_tp_str(selfPtr);
 }
 
 static PyObject *MsPASSError_get_severity(PyObject *selfPtr, void *closure)
 {
-	try {
-		py::handle self(selfPtr);
-		py::tuple args = self.attr("args");
-		py::object severity = args[1];
-		severity.inc_ref();
-		return severity.ptr();
-	} catch (py::error_already_set &e) {
-		/* We could simply backpropagate the exception with e.restore, but
-		exceptions like OSError return None when an attribute is not set. */
-		py::none ret;
-		ret.inc_ref();
-		return ret.ptr();
-	}
+  try {
+    py::handle self(selfPtr);
+    py::tuple args = self.attr("args");
+    py::object severity;
+    if(args.size() < 2)
+      severity = py::cast(ErrorSeverity::Fatal);
+    else {
+      severity = args[1];
+      if(py::isinstance<py::str>(args[1])) {
+        severity = py::cast(mspass::string2severity(std::string(py::str(args[1]))));
+      } else if(!py::isinstance(args[1], py::cast(ErrorSeverity::Fatal).get_type())) {
+        severity = py::cast(ErrorSeverity::Fatal);
+      }
+    }
+    severity.inc_ref();
+    return severity.ptr();
+  } catch (py::error_already_set &e) {
+    /* We could simply backpropagate the exception with e.restore, but
+    exceptions like OSError return None when an attribute is not set. */
+    py::none ret;
+    ret.inc_ref();
+    return ret.ptr();
+  }
 }
 
 static PyGetSetDef MsPASSError_getsetters[] = {
-	{"message", (getter)MsPASSError_get_message, NULL, NULL},
-	{"severity", (getter)MsPASSError_get_severity, NULL, NULL},
-	{NULL}
+  {"message", (getter)MsPASSError_get_message, NULL, NULL},
+  {"severity", (getter)MsPASSError_get_severity, NULL, NULL},
+  {NULL}
 };
 
 PYBIND11_MODULE(ccore,m)

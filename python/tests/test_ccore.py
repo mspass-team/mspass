@@ -497,7 +497,22 @@ def test_MsPASSError():
         assert err.message == 'bad file'
         assert err.severity == ErrorSeverity.Invalid
     try: 
-        raise MsPASSError('test error', ErrorSeverity.Informational)
+        raise MsPASSError('test error1', ErrorSeverity.Informational)
     except MsPASSError as err: 
-        assert err.message == 'test error'
+        assert err.message == 'test error1'
         assert err.severity == ErrorSeverity.Informational
+    try: 
+        raise MsPASSError('test error2', "Suspect")
+    except MsPASSError as err: 
+        assert err.message == 'test error2'
+        assert err.severity == ErrorSeverity.Suspect
+    try: 
+        raise MsPASSError('test error3', 123)
+    except MsPASSError as err: 
+        assert err.message == 'test error3'
+        assert err.severity == ErrorSeverity.Fatal
+    try: 
+        raise MsPASSError("test error4")
+    except MsPASSError as err: 
+        assert err.message == 'test error4'
+        assert err.severity == ErrorSeverity.Fatal
