@@ -13,7 +13,6 @@ from mspasspy.ccore import (AtomicType,
                             Metadata,
                             MetadataDefinitions,
                             MsPASSError,
-                            _MsPASSError,
                             ProcessingHistory,
                             Seismogram,
                             SeismogramEnsemble,
@@ -495,10 +494,10 @@ def test_MsPASSError():
     try:
         x = MetadataDefinitions('foo')
     except MsPASSError as err:
-        assert err.args[0].what() == 'bad file'
-        assert err.args[0].severity() == ErrorSeverity.Invalid
+        assert err.message == 'bad file'
+        assert err.severity == ErrorSeverity.Invalid
     try: 
-        raise MsPASSError(_MsPASSError('test error', ErrorSeverity.Informational))
+        raise MsPASSError('test error', ErrorSeverity.Informational)
     except MsPASSError as err: 
-        assert err.args[0].what() == 'test error'
-        assert err.args[0].severity() == ErrorSeverity.Informational
+        assert err.message == 'test error'
+        assert err.severity == ErrorSeverity.Informational

@@ -397,6 +397,54 @@ public:
     using mspass::dmatrix::ncc;
 };
 
+/* The following Python C API are needed to construct the PyMsPASSError 
+   exception with pybind11. This is following the example from:
+   https://www.pierov.org/2020/03/01/python-custom-exceptions-c-extensions/
+*/
+static PyObject *MsPASSError_tp_str(PyObject *selfPtr)
+{
+	py::str ret;
+	try {
+		py::handle self(selfPtr);
+		py::tuple args = self.attr("args");
+		ret = py::str(args[0]);
+	} catch (py::error_already_set &e) {
+		ret = "";
+	}
+	/* ret will go out of scope when returning, therefore increase its reference
+	count, and transfer it to the caller (like PyObject_Str). */
+	ret.inc_ref();
+	return ret.ptr();
+}
+
+static PyObject *MsPASSError_get_message(PyObject *selfPtr, void *closure)
+{
+	return MsPASSError_tp_str(selfPtr);
+}
+
+static PyObject *MsPASSError_get_severity(PyObject *selfPtr, void *closure)
+{
+	try {
+		py::handle self(selfPtr);
+		py::tuple args = self.attr("args");
+		py::object severity = args[1];
+		severity.inc_ref();
+		return severity.ptr();
+	} catch (py::error_already_set &e) {
+		/* We could simply backpropagate the exception with e.restore, but
+		exceptions like OSError return None when an attribute is not set. */
+		py::none ret;
+		ret.inc_ref();
+		return ret.ptr();
+	}
+}
+
+static PyGetSetDef MsPASSError_getsetters[] = {
+	{"message", (getter)MsPASSError_get_message, NULL, NULL},
+	{"severity", (getter)MsPASSError_get_severity, NULL, NULL},
+	{NULL}
+};
+
 PYBIND11_MODULE(ccore,m)
 {
   m.attr("__name__") = "mspasspy.ccore";
@@ -982,50 +1030,40 @@ PYBIND11_MODULE(ccore,m)
     .value("Informational",ErrorSeverity::Informational)
   ;
 
-  /* the following error handling is the easiest and cleanest workaround
-     that I could come up with. It's basically creating a custom exception
-     MsPASSError and put in the non-exception object, _MsPASSError, as its
-     arg[0]. Users can then access the C++ attributes and methods defined
-     in _MsPASSError. 
+  /* The following magic were based on the great example from:
+    https://www.pierov.org/2020/03/01/python-custom-exceptions-c-extensions/
+    This appears to be the cleanest and easiest way to implement a custom 
+    exception with pybind11. 
 
-     One could potentially use the construct in this link:
-     https://github.com/pybind/pybind11/issues/1193#issuecomment-429451094
-     to create a new exception with PyErr_NewException. My initial attemp 
-     reveals that an Exception can't be based from pybind11_object. It is 
-     also unclear how a constructor should be defined in the dict. Thus,
-     we will have to define such exception outside of pybind11.
-     
-     It also appears that boost.python does not share such a problem:
-     https://stackoverflow.com/questions/2261858/boostpython-export-custom-exception
-     However, that post was fairly old so I think it not worth trying out.
-     
-     Finally, it is also possible to fork pybind11 and modify its internal
-     to add the feature we need:
-     https://stackoverflow.com/questions/62087383/how-can-you-bind-exceptions-with-custom-fields-and-constructors-in-pybind11-and
+    The PyMsPASSError is the python object inherited from the base exception
+    object on the python side. This is done by the PyErr_NewException call.
+    The register_exception_translator is the pybind11 interface that catches
+    and translates any MsPASSError thrown from the C++ side and throws a new
+    PyMsPASSError to python side.
   */
-  py::class_<mspass::MsPASSError> (m,"_MsPASSError")
-    .def(py::init<>())
-    .def(py::init<const MsPASSError&>())
-    .def(py::init<const std::string,const char *>())
-    .def(py::init<const std::string,mspass::ErrorSeverity>())
-    .def("what",&mspass::MsPASSError::what)
-    .def("severity",&mspass::MsPASSError::severity)
-    .def("__str__", [](const MsPASSError &e) -> std::string {
-      return std::string(e.what());
-    })
-    .def("__repr__", [](const MsPASSError &e) -> std::string {
-      std::string strout("_MsPASSError(");
-      return strout + std::string(py::str(py::cast(e).attr("__str__")())) + ")";
-    })
-  ;
-  static py::exception<mspass::MsPASSError> exc(m, "MsPASSError");
+  static PyObject *PyMsPASSError = PyErr_NewException("mspasspy.ccore.MsPASSError", NULL, NULL);
+  if (PyMsPASSError) {
+    PyTypeObject *as_type = reinterpret_cast<PyTypeObject *>(PyMsPASSError);
+    as_type->tp_str = MsPASSError_tp_str;
+    for (int i = 0; MsPASSError_getsetters[i].name != NULL; i++) {
+      PyObject *descr = PyDescr_NewGetSet(as_type, MsPASSError_getsetters+i);
+      auto dict = py::reinterpret_borrow<py::dict>(as_type->tp_dict);
+      dict[py::handle(PyDescr_NAME(descr))] = py::handle(descr);
+    }
+
+    Py_XINCREF(PyMsPASSError);
+    m.add_object("MsPASSError", py::handle(PyMsPASSError));
+  }
   py::register_exception_translator([](std::exception_ptr p) {
     try {
-        if (p) std::rethrow_exception(p);
-    } catch (const mspass::MsPASSError &e) {
-        py::object py_e = py::cast(e);
-        py::object error_type = py::module::import("mspasspy.ccore").attr("MsPASSError");
-        PyErr_SetObject(error_type.ptr(), py_e.ptr());
+      if (p) {
+        std::rethrow_exception(p);
+      }
+    } catch (MsPASSError &e) {
+      py::tuple args(2);
+      args[0] = e.what();
+      args[1] = e.severity();
+      PyErr_SetObject(PyMsPASSError, args.ptr());
     }
   });
 
