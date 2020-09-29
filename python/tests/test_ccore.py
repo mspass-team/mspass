@@ -492,11 +492,10 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     assert str(phred.get_nodes()) == str(phred_copy.get_nodes())
 
 def test_MsPASSError():
-    with pytest.raises(MsPASSError, match = "bad file"):
-        x = MetadataDefinitions('foo')
     try:
         x = MetadataDefinitions('foo')
     except MsPASSError as err:
+        assert err.args[0].what() == 'bad file'
         assert err.args[0].severity() == ErrorSeverity.Invalid
     try: 
         raise MsPASSError(_MsPASSError('test error', ErrorSeverity.Informational))
