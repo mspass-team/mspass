@@ -513,7 +513,7 @@ public:
   */
   std::string map_as_saved(const std::string alg,const std::string algid,
     const AtomicType typ);
-
+  /*! Clear this history chain - use with caution. */
   void clear();
   /*! Retrieve the nodes multimap that defines the tree stucture branches.
 
@@ -549,6 +549,7 @@ public:
   {
     return current_id;
   };
+  /*! Return the algorithm name and id that created current node. */
   pair<std::string,std::string> create_by() const
   {
     pair<std::string,std::string> result(algorithm,algid);

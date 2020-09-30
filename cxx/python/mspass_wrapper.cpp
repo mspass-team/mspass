@@ -1280,7 +1280,7 @@ PYBIND11_MODULE(ccore,m)
       },
       "Load data defining this as the raw input of a processing history chain")
     .def("new_reduction",&mspass::ProcessingHistory::new_reduction,
-      "Set up history chain to define the current data as result of reduction - output form mulitple inputs",
+      "Set up history chain to define the current data as result of reduction - output form multiple inputs",
       py::arg("alg"),
       py::arg("algid"),
       py::arg("type"),
@@ -1317,6 +1317,8 @@ PYBIND11_MODULE(ccore,m)
     .def("stage",&mspass::ProcessingHistory::stage,
       "Return the current stage number (counter of processing stages applied in this run)")
     .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
+    .def("create_by",&mspass::ProcessingHistory::create_by ,"Return the algorithm name and id that created current node")
+    .def("current_nodedata",&mspass::ProcessingHistory::current_nodedata,"Return all the attributes of current")
     .def("newid",&mspass::ProcessingHistory::newid,"Create a new uuid for current data")
     .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
     .def("inputs",&mspass::ProcessingHistory::inputs,
