@@ -73,6 +73,7 @@ public:
     jid=std::string();
     jnm=std::string();
   };
+  virtual ~BasicProcessingHistory(){};
   BasicProcessingHistory(const std::string jobname,const std::string jobid)
   {
     jid=jobid;
