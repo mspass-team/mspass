@@ -119,6 +119,8 @@ def timeseries_as_trace(func, *args, **kwargs):
     for i in converted_args_ids:
         ts = Trace2TimeSeries(converted_args[i])
         args[i].s = ts.s
+        # metadata
+        # refer to copy constructor
     for k in converted_kwargs_keys:
         ts = Trace2TimeSeries(converted_kwargs[k])
         kwargs[k].s = ts.s

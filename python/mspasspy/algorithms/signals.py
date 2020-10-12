@@ -60,14 +60,14 @@ def correlate(a, b, shift, preserve_history=False, instance=None, dryrun=False,
     # only accepts two timeseries inputs as trace
     # ndarray input is not allowed in mspasspy
     # stream and ensemble inputs does not make sense
-    return obspy.signal.filter.cross_correlation.correlate(a, b, shift, demean, normalize, method, domain)
+    return obspy.signal.cross_correlation.correlate(a, b, shift, demean, normalize, method, domain)
 
 
 @mspass_func_wrapper
 @timeseries_as_trace
 def correlate_template(data, template, preserve_history=False, instance=None, dryrun=False,
                        mode='valid', normalize='full', demean=True, method='auto'):
-    return obspy.signal.filter.cross_correlation.correlate_template(data, template, mode, normalize, demean, method)
+    return obspy.signal.cross_correlation.correlate_template(data, template, mode, normalize, demean, method)
 
 
 @mspass_func_wrapper
@@ -75,7 +75,7 @@ def correlate_template(data, template, preserve_history=False, instance=None, dr
 @seismogram_as_stream
 def correlate_stream_template(stream, template, preserve_history=False, instance=None, dryrun=False,
                               template_time=None, **kwargs):
-    return obspy.signal.filter.cross_correlation.correlate_stream_template(stream, template, template_time)
+    return obspy.signal.cross_correlation.correlate_stream_template(stream, template, template_time)
 
 
 @mspass_func_wrapper
@@ -88,7 +88,7 @@ def correlation_detector(stream, templates, heights, distance, preserve_history=
     tem_list = []
     for template in templates:
         tem_list.append(template.toStream())
-    return obspy.signal.filter.cross_correlation.correlation_detector(stream, tem_list, heights, distance, template_times,
+    return obspy.signal.cross_correlation.correlation_detector(stream, tem_list, heights, distance, template_times,
                                                                template_magnitudes, template_names,
                                                                similarity_func, details, plot, **kwargs)
 
@@ -100,12 +100,14 @@ def templates_max_similarity(st, time, streams_templates, preserve_history=False
     tem_list = []
     for template in streams_templates:
         tem_list.append(template.toStream())
-    return obspy.signal.filter.cross_correlation.templates_max_similarity(st, time, tem_list)
+    return obspy.signal.cross_correlation.templates_max_similarity(st, time, tem_list)
 
 @mspass_func_wrapper
 @seismogram_as_stream
-def xcorr_3c(st1, st2, shift_len, components=['Z', 'N', 'E'], full_xcorr=False, abs_max=True,
+def xcorr_3c(st1, st2, shift_len, components=None, full_xcorr=False, abs_max=True,
              preserve_history=False, instance=None, dryrun=False):
+    if components is None:
+        components = ['Z', 'N', 'E']
     return obspy.signal.cross_correlation.xcorr_3c(st1, st2, shift_len, components, full_xcorr, abs_max)
 
 @mspass_func_wrapper

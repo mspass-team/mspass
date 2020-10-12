@@ -35,16 +35,16 @@ def test_filter():
     seis = get_live_seismogram()
     tse = get_live_timeseries_ensemble(3)
     seis_e = get_live_seismogram_ensemble(3)
-    filter(ts, "bandpass", preserve_history=True, instance='0')
-    filter(seis, "bandpass", preserve_history=True, instance='0')
-    filter(tse, "bandpass", preserve_history=True, instance='0')
-    filter(seis_e, "bandpass")
-    filter(ts, "bandstop")
-    filter(ts, "lowpass")
-    filter(ts, "highpass")
-    filter(ts, "lowpass_cheby_2")
-    filter(ts, "lowpass_fir")
-    filter(ts, "remez_fir")
+    filter(ts, "bandpass", freqmin=10, freqmax=20, preserve_history=True, instance='0')
+    filter(seis, "bandpass", freqmin=10, freqmax=20, preserve_history=True, instance='0')
+    filter(tse, "bandpass", freqmin=10, freqmax=20, preserve_history=True, instance='0')
+    filter(seis_e, "bandpass",  freqmin=10, freqmax=20, preserve_history=True, instance='0')
+    filter(ts, "bandstop", freqmin=10, freqmax=20)
+    filter(ts, "lowpass", freq=10)
+    filter(ts, "highpass", freq=1)
+    filter(ts, "lowpass_cheby_2", freq=10)
+    # filter(ts, "lowpass_fir", freq=10)
+    # filter(ts, "remez_fir", freqmin=10, freqmax=20)
 
     # todo validate the alhorithm
 
@@ -59,8 +59,8 @@ def test_detrend():
     detrend(seis_e, preserve_history=True, instance='0')
     detrend(ts, type="linear", preserve_history=True, instance='0')
     detrend(ts, type="constant", preserve_history=True, instance='0')
-    detrend(ts, type="polynomial", preserve_history=True, instance='0')
-    detrend(ts, type="spline", preserve_history=True, instance='0')
+    detrend(ts, type="polynomial", order=2, preserve_history=True, instance='0')
+    detrend(ts, type="spline", order=2, dspline=1000, preserve_history=True, instance='0')
 
 def test_interpolate():
     ts = get_live_timeseries()
@@ -71,7 +71,7 @@ def test_interpolate():
     interpolate(seis, 255, preserve_history=True, instance='0')
     interpolate(tse, 255, preserve_history=True, instance='0')
     interpolate(seis_e, 255, preserve_history=True, instance='0')
-    interpolate(ts, 255, method='lanczos', preserve_history=True, instance='0')
+    interpolate(ts, 255, method='lanczos', a=20, preserve_history=True, instance='0')
     interpolate(ts, 255, method='slinear', preserve_history=True, instance='0')
     interpolate(ts, 255, method='linear', preserve_history=True, instance='0')
     interpolate(ts, 255, method='nearest', preserve_history=True, instance='0')
@@ -100,7 +100,7 @@ def test_correlation_detector():
 def test_templates_max_similarity():
     tse1 = get_live_timeseries_ensemble(3)
     tse2 = get_live_timeseries_ensemble(3)
-    templates_max_similarity(tse1, 0, tse2)
+    templates_max_similarity(tse1, 0, [tse2])
 
 def test_xcorr_3c():
     seis1 = get_live_seismogram()
@@ -115,4 +115,4 @@ def test_xcorr_pick_correction():
     pass
 
 if __name__ == "__main__":
-    test_xcorr_3c()
+    test_xcorr_max()

@@ -101,7 +101,7 @@ def TimeSeries2Trace(ts):
         dresult.stats['station'] = ts.get_string('sta')
     else:
         dresult.stats['station'] = ''
-    if ts.is_defined('channel'):
+    if ts.is_defined('chan'):
         dresult.stats['channel'] = ts.get_string('chan')
     else:
         dresult.stats['channel'] = ''
