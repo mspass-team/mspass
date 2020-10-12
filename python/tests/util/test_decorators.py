@@ -7,10 +7,9 @@ import mspasspy.ccore as mspass
 from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
 
 # module to test
-sys.path.append("../../mspasspy/util/")
-sys.path.append("..")
+sys.path.append("python/tests")
 
-from decorators import (mspass_func_wrapper,
+from mspasspy.util.decorators import (mspass_func_wrapper,
                         is_input_dead,
                         timeseries_as_trace,
                         seismogram_as_stream,

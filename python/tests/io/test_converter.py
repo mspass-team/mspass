@@ -4,7 +4,7 @@ import obspy
 import bson.objectid
 import sys
 
-sys.path.append("..")
+sys.path.append("python/tests")
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,

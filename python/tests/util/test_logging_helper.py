@@ -5,11 +5,10 @@ import pytest
 # stable modules in mspasspy
 import mspasspy.ccore as mspass
 from mspasspy.ccore import (Seismogram)
+from mspasspy.util import logging_helper
 
 # module to test
-sys.path.append("../../mspasspy/util/")
-sys.path.append("..")
-import logging_helper
+sys.path.append("python/tests")
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,

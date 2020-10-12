@@ -7,9 +7,7 @@ import mspasspy.ccore as mspass
 from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
 
 # module to test
-sys.path.append("../../mspasspy/util/")
-sys.path.append("../../mspasspy/algorithms/")
-sys.path.append("..")
+sys.path.append("python/tests")
 
 from helper import (get_live_seismogram,
                     get_live_timeseries,
@@ -18,7 +16,7 @@ from helper import (get_live_seismogram,
                     get_stream,
                     get_trace)
 
-from signals import (filter,
+from mspasspy.algorithms.signals import (filter,
                      detrend,
                      interpolate,
                      correlate,
