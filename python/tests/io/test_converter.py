@@ -2,6 +2,13 @@ import pytest
 import numpy as np
 import obspy
 import bson.objectid
+import sys
+
+sys.path.append("python/tests")
+from helper import (get_live_seismogram,
+                    get_live_timeseries,
+                    get_live_timeseries_ensemble,
+                    get_live_seismogram_ensemble)
 
 from mspasspy.ccore import (DoubleVector,
                             dmatrix,
@@ -10,13 +17,19 @@ from mspasspy.ccore import (DoubleVector,
                             Metadata,
                             MetadataDefinitions,
                             Seismogram,
-                            TimeSeries)
+                            TimeSeries,
+                            SeismogramEnsemble,
+                            TimeSeriesEnsemble)
 from mspasspy.io.converter import (dict2Metadata, 
                                    Metadata2dict, 
                                    TimeSeries2Trace, 
                                    Seismogram2Stream, 
                                    Trace2TimeSeries,
-                                   Stream2Seismogram)
+                                   Stream2Seismogram,
+                                   TimeSeriesEnsemble2Stream,
+                                   Stream2TimeSeriesEnsemble,
+                                   SeismogramEnsemble2Stream,
+                                   Stream2SeismogramEnsemble)
 
 def setup_function(function):
     ts_size = 255    
@@ -154,3 +167,39 @@ def test_Stream2Seismogram():
     assert all(np.array(seis.u)[0] == test_Stream2Seismogram.stream[0].data)
     assert all(np.array(seis.u)[1] == test_Stream2Seismogram.stream[1].data)
     assert all(np.array(seis.u)[2] == test_Stream2Seismogram.stream[2].data)
+
+def test_TimeSeriesEnsemble_as_Stream():
+    # use data object to verify converter
+    tse = get_live_timeseries_ensemble(3)
+    stream = tse.toStream()
+    tse_c = stream.toTimeSeriesEnsemble()
+    assert len(tse) == len(tse_c)
+    for k in range(3):
+        assert all(a == b for a,b in zip(tse.member[k].s, tse_c.member[k].s))
+
+    # dead member is also dead after conversion
+    tse.member[0].kill()
+    stream = tse.toStream()
+    tse_c = stream.toTimeSeriesEnsemble()
+    for k in range(3):
+        assert tse.member[k].live == tse_c.member[k].live
+
+    # dead member will be an empty object after conversion
+    assert len(tse_c.member[0].s) == 0
+
+def test_SeismogramEnsemble_as_Stream():
+    seis_e = get_live_seismogram_ensemble(3)
+    stream = seis_e.toStream()
+    seis_e_c = stream.toSeismogramEnsemble()
+    assert len(seis_e) == len(seis_e_c)
+    for k in range(3):
+        assert all(a.any() == b.any() for a, b in zip(seis_e.member[k].u, seis_e_c.member[k].u))
+
+    # dead member is also dead after conversion
+    seis_e.member[0].kill()
+    stream = seis_e.toStream()
+    seis_e_c = stream.toSeismogramEnsemble()
+    for k in range(3):
+        assert seis_e_c.member[k].live == seis_e.member[k].live
+    assert seis_e_c.member[0].u.rows() == 0
+    assert seis_e_c.member[0].u.columns() == 0
