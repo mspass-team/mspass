@@ -91,15 +91,14 @@ def correlation_detector(stream, templates, heights, distance, preserve_history=
     tem_list = []
     for template in templates:
         tem_list.append(template.toStream())
-    detections, sims = obspy.signal.cross_correlation.correlation_detector(
-        stream, tem_list, heights, distance, template_times, template_magnitudes, template_names,
-        similarity_func, details, plot, **kwargs)
+    detections, sims = obspy.signal.cross_correlation.correlation_detector(stream, tem_list, heights, distance,
+        template_times, template_magnitudes, template_names, similarity_func, details, plot, **kwargs)
     converted_detections = []
     for detection in detections:
         if return_type == "seismogram":
             converted_detections.append(Stream2Seismogram(detection, cardinal=True))
         elif return_type == "timeseries_ensemble":
-            converted_detections.append(Stream2TimeSeriesEnsemble(detection, cardinal=True))
+            converted_detections.append(Stream2TimeSeriesEnsemble(detection))
         else:
             raise TypeError("Only seismogram and timeseries_ensemble types are supported")
     return converted_detections, sims

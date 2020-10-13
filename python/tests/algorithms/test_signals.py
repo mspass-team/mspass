@@ -3,6 +3,7 @@ import pytest
 import obspy
 import obspy.signal.cross_correlation
 import numpy as np
+from obspy import UTCDateTime, read, Trace
 
 import mspasspy.ccore as mspass
 from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
@@ -29,6 +30,15 @@ from signals import (filter,
                      xcorr_3c,
                      xcorr_max,
                      xcorr_pick_correction)
+
+from mspasspy.io.converter import (TimeSeries2Trace,
+                                   Seismogram2Stream,
+                                   TimeSeriesEnsemble2Stream,
+                                   SeismogramEnsemble2Stream,
+                                   Stream2Seismogram,
+                                   Trace2TimeSeries,
+                                   Stream2TimeSeriesEnsemble,
+                                   Stream2SeismogramEnsemble)
 
 def test_filter():
     ts = get_live_timeseries()
@@ -143,20 +153,51 @@ def test_correlate_stream_template():
         assert all(a == b for a, b in zip(res1.u[i,:], res2[i].data))
 
 def test_correlation_detector():
-    seis = get_live_seismogram()
-    seis_list = []
-    for i in range(3):
-        seis_list.append(get_live_timeseries_ensemble(2))
-    st1 = seis.toStream()
-    tem_lists = []
-    for i in range(3):
-        tem_lists.append(seis_list[i].toStream())
-    res, sims = correlation_detector(seis, seis_list, 0.5, 10, return_type="timeseries_ensemble")
-    res2, sims2 = obspy.signal.cross_correlation.correlation_detector(st1, tem_lists, 0.5, 10)
-    assert all(a==b for a, b in zip(sims, sims2))
+    template = read().filter('highpass', freq=5).normalize()
+    pick = UTCDateTime('2009-08-24T00:20:07.73')
+    template.trim(pick, pick + 10)
+    n1 = len(template[0])
+    n2 = 100 * 3600  # 1 hour
+    dt = template[0].stats.delta
+    # shift one template Trace
+    template[1].stats.starttime += 5
+    stream = template.copy()
+    np.random.seed(42)
+    for tr, trt in zip(stream, template):
+        tr.stats.starttime += 24 * 3600
+        tr.data = np.random.random(n2) - 0.5  # noise
+        if tr.stats.channel[-1] == 'Z':
+            tr.data[n1:2 * n1] += 10 * trt.data
+            tr.data = tr.data[:-n1]
+        tr.data[5 * n1:6 * n1] += 100 * trt.data
+        tr.data[20 * n1:21 * n1] += 2 * trt.data
+    # make one template trace a bit shorter
+    template[2].data = template[2].data[:-n1 // 5]
+    # make two stream traces a bit shorter
+    stream[0].trim(5, None)
+    stream[1].trim(1, 20)
+    detections, sims = obspy.signal.cross_correlation.correlation_detector(stream, template, 0.2, 30)
+
+    # fixme seed id problem
+    # tse = Stream2Seismogram(stream, cardinal=True)
+    # tem = Stream2Seismogram(template, cardinal=True)
+    # detections2, sims2 = correlation_detector(tse, [tem], 0.2, 30)
+
+    # seis = get_live_seismogram()
+    # seis_list = []
+    # for i in range(3):
+    #     seis_list.append(get_live_timeseries_ensemble(2))
+    # st1 = seis.toStream()
+    # tem_lists = []
+    # for i in range(3):
+    #     tem_lists.append(seis_list[i].toStream())
+    # res, sims = correlation_detector(seis, seis_list, 0.5, 10, return_type="timeseries_ensemble")
+    # res2, sims2 = obspy.signal.cross_correlation.correlation_detector(st1, tem_lists, 0.5, 10)
+    # assert all(a==b for a, b in zip(sims, sims2))
 
 
 def test_templates_max_similarity():
+    # fixme seed id problem
     tse1 = get_live_timeseries_ensemble(3)
     tse2 = get_live_timeseries_ensemble(3)
     st1 = tse1.toStream()
@@ -182,14 +223,20 @@ def test_xcorr_max():
     assert res1 == res2
 
 def test_xcorr_pick_correction():
-    ts1 = get_live_timeseries()
-    ts2 = get_live_timeseries()
-    tr1 = ts1.toTrace()
-    tr2 = ts2.toTrace()
-    # r1, r2 = xcorr_pick_correction(ts1, ts2, 10, 10, 0.1, 0.1, 0.10)
-    # print(r1, r2)
-    # rr1, rr2 = obspy.signal.cross_correlation.xcorr_pick_correction(10, tr1, 10, tr2, 0.05, 0.2, 0.10)
-    # assert r2 == rr2
+    st1 = read('./python/tests/data/BW.UH1._.EHZ.D.2010.147.a.slist.gz')
+    st2 = read('./python/tests/data/BW.UH1._.EHZ.D.2010.147.b.slist.gz')
+    tr1 = st1.select(component="Z")[0]
+    tr2 = st2.select(component="Z")[0]
+    t1 = UTCDateTime("2010-05-27T16:24:33.315000Z")
+    t2 = UTCDateTime("2010-05-27T16:27:30.585000Z")
+
+    ts1 = Trace2TimeSeries(tr1)
+    ts2 = Trace2TimeSeries(tr2)
+
+    dt, coeff = obspy.signal.cross_correlation.xcorr_pick_correction(t1, tr1, t2, tr2, 0.05, 0.2, 0.1)
+    dt2, coeff2 = xcorr_pick_correction(ts1, ts2, t1, t2, 0.05, 0.2, 0.1)
+    assert dt == dt2
+    assert coeff == coeff2
 
 if __name__ == "__main__":
-    test_xcorr_pick_correction()
+    test_correlation_detector()
