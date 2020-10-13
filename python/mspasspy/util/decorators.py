@@ -18,10 +18,6 @@ import mspasspy.ccore as mspass
 import mspasspy.util.logging_helper as logging_helper
 
 @decorator
-def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
-    pass
-
-@decorator
 def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
 
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
@@ -43,13 +39,48 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
         else:
             logging_helper.ensemble_error(data, algname, err, mspass.ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        message = "MsPass Error, severity: " + ex.severity + ", message: " + ex.message + \
-            "\nIf it is a bug that needs to be fixed, please contact authors"
         if isinstance(data, (Seismogram,TimeSeries)):
-            data.elog.log_error(algname, message, mspass.ErrorSeverity.Invalid)
+            data.elog.log_error(algname, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(data, algname, message, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data, algname, ex.message, ex.severity)
 
+@decorator
+def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    if not isinstance(data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
+        raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
+
+    if not isinstance(data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
+        raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
+
+    algname = func.__name__
+    try:
+        if preserve_history and instance is None:
+            raise RuntimeError(algname + ": preserve_history was true but instance not defined")
+        if dryrun:
+            return "OK"
+        res = func(data1, data2, *args, **kwargs)
+        if preserve_history:
+            logging_helper.info(data1, algname, instance)
+            logging_helper.info(data2, algname, instance)
+        return res
+    except RuntimeError as err:
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, algname, err, mspass.ErrorSeverity.Invalid)
+        if isinstance(data2, (Seismogram, TimeSeries)):
+            data2.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
+    except MsPASSError as ex:
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(algname, ex.message, ex.severity)
+        else:
+            logging_helper.ensemble_error(data1, algname, ex.message, ex.severity)
+        if isinstance(data2, (Seismogram, TimeSeries)):
+            data2.elog.log_error(algname, ex.message, ex.severity)
+        else:
+            logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
 
 def is_input_dead(*args, **kwargs):
     """
@@ -119,11 +150,15 @@ def timeseries_as_trace(func, *args, **kwargs):
     for i in converted_args_ids:
         ts = Trace2TimeSeries(converted_args[i])
         args[i].s = ts.s
-        # metadata
-        # refer to copy constructor
+        # metadata copy
+        for k in ts.keys():
+            args[i][k] = ts[k]
     for k in converted_kwargs_keys:
         ts = Trace2TimeSeries(converted_kwargs[k])
         kwargs[k].s = ts.s
+        # metadata copy
+        for key in ts.keys():
+            kwargs[k][key] = ts[key]
     return res
 
 
@@ -157,9 +192,15 @@ def seismogram_as_stream(func, *args, **kwargs):
         for i in converted_args_ids:
             seis = Stream2Seismogram(converted_args[i], cardinal=True)
             args[i].u = seis.u
+            # metadata copy
+            for k in seis.keys():
+                args[i][k] = seis[k]
         for k in converted_kwargs_keys:
             seis = Stream2Seismogram(converted_kwargs[k], cardinal=True)
             kwargs[k].u = seis.u
+            # metadata copy
+            for key in seis.keys():
+                kwargs[k][key] = seis[key]
     return res
 
 
@@ -191,9 +232,13 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
         for i in converted_args_ids:
             tse = converted_args[i].toTimeSeriesEnsemble()
             args[i].member = tse.member
+            # for k in tse.keys():
+            #     args[i][k] = tse[k]
         for k in converted_kwargs_keys:
             tse = converted_kwargs[k].toTimeSeriesEnsemble()
             kwargs[k].member = tse.member
+            # for key in tse.keys():
+            #     kwargs[k][key] = tse[key]
     return res
 
 
@@ -225,7 +270,11 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
         for i in converted_args_ids:
             seis_e = converted_args[i].toSeismogramEnsemble()
             args[i].member = seis_e.member
+            # for k in seis_e.keys():
+            #     args[i][k] = seis_e[k]
         for k in converted_kwargs_keys:
             seis_e = converted_kwargs[k].toSeismogramEnsemble()
             kwargs[k].member = seis_e.member
+            # for key in seis_e.keys():
+            #     kwargs[k][key] = seis_e[key]
     return res
