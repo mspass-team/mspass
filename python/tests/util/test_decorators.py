@@ -8,8 +8,10 @@ from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, Seismogr
 
 # module to test
 sys.path.append("python/tests")
+sys.path.append("python/mspasspy/util/")
 
-from mspasspy.util.decorators import (mspass_func_wrapper,
+from decorators import (mspass_func_wrapper,
+                        mspass_func_wrapper_multi,
                         is_input_dead,
                         timeseries_as_trace,
                         seismogram_as_stream,
@@ -90,6 +92,7 @@ def test_mspass_func_wrapper():
 @timeseries_as_trace
 def dummy_func_timeseries_as_trace(d, any=None):
     d.data = np.array([0, 1, 2])
+    d.stats['chan'] = 'Z'
     any.data = np.array([2,3,4])
 
 
@@ -103,11 +106,13 @@ def test_timeseries_as_trace():
     assert len(cp2) != len(ts2.s)
     assert all(a == b for a,b in zip([0,1,2], ts.s))
     assert all(a == b for a, b in zip([2,3,4], ts2.s))
+    assert ts['chan'] == 'Z'
 
 
 @seismogram_as_stream
 def dummy_func_seismogram_as_stream(d1, d2=None):
     d1[0].data[0] = -1
+    d1[0].stats['test'] = 'test'
     d2[0].data[0] = -1
 
 def test_seismogram_as_trace():
@@ -120,6 +125,7 @@ def test_seismogram_as_trace():
     assert cp2[0] != seis2.u[0,0]
     assert seis1.u[0,0] == -1
     assert seis2.u[0, 0] == -1
+    assert seis1['test'] == 'test'
 
 @timeseries_ensemble_as_stream
 def dummy_func_timeseries_ensemble_as_stream(data):
@@ -245,6 +251,43 @@ def test_all_decorators():
     assert seis_e.member[0].u[0,0] == -1
     assert seis_e.member[0].u[0,0] != cp.member[0].u[0,0]
     assert seis_e.member[0].number_of_stages() == 1
+
+@mspass_func_wrapper_multi
+def dummy_func_multi(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    return None
+
+def test_mspass_func_wrapper_multi():
+    with pytest.raises(RuntimeError) as err:
+        dummy_func_multi(1, 2)
+    assert str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
+
+    seis1 = get_live_seismogram()
+    seis2 = get_live_seismogram()
+    assert seis1.elog.size() == 0
+    assert seis2.elog.size() == 0
+    dummy_func_multi(seis1, seis2, preserve_history=True)
+    assert seis1.elog.size() == 1
+    assert seis2.elog.size() == 1
+
+    log = seis2.elog.get_error_log()
+    assert log[0].message.find("preserve_history was true but instance not defined") != 0
+
+    assert "OK" == dummy_func_multi(seis1, seis2, dryrun=True)
+
+    assert seis1.number_of_stages() == 0
+    assert seis2.number_of_stages() == 0
+    dummy_func_multi(seis1, seis2, preserve_history=True, instance='0')
+    assert seis1.number_of_stages() == 1
+    assert seis2.number_of_stages() == 1
+
+    seis_e = get_live_seismogram_ensemble(3)
+    for i in range(3):
+        assert seis_e.member[i].number_of_stages() == 0
+    dummy_func_multi(seis1, seis_e, preserve_history=True, instance='0')
+    assert seis1.number_of_stages() == 2
+    for i in range(3):
+        assert seis_e.member[i].number_of_stages() == 1
+
 
 
 if __name__ == "__main__":
