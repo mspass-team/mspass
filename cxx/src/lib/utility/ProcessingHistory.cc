@@ -185,7 +185,7 @@ void ProcessingHistory::set_as_origin(const string alg,const string algid_in,
   /* Origin/raw are always defined as stage 0 even after a save. */
   current_stage=0;
 }
-string ProcessingHistory::new_reduction(const string alg,const string algid_in,
+string ProcessingHistory::new_ensemble_process(const string alg,const string algid_in,
   const AtomicType typ,const vector<ProcessingHistory*> parents,
     const bool create_newid)
 {
@@ -193,42 +193,39 @@ string ProcessingHistory::new_reduction(const string alg,const string algid_in,
   {
     this->newid();
   }
-  if(this->is_empty())
-  {
-    elog.log_error("ProcessingHistory::new_reduction",
-      "This method cannot be called on an empty history chain - you must call set_as_origin first",
-       ErrorSeverity::Complaint);
-    return current_id;
-  }
-  /* This works because the get methods used here return a deep copy from
-  each parent with their current data pushed to define the base of the
-  chain.  Because we are bringing in history from other data we also
-  have clear the nodes multimap before inserting parent
-  data to avoid duplicates - it would be very error prone to require caller
-  to clear before calling this method*/
+  /* We need to clear the tree contents because all the parents will
+  branch from this.  Hence, we have to put the node data into an empty
+  container */
   this->clear();
+  algorithm=alg;
+  algid=algid_in;
+  mytype=typ;
+  /* Initialize current stage but assume it will be updated as max of
+  parents below */
+  current_stage=0;
   multimap<string,NodeData>::const_iterator nptr,nl,nu;
   size_t i;
   /* current_stage can be ambiguous from multiple inputs.  We define
-  the current stage from a reduction as the largest stage value found
+  the current stage from a reduce as the largest stage value found
   in all inputs.  Note we only test the stage value at the head for
   each parent */
   int max_stage(0);
   for(i=0;i<parents.size();++i)
   {
-    multimap<string,NodeData> parent_node_data(parents[i]->get_nodes());
-    /* We also have to get the head data with this method now */
-    NodeData nd=parents[i]->current_nodedata();
-    if(nd.stage>max_stage) max_stage=nd.stage;
     if(parents[i]->is_empty())
     {
       stringstream ss;
       ss << "Vector member number "<<i<<" with uuid="<<parents[i]->id()
          << " has an empty history chain"<<endl
          << "At best the processing history data will be incomplete"<<endl;
-      elog.log_error("ProcessingHistory::new_reduction",ss.str(),
+      elog.log_error("ProcessingHistory::new_ensemble_process",ss.str(),
         ErrorSeverity::Complaint);
+      continue;
     }
+    multimap<string,NodeData> parent_node_data(parents[i]->get_nodes());
+    /* We also have to get the head data with this method now */
+    NodeData nd=parents[i]->current_nodedata();
+    if(nd.stage>max_stage) max_stage=nd.stage;
     for(nptr=parent_node_data.begin();nptr!=parent_node_data.end();++nptr)
     {
       /*Adding to nodes multimap has a complication.  It is possible in
@@ -270,7 +267,7 @@ string ProcessingHistory::new_reduction(const string alg,const string algid_in,
     ++current_stage;
   else
   {
-    elog.log_error("ProcessingHistory::new_reduction",
+    elog.log_error("ProcessingHistory::new_ensemble_process",
       "current_stage for none of the parents was initialized\nImproper usage will create an invalid history chain that may cause downstream problems",
        ErrorSeverity::Complaint);
     current_stage=0;
@@ -282,14 +279,13 @@ string ProcessingHistory::new_reduction(const string alg,const string algid_in,
   current_status=ProcessingStatus::VOLATILE;
   return current_id;
 }
-/* Companion to new_reduction that appends the history of one datum to the
-multimap containers.  It does not alter the current values the new_reduction method
+/* Companion to new_ensemble_process that appends the history of one datum to the
+multimap containers.  It does not alter the current values the new_ensemble_process method
 MUST have been called before calling this method or the history chain will
 become corrupted.*/
 void ProcessingHistory::add_one_input(const ProcessingHistory& data_to_add)
 {
-  multimap<string,NodeData>::iterator nptr;
-  multimap<string,NodeData> newhistory = data_to_add.get_nodes();
+
   if(data_to_add.is_empty())
   {
     stringstream ss;
@@ -300,9 +296,11 @@ void ProcessingHistory::add_one_input(const ProcessingHistory& data_to_add)
   }
   else
   {
+    multimap<string,NodeData>::iterator nptr;
+    multimap<string,NodeData> newhistory = data_to_add.get_nodes();
     multimap<string,NodeData>::iterator nl,nu;
     /* As above this one needs check for duplicates and only add
-    a node if the data are unique.  This is simple compared to new_reduction
+    a node if the data are unique.  This is simple compared to new_ensemble_process
     because we just have to check one object's history at a time. */
     for(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)
     {
@@ -325,6 +323,11 @@ void ProcessingHistory::add_one_input(const ProcessingHistory& data_to_add)
         this->nodes.insert(*nptr);
       }
     }
+    /* Don't forget head node data*/
+    NodeData nd=data_to_add.current_nodedata();
+    NodeData ndhere=this->current_nodedata();
+    pair<string,NodeData> pnd(current_id,nd);
+    this->nodes.insert(pnd);
   }
 }
 /* This one also doesn't change the current contents because it is just a
@@ -455,6 +458,135 @@ string ProcessingHistory::map_as_saved(const string alg,const string algid_in,
   }
   mytype=typ;
   return current_id;
+}
+
+void ProcessingHistory::accumulate(const string algin,const string algidin,
+    const AtomicType typ,const ProcessingHistory& newinput)
+{
+  /* We have to detect an initialization condition without losing the
+  stored history.   There are two conditions we need to handle.  First,
+  if we create an empty container to hold the accmulator and put it on the
+  left hand side we will want to clear the history chain or we will
+  accumulate random junk.   The second condition is if we accumulate in
+  a way were the left hand side is some existing data where we do want to
+  preserve the history.   For the is_empty logic:   we just copy the
+  newinput's history and add make its current node data the connection
+  backward - i.e. we have to make a new uuid and add an entry. */
+  if(this->is_empty())
+  {
+    this->newid();
+    nodes=newinput.get_nodes();
+    NodeData nd;
+    nd=newinput.current_nodedata();
+    pair<string,NodeData> pn(current_id,nd);
+    this->nodes.insert(pn);
+    this->set_jobid(newinput.jobid());
+    this->set_jobname(newinput.jobname());
+    algorithm=algin;
+    algid=algidin;
+    current_status=ProcessingStatus::VOLATILE;
+    current_stage=nd.stage+1;
+    mytype=typ;
+  }
+  /* This is the condition for a left hand side that is not empty but not
+  yet initialized.   We detect this condition by a mismatch in all the unique
+  names and ids that mark the current process define this reduce operation*/
+  else if((this->algorithm != algin) || (this->algid != algidin)
+    || (this->jid  != newinput.jobid()) || (this->jnm != newinput.jobname()))
+  {
+    /* This is similar to the block above, but the key difference here is we
+    have to push this's history data to convert it's current data to define an input.
+    That means getting a new uuid and pushing current node data to the nodes map
+    as an input */
+    NodeData nd;
+    nd=this->current_nodedata();
+    this->newid();
+    pair<string,NodeData> pn(current_id,nd);
+    this->nodes.insert(pn);
+    this->jid=newinput.jobid();
+    this->jnm=newinput.jobname();
+    this->algorithm=algin;
+    this->algid=algidin;
+    this->current_status=ProcessingStatus::VOLATILE;
+    this->current_stage=nd.stage+1;
+    this->mytype=typ;
+    this->add_one_input(newinput);
+  }
+  else
+  {
+    this->add_one_input(newinput);
+  }
+}
+
+string ProcessingHistory::clean_accumulate_uuids()
+{
+  /* Return undefined immediately if the history chain is empty */
+  if(this->is_empty()) return string("UNDEFINED");
+  NodeData ndthis=this->current_nodedata();
+  string alg(ndthis.algorithm);
+  string algidtest(ndthis.algid);
+  /* The algorithm here finds all entries for which algorithm is alg and
+  algid matches aldid.  We build a list of uuids (keys) linked to that unique
+  algorithm.  We then use the id in ndthis as the master*/
+  set<string> matching_ids;
+  matching_ids.insert(ndthis.uuid);
+  std::list<multimap<string,NodeData>::iterator> need_to_erase;
+  for(auto nptr=this->nodes.begin();nptr!=this->nodes.end();++nptr)
+  {
+    /* this copy operation is somewhat inefficient, but the cost is small
+    compared to how obscure the code will look if we directly manipulate the
+    second value */
+    NodeData nd(nptr->second);
+    /* this depends upon the distinction between set and multiset.  i.e. an insert
+    of a duplicate does nothing*/
+    if((alg==nd.algorithm) && (algidtest==nd.algid))
+    {
+      matching_ids.insert(nd.uuid);
+      need_to_erase.push_back(nptr);
+    }
+  }
+  // handle no match situation gracefully
+  if(matching_ids.empty())
+    return string("UNDEFINED");
+  /* Nothing more to do but return the uuid if there is only one*/
+  if(matching_ids.size()==1)
+    return *(matching_ids.begin());
+  else
+  {
+    for(auto sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)
+    {
+      nodes.erase(*sptr);
+    }
+    need_to_erase.clear();
+  }
+  /* Here is the complicated case.  We use the uuid from ndthis as the master
+  and change all the others.   This operation works ONLY because in a multimap
+  erase only invalidates the iterator it points to and others remain valid.
+  */
+  string master_uuid=ndthis.uuid;
+  for(auto sptr=matching_ids.begin();sptr!=matching_ids.end();++sptr)
+  {
+    /* Note this test is necessary to stip the master_uuid - no else needed*/
+    if((*sptr)!=master_uuid)
+    {
+      multimap<string,NodeData>::iterator nl,nu;
+      nl=this->nodes.lower_bound(*sptr);
+      nu=this->nodes.upper_bound(*sptr);
+      for(auto nptr=nl;nptr!=nu;++nptr)
+      {
+        NodeData nd;
+        nd=(nptr->second);
+        need_to_erase.push_back(nptr);
+        nodes.insert(pair<string,NodeData>(master_uuid,nd));
+      }
+    }
+  }
+  for(auto sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)
+  {
+    nodes.erase(*sptr);
+  }
+
+  return master_uuid;
 }
 multimap<string,NodeData> ProcessingHistory::get_nodes() const
 {

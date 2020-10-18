@@ -397,7 +397,7 @@ public:
     using mspass::dmatrix::ncc;
 };
 
-/* The following Python C API are needed to construct the PyMsPASSError 
+/* The following Python C API are needed to construct the PyMsPASSError
    exception with pybind11. This is following the example from:
    https://www.pierov.org/2020/03/01/python-custom-exceptions-c-extensions/
 */
@@ -844,7 +844,7 @@ PYBIND11_MODULE(ccore,m)
       double* packet;
       try{
         packet = m.get_address(start,0);
-      } catch (MsPASSError e) {
+      } catch (MsPASSError& e) {
         packet = nullptr;
       }
       std::vector<ssize_t> size(2);
@@ -1042,8 +1042,8 @@ PYBIND11_MODULE(ccore,m)
 
   /* The following magic were based on the great example from:
     https://www.pierov.org/2020/03/01/python-custom-exceptions-c-extensions/
-    This appears to be the cleanest and easiest way to implement a custom 
-    exception with pybind11. 
+    This appears to be the cleanest and easiest way to implement a custom
+    exception with pybind11.
 
     The PyMsPASSError is the python object inherited from the base exception
     object on the python side. This is done by the PyErr_NewException call.
@@ -1279,7 +1279,7 @@ PYBIND11_MODULE(ccore,m)
         self.set_as_origin(alg, algid, uuid, typ, true);
       },
       "Load data defining this as the raw input of a processing history chain")
-    .def("new_reduction",&mspass::ProcessingHistory::new_reduction,
+    .def("new_ensemble_process",&mspass::ProcessingHistory::new_ensemble_process,
       "Set up history chain to define the current data as result of reduction - output form multiple inputs",
       py::arg("alg"),
       py::arg("algid"),
@@ -1287,9 +1287,21 @@ PYBIND11_MODULE(ccore,m)
       py::arg("parents"),
       py::arg("create_newid") = true)
     .def("add_one_input",&mspass::ProcessingHistory::add_one_input,
-      "Companion to new_reduction used to add a single input datum after call to new_reduction")
+      "A single input datum after initialization with new_ensemble_process or accumulate",
+      py::arg("newinput"))
     .def("add_many_inputs",&mspass::ProcessingHistory::add_many_inputs,
-      "Companion to new_reduction used to add a single input datum after call to new_reduction")
+      "Add multiple inputs after initialization with new_ensemble_process or accumulate",
+      py::arg("inputs"))
+    .def("accumulate",&mspass::ProcessingHistory::accumulate,
+      "History accumulator for spark reduce operators",
+      py::arg("alg"),
+      py::arg("algid"),
+      py::arg("type"),
+      py::arg("newinput")
+      )
+    .def("clean_accumulate_uuids",&mspass::ProcessingHistory::clean_accumulate_uuids,
+      "Clean up possible inconsistent uuids after running a reduce operator"
+      )
     .def("new_map",py::overload_cast<const std::string,const std::string,
       const mspass::AtomicType,const mspass::ProcessingStatus>
         (&mspass::ProcessingHistory::new_map),
@@ -1317,7 +1329,7 @@ PYBIND11_MODULE(ccore,m)
     .def("stage",&mspass::ProcessingHistory::stage,
       "Return the current stage number (counter of processing stages applied in this run)")
     .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
-    .def("create_by",&mspass::ProcessingHistory::create_by ,"Return the algorithm name and id that created current node")
+    .def("created_by",&mspass::ProcessingHistory::created_by ,"Return the algorithm name and id that created current node")
     .def("current_nodedata",&mspass::ProcessingHistory::current_nodedata,"Return all the attributes of current")
     .def("newid",&mspass::ProcessingHistory::newid,"Create a new uuid for current data")
     .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")

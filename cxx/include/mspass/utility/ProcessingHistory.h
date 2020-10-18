@@ -93,7 +93,7 @@ public:
   returns 0 since it does not implement the actual history mechanism.
   */
   virtual size_t number_of_stages(){return 0;};
-  std::string jobid()
+  std::string jobid() const
   {
     return jid;
   };
@@ -348,15 +348,21 @@ public:
   */
   void set_as_origin(const string alg,const string algid,
     const string uuid,const AtomicType typ, bool define_as_raw=false);
-  /*! Define history chain for an algorithm with multiple inputs.
+  /*! Define history chain for an algorithm with multiple inputs in an ensemble.
 
   Use this method to define the history chain for an algorithm that has
   multiple inputs for each output.  Each output needs to call this method
   to build the connections that define how all inputs link to the the
-  new data being created by the algorithm that calls this method.   We \
-  call it reduction because it loosly matches the idea of reduce in map-reduce,
-  but don't take that too literally - this method has nothing directly to do
-  with reduce in Spark.
+  new data being created by the algorithm that calls this method.  Use this
+  method for map operators that have an ensemble object as input and a single
+  data object as output.  This method should be called in creation of the
+  output object.  If the algorthm builds multiple outputs to build an
+  output ensemble call this method for each output before pushing it to
+  the output ensemble container.
+
+  This method should not be used for a reduce operation in spark.  It does
+  not satisfy the associative rule for reduce. Use accumulate for reduce
+  operations.
 
   Normally, it makes sense to have the boolean create_newid true so it is
   guaranteed the current_id is unique.  There is little cost in creating a new
@@ -389,17 +395,17 @@ public:
   \return a string representation of the uuid of the data to which this
     ProcessingHistory is now attached.
   */
-  string new_reduction(const string alg,const string algid,
+  string new_ensemble_process(const string alg,const string algid,
     const AtomicType typ,const vector<ProcessingHistory*> parents,
       const bool create_newid=true);
   /*! \brief Add one datum as an input for current data.
 
-  This method MUST ONLY be called after a call to new_reduction in the
+  This method MUST ONLY be called after a call to new_ensemble_process in the
   situation were additional inputs need to be defined that were not
-  available at the time new_reduction was called.   An example might be
+  available at the time new_ensemble_process was called.   An example might be
   a stack that was created within the scope of "algorithm" and then used in
   some way to create the output data.   In any case it differs fundamentally
-  from new_reduction in that it does not touch attributes that define the
+  from new_ensemble_process in that it does not touch attributes that define the
   current state of "this".  It simply says this is another input to the
   data "this" contains.
 
@@ -418,6 +424,53 @@ public:
   \param d is the vector of data to define as inputs
   */
   void add_many_inputs(const vector<ProcessingHistory*>& d);
+  /*! \brief Method to use with a spark reduce algorithm.
+
+  A reduce operator in spark utilizes a binary function where two inputs
+  are used to generate a single output object.   Because the inputs could be
+  scattered on multiple processor nodes this operation must be associative.
+  The new_ensemble_process method does not satisfy that constraint so this method
+  was necessary to handle that type of algorithm correctly.
+
+  The way this algorithm works is it fundamentally branches on two different
+  cases: (1) initialization, which is detected by testing if the node data
+  map is empty or (2) secondary calls.   This should work even if multiple
+  inputs are combined at the end of the reduce operation because the copies
+  being merged will not be empty.   Note an empty input will create a complaint
+  entry in the error log.
+
+
+
+  */
+  void accumulate(const string alg,const string algid,
+    const AtomicType typ,const ProcessingHistory& newinput);
+  /* \brief Clean up inconsistent uuids that can be produced by reduce.
+
+  In a spark reduce operation it is possible to create multiple uuid keys
+  for inputs to the same algorithm instance.  That happpens because
+  the mechanism used by ProcessingHistory to define the process history
+  tree is not associative.   When a reduce gets sprayed across multiple
+  nodes multiple initializations can occur that make artifical
+  inconsitent uuids.  This method should normally be called after a reduce
+  operator if history is being preserved or the history chain may be
+  foobarred - no invalid just mess up with extra branches in the processing
+  tree.   This algorithm uses matching ald and algid to define duplicates.
+  A VERY IMPORTANT limitation of that is that algid MUST be unique for a
+  given job run when a reduce is called.  i.e. if an earlier workflow had
+  used alg and algid but with a different jobid and jobname the distintion
+  cannot be detected with this algorithm.   This means our global history
+  handling must guarantee algid is unique for each run.
+
+  \param alg is the algorithm field to test for duplicates
+  \param algid is the algorithm id file to test for duplicates.
+
+  \return unique uuid for alg,algid match set in the history chain.
+    Note if there are not duplicates it simply returns the only one it finds.
+    If there are duplicates it returns the lexically smallest (first in
+    alphabetic order) uuid.  Most importantly if there is no match or if
+    history is empty it returns the string UNDEFINED.
+  */
+  string clean_accumulate_uuids();
     /*! \brief Define this algorithm as a one-to-one map of same type data.
 
   Many algorithms define a one-to-one map where each one input data object
@@ -551,7 +604,7 @@ public:
     return current_id;
   };
   /*! Return the algorithm name and id that created current node. */
-  pair<std::string,std::string> create_by() const
+  pair<std::string,std::string> created_by() const
   {
     pair<std::string,std::string> result(algorithm,algid);
     return result;
@@ -655,7 +708,7 @@ private:
 /*! Append history data from a data object to inputs vector.
 
 This is a convenience template that is a wrapper for add_one_input used
-as in some contexts in combination with new_reduction.   It handles
+as in some contexts in combination with new_ensemble_process.   It handles
 automatically ignoring dead data and the casting operation to ProcessingHistory.
 It will only work if d can be dynamically cast to a ProcessingHistory.
 That means it will work for Seismogram and TimeSeries objects but not
@@ -664,7 +717,7 @@ CoreSeismogram or CoreTimeSeries.
 \param d is the data to define as an input.
 \param his is the history data to append this record to - IMPORTANT this
   function blindly assumes this function is called ONLY after a call to
-  his.new_reduction.
+  his.new_ensemble_process.
 */
 
 template <typename Tdata>
