@@ -454,18 +454,17 @@ public:
   inconsitent uuids.  This method should normally be called after a reduce
   operator if history is being preserved or the history chain may be
   foobarred - no invalid just mess up with extra branches in the processing
-  tree.   This algorithm uses matching ald and algid to define duplicates.
-  A VERY IMPORTANT limitation of that is that algid MUST be unique for a
+  tree.
+
+  A VERY IMPORTANT limitation of the algorithm used by this method
+  is that the combination of algorithm and algid in "this" MUST be unique for a
   given job run when a reduce is called.  i.e. if an earlier workflow had
   used alg and algid but with a different jobid and jobname the distintion
   cannot be detected with this algorithm.   This means our global history
   handling must guarantee algid is unique for each run.
 
-  \param alg is the algorithm field to test for duplicates
-  \param algid is the algorithm id file to test for duplicates.
-
   \return unique uuid for alg,algid match set in the history chain.
-    Note if there are not duplicates it simply returns the only one it finds.
+    Note if there are no duplicates it simply returns the only one it finds.
     If there are duplicates it returns the lexically smallest (first in
     alphabetic order) uuid.  Most importantly if there is no match or if
     history is empty it returns the string UNDEFINED.

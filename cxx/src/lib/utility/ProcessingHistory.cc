@@ -530,6 +530,9 @@ string ProcessingHistory::clean_accumulate_uuids()
   algorithm.  We then use the id in ndthis as the master*/
   set<string> matching_ids;
   matching_ids.insert(ndthis.uuid);
+  /* this approach of pushing iterators to this list that match seemed to
+  be the only way I could make this work correctly.   Not sure why, but
+  the added cost over handling this correctly in the loops is small. */
   std::list<multimap<string,NodeData>::iterator> need_to_erase;
   for(auto nptr=this->nodes.begin();nptr!=this->nodes.end();++nptr)
   {
