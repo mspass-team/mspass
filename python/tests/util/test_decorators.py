@@ -193,7 +193,7 @@ def test_seismogram_ensemble_as_stream():
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def dummy_func_2(data, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_func_2(data, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, **kwargs):
     if isinstance(data, obspy.Trace):
         data.data = np.array([0, 1, 2])
     elif isinstance(data, obspy.Stream):
@@ -251,6 +251,11 @@ def test_all_decorators():
     assert seis_e.member[0].u[0,0] == -1
     assert seis_e.member[0].u[0,0] != cp.member[0].u[0,0]
     assert seis_e.member[0].number_of_stages() == 1
+
+    # test inplace return
+    seis1 = get_live_seismogram()
+    ret = dummy_func_2(seis1, preserve_history=True, instance='0')
+    assert seis1 == ret
 
 @mspass_func_wrapper_multi
 def dummy_func_multi(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
