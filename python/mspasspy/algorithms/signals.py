@@ -30,7 +30,7 @@ from mspasspy.io.converter import (TimeSeries2Trace,
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def filter(data, type, *args, preserve_history=False, instance=None, dryrun=False, **options):
+def filter(data, type, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, **options):
     data.filter(type, **options)  # inplace filtering
 
 
@@ -39,7 +39,7 @@ def filter(data, type, *args, preserve_history=False, instance=None, dryrun=Fals
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, type='simple', **options):
+def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, type='simple', **options):
     data.detrend(type, **options)
 
 
@@ -48,7 +48,7 @@ def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, ty
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def interpolate(data, sampling_rate, *args,preserve_history=False, instance=None, dryrun=False,
+def interpolate(data, sampling_rate, *args,preserve_history=False, instance=None, dryrun=False, inplace_return=True,
                 method='weighted_average_slopes', starttime=None, npts=None, time_shift=0.0, **kwargs):
     data.interpolate(sampling_rate, method, starttime, npts, time_shift, *args, **kwargs)
 
