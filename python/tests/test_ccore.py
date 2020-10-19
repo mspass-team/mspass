@@ -1,4 +1,5 @@
 import array
+import copy
 import pickle
 
 import numpy as np
@@ -478,7 +479,7 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
         ph_list.append(ProcessingHistoryBase())
         ph_list[i].set_as_raw("fakedataset", "0", "fakeid_"+str(i), AtomicType.SEISMOGRAM)
         ph_list[i].new_map("onetoone", "0", AtomicType.SEISMOGRAM)
-    phred.new_reduction("testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
+    phred.new_ensemble_process("testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
     dic = phred.get_nodes()
     rec = 0
     for i in dic.keys():
@@ -486,6 +487,35 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
             print(i, " : ", j.uuid, " , ", j.status)
             rec+=1
     assert rec == 8
+
+    ph_list2 = copy.deepcopy(ph_list)
+    ph_list3 = copy.deepcopy(ph_list)
+    # a stack in order
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[1])
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[2])
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[3])
+    # a stack out of order
+    ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[2])
+    ph_list3[3].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[1])
+    ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[3])
+    ph_list2[0].clean_accumulate_uuids()
+    ph_list3[0].clean_accumulate_uuids()
+    nodes2 = {}
+    for k,v in ph_list2[0].get_nodes().items():
+        if k not in ph_list2[0].id():
+            nodes2[k] = str(v)
+    nodes3 = {}
+    for k,v in ph_list3[0].get_nodes().items():
+        if k not in ph_list3[0].id():
+            nodes3[k] = str(v)
+    assert nodes2 == nodes3
+    nodes2 = []
+    for i in ph_list2[0].get_nodes()[ph_list2[0].id()]:
+        nodes2.append(str(i))
+    nodes3 = []
+    for i in ph_list3[0].get_nodes()[ph_list3[0].id()]:
+        nodes3.append(str(i))
+    assert nodes2.sort() == nodes3.sort()
 
     phred_copy = pickle.loads(pickle.dumps(phred))
     assert str(phred.get_nodes()) == str(phred_copy.get_nodes())
