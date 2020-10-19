@@ -424,6 +424,13 @@ public:
   \param d is the vector of data to define as inputs
   */
   void add_many_inputs(const vector<ProcessingHistory*>& d);
+
+  /*! \brief Merge the history nodes from another. 
+
+  \param data_to_add is the ProcessingHistory of the data object to be
+    merged.
+  */
+  void merge(const ProcessingHistory& data_to_add);
   /*! \brief Method to use with a spark reduce algorithm.
 
   A reduce operator in spark utilizes a binary function where two inputs

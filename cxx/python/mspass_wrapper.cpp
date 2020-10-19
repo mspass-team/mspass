@@ -1299,8 +1299,9 @@ PYBIND11_MODULE(ccore,m)
       py::arg("type"),
       py::arg("newinput")
       )
-    .def("clean_accumulate_uuids",&mspass::ProcessingHistory::clean_accumulate_uuids,
-      "Clean up possible inconsistent uuids after running a reduce operator"
+    .def("_merge",&mspass::ProcessingHistory::merge,
+      "Merge the history nodes from another",
+      py::arg("newinput")
       )
     .def("new_map",py::overload_cast<const std::string,const std::string,
       const mspass::AtomicType,const mspass::ProcessingStatus>

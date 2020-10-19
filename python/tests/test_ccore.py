@@ -498,40 +498,6 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[2])
     ph_list3[3].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[1])
     ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[3])
-    ph_list2[0].clean_accumulate_uuids()
-    ph_list3[0].clean_accumulate_uuids()
-    assert len(ph_list2[0].get_nodes()) == 5
-    assert len(ph_list3[0].get_nodes()) == 5
-    nodes2 = {}
-    for k,v in ph_list2[0].get_nodes().items():
-        if k not in ph_list2[0].id():
-            nodes2[k] = str(v)
-    nodes3 = {}
-    for k,v in ph_list3[0].get_nodes().items():
-        if k not in ph_list3[0].id():
-            nodes3[k] = str(v)
-    assert nodes2 == nodes3
-    nodes2 = []
-    for i in ph_list2[0].get_nodes()[ph_list2[0].id()]:
-        nodes2.append(str(i))
-    nodes3 = []
-    for i in ph_list3[0].get_nodes()[ph_list3[0].id()]:
-        nodes3.append(str(i))
-    assert nodes2.sort() == nodes3.sort()
-
-    # test when algorithm name and id collides
-    ph_list2 = copy.deepcopy(ph_list)
-    ph_list3 = copy.deepcopy(ph_list)
-    # a stack in order
-    ph_list2[0].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list2[1])
-    ph_list2[0].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list2[2])
-    ph_list2[0].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list2[3])
-    # a stack out of order
-    ph_list3[0].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list3[2])
-    ph_list3[3].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list3[1])
-    ph_list3[0].accumulate("onetoone", "0", AtomicType.SEISMOGRAM, ph_list3[3])
-    ph_list2[0].clean_accumulate_uuids()
-    ph_list3[0].clean_accumulate_uuids()
     assert len(ph_list2[0].get_nodes()) == 5
     assert len(ph_list3[0].get_nodes()) == 5
     nodes2 = {}
