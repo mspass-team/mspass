@@ -3,6 +3,7 @@
 #include <list>
 #include <algorithm>
 #include <sstream>
+#include <boost/algorithm/string/predicate.hpp>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ProcessingHistory.h"
 
@@ -483,7 +484,7 @@ void ProcessingHistory::accumulate(const string algin,const string algidin,
     this->set_jobid(newinput.jobid());
     this->set_jobname(newinput.jobname());
     algorithm=algin;
-    algid=algidin;
+    algid=algidin+".acc";
     current_status=ProcessingStatus::VOLATILE;
     current_stage=nd.stage+1;
     mytype=typ;
@@ -491,7 +492,7 @@ void ProcessingHistory::accumulate(const string algin,const string algidin,
   /* This is the condition for a left hand side that is not empty but not
   yet initialized.   We detect this condition by a mismatch in all the unique
   names and ids that mark the current process define this reduce operation*/
-  else if((this->algorithm != algin) || (this->algid != algidin)
+  else if((this->algorithm != algin) || (this->algid != algidin+".acc")
     || (this->jid  != newinput.jobid()) || (this->jnm != newinput.jobname()))
   {
     /* This is similar to the block above, but the key difference here is we
@@ -506,7 +507,7 @@ void ProcessingHistory::accumulate(const string algin,const string algidin,
     this->jid=newinput.jobid();
     this->jnm=newinput.jobname();
     this->algorithm=algin;
-    this->algid=algidin;
+    this->algid=algidin+".acc";
     this->current_status=ProcessingStatus::VOLATILE;
     this->current_stage=nd.stage+1;
     this->mytype=typ;
@@ -525,6 +526,8 @@ string ProcessingHistory::clean_accumulate_uuids()
   NodeData ndthis=this->current_nodedata();
   string alg(ndthis.algorithm);
   string algidtest(ndthis.algid);
+  if(!boost::algorithm::ends_with(algidtest, ".acc")) return ndthis.uuid;
+  this->algid.resize(this->algid.size() - 4);
   /* The algorithm here finds all entries for which algorithm is alg and
   algid matches aldid.  We build a list of uuids (keys) linked to that unique
   algorithm.  We then use the id in ndthis as the master*/
