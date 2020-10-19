@@ -15,12 +15,11 @@ from mspasspy.io.converter import (TimeSeries2Trace,
 
 from mspasspy.ccore import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, MsPASSError
 import mspasspy.ccore as mspass
-import mspasspy.util.logging_helper as logging_helper
+from mspasspy.util import logging_helper
 
 @decorator
 def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False,
                         inplace_return=False, **kwargs):
-
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
         raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
 
@@ -42,10 +41,11 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
         else:
             logging_helper.ensemble_error(data, algname, err, mspass.ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if isinstance(data, (Seismogram,TimeSeries)):
+        if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(algname, ex.message, ex.severity)
         else:
             logging_helper.ensemble_error(data, algname, ex.message, ex.severity)
+
 
 @decorator
 def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
@@ -85,11 +85,12 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
         else:
             logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
 
+
 def is_input_dead(*args, **kwargs):
     """
     A helper method to see if any mspass objects in the input parameters are dead. If one is dead,
     we should keep silent, i.e. no longer perform any further operations on this dead mspass object.
-    Note for an ensemble object, only if all the objects of it are dead, we see them as dead,
+    Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,
     otherwise they are still alive.
     :param args: any parameters.
     :param kwargs: any key-word parameters.
@@ -250,7 +251,7 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
     if is_input_dead(*args, **kwargs):
         return
     converted_args = []
-    converted_kwargs= {}
+    converted_kwargs = {}
     converted_args_ids = []
     converted_kwargs_keys = []
     converted = False
@@ -280,4 +281,15 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
             kwargs[k].member = seis_e.member
             # for key in seis_e.keys():
             #     kwargs[k][key] = seis_e[key]
+    return res
+
+# wrapper is just an example, if a user wants some specific function, they can refer to the implementation here.
+@decorator
+def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    algname = func.__name__
+    if dryrun:
+        return "OK"
+    res = func(data1, data2, **kwargs)
+    if preserve_history:
+        logging_helper.reduce(data1, data2, algname, instance)
     return res
