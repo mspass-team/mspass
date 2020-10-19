@@ -18,7 +18,8 @@ import mspasspy.ccore as mspass
 import mspasspy.util.logging_helper as logging_helper
 
 @decorator
-def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False,
+                        inplace_return=False, **kwargs):
 
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
         raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
@@ -32,6 +33,8 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
         res = func(data, *args, **kwargs)
         if preserve_history:
             logging_helper.info(data, algname, instance)
+        if res is None and inplace_return:
+            return data
         return res
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
