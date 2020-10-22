@@ -4,6 +4,7 @@ Tools for connecting to MongoDB.
 """
 import math
 import os
+import copy
 import pickle
 import struct
 import sys
@@ -21,7 +22,7 @@ from mspasspy.ccore import (BasicTimeSeries,
                             MetadataDefinitions,
                             ErrorLogger,
                             ErrorSeverity)
-from mspasspy.io.converter import dict2Metadata, Metadata2dict
+#from mspasspy.io.converter import dict2Metadata, Metadata2dict
 
 from obspy import Inventory
 from obspy import UTCDateTime
@@ -79,7 +80,13 @@ class Database(pymongo.database.Database):
     A MongoDB database handler.
 
     This is a wrapper around the :class:`~pymongo.database.Database` with
-    methods added to handle MsPASS data.
+    methods added to handle MsPASS data.  The one and only constructor 
+    uses a database handle normally created with a variant of this pair 
+    of commands:
+        client=MongoClient()
+        db=client['databasename']
+    where databasename is variable and the name of the database you 
+    wish to access with this handle.
     """
     def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
         """
@@ -1068,20 +1075,23 @@ class Database(pymongo.database.Database):
         Tests if dict content of record_to_test is
         in the site collection.  Inverted logic in one sense
         as it returns true when the record is not yet in
-        the database.  Uses key of net,sta,loc,site_starttime
-        and site_endtime.  All tests are simple equality.
+        the database.  Uses key of net,sta,loc,starttime
+        and endtime.  All tests are simple equality.
         Should be ok for times as stationxml uses nearest
         day as in css3.0.
+        
+        originally tried to do the time interval tests with a 
+        query, but found it was a bit cumbersone to say the least.
+        Because this particular query is never expected to return 
+        a large number of documents we resort to a linear 
+        search through all matches on net,sta,loc rather than 
+        using a confusing and ugly query construct. 
         """
         dbsite = self.site
         queryrecord={}
         queryrecord['net']=record_to_test['net']
         queryrecord['sta']=record_to_test['sta']
         queryrecord['loc']=record_to_test['loc']
-        #queryrecord['site_elev']=record_to_test['site_elev']
-        #queryrecord['site_edepth']=record_to_test['site_edepth']
-        queryrecord['site_starttime']=record_to_test['site_starttime']
-        queryrecord['site_endtime']=record_to_test['site_endtime']
         matches=dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
@@ -1090,24 +1100,96 @@ class Database(pymongo.database.Database):
         if(nrec<=0):
             return True
         else:
-            return False
-
-    def save_inventory(self, inv, firstid=-1, verbose=False):
+            # Now do the linear search on time for a match
+            st0=record_to_test['starttime']
+            et0=record_to_test['endtime']
+            time_fudge_factor=10.0
+            stp=st0+time_fudge_factor
+            stm=st0-time_fudge_factor
+            etp=et0+time_fudge_factor
+            etm=et0-time_fudge_factor
+            for x in matches:
+                sttest=x['starttime']
+                ettest=x['endtime']
+                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                    return False
+            return True
+    def _channel_is_not_in_db(self, record_to_test):
+        """
+        Small helper functoin for save_inventory.
+        Tests if dict content of record_to_test is
+        in the site collection.  Inverted logic in one sense
+        as it returns true when the record is not yet in
+        the database.  Uses key of net,sta,loc,starttime
+        and endtime.  All tests are simple equality.
+        Should be ok for times as stationxml uses nearest
+        day as in css3.0.
+        """
+        dbchannels = self.channels
+        queryrecord={}
+        queryrecord['net']=record_to_test['net']
+        queryrecord['sta']=record_to_test['sta']
+        queryrecord['loc']=record_to_test['loc']
+        queryrecord['chan']=record_to_test['chan']
+        matches=dbchannels.find(queryrecord)
+        # this returns a warning that count is depricated but
+        # I'm getting confusing results from google search on the
+        # topic so will use this for now
+        nrec=matches.count()
+        if(nrec<=0):
+            return True
+        else:
+            # Now do the linear search on time for a match
+            st0=record_to_test['starttime']
+            et0=record_to_test['endtime']
+            time_fudge_factor=10.0
+            stp=st0+time_fudge_factor
+            stm=st0-time_fudge_factor
+            etp=et0+time_fudge_factor
+            etm=et0-time_fudge_factor
+            for x in matches:
+                sttest=x['starttime']
+                ettest=x['endtime']
+                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                    return False
+            return True
+    def save_inventory(self, inv,firstid=-1, verbose=False):
         """
         Saves contents of all components of an obspy inventory
-        object to documents in the site collection.   No checking
-        for duplicates is preformed so every component of the
-        input inventory will generate a new document in collection.
-        The design depends on the using a some other mechanism to
-        sort out pure duplicates from legimate station definitions
-        to handle issues like orientation changes of components,
-        gain changes, etc.   We emphasize this point because this
-        function should be used with care for large data sets.
-        Careless application to the output of buld downloads
-        with obspy using web services could generate large numbers
-        of unnecessary duplicates.   Use this function only when
-        the inventory object(s) to be saved do not have excessive
-        numbers of duplicates.
+        object to documents in the site and channels collections.  
+        The site collection is sufficient of Seismogram objects but 
+        TimeSeries data will often want to be connected to the 
+        channels collection.   The algorithm used will not add 
+        duplicates based on the following keys:
+        
+        For site:
+            net
+            sta
+            chan
+            loc
+            starttime::endtime - this check is done cautiously with 
+              a 10 s fudge factor to avoid the issue of floating point 
+              equal tests.   Probably overly paranoid since these 
+              fields are normally rounded to a time at the beginning 
+              of a utc day, but small cost to pay for stabilty because
+              this function is not expected to be run millions of times
+              on a huge collection.
+            
+        for channels:
+            net
+            sta
+            chan
+            loc
+            starttime::endtime - same approach as for site with same 
+               issues - note especially 10 s fudge factor.   This is
+               necessary because channel metadata can change more 
+               frequently than site metadata (e.g. with a sensor 
+               orientation or sensor swap)
+              
+        Finally note the site collection contains full response data 
+        that can be obtained by extracting the data with the key 
+        "serialized_inventory" and running pickle loads on the returned 
+        string.  
 
         :param inv: is the obspy Inventory object of station data to save.
         :param firstid: Set the initial value for site_id internal
@@ -1118,10 +1200,14 @@ class Database(pymongo.database.Database):
         needed.  If the site collection is empty and firstid
             is negative the first id will be set to one.
         :verbose:  print informational lines if true.  If false
-        only informs user when a duplicate is dropped.
+        works silently)
 
-        :return:  integer giving the number of documents saved.
-        :rtype: integer
+        :return:  tuple with
+          0 - integer number of site documents saved
+          1 -integer number of channels documents saved
+          2 - number of distinct site (net,sta,loc) items processed
+          3 - number of distinct channel items processed
+        :rtype: tuple
         """
         # This constant is used below to set endtime to a time
         # in the far future if it is null
@@ -1129,18 +1215,29 @@ class Database(pymongo.database.Database):
         # site is a frozen name for the collection here.  Perhaps
         # should be a variable with a default
         dbcol = self.site
+        dbchannels = self.channels
+        # This handles automatic handling of ids - the default
         if(firstid<0):
             x=dbcol.find_one(sort=[("site_id", pymongo.DESCENDING)])
             if x:
                 site_id=x['site_id']+1
             else:
                 site_id=1   # default for an empty db
+            # repeat for channels
+            x=dbchannels.find_one(sort=[("chan_id",pymongo.DESCENDING)])
+            if x:
+                chan_id=x['chan_id']+1
+            else:
+                chan_id=1
         else:
             site_id=firstid
+            chan_id=firstid
         if verbose:
             print("First site_id of this run = ",site_id)
-        nsaved=0
-        nprocessed=0
+        n_site_saved=0
+        n_chan_saved=0
+        n_site_processed=0
+        n_chan_processed=0
         for x in inv:
             # Inventory object I got from webservice download
             # makes the sta variable here a net:sta combination
@@ -1170,7 +1267,7 @@ class Database(pymongo.database.Database):
             # obspy sets as a depth attribute.  This little
             # function returns a dict keyed by loc with edepths
             chans=y[0].channels
-            edepths = _extract_edepths(chans)
+            edepths = self._extract_edepths(chans)
             # Assume loc code of 0 is same as rest
             #loc=_extract_loc_code(chanlist[0])
             rec={}
@@ -1178,52 +1275,116 @@ class Database(pymongo.database.Database):
             all_locs=edepths.keys()
             for loc in all_locs:
                 rec['loc']=loc
-                rec['site_edepth']=edepths[loc]
+                rec['edepth']=edepths[loc]
                 rec['net']=net
                 rec['sta']=sta
-                rec['site_lat']=latitude
-                rec['site_lon']=longitude
+                rec['lat']=latitude
+                rec['lon']=longitude
                 # This is MongoDBs way to set a geographic
                 # point - allows spatial queries.  Note longitude
                 # must be first of the pair
                 rec['coords']=[longitude,latitude]
-                rec['site_elev']=elevation
-                rec['site_starttime']=starttime.timestamp
-                rec['site_endtime']=endtime.timestamp
+                rec['elev']=elevation
+                rec['starttime']=starttime.timestamp
+                rec['endtime']=endtime.timestamp
             # needed and currently lacking - a way to get unique
             # integer site_id - for now do it the easy way
                 rec['site_id']=site_id
                 rec['serialized_inventory']=picklestr
                 if self._site_is_not_in_db(rec):
                     dbcol.insert_one(rec)
-                    nsaved+=1
+                    n_site_saved+=1
                     if verbose:
-                        print('net:sta:loc=',net,":",sta,":",loc,
-                            " added to db")
+                        print("net:sta:loc=",net,":",sta,":",loc,
+                            "for time span ",starttime," to ",endtime,
+                            " added to site collection")
                 else:
                     if verbose:
-                        print('net:sta:loc=',net,":",sta,":",loc,
-                            " is already in db - ignored")
-                nprocessed += 1
+                        print("net:sta:loc=",net,":",sta,":",loc,
+                            "for time span ",starttime," to ",endtime,
+                            " is already in site collection - ignored")
+                n_site_processed += 1
                 site_id += 1
+                # done with site now handle channels
+                # Because many features are shared we can copy rec 
+                # note this has to be a deep copy 
+                chanrec=copy.deepcopy(rec)
+                # We don't want this baggage in the channel documents
+                # keep them only in the site collection
+                del chanrec['serialized_inventory']
+                for chan in chans:
+                    chanrec['chan']=chan.code
+                    chanrec['vang']=chan.dip
+                    chanrec['hang']=chan.azimuth
+                    chanrec['edepth']=chan.depth
+                    st=chan.start_date
+                    et=chan.end_date
+                    # We have to handle nulls (common) correctly here too
+                    if st is None:
+                        if verbose:
+                            print('chan ',chan.code,' for loc code ',chanrec['loc'],
+                                  ' does not have starttime defined.  Set to epoch 0')
+                        st=UTCDateTime(0.0) # epoch 0 time
+                    if et is None:
+                        if verbose:
+                            print('chan ',chan.code,' for loc code ',chanrec['loc'],
+                                  ' has no endtime defined.  Set to distant future')
+                        et=DISTANTFUTURE
+                    chanrec['starttime']=st.timestamp
+                    chanrec['endtime']=et.timestamp
+                    chanrec['chan_id']=chan_id
+                    n_chan_processed += 1
+                    if(self._channel_is_not_in_db(chanrec)):
+                        dbchannels.insert_one(chanrec)
+                        # insert_one has an obnoxious behavior in that it 
+                        # inserts the ObjectId in chanrec.  In this loop 
+                        # we reuse chanrec sow we have to delete the id file
+                        del chanrec['_id']
+                        n_chan_saved += 1
+                        chan_id += 1
+                        if verbose:
+                            print("net:sta:loc:chan=",
+                              net,":",sta,":",loc,":",chan.code,
+                              "for time span ",st," to ",et,
+                              " added to channels collection")
+                    else:
+                        if verbose:
+                            print('net:sta:loc:chan=',
+                              net,":",sta,":",loc,":",chan.code,
+                              "for time span ",st," to ",et,
+                              " already in channels collection - ignored")
+                
         # Tried this to create a geospatial index.   Failing
         # in later debugging for unknown reason.   Decided it
         # should be a done externally anyway as we don't use
         # that feature now - thought of doing so but realized
         # was unnecessary baggage
         #dbcol.create_index(["coords",GEOSPHERE])
-        return [nsaved,nprocessed]
+        #
+        # For now we will always print this summary information
+        # For expected use it would be essential information 
+        #
+        print("Database.save_inventory processing summary:")
+        print("Number of site records processed=",n_site_processed)
+        print("number of site records saved=",n_site_saved)
+        print("number of channels records processed=",n_chan_processed)
+        print("number of channels records saved=",n_chan_saved)
+        return tuple([n_site_saved,n_chan_saved,n_site_processed,n_chan_processed])
 
-    def load_stations(self, net, sta, loc='NONE', time=-1.0):
+    def load_seed_station(self, net, sta, loc='NONE', time=-1.0):
         """
         The site collection is assumed to have a one to one
-        mapping of net:sta:loc:site_starttime - site_endtime.
+        mapping of net:sta:loc:starttime - endtime.
         This method uses a restricted query to match the
         keys given and returns a dict of coordinate data;
-        site_lat, site_lon, site_elev, site_edepth.
+        lat, lon, elev, edepth.
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.
         Returns None if there is no match.
+        
+        The seed modifier in the name is to emphasize this method is
+        for data originating as the SEED format that use net:sta:loc:chan 
+        as the primary index.
 
         :param net:  network name to match
         :param sta:  station name to match
@@ -1231,7 +1392,7 @@ class Database(pymongo.database.Database):
         default ignores loc in query.
         :param time: epoch time for requested metadata
 
-        :return coordinate data:
+        :return: handle to query result
         :rtype:  MondoDB Cursor object of query result.
         """
         dbsite=self.site
@@ -1241,14 +1402,61 @@ class Database(pymongo.database.Database):
         if(loc!='NONE'):
             query['loc']=loc
         if(time>0.0):
-            query['site_starttime']={"$lt" : time}
-            query['site_endtime']={"$gt" : time}
+            query['starttime']={"$lt" : time}
+            query['endtime']={"$gt" : time}
         matchsize=dbsite.count_documents(query)
         if(matchsize==0):
             return None
         else:
             stations=dbsite.find(query)
+            if(matchsize>1):
+                print("load_seed_site (WARNING):  query=",query)
+                print("Returned ",matchsize," documents - should be exactly one")
             return stations
+    def load_seed_channel(self, net, sta, chan, loc='NONE', time=-1.0):
+        """
+        The channels collection is assumed to have a one to one
+        mapping of net:sta:loc:chan:starttime - endtime.
+        This method uses a restricted query to match the
+        keys given and returns a dict of the document contents 
+        associated with that key.  
+        The (optional) time arg is used for a range match to find
+        period between the site startime and endtime.  If not used
+        the first occurence will be returned (usually ill adivsed)
+        Returns None if there is no match.
+
+        :param net:  network name to match
+        :param sta:  station name to match
+        :param chan:  seed channel code to match
+        :param loc:   optional loc code to made (empty string ok and common)
+        default ignores loc in query.
+        :param time: epoch time for requested metadata
+
+        :return: handle to query return
+        :rtype:  MondoDB Cursor object of query result.
+        """
+        dbchannels=self.channels
+        query={}
+        query['net']=net
+        query['sta']=sta
+        if(loc=='NONE'):
+            query['loc']=""
+        else:
+            query['loc']=loc
+        query['chan']=chan
+        if(time>0.0):
+            query['starttime']={"$lt" : time}
+            query['endtime']={"$gt" : time}
+        matchsize=dbchannels.count_documents(query)
+        if(matchsize==0):
+            return None
+        else:
+            channel=dbchannels.find(query)
+            if(matchsize>1):
+                print("load_seed_channel (WARNING):  query=",query)
+                print("Returned ",matchsize," documents - should be exactly one")
+            return channel
+
 
     def load_inventory(self, net=None, sta=None, loc=None, time=None):
         """
@@ -1266,7 +1474,7 @@ class Database(pymongo.database.Database):
         :param loc:  loc code to select.  Can be a single unique
         location (e.g. '01') or a MongoDB expression query.
         :param time:   limit return to stations with
-        site_startime<time<site_endtime.  Input is assumed an
+        startime<time<endtime.  Input is assumed an
         epoch time NOT an obspy UTCDateTime. Use a conversion
         to epoch time if necessary.
         :return:  obspy Inventory of all stations matching the
@@ -1282,8 +1490,8 @@ class Database(pymongo.database.Database):
         if(loc!=None):
             query['loc']=loc
         if(time!=None):
-            query['site_starttime']={"$lt" : time}
-            query['site_endtime']={"$gt" : time}
+            query['starttime']={"$lt" : time}
+            query['endtime']={"$gt" : time}
         matchsize=dbsite.count_documents(query)
         result=Inventory()
         if(matchsize==0):
@@ -1334,7 +1542,7 @@ class Database(pymongo.database.Database):
         else:
             source_id=first_source_id
         if verbose:
-            print("First site_id of this run = ",site_id)
+            print("First site_id of this run = ",source_id)
         nevents=0
         for event in cat:
             # event variable in loop is an Event object from cat
