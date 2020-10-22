@@ -460,9 +460,73 @@ string ProcessingHistory::map_as_saved(const string alg,const string algid_in,
   return current_id;
 }
 
-void ProcessingHistory::accumulate(const string algin,const string algidin,
-    const AtomicType typ,const ProcessingHistory& newinput)
+/* Merge in the history nodes from another. */
+void ProcessingHistory::merge(const ProcessingHistory& data_to_add)
 {
+
+  if(data_to_add.is_empty())
+  {
+    stringstream ss;
+    ss<<"Data with uuid="<<data_to_add.id()<<" has an empty history chain"<<endl
+      << "At best this will leave ProcessingHistory incomplete"<<endl;
+    elog.log_error("ProcessingHistory::merge",ss.str(),
+      ErrorSeverity::Complaint);
+  }
+  else
+  {
+    multimap<string,NodeData>::iterator nptr;
+    multimap<string,NodeData> newhistory = data_to_add.get_nodes();
+    multimap<string,NodeData>::iterator nl,nu;
+    for(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)
+    {
+      string key(nptr->first);
+      /* if the data_to_add's key matches its current id, 
+      we merge all the nodes under the current id of *this. */
+      if(key == data_to_add.current_id)
+      {
+        this->nodes.insert(std::make_pair(this->current_id, nptr->second));
+      }
+      else if(this->nodes.count(key)>0)
+      {
+        nl=this->nodes.lower_bound(key);
+        nu=this->nodes.upper_bound(key);
+        for(auto ptr=nl;ptr!=nu;++ptr)
+        {
+          NodeData ndtest(ptr->second);
+          if(ndtest != (nptr->second))
+          {
+            this->nodes.insert(*nptr);
+          }
+        }
+      }
+      else
+      {
+        this->nodes.insert(*nptr);
+      }
+    }
+  }
+}
+
+void ProcessingHistory::accumulate(const string algin,const string algidin,
+    const AtomicType typ,const ProcessingHistory& ni)
+{
+  ProcessingHistory newinput(ni);
+  if((newinput.algorithm != algin) || (newinput.algid != algidin)
+    || (newinput.jid  != newinput.jobid()) || (newinput.jnm != newinput.jobname()))
+  {
+    NodeData nd;
+    nd=newinput.current_nodedata();
+    newinput.newid();
+    pair<string,NodeData> pn(newinput.current_id,nd);
+    newinput.nodes.insert(pn);
+    newinput.jid=newinput.jobid();
+    newinput.jnm=newinput.jobname();
+    newinput.algorithm=algin;
+    newinput.algid=algidin;
+    newinput.current_status=ProcessingStatus::VOLATILE;
+    newinput.current_stage=nd.stage+1;
+    newinput.mytype=typ;
+  }
   /* We have to detect an initialization condition without losing the
   stored history.   There are two conditions we need to handle.  First,
   if we create an empty container to hold the accmulator and put it on the
@@ -475,13 +539,13 @@ void ProcessingHistory::accumulate(const string algin,const string algidin,
   if(this->is_empty())
   {
     this->newid();
-    nodes=newinput.get_nodes();
+    nodes=ni.get_nodes();
     NodeData nd;
-    nd=newinput.current_nodedata();
+    nd=ni.current_nodedata();
     pair<string,NodeData> pn(current_id,nd);
     this->nodes.insert(pn);
-    this->set_jobid(newinput.jobid());
-    this->set_jobname(newinput.jobname());
+    this->set_jobid(ni.jobid());
+    this->set_jobname(ni.jobname());
     algorithm=algin;
     algid=algidin;
     current_status=ProcessingStatus::VOLATILE;
@@ -510,11 +574,11 @@ void ProcessingHistory::accumulate(const string algin,const string algidin,
     this->current_status=ProcessingStatus::VOLATILE;
     this->current_stage=nd.stage+1;
     this->mytype=typ;
-    this->add_one_input(newinput);
+    this->merge(newinput);
   }
   else
   {
-    this->add_one_input(newinput);
+    this->merge(newinput);
   }
 }
 
