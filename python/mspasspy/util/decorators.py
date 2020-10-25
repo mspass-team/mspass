@@ -17,6 +17,7 @@ from mspasspy.ccore import Seismogram, TimeSeries, TimeSeriesEnsemble, Seismogra
 import mspasspy.ccore as mspass
 from mspasspy.util import logging_helper
 
+
 @decorator
 def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False,
                         inplace_return=False, **kwargs):
@@ -41,6 +42,8 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
         else:
             logging_helper.ensemble_error(data, algname, err, mspass.ErrorSeverity.Invalid)
     except MsPASSError as ex:
+        if ex.severity == mspass.ErrorSeverity.Fatal:
+            raise
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(algname, ex.message, ex.severity)
         else:
@@ -76,6 +79,8 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
         else:
             logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
     except MsPASSError as ex:
+        if ex.severity == mspass.ErrorSeverity.Fatal:
+            raise
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(algname, ex.message, ex.severity)
         else:
@@ -283,13 +288,38 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
             #     kwargs[k][key] = seis_e[key]
     return res
 
+
 # wrapper is just an example, if a user wants some specific function, they can refer to the implementation here.
 @decorator
-def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False,
+                               **kwargs):
     algname = func.__name__
     if dryrun:
         return "OK"
-    res = func(data1, data2, **kwargs)
-    if preserve_history:
-        logging_helper.reduce(data1, data2, algname, instance)
-    return res
+    try:
+        if isinstance(data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+            if type(data1) != type(data2):
+                raise TypeError("data2 has a different type as data1")
+        else:
+            raise TypeError("only mspass objects are supported in reduce wrapped methods")
+        res = func(data1, data2, *args, **kwargs)
+        if preserve_history:
+            logging_helper.reduce(data1, data2, algname, instance)
+        return res
+    except RuntimeError as err:
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+            data2.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+        else:
+            logging_helper.ensemble_error(data1, algname, err, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
+    except MsPASSError as ex:
+        if ex.severity != mspass.ErrorSeverity.Informational or \
+                ex.severity != mspass.ErrorSeverity.Debug:
+            raise
+        if isinstance(data1, (Seismogram, TimeSeries)):
+            data1.elog.log_error(algname, ex.message, ex.severity)
+            data2.elog.log_error(algname, ex.message, ex.severity)
+        else:
+            logging_helper.ensemble_error(data1, algname, ex.message, ex.severity)
+            logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)

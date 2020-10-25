@@ -75,7 +75,19 @@ def ensemble_error(d, alg, message, err_severity=mspass.ErrorSeverity.Invalid):
 
 
 def reduce(data1, data2, algname, instance):
+    """
+    This function replicates the processing history of data2 onto data1, which is a common use case
+    in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,
+    the processing history will still be replicated.
+    :param data1: Mspass object
+    :param data2: Mspass object
+    :param algname: The name of the reduce algorithm that uses this helper function.
+    :param instance: The unique id of that user gives to the algorithm.
+    :return: None
+    """
     if isinstance(data1, (mspass.TimeSeries, mspass.Seismogram)):
+        if type(data1) != type(data2):
+            raise TypeError("logging_helper.reduce: data2 has a different type as data1")
         if data1.live:
             data1.accumulate(algname,
                              instance,
@@ -84,6 +96,8 @@ def reduce(data1, data2, algname, instance):
                              data2)
 
     elif isinstance(data1, (mspass.TimeSeriesEnsemble, mspass.SeismogramEnsemble)):
+        if type(data1) != type(data2):
+            raise TypeError("logging_helper.reduce: data2 has a different type as data1")
         if len(data1.member) != len(data2.member):
             raise IndexError("logging_helper.reduce: data1 and data2 have different sizes of member")
         for i in range(len(data1.member)):
@@ -94,5 +108,5 @@ def reduce(data1, data2, algname, instance):
                                     else mspass.AtomicType.SEISMOGRAM,
                                  data2.member[i])
     else:
-        print('Coding error - logging.info was passed an unexpected data type of', type(data1))
+        print('Coding error - logging.reduce was passed an unexpected data type of', type(data1))
         print('Not treated as fatal but a bug fix is needed')
