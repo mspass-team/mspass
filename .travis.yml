@@ -88,6 +88,7 @@ jobs:
         - pip install numpy 
         - pip install obspy
         - pip install -r docs/requirements.txt
+        - pip install "dask[complete]"
       install:
         - pip3 install ./ -vvv
       script:
@@ -125,6 +126,7 @@ jobs:
         - pip install mongomock
         - pip install pytest-cov
         - pip install codecov
+        - pip install "dask[complete]"
       install:
         - python setup.py build --debug install
       script:
