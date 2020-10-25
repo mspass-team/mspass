@@ -131,15 +131,15 @@ jobs:
         - pip install "dask[complete]"
         - pip install pyspark
         - pip install pytest-spark
+        - mkdir -p ./spark
+        - wget -q -O ./spark/spark.tgz https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar xzf ./spark/spark.tgz -C ./spark/
+        - rm ./spark/spark.tgz
+        - export SPARK_HOME=$(pwd)/spark/spark-3.0.0-bin-hadoop2.7
+        - export PATH=$PATH:$(pwd)/spark/spark-3.0.0-bin-hadoop2.7/bin
       install:
         - python setup.py build --debug install
       script:
-        - mkdir -p ./spark
-        - wget -q -O ./spark/spark.tgz https://archive.apache.org/dist/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
-        - tar xzf ./spark/spark.tgz -C ./spark/
-        - rm ./spark/spark.tgz
-        - export SPARK_HOME=$(pwd)/spark/spark-2.4.7-bin-hadoop2.7
-        - export PATH=$PATH:$(pwd)/spark/spark-2.4.7-bin-hadoop2.7/bin
         - export MSPASS_HOME=$(pwd)
         - pytest --cov=mspasspy python/tests/
         - make test -C build/temp.*/
