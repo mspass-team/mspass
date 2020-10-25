@@ -129,19 +129,19 @@ jobs:
         - pip install pytest-cov
         - pip install codecov
         - pip install "dask[complete]"
-        - mkdir -p /opt
-        - wget -q -O /opt/spark.tgz http://www.gtlib.gatech.edu/pub/apache/spark/spark-2.4.3/spark-2.4.3-bin-hadoop2.7.tgz
-        - tar xzf /opt/spark.tgz -C /opt/
-        - rm /opt/spark.tgz
-        - export SPARK_HOME=/opt/spark-2.4.3-bin-hadoop2.7
-        - export PATH=$PATH:/opt/spark-2.4.3-bin-hadoop2.7/bin
         - pip install pyspark
         - pip install pytest-spark
       install:
         - python setup.py build --debug install
       script:
+        - mkdir -p ./spark
+        - wget -q -O ./spark/spark.tgz https://archive.apache.org/dist/spark/spark-2.4.7/spark-2.4.7-bin-hadoop2.7.tgz
+        - tar xzf ./spark/spark.tgz -C ./spark/
+        - rm ./spark/spark.tgz
+        - export SPARK_HOME=$(pwd)/spark/spark-2.4.7-bin-hadoop2.7
+        - export PATH=$PATH:$(pwd)/spark/spark-2.4.7-bin-hadoop2.7/bin
         - export MSPASS_HOME=$(pwd)
-        - pytest --spark_home=$SPARK_HOME --cov=mspasspy python/tests/
+        - pytest --cov=mspasspy python/tests/
         - make test -C build/temp.*/
       # - gcov -b -n build/temp.*/python/CMakeFiles/ccore.dir/mspass_wrapper.gcno > /dev/null
       after_success:
