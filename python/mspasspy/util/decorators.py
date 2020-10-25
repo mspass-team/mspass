@@ -314,7 +314,7 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
             logging_helper.ensemble_error(data1, algname, err, mspass.ErrorSeverity.Invalid)
             logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if ex.severity != mspass.ErrorSeverity.Informational or \
+        if ex.severity != mspass.ErrorSeverity.Informational and \
                 ex.severity != mspass.ErrorSeverity.Debug:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):

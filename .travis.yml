@@ -90,6 +90,7 @@ jobs:
         - pip install -r docs/requirements.txt
         - pip install "dask[complete]"
         - pip install pyspark
+        - pip install pytest-spark
       install:
         - pip3 install ./ -vvv
       script:
@@ -129,11 +130,12 @@ jobs:
         - pip install codecov
         - pip install "dask[complete]"
         - pip install pyspark
+        - pip install pytest-spark
       install:
         - python setup.py build --debug install
       script:
         - export MSPASS_HOME=$(pwd)
-        - pytest --cov=mspasspy python/tests/
+        - pytest --spark_home=/opt/spark --cov=mspasspy python/tests/
         - make test -C build/temp.*/
       # - gcov -b -n build/temp.*/python/CMakeFiles/ccore.dir/mspass_wrapper.gcno > /dev/null
       after_success:
