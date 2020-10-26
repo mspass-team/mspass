@@ -88,9 +88,6 @@ jobs:
         - pip install numpy 
         - pip install obspy
         - pip install -r docs/requirements.txt
-        - pip install "dask[complete]"
-        - pip install pyspark
-        - pip install pytest-spark
       install:
         - pip3 install ./ -vvv
       script:
