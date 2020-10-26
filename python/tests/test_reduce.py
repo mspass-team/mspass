@@ -101,11 +101,7 @@ def dask_reduce(input):
     return res.compute()
 
 
-def spark_reduce(input):
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext(conf=conf)
+def spark_reduce(input, sc):
     data = sc.parallelize(input)
     zero = get_live_timeseries()
     zero.s = DoubleVector(np.zeros(255))
@@ -113,14 +109,14 @@ def spark_reduce(input):
     return res
 
 
-def test_reduce_dask_spark():
+def test_reduce_dask_spark(spark_context):
     findspark.init()
     l = [get_live_timeseries() for i in range(5)]
     res = np.zeros(255)
     for i in range(5):
         for j in range(255):
             res[j] = (res[j] + l[i].s[j])
-    spark_res = spark_reduce(l)
+    spark_res = spark_reduce(l, spark_context)
     dask_res = dask_reduce(l)
     assert all(a == b for a, b in zip(res, dask_res.s))
     assert all(a == b for a, b in zip(res, spark_res.s))

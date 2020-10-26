@@ -129,14 +129,14 @@ jobs:
         - pip install pytest-cov
         - pip install codecov
         - pip install "dask[complete]"
+        - mkdir -p /opt
+        - wget -q -O /opt/spark.tgz https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        - tar xzf /opt/spark.tgz -C /opt/
+        - rm /opt/spark.tgz
+        - export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7
+        - export PATH=$PATH:/opt/spark-3.0.0-bin-hadoop2.7/bin
         - pip install pyspark
         - pip install pytest-spark
-        - mkdir -p ./spark
-        - wget -q -O ./spark/spark.tgz https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
-        - tar xzf ./spark/spark.tgz -C ./spark/
-        - rm ./spark/spark.tgz
-        - export SPARK_HOME=$(pwd)/spark/spark-3.0.0-bin-hadoop2.7
-        - export PATH=$PATH:$(pwd)/spark/spark-3.0.0-bin-hadoop2.7/bin
       install:
         - python setup.py build --debug install
       script:
