@@ -16,7 +16,9 @@ from decorators import (mspass_func_wrapper,
                         timeseries_as_trace,
                         seismogram_as_stream,
                         timeseries_ensemble_as_stream,
-                        seismogram_ensemble_as_stream)
+                        seismogram_ensemble_as_stream,
+                        mspass_reduce_func_wrapper)
+import logging_helper
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
@@ -293,7 +295,50 @@ def test_mspass_func_wrapper_multi():
     for i in range(3):
         assert seis_e.member[i].number_of_stages() == 1
 
+@mspass_reduce_func_wrapper
+def dummy_reduce_func(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    data1.s[0] = -1
 
+@mspass_reduce_func_wrapper
+def dummy_reduce_func_runtime(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    raise RuntimeError("test")
+
+@mspass_reduce_func_wrapper
+def dummy_reduce_func_mspasserror(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+    raise mspass.MsPASSError("test", mspass.ErrorSeverity.Fatal)
+
+def test_mspass_reduce_func_wrapper():
+    ts1 = get_live_timeseries()
+    ts1.s[0] = 1
+    ts2 = get_live_timeseries()
+    logging_helper.info(ts2, 'dummy_func', '1')
+    logging_helper.info(ts2, 'dummy_func_2', '2')
+    assert len(ts1.get_nodes()) == 0
+    dummy_reduce_func(ts1, ts2, preserve_history=True, instance='3')
+    assert ts1.s[0] == -1
+    assert len(ts1.get_nodes()) == 3
+
+    with pytest.raises(TypeError) as err:
+        dummy_reduce_func([0], [1], preserve_history=True, instance='3')
+    assert str(err.value) == "only mspass objects are supported in reduce wrapped methods"
+
+    with pytest.raises(TypeError) as err:
+        dummy_reduce_func(ts1, get_live_seismogram(), preserve_history=True, instance='3')
+    assert str(err.value) == "data2 has a different type as data1"
+
+    ts1 = get_live_timeseries()
+    ts2 = get_live_timeseries()
+    assert len(ts1.elog.get_error_log()) == 0
+    dummy_reduce_func_runtime(ts1, ts2, preserve_history=True, instance='3')
+    assert len(ts1.elog.get_error_log()) == 1
+    assert len(ts2.elog.get_error_log()) == 1
+
+    ts1 = get_live_timeseries()
+    ts2 = get_live_timeseries()
+    assert len(ts1.elog.get_error_log()) == 0
+    with pytest.raises(mspass.MsPASSError) as err:
+        dummy_reduce_func_mspasserror(ts1, ts2, preserve_history=True, instance='3')
+    assert str(err.value) == "test"
 
 if __name__ == "__main__":
-    test_all_decorators()
+    test_mspass_reduce_func_wrapper()
