@@ -13,6 +13,7 @@
 #include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
+namespace utility{       
 //==================================================================
 /*! \brief special convenience class for matrix indexing errors.
  *
@@ -38,16 +39,16 @@ Basic constructor for this error object.
 /*! Writes the error message to standard error.
 */
         virtual void log_error()
-	{ cerr << "Matrix index (" << row << "," << column 
-		<< ")is outside range = " << nrr << "," << ncc << endl;};
+	{ std::cerr << "Matrix index (" << row << "," << column 
+		<< ")is outside range = " << nrr << "," << ncc << std::endl;};
         /*! std::exception standard interface. */
         virtual const char* what() const throw()
         {
-            stringstream ss(message);
-            ss << "dmatrix object:  indexing error"<<endl
+            std::stringstream ss(message);
+            ss << "dmatrix object:  indexing error"<<std::endl
                 << "Matrix index (" << row << "," << column
-                << ")is outside range = " << nrr << "," << ncc << endl;
-            string result(ss.str());
+                << ")is outside range = " << nrr << "," << ncc << std::endl;
+            std::string result(ss.str());
             return result.c_str();
         };
         /* necessary baggage for some compilers - empty destructor */
@@ -78,20 +79,20 @@ Basic constructor for this error object.
 /*! Writes the error message to standard error.*/
 	virtual void log_error()
 	{
-            cerr << "dmatrix class:   size mismatch error in binary operator"<<endl
+            std::cerr << "dmatrix class:   size mismatch error in binary operator"<<std::endl
                 << "matrix on left is "<< nrow1 << "X" << ncol1
 		<< "while matrix on right is "
-		<< nrow2 << "X" << ncol2 << endl;
+		<< nrow2 << "X" << ncol2 << std::endl;
 	};
         /*! std::exception standard interface. */
         virtual const char* what() const throw()
         {
-            stringstream ss(message);
-            ss << "dmatrix class:   size mismatch error in binary operator"<<endl
+            std::stringstream ss(message);
+            ss << "dmatrix class:   size mismatch error in binary operator"<<std::endl
                 << "matrix on left is "<< nrow1 << "X" << ncol1
 		<< "while matrix on right is "
-		<< nrow2 << "X" << ncol2 << endl;
-            string result(ss.str());
+		<< nrow2 << "X" << ncol2 << std::endl;
+            std::string result(ss.str());
             return result.c_str();
         };
         /* necessary baggage for some compilers - empty destructor */
@@ -245,7 +246,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \param os is the std::ostream to contain data.
   \param A is the data to be written
   */
-  friend ostream& operator<<(ostream& os, dmatrix& A);
+  friend std::ostream& operator<<(std::ostream& os, dmatrix& A);
   /*! Return number of rows in this matrix. */
   size_t rows() const;
   /*! Return number of columns in this matrix. */
@@ -255,11 +256,11 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   This function returns an std::vector with 2 elements with size information.
   first component is rows, second is columns.  This simulates
   the matlab size function. */
-  vector<size_t> size() const;
+  std::vector<size_t> size() const;
   /*! Initialize a matrix to all zeros. */
   void zero();
 protected:
-   vector<double> ary;   // initial size of container 0
+   std::vector<double> ary;   // initial size of container 0
    size_t length;
    size_t nrr, ncc;
 private:
@@ -304,6 +305,7 @@ public:
         */
         friend dvector operator*(const dmatrix &A, const dvector &x);
 };
-	
+
+} // end utility namespace	
 } // end namespace mspass
 #endif

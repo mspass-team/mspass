@@ -1,7 +1,9 @@
 #include "mspass/seismic/TimeSeries.h"
-using namespace mspass;
-namespace mspass
+namespace mspass::seismic
 {
+using namespace std;
+using namespace mspass::utility;
+
 TimeSeries::TimeSeries(const CoreTimeSeries& d, const std::string alg)
     : CoreTimeSeries(d),ProcessingHistory()
 {

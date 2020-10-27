@@ -1,10 +1,12 @@
 #include "mspass/utility/ErrorLogger.h"
-using namespace mspass;
-namespace mspass
+using namespace mspass::utility;
+namespace mspass::utility
 {
+using namespace std;
+
 /* First code for the LogData class that are too long for inline */
 LogData::LogData(const int jid, const std::string alg,
-  const mspass::MsPASSError& merr)
+  const mspass::utility::MsPASSError& merr)
 {
   job_id=jid;
   p_id=getpid();
@@ -12,7 +14,7 @@ LogData::LogData(const int jid, const std::string alg,
   message=merr.what();
   badness=merr.severity();
 }
-LogData::LogData(const int jid, const std::string alg, const std::string msg, const mspass::ErrorSeverity lvl)
+LogData::LogData(const int jid, const std::string alg, const std::string msg, const mspass::utility::ErrorSeverity lvl)
 {
   job_id=jid;
   p_id=getpid();
@@ -65,14 +67,14 @@ ErrorLogger& ErrorLogger::operator=(const ErrorLogger& parent)
   }
   return *this;
 }
-int ErrorLogger::log_error(const mspass::MsPASSError& merr)
+int ErrorLogger::log_error(const mspass::utility::MsPASSError& merr)
 {
   LogData thislog(this->job_id,string("MsPASSError"),merr);
   allmessages.push_back(thislog);
   return allmessages.size();
 }
 int ErrorLogger::log_error(const std::string alg, const std::string mess,
-  const mspass::ErrorSeverity level=ErrorSeverity::Invalid)
+  const mspass::utility::ErrorSeverity level=ErrorSeverity::Invalid)
 {
   LogData thislog(this->job_id,alg,mess,level);
   allmessages.push_back(thislog);

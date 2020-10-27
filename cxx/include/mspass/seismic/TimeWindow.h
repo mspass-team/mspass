@@ -1,6 +1,6 @@
 #ifndef _TIMEWINDOW_H_
 #define _TIMEWINDOW_H_
-namespace mspass
+namespace mspass::seismic
 {
 /*!
 \brief Defines a time window.
@@ -73,5 +73,5 @@ public:
 	bool operator()(const TimeWindow ti1,const TimeWindow ti2) const
 	{return(ti1.end<ti2.start);};
 };
-}  // end mspass namespace declaration
+}  // end mspass::seismic namespace declaration
 #endif

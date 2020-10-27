@@ -1,9 +1,8 @@
 #include <float.h>
 #include <math.h>
 #include "mspass/utility/SphericalCoordinate.h"
-namespace mspass
+namespace mspass::utility
 {
-using namespace mspass;
 /* This routine takes a 3-d unit vector, nu, and converts it
 to a SphericalCoordinate structure which is returned.  The 
 input coordinates are assume to be standard, right handed

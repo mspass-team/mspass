@@ -2,8 +2,8 @@
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
-using namespace mspass;
-namespace mspass
+using namespace mspass::utility;
+namespace mspass::utility
 {
 MetadataList get_mdlist(const AntelopePf& m,const string tag)
 {
@@ -120,5 +120,5 @@ int  copy_selected_metadata(const Metadata& mdin, Metadata& mdout,
     }
     return count;
 }
-} // Termination of namespace SEISPP definitions
+} // Termination of namespace mspass::utility definitions
 

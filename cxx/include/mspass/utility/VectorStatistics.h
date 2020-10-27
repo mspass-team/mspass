@@ -3,7 +3,7 @@
 #include "mspass/utility/MsPASSError.h"
 namespace mspass
 {
-using namespace std;
+namespace utility{
 
 /*! \brief Generic object to compute common robust statistics from a vector container of data.
 
@@ -18,7 +18,7 @@ public:
 	\param din is vector container from which statistics are to be derived.  Currently
 	assume default sort is used.  Probably should have an optional order template parameter
 	for the container. */
-	VectorStatistics(vector<T> din);
+	VectorStatistics(std::vector<T> din);
 	/*!  Construct from a C style pointer to an array of T.*/
 	VectorStatistics(T *din,int n);
 	/*! Return median */
@@ -45,25 +45,25 @@ public:
 	Will throw a MsPASSError if n exceed the data length. */
 	T quantile(size_t n);
 private:
-	vector<T> d;
+	std::vector<T> d;
 };
 
-template <class T> VectorStatistics<T>::VectorStatistics(vector<T> din)
+template <class T> VectorStatistics<T>::VectorStatistics(std::vector<T> din)
 {
-	if(din.size()<=1) throw mspass::MsPASSError(string("VectorStatistics constructor:  ")
+	if(din.size()<=1) throw mspass::utility::MsPASSError(std::string("VectorStatistics constructor:  ")
 		+ "input vector has insufficient data to compute statistics",
-	  mspass::ErrorSeverity::Invalid);
+	  mspass::utility::ErrorSeverity::Invalid);
 	d=din;
-	sort(d.begin(),d.end());
+	std::sort(d.begin(),d.end());
 }
 template <class T> VectorStatistics<T>::VectorStatistics(T *din,int n)
 {
-	if(n<=1) throw mspass::MsPASSError(string("VectorStatistics constructor:  ")
+	if(n<=1) throw mspass::utility::MsPASSError(std::string("VectorStatistics constructor:  ")
 		+ "input vector has insufficient data to compute statistics",
-	  mspass::ErrorSeverity::Invalid);
+	  mspass::utility::ErrorSeverity::Invalid);
 	d.reserve(n);
 	for(int i=0;i<n;++i) d.push_back(din[i]);
-	sort(d.begin(),d.end());
+	std::sort(d.begin(),d.end());
 }
 template <class T> T VectorStatistics<T>::median()
 {
@@ -148,7 +148,7 @@ template <class T> T VectorStatistics<T>::interquartile()
 }
 template <class T> T VectorStatistics<T>::mad(T center)
 {
-	vector<T> absdiff;
+	std::vector<T> absdiff;
 	int n=d.size();
 	int i;
 	for(i=0;i<n;++i)
@@ -187,10 +187,11 @@ template <class T> T VectorStatistics<T>::quantile(size_t n)
 {
 	if(n>=d.size())
 	{
-		stringstream ss;
+		std::stringstream ss;
 		ss << "VectorStatistics::quantile method:  asked for 1-quantile number "
-		  << n<<" but data vecotor length is only "<<d.size()<<endl;
-		throw mspass::MsPASSError(ss.str(),mspass::ErrorSeverity::Invalid);
+		  << n<<" but data vecotor length is only "<<d.size()<<std::endl;
+		throw mspass::utility::MsPASSError(ss.str(),mspass::utility::ErrorSeverity::Invalid);
 	}
 }
+} // end utility namespace
 } /* End mspass namespace encapsulation */

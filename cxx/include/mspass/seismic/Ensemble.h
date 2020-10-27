@@ -3,8 +3,8 @@
 #include <vector>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
-namespace mspass{
-template <typename Tdata> class Ensemble : public Metadata
+namespace mspass::seismic{
+template <typename Tdata> class Ensemble : public mspass::utility::Metadata
 {
 public:
   /*! \brief Container holding data objects.
@@ -16,7 +16,7 @@ public:
   objects can be large and copying with a getter would be a serious
   inefficiently.
   */
-  vector<Tdata> member;
+  std::vector<Tdata> member;
   /*! Default constructor. */
   Ensemble(){};
   /*! \brief Reserve space but build empty ensemble.
@@ -29,12 +29,12 @@ public:
   */
   Ensemble(const size_t n){member.reserve(n);};
   /*! Partial constructor to clone metadata and set aside n slots but no data*/
-  Ensemble(const Metadata& md,const size_t n) : Metadata(md)
+  Ensemble(const mspass::utility::Metadata& md,const size_t n) : mspass::utility::Metadata(md)
   {
       member.reserve(n);
   };
   /*! Standard copy constructor. */
-  Ensemble(const Ensemble& parent) : Metadata(dynamic_cast<const Metadata&>(parent)),
+  Ensemble(const Ensemble& parent) : mspass::utility::Metadata(dynamic_cast<const mspass::utility::Metadata&>(parent)),
     member(parent.member){};
   /*! Standard assignment operator. */
   Ensemble& operator=(const Ensemble& parent)
@@ -71,10 +71,10 @@ public:
   \param newmd contains new Metadata to use for updates.
 
   */
-  void update_metadata(const Metadata& newmd)
+  void update_metadata(const mspass::utility::Metadata& newmd)
   try{
-    Metadata *md;
-    md=dynamic_cast<Metadata*>(this);
+    mspass::utility::Metadata *md;
+    md=dynamic_cast<mspass::utility::Metadata*>(this);
     (*md) += newmd;
   }catch(...){throw;};
   /*! \brief copy ensemble metadata to all members.
@@ -90,8 +90,8 @@ public:
       size_t i;
       for(i=0;i<this->member.size();++i)
       {
-          mspass::Metadata *mdmember=&(this->member[i]);
-          (*mdmember)+=dynamic_cast<mspass::Metadata&>(*this);
+          mspass::utility::Metadata *mdmember=&(this->member[i]);
+          (*mdmember)+=dynamic_cast<mspass::utility::Metadata&>(*this);
       }
   };
 };
@@ -121,7 +121,7 @@ instead in such a situation.
 */
 /* Disable temporarily - needs a revision to match new history approach
 template <typename Tdata>
-  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::Ensemble<Tdata>& d)
+  size_t set_inputs(ProcessingHistoryRecord& rec, const mspass::seismic::Ensemble<Tdata>& d)
 {
   try{
     for(size_t i=0;i<d.member.size();++i)
@@ -138,5 +138,5 @@ template <typename Tdata>
   }catch(...){throw;};
 };
 */
-}  // End mspass namespace encapsulation
+}  // End mspass::seismic namespace encapsulation
 #endif  //  End guard

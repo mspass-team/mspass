@@ -5,6 +5,7 @@
 #include <string>
 #include "mspass/utility/Metadata.h"
 namespace mspass{
+namespace utility{
 /*! key for accessing Tbl and Arr entries.
  *
  These are of use only when this object is converted to a Metadata
@@ -14,8 +15,8 @@ namespace mspass{
  with the boost::any capability.   This allows them to be retrieved if
  desired with these keys and the correct type specification.   
  */
-const string pftbl_key("AntelopePfTbl");
-const string pfarr_key("AntelopePfArr");
+const std::string pftbl_key("AntelopePfTbl");
+const std::string pfarr_key("AntelopePfArr");
 /*! \brief C++ object version of a parameter file.
 
    This object encapsulates the Antelope concept of a parameter
@@ -78,7 +79,7 @@ public:
       \exception - throws a MsPASSError object with an informative message if
         constuctor fails for any reason.
         */
-    AntelopePf(string pfbase);
+    AntelopePf(std::string pfbase);
     /*! \brief Construct from a set of text lines.
 
       This is a cruder constructor that could be used for small pf file.
@@ -87,7 +88,7 @@ public:
       this series of lines as it would if reading from a file.
 
       \param lines is the modified version of the text pf file.*/
-    AntelopePf(list<string> lines);
+    AntelopePf(std::list<std::string> lines);
     /*!  Standard copy constructor. */
     AntelopePf(const AntelopePf& parent);
     /*! \brief get a Tbl component by key.
@@ -99,7 +100,7 @@ public:
       \param key is the key for the Tbl desired.
       \exception AntelopePfError will be thrown if the key
          is not present. */
-    list<string> get_tbl(const string key) const;
+    std::list<std::string> get_tbl(const std::string key) const;
     /*! \brief used for subtrees (nested Arrs in antelope)
 
        This method is used for nested Arr constructs.
@@ -112,11 +113,11 @@ public:
 
        \exception AntelopePfError will be thrown if the key is not
             found. */
-    AntelopePf get_branch(const string key) const;
+    AntelopePf get_branch(const std::string key) const;
     /*! Return a list of keys for branches (Arrs) in the pf file. */
-    list<string> arr_keys() const;
+    std::list<std::string> arr_keys() const;
     /*! Return a list of keys for Tbls in the pf.*/
-    list<string> tbl_keys() const;
+    std::list<std::string> tbl_keys() const;
     /*! \brief Return an object with only simple name:value pairs.
      *
      The Metadata parent of this object only handles name:value pairs.
@@ -145,11 +146,11 @@ public:
        \param ofs is a std::ostream (e.g. cout) where the result
           will be written in pf style.   Usually should end in ".pf".
           */
-    void pfwrite(ostream& ofs);
+    void pfwrite(std::ostream& ofs);
 private:
-    map<string,list<string> > pftbls;
+    std::map<std::string,std::list<std::string> > pftbls;
     /* This is used for nested Arrs */
-    map<string, AntelopePf> pfbranches;
+    std::map<std::string, AntelopePf> pfbranches;
     /* This method is used to implemetn PFPATH - it is called for
     each secondary file in the PFPATH chain.   Returns the number of
     items changed */
@@ -166,18 +167,18 @@ class AntelopePfError : public MsPASSError
 {
     public:
         AntelopePfError(){
-            message=string("AntelopePfError->undefined error");
+            message=std::string("AntelopePfError->undefined error");
         };
-        AntelopePfError(string mess)
+        AntelopePfError(std::string mess)
         {
             message="AntelopePfError object message="+mess;
         };
         AntelopePfError(const char *mess)
         {
-            message=string("AntelopePfError object message=")+mess;
+            message=std::string("AntelopePfError object message=")+mess;
         };
         void log_error(){
-            cerr << message<<endl;
+            std::cerr << message<<std::endl;
         };
 };
 /* Procedural functions using AntelopePf object */
@@ -194,9 +195,10 @@ section.
   data defining the MetadataList.
 
   */
-MetadataList get_mdlist(const mspass::AntelopePf& m, const std::string tag);
+MetadataList get_mdlist(const mspass::utility::AntelopePf& m, const std::string tag);
 /*! Read a single pf file and return as an AntelopePf object. */
-AntelopePf pfread(const string fname);
+AntelopePf pfread(const std::string fname);
 
+} // End utility namespace
 } // End mspass namespace declaration
 #endif

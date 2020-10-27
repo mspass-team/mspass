@@ -1,8 +1,10 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/utility/ProcessingHistory.h"
-using namespace mspass;
-namespace mspass
+namespace mspass::seismic
 {
+using namespace std;
+using namespace mspass::utility;
+
 Seismogram::Seismogram(const CoreSeismogram& d)
     : CoreSeismogram(d),ProcessingHistory()
 {
@@ -26,11 +28,11 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   these not being a direct base.  Sure there is a way to fix that, but
   the difference in calling operator= like here is next to nothing.*/
   BasicTimeSeries bts=dynamic_cast<BasicTimeSeries&>(*this);
-  bts=mspass::BasicTimeSeries::operator=(b);
+  bts=BasicTimeSeries::operator=(b);
   Metadata mdthis=dynamic_cast<Metadata&>(*this);
-  mdthis=mspass::Metadata::operator=(m);
+  mdthis=Metadata::operator=(m);
   ProcessingHistory histhis=dynamic_cast<ProcessingHistory&>(*this);
-  histhis=mspass::ProcessingHistory::operator=(his);
+  histhis=ProcessingHistory::operator=(his);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;

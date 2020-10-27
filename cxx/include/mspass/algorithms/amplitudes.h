@@ -5,15 +5,15 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
 #include "mspass/utility/VectorStatistics.h"
-namespace mspass{
-double PeakAmplitude(const mspass::CoreTimeSeries& d);
-double PeakAmplitude(const mspass::CoreSeismogram& d);
-double RMSAmplitude(const mspass::CoreTimeSeries& d);
-double RMSAmplitude(const mspass::CoreSeismogram& d);
-double PerfAmplitude(const mspass::CoreTimeSeries& d,const double perf);
-double PerfAmplitude(const mspass::CoreSeismogram& d,const double perf);
-double MADAmplitude(const mspass::CoreTimeSeries& d);
-double MADAmplitude(const mspass::CoreSeismogram& d);
+namespace mspass::algorithms::amplitudes{
+double PeakAmplitude(const mspass::seismic::CoreTimeSeries& d);
+double PeakAmplitude(const mspass::seismic::CoreSeismogram& d);
+double RMSAmplitude(const mspass::seismic::CoreTimeSeries& d);
+double RMSAmplitude(const mspass::seismic::CoreSeismogram& d);
+double PerfAmplitude(const mspass::seismic::CoreTimeSeries& d,const double perf);
+double PerfAmplitude(const mspass::seismic::CoreSeismogram& d,const double perf);
+double MADAmplitude(const mspass::seismic::CoreTimeSeries& d);
+double MADAmplitude(const mspass::seismic::CoreSeismogram& d);
 enum class ScalingMethod
 {
   Peak, /*! Use peak amplitude method - equivalent to Linfinity norm*/
@@ -21,7 +21,7 @@ enum class ScalingMethod
   ClipPerc, /*! Use a percent clip scaling method as used in seismic unix.*/
   MAD   /*! Use median absolute deviation scaling - a form of L1 norm*/
 };
-const string scale_factor_key("calib");
+const std::string scale_factor_key("calib");
 /*! \brief Scaling function for atomic data objects in mspass.
 
 An atomic data object in this case means a class that is a child of
@@ -47,8 +47,8 @@ template <typename Tdata> double scale(Tdata& d,const ScalingMethod method,
   const double level)
 {
   if((method==ScalingMethod::ClipPerc) && (level<=0.0 || level>1.0))
-    throw mspass::MsPASSError("scale function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
-       mspass::ErrorSeverity::Suspect);
+    throw mspass::utility::MsPASSError("scale function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
+       mspass::utility::ErrorSeverity::Suspect);
   try{
     double newcalib(1.0);
     if(d.is_defined(scale_factor_key))
@@ -103,15 +103,15 @@ the scale function for each.  The template is for member data type.
 
 \return vector of computed amplitudes
 */
-template <typename Tdata> vector<double> scale_ensemble_members(mspass::Ensemble<Tdata>& d,
+template <typename Tdata> std::vector<double> scale_ensemble_members(mspass::seismic::Ensemble<Tdata>& d,
   const ScalingMethod& method, const double level)
 {
   if((method==ScalingMethod::ClipPerc) && (level<=0.0 || level>1.0))
-    throw mspass::MsPASSError("scale_ensemble_members function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
-       mspass::ErrorSeverity::Suspect);
+    throw mspass::utility::MsPASSError("scale_ensemble_members function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
+       mspass::utility::ErrorSeverity::Suspect);
   try{
-    typename vector<Tdata>::iterator dptr;
-    vector<double> amps;
+    typename std::vector<Tdata>::iterator dptr;
+    std::vector<double> amps;
     amps.reserve(d.member.size());
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
     {
@@ -142,16 +142,16 @@ in contrast, scales each member separately.
 
 \return computed average amplitude
 */
-template <typename Tdata> double scale_ensemble(mspass::Ensemble<Tdata>& d,
+template <typename Tdata> double scale_ensemble(mspass::seismic::Ensemble<Tdata>& d,
   const ScalingMethod& method, const double level, const bool use_mean)
 {
   if((method==ScalingMethod::ClipPerc) && (level<=0.0 || level>1.0))
-    throw mspass::MsPASSError("scale_ensemble function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
-       mspass::ErrorSeverity::Suspect);
+    throw mspass::utility::MsPASSError("scale_ensemble function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
+       mspass::utility::ErrorSeverity::Suspect);
   try{
     double avgamp;   //defined here because the value computed here is returned on success
-    typename vector<Tdata>::iterator dptr;
-    vector<double> amps;
+    typename std::vector<Tdata>::iterator dptr;
+    std::vector<double> amps;
     amps.reserve(d.member.size());
     size_t nlive(0);
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
@@ -178,7 +178,7 @@ template <typename Tdata> double scale_ensemble(mspass::Ensemble<Tdata>& d,
     }
     /*Silently return a 0 if there are no live data members*/
     if(nlive==0) return 0.0;
-    mspass::VectorStatistics<double> ampstats(amps);
+    mspass::utility::VectorStatistics<double> ampstats(amps);
     if(use_mean)
     {
       avgamp=ampstats.mean();

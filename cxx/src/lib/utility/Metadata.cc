@@ -3,8 +3,10 @@
 #include "misc/base64.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/MsPASSError.h"
-namespace mspass
+namespace mspass::utility
 {
+using namespace std;
+
 Metadata::Metadata(ifstream& ifs, const string form)
 {
   try{
@@ -367,4 +369,4 @@ void Metadata::change_key(const string oldkey, const string newkey)
     md.erase(mdptr);
   }
 }
-} // End mspass Namespace block
+} // End mspass::utility Namespace block

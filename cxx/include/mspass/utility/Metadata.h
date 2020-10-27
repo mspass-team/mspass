@@ -14,6 +14,7 @@
 
 namespace mspass
 {
+namespace utility{
 /*! \brief Error thrown when get operators fail.
  *
  * This is a convenience class used to construct a more informative
@@ -21,17 +22,17 @@ namespace mspass
 class MetadataGetError : public MsPASSError
 {
 public:
-  stringstream ss;
+  std::stringstream ss;
   MetadataGetError():MsPASSError(){}; // seems necessary to not default this with gcc
   /*! Constructor called when a key is not found in the Metadata.
    * \param Texpected is the type name (return of typeid name method) trying to extract. */
-  MetadataGetError(const string key,const char *Texpected)
+  MetadataGetError(const std::string key,const char *Texpected)
   {
 
-    string pretty_name(boost::core::demangle(Texpected));
-    ss<<"Error trying to extract Metadata with key="<<key<<endl
-      << "No value associated with this key is set in Metadata object"<<endl
-      << "Expected an entry of type="<<pretty_name<<endl;
+    std::string pretty_name(boost::core::demangle(Texpected));
+    ss<<"Error trying to extract Metadata with key="<<key<<std::endl
+      << "No value associated with this key is set in Metadata object"<<std::endl
+      << "Expected an entry of type="<<pretty_name<<std::endl;
     message=ss.str();
     badness=ErrorSeverity::Suspect;
   };
@@ -41,17 +42,17 @@ public:
     contents of the map can by any type.  We use boost::any to provide
     sanity checks on types.   This is creates the error message thrown
     when the type of the return does not match the type requested. */
-  MetadataGetError(const char *boostmessage,const string key,
+  MetadataGetError(const char *boostmessage,const std::string key,
       const char *Texpected, const char *Tactual)
   {
     ss << "Error in Metadata get method.   Type mismatch in attem to get "
-	    << "data with key="<<key<<endl
-      << "boost::any bad_any_cast wrote this message:  "<<endl
-      << boostmessage<<endl;
-    string name_e(boost::core::demangle(Texpected));
-    ss << "Trying to convert to data of type="<<name_e<<endl;
-    string name_a(boost::core::demangle(Tactual));
-    ss << "Actual entry has type="<<name_a<<endl;
+	    << "data with key="<<key<<std::endl
+      << "boost::any bad_any_cast wrote this message:  "<<std::endl
+      << boostmessage<<std::endl;
+    std::string name_e(boost::core::demangle(Texpected));
+    ss << "Trying to convert to data of type="<<name_e<<std::endl;
+    std::string name_a(boost::core::demangle(Tactual));
+    ss << "Actual entry has type="<<name_a<<std::endl;
     message=ss.str();
     badness=ErrorSeverity::Suspect;
   };
@@ -90,7 +91,7 @@ public:
      is accepted.
   \exception MsPASSError can be thrown for a variety of conditions.
   */
-  Metadata(ifstream& ifs, const string form=string("pf"));
+  Metadata(std::ifstream& ifs, const std::string form=std::string("pf"));
   /*!
   Standard copy constructor.
 
@@ -130,7 +131,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  double get_double(const string key) const override{
+  double get_double(const std::string key) const override{
     try{
       double val;
       val=get<double>(key);
@@ -154,7 +155,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  int get_int(const string key) const override
+  int get_int(const std::string key) const override
   {
       try{
         int val;
@@ -179,7 +180,7 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  long get_long(const string key) const
+  long get_long(const std::string key) const
   {
       try{
         long val;
@@ -208,10 +209,10 @@ other attributes.
   \exception MetadataGetError if requested parameter is not found or there is a type mismatch.
   \param key keyword associated with requested metadata member.
   **/
-  string get_string(const string key) const override{
+  std::string get_string(const std::string key) const override{
     try{
-      string val;
-      val=get<string>(key);
+      std::string val;
+      val=get<std::string>(key);
       return val;
     }catch(...){throw;};
   };
@@ -223,7 +224,7 @@ other attributes.
 
   \param key keyword associated with requested metadata member.
   **/
-  bool get_bool(const string key) const override{
+  bool get_bool(const std::string key) const override{
     try{
       bool val;
       val=get<bool>(key);
@@ -245,7 +246,7 @@ other attributes.
   \exception - will throw a MetadataGetError (child of MsPASSError) for
        type mismatch or in an overflow or underflow condition.
   */
-  template <typename T> T get(const string key) const;
+  template <typename T> T get(const std::string key) const;
   /*! \brief Generic get interface for C char array.
 
           This is a generic interface most useful for template procedures
@@ -264,7 +265,7 @@ other attributes.
   {
     try{
       T val;
-      val=get<T>(string(key));
+      val=get<T>(std::string(key));
       return val;
     }catch(...){throw;};
   }
@@ -278,8 +279,8 @@ other attributes.
 
   \exception - MetadataGetError if requested parameter is not found.
   */
-  boost::any get_any(const string key) const {
-    map<string,boost::any>::const_iterator iptr;
+  boost::any get_any(const std::string key) const {
+    std::map<std::string,boost::any>::const_iterator iptr;
     iptr=md.find(key);
     if(iptr==md.end())
     {
@@ -287,8 +288,8 @@ other attributes.
     }
     return iptr->second;
   };
-  std::string type(const string key) const;
-  template <typename T> void put(const string key, T val) noexcept
+  std::string type(const std::string key) const;
+  template <typename T> void put(const std::string key, T val) noexcept
   {
     boost::any aval=val;
     md[key]=aval;
@@ -299,46 +300,46 @@ other attributes.
     /* could do this as put(string(key),val) but this is so trivial duplicating
     the code for the string method is more efficient than an added function call.*/
     boost::any aval=val;
-    md[string(key)]=aval;
-    changed_or_set.insert(string(key));
+    md[std::string(key)]=aval;
+    changed_or_set.insert(std::string(key));
   }
-  void put(const string key, const double val) override
+  void put(const std::string key, const double val) override
   {
       this->put<double>(key,val);
   };
-  void put(const string key, const int val) override
+  void put(const std::string key, const int val) override
   {
       this->put<int>(key,val);
   };
-  void put(const string key, const bool val) override
+  void put(const std::string key, const bool val) override
   {
       this->put<bool>(key,val);
   };
-  void put(const string key, const string val) override
+  void put(const std::string key, const std::string val) override
   {
-      this->put<string>(key,val);
+      this->put<std::string>(key,val);
   };
-  void put_object(const string key, const pybind11::object val)
+  void put_object(const std::string key, const pybind11::object val)
   {
       this->put<pybind11::object>(key,val);
   }
-  void put_int(const string key,const int val)
+  void put_int(const std::string key,const int val)
   {
     this->put<int>(key,val);
   };
-  void put_string(const string key,const string val)
+  void put_string(const std::string key,const std::string val)
   {
-    this->put<string>(key,val);
+    this->put<std::string>(key,val);
   };
-  void put_bool(const string key,const bool val)
+  void put_bool(const std::string key,const bool val)
   {
     this->put<bool>(key,val);
   };
-  void put_double(const string key,const double val)
+  void put_double(const std::string key,const double val)
   {
     this->put<double>(key,val);
   };
-  void put_long(const string key,const long val)
+  void put_long(const std::string key,const long val)
   {
     this->put<long>(key,val);
   };
@@ -366,10 +367,10 @@ other attributes.
      and it is not of type string.
    */
   void append_chain(const std::string key, const std::string val,
-		  const std::string separator=string(":"));
+		  const std::string separator=std::string(":"));
 
   /*! Return the keys of all altered Metadata values. */
-  set<string> modified() const
+  std::set<std::string> modified() const
   {
       return changed_or_set;
   };
@@ -388,7 +389,7 @@ other attributes.
 	  changed_or_set.clear();
   };
   /*! Return all keys without any type information. */
-  set<string> keys() const noexcept;
+  std::set<std::string> keys() const noexcept;
   /*! Test if a key has an associated value.  Returns true if
    * a value is defined. */
   bool is_defined(const std::string key) const noexcept;
@@ -411,9 +412,9 @@ other attributes.
   /*! Return the size of the internal map container. */
   std::size_t size() const noexcept;
   /*! Return iterator to beginning of internal map container. */
-  std::map<string,boost::any>::const_iterator  begin() const noexcept;
+  std::map<std::string,boost::any>::const_iterator  begin() const noexcept;
   /*! Return iterator to end of internal map container. */
-  std::map<string,boost::any>::const_iterator  end() const noexcept;
+  std::map<std::string,boost::any>::const_iterator  end() const noexcept;
   /*! \brief Change the keyword to access an attribute.
 
   Sometimes it is useful to change the key used to access a particular piece
@@ -429,16 +430,16 @@ other attributes.
   \param newkey is the new key to use for the replacement.
   */
   void change_key(const std::string oldkey, const std::string newkey);
-  friend std::ostringstream& operator<<(std::ostringstream&, mspass::Metadata&);
+  friend std::ostringstream& operator<<(std::ostringstream&, mspass::utility::Metadata&);
 protected:
-  map<string,boost::any> md;
+  std::map<std::string,boost::any> md;
   /* The keys of any entry changed will be contained here.   */
-  set<string> changed_or_set;
+  std::set<std::string> changed_or_set;
 };
-template <typename T> T Metadata::get(const string key) const
+template <typename T> T Metadata::get(const std::string key) const
 {
   T result;
-  map<string,boost::any>::const_iterator iptr;
+  std::map<std::string,boost::any>::const_iterator iptr;
   iptr=md.find(key);
   if(iptr==md.end())
   {
@@ -463,7 +464,7 @@ template <typename T> T Metadata::get(const string key) const
  * \param val is the boost::any container to be checked for type.
  * \return demangled name of type of the entity stored in the container.
  * */
-string demangled_name(const boost::any val);
+std::string demangled_name(const boost::any val);
 /*   Start of helper procedures for Metadata. */
 /*! \brief Define standard types for Metadata.
 
@@ -564,5 +565,6 @@ anything else.
 */
 Metadata restore_serialized_metadata(const std::string);
 
+} // end utility namespace
 }  //End of namespace MsPASS
 #endif

@@ -3,6 +3,7 @@
 #include <map>
 #include <tuple>
 namespace mspass{
+namespace utility{
 enum class MDDefFormat
 {
     PF,
@@ -47,7 +48,7 @@ public:
   \param mdname is the file to read
   \param form defines the format (limited by MDDefFormat definitions)
   */
-  MetadataDefinitions(const std::string mdname,const mspass::MDDefFormat form);
+  MetadataDefinitions(const std::string mdname,const mspass::utility::MDDefFormat form);
   /*! Standard copy constructor. */
   MetadataDefinitions(const MetadataDefinitions& parent);
   /*! Test if a key is defined either as a unique key or an alias */
@@ -65,7 +66,7 @@ public:
 
   \return MDtype enum that can be used to establish the proper type.
   */
-  mspass::MDtype type(const std::string key) const;
+  mspass::utility::MDtype type(const std::string key) const;
   std::list<std::string> keys() const;
   /*! Basic putter.
 
@@ -95,7 +96,7 @@ public:
    the key is a registered unique name and not an alias.
    */
   bool is_alias(const std::string key) const;
-  list<std::string> aliases(const std::string key) const;
+  std::list<std::string> aliases(const std::string key) const;
   /*! Get definitive name for an alias.
 
   This method is used to ask the opposite question as aliases.  The aliases
@@ -108,7 +109,7 @@ public:
 
   \return std::pair with the definitive key as the first of the pair and the type
   in the second field. */
-  std::pair<std::string,mspass::MDtype> unique_name(const string aliasname) const;
+  std::pair<std::string,mspass::utility::MDtype> unique_name(const std::string aliasname) const;
   /*! Add an alias for key.
 
   \param key is the main key for which an alias is to be defined
@@ -122,7 +123,7 @@ public:
   \return true if the data linked to this not not marked readonly.
   (if the key is undefined a false is silently returned)
   */
-  bool writeable(const string key) const;
+  bool writeable(const std::string key) const;
   /*! Check if a key:value pair is marked readonly. Inverted logic
   of similar writeable method.
 
@@ -130,7 +131,7 @@ public:
   \return true of the data linked to this keys IS marked readonly.
   (if the key is undefined this method silently returns true)
   */
-  bool readonly(const string key) const;
+  bool readonly(const std::string key) const;
   /*! \brief Lock a parameter to assure it will not be saved.
 
   Parameters can be defined readonly.  That is a standard feature of this
@@ -142,7 +143,7 @@ public:
 
   \param key is the key for the attribute with properties to be redefined.
   */
-  void set_readonly(const string key);
+  void set_readonly(const std::string key);
   /*! \brief Force a key:value pair to be writeable.
 
   Normally some parameters are marked readonly on construction to avoid
@@ -154,7 +155,7 @@ public:
 
   \param key is key for the attribute to be redefined.
   */
-  void set_writeable(const string key);
+  void set_writeable(const std::string key);
   /*! \brief Test if a key:value pair is set as normalized.
 
   In MongoDB a normalized attribute is one that has a master copy in one and
@@ -162,7 +163,7 @@ public:
   normalized and false otherwise (It will also return false for any key that
   is undefined.).
   */
-  bool is_normalized(const string key) const;
+  bool is_normalized(const std::string key) const;
   /*! \brief Returns a unique identifier for a normalized attribute.
 
   In MongoDB a normalized attribute is one that has a master copy in one and
@@ -191,7 +192,7 @@ public:
     to test for a null return and handle such entries inline instead of a double
     search required if preceded by is_normalized.
   */
-  string unique_id_key(const string key) const;
+  std::string unique_id_key(const std::string key) const;
   /*! \Brief return the master collection (table) for a key used as a unique id.
 
   Support for normalized Metadata requires static tables (collection in MongoDB)
@@ -207,7 +208,7 @@ public:
      unique tuple/document required to access related Metadata.  String will be
      empty if the search fails.
   */
-  string collection(const string key) const;
+  std::string collection(const std::string key) const;
   /*! \brief Special method for efficiency.
 
   For mspass using mongodb normalization for all currently supported Metadata
@@ -220,7 +221,7 @@ public:
   \return an std::pair with of strings with first=collection and second=attribute name.
   */
 
-  std::pair<std::string,std::string> normalize_data(const string key) const;
+  std::pair<std::string,std::string> normalize_data(const std::string key) const;
   /*! \brief Apply a set of aliases to data.
 
   This method should be called in processing workflows to apply a series
@@ -236,7 +237,7 @@ public:
     \return std::list of srings of failed changes.  Callers should
      test the size of this return and take action if needed.
     */
-std::list<std::string> apply_aliases(mspass::Metadata& d,
+std::list<std::string> apply_aliases(mspass::utility::Metadata& d,
           const std::list<std::string> aliaslist);
   /*! \brief Restore any aliases to unique names.
 
@@ -252,7 +253,7 @@ std::list<std::string> apply_aliases(mspass::Metadata& d,
    a log entry into this returned object. Caller should test the size of
    the return and handle or ignore errors as appropriate.
    */
-  void clear_aliases(mspass::Metadata& d);
+  void clear_aliases(mspass::utility::Metadata& d);
   /*! Standard assignment operator. */
   MetadataDefinitions& operator=(const MetadataDefinitions& other);
   /*!\brief Accumulate additional definitions.
@@ -276,9 +277,9 @@ std::list<std::string> apply_aliases(mspass::Metadata& d,
   MetadataDefinitions& operator+=(const MetadataDefinitions& other);
 private:
   std::map<std::string,MDtype> tmap;
-  std::map<std::string,string> cmap;
+  std::map<std::string,std::string> cmap;
   std::multimap<std::string,std::string> aliasmap;
-  map<std::string,std::string> alias_xref;
+  std::map<std::string,std::string> alias_xref;
   std::set<std::string> roset;
   /* This map is used to handle normalized data in any database.   For the
   initial design the data could be a pair, but I make it a tuple because I
@@ -290,5 +291,6 @@ private:
   void yaml_reader(const std::string fname);
 
 };
+} // end utility namespace
 }  // end mspass namespace
 #endif

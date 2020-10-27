@@ -1,7 +1,12 @@
 #include <sstream>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
-namespace mspass {
+namespace mspass::algorithms
+{
+using namespace std;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 /*! \brief Extracts a requested time window of data from a parent Seismogram object.
 
 It is common to need to extract a smaller segment of data from a larger

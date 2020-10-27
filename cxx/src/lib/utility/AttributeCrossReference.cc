@@ -1,8 +1,8 @@
 #include <sstream>
 #include "mspass/utility/AttributeCrossReference.h"
 using namespace std;
-using namespace mspass;
-namespace mspass {
+using namespace mspass::utility;
+namespace mspass::utility {
 AttributeCrossReference::AttributeCrossReference(const string lines_to_parse)
 {
   try{
@@ -175,4 +175,4 @@ set<string> AttributeCrossReference::external_names() const
   return keys;
 }
 
-} // end mspass namespace encapsulation
+} // end mspass::utility namespace encapsulation

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
-namespace mspass{
+namespace mspass::seismic{
 /*! \brief Type of time standard for time series data.
 
 Time series data have two common standards.  Absolute time means the

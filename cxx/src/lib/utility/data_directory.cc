@@ -1,6 +1,6 @@
 #include <string>
 #include "mspass/utility/MsPASSError.h"
-namespace mspass{
+namespace mspass::utility{
 /* Standardizes top level directory for mspass */
 std::string data_directory()
 {
@@ -9,7 +9,7 @@ std::string data_directory()
 	/* Note man page for getenv says explicitly the return of getenv should not
 			be touched - i.e. don't free it*/
 	base=getenv(mspass_home_envname.c_str());
-	if(base==NULL)throw MsPASSError(string("maspass_data_directory procedure:  ")
+	if(base==NULL)throw MsPASSError(std::string("maspass_data_directory procedure:  ")
 	    + "required environmental variable="+mspass_home_envname+" is not set");
         std::string datadir;
 	datadir=std::string(base)+"/data";

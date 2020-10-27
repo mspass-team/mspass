@@ -3,7 +3,12 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/seismic/CoreTimeSeries.h"
-namespace mspass {
+namespace mspass::algorithms
+{
+using namespace std;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet,
 	const CoreSeismogram& d)
 {

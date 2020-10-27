@@ -20,12 +20,12 @@
 #include <mspass/algorithms/algorithms.h>
 #include <mspass/algorithms/amplitudes.h>
 //Deconvolution algorithms are in a separate directory
-#include <mspass/deconvolution/WaterLevelDecon.h>
-#include <mspass/deconvolution/LeastSquareDecon.h>
-#include <mspass/deconvolution/MultiTaperXcorDecon.h>
-#include <mspass/deconvolution/MultiTaperSpecDivDecon.h>
-#include <mspass/deconvolution/GeneralIterDecon.h>
-#include <mspass/deconvolution/CNR3CDecon.h>
+#include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
+#include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
+#include <mspass/algorithms/deconvolution/MultiTaperXcorDecon.h>
+#include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
+#include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
+#include <mspass/algorithms/deconvolution/CNR3CDecon.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
@@ -90,42 +90,74 @@ namespace pybind11 { namespace detail {
 }} // namespace pybind11::detail
 
 using std::stringstream;
-using mspass::AttributeMap;
-using mspass::SphericalCoordinate;
-using mspass::SlownessVector;
-using mspass::TimeWindow;
-using mspass::MDtype;
-using mspass::BasicMetadata;
-using mspass::Metadata;
-using mspass::AntelopePf;
-using mspass::Metadata_typedef;
-using mspass::TimeReferenceType;
-using mspass::BasicTimeSeries;
-using mspass::CoreTimeSeries;
-using mspass::TimeSeries;
-using mspass::CoreSeismogram;
-using mspass::dmatrix;
-using mspass::Seismogram;
-using mspass::MsPASSError;
-using mspass::ErrorSeverity;
-using mspass::LogData;
-using mspass::ErrorLogger;
-using mspass::pfread;
-using mspass::MDDefFormat;
-using mspass::MetadataDefinitions;
-using mspass::BasicProcessingHistory;
-using mspass::ProcessingHistory;
-using mspass::NodeData;
-using mspass::Ensemble;
-using mspass::agc;
-using mspass::ExtractComponent;
-using mspass::BasicDeconOperator;
-using mspass::WaterLevelDecon;
-using mspass::LeastSquareDecon;
-using mspass::MultiTaperXcorDecon;
-using mspass::MultiTaperSpecDivDecon;
-using mspass::GeneralIterDecon;
-using mspass::CNR3CDecon;
+using std::string;
+
+using mspass::utility::AttributeMap;
+using mspass::utility::SphericalCoordinate;
+using mspass::utility::MDtype;
+using mspass::utility::BasicMetadata;
+using mspass::utility::Metadata;
+using mspass::utility::AntelopePf;
+using mspass::utility::Metadata_typedef;
+using mspass::utility::dmatrix;
+using mspass::utility::MsPASSError;
+using mspass::utility::ErrorSeverity;
+using mspass::utility::LogData;
+using mspass::utility::ErrorLogger;
+using mspass::utility::MDDefFormat;
+using mspass::utility::MetadataDefinitions;
+using mspass::utility::BasicProcessingHistory;
+using mspass::utility::ProcessingHistory;
+using mspass::utility::ProcessingStatus;
+using mspass::utility::NodeData;
+using mspass::utility::AtomicType;
+using mspass::utility::pfread;
+using mspass::utility::restore_serialized_metadata;
+using mspass::utility::string2severity;
+using mspass::utility::UnitVectorToSpherical;
+using mspass::utility::error_says_data_bad;
+using mspass::utility::parse_message_error_severity;
+using mspass::utility::message_error_severity;
+using mspass::utility::get_mdlist;
+using mspass::utility::algorithm_history;
+using mspass::utility::algorithm_outputs;
+
+using mspass::seismic::SlownessVector;
+using mspass::seismic::TimeWindow;
+using mspass::seismic::TimeReferenceType;
+using mspass::seismic::BasicTimeSeries;
+using mspass::seismic::CoreTimeSeries;
+using mspass::seismic::TimeSeries;
+using mspass::seismic::CoreSeismogram;
+using mspass::seismic::Seismogram;
+using mspass::seismic::Ensemble;
+
+using mspass::algorithms::agc;
+using mspass::algorithms::ArrivalTimeReference;
+using mspass::algorithms::ExtractComponent;
+using mspass::algorithms::WindowData;
+using mspass::algorithms::WindowData3C;
+
+using mspass::algorithms::amplitudes::ScalingMethod;
+using mspass::algorithms::amplitudes::scale;
+using mspass::algorithms::amplitudes::scale_ensemble_members;
+using mspass::algorithms::amplitudes::scale_ensemble;
+using mspass::algorithms::amplitudes::PeakAmplitude;
+using mspass::algorithms::amplitudes::RMSAmplitude;
+using mspass::algorithms::amplitudes::MADAmplitude;
+using mspass::algorithms::amplitudes::PerfAmplitude;
+
+using mspass::algorithms::deconvolution::BasicDeconOperator;
+using mspass::algorithms::deconvolution::WaterLevelDecon;
+using mspass::algorithms::deconvolution::LeastSquareDecon;
+using mspass::algorithms::deconvolution::MultiTaperXcorDecon;
+using mspass::algorithms::deconvolution::MultiTaperSpecDivDecon;
+using mspass::algorithms::deconvolution::GeneralIterDecon;
+using mspass::algorithms::deconvolution::CNR3CDecon;
+using mspass::algorithms::deconvolution::ScalarDecon;
+using mspass::algorithms::deconvolution::FFTDeconOperator;
+using mspass::algorithms::deconvolution::PowerSpectrum;
+using mspass::algorithms::deconvolution::circular_shift;
 
 /* We enable this gem for reasons explain in the documentation for pybinde11
 at this url:  https://pybind11.readthedocs.io/en/master/advanced/cast/stl.html
@@ -144,12 +176,11 @@ needed to handle virtual function in the abstract base class BasicMetadata. */
 class PyBasicMetadata : public BasicMetadata
 {
 public:
-  using BasicMetadata::BasicMetadata;
   int get_int(const std::string key) const override
   {
     PYBIND11_OVERLOAD_PURE(
       int,
-      mspass::BasicMetadata,
+      BasicMetadata,
       get_int,
       key
     );
@@ -158,7 +189,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       double,
-      mspass::BasicMetadata,
+      BasicMetadata,
       get_double,
       key
     );
@@ -167,7 +198,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       bool,
-      mspass::BasicMetadata,
+      BasicMetadata,
       get_bool,
       key
     );
@@ -176,7 +207,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       std::string,
-      mspass::BasicMetadata,
+      BasicMetadata,
       get_string,
       key
     );
@@ -185,7 +216,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       void,
-      mspass::BasicMetadata,
+      BasicMetadata,
       put,
       key,
       val
@@ -195,7 +226,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       void,
-      mspass::BasicMetadata,
+      BasicMetadata,
       put,
       key,
       val
@@ -205,7 +236,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       void,
-      mspass::BasicMetadata,
+      BasicMetadata,
       put,
       key,
       val
@@ -215,7 +246,7 @@ public:
   {
     PYBIND11_OVERLOAD_PURE(
       void,
-      mspass::BasicMetadata,
+      BasicMetadata,
       put,
       key,
       val
@@ -227,7 +258,6 @@ public:
 class PyBasicTimeSeries : public BasicTimeSeries
 {
 public:
-  using BasicTimeSeries::BasicTimeSeries;
   /* BasicTimeSeries has virtual methods that are not pure because
   forms that contain gap handlers need additional functionality.
   We thus use a different qualifier to PYBIND11_OVERLOAD macro here.
@@ -236,7 +266,7 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       ator,
       tshift);
   }
@@ -244,7 +274,7 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       ator,
       tshift);
   }
@@ -252,14 +282,14 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       rtoa);
   }
   void shift(const double dt)
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       shift,
       dt);
   }
@@ -267,7 +297,7 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       set_dt,
       sample_interval);
   }
@@ -275,7 +305,7 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       set_npts,
       npts);
   }
@@ -283,7 +313,7 @@ public:
   {
     PYBIND11_OVERLOAD(
       void,
-      mspass::BasicTimeSeries,
+      BasicTimeSeries,
       set_t0,
       d0in);
   }
@@ -294,12 +324,11 @@ public:
 class PyBasicProcessingHistory : public BasicProcessingHistory
 {
 public:
-  using BasicProcessingHistory::BasicProcessingHistory;
   size_t number_of_stages() override
   {
     PYBIND11_OVERLOAD(
       size_t,
-      mspass::BasicProcessingHistory,
+      BasicProcessingHistory,
       number_of_stages,  //exta comma needed for reasons given in pybind docs
     );
   }
@@ -309,59 +338,57 @@ public:
 class PyBasicDeconOperator : public BasicDeconOperator
 {
 public:
-  using BasicDeconOperator::BasicDeconOperator;
-  void change_parameter(const mspass::Metadata &md)
+  void change_parameter(const Metadata &md)
   {
     PYBIND11_OVERLOAD_PURE(
       void,
-      mspass::BasicDeconOperator,
+      BasicDeconOperator,
       change_parameter,
     );
   }
 };
 /* This is is needed here because ScalarDecon has multiple pure virtual methods
    overridden by all scalar trace decon operators */
-class PyScalarDecon : public mspass::ScalarDecon
+class PyScalarDecon : public ScalarDecon
 {
 public:
-  using ScalarDecon::ScalarDecon;
   void process()
   {
     PYBIND11_OVERLOAD_PURE(
         void,
-        mspass::ScalarDecon,
+        ScalarDecon,
         process
     );
   }
-  mspass::CoreTimeSeries actual_output()
+  CoreTimeSeries actual_output()
   {
     PYBIND11_OVERLOAD_PURE(
-        mspass::CoreTimeSeries,
-        mspass::ScalarDecon,
+        CoreTimeSeries,
+        ScalarDecon,
         actual_output
     );
   }
-  mspass::CoreTimeSeries inverse_wavelet()
+  CoreTimeSeries inverse_wavelet()
   {
     PYBIND11_OVERLOAD_PURE(
-        mspass::CoreTimeSeries,
-        mspass::ScalarDecon,
+        CoreTimeSeries,
+        ScalarDecon,
         inverse_wavelet
     );
   }
-  mspass::CoreTimeSeries inverse_wavelet(double)
+  CoreTimeSeries inverse_wavelet(double)
   {
     PYBIND11_OVERLOAD_PURE(
-        mspass::CoreTimeSeries,
-        mspass::ScalarDecon,
+        CoreTimeSeries,
+        ScalarDecon,
         inverse_wavelet
     );
   }
-  mspass::Metadata QCMetrics()
+  Metadata QCMetrics()
   {
     PYBIND11_OVERLOAD_PURE(
-        mspass::Metadata,
-        mspass::ScalarDecon,
+        Metadata,
+        ScalarDecon,
         QCMetrics
     );
   }
@@ -386,12 +413,12 @@ struct PyMetadataIterator {
 };
 
 /* The following is needed for the binding to access protected members */
-class Publicdmatrix : public mspass::dmatrix {
+class Publicdmatrix : public dmatrix {
 public:
-    using mspass::dmatrix::ary;
-    using mspass::dmatrix::length;
-    using mspass::dmatrix::nrr;
-    using mspass::dmatrix::ncc;
+    using dmatrix::ary;
+    using dmatrix::length;
+    using dmatrix::nrr;
+    using dmatrix::ncc;
 };
 
 /* The following Python C API are needed to construct the PyMsPASSError
@@ -430,7 +457,7 @@ static PyObject *MsPASSError_get_severity(PyObject *selfPtr, void *closure)
     else {
       severity = args[1];
       if(py::isinstance<py::str>(args[1])) {
-        severity = py::cast(mspass::string2severity(std::string(py::str(args[1]))));
+        severity = py::cast(string2severity(std::string(py::str(args[1]))));
       } else if(!py::isinstance(args[1], py::cast(ErrorSeverity::Fatal).get_type())) {
         severity = py::cast(ErrorSeverity::Fatal);
       }
@@ -462,14 +489,14 @@ PYBIND11_MODULE(ccore,m)
   py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector");
   py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
 
-  py::class_<mspass::SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
+  py::class_<SphericalCoordinate>(m,"SphericalCoordinate","Enscapsulates concept of spherical coordinates")
     .def(py::init<>())
     .def(py::init<const SphericalCoordinate&>())
     .def(py::init([](py::array_t<double> uv) {
       py::buffer_info info = uv.request();
       if (info.ndim != 1 || info.shape[0] != 3)
         throw py::value_error("SphericalCoordinate expects a vector of 3 elements");
-      return mspass::UnitVectorToSpherical(static_cast<double*>(info.ptr));
+      return UnitVectorToSpherical(static_cast<double*>(info.ptr));
     }))
     /* The use of capsule to avoid copy is found at
        https://github.com/pybind/pybind11/issues/1042 */
@@ -478,12 +505,12 @@ PYBIND11_MODULE(ccore,m)
       auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
       return py::array(3, v, capsule);
     },"Return the unit vector equivalent to direction defined in sphereical coordinates")
-    .def_readwrite("radius", &mspass::SphericalCoordinate::radius,"R of spherical coordinates")
-    .def_readwrite("theta", &mspass::SphericalCoordinate::theta,"zonal angle of spherical coordinates")
-    .def_readwrite("phi", &mspass::SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
+    .def_readwrite("radius", &SphericalCoordinate::radius,"R of spherical coordinates")
+    .def_readwrite("theta", &SphericalCoordinate::theta,"zonal angle of spherical coordinates")
+    .def_readwrite("phi", &SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
   ;
 
-  py::class_<mspass::SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
+  py::class_<SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
     .def(py::init<>())
     .def(py::init<const SlownessVector&>())
     .def(py::init<const double, const double, const double>())
@@ -494,7 +521,7 @@ PYBIND11_MODULE(ccore,m)
     .def_readwrite("uy",&SlownessVector::uy,"Slowness component in the y (Northing) direction")
   ;
 
-  py::class_<mspass::TimeWindow>(m,"TimeWindow","Simple description of a time window")
+  py::class_<TimeWindow>(m,"TimeWindow","Simple description of a time window")
     .def(py::init<>(),"Default constructor")
     .def(py::init<const double, const double>(),"Construct from start and end time")
     .def(py::init<const TimeWindow&>(),"Copy constuctor")
@@ -504,10 +531,10 @@ PYBIND11_MODULE(ccore,m)
     .def_readwrite("end",&TimeWindow::end,"End time of the window")
   ;
 
-  py::class_<mspass::BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")
+  py::class_<BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")
     .def(py::init<>())
   ;
-  py::enum_<mspass::MDtype>(m,"MDtype")
+  py::enum_<MDtype>(m,"MDtype")
     .value("Real",MDtype::Real)
     .value("Real32",MDtype::Real32)
     .value("Double",MDtype::Double)
@@ -520,7 +547,7 @@ PYBIND11_MODULE(ccore,m)
     .value("Boolean",MDtype::Boolean)
     .value("Invalid",MDtype::Invalid)
   ;
-  py::class_<mspass::Metadata,mspass::BasicMetadata> md(m,"Metadata");
+  py::class_<Metadata,BasicMetadata> md(m,"Metadata");
   md.def(py::init<>())
     .def(py::init<const Metadata&>())
     .def(py::init<std::ifstream&,const std::string>())
@@ -547,12 +574,12 @@ PYBIND11_MODULE(ccore,m)
       }
       return md;
     }))
-    .def("get_double",&mspass::Metadata::get_double,"Retrieve a real number by a specified key")
-    .def("get_long",&mspass::Metadata::get_long,"Return a long integer by a specified key")
-    .def("get_bool",&mspass::Metadata::get_bool,"Return a (C) boolean defined by a specified key")
-    .def("get_string",&mspass::Metadata::get_string,"Return a string indexed by a specified key")
-    .def("get",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
-    .def("__getitem__",&mspass::Metadata::get_any,"Return the value indexed by a specified key")
+    .def("get_double",&Metadata::get_double,"Retrieve a real number by a specified key")
+    .def("get_long",&Metadata::get_long,"Return a long integer by a specified key")
+    .def("get_bool",&Metadata::get_bool,"Return a (C) boolean defined by a specified key")
+    .def("get_string",&Metadata::get_string,"Return a string indexed by a specified key")
+    .def("get",&Metadata::get_any,"Return the value indexed by a specified key")
+    .def("__getitem__",&Metadata::get_any,"Return the value indexed by a specified key")
     .def("put", [](Metadata& md, const py::bytes k, const py::object v) {
       if(py::isinstance<py::float_>(v))
         md.put(std::string(py::str(k.attr("__str__")())), (v.cast<double>()));
@@ -683,7 +710,7 @@ PYBIND11_MODULE(ccore,m)
       },
       [](py::tuple t) {
        string sbuf=t[0].cast<std::string>();
-       return mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+       return Metadata(restore_serialized_metadata(sbuf));
      }
      ))
   ;
@@ -691,25 +718,25 @@ PYBIND11_MODULE(ccore,m)
     .def("__iter__", [](PyMetadataIterator &it) -> PyMetadataIterator& { return it; })
     .def("__next__", &PyMetadataIterator::next);
 
-  py::class_<mspass::AntelopePf,Metadata>(m,"AntelopePf")
+  py::class_<AntelopePf,Metadata>(m,"AntelopePf")
     .def(py::init<>())
     .def(py::init<const AntelopePf&>())
     .def(py::init<std::string>(),"Construct from a file")
     .def(py::init<std::list<string>>(),"Construct from a list of strings defining lines to be parsed")
-    .def("get_tbl",&mspass::AntelopePf::get_tbl,"Fetch contents of a block of the pf file defined by Tbl&")
-    .def("get_branch",&mspass::AntelopePf::get_branch,"Fetch contents of a block of the pf defined by an Arr&")
-    .def("arr_keys",&mspass::AntelopePf::arr_keys,"Return a list of all branch (&Arr) keys")
-    .def("tbl_keys",&mspass::AntelopePf::tbl_keys,"Fetch a list of keys for all &Tbl blocks")
-    .def("ConvertToMetadata",&mspass::AntelopePf::ConvertToMetadata,"Convert to a flat Metadata space (no branches)")
+    .def("get_tbl",&AntelopePf::get_tbl,"Fetch contents of a block of the pf file defined by Tbl&")
+    .def("get_branch",&AntelopePf::get_branch,"Fetch contents of a block of the pf defined by an Arr&")
+    .def("arr_keys",&AntelopePf::arr_keys,"Return a list of all branch (&Arr) keys")
+    .def("tbl_keys",&AntelopePf::tbl_keys,"Fetch a list of keys for all &Tbl blocks")
+    .def("ConvertToMetadata",&AntelopePf::ConvertToMetadata,"Convert to a flat Metadata space (no branches)")
   ;
 
-  py::class_<mspass::Metadata_typedef>(m,"Metadata_typedef")
+  py::class_<Metadata_typedef>(m,"Metadata_typedef")
     .def(py::init<>())
     .def_readwrite("tag",&Metadata_typedef::tag,"Name key for this metadata")
     .def_readwrite("mdt",&Metadata_typedef::mdt,"Type of any value associated with this key")
   ;
 
-  py::enum_<mspass::TimeReferenceType>(m,"TimeReferenceType")
+  py::enum_<TimeReferenceType>(m,"TimeReferenceType")
     .value("Relative",TimeReferenceType::Relative)
     .value("UTC",TimeReferenceType::UTC)
   ;
@@ -717,62 +744,62 @@ PYBIND11_MODULE(ccore,m)
   timetype method
   set_tref
   */
-  py::class_<mspass::BasicTimeSeries,PyBasicTimeSeries>(m,"BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
+  py::class_<BasicTimeSeries,PyBasicTimeSeries>(m,"BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
     .def(py::init<>())
-    .def("time",&mspass::BasicTimeSeries::time,"Return the computed time for a sample number (integer)")
-    .def("sample_number",&mspass::BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
-    .def("endtime",&mspass::BasicTimeSeries::endtime,"Return the (computed) end time of a time series")
-    .def("shifted",&mspass::BasicTimeSeries::shifted,"Return True if the data have been time shifted to relative time")
-    .def("rtoa",py::overload_cast<const double>(&mspass::BasicTimeSeries::rtoa))
-    .def("rtoa",py::overload_cast<>(&mspass::BasicTimeSeries::rtoa))
-    .def("ator",&mspass::BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
-    .def("shift",&mspass::BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
-    .def("time_reference",&mspass::BasicTimeSeries::time_reference,"Return time standard")
-    .def("shifted",&mspass::BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
-    .def("force_t0_shift",&mspass::BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")
-    .def("live",&mspass::BasicTimeSeries::live,"Return True if the data are marked valid (not dead)")
-    .def("dead",&mspass::BasicTimeSeries::dead,"Return true if the data are marked bad and should not be used")
-    .def("kill",&mspass::BasicTimeSeries::kill,"Mark this data object bad = dead")
-    .def("set_live",&mspass::BasicTimeSeries::set_live,"Undo a kill (mark data ok)")
-    .def("dt",&mspass::BasicTimeSeries::dt,"Return the sample interval (normally in second)")
-    .def("samprate",&mspass::BasicTimeSeries::samprate,"Return the sample rate (usually in Hz)")
-    .def("time_is_UTC",&mspass::BasicTimeSeries::time_is_UTC,"Return true if t0 is a UTC epoch time")
-    .def("time_is_relative",&mspass::BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
-    .def("npts",&mspass::BasicTimeSeries::npts,"Return the number of time samples in this object")
-    .def("t0",&mspass::BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
-    .def("set_dt",&mspass::BasicTimeSeries::set_dt,"Set the data time sample interval")
-    .def("set_npts",&mspass::BasicTimeSeries::set_npts,"Set the number of data samples in this object")
-    .def("set_t0",&mspass::BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
-    .def_property("npts",[](const mspass::BasicTimeSeries &self) {
+    .def("time",&BasicTimeSeries::time,"Return the computed time for a sample number (integer)")
+    .def("sample_number",&BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
+    .def("endtime",&BasicTimeSeries::endtime,"Return the (computed) end time of a time series")
+    .def("shifted",&BasicTimeSeries::shifted,"Return True if the data have been time shifted to relative time")
+    .def("rtoa",py::overload_cast<const double>(&BasicTimeSeries::rtoa))
+    .def("rtoa",py::overload_cast<>(&BasicTimeSeries::rtoa))
+    .def("ator",&BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
+    .def("shift",&BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
+    .def("time_reference",&BasicTimeSeries::time_reference,"Return time standard")
+    .def("shifted",&BasicTimeSeries::shifted,"Return true if data are UTC standard with a time shift applied")
+    .def("force_t0_shift",&BasicTimeSeries::force_t0_shift,"Force a time shift value to make data shifted UTC in relative time")
+    .def("live",&BasicTimeSeries::live,"Return True if the data are marked valid (not dead)")
+    .def("dead",&BasicTimeSeries::dead,"Return true if the data are marked bad and should not be used")
+    .def("kill",&BasicTimeSeries::kill,"Mark this data object bad = dead")
+    .def("set_live",&BasicTimeSeries::set_live,"Undo a kill (mark data ok)")
+    .def("dt",&BasicTimeSeries::dt,"Return the sample interval (normally in second)")
+    .def("samprate",&BasicTimeSeries::samprate,"Return the sample rate (usually in Hz)")
+    .def("time_is_UTC",&BasicTimeSeries::time_is_UTC,"Return true if t0 is a UTC epoch time")
+    .def("time_is_relative",&BasicTimeSeries::time_is_relative,"Return true if t0 is not UTC=some relative time standard like shot time")
+    .def("npts",&BasicTimeSeries::npts,"Return the number of time samples in this object")
+    .def("t0",&BasicTimeSeries::t0,"Return the time of the first sample of data in this time series")
+    .def("set_dt",&BasicTimeSeries::set_dt,"Set the data time sample interval")
+    .def("set_npts",&BasicTimeSeries::set_npts,"Set the number of data samples in this object")
+    .def("set_t0",&BasicTimeSeries::set_t0,"Set time of sample 0 (t0) - does not check if consistent with time standard")
+    .def_property("npts",[](const BasicTimeSeries &self) {
         return self.npts();
-      },[](mspass::BasicTimeSeries &self, size_t npts) {
+      },[](BasicTimeSeries &self, size_t npts) {
         self.set_npts(npts);
       },"Number of samples in this object")
-    .def_property("t0",[](const mspass::BasicTimeSeries &self) {
+    .def_property("t0",[](const BasicTimeSeries &self) {
         return self.t0();
-      },[](mspass::BasicTimeSeries &self, double t0) {
+      },[](BasicTimeSeries &self, double t0) {
         self.set_t0(t0);
       },"The time of the first sample of data in this object")
-    .def_property("dt",[](const mspass::BasicTimeSeries &self) {
+    .def_property("dt",[](const BasicTimeSeries &self) {
         return self.dt();
-      },[](mspass::BasicTimeSeries &self, double dt) {
+      },[](BasicTimeSeries &self, double dt) {
         self.set_dt(dt);
       },"The sample interval (normally in second)")
-    .def_property("live",[](const mspass::BasicTimeSeries &self) {
+    .def_property("live",[](const BasicTimeSeries &self) {
         return self.live();
-      },[](mspass::BasicTimeSeries &self, bool b) {
+      },[](BasicTimeSeries &self, bool b) {
         if(b)
           self.set_live();
         else
           self.kill();
       },"Whether the data is valid or not")
-    .def_property("tref",[](const mspass::BasicTimeSeries &self) {
+    .def_property("tref",[](const BasicTimeSeries &self) {
         return self.timetype();
-      },[](mspass::BasicTimeSeries &self, TimeReferenceType tref) {
+      },[](BasicTimeSeries &self, TimeReferenceType tref) {
         self.set_tref(tref);
       },"Time reference standard for this data object")
   ;
-  py::class_<mspass::CoreTimeSeries,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
+  py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const size_t>())
@@ -793,7 +820,7 @@ PYBIND11_MODULE(ccore,m)
   Leans heavily on example here:
   https://github.com/pybind/pybind11/blob/master/tests/test_buffers.cpp
   */
-  py::class_<mspass::dmatrix>(m, "dmatrix", py::buffer_protocol())
+  py::class_<dmatrix>(m, "dmatrix", py::buffer_protocol())
     .def(py::init<>())
     .def(py::init<size_t,size_t>())
     .def(py::init<const dmatrix&>())
@@ -806,7 +833,7 @@ PYBIND11_MODULE(ccore,m)
       memcpy(v->get_address(0,0), info.ptr, sizeof(double) * v->rows() * v->columns());
       return v;
     }))
-    .def_buffer([](mspass::dmatrix &m) -> py::buffer_info {
+    .def_buffer([](dmatrix &m) -> py::buffer_info {
       return py::buffer_info(
         m.get_address(0,0),                               /* Pointer to buffer */
         sizeof(double),                          /* Size of one scalar */
@@ -917,12 +944,12 @@ PYBIND11_MODULE(ccore,m)
       return strout;
     })
   ;
-  py::class_<mspass::CoreSeismogram,mspass::BasicTimeSeries,mspass::Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
+  py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
-    .def(py::init<const std::vector<mspass::CoreTimeSeries>&,const unsigned int>())
-    .def(py::init<const mspass::Metadata&,const bool>(),"Construct from Metadata with read from file option")
+    .def(py::init<const std::vector<CoreTimeSeries>&,const unsigned int>())
+    .def(py::init<const Metadata&,const bool>(),"Construct from Metadata with read from file option")
     .def("set_dt",&CoreSeismogram::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreSeismogram::set_npts,
@@ -931,7 +958,7 @@ PYBIND11_MODULE(ccore,m)
       "Sync number of samples with data")
     .def("set_t0",&CoreSeismogram::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
-    .def("endtime",&mspass::CoreSeismogram::endtime,"Return the (computed) end time of a time series")
+    .def("endtime",&CoreSeismogram::endtime,"Return the (computed) end time of a time series")
     .def("rotate_to_standard",&CoreSeismogram::rotate_to_standard,"Transform data to cardinal coordinates")
     .def("rotate",py::overload_cast<SphericalCoordinate&>(&CoreSeismogram::rotate),"3D rotation defined by spherical coordinate angles")
     .def("rotate",py::overload_cast<const double>(&CoreSeismogram::rotate),"2D rotation about the vertical axis")
@@ -994,8 +1021,8 @@ PYBIND11_MODULE(ccore,m)
   ;
 
   m.def("ArrivalTimeReference",
-      py::overload_cast<mspass::Seismogram&,std::string,mspass::TimeWindow>
-          (&mspass::ArrivalTimeReference),
+      py::overload_cast<Seismogram&,std::string,TimeWindow>
+          (&ArrivalTimeReference),
           "Shifts data so t=0 is a specified arrival time",
       py::return_value_policy::copy,
       py::arg("d"),
@@ -1003,8 +1030,8 @@ PYBIND11_MODULE(ccore,m)
       py::arg("window")
   );
   m.def("ArrivalTimeReference",
-      py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,std::string,mspass::TimeWindow>
-          (&mspass::ArrivalTimeReference),
+      py::overload_cast<Ensemble<Seismogram>&,std::string,TimeWindow>
+          (&ArrivalTimeReference),
           "Shifts data so t=0 is a specified arrival time",
       py::return_value_policy::copy,
       py::arg("d"),
@@ -1013,22 +1040,22 @@ PYBIND11_MODULE(ccore,m)
   );
   /* overload_cast would not work on this name because of a strange limitation with templated functions
    * used for the Ensemble definition.   */
-  m.def("ExtractComponent",static_cast<mspass::TimeSeries(*)(const mspass::Seismogram&,const unsigned int)>(&mspass::ExtractComponent),
+  m.def("ExtractComponent",static_cast<TimeSeries(*)(const Seismogram&,const unsigned int)>(&ExtractComponent),
   	"Extract component as a TimeSeries object",
       py::return_value_policy::copy,
       py::arg("tcs"),
       py::arg("component")
   );
-  m.def("EnsembleComponent",static_cast<mspass::Ensemble<TimeSeries>(*)(const mspass::Ensemble<Seismogram>&,const unsigned int)>(&mspass::ExtractComponent),
+  m.def("EnsembleComponent",static_cast<Ensemble<TimeSeries>(*)(const Ensemble<Seismogram>&,const unsigned int)>(&ExtractComponent),
   /*
-  m.def("ExtractComponent",py::overload_cast<const mspass::Ensemble<Seismogram>,const size_t>(&mspass::ExtractComponent),
+  m.def("ExtractComponent",py::overload_cast<const Ensemble<Seismogram>,const size_t>(&ExtractComponent),
   */
   	"Extract one component from a 3C ensemble",
       py::return_value_policy::copy,
       py::arg("d"),
       py::arg("component")
   );
-   py::enum_<mspass::ErrorSeverity>(m,"ErrorSeverity")
+   py::enum_<ErrorSeverity>(m,"ErrorSeverity")
     .value("Fatal",ErrorSeverity::Fatal)
     .value("Invalid",ErrorSeverity::Invalid)
     .value("Suspect",ErrorSeverity::Suspect)
@@ -1077,57 +1104,57 @@ PYBIND11_MODULE(ccore,m)
   /* this set of functions are companions to MsPASSError needed as a
   workaround for problem that MsPASSError method are not visible to
   error handlers for a caught MsPASSError exception. */
-  m_util.def("error_says_data_bad",&mspass::error_says_data_bad,
+  m_util.def("error_says_data_bad",&error_says_data_bad,
     "Test if what message from MsPASSError defines data as invalid and should be killed")
   ;
-  m_util.def("error_severity_string",&mspass::parse_message_error_severity,
+  m_util.def("error_severity_string",&parse_message_error_severity,
     "Return a string defining error severity of a MsPASSError exception")
   ;
-  m_util.def("error_severity",&mspass::message_error_severity,
+  m_util.def("error_severity",&message_error_severity,
     "Return an ErrorSeverity object defining severity of a MsPASSError being handled")
   ;
-  m_util.def("pfread",&mspass::pfread,"parameter file reader",
+  m_util.def("pfread",&pfread,"parameter file reader",
       py::return_value_policy::copy,
       py::arg("pffile")
   );
-  m_util.def("get_mdlist",&mspass::get_mdlist,"retrieve list with keys and types",
+  m_util.def("get_mdlist",&get_mdlist,"retrieve list with keys and types",
     py::return_value_policy::copy
   );
-  py::enum_<mspass::MDDefFormat>(m,"MDDefFormat")
+  py::enum_<MDDefFormat>(m,"MDDefFormat")
     .value("PF",MDDefFormat::PF)
     .value("YAML",MDDefFormat::YAML)
   ;
-  py::class_<mspass::MetadataDefinitions>(m,"MetadataDefinitions","Load a catalog of valid metadata names with types defined")
+  py::class_<MetadataDefinitions>(m,"MetadataDefinitions","Load a catalog of valid metadata names with types defined")
     .def(py::init<>())
     .def(py::init<string>())
-    .def(py::init<std::string,mspass::MDDefFormat>())
-    .def("is_defined",&mspass::MetadataDefinitions::is_defined,"Test if a key is defined")
-    .def("concept",&mspass::MetadataDefinitions::concept,"Return a string with a brief description of the concept this attribute captures")
-    .def("type",&mspass::MetadataDefinitions::type,"Return a description of the type of this attribute")
-    .def("add",&mspass::MetadataDefinitions::add,"Append a new attribute to the catalog")
-    .def("has_alias",&mspass::MetadataDefinitions::has_alias,"Returns true if a specified key as an alterate name - alias")
-    .def("is_alias",&mspass::MetadataDefinitions::is_alias,"Return true if a key is an alias")
-    .def("aliases",&mspass::MetadataDefinitions::aliases,"Return a list of aliases for a particular key")
-    .def("unique_name",&mspass::MetadataDefinitions::unique_name,"Returns the unique key name associated with an alias")
-    .def("add_alias",&mspass::MetadataDefinitions::add_alias,"Add an alias for a particular atrribute key")
-    .def("keys",&mspass::MetadataDefinitions::keys,"Return a list of all valid keys")
-    .def("writeable",&mspass::MetadataDefinitions::writeable,"Test if an attribute should be saved")
-    .def("readonly",&mspass::MetadataDefinitions::readonly,"Test if an attribute is marked readonly")
-    .def("set_readonly",&mspass::MetadataDefinitions::set_readonly,"Force an attribute to be marked readonly")
-    .def("set_writeable",&mspass::MetadataDefinitions::set_writeable,"Force an attribute to be marked as writeable")
-    .def("is_normalized",&mspass::MetadataDefinitions::is_normalized,"Test to see if an attribute is stored in a master collection (table)")
-    .def("unique_id_key",&mspass::MetadataDefinitions::unique_id_key,"Return the key for a unique id to fetch an attribute from a master collection (table)")
-    .def("collection",&mspass::MetadataDefinitions::collection,"Return the table (collection) name for an attribute defined in a master table")
-    .def("normalize_data",&mspass::MetadataDefinitions::normalize_data,"Faster method to return unique_id_key and table name")
-    .def("apply_aliases",&mspass::MetadataDefinitions::apply_aliases,"Apply a set of alias names to Metadata or child of Metadata")
-    .def("clear_aliases",&mspass::MetadataDefinitions::clear_aliases,"Clear aliases in a Metadata or child of Metadata")
+    .def(py::init<std::string,MDDefFormat>())
+    .def("is_defined",&MetadataDefinitions::is_defined,"Test if a key is defined")
+    .def("concept",&MetadataDefinitions::concept,"Return a string with a brief description of the concept this attribute captures")
+    .def("type",&MetadataDefinitions::type,"Return a description of the type of this attribute")
+    .def("add",&MetadataDefinitions::add,"Append a new attribute to the catalog")
+    .def("has_alias",&MetadataDefinitions::has_alias,"Returns true if a specified key as an alterate name - alias")
+    .def("is_alias",&MetadataDefinitions::is_alias,"Return true if a key is an alias")
+    .def("aliases",&MetadataDefinitions::aliases,"Return a list of aliases for a particular key")
+    .def("unique_name",&MetadataDefinitions::unique_name,"Returns the unique key name associated with an alias")
+    .def("add_alias",&MetadataDefinitions::add_alias,"Add an alias for a particular atrribute key")
+    .def("keys",&MetadataDefinitions::keys,"Return a list of all valid keys")
+    .def("writeable",&MetadataDefinitions::writeable,"Test if an attribute should be saved")
+    .def("readonly",&MetadataDefinitions::readonly,"Test if an attribute is marked readonly")
+    .def("set_readonly",&MetadataDefinitions::set_readonly,"Force an attribute to be marked readonly")
+    .def("set_writeable",&MetadataDefinitions::set_writeable,"Force an attribute to be marked as writeable")
+    .def("is_normalized",&MetadataDefinitions::is_normalized,"Test to see if an attribute is stored in a master collection (table)")
+    .def("unique_id_key",&MetadataDefinitions::unique_id_key,"Return the key for a unique id to fetch an attribute from a master collection (table)")
+    .def("collection",&MetadataDefinitions::collection,"Return the table (collection) name for an attribute defined in a master table")
+    .def("normalize_data",&MetadataDefinitions::normalize_data,"Faster method to return unique_id_key and table name")
+    .def("apply_aliases",&MetadataDefinitions::apply_aliases,"Apply a set of alias names to Metadata or child of Metadata")
+    .def("clear_aliases",&MetadataDefinitions::clear_aliases,"Clear aliases in a Metadata or child of Metadata")
     .def(py::self += py::self)
   ;
 /* These are needed for mspass extensions of Core data objects */
-  py::class_<mspass::LogData>(m,"LogData","Many mspass create error and log messages with this structure")
+  py::class_<LogData>(m,"LogData","Many mspass create error and log messages with this structure")
     .def(py::init<>())
-    .def(py::init<int,std::string,mspass::MsPASSError&>())
-    .def(py::init<int,std::string,std::string,mspass::ErrorSeverity>())
+    .def(py::init<int,std::string,MsPASSError&>())
+    .def(py::init<int,std::string,std::string,ErrorSeverity>())
     .def(py::init([](py::dict d) {
       auto ld = new LogData();
       for(auto i : d) {
@@ -1140,7 +1167,7 @@ PYBIND11_MODULE(ccore,m)
         else if(std::string(py::str(i.first)) == "message")
           ld->message = i.second.cast<std::string>();
         else if(std::string(py::str(i.first)) == "badness")
-          ld->badness = i.second.cast<mspass::ErrorSeverity>();
+          ld->badness = i.second.cast<ErrorSeverity>();
       }
       return ld;
     }))
@@ -1161,63 +1188,63 @@ PYBIND11_MODULE(ccore,m)
       return strout + std::string(py::str(py::cast(ld).attr("__str__")())) + ")";
     })
   ;
-  py::class_<mspass::ErrorLogger>(m,"ErrorLogger","Used to post any nonfatal errors without aborting a program of family of parallel programs")
+  py::class_<ErrorLogger>(m,"ErrorLogger","Used to post any nonfatal errors without aborting a program of family of parallel programs")
     .def(py::init<>())
     .def(py::init<const ErrorLogger&>())
     .def(py::init<int>())
-    .def("set_job_id",&mspass::ErrorLogger::set_job_id)
-    .def("get_job_id",&mspass::ErrorLogger::get_job_id)
-    .def("log_error",py::overload_cast<const mspass::MsPASSError&>(&mspass::ErrorLogger::log_error),"log error thrown as MsPASSError")
-    .def("log_error",py::overload_cast<const std::string,const std::string,const mspass::ErrorSeverity>(&mspass::ErrorLogger::log_error),"log a message at a specified severity level")
-    .def("log_verbose",&mspass::ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
-    .def("get_error_log",&mspass::ErrorLogger::get_error_log,"Return all posted entries")
-    .def("size",&mspass::ErrorLogger::size,"Return number of entries in this log")
-    .def("__len__",&mspass::ErrorLogger::size,"Return number of entries in this log")
-    .def("worst_errors",&mspass::ErrorLogger::worst_errors,"Return a list of only the worst errors")
+    .def("set_job_id",&ErrorLogger::set_job_id)
+    .def("get_job_id",&ErrorLogger::get_job_id)
+    .def("log_error",py::overload_cast<const MsPASSError&>(&ErrorLogger::log_error),"log error thrown as MsPASSError")
+    .def("log_error",py::overload_cast<const std::string,const std::string,const ErrorSeverity>(&ErrorLogger::log_error),"log a message at a specified severity level")
+    .def("log_verbose",&ErrorLogger::log_verbose,"Log an informational message - tagged as log message")
+    .def("get_error_log",&ErrorLogger::get_error_log,"Return all posted entries")
+    .def("size",&ErrorLogger::size,"Return number of entries in this log")
+    .def("__len__",&ErrorLogger::size,"Return number of entries in this log")
+    .def("worst_errors",&ErrorLogger::worst_errors,"Return a list of only the worst errors")
     .def("__getitem__", [](ErrorLogger &self, size_t i) {
       return py::cast(self).attr("get_error_log")().attr("__getitem__")(i);
     })
   ;
   /* New classes in 2020 API revision - object level history preservation */
-  py::enum_<mspass::ProcessingStatus>(m,"ProcessingStatus")
-    .value("RAW",mspass::ProcessingStatus::RAW)
-    .value("ORIGIN",mspass::ProcessingStatus::ORIGIN)
-    .value("VOLATILE",mspass::ProcessingStatus::VOLATILE)
-    .value("SAVED",mspass::ProcessingStatus::SAVED)
-    .value("UNDEFINED",mspass::ProcessingStatus::UNDEFINED)
+  py::enum_<ProcessingStatus>(m,"ProcessingStatus")
+    .value("RAW",ProcessingStatus::RAW)
+    .value("ORIGIN",ProcessingStatus::ORIGIN)
+    .value("VOLATILE",ProcessingStatus::VOLATILE)
+    .value("SAVED",ProcessingStatus::SAVED)
+    .value("UNDEFINED",ProcessingStatus::UNDEFINED)
   ;
 
-  py::enum_<mspass::AtomicType>(m,"AtomicType")
-    .value("TIMESERIES",mspass::AtomicType::TIMESERIES)
-    .value("SEISMOGRAM",mspass::AtomicType::SEISMOGRAM)
-    .value("UNDEFINED",mspass::AtomicType::UNDEFINED)
+  py::enum_<AtomicType>(m,"AtomicType")
+    .value("TIMESERIES",AtomicType::TIMESERIES)
+    .value("SEISMOGRAM",AtomicType::SEISMOGRAM)
+    .value("UNDEFINED",AtomicType::UNDEFINED)
   ;
 
-  py::class_<mspass::BasicProcessingHistory,PyBasicProcessingHistory>
-  //py::class_<mspass::BasicProcessingHistory>
+  py::class_<BasicProcessingHistory,PyBasicProcessingHistory>
+  //py::class_<BasicProcessingHistory>
       (m,"BasicProcessingHistory","Base class - hold job history data")
     .def(py::init<>())
-    .def("jobid",&mspass::BasicProcessingHistory::jobid,
+    .def("jobid",&BasicProcessingHistory::jobid,
       "Return job id string")
-    .def("jobname",&mspass::BasicProcessingHistory::jobname,
+    .def("jobname",&BasicProcessingHistory::jobname,
       "Return job name string defining main python script driving this processing chain")
-    .def("set_jobid",&mspass::BasicProcessingHistory::set_jobid,
+    .def("set_jobid",&BasicProcessingHistory::set_jobid,
       "Set a unique id so jobname + id is unique")
-    .def("set_jobname",&mspass::BasicProcessingHistory::set_jobname,
+    .def("set_jobname",&BasicProcessingHistory::set_jobname,
       "Set the base job name defining the main python script for this run")
   ;
-  py::class_<mspass::NodeData>
+  py::class_<NodeData>
     (m,"NodeData","Data structure used in ProcessingHistory to processing tree node data")
     .def(py::init<>())
-    .def(py::init<const mspass::NodeData&>())
-    .def_readwrite("status",&mspass::NodeData::status,"ProcessingStatus value at this node")
-    .def_readwrite("uuid",&mspass::NodeData::uuid,"uuid of data stage associated with this node")
-    .def_readwrite("algorithm",&mspass::NodeData::algorithm,"algorithm that created data linked to this node position")
-    .def_readwrite("algid",&mspass::NodeData::algid,
+    .def(py::init<const NodeData&>())
+    .def_readwrite("status",&NodeData::status,"ProcessingStatus value at this node")
+    .def_readwrite("uuid",&NodeData::uuid,"uuid of data stage associated with this node")
+    .def_readwrite("algorithm",&NodeData::algorithm,"algorithm that created data linked to this node position")
+    .def_readwrite("algid",&NodeData::algid,
       "id defining an instance of a particular algorithm (defines what parameter choices were used)")
-    .def_readwrite("stage",&mspass::NodeData::stage,
+    .def_readwrite("stage",&NodeData::stage,
       "Processing stage counter for this node of the processing tree")
-    .def_readwrite("type",&mspass::NodeData::type,"Type of data this process handled as this input")
+    .def_readwrite("type",&NodeData::type,"Type of data this process handled as this input")
     .def("__str__", [](const NodeData &nd) -> std::string {
       return std::string("{'status': ") + std::string(py::str(py::cast(nd.status))) +
         ", 'uuid': " + std::string(py::repr(py::cast(nd.uuid))) +
@@ -1247,24 +1274,24 @@ PYBIND11_MODULE(ccore,m)
       }
      ))
   ;
-  py::class_<mspass::ProcessingHistory,mspass::BasicProcessingHistory>
+  py::class_<ProcessingHistory,BasicProcessingHistory>
     (m,"ProcessingHistory","Used to save object level processing history.")
     .def(py::init<>())
     .def(py::init<const std::string,const std::string>())
-    .def(py::init<const mspass::ProcessingHistory&>())
-    .def("is_empty",&mspass::ProcessingHistory::is_empty,
+    .def(py::init<const ProcessingHistory&>())
+    .def("is_empty",&ProcessingHistory::is_empty,
       "Return true if the processing chain is empty")
-    .def("is_raw",&mspass::ProcessingHistory::is_raw,
+    .def("is_raw",&ProcessingHistory::is_raw,
       "Return True if the data are raw data with no previous processing")
-    .def("is_origin",&mspass::ProcessingHistory::is_origin,
+    .def("is_origin",&ProcessingHistory::is_origin,
        "Return True if the data are marked as an origin - commonly an intermediate save")
-    .def("is_volatile",&mspass::ProcessingHistory::is_volatile,
+    .def("is_volatile",&ProcessingHistory::is_volatile,
       "Return True if the data are unsaved, partially processed data")
-    .def("is_saved",&mspass::ProcessingHistory::is_saved,
+    .def("is_saved",&ProcessingHistory::is_saved,
       "Return True if the data are saved and history can be cleared")
-    .def("number_of_stages",&mspass::ProcessingHistory::number_of_stages,
+    .def("number_of_stages",&ProcessingHistory::number_of_stages,
       "Return count of the number of processing steps applied so far")
-    .def("set_as_origin",&mspass::ProcessingHistory::set_as_origin,
+    .def("set_as_origin",&ProcessingHistory::set_as_origin,
       "Load data defining this as the top of a processing history chain",
       py::arg("alg"),
       py::arg("algid"),
@@ -1272,70 +1299,70 @@ PYBIND11_MODULE(ccore,m)
       py::arg("type"),
       py::arg("define_as_raw") = false)
     .def("set_as_raw",[](ProcessingHistory &self, const string alg,const string algid,
-      const string uuid,const mspass::AtomicType typ){
+      const string uuid,const AtomicType typ){
         self.set_as_origin(alg, algid, uuid, typ, true);
       },
       "Load data defining this as the raw input of a processing history chain")
-    .def("new_ensemble_process",&mspass::ProcessingHistory::new_ensemble_process,
+    .def("new_ensemble_process",&ProcessingHistory::new_ensemble_process,
       "Set up history chain to define the current data as result of reduction - output form multiple inputs",
       py::arg("alg"),
       py::arg("algid"),
       py::arg("type"),
       py::arg("parents"),
       py::arg("create_newid") = true)
-    .def("add_one_input",&mspass::ProcessingHistory::add_one_input,
+    .def("add_one_input",&ProcessingHistory::add_one_input,
       "A single input datum after initialization with new_ensemble_process or accumulate",
       py::arg("newinput"))
-    .def("add_many_inputs",&mspass::ProcessingHistory::add_many_inputs,
+    .def("add_many_inputs",&ProcessingHistory::add_many_inputs,
       "Add multiple inputs after initialization with new_ensemble_process or accumulate",
       py::arg("inputs"))
-    .def("accumulate",&mspass::ProcessingHistory::accumulate,
+    .def("accumulate",&ProcessingHistory::accumulate,
       "History accumulator for spark reduce operators",
       py::arg("alg"),
       py::arg("algid"),
       py::arg("type"),
       py::arg("newinput")
       )
-    .def("_merge",&mspass::ProcessingHistory::merge,
+    .def("_merge",&ProcessingHistory::merge,
       "Merge the history nodes from another",
       py::arg("newinput")
       )
     .def("new_map",py::overload_cast<const std::string,const std::string,
-      const mspass::AtomicType,const mspass::ProcessingStatus>
-        (&mspass::ProcessingHistory::new_map),
+      const AtomicType,const ProcessingStatus>
+        (&ProcessingHistory::new_map),
       "Set history chain to define the current data as a one-to-one map from parent",
       py::arg("alg"),
       py::arg("algid"),
       py::arg("type"),
-      py::arg("newstatus") = mspass::ProcessingStatus::VOLATILE)
+      py::arg("newstatus") = ProcessingStatus::VOLATILE)
     .def("new_map",py::overload_cast<const std::string,const std::string,
-      const mspass::AtomicType,const ProcessingHistory&,
-      const mspass::ProcessingStatus>
-        (&mspass::ProcessingHistory::new_map),
+      const AtomicType,const ProcessingHistory&,
+      const ProcessingStatus>
+        (&ProcessingHistory::new_map),
       "Set history chain to define the current data as a one-to-one map from parent",
       py::arg("alg"),
       py::arg("algid"),
       py::arg("type"),
       py::arg("data_to_clone"),
-      py::arg("newstatus") = mspass::ProcessingStatus::VOLATILE)
-    .def("map_as_saved",&mspass::ProcessingHistory::map_as_saved,
+      py::arg("newstatus") = ProcessingStatus::VOLATILE)
+    .def("map_as_saved",&ProcessingHistory::map_as_saved,
       "Load data defining this as the end of chain that was or will soon be saved")
-    .def("clear",&mspass::ProcessingHistory::clear,
+    .def("clear",&ProcessingHistory::clear,
       "Clear this history chain - use with caution")
-    .def("get_nodes", &mspass::ProcessingHistory::get_nodes,
+    .def("get_nodes", &ProcessingHistory::get_nodes,
       "Retrieve the nodes multimap that defines the tree stucture branches")
-    .def("stage",&mspass::ProcessingHistory::stage,
+    .def("stage",&ProcessingHistory::stage,
       "Return the current stage number (counter of processing stages applied in this run)")
-    .def("id",&mspass::ProcessingHistory::id,"Return current uuid")
-    .def("created_by",&mspass::ProcessingHistory::created_by ,"Return the algorithm name and id that created current node")
-    .def("current_nodedata",&mspass::ProcessingHistory::current_nodedata,"Return all the attributes of current")
-    .def("newid",&mspass::ProcessingHistory::newid,"Create a new uuid for current data")
-    .def("set_id",&mspass::ProcessingHistory::set_id,"Set current uuid to valued passed")
-    .def("inputs",&mspass::ProcessingHistory::inputs,
+    .def("id",&ProcessingHistory::id,"Return current uuid")
+    .def("created_by",&ProcessingHistory::created_by ,"Return the algorithm name and id that created current node")
+    .def("current_nodedata",&ProcessingHistory::current_nodedata,"Return all the attributes of current")
+    .def("newid",&ProcessingHistory::newid,"Create a new uuid for current data")
+    .def("set_id",&ProcessingHistory::set_id,"Set current uuid to valued passed")
+    .def("inputs",&ProcessingHistory::inputs,
       "Return a list of uuids of all data that were inputs to defined uuid (current or any ancestor)")
-    .def("number_inputs",py::overload_cast<const std::string>(&mspass::ProcessingHistory::number_inputs, py::const_),
+    .def("number_inputs",py::overload_cast<const std::string>(&ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to generate a specified uuid of the process chain")
-    .def("number_inputs",py::overload_cast<>(&mspass::ProcessingHistory::number_inputs, py::const_),
+    .def("number_inputs",py::overload_cast<>(&ProcessingHistory::number_inputs, py::const_),
       "Return the number of inputs used to create the current data")
     .def_readwrite("elog",&ProcessingHistory::elog)
     .def("__str__", [](const ProcessingHistory &ph) -> std::string {
@@ -1362,7 +1389,7 @@ PYBIND11_MODULE(ccore,m)
      ))
   ;
 
-  py::class_<mspass::Seismogram,mspass::CoreSeismogram,mspass::ProcessingHistory>
+  py::class_<Seismogram,CoreSeismogram,ProcessingHistory>
                                                 (m,"Seismogram")
     .def(py::init<>())
     .def(py::init<const Seismogram&>())
@@ -1374,7 +1401,7 @@ PYBIND11_MODULE(ccore,m)
       const bool,const bool, const dmatrix&,const dmatrix&>())
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
-    .def("load_history",&mspass::Seismogram::load_history,
+    .def("load_history",&Seismogram::load_history,
        "Load ProcessingHistory from another data object that contains relevant history")
     .def(py::pickle(
       [](const Seismogram &self) {
@@ -1406,7 +1433,7 @@ PYBIND11_MODULE(ccore,m)
       [](py::tuple t) {
        string sbuf=t[0].cast<std::string>();
        Metadata md;
-       md=mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+       md=Metadata(restore_serialized_metadata(sbuf));
        stringstream ssbts(t[1].cast<std::string>());
        boost::archive::text_iarchive arbts(ssbts);
        BasicTimeSeries bts;
@@ -1430,16 +1457,16 @@ PYBIND11_MODULE(ccore,m)
      ))
     ;
 
-    py::class_<mspass::TimeSeries,mspass::CoreTimeSeries,mspass::ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
+    py::class_<TimeSeries,CoreTimeSeries,ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
       .def(py::init<const CoreTimeSeries&>())
-      .def(py::init<const mspass::CoreTimeSeries&,const std::string>())
-      .def("load_history",&mspass::TimeSeries::load_history,
+      .def(py::init<const CoreTimeSeries&,const std::string>())
+      .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
       // Not sure this constructor needs to be exposed to python
       /*
-      .def(py::init<const mspass::BasicTimeSeries&,const mspass::Metadata&,
+      .def(py::init<const BasicTimeSeries&,const Metadata&,
         const ProcessingHistory&, const std::vector&)
         */
       .def(py::pickle(
@@ -1461,7 +1488,7 @@ PYBIND11_MODULE(ccore,m)
         [](py::tuple t) {
          string sbuf=t[0].cast<std::string>();
          Metadata md;
-         md=mspass::Metadata(mspass::restore_serialized_metadata(sbuf));
+         md=Metadata(restore_serialized_metadata(sbuf));
          stringstream ssbts(t[1].cast<std::string>());
          boost::archive::text_iarchive arbts(ssbts);
          BasicTimeSeries bts;
@@ -1491,22 +1518,22 @@ PYBIND11_MODULE(ccore,m)
      Note also the objects are stored in and std::vector container with the name member.  It appears
      the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
      will be handled. */
-  py::class_<mspass::Ensemble<TimeSeries>,mspass::Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+  py::class_<Ensemble<TimeSeries>,Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<TimeSeries>&>())
-    .def("update_metadata",&mspass::Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",&mspass::Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
+    .def("update_metadata",&Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
+    .def("sync_metadata",&Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
-    .def_readwrite("member",&mspass::Ensemble<TimeSeries>::member,
+    .def_readwrite("member",&Ensemble<TimeSeries>::member,
             "Vector of TimeSeries objects defining the ensemble")
-    .def("__getitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i) {
+    .def("__getitem__", [](Ensemble<TimeSeries> &self, const size_t i) {
       return self.member.at(i);
     })
-    .def("__getitem__",&mspass::Metadata::get_any)
-    .def("__setitem__", [](mspass::Ensemble<TimeSeries> &self, const size_t i, const TimeSeries ts) {
+    .def("__getitem__",&Metadata::get_any)
+    .def("__setitem__", [](Ensemble<TimeSeries> &self, const size_t i, const TimeSeries ts) {
       self.member.at(i) = ts;
     })
     // Based on this issue: https://github.com/pybind/pybind11/issues/974
@@ -1536,22 +1563,22 @@ PYBIND11_MODULE(ccore,m)
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
   ;
-  py::class_<mspass::Ensemble<Seismogram>,mspass::Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+  py::class_<Ensemble<Seismogram>,Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<Seismogram>&>())
-    .def("update_metadata",&mspass::Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",&mspass::Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
+    .def("update_metadata",&Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
+    .def("sync_metadata",&Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
-    .def_readwrite("member",&mspass::Ensemble<Seismogram>::member,
+    .def_readwrite("member",&Ensemble<Seismogram>::member,
             "Vector of Seismogram objects defining the ensemble")
-    .def("__getitem__", [](mspass::Ensemble<Seismogram> &self, const size_t i) {
+    .def("__getitem__", [](Ensemble<Seismogram> &self, const size_t i) {
       return self.member.at(i);
     })
-    .def("__getitem__",&mspass::Metadata::get_any)
-    .def("__setitem__", [](mspass::Ensemble<Seismogram> &self, const size_t i, const Seismogram ts) {
+    .def("__getitem__",&Metadata::get_any)
+    .def("__setitem__", [](Ensemble<Seismogram> &self, const size_t i, const Seismogram ts) {
       self.member.at(i) = ts;
     })
     .def("__setitem__", [](Metadata& md, const py::bytes k, const py::object v) {
@@ -1579,226 +1606,226 @@ PYBIND11_MODULE(ccore,m)
   ;
 
   /* this is a set of deconvolution related classes*/
-  py::class_<mspass::ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
-      .def("load",&mspass::ScalarDecon::load,
+  py::class_<ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
+      .def("load",&ScalarDecon::load,
         py::arg("w"),py::arg("d"),"Load data and wavelet to use to construct deconvolutions operator")
-      .def("loaddata",&mspass::ScalarDecon::loaddata,py::arg("d"))
-      .def("loadwavelet",&mspass::ScalarDecon::loadwavelet,py::arg("w"))
-      .def("process",&mspass::ScalarDecon::process)
-      .def("getresult",&mspass::ScalarDecon::getresult,
+      .def("loaddata",&ScalarDecon::loaddata,py::arg("d"))
+      .def("loadwavelet",&ScalarDecon::loadwavelet,py::arg("w"))
+      .def("process",&ScalarDecon::process)
+      .def("getresult",&ScalarDecon::getresult,
               "Fetch vector of deconvolved data - after calling process")
-      .def("change_parameter",&mspass::ScalarDecon::changeparameter,"Change deconvolution parameters")
-      .def("change_shaping_wavelet",&mspass::ScalarDecon::change_shaping_wavelet,
+      .def("change_parameter",&ScalarDecon::changeparameter,"Change deconvolution parameters")
+      .def("change_shaping_wavelet",&ScalarDecon::change_shaping_wavelet,
               "Change the shaping wavelet applied to output")
-      .def("actual_output",&mspass::ScalarDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("ideal_output",&mspass::ScalarDecon::ideal_output,"Return ideal output of for inverse")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::ScalarDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::ScalarDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::ScalarDecon::QCMetrics,"Return ideal output of for inverse")
+      .def("actual_output",&ScalarDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("ideal_output",&ScalarDecon::ideal_output,"Return ideal output of for inverse")
+      .def("inverse_wavelet",py::overload_cast<>(&ScalarDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&ScalarDecon::inverse_wavelet))
+      .def("QCMetrics",&ScalarDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-  py::class_<mspass::WaterLevelDecon,mspass::ScalarDecon>(m,"WaterLevelDecon","Water level frequency domain operator")
-      .def(py::init<const mspass::Metadata>())
-      .def("changeparameter",&mspass::WaterLevelDecon::changeparameter,"Change operator parameters")
-      .def("process",&mspass::WaterLevelDecon::process,"Process previously loaded data")
-      .def("actual_output",&mspass::WaterLevelDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::WaterLevelDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::WaterLevelDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
+  py::class_<WaterLevelDecon,ScalarDecon>(m,"WaterLevelDecon","Water level frequency domain operator")
+      .def(py::init<const Metadata>())
+      .def("changeparameter",&WaterLevelDecon::changeparameter,"Change operator parameters")
+      .def("process",&WaterLevelDecon::process,"Process previously loaded data")
+      .def("actual_output",&WaterLevelDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&WaterLevelDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&WaterLevelDecon::inverse_wavelet))
+      .def("QCMetrics",&WaterLevelDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-  py::class_<mspass::LeastSquareDecon,mspass::ScalarDecon>(m,"LeastSquareDecon","Water level frequency domain operator")
-      .def(py::init<const mspass::Metadata>())
-      .def("changeparameter",&mspass::LeastSquareDecon::changeparameter,"Change operator parameters")
-      .def("process",&mspass::LeastSquareDecon::process,"Process previously loaded data")
-      .def("actual_output",&mspass::LeastSquareDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::LeastSquareDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::LeastSquareDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::LeastSquareDecon::QCMetrics,"Return ideal output of for inverse")
+  py::class_<LeastSquareDecon,ScalarDecon>(m,"LeastSquareDecon","Water level frequency domain operator")
+      .def(py::init<const Metadata>())
+      .def("changeparameter",&LeastSquareDecon::changeparameter,"Change operator parameters")
+      .def("process",&LeastSquareDecon::process,"Process previously loaded data")
+      .def("actual_output",&LeastSquareDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&LeastSquareDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&LeastSquareDecon::inverse_wavelet))
+      .def("QCMetrics",&LeastSquareDecon::QCMetrics,"Return ideal output of for inverse")
   ;
-  py::class_<mspass::MultiTaperSpecDivDecon,mspass::ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
-      .def(py::init<const mspass::Metadata>())
-      .def("changeparameter",&mspass::MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
-      .def("process",&mspass::MultiTaperSpecDivDecon::process,"Process previously loaded data")
-      .def("loadnoise",&mspass::MultiTaperSpecDivDecon::loadnoise,"Load noise data for regularization")
-      .def("load",&mspass::MultiTaperSpecDivDecon::load,"Load all data, wavelet, and noise")
-      .def("actual_output",&mspass::MultiTaperSpecDivDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::MultiTaperSpecDivDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::MultiTaperSpecDivDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
-      .def("get_taperlen",&mspass::MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
-      .def("get_number_tapers",&mspass::MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
-      .def("get_time_bandwidth_product",&mspass::MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+  py::class_<MultiTaperSpecDivDecon,ScalarDecon>(m,"MultiTaperSpecDivDecon","Water level frequency domain operator")
+      .def(py::init<const Metadata>())
+      .def("changeparameter",&MultiTaperSpecDivDecon::changeparameter,"Change operator parameters")
+      .def("process",&MultiTaperSpecDivDecon::process,"Process previously loaded data")
+      .def("loadnoise",&MultiTaperSpecDivDecon::loadnoise,"Load noise data for regularization")
+      .def("load",&MultiTaperSpecDivDecon::load,"Load all data, wavelet, and noise")
+      .def("actual_output",&MultiTaperSpecDivDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&MultiTaperSpecDivDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperSpecDivDecon::inverse_wavelet))
+      .def("QCMetrics",&MultiTaperSpecDivDecon::QCMetrics,"Return ideal output of for inverse")
+      .def("get_taperlen",&MultiTaperSpecDivDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
+      .def("get_number_tapers",&MultiTaperSpecDivDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
+      .def("get_time_bandwidth_product",&MultiTaperSpecDivDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
-  py::class_<mspass::FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
+  py::class_<FFTDeconOperator>(m,"FFTDeconOperator","Base class used by frequency domain deconvolution methods")
     .def(py::init<>())
-    .def("change_size",&mspass::FFTDeconOperator::change_size,"Change fft buffer size")
-    .def("get_size",&mspass::FFTDeconOperator::get_size,"Get current fft buffer size")
-    .def("change_shift",&mspass::FFTDeconOperator::change_shift,"Change reference time shift")
-    .def("get_shift",&mspass::FFTDeconOperator::get_shift,"Get current reference time shift")
-    .def("df",&mspass::FFTDeconOperator::df,"Get frequency bin size")
+    .def("change_size",&FFTDeconOperator::change_size,"Change fft buffer size")
+    .def("get_size",&FFTDeconOperator::get_size,"Get current fft buffer size")
+    .def("change_shift",&FFTDeconOperator::change_shift,"Change reference time shift")
+    .def("get_shift",&FFTDeconOperator::get_shift,"Get current reference time shift")
+    .def("df",&FFTDeconOperator::df,"Get frequency bin size")
   ;
-  py::class_<mspass::MultiTaperXcorDecon,mspass::ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
-      .def(py::init<const mspass::Metadata>())
-      .def("changeparameter",&mspass::MultiTaperXcorDecon::changeparameter,"Change operator parameters")
-      .def("process",&mspass::MultiTaperXcorDecon::process,"Process previously loaded data")
-      .def("loadnoise",&mspass::MultiTaperXcorDecon::loadnoise,"Load noise data for regularization")
-      .def("load",&mspass::MultiTaperXcorDecon::load,"Load all data, wavelet, and noise")
-      .def("actual_output",&mspass::MultiTaperXcorDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::MultiTaperXcorDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::MultiTaperXcorDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
-      .def("get_taperlen",&mspass::MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
-      .def("get_number_tapers",&mspass::MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
-      .def("get_time_bandwidth_product",&mspass::MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
+  py::class_<MultiTaperXcorDecon,ScalarDecon>(m,"MultiTaperXcorDecon","Water level frequency domain operator")
+      .def(py::init<const Metadata>())
+      .def("changeparameter",&MultiTaperXcorDecon::changeparameter,"Change operator parameters")
+      .def("process",&MultiTaperXcorDecon::process,"Process previously loaded data")
+      .def("loadnoise",&MultiTaperXcorDecon::loadnoise,"Load noise data for regularization")
+      .def("load",&MultiTaperXcorDecon::load,"Load all data, wavelet, and noise")
+      .def("actual_output",&MultiTaperXcorDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&MultiTaperXcorDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&MultiTaperXcorDecon::inverse_wavelet))
+      .def("QCMetrics",&MultiTaperXcorDecon::QCMetrics,"Return ideal output of for inverse")
+      .def("get_taperlen",&MultiTaperXcorDecon::get_taperlen,"Get length of the Slepian tapers used by the operator")
+      .def("get_number_tapers",&MultiTaperXcorDecon::get_number_tapers,"Get number of Slepian tapers used by the operator")
+      .def("get_time_bandwidth_product",&MultiTaperXcorDecon::get_time_bandwidth_product,"Get time bandwidt product of Slepian tapers used by the operator")
   ;
   /* this wrapper is propertly constructed, but for now we disable it
    * because it has known bugs that need to be squashed.  It should be
    * turned back on if and when those bugs are squashed.
-  py::class_<mspass::GeneralIterDecon,mspass::ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
-      .def(py::init<mspass::AntelopePf&>())
-      .def("changeparameter",&mspass::GeneralIterDecon::changeparameter,"Change operator parameters")
-      .def("process",&mspass::GeneralIterDecon::process,"Process previously loaded data")
-      .def("loadnoise",&mspass::GeneralIterDecon::loadnoise,"Load noise data for regularization")
-      .def("load",py::overload_cast<const mspass::CoreSeismogram&,const mspass::TimeWindow>
-              (&mspass::GeneralIterDecon::load),"Load data")
-      .def("actual_output",&mspass::GeneralIterDecon::actual_output,"Return actual output of inverse*wavelet")
-      .def("inverse_wavelet",py::overload_cast<>(&mspass::GeneralIterDecon::inverse_wavelet))
-      .def("inverse_wavelet",py::overload_cast<double>(&mspass::GeneralIterDecon::inverse_wavelet))
-      .def("QCMetrics",&mspass::GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
+  py::class_<GeneralIterDecon,ScalarDecon>(m,"GeneralIterDecon","Water level frequency domain operator")
+      .def(py::init<AntelopePf&>())
+      .def("changeparameter",&GeneralIterDecon::changeparameter,"Change operator parameters")
+      .def("process",&GeneralIterDecon::process,"Process previously loaded data")
+      .def("loadnoise",&GeneralIterDecon::loadnoise,"Load noise data for regularization")
+      .def("load",py::overload_cast<const CoreSeismogram&,const TimeWindow>
+              (&GeneralIterDecon::load),"Load data")
+      .def("actual_output",&GeneralIterDecon::actual_output,"Return actual output of inverse*wavelet")
+      .def("inverse_wavelet",py::overload_cast<>(&GeneralIterDecon::inverse_wavelet))
+      .def("inverse_wavelet",py::overload_cast<double>(&GeneralIterDecon::inverse_wavelet))
+      .def("QCMetrics",&GeneralIterDecon::QCMetrics,"Return ideal output of for inverse")
   ;
   */
 
-py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
   .def(py::init<>())
-  .def(py::init<const mspass::AntelopePf&>())
-  .def("change_parameters",&mspass::CNR3CDecon::change_parameters,
+  .def(py::init<const AntelopePf&>())
+  .def("change_parameters",&CNR3CDecon::change_parameters,
       "Change operator definition")
-  .def("loaddata",py::overload_cast<mspass::Seismogram&,const int,const bool>(&mspass::CNR3CDecon::loaddata),
+  .def("loaddata",py::overload_cast<Seismogram&,const int,const bool>(&CNR3CDecon::loaddata),
        "Load data defining wavelet by one data component")
-  .def("loaddata",py::overload_cast<mspass::Seismogram&,const bool>(&mspass::CNR3CDecon::loaddata),
+  .def("loaddata",py::overload_cast<Seismogram&,const bool>(&CNR3CDecon::loaddata),
        "Load data only with optional noise")
-  .def("loadnoise_data",py::overload_cast<const Seismogram&>(&mspass::CNR3CDecon::loadnoise_data),
+  .def("loadnoise_data",py::overload_cast<const Seismogram&>(&CNR3CDecon::loadnoise_data),
        "Load noise to use for regularization from a seismogram")
-  .def("loadnoise_data",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise_data),
+  .def("loadnoise_data",py::overload_cast<const PowerSpectrum&>(&CNR3CDecon::loadnoise_data),
        "Load noise to use for regularization from a seismogram")
-  .def("loadnoise_wavelet",py::overload_cast<const TimeSeries&>(&mspass::CNR3CDecon::loadnoise_wavelet),
+  .def("loadnoise_wavelet",py::overload_cast<const TimeSeries&>(&CNR3CDecon::loadnoise_wavelet),
        "Load noise to use for regularization from a seismogram")
-  .def("loadnoise_wavelet",py::overload_cast<const mspass::PowerSpectrum&>(&mspass::CNR3CDecon::loadnoise_wavelet),
+  .def("loadnoise_wavelet",py::overload_cast<const PowerSpectrum&>(&CNR3CDecon::loadnoise_wavelet),
        "Load noise to use for regularization from a seismogram")
-  .def("loadwavelet",&mspass::CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
-  .def("process",&mspass::CNR3CDecon::process,"Process data previously loaded")
-  .def("ideal_output",&mspass::CNR3CDecon::ideal_output,"Return ideal output for this operator")
-  .def("actual_output",&mspass::CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
-  .def("inverse_wavelet",&mspass::CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
-  .def("QCMetrics",&mspass::CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
+  .def("loadwavelet",&CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
+  .def("process",&CNR3CDecon::process,"Process data previously loaded")
+  .def("ideal_output",&CNR3CDecon::ideal_output,"Return ideal output for this operator")
+  .def("actual_output",&CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
+  .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
+  .def("QCMetrics",&CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
 ;
 
   /* this pair of functions are potentially useful for interactive queries of
   ProcessingHistory data */
-  m_util.def("algorithm_history",&mspass::algorithm_history,
+  m_util.def("algorithm_history",&algorithm_history,
     "Return a list of algorithms applied to produce current data object",
     py::return_value_policy::copy,
     py::arg("h"))
   ;
-  m_util.def("algorithm_outputs",&mspass::algorithm_outputs,
+  m_util.def("algorithm_outputs",&algorithm_outputs,
     "Return a list of uuids of data created by a specified algorithm",
     py::return_value_policy::copy,
     py::arg("h"),
     py::arg("algorithm"),
     py::arg("algid") )
   ;
-  m.def("agc",&mspass::agc,"Automatic gain control a Seismogram",
+  m.def("agc",&agc,"Automatic gain control a Seismogram",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
-  m.def("_WindowData",&mspass::WindowData,"Reduce data to window inside original",
+  m.def("_WindowData",&WindowData,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
-  m.def("_WindowData3C",&mspass::WindowData3C,"Reduce data to window inside original",
+  m.def("_WindowData3C",&WindowData3C,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
-  m.def("circular_shift",&mspass::circular_shift,"Time-domain circular shift operator",
+  m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("i0") )
   ;
   /* Amplitude functions - overloads */
-  m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::PeakAmplitude),
+  m.def("PeakAmplitude",py::overload_cast<const CoreTimeSeries&>(&PeakAmplitude),
     "Compute amplitude as largest absolute amplitude",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("PeakAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::PeakAmplitude),
+  m.def("PeakAmplitude",py::overload_cast<const CoreSeismogram&>(&PeakAmplitude),
     "Compute amplitude as largest vector amplitude",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("RMSAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::RMSAmplitude),
+  m.def("RMSAmplitude",py::overload_cast<const CoreTimeSeries&>(&RMSAmplitude),
     "Compute amplitude from rms of signal",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("RMSAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::RMSAmplitude),
+  m.def("RMSAmplitude",py::overload_cast<const CoreSeismogram&>(&RMSAmplitude),
     "Compute amplitude as rms on all 3 components",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("MADAmplitude",py::overload_cast<const CoreTimeSeries&>(&mspass::MADAmplitude),
+  m.def("MADAmplitude",py::overload_cast<const CoreTimeSeries&>(&MADAmplitude),
     "Compute amplitude from median absolute deviation (MAD) of signal",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("MADAmplitude",py::overload_cast<const CoreSeismogram&>(&mspass::MADAmplitude),
+  m.def("MADAmplitude",py::overload_cast<const CoreSeismogram&>(&MADAmplitude),
     "Compute amplitude as median of vector amplitudes",
     py::return_value_policy::copy,py::arg("d") )
   ;
-  m.def("PerfAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&mspass::PerfAmplitude),
+  m.def("PerfAmplitude",py::overload_cast<const CoreTimeSeries&,const double>(&PerfAmplitude),
     "Compute amplitude of signal using clip percentage metric",
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
-  m.def("PerfAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&mspass::PerfAmplitude),
+  m.def("PerfAmplitude",py::overload_cast<const CoreSeismogram&,const double>(&PerfAmplitude),
     "Compute amplitude of signal using clip percentage metric",
     py::return_value_policy::copy,py::arg("d"),py::arg("perf") )
   ;
-  py::enum_<mspass::ScalingMethod>(m,"ScalingMethod")
-    .value("Peak",mspass::ScalingMethod::Peak)
-    .value("RMS",mspass::ScalingMethod::RMS)
-    .value("ClipPerc",mspass::ScalingMethod::ClipPerc)
-    .value("MAD",mspass::ScalingMethod::MAD)
+  py::enum_<ScalingMethod>(m,"ScalingMethod")
+    .value("Peak",ScalingMethod::Peak)
+    .value("RMS",ScalingMethod::RMS)
+    .value("ClipPerc",ScalingMethod::ClipPerc)
+    .value("MAD",ScalingMethod::MAD)
   ;
   /* We give the python names for these functions a trailing underscore as
   a standard hit they are not to be used directly - should be hidden behing
   python functions that simply the api and (more importantly) add an optional
   history preservation. */
-  m.def("_scale",py::overload_cast<mspass::Seismogram&,const mspass::ScalingMethod,const double>(&mspass::scale<Seismogram>),
+  m.def("_scale",py::overload_cast<Seismogram&,const ScalingMethod,const double>(&scale<Seismogram>),
     "Scale a Seismogram object with a chosen amplitude metric",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level") )
   ;
-  m.def("_scale",py::overload_cast<mspass::TimeSeries&,const mspass::ScalingMethod,const double>(&mspass::scale<TimeSeries>),
+  m.def("_scale",py::overload_cast<TimeSeries&,const ScalingMethod,const double>(&scale<TimeSeries>),
     "Scale a TimeSeries object with a chosen amplitude metric",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level") )
   ;
-  m.def("_scale_ensemble_members",py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,
-          const mspass::ScalingMethod&, const double>(&mspass::scale_ensemble_members<mspass::Seismogram>),
+  m.def("_scale_ensemble_members",py::overload_cast<Ensemble<Seismogram>&,
+          const ScalingMethod&, const double>(&scale_ensemble_members<Seismogram>),
     "Scale each member of a SeismogramEnsemble individually by selected metric",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level") )
   ;
-  m.def("_scale_ensemble_members",py::overload_cast<mspass::Ensemble<mspass::TimeSeries>&,
-          const mspass::ScalingMethod&, const double>(&mspass::scale_ensemble_members<mspass::TimeSeries>),
+  m.def("_scale_ensemble_members",py::overload_cast<Ensemble<TimeSeries>&,
+          const ScalingMethod&, const double>(&scale_ensemble_members<TimeSeries>),
     "Scale each member of a TimeSeriesEnsemble individually by selected metric",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level") )
   ;
-  m.def("_scale_ensemble",py::overload_cast<mspass::Ensemble<mspass::Seismogram>&,
-          const mspass::ScalingMethod&, const double, const bool>(&mspass::scale_ensemble<mspass::Seismogram>),
+  m.def("_scale_ensemble",py::overload_cast<Ensemble<Seismogram>&,
+          const ScalingMethod&, const double, const bool>(&scale_ensemble<Seismogram>),
     "Apply a uniform scale to a SeismogramEnsemble using average member estimates by a selected method",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
   ;
-  m.def("_scale_ensemble",py::overload_cast<mspass::Ensemble<mspass::TimeSeries>&,
-          const mspass::ScalingMethod&, const double, const bool>(&mspass::scale_ensemble<mspass::TimeSeries>),
+  m.def("_scale_ensemble",py::overload_cast<Ensemble<TimeSeries>&,
+          const ScalingMethod&, const double, const bool>(&scale_ensemble<TimeSeries>),
     "Apply a uniform scale to a TimeSeriesEnsemble using average member estimates by a selected method",
     py::return_value_policy::copy,
     py::arg("d"),py::arg("method"),py::arg("level"),py::arg("use_mean") )
@@ -1806,25 +1833,25 @@ py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored 
   /* These are a pair of (four actually - overloaded) procedures to aid
   python programs in building history chains.  See C++ doxygen definitions */
 /* Temporarily disabled
-  m.def("append_input",&mspass::append_input<TimeSeries>,
+  m.def("append_input",&append_input<TimeSeries>,
     "Use the history chain of a TimeSeries to define it as an input for an algorithm to define ProcessingHistory",
     py::return_value_policy::copy,
     py::arg("rec"),
     py::arg("d") )
   ;
-  m.def("append_input",&mspass::append_input<Seismogram>,
+  m.def("append_input",&append_input<Seismogram>,
     "Use the history chain of a Seismogram to define it as an input for an algorithm to define ProcessingHistory",
     py::return_value_policy::copy,
     py::arg("rec"),
     py::arg("d") )
   ;
-  m.def("set_inputs",&mspass::set_inputs<TimeSeries>,
+  m.def("set_inputs",&set_inputs<TimeSeries>,
     "Set inputs in a history chain when inputs are an Ensemble of TimeSeries objects",
     py::return_value_policy::copy,
     py::arg("rec"),
     py::arg("d") )
   ;
-  m.def("set_inputs",&mspass::set_inputs<Seismogram>,
+  m.def("set_inputs",&set_inputs<Seismogram>,
     "Set inputs in a history chain when inputs are an Ensemble of Seismogram objects",
     py::return_value_policy::copy,
     py::arg("rec"),

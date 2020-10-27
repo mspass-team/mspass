@@ -10,7 +10,7 @@
 #include "mspass/seismic/SlownessVector.h"
 #include "mspass/seismic/TimeWindow.h"
 //#include "mspass/seismic/Ensemble.h"
-namespace mspass{
+namespace mspass::seismic{
 
 /* A Seismogram is viewed as a special collection of Time Series
 type data that is essentially a special version of a vector time series.
@@ -37,7 +37,7 @@ done, for example, with std::basic_string made equivalent to std::string.
  through inheritance of a Metadata object.
 \author Gary L. Pavlis
 **/
-class CoreSeismogram : public mspass::BasicTimeSeries , public mspass::Metadata
+class CoreSeismogram : public mspass::seismic::BasicTimeSeries , public mspass::utility::Metadata
 {
 public:
  /*!
@@ -51,7 +51,7 @@ Matrix is 3xns.  Thus the rows are the component number
  tests are done to validate this consistency.  All constructors handle
  this, but again because u is public be very careful in altering u.
 **/
-	dmatrix u;
+	mspass::utility::dmatrix u;
 
 /*!
  Default constructor.
@@ -109,7 +109,7 @@ Initializes data and sets aside memory for
    of the three components passed through ts is used.  Default is 0.
 
 **/
-	CoreSeismogram(const vector<mspass::CoreTimeSeries>& ts,
+	CoreSeismogram(const std::vector<mspass::seismic::CoreTimeSeries>& ts,
 		const unsigned int component_to_clone=0);
 /*! \brief Construct from Metadata definition that includes data path.
  *
@@ -138,7 +138,7 @@ Initializes data and sets aside memory for
 
  \exception  Will throw a MsPASSError if required metadata are missing.
  */
-        CoreSeismogram(const mspass::Metadata& md,const bool load_data=true);
+        CoreSeismogram(const mspass::utility::Metadata& md,const bool load_data=true);
 /*!
  Standard copy constructor.
 **/
@@ -302,7 +302,7 @@ create cummulative transformations.
 
 \param sc defines final x3 direction (longitudinal) in a spherical coordinate structure.
 **/
-	void rotate(SphericalCoordinate& sc);
+	void rotate(mspass::utility::SphericalCoordinate& sc);
 
 /*!
  Rotate data using a P wave type coordinate definition.
@@ -367,7 +367,7 @@ transformation.   Use the transform or horizontal rotation method to
 \param vp0 Surface P wave velocity
 \param vs0 Surface S wave velocity.
 **/
-	void free_surface_transformation(const mspass::SlownessVector u, const double vp0, const double vs0);
+	void free_surface_transformation(const mspass::seismic::SlownessVector u, const double vp0, const double vs0);
 /*! Return current transformation matrix.
 
 The transformation matrix is maintained internally in this object.
@@ -377,9 +377,9 @@ matrix when the coordinates are cardinal (i.e. ENZ).
 
 \return 3x3 transformation matrix.
 */
-  dmatrix get_transformation_matrix() const
+  mspass::utility::dmatrix get_transformation_matrix() const
   {
-      dmatrix result(3,3);
+      mspass::utility::dmatrix result(3,3);
       for(int i=0;i<3;++i)
           for(int j=0;j<3;++j) result(i,j)=tmatrix[i][j];
       return result;
@@ -401,7 +401,7 @@ matrix when the coordinates are cardinal (i.e. ENZ).
  \exception Will throw a MsPASSError if the input matrix is
    not 3x3.
    */
-  bool set_transformation_matrix(const dmatrix& A);
+  bool set_transformation_matrix(const mspass::utility::dmatrix& A);
 /*! \brief Define the transformaton matrix with a C style 3x3 matrix.
 
  \param a is a C style 3x3 matrix.
@@ -460,5 +460,5 @@ private:
            matrix is an identity matrix. */
   bool tmatrix_is_cardinal();
 };
-}  //end mspass namespace enscapsulation
+}  //end mspass::seismic namespace enscapsulation
 #endif  // End guard

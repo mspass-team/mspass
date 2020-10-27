@@ -2,7 +2,9 @@
 #include "mspass/utility/ErrorLogger.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/seismic/Taper.h"
-using namespace mspass;
+using namespace std;
+using namespace mspass::utility;
+using namespace mspass::seismic;
 /* We use this print the results as a matrix on completion.*/
 dmatrix vov2dmatrix(vector<vector<double>>& d)
 {

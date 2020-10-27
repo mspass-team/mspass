@@ -6,8 +6,7 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ProcessManager.h"
 using namespace std;
-using namespace mspass;
-namespace mspass{
+namespace mspass::utility{
 ProcessManager::ProcessManager() : jobnm()
 {
   job_uuid=gen();

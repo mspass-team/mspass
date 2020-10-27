@@ -2,8 +2,12 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
-namespace mspass {
-using namespace mspass;
+namespace mspass::algorithms
+{
+using namespace std;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 /* This file contains helper procedures for Seismogram objects.  Most
 are truly procedural and take a Seismogram object or a Ensemble
 object and return one or the other.
@@ -219,8 +223,8 @@ Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
     throw MsPASSError("ExtractComponent(Ensmble): illegal component number - must be 0,1, or 2",
 		    ErrorSeverity::Invalid);
   try{
-    mspass::Ensemble<TimeSeries> result;
-    result.mspass::Metadata::operator=(d);
+    Ensemble<TimeSeries> result;
+    result.Metadata::operator=(d);
     result.member.reserve(d.member.size());
     vector<Seismogram>::const_iterator dptr;
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)

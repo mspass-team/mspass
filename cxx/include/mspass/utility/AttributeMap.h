@@ -7,6 +7,7 @@
 #include "mspass/utility/AntelopePf.h"
 namespace mspass
 {
+namespace utility{
 /*! \brief  Defines properties of a database attribute and link to internal names.
 *
 * This object is used to define the relationship between a parameter stored
@@ -74,7 +75,7 @@ public:
 	in the form used by Antelope/datascope:  that is the string is if the form table.attribute.
 	*/
 	std::string fully_qualified_name() const;
-        friend ostream& operator<<(ostream& ofs, const AttributeProperties& d);
+        friend std::ostream& operator<<(std::ostream& ofs, const AttributeProperties& d);
 };
 /*! \brief An object to map internal and external attribute names.
 *
@@ -112,7 +113,7 @@ public:
 	* a map and handle the possibility that the requested item is not known to
 	* the map.  Consult the web or the source code for libMsPASS if you don't
 	* know how to do this.  */
-	map<std::string,AttributeProperties> attributes;
+	std::map<std::string,AttributeProperties> attributes;
 	/*! \brief Default constructor.
 	*  The default assumes the css3.0 schema and will load the name definitions
 	*  defined for that schema.  */
@@ -177,9 +178,9 @@ public:
 		not defined for the AttributeMap itself.  This always indicates
 		an error in the definition of the AttributeMap.
 	*/
-	map<std::string,AttributeProperties> aliases(const std::string key) const;
+	std::map<std::string,AttributeProperties> aliases(const std::string key) const;
         /*! Overload for literals. */
-	map<std::string,AttributeProperties> aliases(const char *key) const;
+	std::map<std::string,AttributeProperties> aliases(const char *key) const;
 	/*! Returns an ordered list of table names to try in extracting an alias named.
 
 	Aliases present an issue on input.  Because many attribute names appear in
@@ -225,9 +226,9 @@ private:
 	*
 	* The map uses an alias name as the key and the list of strings
 	* are keys back to the public map to AttributePropeties. */
-	map<std::string,list<std::string> > aliasmap;
+	std::map<std::string,std::list<std::string> > aliasmap;
 };
-
-} // End namespace MsPASS declaration
+} // end utility namespace
+} // End namespace mspass declaration
 
 #endif

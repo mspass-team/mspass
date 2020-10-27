@@ -7,8 +7,7 @@
 #include "mspass/utility/ProcessingHistory.h"
 
 using namespace std;
-using namespace mspass;
-namespace mspass{
+namespace mspass::utility{
 /* This is an internal function that returns a string description of the
 ProcessingStatus enum class */
 string status_to_words(const ProcessingStatus status)

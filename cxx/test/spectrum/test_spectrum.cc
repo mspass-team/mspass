@@ -1,10 +1,11 @@
 #include <vector>
-#include "mspass/deconvolution/wavelet.h"
+#include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/seismic/TimeSeries.h"
-#include "mspass/deconvolution/MTPowerSpectrumEngine.h"
+#include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
 /* Hack test */
 using namespace std;
-using namespace mspass;
+using namespace mspass::seismic;
+using namespace mspass::algorithms::deconvolution;
 int main(int argc, char **argv)
 {
   cout << "mspass spectrum test program starting"<<endl
@@ -15,8 +16,8 @@ int main(int argc, char **argv)
   MTPowerSpectrumEngine mtpse4(512,4,8);
   MTPowerSpectrumEngine mtpse5(512,5,10);
   double *gtmp,*rtmp;
-  gtmp=mspass::gaussian(10.0,1.0,512);
-  rtmp=mspass::rickerwavelet(5.0,0.01,512);
+  gtmp=gaussian(10.0,1.0,512);
+  rtmp=rickerwavelet(5.0,0.01,512);
   vector<double> g,r;
   int i,nfft(512);
   for(i=0;i<nfft;++i)

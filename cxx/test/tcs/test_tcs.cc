@@ -5,7 +5,8 @@
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
+using namespace mspass::seismic;
 int main(int argc, char **argv)
 {
     string pfname("test_tcs");
