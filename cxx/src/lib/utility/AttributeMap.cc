@@ -2,9 +2,9 @@
 #include "mspass/utility/utility.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/AttributeMap.h"
-namespace mspass{
+namespace mspass::utility{
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
 // AttributeProperties encapsulate concepts about what a piece
 // of metadata is.  It was designed originally with attributes
 // extracted from a relational database as the model.  The
@@ -201,7 +201,7 @@ AttributeMap::AttributeMap(const string mapname)
 	const string pfname("attribute_maps.pf");
 	string datadir,pfdir,pffile;
 	try{
-                datadir=mspass::data_directory();
+                datadir=mspass::utility::data_directory();
 		pfdir=datadir+"/pf/";
 		pffile=pfdir+pfname;
 		AntelopePf pfall_maps(pffile);
@@ -344,4 +344,4 @@ AttributeProperties AttributeMap::operator[](const char *key) const
 }
 
 
-} // End mspass Namespace declaration
+} // End mspass::utility Namespace declaration

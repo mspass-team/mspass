@@ -2,7 +2,8 @@
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/utility/AttributeMap.h"
 #include "mspass/utility/AttributeCrossReference.h"
-using namespace mspass;
+using namespace std;
+using namespace mspass::utility;
 /* This is a test program for AttributeMap and AttributeCrossReference objects.*/
 
 int main(int argc,char **argv)
@@ -59,7 +60,7 @@ int main(int argc,char **argv)
     cout << "Example arrival.time"<<endl;
     cout << amdef["arrival.time"]<<endl;
     cout << "Starting tests of AttributeCrossReference - trying to read test pf file"<<endl;
-    string dir=mspass::data_directory();
+    string dir=data_directory();
     dir=dir+"/pf";
     string dfile=dir+"/axref_test.pf";
     AntelopePf pf(dfile);

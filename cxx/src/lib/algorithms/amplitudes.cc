@@ -3,9 +3,11 @@
 #include "mspass/seismic/Seismogram.h"
 #include "misc/blas.h"
 #include "mspass/algorithms/amplitudes.h"
+namespace mspass::algorithms::amplitudes
+{
 using namespace std;
-using namespace mspass;
-namespace mspass{
+using namespace mspass::seismic;
+
 /* Series of overloaded functions to measure peak amplitudes for
 different types of seismic data objects.  These are used in
 a generic algorithm defined in seispp.h */

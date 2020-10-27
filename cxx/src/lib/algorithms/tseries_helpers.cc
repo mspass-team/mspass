@@ -3,9 +3,12 @@
 #include "mspass/seismic/TimeWindow.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
+namespace mspass::algorithms
+{
 using namespace std;
-namespace mspass {
-using namespace mspass;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 /* This file is very very similar to a related set of procedures found
 in the file three_component_helpers.cc.  Future efforts could merge
 them into a template version standardizes what these do.

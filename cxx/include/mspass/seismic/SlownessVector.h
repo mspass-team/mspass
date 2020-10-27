@@ -1,7 +1,7 @@
 #ifndef _SLOWNESS_H_
 #define _SLOWNESS_H_
 #include <string>
-namespace mspass
+namespace mspass::seismic
 {
 /*! \brief Slowness vector object.  
 
@@ -77,5 +77,5 @@ private:
 	double azimuth0;
 };
 
-} // End mspass namespace declaration
+} // End mspass::seismic namespace declaration
 #endif

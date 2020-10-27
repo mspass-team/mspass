@@ -1,7 +1,7 @@
 #include <iostream>
 #include "mspass/utility/dmatrix.h"
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
 dmatrix MakeA()
 {
     dmatrix A(3,2);

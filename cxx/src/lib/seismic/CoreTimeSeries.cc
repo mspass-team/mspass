@@ -3,10 +3,10 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/Metadata.h"
-namespace mspass
+namespace mspass::seismic
 {
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
 //
 // simple constructors for the CoreTimeSeries object are defined inline
 // in seispp.h.

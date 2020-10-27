@@ -2,7 +2,9 @@
 #include "misc/blas.h"
 #include "mspass/utility/dmatrix.h"
 
-namespace mspass{
+namespace mspass::utility{
+using namespace std;
+
 dmatrix::dmatrix()
 {
   nrr=0;

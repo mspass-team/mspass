@@ -1,5 +1,9 @@
+#ifndef _MSPASS_SEISMIC_DATAGAP_H_
+#define _MSPASS_SEISMIC_DATAGAP_H_
 #include <set>
 #include "mspass/seismic/TimeWindow.h"
+
+namespace mspass::seismic{
 /*! \brief Function object used for weak comparison to order TimeWindow objects.
 
 // TimeWindow objects are used, among other things, to define real
@@ -24,14 +28,14 @@ It also returns true if i is outside the range of the data.
 (i.e. less than 0 or >= ns).
 //\param is - sample number to test.
 **/
-      bool is_gap(const int is);  query by sample number
+      bool is_gap(const int is);  //query by sample number
 /*!
 Checks if data at time ttest is a gap or valid data.
 This function is like the overloaded version with an int argument except
 it uses a time instead of sample number for the query.
 \param ttest - time to be tested.
 **/
-      bool is_gap(const double ttest);  query by time
+      bool is_gap(const double ttest);  //query by time
 /*!
 Checks if a given data segment has a gap.
 For efficiency it is often useful to ask if a whole segment of data is
@@ -73,5 +77,7 @@ protected:
   object derived from this base class.  The set is keyed by a TimeWindow
   which allows a simple, fast way to define a time range with invalid
   data. */
-  set<TimeWindow,TimeWindowCmp> gaps;
+  std::set<TimeWindow,TimeWindowCmp> gaps;
 };
+}  // End mspass::seismic namespace
+#endif //end guard

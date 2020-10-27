@@ -1,6 +1,5 @@
 add_subdirectory(utility)
 add_subdirectory(seismic)
-add_subdirectory(deconvolution)
 add_subdirectory(algorithms)
 
 file(WRITE ${CMAKE_BINARY_DIR}/src/dummy.cc "")

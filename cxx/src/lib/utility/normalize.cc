@@ -3,9 +3,8 @@
 #include <mspass/utility/dmatrix.h>
 #include <mspass/utility/MsPASSError.h>
 #include "misc/blas.h"
-namespace mspass{
-using std::vector;
-using mspass::dmatrix;
+namespace mspass::utility{
+using namespace std;
 
 vector<double> normalize_rows(const dmatrix& d)
 {

@@ -1,10 +1,8 @@
 #include <float.h>
 #include <math.h>
 #include "mspass/seismic/SlownessVector.h"
-namespace mspass
+namespace mspass::seismic
 {
-using namespace std;
-using namespace mspass;
 // these are trivial constructors and could be done inline, but 
 // decided to put them here to keep things together.  Learned this
 // lesson the hard way

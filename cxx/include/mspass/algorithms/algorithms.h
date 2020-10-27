@@ -7,7 +7,7 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
-namespace mspass{
+namespace mspass::algorithms{
 /* \brief Apply agc operator to three component seismogram data.
 
    Automatic gain control (agc) is a standard operation in seismic
@@ -31,7 +31,7 @@ original data.
 This function does not throw an exception, but can post errors to the
 ErrorLogger object that is a member of Seismogram.
 */
-TimeSeries agc(Seismogram& d,const double twin);
+mspass::seismic::TimeSeries agc(mspass::seismic::Seismogram& d,const double twin);
 /*! \brief Extracts a requested time window of data from a parent Seismogram object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -47,7 +47,8 @@ handling time.
 \param parent is the larger Seismogram object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-Seismogram WindowData3C(const Seismogram& parent, const TimeWindow& tw);
+mspass::seismic::Seismogram WindowData3C(const mspass::seismic::Seismogram& parent, 
+  const mspass::seismic::TimeWindow& tw);
 /*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -63,7 +64,8 @@ handling time.
 \param parent is the larger TimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
+mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent, 
+  const mspass::seismic::TimeWindow& tw);
 /* This set of procedures are ancessors of seismogram_helpers.   They
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.
@@ -86,8 +88,8 @@ TimeSeries WindowData(const TimeSeries& parent, const TimeWindow& tw);
 \param tw is a TimeWindow object that defines the window of data to extract around
     the desired arrival time.
 **/
-std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
-	std::string key, mspass::TimeWindow tw);
+std::shared_ptr<mspass::seismic::Seismogram> ArrivalTimeReference(mspass::seismic::Seismogram& din,
+	std::string key, mspass::seismic::TimeWindow tw);
 /*! \brief Extract one component from a Seismogram and create a TimeSeries object from it.
 
  Copies all Metadata from parent Seismogram to build a TimeSeries
@@ -109,7 +111,7 @@ std::shared_ptr<Seismogram> ArrivalTimeReference(Seismogram& din,
 
 \return TimeSeries of component requested
 **/
-mspass::TimeSeries ExtractComponent(const Seismogram& tcs,
+mspass::seismic::TimeSeries ExtractComponent(const mspass::seismic::Seismogram& tcs,
 		const unsigned int component);
 /* Enemble algorithms */
 /*! \brief  Returns a gather of Seismograms in an arrival time reference fram.
@@ -125,8 +127,8 @@ mspass::TimeSeries ExtractComponent(const Seismogram& tcs,
 \param tw is a TimeWindow object that defines the window of data to extract around
     the desired arrival time.
 **/
-std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
-  (ThreeComponentEnsemble& din,std::string key, TimeWindow tw);
+std::shared_ptr<mspass::seismic::ThreeComponentEnsemble> ArrivalTimeReference
+  (mspass::seismic::ThreeComponentEnsemble& din, std::string key, mspass::seismic::TimeWindow tw);
 /*! \brief Extract one component from a 3C ensemble.
  *
  This function creates an ensemble of TimeSeries objects that are
@@ -147,7 +149,8 @@ std::shared_ptr<ThreeComponentEnsemble> ArrivalTimeReference
  \exception Will throw a MsPASSError exception if the ensemble
    input is incompatible or the component number is not 0,1, or 2.
    */
-Ensemble<TimeSeries> ExtractComponent(const Ensemble<Seismogram>& d,
+mspass::seismic::Ensemble<mspass::seismic::TimeSeries> ExtractComponent(
+  const mspass::seismic::Ensemble<mspass::seismic::Seismogram>& d,
 	const unsigned int comp);
 /*! \brief Sparse time domain convolution.
 Sometimes with modeling we have an data series (d) that is sparse
@@ -163,7 +166,8 @@ for zeros in d.
 \param wavelet is the wavelet to be convolved with d (not sparse)
 \param d is the sparse data vector (dominated by zeros).
 */
-CoreSeismogram sparse_convolve(const CoreTimeSeries& wavelet,
-				const CoreSeismogram& d);
-}//End mspass namespace encapsulation
+mspass::seismic::CoreSeismogram sparse_convolve(
+    const mspass::seismic::CoreTimeSeries& wavelet,
+		const mspass::seismic::CoreSeismogram& d);
+}//End mspass::algorithms namespace encapsulation
 #endif

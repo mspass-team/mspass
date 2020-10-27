@@ -8,7 +8,7 @@
 #include "mspass/utility/ProcessingHistory.h"
 
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
 /* Translates ProcessingStatus to word for printing */
 string status_string(const ProcessingStatus stat)
 {

@@ -1,9 +1,8 @@
 #include <cstring>
 #include <string>
 #include "mspass/utility/MsPASSError.h"
-namespace mspass{
+namespace mspass::utility{
 using namespace std;
-using namespace mspass;
 /* These are two useful helper functions for MsPASSError constructors and
 for inverse needed for python wrappers - there is no way currently with
 pybind11 to have a custom exception class have access to members other
@@ -40,21 +39,21 @@ ErrorSeverity string2severity(const string howbad)
   return badness;
 }
 /* inverse of string2severity */
-string severity2string(const mspass::ErrorSeverity es)
+string severity2string(const mspass::utility::ErrorSeverity es)
 {
   switch(es)
   {
-    case mspass::ErrorSeverity::Fatal:
+    case mspass::utility::ErrorSeverity::Fatal:
       return string("Fatal");
-    case mspass::ErrorSeverity::Invalid:
+    case mspass::utility::ErrorSeverity::Invalid:
       return string("Invalid");
-    case mspass::ErrorSeverity::Suspect:
+    case mspass::utility::ErrorSeverity::Suspect:
       return string("Suspect");
-    case mspass::ErrorSeverity::Complaint:
+    case mspass::utility::ErrorSeverity::Complaint:
       return string("Complaint");
-    case mspass::ErrorSeverity::Debug:
+    case mspass::utility::ErrorSeverity::Debug:
       return string("Debug");
-    case mspass::ErrorSeverity::Informational:
+    case mspass::utility::ErrorSeverity::Informational:
       return string("Informational");
     default:
       return string("Fatal");
@@ -67,7 +66,7 @@ posts a string representation of the severity level at the end of the
 message string of a what return.   Use this set of functions to
 test the return of "what" to convert to tests for levels of
 badness. */
-string parse_message_error_severity(const mspass::MsPASSError& err)
+string parse_message_error_severity(const mspass::utility::MsPASSError& err)
 {
   string s=err.what();
   size_t fpos;
@@ -79,7 +78,7 @@ string parse_message_error_severity(const mspass::MsPASSError& err)
   if(badness_str.empty()) return string("Invalid");
   return badness_str;
 }
-ErrorSeverity message_error_severity(const mspass::MsPASSError& err)
+ErrorSeverity message_error_severity(const mspass::utility::MsPASSError& err)
 {
   string str=parse_message_error_severity(err);
   return string2severity(str);
@@ -89,7 +88,7 @@ ErrorSeverity message_error_severity(const mspass::MsPASSError& err)
 Hope is that err will be a pointer to a real MsPASSError and the
 compiled C++ code will handle the conversion.  Problem will occur if
 err is a copy created by python.*/
-bool error_says_data_bad(const mspass::MsPASSError& err)
+bool error_says_data_bad(const mspass::utility::MsPASSError& err)
 {
   if( (err.severity() == ErrorSeverity::Fatal)
         || (err.severity() == ErrorSeverity::Invalid)) return true;

@@ -4,18 +4,18 @@
 #include "mspass/utility/ProcessingHistory.h"
 #include "mspass/utility/ErrorLogger.h"
 
-namespace mspass{
+namespace mspass::seismic{
 /*! \brief Implemntation of Seismogram for MsPASS.
 
 This is the working version of a three-component seismogram object used
 in the MsPASS framework.   It extends CoreSeismogram by adding
 ProcessingHistory.   */
-class Seismogram : public mspass::CoreSeismogram,
-   public mspass::ProcessingHistory
+class Seismogram : public mspass::seismic::CoreSeismogram,
+   public mspass::utility::ProcessingHistory
 {
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
-  Seismogram() : mspass::CoreSeismogram(),mspass::ProcessingHistory(){};
+  Seismogram() : mspass::seismic::CoreSeismogram(),mspass::utility::ProcessingHistory(){};
   /*! \brief Construct from lower level CoreSeismogram.
 
   In MsPASS CoreSeismogram has the primary functions that define the
@@ -30,7 +30,7 @@ public:
 
   \param d is the data to be copied to create the new Seismogram object
    */
-  Seismogram(const mspass::CoreSeismogram& d);
+  Seismogram(const mspass::seismic::CoreSeismogram& d);
   /*! Contruct from a core seismogram and initialize history as origin.
 
   This constructor is a variant of a similar one built only from a
@@ -48,7 +48,7 @@ public:
   \param is core data to be cloned
   \param alg is the algorithm name to set for the origin history record.
   */
-  Seismogram(const mspass::CoreSeismogram& d, const std::string alg);
+  Seismogram(const mspass::seismic::CoreSeismogram& d, const std::string alg);
   /*! \brief Construct from all pieces.
 
 This constructor build a Seismogram object from all the pieces that define
@@ -67,10 +67,10 @@ mess with).   tm is also a dmatrix representation the tmatrix stored
 internally as a 2d C array, but we use the dmatrix to mesh
 with serialization.
 */
-  Seismogram(const mspass::BasicTimeSeries& b, const mspass::Metadata& m,
-    const mspass::ProcessingHistory& his,
+  Seismogram(const mspass::seismic::BasicTimeSeries& b, const mspass::utility::Metadata& m,
+    const mspass::utility::ProcessingHistory& his,
       const bool card, const bool ortho,
-        const mspass::dmatrix& tm, const mspass::dmatrix& uin);
+        const mspass::utility::dmatrix& tm, const mspass::utility::dmatrix& uin);
   /*! Constructor driven by a Metadata object.
 
   The flexibilityof Metadata makes it helpful at times to build a Seismogram
@@ -90,13 +90,13 @@ with serialization.
   \param readername is the algorithm name assigned to the top level history
      record.   Defaults to "load3C"
   */
-  Seismogram(const Metadata& md,const string jobname=string("test"),
-    const string jobid=string("UNDEFINED"),
-      const string readername=string("load3C"),
-        const string algid=string("0"));
+  Seismogram(const Metadata& md,const std::string jobname=std::string("test"),
+    const std::string jobid=std::string("UNDEFINED"),
+      const std::string readername=std::string("load3C"),
+        const std::string algid=std::string("0"));
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
-    : mspass::CoreSeismogram(parent), mspass::ProcessingHistory(parent)
+    : mspass::seismic::CoreSeismogram(parent), mspass::utility::ProcessingHistory(parent)
   {};
   /*! Standard assignment operator. */
   Seismogram& operator=(const Seismogram& parent);
@@ -108,7 +108,7 @@ with serialization.
 
   \param h is the ProcessingHistory data to copy into this Seismogram.
   */  
-  void load_history(const mspass::ProcessingHistory& h);
+  void load_history(const mspass::utility::ProcessingHistory& h);
 };
-}//END mspass namespace
+}//END mspass::seismic namespace
 #endif

@@ -8,9 +8,9 @@
 #include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/AntelopePf.h"
-namespace mspass {
+namespace mspass::utility {
 using namespace std;
-using namespace mspass;
+using namespace mspass::utility;
 enum PfStyleInputType {PFMDSTRING, PFMDREAL, PFMDINT, PFMDBOOL, PFMDARR, PFMDTBL};
 /* this is functionally similar to antelope yesno function, but
    in a more C++ style.  int return code is the same:
@@ -100,7 +100,7 @@ bool is_comment_line(string testline)
 }
 AntelopePf pfread(const string fname)
 {
-    const string base_error("mspass::pfread:  ");
+    const string base_error("mspass::utility::pfread:  ");
     /* Low level check to see if file exists - for some reason ifstream
      * does not throw an error if trying to read from a nonexistent file.
      * Seems like a mistake in std to me. Taken from example on web
@@ -446,4 +446,4 @@ Metadata AntelopePf::ConvertToMetadata()
     };
 }
 
-} // End mspass Namespace declaration
+} // End mspass::utility Namespace declaration

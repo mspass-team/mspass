@@ -15,6 +15,7 @@
 #include "mspass/utility/ErrorLogger.h"
 //#include "mspass/seismic/Ensemble.h"
 namespace mspass{
+namespace utility{
 /*! This enum class is used to define status of processing of a datum.
 We use this mechanism to help keep the history data from creating memory
 bloat.   It is alwo helpul to build a linked list of a chain of data
@@ -61,7 +62,7 @@ if a writer immediately clears the history record after it is saved.
 If not, duplicate values with this key will appear in the nodes multimap
 and the history chain will become ambiguous (two trees emerging from the
 same root).*/
-const string SAVED_ID_KEY("NODEDATA_AT_SAVE");
+const std::string SAVED_ID_KEY("NODEDATA_AT_SAVE");
 
 
 /*! Base class defining core concepts.  */
@@ -142,11 +143,11 @@ class NodeData
 {
 public:
   /*! status definition of the parent. */
-  mspass::ProcessingStatus status;
+  mspass::utility::ProcessingStatus status;
   /*! uuid of the parent. */
   std::string uuid;
   /*! This enum can be used to track changes in data type.  */
-  mspass::AtomicType type;
+  mspass::utility::AtomicType type;
   /*! Integer count of the number of processing steps applied to create this parent.*/
   int stage;
   /*! \brief Name of algorithm algorithm applied at this stage.
@@ -346,8 +347,8 @@ public:
   to elog if the history data structures are not empty and it the clear
   method needs to be called internally.
   */
-  void set_as_origin(const string alg,const string algid,
-    const string uuid,const AtomicType typ, bool define_as_raw=false);
+  void set_as_origin(const std::string alg,const std::string algid,
+    const std::string uuid,const AtomicType typ, bool define_as_raw=false);
   /*! Define history chain for an algorithm with multiple inputs in an ensemble.
 
   Use this method to define the history chain for an algorithm that has
@@ -395,8 +396,8 @@ public:
   \return a string representation of the uuid of the data to which this
     ProcessingHistory is now attached.
   */
-  string new_ensemble_process(const string alg,const string algid,
-    const AtomicType typ,const vector<ProcessingHistory*> parents,
+  std::string new_ensemble_process(const std::string alg,const std::string algid,
+    const AtomicType typ,const std::vector<ProcessingHistory*> parents,
       const bool create_newid=true);
   /*! \brief Add one datum as an input for current data.
 
@@ -423,7 +424,7 @@ public:
 
   \param d is the vector of data to define as inputs
   */
-  void add_many_inputs(const vector<ProcessingHistory*>& d);
+  void add_many_inputs(const std::vector<ProcessingHistory*>& d);
 
   /*! \brief Merge the history nodes from another. 
 
@@ -449,7 +450,7 @@ public:
 
 
   */
-  void accumulate(const string alg,const string algid,
+  void accumulate(const std::string alg,const std::string algid,
     const AtomicType typ,const ProcessingHistory& newinput);
   /* \brief Clean up inconsistent uuids that can be produced by reduce.
 
@@ -476,7 +477,7 @@ public:
     alphabetic order) uuid.  Most importantly if there is no match or if
     history is empty it returns the string UNDEFINED.
   */
-  string clean_accumulate_uuids();
+  std::string clean_accumulate_uuids();
     /*! \brief Define this algorithm as a one-to-one map of same type data.
 
   Many algorithms define a one-to-one map where each one input data object
@@ -581,7 +582,7 @@ public:
   It copies the map and then pushes the "current" contents to the map
   before returning the copy.  This allows the data defines as current to
   not be pushed into the tree until they are needed.   */
-  std::multimap<std::string,mspass::NodeData> get_nodes() const;
+  std::multimap<std::string,mspass::utility::NodeData> get_nodes() const;
 
   /*! Return the current stage count for this object.
 
@@ -610,9 +611,9 @@ public:
     return current_id;
   };
   /*! Return the algorithm name and id that created current node. */
-  pair<std::string,std::string> created_by() const
+  std::pair<std::string,std::string> created_by() const
   {
-    pair<std::string,std::string> result(algorithm,algid);
+    std::pair<std::string,std::string> result(algorithm,algid);
     return result;
   }
   /*! Return all the attributes of current.
@@ -667,7 +668,7 @@ public:
     empty list if the key is not found.
 
   */
-  std::list<mspass::NodeData> inputs(const std::string id_to_find) const;
+  std::list<mspass::utility::NodeData> inputs(const std::string id_to_find) const;
 
   /*! Assignment operator.  */
   ProcessingHistory& operator=(const ProcessingHistory& parent);
@@ -679,7 +680,7 @@ protected:
   /* This map defines connections of each data object to others.  Key is the
   uuid of a given object and the values (second) associated with
   that key are the inputs used to create the data defined by the key uuid */
-  std::multimap<std::string,mspass::NodeData> nodes;
+  std::multimap<std::string,mspass::utility::NodeData> nodes;
 private:
   /*  This set of private variables are the values of attributes for
   the same concepts in the NodeData struct/class.   We break them out as
@@ -775,5 +776,6 @@ algorithm.
 */
 std::list<std::string> algorithm_outputs(const ProcessingHistory& h,
   const std::string alg, const std::string algid);
+} // end utility namespace
 } // End mspass namespace
 #endif

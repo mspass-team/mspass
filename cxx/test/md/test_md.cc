@@ -3,7 +3,8 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/AntelopePf.h"
-using namespace mspass;
+using namespace std;
+using namespace mspass::utility;
 void print_metadata(Metadata& md)
 {
   ostringstream ss;

@@ -4,7 +4,7 @@
 #include "mspass/seismic/BasicTimeSeries.h"
 #include "mspass/utility/Metadata.h"
 
-namespace mspass{
+namespace mspass::seismic{
 /*! \brief Scalar time series data object.
 
 This data object extends BasicTimeSeries mainly by adding a vector of
@@ -13,7 +13,7 @@ that aren't essential to define the data object, but which are necessary
 for some algorithms.
 \author Gary L. Pavlis
 **/
-class CoreTimeSeries: public mspass::BasicTimeSeries , public mspass::Metadata
+class CoreTimeSeries: public mspass::seismic::BasicTimeSeries , public mspass::utility::Metadata
 {
 public:
 /*!
@@ -24,7 +24,7 @@ like the BLAS can be used with data object by using a syntax
 like this: if d is a CoreTimeSeries object, the address of the first sample of
 the data is &(d.s[0]).
 **/
-	vector<double>s;
+	std::vector<double>s;
 /*!
 Default constructor.  Initializes object data to zeros and sets the
 initial STL vector size to 0 length.
@@ -141,5 +141,5 @@ this operator is simply an alterative interface to this->s[sample].
 **/
 	double operator[](size_t const sample) const;
 };
-}  // End mspass namespace
+}  // End mspass::seismic namespace
 #endif //end guard

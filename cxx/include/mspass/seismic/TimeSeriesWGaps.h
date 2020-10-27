@@ -1,5 +1,8 @@
+#ifndef _MSPASS_SEISMIC_TSWGAPS_H_
+#define _MSPASS_SEISMIC_TSWGAPS_H_
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/DataGap.h"
+namespace mspass::seismic{
 class TimeSeriesWGaps : public TimeSeries, public DataGap
 {
 public:
@@ -7,7 +10,7 @@ public:
 
   Will need a set of conastructors.   Requires some thought as how to
   set gap is an issue. */
-  TimeSeriesWGaps(args)
+  TimeSeriesWGaps();
   /*! Copy constructor. */
   TimeSeriesWGaps(const TimeSeriesWGaps& parent);
   TimeSeriesWGaps& operator=(const TimeSeriesWGaps& parent);
@@ -63,3 +66,5 @@ public:
   void zero_gaps();
 
 };
+} //end mspass::seismic namespace 
+#endif //end guard

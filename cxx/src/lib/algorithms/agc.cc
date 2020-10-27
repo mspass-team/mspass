@@ -3,10 +3,12 @@
 #include <string>
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/algorithms/algorithms.h"
+namespace mspass::algorithms
+{
 using namespace std;
-using namespace mspass;
-namespace mspass{
-using namespace mspass;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 /* This uses the same algorithm as seismic unix BUT with a vector ssq
  * instead of the scalar form.   Returns a gain function a the same sample
  * rate as teh original data with the gain factor applied to each 3c sample.

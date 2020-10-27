@@ -1,6 +1,7 @@
 #ifndef _SPHERICALCOORDINATE_H_
 #define _SPHERICALCOORDINATE_H_
 namespace mspass {
+namespace utility{
 /*!
 \brief  Encapsulates spherical coordinates in a data structure.
 
@@ -38,5 +39,6 @@ double *SphericalToUnitVector(const SphericalCoordinate& sc);
 double rad(const double theta_deg);
 /*! Convert from radians to degrees. */
 double deg(const double theta_rad);
+} // end utility namespace
 } // end namespace mspass declaration
 #endif

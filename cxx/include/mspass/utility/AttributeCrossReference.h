@@ -7,6 +7,7 @@
 #include "mspass/utility/AttributeMap.h"
 namespace mspass
 {
+namespace utility{
 /*! \brief Cross reference between external and internal names.
 
   Data formats commonly have a frozen namespace with which people
@@ -50,7 +51,7 @@ class AttributeCrossReference
            described above for single string constructor.
         \exception MsPASSError will be thrown if there are parsing errors.
         */
-        AttributeCrossReference(const list<string>& lines);
+        AttributeCrossReference(const std::list<std::string>& lines);
 
         /*! Build for a set of STL containers.
 
@@ -63,7 +64,7 @@ class AttributeCrossReference
           \param mdlist is a MsPASS::MetadataList object defining the
             complete internal namespace. */
         AttributeCrossReference(const std::map<std::string,std::string> internal2external,
-                const mspass::MetadataList& mdlist);
+                const mspass::utility::MetadataList& mdlist);
         /*! Standard copy constructor. */
         AttributeCrossReference(const AttributeCrossReference& parent);
         /*! Get internal name for attribute with external name key.*/
@@ -99,5 +100,6 @@ class AttributeCrossReference
         /* keyed by internal names.  Get type of this attribute*/
         std::map<std::string,MDtype> imdtypemap;
 };
+} // end utility namespace
 } // end mspass namespace encapsulation
 #endif

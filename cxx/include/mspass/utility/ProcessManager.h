@@ -12,7 +12,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_serialize.hpp>
 namespace mspass{
-
+namespace utility{
 /*! \brief Lightweight data structure to completely describe an algorithm.
 
 Processing data always involves application of one or more algorithms.
@@ -61,8 +61,8 @@ public:
   \param id is a unique id string defining the parameters that were used for
     this instance of an algorithm.
   */
-  AlgorithmDefinition(const string name, const string typin,
-    const string typout, const string id)
+  AlgorithmDefinition(const std::string name, const std::string typin,
+    const std::string typout, const std::string id)
   {
     nm=name;
     myid=id;
@@ -76,7 +76,7 @@ public:
     input_type=parent.input_type;
     output_type=parent.output_type;
   };
-  string name() const
+  std::string name() const
   {
     return nm;
   };
@@ -87,7 +87,7 @@ public:
   particular algorithm instance.  If the algorithm has no parameters
   this string will be null. Callers should test that condition by calling
   the length method of std::string to verify the id is not zero length */
-  string id() const
+  std::string id() const
   {
     return myid;
   };
@@ -98,7 +98,7 @@ public:
   class because it is the only attribute that should ever be changed
   after construction.  The reason is the name and type constraints are
   fixed, but id defines a particular instance that may be variable. */
-  void set_id(const string id){myid=id;};
+  void set_id(const std::string id){myid=id;};
   //void set_name(const string name){nm=name;};
   AlgorithmDefinition& operator=(const AlgorithmDefinition& parent)
   {
@@ -112,10 +112,10 @@ public:
     return *this;
   };
 private:
-  string nm;
-  string myid;
-  string input_type;
-  string output_type;
+  std::string nm;
+  std::string myid;
+  std::string input_type;
+  std::string output_type;
   friend boost::serialization::access;
   template<class Archive>
      void serialize(Archive& ar,const unsigned int version)
@@ -128,8 +128,8 @@ class ProcessManager
 {
 public:
   ProcessManager();
-  ProcessManager(string fname);
-  AlgorithmDefinition algorithm(const string name,
+  ProcessManager(std::string fname);
+  AlgorithmDefinition algorithm(const std::string name,
     const size_t instance=0) const;
   std::string jobname() const
   {
@@ -150,14 +150,14 @@ public:
 
   \return new uuid definign this job in string form.
   */
-  string new_newid()
+  std::string new_newid()
   {
     boost::uuids::uuid id;
     id=gen();
     return boost::uuids::to_string(id);
   }
 private:
-  string jobnm;
+  std::string jobnm;
   boost::uuids::uuid job_uuid;
   boost::uuids::random_generator gen;
   std::map<std::string,std::vector<AlgorithmDefinition>> algs;
@@ -170,5 +170,6 @@ private:
     ar & algs;
   };
 };
+} // end utility namespace
 }  // end mspass namespace encapsulation
 #endif

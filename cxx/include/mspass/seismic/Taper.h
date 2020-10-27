@@ -1,9 +1,9 @@
-#include <math.h>
+//#include <math.h>
 #include <vector>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 
-namespace mspass{
+namespace mspass::seismic{
 
 class BasicTaper
 {
@@ -15,8 +15,8 @@ public:
     all = false;
   };
   virtual ~BasicTaper(){};
-  virtual int apply(mspass::TimeSeries& d)=0;
-  virtual int apply(mspass::Seismogram& d)=0;
+  virtual int apply(mspass::seismic::TimeSeries& d)=0;
+  virtual int apply(mspass::seismic::Seismogram& d)=0;
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
@@ -43,8 +43,8 @@ public:
   LinearTaper(const double t0head,const double t1head,
             const double t1tail,const double t0tail);
   /* these need to post to history using new feature*/
-  int apply(mspass::TimeSeries& d);
-  int apply(mspass::Seismogram& d);
+  int apply(mspass::seismic::TimeSeries& d);
+  int apply(mspass::seismic::Seismogram& d);
 private:
   double t0head,t1head,t1tail,t0tail;
 };
@@ -69,8 +69,8 @@ public:
   CosineTaper(const double t0head,const double t1head,
             const double t1tail,const double t0tail);
   /* these need to post to history using new feature*/
-  int apply(mspass::TimeSeries& d);
-  int apply(mspass::Seismogram& d);
+  int apply(mspass::seismic::TimeSeries& d);
+  int apply(mspass::seismic::Seismogram& d);
 private:
   double t0head,t1head,t1tail,t0tail;
 };
@@ -83,14 +83,14 @@ class VectorTaper : public BasicTaper
 {
 public:
   VectorTaper();
-  VectorTaper(const vector<double> taperdata);
-  int apply(mspass::TimeSeries& d);
-  int apply(mspass::Seismogram& d);
+  VectorTaper(const std::vector<double> taperdata);
+  int apply(mspass::seismic::TimeSeries& d);
+  int apply(mspass::seismic::Seismogram& d);
   void disable(){all=false;};
   void enable(){
     if(taper.size()>0) all=true;
   };
 private:
-  vector<double> taper;
+  std::vector<double> taper;
 };
 } // End namespace

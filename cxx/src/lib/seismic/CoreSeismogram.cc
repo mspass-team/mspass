@@ -6,9 +6,10 @@
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
 
-namespace mspass
+namespace mspass::seismic
 {
-using namespace mspass;
+using namespace std;
+using namespace mspass::utility;
 /*
  *  Start with all the constructors.
  *
@@ -298,8 +299,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     // azimuth from north.  At the same time convert vang to radians.
     for(i=0; i<3; ++i)
     {
-        hang[i]=mspass::rad(90.0-hang[i]);
-        vang[i]=mspass::rad(vang[i]);
+        hang[i]=mspass::utility::rad(90.0-hang[i]);
+        vang[i]=mspass::utility::rad(vang[i]);
     }
     for(i=0; i<3; ++i)
     {

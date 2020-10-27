@@ -2,8 +2,9 @@
 #include <ostream>
 #include "mspass/seismic/BasicTimeSeries.h"
 #include "mspass/utility/MsPASSError.h"
-namespace mspass {
-using namespace mspass;
+namespace mspass::seismic {
+using namespace std;
+using namespace mspass::utility;
 
 void BasicTimeSeries::ator(double tshift)
 {

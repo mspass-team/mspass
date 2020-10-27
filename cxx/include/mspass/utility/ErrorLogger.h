@@ -2,7 +2,6 @@
 #define _ERROR_LOGGER_H_
 #include <unistd.h>
 #include <list>
-#include <list>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -11,13 +10,14 @@
 #include "mspass/utility/ErrorLogger.h"
 namespace mspass
 {
+namespace utility{
 class LogData
 {
 public:
   int job_id;
   int p_id;  // output of getpid()
   std::string algorithm;
-  mspass::ErrorSeverity badness;
+  mspass::utility::ErrorSeverity badness;
   std::string message;
   LogData(){};
   /*! Normal constuctor from a MsPASSError or child of same.
@@ -26,7 +26,7 @@ public:
   \param alg is assigned to algorithm attribute.
   \param merr is parsed to fill the message and severity fields.
   Note p_id is always fetched with the system call getpid in the constructor.*/
-  LogData(const int jid, const std::string alg,const mspass::MsPASSError& merr);
+  LogData(const int jid, const std::string alg,const mspass::utility::MsPASSError& merr);
   /*! Normal constuctor from strings.
 
   \param jid is the value to assign to job_id.
@@ -34,8 +34,8 @@ public:
   \param msg is the error message.
   \param lvl is the error severity.
   Note p_id is always fetched with the system call getpid in the constructor.*/
-  LogData(const int jid, const std::string alg, const std::string msg, const mspass::ErrorSeverity lvl);
-  friend ostream& operator<<(ostream&, LogData&);
+  LogData(const int jid, const std::string alg, const std::string msg, const mspass::utility::ErrorSeverity lvl);
+  friend std::ostream& operator<<(std::ostream&, LogData&);
 private:
   friend boost::serialization::access;
   template<class Archive>
@@ -74,7 +74,7 @@ public:
 
   \return size of error log after insertion.
   */
-  int log_error(const mspass::MsPASSError& merr);
+  int log_error(const mspass::utility::MsPASSError& merr);
   /*! Log one a message directly with a specified severity.
 
     This is a convenience overload of log_error.  It splits the
@@ -89,7 +89,7 @@ public:
     \return size of error log after insertion.
     */
   int log_error(const std::string alg, const std::string mess,
-		  const mspass::ErrorSeverity level);
+		  const mspass::utility::ErrorSeverity level);
 
   /*! \brief Log a verbose message marking it informational.
 
@@ -131,7 +131,7 @@ errors are things like Complaint or less.
 template <typename Tdata> bool data_are_valid(const Tdata& d)
 {
   if(d.dead()) return false;
-  list<LogData> welog;
+  std::list<LogData> welog;
   welog=d.elog.worst_errors();
   /*The return will be empty if there are no errors logged*/
   if(welog.size()<=0) return true;
@@ -145,5 +145,6 @@ template <typename Tdata> bool data_are_valid(const Tdata& d)
   else
       return true;
 }
+} // end utility namespace
 } // End mspass namespace
 #endif

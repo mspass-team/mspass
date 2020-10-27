@@ -7,9 +7,9 @@
 #include "mspass/utility/AntelopePf.h"
 #include "yaml-cpp/yaml.h"
 #include "mspass/utility/MetadataDefinitions.h"
-const string DefaultSchemaName("mspass");
-namespace mspass{
-using namespace mspass;
+const std::string DefaultSchemaName("mspass");
+namespace mspass::utility{
+using namespace mspass::utility;
 using namespace std;
 MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 {
@@ -32,7 +32,7 @@ MetadataDefinitions::MetadataDefinitions(const std::string mdname)
       {
         name_to_use.assign(mdname,0,ipos);
       }
-      string datadir=mspass::data_directory();
+      string datadir=mspass::utility::data_directory();
       string path;
       path=datadir+"/yaml/"+name_to_use+".yaml";
       MetadataDefinitions tmp(path,MDDefFormat::YAML);
@@ -46,7 +46,7 @@ MetadataDefinitions::MetadataDefinitions(const std::string mdname)
 MetadataDefinitions::MetadataDefinitions()
 {
     try{
-      string datadir=mspass::data_directory();
+      string datadir=mspass::utility::data_directory();
       string path;
       path=datadir+"/yaml/"+DefaultSchemaName+".yaml";
       MetadataDefinitions tmp(path,MDDefFormat::YAML);
@@ -113,10 +113,10 @@ std::string MetadataDefinitions::concept(const std::string key) const
   return cptr->second;
 }
 
-mspass::MDtype MetadataDefinitions::type(const std::string key) const
+mspass::utility::MDtype MetadataDefinitions::type(const std::string key) const
 {
   const string base_error("MetadataDefinitions::type:  ");
-  map<std::string,mspass::MDtype>::const_iterator tptr;
+  map<std::string,mspass::utility::MDtype>::const_iterator tptr;
   if(this->is_alias(key))
     return this->unique_name(key).second;
   tptr=tmap.find(key);
@@ -175,7 +175,7 @@ bool MetadataDefinitions::is_alias(const std::string key) const
 	  return true;
 }
 
-std::pair<std::string,mspass::MDtype> MetadataDefinitions::unique_name
+std::pair<std::string,mspass::utility::MDtype> MetadataDefinitions::unique_name
                                   (const string aliasname) const
 {
     const string base_error("MetadataDefinitions::unique_name:  ");
@@ -197,14 +197,14 @@ std::pair<std::string,mspass::MDtype> MetadataDefinitions::unique_name
         + " has no matching entry in alias tables\n"
         + "SETUP ERROR - FIX CONFIGURATION FILES",
         ErrorSeverity::Fatal);
-      return(pair<std::string,mspass::MDtype>(kname,tptr->second));
+      return(pair<std::string,mspass::utility::MDtype>(kname,tptr->second));
     }
 }
 std::list<std::string> MetadataDefinitions::keys() const
 {
   /* assume tmap and cmap have the same keys*/
   std::list<std::string> result;
-  map<string,mspass::MDtype>::const_iterator tptr;
+  map<string,mspass::utility::MDtype>::const_iterator tptr;
   for(tptr=tmap.cbegin();tptr!=tmap.cend();++tptr)
   {
     result.push_back(tptr->first);
