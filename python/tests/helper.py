@@ -1,13 +1,14 @@
 import numpy as np
 import obspy
 import bson.objectid
-import mspasspy.ccore as mspass
-from mspasspy.ccore import (Seismogram,
-                            TimeSeries,
-                            TimeSeriesEnsemble,
-                            SeismogramEnsemble,
-                            DoubleVector,
-                            dmatrix)
+
+from mspasspy.ccore.utility import (AtomicType,
+                                    dmatrix)
+from mspasspy.ccore.seismic import (Seismogram,
+                                    TimeSeries,
+                                    TimeSeriesEnsemble,
+                                    SeismogramEnsemble,
+                                    DoubleVector)
 
 ts_size = 255
 sampling_rate = 20.0
@@ -17,17 +18,17 @@ def get_live_seismogram():
     seis = Seismogram()
     seis.set_live()
     seis.set_as_origin('test', '0', '0',
-                       mspass.AtomicType.SEISMOGRAM)
+                       AtomicType.SEISMOGRAM)
     seis.dt = 1 / sampling_rate
     seis.t0 = 0
     seis.npts = ts_size
     seis.put('net', 'IU')
     seis.put('npts', ts_size)
     seis.put('sampling_rate', sampling_rate)
-    seis.u = dmatrix(3, ts_size)
+    seis.data = dmatrix(3, ts_size)
     for i in range(3):
         for j in range(ts_size):
-            seis.u[i, j] = np.random.rand()
+            seis.data[i, j] = np.random.rand()
     return seis
 
 
@@ -41,8 +42,8 @@ def get_live_timeseries():
     ts.put('npts', ts_size)
     ts.put('sampling_rate', sampling_rate)
     ts.set_as_origin('test', '0', '0',
-                     mspass.AtomicType.TIMESERIES)
-    ts.s = DoubleVector(np.random.rand(ts_size))
+                     AtomicType.TIMESERIES)
+    ts.data = DoubleVector(np.random.rand(ts_size))
     return ts
 
 

@@ -1,6 +1,6 @@
 import pymongo
 
-from mspasspy.ccore import AntelopePf
+from mspasspy.ccore.utility import AntelopePf
 from mspasspy.io.converter import Metadata2dict
 
 def get_jobid(db):
@@ -105,7 +105,7 @@ class pf_history_data(basic_history_data):
     """
     Loads history data container with data from an AntelopePf object.
     
-    mspasspy.ccore defines the AntelopePf object that is an option for parameter 
+    mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter 
     inputs.  The file structure is identical to the
     Antelope Pf file syntax.   The API to an AntelopePF is not, however, 
     the same as the python bindings in Antelope as it handles Tbl 

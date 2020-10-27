@@ -15,13 +15,13 @@ import bson.objectid
 import gridfs
 import pymongo
 
-from mspasspy.ccore import (BasicTimeSeries,
-                            Seismogram,
-                            dmatrix,
-                            TimeReferenceType,
-                            MetadataDefinitions,
-                            ErrorLogger,
-                            ErrorSeverity)
+from mspasspy.ccore.utility import (dmatrix,
+                                    MetadataDefinitions,
+                                    ErrorLogger,
+                                    ErrorSeverity)
+from mspasspy.ccore.seismic import (BasicTimeSeries,
+                                    Seismogram,
+                                    TimeReferenceType)
 #from mspasspy.io.converter import dict2Metadata, Metadata2dict
 
 from obspy import Inventory
@@ -459,7 +459,7 @@ class Database(pymongo.database.Database):
                 # because u is a buffer object.   Seems a necessary evil because
                 # pybind11 wrappers and pickle are messy.  This seems a clean
                 # solution for a minimal cose (making a copy before write)
-                ub=bytes(d.u)
+                ub=bytes(d.data)
                 fh.write(ub)
         except:
             d.elog.log_error(sys._getframe().f_code.co_name,
@@ -520,7 +520,7 @@ class Database(pymongo.database.Database):
                         traceback.format_exc() \
                         + "GridFS failed to delete data with gridfs_wf_id = " + ids,
                         ErrorSeverity.Complaint)
-            ub=bytes(d.u)
+            ub=bytes(d.data)
             # pickle dumps returns its result as a byte stream - dump (without the s)
             # used in file writer writes to a file
             file_id = gfsh.put(pickle.dumps(ub))
@@ -665,11 +665,11 @@ class Database(pymongo.database.Database):
         # Validate sizes. For now we post a message making the data invalid
         # and set live false if there is a size mismatch.
         if(len(x)==(3*d.ns)):
-            d.u=dmatrix(3,d.ns)
+            d.data=dmatrix(3,d.ns)
             ii=0
             for i in range(3):
                 for j in range(d.ns):
-                    d.u[i,j]=x[ii]
+                    d.data[i,j]=x[ii]
         else:
             emess="Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
             % (len(x),(3*d.ns))

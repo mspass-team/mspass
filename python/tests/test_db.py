@@ -8,8 +8,8 @@ import numpy as np
 import pymongo
 import pytest
 
-from mspasspy.ccore import (Seismogram,
-                            dmatrix)
+from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.utility import dmatrix
 from mspasspy.db import (Client,
                          Database)
 from mspasspy.io.seispp import index_data
@@ -50,10 +50,10 @@ class TestDatabase():
         ts_size = 255    
         sampling_rate = 20.0
         s1 = Seismogram()
-        s1.u = dmatrix(3, ts_size)
+        s1.data = dmatrix(3, ts_size)
         for i in range(3):
             for j in range(ts_size):
-                s1.u[i, j] = np.random.rand()
+                s1.data[i, j] = np.random.rand()
         s1.live = True
         s1.dt = 1/sampling_rate
         s1.t0 = 0

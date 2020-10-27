@@ -5,8 +5,7 @@ import obspy.signal.cross_correlation
 import numpy as np
 from obspy import UTCDateTime, read, Trace
 
-import mspasspy.ccore as mspass
-from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
+from mspasspy.ccore.seismic import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
 
 # module to test
 sys.path.append("python/tests")
@@ -61,13 +60,13 @@ def test_filter():
     # functionality verification testing
     ts = get_live_timeseries()
     tr = obspy.Trace()
-    tr.data = np.array(ts.s)
-    copy = np.array(ts.s)
+    tr.data = np.array(ts.data)
+    copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
     tr.filter("bandpass", freqmin=1, freqmax=5)
     filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0')
-    assert all(a == b for a,b in zip(ts.s, tr.data))
-    assert not all(a == b for a, b in zip(ts.s, copy))
+    assert all(a == b for a,b in zip(ts.data, tr.data))
+    assert not all(a == b for a, b in zip(ts.data, copy))
 
 def test_detrend():
     ts = get_live_timeseries()
@@ -86,13 +85,13 @@ def test_detrend():
     # functionality verification testing
     ts = get_live_timeseries()
     tr = obspy.Trace()
-    tr.data = np.array(ts.s)
-    copy = np.array(ts.s)
+    tr.data = np.array(ts.data)
+    copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
     tr.detrend(type="simple")
     detrend(ts, "simple", preserve_history=True, instance='0')
-    assert all(a == b for a, b in zip(ts.s, tr.data))
-    assert not all(a == b for a, b in zip(ts.s, copy))
+    assert all(a == b for a, b in zip(ts.data, tr.data))
+    assert not all(a == b for a, b in zip(ts.data, copy))
 
 def test_interpolate():
     ts = get_live_timeseries()
@@ -116,13 +115,13 @@ def test_interpolate():
     # functionality verification testing
     ts = get_live_timeseries()
     tr = obspy.Trace()
-    tr.data = np.array(ts.s)
-    copy = np.array(ts.s)
+    tr.data = np.array(ts.data)
+    copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
     tr.interpolate(255, method="zero")
     interpolate(ts, 255, method='zero', preserve_history=True, instance='0')
-    assert all(a == b for a, b in zip(ts.s, tr.data))
-    assert not all(a == b for a, b in zip(ts.s, copy))
+    assert all(a == b for a, b in zip(ts.data, tr.data))
+    assert not all(a == b for a, b in zip(ts.data, copy))
 
 def test_correlate():
     ts1 = get_live_timeseries()
@@ -150,7 +149,7 @@ def test_correlate_stream_template():
     res1 = correlate_stream_template(tse1, tse2, preserve_history=True, instance='0')
     res2 = obspy.signal.cross_correlation.correlate_stream_template(st1, st2)
     for i in range(3):
-        assert all(a == b for a, b in zip(res1.u[i,:], res2[i].data))
+        assert all(a == b for a, b in zip(res1.data[i,:], res2[i].data))
 
 def test_correlation_detector():
     template = read().filter('highpass', freq=5).normalize()

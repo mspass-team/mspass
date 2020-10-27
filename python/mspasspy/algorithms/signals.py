@@ -7,7 +7,6 @@ import obspy.signal.interpolation
 from obspy.core.stream import Stream
 from obspy.core.trace import Trace
 
-import mspasspy.ccore as mspass
 from mspasspy.util import logging_helper
 from mspasspy.util.decorators import (mspass_func_wrapper,
                                       mspass_func_wrapper_multi,
@@ -142,10 +141,10 @@ if __name__ == "__main__":
     #
     # # init a seismogram
     # seismogram = Seismogram()
-    # seismogram.u = dmatrix(3, ts_size)
+    # seismogram.data = dmatrix(3, ts_size)
     # for i in range(3):
     #     for j in range(ts_size):
-    #         seismogram.u[i,j] = np.random.rand()
+    #         seismogram.data[i,j] = np.random.rand()
     #
     # seismogram.live = True
     # seismogram.dt = 1/sampling_rate

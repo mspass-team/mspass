@@ -1,6 +1,11 @@
 import numpy as np
-import mspasspy.ccore as mspass
-def ensemble_error_post(d,alg,message):
+
+from mspasspy.ccore.utility import MsPASSError, AtomicType, ErrorSeverity, ProcessingStatus
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, TimeWindow
+from mspasspy.ccore.algorithms.basic import _WindowData, _WindowData3C
+from mspasspy.ccore.algorithms.amplitudes import _scale, _scale_ensemble ,_scale_ensemble_members, ScalingMethod
+
+def ensemble_error_post(d,alg,message, severity):
     """
     This is a small helper function useful for error handlers in except 
     blocks for ensemble objects.  If a function is called on an ensemble 
@@ -12,16 +17,15 @@ def ensemble_error_post(d,alg,message):
       objects.
     :param alg: is the algorithm name posted to elog on each member
     :param message: is the string posted to all members
-    (Note due to a current flaw in the api we don't have access to the 
-    severity attribute.  For now this always set it Invalid)
+    :param severity: is the error severity level
     """
-    if(isinstance(d,mspass.TimeSeriesEnsemble) 
-           or isinstance(d,mspass.SeismogramEnsemble)):
+    if(isinstance(d,TimeSeriesEnsemble) 
+           or isinstance(d,SeismogramEnsemble)):
         n=len(d.member)
         if(n<=0):
             return
         for i in range(n):
-            d.member[i].elog.log_error(alg,str(message),mspass.ErrorSeverity.Invalid)
+            d.member[i].elog.log_error(alg,str(message), severity)
     else:
         print('Coding error - ensemble_error_post was passed an unexpected data type of',
               type(d))
@@ -62,7 +66,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
       are scaled.  For perc it is used to set the percent clip level.  
       A RuntimeError exception is thrown if method is perc and level is larger 
       that one. Default is 1.0
-    :param window: is an optional mspass.TimeWindow applied to compute amplitude 
+    :param window: is an optional TimeWindow applied to compute amplitude 
       for scaling.  When not a null (python None) a windowing algorithm will 
       be applied before computing the amplitude metric and the amplitude 
       computed in that window will be used for scaling.   Default is None 
@@ -120,9 +124,9 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
             raise RuntimeError(algname+":  level argument received has illegal value=",
                 level," level must be a positive number")
     if(window!=None):
-        if(not isinstance(window,mspass.TimeWindow)):
+        if(not isinstance(window,TimeWindow)):
             raise RuntimeError(algname
-              +":  optional window parameter set but data passed is not a mspass.TimeWindow object")
+              +":  optional window parameter set but data passed is not a TimeWindow object")
     if(preserve_history):
         if(instance==None):
             raise RuntimeError(algname
@@ -132,57 +136,57 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
     # The pybind11 and C++ way of defining an enum class creates an 
     # obnoxiously ugly syntax. We insulate the user from this oddity 
     # by using a string arg to define this enum passed to _scale
-    method_to_use=mspass.ScalingMethod.Peak
+    method_to_use=ScalingMethod.Peak
     if(method=='rms' or method=='RMS'):
-        method_to_use=mspass.ScalingMethod.RMS
+        method_to_use=ScalingMethod.RMS
     elif(method=='perc'):
-        method_to_use=mspass.ScalingMethod.perc
+        method_to_use=ScalingMethod.perc
     elif(method=='MAD' or method=='mad'):
-        method_to_use=mspass.ScalingMethod.MAD
+        method_to_use=ScalingMethod.MAD
     # else not needed due to tests above 
     # Note the large block from here on may need an error handler to 
     # avoid global aborts.   Maybe only the caller needs a handler
     ampvec=[]   # needed to allow ampvec to be the return
     try:
         if(window==None):
-            if(isinstance(d,mspass.TimeSeries)):
+            if(isinstance(d,TimeSeries)):
             # Silently return 0 if marked dead
                 if(d.dead()):
                     return ampvec
                 else:
-                    amp=mspass._scale(d,method_to_use,level)
+                    amp=_scale(d,method_to_use,level)
                     ampvec.append(amp)
                 if(preserve_history):
                     if(d.is_empty()):
                         d.elog.log_error(algname
                          +": cannot preserve history because container was empty\nMust at least contain an origin record")
                     else:
-                        d.new_map(algname,instance,mspass.AtomicType.TIMESERIES,
-                              mspass.ProcessingStatus.VOLATILE)
-            elif(isinstance(d,mspass.Seismogram)):
+                        d.new_map(algname,instance,AtomicType.TIMESERIES,
+                              ProcessingStatus.VOLATILE)
+            elif(isinstance(d,Seismogram)):
             # Silently return 0 if marked dead
                 if(d.dead()):
                     return ampvec
                 else:
-                    amp=mspass._scale(d,method_to_use,level)
+                    amp=_scale(d,method_to_use,level)
                     ampvec.append(amp)
                 if(preserve_history):
                     if(d.is_empty()):
                         d.elog.log_error(algname,
                          "cannot preserve history because container was empty\nMust at least contain an origin record",
-                         mspass.ErrorSeverity.Complaint)
+                         ErrorSeverity.Complaint)
                     else:
-                        d.new_map(algname,instance,mspass.AtomicType.SEISMOGRAM,
-                              mspass.ProcessingStatus.VOLATILE)
-            elif(isinstance(d,mspass.TimeSeriesEnsemble) 
-                or isinstance(d,mspass.SeismogramEnsemble)):
+                        d.new_map(algname,instance,AtomicType.SEISMOGRAM,
+                              ProcessingStatus.VOLATILE)
+            elif(isinstance(d,TimeSeriesEnsemble) 
+                or isinstance(d,SeismogramEnsemble)):
                 if(len(d.member)<=0):  # Silently return nothing if the ensemble is empy
                     return ampvec
                 if(scale_by_section):
-                    amp=mspass._scale_ensemble(d,method_to_use,level,use_mean)
+                    amp=_scale_ensemble(d,method_to_use,level,use_mean)
                     ampvec.append(amp)
                 else:
-                    ampvec=mspass._scale_ensemble_members(d,method_to_use,level)
+                    ampvec=_scale_ensemble_members(d,method_to_use,level)
                 if(preserve_history):
                     n=len(d.member)
                     for i in range(n):
@@ -191,14 +195,14 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
                             if(d.member[i].is_empty()):
                                 d.member[i].elog.log_error(algname,
                                   "cannot preserve history because container was empty\nMust at least contain an origin record",
-                                  mspass.ErrorSeverity.Complaint)
+                                  ErrorSeverity.Complaint)
                             else:
-                                if(isinstance(d.member[i],mspass.Seismogram)):
-                                    d.member[i].new_map(algname,instance,mspass.AtomicType.SEISMOGRAM,
-                                            mspass.ProcessingStatus.VOLATILE)
+                                if(isinstance(d.member[i],Seismogram)):
+                                    d.member[i].new_map(algname,instance,AtomicType.SEISMOGRAM,
+                                            ProcessingStatus.VOLATILE)
                                 else:
-                                    d.member[i].new_map(algname,instance,mspass.AtomicType.TIMESERIES,
-                                            mspass.ProcessingStatus.VOLATILE)
+                                    d.member[i].new_map(algname,instance,AtomicType.TIMESERIES,
+                                            ProcessingStatus.VOLATILE)
             else:
                 raise RuntimeError("scale:  input data is not a supported mspass seismic data type")
         else:
@@ -207,14 +211,14 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
         # all nonerror states land here and return this value
         return ampvec
     except RuntimeError as err:
-        if( isinstance(d,mspass.Seismogram) 
-                    or isinstance(d,mspass.TimeSeries) ):
+        if( isinstance(d,Seismogram) 
+                    or isinstance(d,TimeSeries) ):
             # This shows an api problem.  MsPaSSErrors are cast to 
             # RuntimeErrors and lose access to the ErrorSeverity attribute
             # We need to implement a custom exception for MsPASSError 
             # as described in pybind11 documentation. This line
             # should be fixed when that is done
-            d.elog.log_error(algname,str(err),mspass.ErrorSeverity.Invalid)
+            d.elog.log_error(algname,str(err),ErrorSeverity.Invalid)
         # avoid further isinstance at the expense of a maintenance issue.
         # if we add any other supported data objects we could have a 
         # problem here.  This assumes what lands here is an ensemble
@@ -226,10 +230,10 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
         raise
     except:
         message="Something threw an unexpected exception\nThat is a bug that needs to be fixed - contact authors"
-        if( isinstance(d,mspass.Seismogram) or isinstance(d,mspass.TimeSeries) ):
-          d.elog.log_error(algname,message,mspass.ErrorSeverity.Invalid)
+        if( isinstance(d,Seismogram) or isinstance(d,TimeSeries) ):
+          d.elog.log_error(algname,message,ErrorSeverity.Invalid)
         else:
-          ensemble_error_post(d,algname,message,mspass.ErrorSeverity.Invalid) 
+          ensemble_error_post(d,algname,message,ErrorSeverity.Invalid) 
         
 def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
     """
@@ -249,7 +253,7 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
     
     :param d: is the input data.  d must be either a TimeSeries or Seismogram 
       object or the function will log an error to d and return a None.
-    :param twin: is a mspass.TimeWindow defining window to be cut
+    :param twin: is a TimeWindow defining window to be cut
     :param t0shift: is an optional time shift to apply to the time window. 
       This parameter is convenient to avoid conversions to relative time. 
       A typical example would be to set t0shift to an arrival time and let 
@@ -268,51 +272,51 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
       an empty version of the parent data type (default constructor) if 
       the input is marked dead
     """
-    twcut=mspass.TimeWindow(twin)
+    twcut=TimeWindow(twin)
     if(t0shift!=None):
         twcut.shift(t0shift)
     try:
-        if(isinstance(d,mspass.TimeSeries)):
+        if(isinstance(d,TimeSeries)):
             if(d.dead()):
                 # Functions like this should return a copy of the original 
                 # if it was marked dead - this allows preservation of
                 # history data to allow recording why data were killed
                 return d
-            dcut=mspass._WindowData(d,twcut)
+            dcut=_WindowData(d,twcut)
             if(preserve_history):
                 if(instance==None):
                     dcut.elog.log_error("WindowData",
                       "Undefined instance argument - cannot save history data",
-                      mspass.ErrorSeverity.Complaint)
+                      ErrorSeverity.Complaint)
                 elif(dcut.is_empty()):
                     dcut.elog.log_error("WindowData",
                      "Error log is empty.  Cannot be extended without a top level entry",
-                     mspass.ErrorSeverity.Complaint)
+                     ErrorSeverity.Complaint)
                 else:
-                    dcut.new_map("WindowData",instance,mspass.AtomicType.TIMESERIES,
-                              mspass.ProcessingStatus.VOLATILE)
+                    dcut.new_map("WindowData",instance,AtomicType.TIMESERIES,
+                              ProcessingStatus.VOLATILE)
             return dcut
-        elif(isinstance(d,mspass.Seismogram)):
+        elif(isinstance(d,Seismogram)):
             if(d.dead()):
                 # As above return original if dead
                 return d
-            dcut=mspass._WindowData3C(d,twcut)
+            dcut=_WindowData3C(d,twcut)
             if(preserve_history):
                 if(instance==None):
                     d.elog("WindowData",
                       "Undefined instance argument - cannot save history data",
-                      mspass.ErrorSeverity.Complaint)
+                      ErrorSeverity.Complaint)
                 elif(dcut.is_empty()):
                     dcut.elog("WindowData",
                      "Error log is empty.  Cannot be extended without a top level entry",
-                     mspass.ErrorSeverity.Complaint)
+                     ErrorSeverity.Complaint)
                 else:
-                    dcut.new_map("WindowData",instance,mspass.AtomicType.SEISMOGRAM,
-                              mspass.ProcessingStatus.VOLATILE)
+                    dcut.new_map("WindowData",instance,AtomicType.SEISMOGRAM,
+                              ProcessingStatus.VOLATILE)
             return dcut
         else:
             raise RuntimeError("WindowData:  Invalid input data type received")
     except RuntimeError as err:
-        d.log_error("WindowData",str(err),mspass.ErrorSeverity.Invalid)
+        d.log_error("WindowData",str(err),ErrorSeverity.Invalid)
         return None
 

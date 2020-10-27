@@ -195,6 +195,8 @@ PYBIND11_MODULE(seismic, m) {
       },"Time reference standard for this data object")
   ;
 
+  py::module::import("mspasspy.ccore.utility");
+
   py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
