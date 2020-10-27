@@ -4,16 +4,15 @@ Functions for converting to and from MsPASS data types.
 import numpy as np
 import obspy.core
 
-from mspasspy.ccore import (CoreSeismogram,
-                            CoreTimeSeries,
-                            ExtractComponent,
-                            ErrorSeverity,
-                            Metadata,
-                            Seismogram,
-                            TimeReferenceType,
-                            TimeSeries,
-                            TimeSeriesEnsemble,
-                            SeismogramEnsemble)
+from mspasspy.ccore.utility import (ErrorSeverity, Metadata)
+from mspasspy.ccore.seismic import (CoreSeismogram,
+                                    CoreTimeSeries,
+                                    Seismogram,
+                                    TimeReferenceType,
+                                    TimeSeries,
+                                    TimeSeriesEnsemble,
+                                    SeismogramEnsemble)
+from mspasspy.ccore.algorithms.basic import ExtractComponent
 
 
 def dict2Metadata(dic):
@@ -128,7 +127,7 @@ def TimeSeries2Trace(ts):
         dresult.stats[k] = ts[k]
     dresult.data = np.ndarray(ts.npts)
     for i in range(ts.npts):
-        dresult.data[i] = ts.s[i]
+        dresult.data[i] = ts.data[i]
     return dresult
 
 
@@ -233,7 +232,7 @@ def Trace2TimeSeries(trace):
     # Here, we do not use append, which is equivalent to the C++ method
     # push_back, for efficiency.
     for i in range(ns):
-        dout.s[i] = trace.data[i]
+        dout.data[i] = trace.data[i]
     return dout
 
 

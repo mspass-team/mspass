@@ -13,8 +13,8 @@ from mspasspy.io.converter import (TimeSeries2Trace,
                                    Stream2TimeSeriesEnsemble,
                                    Stream2SeismogramEnsemble)
 
-from mspasspy.ccore import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, MsPASSError
-import mspasspy.ccore as mspass
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.util import logging_helper
 
 
@@ -38,11 +38,11 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
         return res
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
-            data.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+            data.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data, algname, err, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data, algname, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if ex.severity == mspass.ErrorSeverity.Fatal:
+        if ex.severity == ErrorSeverity.Fatal:
             raise
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(algname, ex.message, ex.severity)
@@ -71,15 +71,15 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+            data1.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data1, algname, err, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, algname, err, ErrorSeverity.Invalid)
         if isinstance(data2, (Seismogram, TimeSeries)):
-            data2.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+            data2.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, algname, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if ex.severity == mspass.ErrorSeverity.Fatal:
+        if ex.severity == ErrorSeverity.Fatal:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(algname, ex.message, ex.severity)
@@ -158,13 +158,13 @@ def timeseries_as_trace(func, *args, **kwargs):
     res = func(*converted_args, **converted_kwargs)
     for i in converted_args_ids:
         ts = Trace2TimeSeries(converted_args[i])
-        args[i].s = ts.s
+        args[i].data = ts.data
         # metadata copy
         for k in ts.keys():
             args[i][k] = ts[k]
     for k in converted_kwargs_keys:
         ts = Trace2TimeSeries(converted_kwargs[k])
-        kwargs[k].s = ts.s
+        kwargs[k].data = ts.data
         # metadata copy
         for key in ts.keys():
             kwargs[k][key] = ts[key]
@@ -200,13 +200,13 @@ def seismogram_as_stream(func, *args, **kwargs):
         # fixme cardinal here
         for i in converted_args_ids:
             seis = Stream2Seismogram(converted_args[i], cardinal=True)
-            args[i].u = seis.u
+            args[i].data = seis.data
             # metadata copy
             for k in seis.keys():
                 args[i][k] = seis[k]
         for k in converted_kwargs_keys:
             seis = Stream2Seismogram(converted_kwargs[k], cardinal=True)
-            kwargs[k].u = seis.u
+            kwargs[k].data = seis.data
             # metadata copy
             for key in seis.keys():
                 kwargs[k][key] = seis[key]
@@ -308,14 +308,14 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
-            data2.elog.log_error(algname, str(err), mspass.ErrorSeverity.Invalid)
+            data1.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
+            data2.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data1, algname, err, mspass.ErrorSeverity.Invalid)
-            logging_helper.ensemble_error(data2, algname, err, mspass.ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, algname, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, algname, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if ex.severity != mspass.ErrorSeverity.Informational and \
-                ex.severity != mspass.ErrorSeverity.Debug:
+        if ex.severity != ErrorSeverity.Informational and \
+                ex.severity != ErrorSeverity.Debug:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(algname, ex.message, ex.severity)

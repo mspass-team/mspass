@@ -3,9 +3,9 @@ import os
 import yaml
 import numpy as np
 
-from mspasspy.ccore import MetadataDefinitions
-from mspasspy.ccore import MDtype
-from mspasspy.ccore import MsPASSError
+from mspasspy.ccore.utility import MetadataDefinitions
+from mspasspy.ccore.utility import MDtype
+from mspasspy.ccore.utility import MsPASSError
 
 def index_data(filebase, db, ext='d3C', verbose=False):
     """

@@ -5,6 +5,12 @@ import pickle
 import numpy as np
 import pytest
 
+from mspasspy.ccore.seismic import (Seismogram,
+                                    SeismogramEnsemble,
+                                    SlownessVector,
+                                    TimeSeries,
+                                    TimeSeriesEnsemble,
+                                    TimeReferenceType)
 from mspasspy.ccore.utility import (AtomicType,
                                     dmatrix,
                                     ErrorLogger,
@@ -15,12 +21,6 @@ from mspasspy.ccore.utility import (AtomicType,
                                     MsPASSError,
                                     ProcessingHistory,
                                     SphericalCoordinate)
-from mspasspy.ccore.seismic import (Seismogram,
-                                    SeismogramEnsemble,
-                                    SlownessVector,
-                                    TimeSeries,
-                                    TimeSeriesEnsemble,
-                                    TimeReferenceType)
 
 from mspasspy.ccore.algorithms.basic import ExtractComponent
 

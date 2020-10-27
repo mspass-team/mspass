@@ -2,8 +2,7 @@ import sys
 import numpy as np
 import pytest
 
-import mspasspy.ccore as mspass
-from mspasspy.ccore import (Seismogram)
+from mspasspy.ccore.seismic import (Seismogram)
 
 sys.path.append("python/tests")
 sys.path.append("python/mspasspy/util/")

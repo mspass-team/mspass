@@ -1,6 +1,8 @@
 import numpy
 from matplotlib import pyplot
-import mspasspy.ccore as mspass
+
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.algorithms.basic import ExtractComponent
 import mspasspy.algorithms as alg
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1., color='k',
@@ -182,7 +184,7 @@ def tse2nparray(ens):
             t=tmin+i*dt
             if( (t >= tjstart) and (t <= tjend) ):
                 k=ens.member[j].sample_number(t)
-                work[i,j]=ens.member[j].s[k]
+                work[i,j]=ens.member[j].data[k]
     return [tmin,dt,work]
 def seis2nparray(d):
     tmin=d.t0
@@ -193,7 +195,7 @@ def seis2nparray(d):
     # this is a very slow way to do a matrix transpose of u dmatrix
     for k in range(n):
         for j in range(m):
-            work[j,k]=d.u[k,j]
+            work[j,k]=d.data[k,j]
     return [tmin,dt,work]
 def ts2nparray(d):
     tmin=d.t0
@@ -203,7 +205,7 @@ def ts2nparray(d):
     # be sure this looks like a 2d array as input to the plot function
     work=numpy.zeros(shape=[m,1])
     for j in range(m):
-        work[j,0]=d.s[j]
+        work[j,0]=d.data[j]
     return [tmin,dt,work]
 
 def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
@@ -216,14 +218,14 @@ def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
     figure_handles=[]
-    if(isinstance(d,mspass.SeismogramEnsemble)):
+    if(isinstance(d,SeismogramEnsemble)):
         # We always plot 3C data as 3 windows.  We extract each
         # component and then call this function with a trivial
         # recursion - only call itself once and only once
         title3c=title
         for i in range(3):
             pyplot.figure(i)
-            dcomp=mspass.EnsembleComponent(d,i)
+            dcomp=EnsembleComponent(d,i)
             if(title!=None):
                 title3c='%s:%d' % (title,i)
             try:
@@ -241,11 +243,11 @@ def wtvaplot(d,ranges=None,scale=1.0,fill_color='k',normalize=False,
         try:
             # need to force these into the scope of this block
             plotdata=[]
-            if(isinstance(d,mspass.TimeSeriesEnsemble)):
+            if(isinstance(d,TimeSeriesEnsemble)):
                 plotdata=tse2nparray(d)
-            elif(isinstance(d,mspass.Seismogram)):
+            elif(isinstance(d,Seismogram)):
                 plotdata=seis2nparray(d)
-            elif(isinstance(d,mspass.TimeSeries)):
+            elif(isinstance(d,TimeSeries)):
                 plotdata=ts2nparray(d)
             else:
                 raise RuntimeError("wtvaplot - data received is not one supported by mspass")
@@ -272,14 +274,14 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
     # block handles all but 3C ensembles - common read structure
     # makes a single plot call work for all 3 cases
     figure_handles=[]
-    if(isinstance(d,mspass.SeismogramEnsemble)):
+    if(isinstance(d,SeismogramEnsemble)):
         # We always plot 3C data as 3 windows.  We extract each
         # component and then call this function with a trivial
         # recursion - only call itself once and only once
         title3c=title
         for i in range(3):
             pyplot.figure(i)
-            dcomp=mspass.EnsembleComponent(d,i)
+            dcomp=EnsembleComponent(d,i)
             if(title!=None):
                 title3c='%s:%d' % (title,i)
             try:
@@ -295,11 +297,11 @@ def imageplot(d,ranges=None,cmap=pyplot.cm.gray,aspect=None,vmin=None,vmax=None,
         try:
             # need to force these into the scope of this block
             plotdata=[]
-            if(isinstance(d,mspass.TimeSeriesEnsemble)):
+            if(isinstance(d,TimeSeriesEnsemble)):
                 plotdata=tse2nparray(d)
-            elif(isinstance(d,mspass.Seismogram)):
+            elif(isinstance(d,Seismogram)):
                 plotdata=seis2nparray(d)
-            elif(isinstance(d,mspass.TimeSeries)):
+            elif(isinstance(d,TimeSeries)):
                 plotdata=ts2nparray(d)
             else:
                 raise RuntimeError("wtvaplot - data received is not one supported by mspass")
@@ -644,14 +646,14 @@ class SeismicPlotter:
         fix, but for now we have to use copy constructors specific to each 
         object type.   
         """
-        if(isinstance(d,mspass.TimeSeries)):
-            return mspass.TimeSeries(d)
-        elif(isinstance(d,mspass.Seismogram)):
-            return mspass.Seismogram(d)
-        elif(isinstance(d,mspass.TimeSeriesEnsemble)):
-            return mspass.TimeSeriesEnsemble(d)
-        elif(isinstance(d,mspass.SeismogramEnsemble)):
-            return mspass.SeismogramEnsemble(d)
+        if(isinstance(d,TimeSeries)):
+            return TimeSeries(d)
+        elif(isinstance(d,Seismogram)):
+            return Seismogram(d)
+        elif(isinstance(d,TimeSeriesEnsemble)):
+            return TimeSeriesEnsemble(d)
+        elif(isinstance(d,SeismogramEnsemble)):
+            return SeismogramEnsemble(d)
         else:
             raise RuntimeError("SeismicPlotter._deepcopy:  received and unsupported data type=",type(d))
         
@@ -666,7 +668,7 @@ class SeismicPlotter:
     # These are private methods used internally
     def _normalize(self,d):
         """
-        Normalizes data (d) using mspass.scale function.  for ensembles that 
+        Normalizes data (d) using scale function.  for ensembles that 
         is peak normalization to level self.scale by section. For 
         Seismograms each component will be normalized independently. 
         For TimeSeries the peak is adjusted to self.scale.  
@@ -678,13 +680,13 @@ class SeismicPlotter:
         # These are place holders for now.  Requires some new code in ccore
         # to sort absolute values and return perf level - should use faster
         # max value when perf is 100%
-        if(isinstance(d,mspass.SeismogramEnsemble)):
+        if(isinstance(d,SeismogramEnsemble)):
             alg.scale(d,scale_by_section=True,level=self.scale)
-        elif(isinstance(d,mspass.TimeSeriesEnsemble)):
+        elif(isinstance(d,TimeSeriesEnsemble)):
             alg.scale(d,scale_by_section=True,level=self.scale)
-        elif(isinstance(d,mspass.TimeSeries)):
+        elif(isinstance(d,TimeSeries)):
             alg.scale(d,level=self.scale)
-        elif(isinstance(d,mspass.Seismogram)):
+        elif(isinstance(d,Seismogram)):
             alg.scale(d,level=self.scale)
         else:
             raise RuntimeError('SeismicPlotter._normalize:  Received unsupported data type=',type(d))
@@ -708,24 +710,24 @@ class SeismicPlotter:
         data d and call the appropriate private method for that data type.
         """
         base_error='SeismicPlotter._imageplot (Error):  '
-        if(isinstance(d,mspass.SeismogramEnsemble)):
+        if(isinstance(d,SeismogramEnsemble)):
             if(len(d.member)<=0):
                 raise IndexError(base_error+'ensemble container is empty')
             self._wtva_SeismogramEnsemble(d,fill)
             self._add_3C_titles()
-        elif(isinstance(d,mspass.TimeSeriesEnsemble)):
+        elif(isinstance(d,TimeSeriesEnsemble)):
             if(len(d.member)<=0):
                 raise IndexError(base_error+'ensemble container is empty')
             self._wtva_TimeSeriesEnsemble(d,fill)
             if(self.title!=None):
                 pyplot.title(self.title)
-        elif(isinstance(d,mspass.TimeSeries)):
+        elif(isinstance(d,TimeSeries)):
             if(d.npts<=0):
                 raise IndexError(base_error+'data vector is empty.  Nothing to plot')
             self._wtva_TimeSeries(d,fill)
             if(self.title!=None):
                 pyplot.title(self.title)
-        elif(isinstance(d,mspass.Seismogram)):
+        elif(isinstance(d,Seismogram)):
             if(d.npts<=0):
                 raise IndexError(base_error+'data vector is empty.  Nothing to plot')
             self._wtva_Seismogram(d,fill)
@@ -739,24 +741,24 @@ class SeismicPlotter:
         Private method for making all forms of image plots.  
         """
         base_error='SeismicPlotter._imageplot (Error):  '
-        if(isinstance(d,mspass.SeismogramEnsemble)):
+        if(isinstance(d,SeismogramEnsemble)):
             if(len(d.member)<=0):
                 raise IndexError(base_error+'ensemble container is empty')
             self._imageplot_SeismogramEnsemble(d)
             self._add_3C_titles()
-        elif(isinstance(d,mspass.TimeSeriesEnsemble)):
+        elif(isinstance(d,TimeSeriesEnsemble)):
             if(len(d.member)<=0):
                 raise IndexError(base_error+'ensemble container is empty')
             self._imageplot_TimeSeriesEnsemble(d)
             if(self.title!=None):
                 pyplot.title(self.title)
-        elif(isinstance(d,mspass.TimeSeries)):
+        elif(isinstance(d,TimeSeries)):
             if(d.npts<=0):
                 raise IndexError(base_error+'data vector is empty.  Nothing to plot')
             self._imageplot_TimeSeries(d)
             if(self.title!=None):
                 pyplot.title(self.title)
-        elif(isinstance(d,mspass.Seismogram)):
+        elif(isinstance(d,Seismogram)):
             if(d.npts<=0):
                 raise IndexError(base_error+'data vector is empty.  Nothing to plot')
             self._imageplot_Seismogram(d)
@@ -773,18 +775,18 @@ class SeismicPlotter:
 
         t = numpy.linspace(d.t0, d.t0+d.dt*d.npts, d.npts)
         # We don't need a gain factor here - will be needed for an image overlay through
-        pyplot.plot(t,d.s,'k')
+        pyplot.plot(t,d.data,'k')
         if(fill):
             # Necessary because fill_between doesn't support the pybind11
             # wrapped vector directly - need to convert to numpy array
-            y=numpy.array(d.s)
+            y=numpy.array(d.data)
             pyplot.fill_between(t,0,y,where=y>0.0, interpolate=True,color=self._fill_color)
         return pyplot.gcf()
     def _wtva_Seismogram(self,d,fill):
         # this could be implemented by converting d to an ensemble
-        ens=mspass.TimeSeriesEnsemble()
+        ens=TimeSeriesEnsemble()
         for k in range(3):
-            dcomp=mspass.ExtractComponent(d,k)
+            dcomp=ExtractComponent(d,k)
             ens.member.append(dcomp)
         self._wtva_TimeSeriesEnsemble(ens,fill)
     def _get_ensemble_size(self,d):
@@ -833,7 +835,7 @@ class SeismicPlotter:
             # plot a line but this is proably better unless proven otherwise
             if(d.member[i].dead()):
                 continue
-            y=numpy.array(d.member[i].s)  # Make a copy - fast method with numpy
+            y=numpy.array(d.member[i].data)  # Make a copy - fast method with numpy
             # Fast and easy way to add offset with overloaded operator -= and +=
             if(self._plot_topdown):
                 offset=ndata-i-1
@@ -856,7 +858,7 @@ class SeismicPlotter:
         # should return a list of 3 gcf handles
         figure_handles=[]
         for k in range(3):
-            dcomp=mspass.EnsembleComponent(d,k)
+            dcomp=EnsembleComponent(d,k)
             #figure_title='Component %d' % k
             #pyplot.figure(figure_title)
             pyplot.figure(k)
@@ -905,7 +907,7 @@ class SeismicPlotter:
             while(t<=endtime and t<=tmax):  # tmax test shouldn't be necessary but small cost for safety
                 k=d.member[i].sample_number(t)
                 if(k>0 and k<npts):
-                    work[iwork,j]=d.member[i].s[k]
+                    work[iwork,j]=d.member[i].data[k]
                 t += dt
                 j += 1
         if self._aspect is None:  # guarantee a rectangular picture
@@ -933,7 +935,7 @@ class SeismicPlotter:
         # should return a list of 3 gcf handles
         figure_handles=[]
         for k in range(3):
-            dcomp=mspass.EnsembleComponent(d,k)
+            dcomp=EnsembleComponent(d,k)
             pyplot.figure(k)
             figure=self._imageplot(dcomp)
             figure_handles.append(figure)
@@ -941,9 +943,9 @@ class SeismicPlotter:
         return figure_handles
     def _imageplot_Seismogram(self,d):
         # this could be implemented by converting d to an ensemble
-        ens=mspass.TimeSeriesEnsemble()
+        ens=TimeSeriesEnsemble()
         for k in range(3):
-            dcomp=mspass.ExtractComponent(d,k)
+            dcomp=ExtractComponent(d,k)
             ens.member.append(dcomp)
         self._imageplot_TimeSeriesEnsemble(ens)
     def _imageplot_TimeSeries(self,d):
@@ -958,7 +960,7 @@ class SeismicPlotter:
         work=numpy.zeros(shape=[1,d.npts])
         extent=(d.t0,d.endtime(),-1.0,1.0)
         for j in range(d.npts):
-            work[0,j]=d.s[j]
+            work[0,j]=d.data[j]
         if(self._aspect==None):
             aspect=self._default_single_ts_aspect
         if self._vmin is None and self._vmax is None:

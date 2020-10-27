@@ -56,13 +56,13 @@ PYBIND11_MODULE(basic, m) {
     py::arg("twin") )
   ;
 
-  m.def("WindowData",&WindowData,"Reduce data to window inside original",
+  m.def("_WindowData",&WindowData,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
 
-  m.def("WindowData3C",&WindowData3C,"Reduce data to window inside original",
+  m.def("_WindowData3C",&WindowData3C,"Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )

@@ -3,8 +3,8 @@ import pytest
 import obspy
 import numpy as np
 
-import mspasspy.ccore as mspass
-from mspasspy.ccore import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
+from mspasspy.ccore.seismic import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
+from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 
 # module to test
 sys.path.append("python/tests")
@@ -101,13 +101,13 @@ def dummy_func_timeseries_as_trace(d, any=None):
 def test_timeseries_as_trace():
     ts = get_live_timeseries()
     ts2 = get_live_timeseries()
-    cp = np.array(ts.s)
-    cp2 = np.array(ts2.s)
+    cp = np.array(ts.data)
+    cp2 = np.array(ts2.data)
     dummy_func_timeseries_as_trace(ts, ts2)
-    assert len(cp) != len(ts.s)
-    assert len(cp2) != len(ts2.s)
-    assert all(a == b for a,b in zip([0,1,2], ts.s))
-    assert all(a == b for a, b in zip([2,3,4], ts2.s))
+    assert len(cp) != len(ts.data)
+    assert len(cp2) != len(ts2.data)
+    assert all(a == b for a,b in zip([0,1,2], ts.data))
+    assert all(a == b for a, b in zip([2,3,4], ts2.data))
     assert ts['chan'] == 'Z'
 
 
@@ -120,13 +120,13 @@ def dummy_func_seismogram_as_stream(d1, d2=None):
 def test_seismogram_as_trace():
     seis1 = get_live_seismogram()
     seis2 = get_live_seismogram()
-    cp1 = np.array(seis1.u[0])
-    cp2 = np.array(seis2.u[0])
+    cp1 = np.array(seis1.data[0])
+    cp2 = np.array(seis2.data[0])
     dummy_func_seismogram_as_stream(seis1, seis2)
-    assert cp1[0] != seis1.u[0,0]
-    assert cp2[0] != seis2.u[0,0]
-    assert seis1.u[0,0] == -1
-    assert seis2.u[0, 0] == -1
+    assert cp1[0] != seis1.data[0,0]
+    assert cp2[0] != seis2.data[0,0]
+    assert seis1.data[0,0] == -1
+    assert seis2.data[0, 0] == -1
     assert seis1['test'] == 'test'
 
 @timeseries_ensemble_as_stream
@@ -147,16 +147,16 @@ def test_timeseries_ensemble_as_stream():
     cp = TimeSeriesEnsemble(tse)
     dummy_func_timeseries_ensemble_as_stream(tse)
     assert len(tse.member) == 5
-    assert all(a == b for a,b in zip(cp.member[0].s, tse.member[0].s))
-    assert all(a == b for a, b in zip(cp.member[1].s, tse.member[1].s))
+    assert all(a == b for a,b in zip(cp.member[0].data, tse.member[0].data))
+    assert all(a == b for a, b in zip(cp.member[1].data, tse.member[1].data))
 
     tse = get_live_timeseries_ensemble(2)
     assert len(tse.member) == 2
     cp = TimeSeriesEnsemble(tse)
     dummy_func_timeseries_ensemble_as_stream_2(data=tse)
     assert len(tse.member) == 5
-    assert all(a == b for a, b in zip(cp.member[0].s, tse.member[0].s))
-    assert all(a == b for a, b in zip(cp.member[1].s, tse.member[1].s))
+    assert all(a == b for a, b in zip(cp.member[0].data, tse.member[0].data))
+    assert all(a == b for a, b in zip(cp.member[1].data, tse.member[1].data))
 
 @seismogram_ensemble_as_stream
 def dummy_func_seismogram_ensemble_as_stream(data):
@@ -178,16 +178,16 @@ def test_seismogram_ensemble_as_stream():
     cp = SeismogramEnsemble(seis_e)
     dummy_func_seismogram_ensemble_as_stream(seis_e)
     assert len(seis_e.member) == 3
-    assert all(a.any() == b.any() for a,b in zip(cp.member[0].u, seis_e.member[0].u))
-    assert all(a.any() == b.any() for a, b in zip(cp.member[1].u, seis_e.member[1].u))
+    assert all(a.any() == b.any() for a,b in zip(cp.member[0].data, seis_e.member[0].data))
+    assert all(a.any() == b.any() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
 
     seis_e = get_live_seismogram_ensemble(2)
     assert len(seis_e.member) == 2
     cp = SeismogramEnsemble(seis_e)
     dummy_func_seismogram_ensemble_as_stream_2(data=seis_e)
     assert len(seis_e.member) == 3
-    assert all(a.any() == b.any() for a, b in zip(cp.member[0].u, seis_e.member[0].u))
-    assert all(a.any() == b.any() for a, b in zip(cp.member[1].u, seis_e.member[1].u))
+    assert all(a.any() == b.any() for a, b in zip(cp.member[0].data, seis_e.member[0].data))
+    assert all(a.any() == b.any() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
 
 
 @mspass_func_wrapper
@@ -224,34 +224,34 @@ def test_all_decorators():
 
     # test timeseries_as_trace
     ts = get_live_timeseries()
-    cp = np.array(ts.s)
+    cp = np.array(ts.data)
     dummy_func_2(ts, preserve_history=True, instance='0')
-    assert len(cp) != len(ts.s)
-    assert all(a == b for a, b in zip([0, 1, 2], ts.s))
+    assert len(cp) != len(ts.data)
+    assert all(a == b for a, b in zip([0, 1, 2], ts.data))
     assert ts.number_of_stages() == 1
 
     # test seismogram_as_stream
     seis1 = get_live_seismogram()
-    cp1 = np.array(seis1.u[0])
+    cp1 = np.array(seis1.data[0])
     dummy_func_2(seis1, preserve_history=True, instance='0')
-    assert cp1[0] != seis1.u[0, 0]
-    assert seis1.u[0, 0] == -1
+    assert cp1[0] != seis1.data[0, 0]
+    assert seis1.data[0, 0] == -1
     assert seis1.number_of_stages() == 1
 
     # test timeseries_ensemble_as_stream
     tse = get_live_timeseries_ensemble(2)
     cp = TimeSeriesEnsemble(tse)
     dummy_func_2(tse, preserve_history=True, instance='0')
-    assert tse.member[0].s[0] == -1
-    assert tse.member[0].s[0] != cp.member[0].s[0]
+    assert tse.member[0].data[0] == -1
+    assert tse.member[0].data[0] != cp.member[0].data[0]
     assert tse.member[0].number_of_stages() == 1
 
     # test seismogram_ensemble_as_stream
     seis_e = get_live_seismogram_ensemble(2)
     cp = SeismogramEnsemble(seis_e)
     dummy_func_2(seis_e, preserve_history=True, instance='0')
-    assert seis_e.member[0].u[0,0] == -1
-    assert seis_e.member[0].u[0,0] != cp.member[0].u[0,0]
+    assert seis_e.member[0].data[0,0] == -1
+    assert seis_e.member[0].data[0,0] != cp.member[0].data[0,0]
     assert seis_e.member[0].number_of_stages() == 1
 
     # test inplace return
@@ -297,7 +297,7 @@ def test_mspass_func_wrapper_multi():
 
 @mspass_reduce_func_wrapper
 def dummy_reduce_func(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
-    data1.s[0] = -1
+    data1.data[0] = -1
 
 @mspass_reduce_func_wrapper
 def dummy_reduce_func_runtime(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
@@ -305,17 +305,17 @@ def dummy_reduce_func_runtime(data1, data2, *args, preserve_history=False, insta
 
 @mspass_reduce_func_wrapper
 def dummy_reduce_func_mspasserror(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
-    raise mspass.MsPASSError("test", mspass.ErrorSeverity.Fatal)
+    raise MsPASSError("test", ErrorSeverity.Fatal)
 
 def test_mspass_reduce_func_wrapper():
     ts1 = get_live_timeseries()
-    ts1.s[0] = 1
+    ts1.data[0] = 1
     ts2 = get_live_timeseries()
     logging_helper.info(ts2, 'dummy_func', '1')
     logging_helper.info(ts2, 'dummy_func_2', '2')
     assert len(ts1.get_nodes()) == 0
     dummy_reduce_func(ts1, ts2, preserve_history=True, instance='3')
-    assert ts1.s[0] == -1
+    assert ts1.data[0] == -1
     assert len(ts1.get_nodes()) == 3
 
     with pytest.raises(TypeError) as err:
@@ -336,7 +336,7 @@ def test_mspass_reduce_func_wrapper():
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
     assert len(ts1.elog.get_error_log()) == 0
-    with pytest.raises(mspass.MsPASSError) as err:
+    with pytest.raises(MsPASSError) as err:
         dummy_reduce_func_mspasserror(ts1, ts2, preserve_history=True, instance='3')
     assert str(err.value) == "test"
 

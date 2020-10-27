@@ -10,16 +10,16 @@ from helper import (get_live_seismogram,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
-from mspasspy.ccore import (DoubleVector,
-                            dmatrix,
-                            ErrorLogger,
-                            MDtype,
-                            Metadata,
-                            MetadataDefinitions,
-                            Seismogram,
-                            TimeSeries,
-                            SeismogramEnsemble,
-                            TimeSeriesEnsemble)
+from mspasspy.ccore.utility import (dmatrix,
+                                    ErrorLogger,
+                                    MDtype,
+                                    Metadata,
+                                    MetadataDefinitions)
+from mspasspy.ccore.seismic import (DoubleVector,
+                                    Seismogram,
+                                    TimeSeries,
+                                    TimeSeriesEnsemble,
+                                    SeismogramEnsemble)
 from mspasspy.io.converter import (dict2Metadata, 
                                    Metadata2dict, 
                                    TimeSeries2Trace, 
@@ -64,7 +64,7 @@ def setup_function(function):
     function.md1.put('live', True)
 
     function.ts1 = TimeSeries()
-    function.ts1.s = DoubleVector(np.random.rand(ts_size))
+    function.ts1.data = DoubleVector(np.random.rand(ts_size))
     function.ts1.live = True
     function.ts1.dt = 1/sampling_rate
     function.ts1.t0 = 0
@@ -78,10 +78,10 @@ def setup_function(function):
     # TODO: the default of seismogram.tref is UTC which is inconsistent with the default 
     # for TimeSeries()
     # TODO: It would be nice to have dmatrix support numpy.ndarray as input
-    function.seismogram.u = dmatrix(3, ts_size)
+    function.seismogram.data = dmatrix(3, ts_size)
     for i in range(3):
         for j in range(ts_size):
-            function.seismogram.u[i,j] = np.random.rand()
+            function.seismogram.data[i,j] = np.random.rand()
     
     function.seismogram.live = True
     function.seismogram.dt = 1/sampling_rate
@@ -137,7 +137,7 @@ def test_Trace2TimeSeries():
     # TODO: aliases handling is not tested. Not clear what the
     #  expected behavior should be. 
     ts = Trace2TimeSeries(test_Trace2TimeSeries.tr1)
-    assert all(ts.s == test_Trace2TimeSeries.tr1.data)
+    assert all(ts.data == test_Trace2TimeSeries.tr1.data)
     assert ts.live == True
     assert ts.dt == test_Trace2TimeSeries.tr1.stats.delta
     assert ts.t0 == test_Trace2TimeSeries.tr1.stats.starttime.timestamp
@@ -164,9 +164,9 @@ def test_Stream2Seismogram():
     # TODO: need to refine the test as well as the behavior of the function.
     # Right now when cardinal is false, azimuth and dip needs to be defined. 
     seis = Stream2Seismogram(test_Stream2Seismogram.stream, cardinal = True)
-    assert all(np.array(seis.u)[0] == test_Stream2Seismogram.stream[0].data)
-    assert all(np.array(seis.u)[1] == test_Stream2Seismogram.stream[1].data)
-    assert all(np.array(seis.u)[2] == test_Stream2Seismogram.stream[2].data)
+    assert all(np.array(seis.data)[0] == test_Stream2Seismogram.stream[0].data)
+    assert all(np.array(seis.data)[1] == test_Stream2Seismogram.stream[1].data)
+    assert all(np.array(seis.data)[2] == test_Stream2Seismogram.stream[2].data)
 
 def test_TimeSeriesEnsemble_as_Stream():
     # use data object to verify converter
@@ -175,7 +175,7 @@ def test_TimeSeriesEnsemble_as_Stream():
     tse_c = stream.toTimeSeriesEnsemble()
     assert len(tse) == len(tse_c)
     for k in range(3):
-        assert all(a == b for a,b in zip(tse.member[k].s, tse_c.member[k].s))
+        assert all(a == b for a,b in zip(tse.member[k].data, tse_c.member[k].data))
 
     # dead member is also dead after conversion
     tse.member[0].kill()
@@ -185,7 +185,7 @@ def test_TimeSeriesEnsemble_as_Stream():
         assert tse.member[k].live == tse_c.member[k].live
 
     # dead member will be an empty object after conversion
-    assert len(tse_c.member[0].s) == 0
+    assert len(tse_c.member[0].data) == 0
 
 def test_SeismogramEnsemble_as_Stream():
     seis_e = get_live_seismogram_ensemble(3)
@@ -193,7 +193,7 @@ def test_SeismogramEnsemble_as_Stream():
     seis_e_c = stream.toSeismogramEnsemble()
     assert len(seis_e) == len(seis_e_c)
     for k in range(3):
-        assert all(a.any() == b.any() for a, b in zip(seis_e.member[k].u, seis_e_c.member[k].u))
+        assert all(a.any() == b.any() for a, b in zip(seis_e.member[k].data, seis_e_c.member[k].data))
 
     # dead member is also dead after conversion
     seis_e.member[0].kill()
@@ -201,5 +201,5 @@ def test_SeismogramEnsemble_as_Stream():
     seis_e_c = stream.toSeismogramEnsemble()
     for k in range(3):
         assert seis_e_c.member[k].live == seis_e.member[k].live
-    assert seis_e_c.member[0].u.rows() == 0
-    assert seis_e_c.member[0].u.columns() == 0
+    assert seis_e_c.member[0].data.rows() == 0
+    assert seis_e_c.member[0].data.columns() == 0
