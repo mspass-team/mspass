@@ -16,8 +16,8 @@ include_directories(
 
 add_library(alg_basics STATIC ${sources_alg_basics})
 add_library(amplitudes STATIC ${sources_amplitudes})
-target_link_libraries(alg_basics PRIVATE utility ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-target_link_libraries(amplitudes PRIVATE utility ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(alg_basics PRIVATE utility seismic ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+target_link_libraries(amplitudes PRIVATE utility seismic ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
 add_subdirectory(deconvolution)
 
