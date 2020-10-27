@@ -11,7 +11,7 @@ include_directories(
 #add_library(mspasspython STATIC ${sources_python})
 #target_link_libraries(mspasspython PRIVATE mspass ${PYTHON_LIBRARIES})
 
-pybind11_add_module(ccore mspass_wrapper.cpp MongoDBConverter.cpp)
+pybind11_add_module(ccore mspass_wrapper.cpp)
 
 target_link_libraries(ccore PRIVATE mspass ${Boost_LIBRARIES})
 
