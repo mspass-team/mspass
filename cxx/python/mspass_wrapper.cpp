@@ -17,8 +17,6 @@
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/utility/MetadataDefinitions.h>
 #include <mspass/seismic/Ensemble.h>
-// These includes are objects only visible from the python interpreter
-#include "MongoDBConverter.h"
 #include <mspass/algorithms/algorithms.h>
 #include <mspass/algorithms/amplitudes.h>
 //Deconvolution algorithms are in a separate directory
@@ -119,7 +117,6 @@ using mspass::BasicProcessingHistory;
 using mspass::ProcessingHistory;
 using mspass::NodeData;
 using mspass::Ensemble;
-using mspass::MongoDBConverter;
 using mspass::agc;
 using mspass::ExtractComponent;
 using mspass::BasicDeconOperator;
@@ -1694,32 +1691,6 @@ py::class_<mspass::CNR3CDecon,mspass::FFTDeconOperator>(m,"CNR3CDecon","Colored 
   .def("inverse_wavelet",&mspass::CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
   .def("QCMetrics",&mspass::CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
 ;
-
-  /* This object is in a separate pair of files in this directory.  */
-py::class_<mspass::MongoDBConverter>(m,"MongoDBConverter","Metadata translator from C++ object to python")
-      .def(py::init<>())
-      /* We intentionally do no wrap the copy constructor as this
-         thing should probably not be copied in a python script */
-      //.def(py::init<const mspass::MetadataDefinitions>())
-      .def(py::init<const std::string>())
-      .def("modified",&mspass::MongoDBConverter::modified,
-         py::arg("d"), py::arg("verbose")=false,
-         "Return dict of modified Metadata attributes")
-      .def("selected",&mspass::MongoDBConverter::selected,
-         py::arg("d"),
-         py::arg("keys"),
-         py::arg("noabort")=false,
-         py::arg("verbose")=true,
-         "Return dict of fields defined in input list")
-      .def("all",&mspass::MongoDBConverter::all,
-         py::arg("d"),py::arg("verbose")=true,
-         "Return dict of all Metadata attributes")
-      .def("writeable",&mspass::MongoDBConverter::writeable,
-          py::arg("d"),py::arg("verbose")=true,
-          "Return dict of all Metadata attributes defined to be mutable")
-      .def("badkeys",&mspass::MongoDBConverter::badkeys,
-         "Return a python list of any keys that are not defined in input object")
-    ;
 
   /* this pair of functions are potentially useful for interactive queries of
   ProcessingHistory data */
