@@ -3,7 +3,7 @@
 
 FROM mongo:4.2.0
 
-MAINTAINER Ian Wang <yinzhi.wang.cug@gmail.com>
+LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
 RUN apt-get update \
     && apt-get install -y wget ssh rsync vim-tiny less \
@@ -20,7 +20,7 @@ RUN pip3 --no-cache-dir install pymongo
 RUN mkdir /home/data
 
 # Prepare the environment
-ENV SPARK_VERSION 2.4.5
+ENV SPARK_VERSION 3.0.0
 ENV SPARK_MASTER_PORT 7077
 
 ENV MSPASS_ROLE master
@@ -46,6 +46,9 @@ RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
 RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
+
+# Install Dask through pip
+RUN pip3 --no-cache-dir install "dask[complete]" 
 
 # Install obspy through pip
 RUN pip3 --no-cache-dir install numpy \
