@@ -196,193 +196,193 @@ class Database(pymongo.database.Database):
             return derr
 
     def save3C(self, d, mdef = MetadataDefinitions(), smode="gridfs", mmode="save"):
-            """
-            Save mspass::Seismogram object in MongoDB.
+        """
+        Save mspass::Seismogram object in MongoDB.
 
-            This is a core method to save Seismogram objects in MongoDB.   It uses a
-            feature in the C library (MongoDBConverter) along with capabilities built
-            into the data object to add two important features:  (1) we can do pure
-            updates to database attributes for pure Metadata procedures as well as full
-            writes of new data, and (2) Seismogram has an error log feature that is
-            dumped to a separate document (elog) if it has any entries.   Any data
-            with sever errors are silently dropped assuming the user will use the
-            error log document to backtrack problems.
+        This is a core method to save Seismogram objects in MongoDB.   It uses a
+        feature in the C library (MongoDBConverter) along with capabilities built
+        into the data object to add two important features:  (1) we can do pure
+        updates to database attributes for pure Metadata procedures as well as full
+        writes of new data, and (2) Seismogram has an error log feature that is
+        dumped to a separate document (elog) if it has any entries.   Any data
+        with sever errors are silently dropped assuming the user will use the
+        error log document to backtrack problems.
 
-            This method will immediately attempt to
-            open a connection to the wf and elog collections.  An assumption of
-            that algorithm is that doing so is lightweight and the simplification of
-            a single argument is preferable to requiring two args that have to be
-            checked for consistency.  If you don't want to clobber an existing
-            database just create an empty scratch database before calling this
-            method for the first time.
+        This method will immediately attempt to
+        open a connection to the wf and elog collections.  An assumption of
+        that algorithm is that doing so is lightweight and the simplification of
+        a single argument is preferable to requiring two args that have to be
+        checked for consistency.  If you don't want to clobber an existing
+        database just create an empty scratch database before calling this
+        method for the first time.
 
-            :param d: Seismogram object to be saved.  Not if d is marked dead (live false)
-                the method attempts to write an entry in elog to save the error
-                messages posted for that seismogram.
-            :param mdef: is a MetadataDefinitions object for schema used by d
-            :param smode: mnemonic for SamplelMODE.   Options are currently supported:
-            (1) 'file' - use the dir and dfile attributes to write sample
-                data as a raw dump with fwrite.  File is ALWAYS appended so user
-                can either change dir and/or defile and write to a new file or
-                append to the parent data.   The method will fail if dir or
-                dfile are not defined in this mode.
-            (2) 'gridfs' - (default) data are stored internally in MongoDB's gridfs system
-            (3) 'unchanged' - do not save the data.  This mode is required when mmode
-                is set to updatemd (used for pure Metadata manipulations for efficiency)
-            :param mmode: mnemonic for MetadataMODE.   Supported options are:
-            (1) 'save' - contents are saved dropping all marked readonly (default)
-            (2) 'saveall' - all Metadata attributes are saved even if marked readonly
-                (most useful for temporary data saved inside a job stream)
-            (3) 'updatemd' - run an update to the document of Metadata that have
-                changed.  Nothing else is altered in this case. If smode is not set
-                unchanged the method will throw a RuntimeError exception in
-                the mode.  Similarly, if the ObjectID was set invalid, which is
-                used internally whenever sample data are altered, the method will
-                abort with a RuntimeError exception.
-            (4) 'updateall' - both Metadata and sample data will be updated.  Note
-                this mode should not be used if smode is set to 'file' as it is
-                nearly guaranteed to create inaccessible holes in files.  A
-                warning message is posted in this situation, but the program
-                will blunder on.
+        :param d: Seismogram object to be saved.  Not if d is marked dead (live false)
+            the method attempts to write an entry in elog to save the error
+            messages posted for that seismogram.
+        :param mdef: is a MetadataDefinitions object for schema used by d
+        :param smode: mnemonic for SamplelMODE.   Options are currently supported:
+        (1) 'file' - use the dir and dfile attributes to write sample
+            data as a raw dump with fwrite.  File is ALWAYS appended so user
+            can either change dir and/or defile and write to a new file or
+            append to the parent data.   The method will fail if dir or
+            dfile are not defined in this mode.
+        (2) 'gridfs' - (default) data are stored internally in MongoDB's gridfs system
+        (3) 'unchanged' - do not save the data.  This mode is required when mmode
+            is set to updatemd (used for pure Metadata manipulations for efficiency)
+        :param mmode: mnemonic for MetadataMODE.   Supported options are:
+        (1) 'save' - contents are saved dropping all marked readonly (default)
+        (2) 'saveall' - all Metadata attributes are saved even if marked readonly
+            (most useful for temporary data saved inside a job stream)
+        (3) 'updatemd' - run an update to the document of Metadata that have
+            changed.  Nothing else is altered in this case. If smode is not set
+            unchanged the method will throw a RuntimeError exception in
+            the mode.  Similarly, if the ObjectID was set invalid, which is
+            used internally whenever sample data are altered, the method will
+            abort with a RuntimeError exception.
+        (4) 'updateall' - both Metadata and sample data will be updated.  Note
+            this mode should not be used if smode is set to 'file' as it is
+            nearly guaranteed to create inaccessible holes in files.  A
+            warning message is posted in this situation, but the program
+            will blunder on.
 
-            :return: Number of errors posted to ErrorLogger and saved in the database
-            :rtype: integer
-            :raise: should be surrounded by a RuntimeError exception handler.  The method
-                can abort with several illegal argument combinations
-            """
-            # First we do a series of sanity checks to avoid writing garbage
-            error_count=0
-            try:
-                if( not ((smode=='file') or (smode=='gridfs') or (smode=='unchanged'))):
-                    raise RuntimeError('Illegal value for smode = ' + smode)
-                if( not ((mmode=='save') or (mmode=='saveall') or (mmode=='updatemd')
-                or (mmode=='updateall') ) ):
-                    raise RuntimeError('Illegal value for mmode = ' + mmode)
-                if( (mmode=='updatemd') and (smode=='unchanged')):
-                    raise RuntimeError('Illegal combination of mmode and smode')
-                if( (mmode=='updateall')and(smode=='file')):
-                    d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + 'mmode set to updateall for file mode output\n'\
-                        + 'This may cause stranded data in existing files\n'\
-                        + 'Consider using smode set to gridfs', ErrorSeverity.Informational)
-                    error_count+=1
-            except RuntimeError:
-                raise
-            try:
-                # Now open the wf collections
-                wfcol=self.wf
-                if(d.live):
-                    #Make sure the stored attributes in a Seismogram are consistent
-                    #synced with Metadata as when we save to the database we assume
-                    #use the Metadata attributes to build the update document.
-                    _sync_metadata(d)
-                    if( (mmode=='save') or (mmode=='saveall') ):
-                        if(smode=='file'):
-                            foff = self._save_data3C_to_dfile(d)
-                            if(foff == -1):
-                                error_count += 1
-                                return error_count
-                            d.put_long('foff',foff)
-                            d.put_string('storage_mode','file')
-                        elif(smode=='gridfs'):
-                            fileoid=self._save_data3C_to_gridfs(d)
-                            d.put_string('gridfs_wf_id',str(fileoid))
-                            d.put_string('storage_mode','gridfs')
+        :return: Number of errors posted to ErrorLogger and saved in the database
+        :rtype: integer
+        :raise: should be surrounded by a RuntimeError exception handler.  The method
+            can abort with several illegal argument combinations
+        """
+        # First we do a series of sanity checks to avoid writing garbage
+        error_count=0
+        try:
+            if( not ((smode=='file') or (smode=='gridfs') or (smode=='unchanged'))):
+                raise RuntimeError('Illegal value for smode = ' + smode)
+            if( not ((mmode=='save') or (mmode=='saveall') or (mmode=='updatemd')
+            or (mmode=='updateall') ) ):
+                raise RuntimeError('Illegal value for mmode = ' + mmode)
+            if( (mmode=='updatemd') and (smode=='unchanged')):
+                raise RuntimeError('Illegal combination of mmode and smode')
+            if( (mmode=='updateall')and(smode=='file')):
+                d.elog.log_error(sys._getframe().f_code.co_name,
+                    traceback.format_exc() \
+                    + 'mmode set to updateall for file mode output\n'\
+                    + 'This may cause stranded data in existing files\n'\
+                    + 'Consider using smode set to gridfs', ErrorSeverity.Informational)
+                error_count+=1
+        except RuntimeError:
+            raise
+        try:
+            # Now open the wf collections
+            wfcol=self.wf
+            if(d.live):
+                #Make sure the stored attributes in a Seismogram are consistent
+                #synced with Metadata as when we save to the database we assume
+                #use the Metadata attributes to build the update document.
+                _sync_metadata(d)
+                if( (mmode=='save') or (mmode=='saveall') ):
+                    if(smode=='file'):
+                        foff = self._save_data3C_to_dfile(d)
+                        if(foff == -1):
+                            error_count += 1
+                            return error_count
+                        d.put_long('foff',foff)
+                        d.put_string('storage_mode','file')
+                    elif(smode=='gridfs'):
+                        fileoid=self._save_data3C_to_gridfs(d)
+                        d.put_string('gridfs_wf_id',str(fileoid))
+                        d.put_string('storage_mode','gridfs')
+                    updict=d.todict()
+                    if(mmode=='save'):
+                        for key in list(updict):
+                            if(not mdef.writeable(key)):
+                                del updict[key]
+                    # ObjectId is dropped for now, but may want to save str representation
+                    newid=wfcol.insert_one(updict).inserted_id
+                    # Because we trap condition of an invalid mmode we can do just an else instead of This
+                    #elif( (mmode=='updatemd') or (mmode=="updateall")):
+                    #
+                    # insert_one creates a new copy so we need to post the
+                    # new ObjectId
+                    d.put_string('wf_id',str(newid))
+                else:
+                    # Make sure the oid string is valid
+                    oid=bson.objectid.ObjectId()
+                    try:
+                        oidstr=d.get_string('wf_id')
+                        oid=bson.objectid.ObjectId(oidstr)
+                    except RuntimeError:
+                        d.elog.log_error(sys._getframe().f_code.co_name,
+                            traceback.format_exc() \
+                            + "Error in attempting an update\n" \
+                            + "Required key wf_id, which is a string representation of parent ObjectId, not found\n" \
+                            + "Cannot peform an update - updated data will not be saved",
+                            ErrorSeverity.Invalid)
+                        error_count += 1
+                        return error_count
+                    except bson.errors.InvalidId:
+                        d.elog.log_error(sys._getframe().f_code.co_name,
+                            traceback.format_exc() \
+                            + "Error in attempting an update\n" \
+                            + "ObjectId string = " + oidstr + " is not a valid ObjectId string\n" \
+                            + "Cannot perform an update - this data will be not be saved",
+                            ErrorSeverity.Invalid)
+                        error_count+=1
+                        return error_count
+                    else:
+                        # assume oid is valid, maybe should do a find_one first but for now handle with exception
                         updict=d.todict()
-                        if(mmode=='save'):
+                        if(mmode=='updatemd'):
                             for key in list(updict):
                                 if(not mdef.writeable(key)):
                                     del updict[key]
-                        # ObjectId is dropped for now, but may want to save str representation
-                        newid=wfcol.insert_one(updict).inserted_id
-                        # Because we trap condition of an invalid mmode we can do just an else instead of This
-                        #elif( (mmode=='updatemd') or (mmode=="updateall")):
-                        #
-                        # insert_one creates a new copy so we need to post the
-                        # new ObjectId
-                        d.put_string('wf_id',str(newid))
-                    else:
-                        # Make sure the oid string is valid
-                        oid=bson.objectid.ObjectId()
-                        try:
-                            oidstr=d.get_string('wf_id')
-                            oid=bson.objectid.ObjectId(oidstr)
-                        except RuntimeError:
-                            d.elog.log_error(sys._getframe().f_code.co_name,
-                                traceback.format_exc() \
-                                + "Error in attempting an update\n" \
-                                + "Required key wf_id, which is a string representation of parent ObjectId, not found\n" \
-                                + "Cannot peform an update - updated data will not be saved",
-                                ErrorSeverity.Invalid)
-                            error_count += 1
-                            return error_count
-                        except bson.errors.InvalidId:
-                            d.elog.log_error(sys._getframe().f_code.co_name,
-                                traceback.format_exc() \
-                                + "Error in attempting an update\n" \
-                                + "ObjectId string = " + oidstr + " is not a valid ObjectId string\n" \
-                                + "Cannot perform an update - this data will be not be saved",
-                                ErrorSeverity.Invalid)
-                            error_count+=1
-                            return error_count
-                        else:
-                            # assume oid is valid, maybe should do a find_one first but for now handle with exception
-                            updict=d.todict()
-                            if(mmode=='updatemd'):
-                                for key in list(updict):
-                                    if(not mdef.writeable(key)):
-                                        del updict[key]
-                            if(len(updict)>0):
-                                try:
-                                    ur=wfcol.update_one({'_id': oid},{'$set':updict})
-                                except:
-                                    # This perhaps should be a fatal error
+                        if(len(updict)>0):
+                            try:
+                                ur=wfcol.update_one({'_id': oid},{'$set':updict})
+                            except:
+                                # This perhaps should be a fatal error
+                                d.elog.log_error(sys._getframe().f_code.co_name,
+                                    traceback.format_exc() \
+                                    + "Metadata update operation failed with MongoDB\n" \
+                                    + "All parts of this Seismogram will be dropped",
+                                    ErrorSeverity.Invalid)
+                                error_count+=1
+                                return error_count
+                            # This silently skips case when no Metadata were modified
+                            # That situation would be common if only the sample
+                            # data were changed and  no metadata operations
+                            # were performed
+                            if(ur.modified_count <=0):
+                                emess = "metadata attribute not changed\n "
+                                d.elog.log_error(sys._getframe().f_code.co_name,
+                                    traceback.format_exc() + emess,
+                                    ErrorSeverity.Informational)
+                                error_count+=1
+                        if(mmode=="updateall"):
+                            if(smode=='file'):
+                                self._save_data3C_to_dfile(d)
+                            elif(smode=='gridfs'):
+                            #BROKEN - this needs to be changed to an update mode
+                            # Working on more primitives first, but needs to be fixed
+                                self._save_data3C_to_gridfs(d,update=True)
+                            else:
+                                if(not(smode=='unchanged')):
                                     d.elog.log_error(sys._getframe().f_code.co_name,
                                         traceback.format_exc() \
-                                        + "Metadata update operation failed with MongoDB\n" \
-                                        + "All parts of this Seismogram will be dropped",
-                                        ErrorSeverity.Invalid)
+                                        + "Unrecognized value for smode = " \
+                                        + smode + " Assumed to be unchanged\n" \
+                                        + "That means only Metadata for these data were saved and sample data were left unchanged",
+                                        ErrorSeverity.Suspect)
                                     error_count+=1
-                                    return error_count
-                                # This silently skips case when no Metadata were modified
-                                # That situation would be common if only the sample
-                                # data were changed and  no metadata operations
-                                # were performed
-                                if(ur.modified_count <=0):
-                                    emess = "metadata attribute not changed\n "
-                                    d.elog.log_error(sys._getframe().f_code.co_name,
-                                        traceback.format_exc() + emess,
-                                        ErrorSeverity.Informational)
-                                    error_count+=1
-                            if(mmode=="updateall"):
-                                if(smode=='file'):
-                                    self._save_data3C_to_dfile(d)
-                                elif(smode=='gridfs'):
-                                #BROKEN - this needs to be changed to an update mode
-                                # Working on more primitives first, but needs to be fixed
-                                    self._save_data3C_to_gridfs(d,update=True)
-                                else:
-                                    if(not(smode=='unchanged')):
-                                        d.elog.log_error(sys._getframe().f_code.co_name,
-                                            traceback.format_exc() \
-                                            + "Unrecognized value for smode = " \
-                                            + smode + " Assumed to be unchanged\n" \
-                                            + "That means only Metadata for these data were saved and sample data were left unchanged",
-                                            ErrorSeverity.Suspect)
-                                        error_count+=1
-            except:
-                # Not sure what of if update_one can throw an exception.  docstring does not say
-                d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "something threw an unexpected exception",
-                        ErrorSeverity.Invalid)
-                error_count+=1
-            # always save the error log.  Done before exit in case any of the
-            # python functions posted errors
-            oidstr=d.get_string('wf_id')
-            self._save_elog(oidstr,d.elog)
-            return error_count
+        except:
+            # Not sure what of if update_one can throw an exception.  docstring does not say
+            d.elog.log_error(sys._getframe().f_code.co_name,
+                    traceback.format_exc() \
+                    + "something threw an unexpected exception",
+                    ErrorSeverity.Invalid)
+            error_count+=1
+        # always save the error log.  Done before exit in case any of the
+        # python functions posted errors
+        oidstr=d.get_string('wf_id')
+        self._save_elog(oidstr,d.elog)
+        return error_count
 
     def _save_elog(self, oidstr, elog):
         """
