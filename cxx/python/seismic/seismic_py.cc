@@ -198,7 +198,7 @@ PYBIND11_MODULE(seismic, m) {
   /* The following line is necessary for Metadata to be recognized
      if mspasspy.ccore.utility is not imported already. Reference:
      https://pybind11.readthedocs.io/en/stable/advanced/misc.html#partitioning-code-over-multiple-extension-modules*/
-  py::module::import("mspasspy.ccore.utility");
+  py::module_::import("mspasspy.ccore.utility");
 
   py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())

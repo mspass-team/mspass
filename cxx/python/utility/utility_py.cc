@@ -452,13 +452,13 @@ PYBIND11_MODULE(utility, m) {
     .def("zero",&dmatrix::zero,"Initialize a matrix to all zeros")
     .def(py::self + py::self,"Operator +")
     .def("__add__", [](const dmatrix &a, py::object b) {
-      return py::module::import("mspasspy.ccore.utility").attr("dmatrix")(
+      return py::module_::import("mspasspy.ccore.utility").attr("dmatrix")(
         py::cast(a).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__add__")(b));
     })
     .def(py::self - py::self,"Operator -")
     .def("__sub__", [](const dmatrix &a, py::object b) {
-      return py::module::import("mspasspy.ccore.utility").attr("dmatrix")(
+      return py::module_::import("mspasspy.ccore.utility").attr("dmatrix")(
         py::cast(a).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__sub__")(b));
     })
