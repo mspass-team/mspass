@@ -449,7 +449,17 @@ PYBIND11_MODULE(utility, m) {
     })
     .def("rows",&dmatrix::rows,"Rows in the matrix")
     .def("columns",&dmatrix::columns,"Columns in the matrix")
+    .def("__len__",&dmatrix::rows,"Rows in the matrix")
+    .def_property_readonly("size", [](dmatrix& self) {
+      return static_cast<Publicdmatrix&>(self).length;
+    },"The size of the matrix")
     .def("zero",&dmatrix::zero,"Initialize a matrix to all zeros")
+    .def("transpose",[](const dmatrix &self) {
+      return tr(self);
+    },"Matrix transpose")
+    .def_property_readonly("shape", [](const dmatrix& self) {
+      return py::make_tuple(self.rows(), self.columns());
+    },"Return the unit vector equivalent to direction defined in sphereical coordinates")
     .def(py::self + py::self,"Operator +")
     .def("__add__", [](const dmatrix &a, py::object b) {
       return py::module_::import("mspasspy.ccore.utility").attr("dmatrix")(
@@ -462,6 +472,9 @@ PYBIND11_MODULE(utility, m) {
         py::cast(a).attr("__getitem__")(py::reinterpret_steal<py::slice>(
         PySlice_New(Py_None, Py_None, Py_None))).attr("__sub__")(b));
     })
+    .def(py::self * py::self,"Operator *")
+    .def(py::self * double(),"Operator *")
+    .def(double() * py::self,"Operator *")
     .def(py::self += py::self,"Operator +=")
     .def(py::self -= py::self,"Operator -=")
     .def("__getitem__", [](dmatrix &m, py::slice slice) {

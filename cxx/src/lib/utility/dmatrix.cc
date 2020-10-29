@@ -174,8 +174,8 @@ dmatrix operator*(const double& x, const dmatrix &zx) noexcept
   }
   return tempmat;
 }
-/*
-dmatrix dmatrix::operator* (const double& x) noexcept
+
+dmatrix dmatrix::operator* (double x) const noexcept
 {
     double *ptr;
     dmatrix result(*this);
@@ -183,7 +183,7 @@ dmatrix dmatrix::operator* (const double& x) noexcept
     dscal(length,x,ptr,1);
     return result;
 }
-*/
+
 
 
 

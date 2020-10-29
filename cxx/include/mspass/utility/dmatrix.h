@@ -212,7 +212,7 @@ Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).
   \return sA 
   */
   friend dmatrix operator*(const double& s, const dmatrix& A) noexcept;
-  //dmatrix operator* (const double& s) noexcept;
+  dmatrix operator* (double s) const noexcept;
   /*! \brief Transpose a matrix
    *
    A standard matrix operation is to transpose a matrix (reversing rows

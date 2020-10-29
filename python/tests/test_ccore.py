@@ -34,6 +34,9 @@ def test_dmatrix():
     dm = dmatrix(9,4)
     assert dm.rows() == 9
     assert dm.columns() == 4
+    assert dm.size == 4*9
+    assert len(dm) == 9
+    assert dm.shape == (9, 4)
 
     md = [array.array('l', (0 for _ in range(5))) for _ in range(3)]
     for i in range(3):
@@ -54,6 +57,10 @@ def test_dmatrix():
             md[i][j] = i*4+j
     dm = dmatrix(md)
     assert (dm == md).all()
+    assert (dm.transpose() == md.transpose()).all()
+    assert (dm * 3.14 == md * 3.14).all()
+    assert (2.17 * dm == 2.17 * md).all()
+    assert (dm * dm.transpose() == np.matmul(md, md.transpose())).all()
 
     dm_c = dmatrix(dm)
     dm += dm_c
