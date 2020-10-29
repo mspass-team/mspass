@@ -581,7 +581,7 @@ PYBIND11_MODULE(utility, m) {
     and translates any MsPASSError thrown from the C++ side and throws a new
     PyMsPASSError to python side.
   */
-  static PyObject *PyMsPASSError = PyErr_NewException("mspasspy.ccore.MsPASSError", NULL, NULL);
+  static PyObject *PyMsPASSError = PyErr_NewException("mspasspy.ccore.utility.MsPASSError", NULL, NULL);
   if (PyMsPASSError) {
     PyTypeObject *as_type = reinterpret_cast<PyTypeObject *>(PyMsPASSError);
     as_type->tp_str = MsPASSError_tp_str;
