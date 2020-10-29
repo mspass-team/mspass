@@ -58,7 +58,7 @@ RUN pip3 --no-cache-dir install numpy \
 RUN pip3 --no-cache-dir install pytest
 
 # Download & install pybind11
-ENV PYBIND11_VERSION 2.4.3
+ENV PYBIND11_VERSION 2.6.0
 ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
