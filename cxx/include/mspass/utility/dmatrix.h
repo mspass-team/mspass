@@ -35,21 +35,14 @@ Basic constructor for this error object.
 */
 	dmatrix_index_error(const size_t nrmax, 
                 const size_t ncmax, const size_t ir, const size_t ic)
-		{row = ir; column=ic; nrr=nrmax; ncc=ncmax;};
-/*! Writes the error message to standard error.
-*/
-        virtual void log_error()
-	{ std::cerr << "Matrix index (" << row << "," << column 
-		<< ")is outside range = " << nrr << "," << ncc << std::endl;};
-        /*! std::exception standard interface. */
-        virtual const char* what() const throw()
         {
-            std::stringstream ss(message);
-            ss << "dmatrix object:  indexing error"<<std::endl
-                << "Matrix index (" << row << "," << column
-                << ")is outside range = " << nrr << "," << ncc << std::endl;
-            std::string result(ss.str());
-            return result.c_str();
+                row = ir; column=ic; nrr=nrmax; ncc=ncmax;
+                std::ostringstream oss;
+                oss << "dmatrix object:  indexing error"<<std::endl
+                        << "Matrix index (" << row << "," << column
+                        << ")is outside range = " << nrr << "," << ncc << std::endl;
+                message = oss.str();
+                badness = ErrorSeverity::Invalid;
         };
         /* necessary baggage for some compilers - empty destructor */
         ~dmatrix_index_error() throw(){};
@@ -75,25 +68,15 @@ Basic constructor for this error object.
 */
 	dmatrix_size_error (const size_t nr1, const size_t nc1, 
            const size_t nr2, const size_t nc2)
-	{nrow1=nr1; ncol1=nc1;nrow2=nr2;ncol2=nc2;};
-/*! Writes the error message to standard error.*/
-	virtual void log_error()
 	{
-            std::cerr << "dmatrix class:   size mismatch error in binary operator"<<std::endl
-                << "matrix on left is "<< nrow1 << "X" << ncol1
-		<< "while matrix on right is "
-		<< nrow2 << "X" << ncol2 << std::endl;
-	};
-        /*! std::exception standard interface. */
-        virtual const char* what() const throw()
-        {
-            std::stringstream ss(message);
-            ss << "dmatrix class:   size mismatch error in binary operator"<<std::endl
-                << "matrix on left is "<< nrow1 << "X" << ncol1
-		<< "while matrix on right is "
-		<< nrow2 << "X" << ncol2 << std::endl;
-            std::string result(ss.str());
-            return result.c_str();
+                nrow1=nr1; ncol1=nc1;nrow2=nr2;ncol2=nc2;
+                std::ostringstream oss;
+                oss << "dmatrix class:   size mismatch error in binary operator"<<std::endl
+                        << "matrix on left is "<< nrow1 << "X" << ncol1
+                        << " while matrix on right is "
+                        << nrow2 << "X" << ncol2 << std::endl;
+                message = oss.str();
+                badness = ErrorSeverity::Invalid;
         };
         /* necessary baggage for some compilers - empty destructor */
         ~dmatrix_size_error() throw(){};

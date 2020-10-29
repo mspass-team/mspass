@@ -62,6 +62,9 @@ def test_dmatrix():
     assert (2.17 * dm == 2.17 * md).all()
     assert (dm * dm.transpose() == np.matmul(md, md.transpose())).all()
 
+    with pytest.raises(MsPASSError, match = 'size mismatch'):
+        dm * dm
+
     dm_c = dmatrix(dm)
     dm += dm_c
     assert (dm == md+md).all()
