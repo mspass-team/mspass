@@ -82,7 +82,7 @@ jobs:
       before_install:
         - |
           pyenv versions
-          pyenv global 3.7
+          pyenv global 3.8
         - pip install -U pip
         - pip install pymongo
         - pip install numpy 
@@ -116,7 +116,7 @@ jobs:
       before_install:
         - |
           pyenv versions
-          pyenv global 3.7
+          pyenv global 3.8
         - pip install -U pip
         - pip install pymongo
         - pip install numpy 
@@ -149,7 +149,7 @@ before_install:
   - |
     if [ $TRAVIS_OS_NAME == "linux" ]; then
       pyenv versions
-      pyenv global 3.7
+      pyenv global 3.8
     fi
   - cd cxx 
   - mkdir build 
