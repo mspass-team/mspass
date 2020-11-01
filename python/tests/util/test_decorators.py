@@ -17,7 +17,9 @@ from decorators import (mspass_func_wrapper,
                         seismogram_as_stream,
                         timeseries_ensemble_as_stream,
                         seismogram_ensemble_as_stream,
-                        mspass_reduce_func_wrapper)
+                        mspass_reduce_func_wrapper,
+                        seismogram_copy_helper,
+                        timeseries_copy_helper)
 import logging_helper
 from helper import (get_live_seismogram,
                     get_live_timeseries,
@@ -340,5 +342,20 @@ def test_mspass_reduce_func_wrapper():
         dummy_reduce_func_mspasserror(ts1, ts2, preserve_history=True, instance='3')
     assert str(err.value) == "test"
 
+def test_copy_helpers():
+    ts1 = get_live_timeseries()
+    assert ts1.dt != 1 / 255
+    ts2 = get_live_timeseries()
+    ts2.dt = 1 / 255
+    timeseries_copy_helper(ts1, ts2)
+    assert ts1.dt == 1/255
+
+    seis1 = get_live_seismogram()
+    assert seis1.dt != 1 / 255
+    seis2 = get_live_seismogram()
+    seis2.dt = 1 / 255
+    seismogram_copy_helper(seis1, seis2)
+    assert seis1.dt == 1 / 255
+
 if __name__ == "__main__":
-    test_mspass_reduce_func_wrapper()
+    test_copy_helpers()

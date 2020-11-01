@@ -348,6 +348,11 @@ obspy.core.Stream.toSeismogram = Stream2Seismogram
 
 
 def TimeSeriesEnsemble2Stream(tse):
+    """
+    Convert a timeseries ensemble to stream.
+    :param tse: timeseries ensemble
+    :return: converted stream
+    """
     res = obspy.core.Stream()
     for ts in tse.member:
         res.append(TimeSeries2Trace(ts))
@@ -358,6 +363,11 @@ TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
 
 def Stream2TimeSeriesEnsemble(stream):
+    """
+    Convert a stream to timeseries ensemble.
+    :param stream: stream input
+    :return: converted timeseries ensemble
+    """
     size = len(stream)
     tse = TimeSeriesEnsemble()
     for i in range(size):
@@ -370,6 +380,11 @@ obspy.core.Stream.toTimeSeriesEnsemble = Stream2TimeSeriesEnsemble
 
 
 def SeismogramEnsemble2Stream(sge):
+    """
+    Convert a seismogram ensemble to stream
+    :param sge: seismogram ensemble input
+    :return: stream
+    """
     res = obspy.core.Stream()
     for sg in sge.member:
         res += Seismogram2Stream(sg)
@@ -380,6 +395,11 @@ SeismogramEnsemble.toStream = SeismogramEnsemble2Stream
 
 
 def Stream2SeismogramEnsemble(stream):
+    """
+    Convert a stream to seismogram ensemble.
+    :param stream: stream input
+    :return: converted seismogram ensemble
+    """
     size = len(stream)
     res = SeismogramEnsemble()
     for i in range(int(size / 3)):
