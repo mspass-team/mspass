@@ -4,6 +4,7 @@ import obspy.signal.filter
 import obspy.signal.detrend
 import obspy.signal.cross_correlation
 import obspy.signal.interpolation
+import obspy.core.utcdatetime
 from obspy.core.stream import Stream
 from obspy.core.trace import Trace
 
@@ -30,6 +31,23 @@ from mspasspy.io.converter import (TimeSeries2Trace,
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
 def filter(data, type, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, **options):
+    """
+    This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
+    history and error logs can be preserved.
+    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
+    'remez_fir'. You can refer to
+    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
+    :type type: str
+    :param args: extra arguments
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param instance: instance is a unique id to record the usage of this function while preserving the history.
+    :type instance: str
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper.
+    :param options: extra kv options
+    :return: None
+    """
     data.filter(type, **options)  # inplace filtering
 
 
@@ -38,7 +56,24 @@ def filter(data, type, *args, preserve_history=False, instance=None, dryrun=Fals
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, type='simple', **options):
+def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, type='simple',
+            **options):
+    """
+    This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
+    so the processing history and error logs can be preserved.
+    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param type: type of filter, 'simple', 'linear', 'constant', 'polynomial', 'spline'. You can refer to
+    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html>` for details.
+    :type type: str
+    :param args: extra arguments
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param instance: instance is a unique id to record the usage of this function while preserving the history.
+    :type instance: str
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper.
+    :param options: extra kv options
+    :return: None
+    """
     data.detrend(type, **options)
 
 
@@ -47,17 +82,68 @@ def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, in
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def interpolate(data, sampling_rate, *args,preserve_history=False, instance=None, dryrun=False, inplace_return=True,
+def interpolate(data, sampling_rate, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True,
                 method='weighted_average_slopes', starttime=None, npts=None, time_shift=0.0, **kwargs):
+    """
+    This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
+    so the processing history and error logs can be preserved.
+    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param sampling_rate: The new sampling rate in Hz.
+    :param args: extra arguments.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param instance: instance is a unique id to record the usage of this function while preserving the history.
+    :type instance: str
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper.
+    :param method: One of "linear", "nearest", "zero", "slinear", "quadratic", "cubic", "lanczos",
+    or "weighted_average_slopes". You can refer to
+    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html>` for details.
+    :type method: str
+    :param starttime: The start time (or timestamp) for the new interpolated stream.
+    Will be set to current start time of the data if not given.
+    :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime` or int
+    :param npts: The new number of samples. Will be set to the best fitting number to retain the current end time
+    of the trace if not given.
+    :type npts: int
+    :param time_shift: Shift the trace by adding time_shift to the starttime. The time shift is always given in seconds.
+    A positive shift means the data is shifted towards the future, e.g. a positive time delta.
+    Note that this parameter solely affects the metadata. The actual interpolation of the underlaying data is governed
+    by the parameters sampling_rate, starttime and npts.
+    :param kwargs: extra kv arguments
+    :return: None.
+    """
     data.interpolate(sampling_rate, method, starttime, npts, time_shift, *args, **kwargs)
 
 
 @mspass_func_wrapper_multi
 @timeseries_as_trace
 def correlate(a, b, shift, preserve_history=False, instance=None, dryrun=False,
-              demean=True, normalize='naive', method='auto', domain=None):
-    # only accepts two timeseries inputs as trace
-    return obspy.signal.cross_correlation.correlate(a, b, shift, demean, normalize, method, domain)
+              demean=True, normalize='naive', method='auto'):
+    """
+    Cross-correlation of two signals up to a specified maximal shift.
+    :param a: first signal
+    :param b: second signal
+    :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
+    2*shift samples. The sample with zero shift will be in the middle.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param instance: instance is a unique id to record the usage of this function while preserving the history.
+    :type instance: str
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param demean: Demean data beforehand.
+    :param normalize: Method for normalization of cross-correlation. One of 'naive' or None (True and False are
+    supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
+    :param method: Method to use to calculate the correlation. 'direct': The correlation is determined directly from
+    sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
+    quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
+    (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
+    :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`
+    :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`
+    :type shift: int
+    :type demean: bool
+    :type method: str
+    :return: cross-correlation function.
+    """
+    return obspy.signal.cross_correlation.correlate(a, b, shift, demean, normalize, method)
 
 
 @mspass_func_wrapper
@@ -133,25 +219,3 @@ def xcorr_pick_correction(trace1, trace2, pick1, pick2, t_before, t_after, cc_ma
                           plot=False, filename=None):
     return obspy.signal.cross_correlation.xcorr_pick_correction(pick1, trace1, pick2, trace2, t_before, t_after,
                                                                 cc_maxlag, filter, filter_options, plot, filename)
-
-if __name__ == "__main__":
-    pass
-    # ts_size = 255
-    # sampling_rate = 20.0
-    #
-    # # init a seismogram
-    # seismogram = Seismogram()
-    # seismogram.data = dmatrix(3, ts_size)
-    # for i in range(3):
-    #     for j in range(ts_size):
-    #         seismogram.data[i,j] = np.random.rand()
-    #
-    # seismogram.live = True
-    # seismogram.dt = 1/sampling_rate
-    # seismogram.t0 = 0
-    # seismogram.npts = ts_size
-    # seismogram.put('net', 'IU')
-    # seismogram.put('npts', ts_size)
-    # seismogram.put('sampling_rate', sampling_rate)
-    #
-    # bandpass(seismogram, 1, 20, 1/seismogram.dt)

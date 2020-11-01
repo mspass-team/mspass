@@ -118,10 +118,11 @@ def test_interpolate():
     tr.data = np.array(ts.data)
     copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
-    tr.interpolate(255, method="zero")
-    interpolate(ts, 255, method='zero', preserve_history=True, instance='0')
+    tr.interpolate(40, method="zero")
+    interpolate(ts, 40, method='zero', preserve_history=True, instance='0')
     assert all(a == b for a, b in zip(ts.data, tr.data))
     assert not all(a == b for a, b in zip(ts.data, copy))
+    assert ts.dt == 1/40
 
 def test_correlate():
     ts1 = get_live_timeseries()
@@ -238,4 +239,4 @@ def test_xcorr_pick_correction():
     assert coeff == coeff2
 
 if __name__ == "__main__":
-    test_correlation_detector()
+    test_interpolate()

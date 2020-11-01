@@ -1,17 +1,19 @@
 from mspasspy.util.decorators import mspass_reduce_func_wrapper
-from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 
 
 @mspass_reduce_func_wrapper
 def stack(data1, data2, preserve_history=False, instance=None, dryrun=False):
     """
-    :param data1:
-    :param data2:
-    :param preserve_history:
-    :param instance:
-    :param dryrun:
-    :return:
+    This function summarizes the data field of two mspasspy objects, the result will be stored in data1.
+    Note it is wrapped by mspass_reduce_func_wrapper, so the history and error logs can be preserved.
+    :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param preserve_history: True to preserve the history. Used in the mspass_reduce_func_wrapper.
+    :param instance: instance is a unique id to record the usage of this function while preserving the history.
+    Used in the mspass_reduce_func_wrapper.
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_reduce_func_wrapper.
+    :return: data1 (modified).
     """
     if isinstance(data1, (TimeSeries,Seismogram)):
         data1 += data2
