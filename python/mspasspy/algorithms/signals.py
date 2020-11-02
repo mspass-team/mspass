@@ -34,13 +34,15 @@ def filter(data, type, *args, preserve_history=False, instance=None, dryrun=Fals
     """
     This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
     history and error logs can be preserved.
+
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
-    'remez_fir'. You can refer to
-    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
+     'remez_fir'. You can refer to
+     `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
     :type type: str
     :param args: extra arguments
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
+     mspass_func_wrapper.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
@@ -61,12 +63,14 @@ def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, in
     """
     This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
     so the processing history and error logs can be preserved.
+
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param type: type of filter, 'simple', 'linear', 'constant', 'polynomial', 'spline'. You can refer to
-    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html>` for details.
+     `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html>` for details.
     :type type: str
     :param args: extra arguments
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
+     mspass_func_wrapper.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
@@ -87,28 +91,30 @@ def interpolate(data, sampling_rate, *args, preserve_history=False, instance=Non
     """
     This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
     so the processing history and error logs can be preserved.
+
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param sampling_rate: The new sampling rate in Hz.
     :param args: extra arguments.
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
+     mspass_func_wrapper.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper.
     :param method: One of "linear", "nearest", "zero", "slinear", "quadratic", "cubic", "lanczos",
-    or "weighted_average_slopes". You can refer to
-    `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html>` for details.
+     or "weighted_average_slopes". You can refer to
+     `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html>` for details.
     :type method: str
     :param starttime: The start time (or timestamp) for the new interpolated stream.
-    Will be set to current start time of the data if not given.
+     Will be set to current start time of the data if not given.
     :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime` or int
     :param npts: The new number of samples. Will be set to the best fitting number to retain the current end time
-    of the trace if not given.
+     of the trace if not given.
     :type npts: int
     :param time_shift: Shift the trace by adding time_shift to the starttime. The time shift is always given in seconds.
-    A positive shift means the data is shifted towards the future, e.g. a positive time delta.
-    Note that this parameter solely affects the metadata. The actual interpolation of the underlaying data is governed
-    by the parameters sampling_rate, starttime and npts.
+     A positive shift means the data is shifted towards the future, e.g. a positive time delta.
+     Note that this parameter solely affects the metadata. The actual interpolation of the underlaying data is governed
+     by the parameters sampling_rate, starttime and npts.
     :param kwargs: extra kv arguments
     :return: None.
     """
@@ -124,18 +130,19 @@ def correlate(a, b, shift, preserve_history=False, instance=None, dryrun=False,
     :param a: first signal
     :param b: second signal
     :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
-    2*shift samples. The sample with zero shift will be in the middle.
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper.
+     2*shift samples. The sample with zero shift will be in the middle.
+    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
+     mspass_func_wrapper_multi.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param demean: Demean data beforehand.
     :param normalize: Method for normalization of cross-correlation. One of 'naive' or None (True and False are
-    supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
+     supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
     :param method: Method to use to calculate the correlation. 'direct': The correlation is determined directly from
-    sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
-    quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
-    (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
+     sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
+     quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
+     (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
     :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :type shift: int
