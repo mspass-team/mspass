@@ -39,10 +39,9 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
      an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
-    :param dryrun: True for dry-run, the algorithm is not run, but the function
-      will check the argument list for invalid combinations.  This is
-      useful for pre-run checks of a large job to validate a workflow.
-      Errors generate exceptions but the function returns before attempting any calculations.
+    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
+      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
+      but the function returns before attempting any calculations.
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
      return the origin data (for example, in map-reduce), set inplace_return as true.
     :param kwargs: extra kv arguments
@@ -98,10 +97,9 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
      an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
-    :param dryrun: True for dry-run, the algorithm is not run, but the function
-      will check the argument list for invalid combinations.  This is
-      useful for pre-run checks of a large job to validate a workflow.
-      Errors generate exceptions but the function returns before attempting any calculations.
+    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
+      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
+      but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
     :return: the output of func
     """
@@ -414,7 +412,9 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
      an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
-    :param dryrun: True for dry-run, which return "OK"
+    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
+      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
+      but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
     :return: the output of func
     """
