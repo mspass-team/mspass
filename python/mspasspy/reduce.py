@@ -10,8 +10,8 @@ def stack(data1, data2, preserve_history=False, instance=None, dryrun=False):
 
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
-    :param preserve_history: True to preserve the history. Used in the mspass_reduce_func_wrapper. For details, refer to
-     mspass_reduce_func_wrapper.
+    :param preserve_history: True to preserve the history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_reduce_func_wrapper`.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
      Used in the mspass_reduce_func_wrapper.
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_reduce_func_wrapper.

@@ -41,8 +41,8 @@ def filter(data, type, *args, preserve_history=False, instance=None, dryrun=Fals
      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
     :type type: str
     :param args: extra arguments
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
-     mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
@@ -69,8 +69,8 @@ def detrend(data, *args, preserve_history=False, instance=None, dryrun=False, in
      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html>` for details.
     :type type: str
     :param args: extra arguments
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
-     mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
@@ -95,8 +95,8 @@ def interpolate(data, sampling_rate, *args, preserve_history=False, instance=Non
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param sampling_rate: The new sampling rate in Hz.
     :param args: extra arguments.
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
-     mspass_func_wrapper.
+    :param preserve_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
@@ -131,8 +131,8 @@ def correlate(a, b, shift, preserve_history=False, instance=None, dryrun=False,
     :param b: second signal
     :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
      2*shift samples. The sample with zero shift will be in the middle.
-    :param preserve_history: True to preserve the processing history. Used in mspass_func_wrapper. For details, refer to
-     mspass_func_wrapper_multi.
+    :param preserve_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.
     :param instance: instance is a unique id to record the usage of this function while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
