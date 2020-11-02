@@ -23,31 +23,42 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
                         inplace_return=False, **kwargs):
     """
     This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
-     function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
-     error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
-     Runtime error won't be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
-     will be raised, others won't be raised.
+    function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
+    error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
+    Runtime error won't be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
+    will be raised, others won't be raised.
+
     :param func: target function
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to.
+    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+     and instance are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+     save the history through a new_map operation.   If the history chain is empty this will silently generate
+     an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
-    :param dryrun: True for dry-run, which return "OK"
+    :param dryrun: True for dry-run, the algorithm is not run, but the function
+      will check the argument list for invalid combinations.  This is
+      useful for pre-run checks of a large job to validate a workflow.
+      Errors generate exceptions but the function returns before attempting any calculations.
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
-    return the origin data (for example, in map-reduce), set inplace_return as true.
+     return the origin data (for example, in map-reduce), set inplace_return as true.
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
-        raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
+        raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
 
     algname = func.__name__
+
+    if preserve_history and instance is None:
+        raise ValueError(algname + ": preserve_history was true but instance not defined")
+    if dryrun:
+        return "OK"
+
     try:
-        if preserve_history and instance is None:
-            raise RuntimeError(algname + ": preserve_history was true but instance not defined")
-        if dryrun:
-            return "OK"
         res = func(data, *args, **kwargs)
         if preserve_history:
             logging_helper.info(data, algname, instance)
@@ -74,29 +85,40 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
     this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
     here. The same processing history and error logs will be duplicated and stored in both of the input.
+
     :param func: target function
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to.
+    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+     and instance are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+     save the history through a new_map operation.   If the history chain is empty this will silently generate
+     an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
-    :param dryrun: True for dry-run, which return "OK"
+    :param dryrun: True for dry-run, the algorithm is not run, but the function
+      will check the argument list for invalid combinations.  This is
+      useful for pre-run checks of a large job to validate a workflow.
+      Errors generate exceptions but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
     :return: the output of func
     """
     if not isinstance(data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
-        raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
+        raise TypeError("mspass_func_wrapper_multi only accepts mspass object as data input")
 
     if not isinstance(data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
-        raise RuntimeError("mspass_func_wrapper only accepts mspass object as data input")
+        raise TypeError("mspass_func_wrapper_multi only accepts mspass object as data input")
 
     algname = func.__name__
+
+    if preserve_history and instance is None:
+        raise ValueError(algname + ": preserve_history was true but instance not defined")
+    if dryrun:
+        return "OK"
+
     try:
-        if preserve_history and instance is None:
-            raise RuntimeError(algname + ": preserve_history was true but instance not defined")
-        if dryrun:
-            return "OK"
         res = func(data1, data2, *args, **kwargs)
         if preserve_history:
             logging_helper.info(data1, algname, instance)
@@ -130,10 +152,11 @@ def is_input_dead(*args, **kwargs):
     we should keep silent, i.e. no longer perform any further operations on this dead mspass object.
     Note for an ensemble object, only if all the objects of it are dead, we mark them as dead,
     otherwise they are still alive.
+
     :param args: any parameters.
     :param kwargs: any key-word parameters.
     :return: True if there is a dead mspass object in the parameters, False if no mspass objects in the input parameters
-    or all of them are still alive.
+     or all of them are still alive.
     """
     for arg in args:
         if isinstance(arg, TimeSeries) and arg.dead():
@@ -167,23 +190,26 @@ def is_input_dead(*args, **kwargs):
             return True
     return False
 
+
 def timeseries_copy_helper(ts1, ts2):
     ts1.npts = ts2.npts
     ts1.dt = ts2.dt
-    ts1.tref = TimeReferenceType.UTC # fixme relative? also in converter
+    ts1.tref = ts2.tref
     ts1.live = ts2.live
     ts1.t0 = ts2.t0
     for k in ts2.keys():  # other metadata copy
-        ts1[k] = ts2[k] # override previous metadata is ok, since they are consistent
+        ts1[k] = ts2[k]  # override previous metadata is ok, since they are consistent
     ts1.data = ts2.data
+
 
 @decorator
 def timeseries_as_trace(func, *args, **kwargs):
     """
     This decorator converts all the mspasspy TimeSeries objects in user inputs (*args and **kargs)
-     to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-     the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This
-     wrapper makes it easy to process mspasspy objects using Obspy methods.
+    to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
+    the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This
+    wrapper makes it easy to process mspasspy objects using Obspy methods.
+
     :param func: target func
     :param args: extra arguments
     :param kwargs: extra kv arguments
@@ -216,22 +242,25 @@ def timeseries_as_trace(func, *args, **kwargs):
         timeseries_copy_helper(kwargs[k], ts)
     return res
 
+
 def seismogram_copy_helper(seis1, seis2):
     seis1.npts = seis2.npts
     seis1.dt = seis2.dt
-    seis1.tref = TimeReferenceType.UTC  # fixme relative? also in converter
+    seis1.tref = seis2.tref
     seis1.live = seis2.live
     seis1.t0 = seis2.t0
     for k in seis2.keys():  # other metadata copy
         seis1[k] = seis2[k]  # override previous metadata is ok, since they are consistent
     seis1.data = seis2.data
 
+
 @decorator
 def seismogram_as_stream(func, *args, **kwargs):
     """
     This decorator converts all the mspasspy Seismogram objects in user inputs (*args and **kargs)
-     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-     the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.
+    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
+    the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.
+
     :param func: target func
     :param args: extra arguments
     :param kwargs: extra kv arguments
@@ -281,8 +310,9 @@ def seismogram_as_stream(func, *args, **kwargs):
 def timeseries_ensemble_as_stream(func, *args, **kwargs):
     """
     This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (*args and **kargs)
-     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-     the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
+    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
+    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
+
     :param func: target func
     :param args: extra arguments
     :param kwargs: extra kv arguments
@@ -324,8 +354,9 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
 def seismogram_ensemble_as_stream(func, *args, **kwargs):
     """
     This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (*args and **kargs)
-     to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
-     the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
+    to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
+    the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.
+
     :param func: target func
     :param args: extra arguments
     :param kwargs: extra kv arguments
@@ -369,12 +400,18 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
     and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
-     and data2. Other functionalities are the same as mspass_func_wrapper.
+    and data2. Other functionalities are the same as mspass_func_wrapper.
+
     :param func: target function
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to.
+    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+     and instance are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+     save the history through a new_reduce operation. If the history chain is empty this will silently generate
+     an error posted to error log on each object.
     :param instance: instance is a unique id to record the usage of func while preserving the history.
     :type instance: str
     :param dryrun: True for dry-run, which return "OK"
@@ -382,14 +419,20 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     :return: the output of func
     """
     algname = func.__name__
+
+    if isinstance(data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+        if type(data1) != type(data2):
+            raise TypeError("data2 has a different type as data1")
+    else:
+        raise TypeError("only mspass objects are supported in reduce wrapped methods")
+
+    if preserve_history and instance is None:
+        raise ValueError(algname + ": preserve_history was true but instance not defined")
+
     if dryrun:
         return "OK"
+
     try:
-        if isinstance(data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
-            if type(data1) != type(data2):
-                raise TypeError("data2 has a different type as data1")
-        else:
-            raise TypeError("only mspass objects are supported in reduce wrapped methods")
         res = func(data1, data2, *args, **kwargs)
         if preserve_history:
             logging_helper.reduce(data1, data2, algname, instance)

@@ -73,16 +73,14 @@ def dummy_func(data, *args, preserve_history=False, instance=None, dryrun=False,
 
 
 def test_mspass_func_wrapper():
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(TypeError) as err:
         dummy_func(1)
     assert str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
 
-    seis = get_live_seismogram()
-    assert seis.elog.size() == 0
-    dummy_func(seis, preserve_history=True)
-    assert seis.elog.size() == 1
-    log = seis.elog.get_error_log()
-    assert log[0].message.find("preserve_history was true but instance not defined") != 0
+    with pytest.raises(ValueError) as err:
+        seis = get_live_seismogram()
+        dummy_func(seis, preserve_history=True)
+    assert str(err.value) == "dummy_func: preserve_history was true but instance not defined"
 
     assert "OK" == dummy_func(seis, dryrun=True)
 
@@ -207,16 +205,14 @@ def dummy_func_2(data, *args, preserve_history=False, instance=None, dryrun=Fals
 
 def test_all_decorators():
     # test mspass_func_wrapper
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(TypeError) as err:
         dummy_func_2(1)
     assert str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
 
-    seis = get_live_seismogram()
-    assert seis.elog.size() == 0
-    dummy_func_2(seis, preserve_history=True)
-    assert seis.elog.size() == 1
-    log = seis.elog.get_error_log()
-    assert log[0].message.find("preserve_history was true but instance not defined") != 0
+    with pytest.raises(ValueError) as err:
+        seis = get_live_seismogram()
+        dummy_func_2(seis, preserve_history=True)
+    assert str(err.value) == "dummy_func_2: preserve_history was true but instance not defined"
 
     assert "OK" == dummy_func_2(seis, dryrun=True)
 
@@ -266,20 +262,15 @@ def dummy_func_multi(data1, data2, *args, preserve_history=False, instance=None,
     return None
 
 def test_mspass_func_wrapper_multi():
-    with pytest.raises(RuntimeError) as err:
+    with pytest.raises(TypeError) as err:
         dummy_func_multi(1, 2)
-    assert str(err.value) == "mspass_func_wrapper only accepts mspass object as data input"
+    assert str(err.value) == "mspass_func_wrapper_multi only accepts mspass object as data input"
 
-    seis1 = get_live_seismogram()
-    seis2 = get_live_seismogram()
-    assert seis1.elog.size() == 0
-    assert seis2.elog.size() == 0
-    dummy_func_multi(seis1, seis2, preserve_history=True)
-    assert seis1.elog.size() == 1
-    assert seis2.elog.size() == 1
-
-    log = seis2.elog.get_error_log()
-    assert log[0].message.find("preserve_history was true but instance not defined") != 0
+    with pytest.raises(ValueError) as err:
+        seis1 = get_live_seismogram()
+        seis2 = get_live_seismogram()
+        dummy_func_multi(seis1, seis2, preserve_history=True)
+    assert str(err.value) == "dummy_func_multi: preserve_history was true but instance not defined"
 
     assert "OK" == dummy_func_multi(seis1, seis2, dryrun=True)
 
@@ -327,6 +318,14 @@ def test_mspass_reduce_func_wrapper():
     with pytest.raises(TypeError) as err:
         dummy_reduce_func(ts1, get_live_seismogram(), preserve_history=True, instance='3')
     assert str(err.value) == "data2 has a different type as data1"
+
+    with pytest.raises(ValueError) as err:
+        seis1 = get_live_seismogram()
+        seis2 = get_live_seismogram()
+        dummy_reduce_func(seis1, seis2, preserve_history=True)
+    assert str(err.value) == "dummy_reduce_func: preserve_history was true but instance not defined"
+
+    assert "OK" == dummy_reduce_func(seis1, seis2, dryrun=True)
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()

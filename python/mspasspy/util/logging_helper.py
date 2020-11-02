@@ -7,12 +7,13 @@ def info(data, algname, instance, target=None):
     """
     This helper function is used to log operations in processing history of mspass object.
     Per best practice, every operations happen on the mspass object should be logged.
+
     :param data: the mspass data object
     :param algname: the name of the algorithm that used on the mspass object.
     :param instance: an id designator to uniquely define an instance of algorithm.
     :param target: if the mspass data object is an ensemble type, you may use target as index to
-    log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble
-    will be logged using the same information.
+     log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble
+     will be logged using the same information.
     :return: None
     """
     empty_err_message = "cannot preserve history because container was empty\n" + \
@@ -53,6 +54,7 @@ def ensemble_error(d, alg, message, err_severity=ErrorSeverity.Invalid):
     object that throws an exception this function will post the message 
     posted to all ensemble members.  It silently does nothing if the 
     ensemble is empty. 
+
     :param err_severity: severity of the error, default as ErrorSeverity.Invalid.
     :param d: is the ensemble data to be handled. It print and error message
       and returns doing nothing if d is not one of the known ensemble 
@@ -79,6 +81,7 @@ def reduce(data1, data2, algname, instance):
     This function replicates the processing history of data2 onto data1, which is a common use case
     in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,
     the processing history will still be replicated.
+
     :param data1: Mspass object
     :param data2: Mspass object
     :param algname: The name of the reduce algorithm that uses this helper function.
