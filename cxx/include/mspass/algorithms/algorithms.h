@@ -106,7 +106,7 @@ std::shared_ptr<mspass::seismic::Seismogram> ArrivalTimeReference(mspass::seismi
 \param tcs is the Seismogram to convert.
 \param component is the component to extract (0, 1, or 2)
 
-\expeption This function will throw a MsPASSError if the component number is
+\exception This function will throw a MsPASSError if the component number is
   illegal
 
 \return TimeSeries of component requested
