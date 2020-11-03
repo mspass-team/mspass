@@ -1,6 +1,6 @@
-from mspasspy.ccore import MetadataDefinitions
-from mspasspy.ccore import MDtype
-from mspasspy.ccore import AntelopePf
+from mspasspy.ccore.utility import MetadataDefinitions
+from mspasspy.ccore.utility import MDtype
+from mspasspy.ccore.utility import AntelopePf
 
 def write_group(pf, tag,mdef):
     """
