@@ -88,6 +88,9 @@ def TimeSeries2Trace(ts):
     dresult.stats['delta'] = ts.dt
     dresult.stats['npts'] = ts.npts
     dresult.stats['starttime'] = obspy.core.UTCDateTime(ts.t0)
+    # It appears obspy computes endtime - this throws an AttributeError if
+    # included. Ratained for reference to keep someone from putting this back
+    #dresult.stats['endtime']=obspy.core.UTCDateTime(ts.endtime())
     # todo relative time attribute
     # These are required by obspy but optional in mspass.  Hence, we have
     # to extract them with caution.  Note defaults are identical to
@@ -113,21 +116,20 @@ def TimeSeries2Trace(ts):
     else:
         dresult.stats['calib'] = 1.0
 
-    # It might be possible to replace the following loop with
-    # calling an (nonexistent) function called md2dict that would
-    # generalize this loop.   May need that for serialization and it
-    # may be written in C.  If so, we might want to replace the loop
-    # below with a call to the function for speed.  On the other hand,
-    # creating a dict would require a copy loop or perhaps the
-    # function could be simplified with a call to Trace(dict) where
-    # dict is the translation of md - as I read Trace i think that might
-    # work as an alternative algorithm.  Make it work before you make
-    # it fast!
+    # We have to copy other metadata to preserve them too.  That is 
+    # complicated by the fact that some (notably endtime) are read only
+    # and will abort the program if we just naively copy them. 
+    # The list below are the keys to exclude either because they 
+    # are computed by Trace (i.e. endtime) or are already set above
+    do_not_copy=["delta","npts","starttime","endtime","network","station",
+                   "channel","location","calib"]
     for k in ts.keys():
-        dresult.stats[k] = ts[k]
-    dresult.data = np.ndarray(ts.npts)
-    for i in range(ts.npts):
-        dresult.data[i] = ts.data[i]
+        if not (k in do_not_copy):
+            dresult.stats[k] = ts[k]
+    #dresult.data = np.ndarray(ts.npts)
+    #for i in range(ts.npts):
+        #dresult.data[i] = ts.data[i]
+    dresult.data = np.array(ts.data)
     return dresult
 
 
@@ -199,40 +201,71 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
 Seismogram.toStream = Seismogram2Stream
 
 
-def Trace2TimeSeries(trace):
+def Trace2TimeSeries(trace,history=None):
     """
     Convert an obspy Trace object to a TimeSeries object.
 
+    An obspy Trace object mostly maps directly into the mspass TimeSeries
+    object with the stats of Trace mapping (almost) directly to the TimeSeries
+    Metadata object that is a base class to TimeSeries.  A deep copy of the
+    data vector in the original Trace is made to the result. That copy is
+    done in C++ for speed (we found a 100+ fold speedup using that mechanism
+    instead of a simple python loop)  There is one important type collision
+    in copying obspy starttime and endtime stats fields.  obspy uses their
+    UTCDateTime object to hold time but TimeSeries only supports an epoch
+    time (UTCDateTime.timestamp) so the code here has to convert from the
+    UTCDateTime to epoch time in the TimeSeries.  Note in a TimeSeries
+    starttime is the t0 attribute.
+
+    The biggest mismatch in Trace and TimeSeries is that Trace has no concept
+    of object level history as used in mspass.   That history must be maintained
+    outside obspy.  To maintain full history the user must pass the
+    history maintained externally through the optional history parameter.
+    The contents of history will be loaded directly into the result with
+    no sanity checks.
+
     :param trace: obspy trace object to convert
     :type trace: :class:`~obspy.core.trace.Trace`
+    :param history:  mspass ProcessingHistory object to post to result.
     :return: TimeSeries object derived from obpsy input Trace object
     :rtype: :class:`~mspasspy.ccore.TimeSeries`
     """
-    # First get the data size to know use allocating constructor for TimeSeries
-    ns = trace.stats.npts
-    dout = CoreTimeSeries(ns)
-    # an api change is needed here.  Also TimeSeries needs to handle invalid objectid
-    dout = TimeSeries(dout, "INVALID")
-    dout.npts = ns
-    # Now extract TimeSeries attributes equivalent in d.stats and write to output
-    dout.dt = trace.stats.delta
-    # obspy only understands UTC time as a standard so we just set it
-    dout.tref = TimeReferenceType.UTC
-    dout.live = True
-    try:
-        if trace.dead_mspass:
-            dout.live = False
-    except AttributeError:
-        pass
-    t0utc = trace.stats.starttime
-    dout.t0 = t0utc.timestamp
-    for k in trace.stats:
-        if k not in ('npts', 'delta', 'starttime', 'sampling_rate', 'endtime'):
-            dout[k] = trace.stats[k]
-    # Here, we do not use append, which is equivalent to the C++ method
-    # push_back, for efficiency.
-    for i in range(ns):
-        dout.data[i] = trace.data[i]
+    # The obspy trace object stats attribute only acts like a dictionary
+    # we can't use it directly but this trick simplifies the copy to
+    # mesh with py::dict for pybind11 - needed in TimeSeries constructor below
+    h=dict(trace.stats)
+    # These tests are excessively paranoid since starttime and endtime
+    # are required attributes in Trace, but better save in case
+    # someone creates one outside obspy
+    if 'starttime' in trace.stats:
+        t=h['starttime']
+        h['starttime']=t.timestamp
+    else:
+        # We have to set this to something if it isn't set or
+        # the TimeSeries constructor may abort
+        h['starttime']=0.0
+    # we don't require endtime in TimeSeries so ignore if it is not set
+    if 'endtime' in trace.stats:
+        t=h['endtime']    
+    h['endtime']=t.timestamp
+    #
+    # these define a map of aliases to apply when we convert to mspass
+    # metadata from trace - we redefined these names but others could
+    # surface as obspy evolves independently from mspass
+    mspass_aliases=dict()
+    mspass_aliases['station']='sta'
+    mspass_aliases['network']='net'
+    mspass_aliases['location']='loc'
+    mspass_aliases['channel']='chan'
+    for k in mspass_aliases:
+        if k in h:
+            x=h.pop(k)
+            alias_key=mspass_aliases[k]
+            h[alias_key]=x
+    dout=TimeSeries(h,trace.data)
+    if history!=None:
+        dout.load_history(history)
+    dout.set_live()
     return dout
 
 
