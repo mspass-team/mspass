@@ -903,10 +903,14 @@ class Database(pymongo.database.Database):
             locdata = self._extract_locdata(chans)
             # Assume loc code of 0 is same as rest
             #loc=_extract_loc_code(chanlist[0])
-            rec={}
             picklestr=pickle.dumps(x)
             all_locs=locdata.keys()       
             for loc in all_locs:
+		# If multiple loc codes are present on the second pass
+		# rec will contain the objectid of the document inserted
+		# in the previous pass - an obnoxious property of insert_one
+		# This initialization guarantees an empty container
+                rec=dict()
                 rec['loc']=loc
                 rec['net']=net
                 rec['sta']=sta
