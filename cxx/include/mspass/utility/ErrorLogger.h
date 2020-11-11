@@ -2,10 +2,11 @@
 #define _ERROR_LOGGER_H_
 #include <unistd.h>
 #include <list>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/list.hpp>
+#include <boost/archive/basic_archive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/list.hpp>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/ErrorLogger.h"
 namespace mspass
