@@ -25,61 +25,19 @@ Attributes:
     aliases: nsamp wfdisc.nsamp
   - name: delta
     type: double
-    concept:  Data sample interval in seconds
+    concept: Data sample interval in seconds
     aliases: dt
   - name: sampling_rate
     type: double
-    concept:  Data sampling frequency in Hz=1/s
+    concept: Data sampling frequency in Hz=1/s
+  - name: starttime
+    type: double
+    concept: Time of first sample of data (epoch time or relative to some other time mark)
+    aliases: t0 time
   - name: calib
     type: double
     concept: Nominal conversion factor for changing sample data to ground motion units.
-  - name: net
-    type: string
-    concept: network code (net component of SEED net:sta:chan)
-    aliases: network
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: sta
-    type: string
-    concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-    aliases: station site.sta sitechan.sta wf.sta KSTNM
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: loc
-    type: string
-    concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
-    aliases: location sitechan.loc site.loc
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: starttime
-    type: double
-    concept:  Time of first sample of data (epoch time or relative to some other time mark)
-    aliases: t0 time
 # These are additional attributes for the static site collection/table
-  - name: site_lat
-    type: double
-    concept:  latitude of a seismic station/instrument in degrees
-    aliases: STLA site.lat
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_lon
-    type: double
-    concept:  longitude of a seismic station/instrument in degrees
-    aliases: STLO stlo site.lon
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_elev
-    type: double
-    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: STEL stel site.elev
-    readonly: true
-    unique_id:  site_id
-    collection: site
   - name: site_id
     type: string
     concept:  String representation of ObjectId used to define a particular instrument/seismic station
@@ -87,77 +45,141 @@ Attributes:
     readonly:  false
     unique_id:  site_id
     collection:  site
-# These define the css3.0 sitechan minimal Attributes
-  - name: chan
+  - name: net
     type: string
-    concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
-    aliases: channel KCMPNM sitechan.chan
+    concept: network code (net component of SEED net:sta:chan)
+    aliases: network site.net channel.net wfdisc.net
     readonly: true
-    unique_id: chan_id
-    collection: sitechan
-  - name: hang
+    unique_id: site_id
+    collection: site
+  - name: sta
+    type: string
+    concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+    aliases: station site.sta channel.sta wfdisc.sta KSTNM
+    readonly: true
+    unique_id: site_id
+    collection: site
+  - name: loc
+    type: string
+    concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
+    aliases: location site.loc channel.loc
+    readonly: true
+    unique_id: site_id
+    collection: site
+  - name: site.lat
     type: double
-    concept:  Azimuth (in degree) of a seismometer component - horizontal angle
-    aliases: CMPAZ sitechan.hang
+    concept:  latitude of a seismic station/instrument in degrees
+    aliases: STLA site_lat
     readonly: true
-    unique_id: chan_id
-    collection: sitechan
-  - name: vang
+    unique_id:  site_id
+    collection: site
+  - name: site.lon
     type: double
-    concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
-    aliases: CMPINC sitechan.vang
+    concept:  longitude of a seismic station/instrument in degrees
+    aliases: STLO stlo site_lon
     readonly: true
-    unique_id: chan_id
-    collection: sitechan
+    unique_id:  site_id
+    collection: site
+  - name: site.elev
+    type: double
+    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+    aliases: STEL stel site_elev
+    readonly: true
+    unique_id:  site_id
+    collection: site
+  - name: site.starttime
+    type: double
+    concept:  Time of seismic station/instrument starts recording
+    aliases: site_starttime
+    readonly: true
+    unique_id:  site_id
+    collection: site
+  - name: site.endtime
+    type: double
+    concept:  Time of seismic station/instrument ends recording
+    aliases: site_endtime
+    readonly: true
+    unique_id:  site_id
+    collection: site
+# These define the css3.0 sitechan minimal Attributes which is renamed as channel here
   - name: chan_id
     type: string
     concept:  String representation of ObjectId used to define a particular component of data
     readonly:  false
     unique_id:  chan_id
-    collection:  sitechan
-  - name: chanid
-    type: int
-    concept:  channel id - used in CSS3.0 as the identifier of a particular component of data
-    readonly:  true
+    collection:  channel
+  - name: chan
+    type: string
+    concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
+    aliases: channel KCMPNM channel.chan wfdisc.chan
+    readonly: true
+    unique_id: chan_id
+    collection: channel
+  - name: channel.hang
+    type: double
+    concept:  Azimuth (in degree) of a seismometer component - horizontal angle
+    aliases: hang CMPAZ
+    readonly: true
+    unique_id: chan_id
+    collection: channel
+  - name: channel.vang
+    type: double
+    concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
+    aliases: vang CMPINC
+    readonly: true
+    unique_id: chan_id
+    collection: channel
+  - name: channel.lat
+    type: double
+    concept:  latitude of a seismic station/instrument in degrees
+    aliases: channel_lat
+    readonly: true
     unique_id:  chan_id
-    collection:  sitechan
+    collection: channel
+  - name: channel.lon
+    type: double
+    concept:  longitude of a seismic station/instrument in degrees
+    aliases: channel_lon
+    readonly: true
+    unique_id:  chan_id
+    collection: channel
+  - name: channel.elev
+    type: double
+    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+    aliases: channel_elev
+    readonly: true
+    unique_id:  chan_id
+    collection: channel
+  - name: channel.edepth
+    type: double
+    concept:  depth of a seismic station/instrument in km
+    aliases: channel_edepth
+    readonly: true
+    unique_id:  chan_id
+    collection: channel
+  - name: channel.starttime
+    type: double
+    concept:  Time of channel starts recording
+    aliases: channel_starttime
+    readonly: true
+    unique_id:  channel_id
+    collection: channel
+  - name: channel.endtime
+    type: double
+    concept:  Time of channel ends recording
+    aliases: channel_endtime
+    readonly: true
+    unique_id:  channel_id
+    collection: channel
   - name: LPSPOL
     type: boolean
-    concept: True of channel components have positive polarity (SAC)
+    concept: True if channel components have positive polarity (SAC)
     readonly: false
 # These are attributes for source data.   This schema does not support multiple
 # source locations for a single seismic event.   We use source for the table name
 # instead of event or origin to avoid make that clear.   An event-origin
 # capability is probably possible, but would create baggage for the primary
 # use goal of mspass
-  - name: source_lat
-    type: double
-    concept: Latitude (in degrees) of the hypocenter of seismic source
-    aliases:  EVLA origin.lat
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_lon
-    type: double
-    concept: Longitude (in degrees) of the hypocenter of seismic source
-    aliases:  EVLO origin.lon
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_depth
-    type: double
-    concept: Depth (in km) of the hypocenter of seismic source
-    aliases:  EVDP origin.depth
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_time
-    type: double
-    concept: Origin time of the hypocenter of seismic source (epoch time)
-    aliases:  origin.time
-    readonly: true
-    unique_id: source_id
-    collection: source
   - name: source_id
     type: string
     concept:  String representation of ObjectId used to define a particular seismic source
@@ -165,20 +187,48 @@ Attributes:
     readonly:  false
     unique_id:  source_id
     collection:  source
+  - name: source.lat
+    type: double
+    concept: Latitude (in degrees) of the hypocenter of seismic source
+    aliases:  source_lat EVLA origin.lat
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source.lon
+    type: double
+    concept: Longitude (in degrees) of the hypocenter of seismic source
+    aliases:  source_lon EVLO origin.lon
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source.depth
+    type: double
+    concept: Depth (in km) of the hypocenter of seismic source
+    aliases: source_depth EVDP origin.depth
+    readonly: true
+    unique_id: source_id
+    collection: source
+  - name: source.time
+    type: double
+    concept: Origin time of the hypocenter of seismic source (epoch time)
+    aliases: source_time origin.time
+    readonly: true
+    unique_id: source_id
+    collection: source
   - name: evid
     type: int
     concept:  event id - used in CSS3.0 as the identifier of a particular seismic source
     readonly:  false
     unique_id:  source_id
     collection:  source 
-    alias: evid,event.evid
+    alias: event.evid
   - name: orid
     type: int
     concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
     readonly:  false
     unique_id:  source_id
     collection:  source 
-    alias: origin.orid,event.orid
+    alias: origin.orid event.orid
   - name: KEVNM
     type: string
     concept: Event name 
@@ -254,21 +304,21 @@ Magnitude:
     unique_id: souce_id
     collection: source
 External_files:
-  - name: dfile
+  - name: file.dfile
     type: string
     concept: External data file name.
-    aliases: wfdisc.dfile wfprocess.dfile
+    aliases: dfile wfdisc.dfile wfprocess.dfile
     readonly: false
-  - name: dir
+  - name: file.dir
     type: string
     concept: Directory path to an external file (always used with dfile)
-    aliases: wfdisc.dir wfprocess.dir
+    aliases: dir wfdisc.dir wfprocess.dir
     readonly: false
-  - name: foff
+  - name: file.foff
     type: int
     concept:  Offset in bytes from beginning of a file to first data sample.
     readonly: false
-    aliases: wfdisc.foff wfprocess.foff
+    aliases: foff wfdisc.foff wfprocess.foff
 SeismicPhases:
   - name: phase
     type: string
@@ -300,10 +350,6 @@ MongoDb:
     concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
     readonly: false 
     collection: gridfs_wf
-  - name: storage_mode
-    type: string
-    concept: Provides storage options for seismic data samples.
-    readonly: false
 # These are assorted attributes that can be used in wf but have not logical 
 # grouping
 Other:
