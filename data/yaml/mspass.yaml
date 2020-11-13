@@ -102,60 +102,60 @@ Attributes:
     unique_id:  site_id
     collection: site
 # These define the css3.0 sitechan minimal Attributes which is renamed as channel here
-  - name: chan_id
+  - name: channel_id
     type: string
     concept:  String representation of ObjectId used to define a particular component of data
     readonly:  false
-    unique_id:  chan_id
+    unique_id:  channel_id
     collection:  channel
   - name: chan
     type: string
     concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
     aliases: channel KCMPNM channel.chan wfdisc.chan
     readonly: true
-    unique_id: chan_id
+    unique_id: channel_id
     collection: channel
   - name: channel.hang
     type: double
     concept:  Azimuth (in degree) of a seismometer component - horizontal angle
     aliases: hang CMPAZ
     readonly: true
-    unique_id: chan_id
+    unique_id: channel_id
     collection: channel
   - name: channel.vang
     type: double
     concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
     aliases: vang CMPINC
     readonly: true
-    unique_id: chan_id
+    unique_id: channel_id
     collection: channel
   - name: channel.lat
     type: double
     concept:  latitude of a seismic station/instrument in degrees
     aliases: channel_lat
     readonly: true
-    unique_id:  chan_id
+    unique_id:  channel_id
     collection: channel
   - name: channel.lon
     type: double
     concept:  longitude of a seismic station/instrument in degrees
     aliases: channel_lon
     readonly: true
-    unique_id:  chan_id
+    unique_id:  channel_id
     collection: channel
   - name: channel.elev
     type: double
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
     aliases: channel_elev
     readonly: true
-    unique_id:  chan_id
+    unique_id:  channel_id
     collection: channel
   - name: channel.edepth
     type: double
     concept:  depth of a seismic station/instrument in km
     aliases: channel_edepth
     readonly: true
-    unique_id:  chan_id
+    unique_id:  channel_id
     collection: channel
   - name: channel.starttime
     type: double
