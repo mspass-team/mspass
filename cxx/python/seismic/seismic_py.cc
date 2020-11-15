@@ -443,6 +443,11 @@ PYBIND11_MODULE(seismic, m) {
     //    to function properlty
     .def_readwrite("member",&Ensemble<TimeSeries>::member,
             "Vector of TimeSeries objects defining the ensemble")
+    /* this small lambda is needed because python has no equivalent of
+   a dynamic_cast.  It just returns the ensemble metadata */
+    .def("_get_ensemble_md",[](Ensemble<TimeSeries> &self){
+        return dynamic_cast<Metadata&>(self);
+    })
     .def("__getitem__", [](Ensemble<TimeSeries> &self, const size_t i) {
       return self.member.at(i);
     })
@@ -488,6 +493,11 @@ PYBIND11_MODULE(seismic, m) {
     //    to function properlty
     .def_readwrite("member",&Ensemble<Seismogram>::member,
             "Vector of Seismogram objects defining the ensemble")
+    /* this small lambda is needed because python has no equivalent of
+   a dynamic_cast.  It just returns the ensemble metadata */
+    .def("_get_ensemble_md",[](Ensemble<Seismogram> &self){
+        return dynamic_cast<Metadata&>(self);
+    })
     .def("__getitem__", [](Ensemble<Seismogram> &self, const size_t i) {
       return self.member.at(i);
     })
