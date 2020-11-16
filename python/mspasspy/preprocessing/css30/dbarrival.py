@@ -123,6 +123,30 @@ def load_css30_sources(db,srcdict,collection='source',
         count += 1
     return count
 def set_source_id_from_evid(db,collection='arrival'):
+    """
+    Sets source_id in arrivals by matching evid attributes in the 
+    source collection.   The concept here is that source_id is the 
+    unique key in MsPASS but evid is a foreign key defined when 
+    importing data from a CSS3.0 database.   The evid key can thus\
+    not be trusted so we override it with a source_id we can 
+    guarantee is unique.  This function will only work if the evid
+    attribute is set in documents in the source collection.  Currently 
+    this can be done with a function called load_css30_sources.   
+
+    :param db:  MongoDB handle or MsPASS Database object managing these data.
+    :param collection:  collection to search default is arrival, but any 
+      collection that has evid defined could be scanned.  The algorithm 
+      simply tries to match evid and updates documents it finds with 
+      the object id of the source record it matches.
+    :return: tuple of results with mixed content.  0 and 1 are integers
+      defining number of documents processed and the number altered 
+      respectively.   2 is a dict keyed by evid with a value equal to the 
+      count of the number of documents found and altered with that evid.
+      Component 3 is the dict of the complement to 2; evid keyed dict 
+      with the count of the number of documents encountered but which 
+      for which evid did not match any document in source.
+    
+    """
     dbarr=db[collection]
     dbsrc=db['source']
     alldocs=dbarr.find({})
