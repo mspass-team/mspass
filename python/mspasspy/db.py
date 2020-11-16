@@ -80,12 +80,12 @@ class Database(pymongo.database.Database):
     A MongoDB database handler.
 
     This is a wrapper around the :class:`~pymongo.database.Database` with
-    methods added to handle MsPASS data.  The one and only constructor 
-    uses a database handle normally created with a variant of this pair 
+    methods added to handle MsPASS data.  The one and only constructor
+    uses a database handle normally created with a variant of this pair
     of commands:
         client=MongoClient()
         db=client['databasename']
-    where databasename is variable and the name of the database you 
+    where databasename is variable and the name of the database you
     wish to access with this handle.
     """
     def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
@@ -674,7 +674,7 @@ class Database(pymongo.database.Database):
             emess="Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
             % (len(x),(3*d.ns))
             d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() + emess, 
+                        traceback.format_exc() + emess,
                         ErrorSeverity.Invalid)
         # Necessary step for efficiency.  Seismogram constructor here
         # incorrectly marks data copied form metadata object as changed
@@ -682,9 +682,9 @@ class Database(pymongo.database.Database):
         d.clear_modified()
         return d
 
-    
-    
-   
+
+
+
     @staticmethod
     def _extract_locdata(chanlist):
         """
@@ -716,13 +716,13 @@ class Database(pymongo.database.Database):
         and endtime.  All tests are simple equality.
         Should be ok for times as stationxml uses nearest
         day as in css3.0.
-        
-        originally tried to do the time interval tests with a 
+
+        originally tried to do the time interval tests with a
         query, but found it was a bit cumbersone to say the least.
-        Because this particular query is never expected to return 
-        a large number of documents we resort to a linear 
-        search through all matches on net,sta,loc rather than 
-        using a confusing and ugly query construct. 
+        Because this particular query is never expected to return
+        a large number of documents we resort to a linear
+        search through all matches on net,sta,loc rather than
+        using a confusing and ugly query construct.
         """
         dbsite = self.site
         queryrecord={}
@@ -803,49 +803,49 @@ class Database(pymongo.database.Database):
             return DISTANTFUTURE
         else:
             return t
-    def save_inventory(self, inv, 
+    def save_inventory(self, inv,
                        networks_to_exclude=['SY'],
                        verbose=False):
         """
         Saves contents of all components of an obspy inventory
-        object to documents in the site and channel collections.  
-        The site collection is sufficient of Seismogram objects but 
-        TimeSeries data will often want to be connected to the 
-        channel collection.   The algorithm used will not add 
+        object to documents in the site and channel collections.
+        The site collection is sufficient of Seismogram objects but
+        TimeSeries data will often want to be connected to the
+        channel collection.   The algorithm used will not add
         duplicates based on the following keys:
-        
+
         For site:
             net
             sta
             chan
             loc
-            starttime::endtime - this check is done cautiously with 
-              a 10 s fudge factor to avoid the issue of floating point 
-              equal tests.   Probably overly paranoid since these 
-              fields are normally rounded to a time at the beginning 
+            starttime::endtime - this check is done cautiously with
+              a 10 s fudge factor to avoid the issue of floating point
+              equal tests.   Probably overly paranoid since these
+              fields are normally rounded to a time at the beginning
               of a utc day, but small cost to pay for stabilty because
               this function is not expected to be run millions of times
               on a huge collection.
-            
+
         for channels:
             net
             sta
             chan
             loc
-            starttime::endtime - same approach as for site with same 
+            starttime::endtime - same approach as for site with same
                issues - note especially 10 s fudge factor.   This is
-               necessary because channel metadata can change more 
-               frequently than site metadata (e.g. with a sensor 
+               necessary because channel metadata can change more
+               frequently than site metadata (e.g. with a sensor
                orientation or sensor swap)
-              
-        Finally note the site collection contains full response data 
-        that can be obtained by extracting the data with the key 
-        "serialized_inventory" and running pickle loads on the returned 
-        string.  
+
+        Finally note the site collection contains full response data
+        that can be obtained by extracting the data with the key
+        "serialized_inventory" and running pickle loads on the returned
+        string.
 
         :param inv: is the obspy Inventory object of station data to save.
         :networks_to_exclude: should contain a list (or tuple) of
-            SEED 2 byte network codes that are to be ignored in 
+            SEED 2 byte network codes that are to be ignored in
             processing.   Default is SY which is used for synthetics.
             Set to None if if all are to be loaded.
         :verbose:  print informational lines if true.  If false
@@ -858,7 +858,7 @@ class Database(pymongo.database.Database):
           3 - number of distinct channel items processed
         :rtype: tuple
         """
-        
+
         # site is a frozen name for the collection here.  Perhaps
         # should be a variable with a default
         # to do: need to change source_id to be a copy of the _id string.
@@ -893,18 +893,18 @@ class Database(pymongo.database.Database):
             # stationxml files seen to put elevation in m. We
             # always use km so need to convert
             elevation=y[0].elevation/1000.0
-            # an obnoxious property of station xml files obspy is giving me 
+            # an obnoxious property of station xml files obspy is giving me
             # is that the start_dates and end_dates on the net:sta section
             # are not always consistent with the channel data.  In particular
-            # loc codes are a problem. So we pull the required metadata from 
-            # the chans data and will override locations and time ranges 
+            # loc codes are a problem. So we pull the required metadata from
+            # the chans data and will override locations and time ranges
             # in station section with channel data
             chans=y[0].channels
             locdata = self._extract_locdata(chans)
             # Assume loc code of 0 is same as rest
             #loc=_extract_loc_code(chanlist[0])
             picklestr=pickle.dumps(x)
-            all_locs=locdata.keys()       
+            all_locs=locdata.keys()
             for loc in all_locs:
 		# If multiple loc codes are present on the second pass
 		# rec will contain the objectid of the document inserted
@@ -916,8 +916,8 @@ class Database(pymongo.database.Database):
                 rec['sta']=sta
                 lkey=loc
                 loc_tuple=locdata[lkey]
-                # We use these attributes linked to loc code rather than 
-                # the station data - experience shows they are not 
+                # We use these attributes linked to loc code rather than
+                # the station data - experience shows they are not
                 # consistent and we should use this set.
                 loc_lat=loc_tuple[2]
                 loc_lon=loc_tuple[3]
@@ -964,8 +964,8 @@ class Database(pymongo.database.Database):
                             " is already in site collection - ignored")
                 n_site_processed += 1
                 # done with site now handle channel
-                # Because many features are shared we can copy rec 
-                # note this has to be a deep copy 
+                # Because many features are shared we can copy rec
+                # note this has to be a deep copy
                 chanrec=copy.deepcopy(rec)
                 # We don't want this baggage in the channel documents
                 # keep them only in the site collection
@@ -987,13 +987,13 @@ class Database(pymongo.database.Database):
                         picklestr=pickle.dumps(chan)
                         chanrec['serialized_channel_data']=picklestr
                         result=dbchannel.insert_one(chanrec)
-                        # insert_one has an obnoxious behavior in that it 
-                        # inserts the ObjectId in chanrec.  In this loop 
+                        # insert_one has an obnoxious behavior in that it
+                        # inserts the ObjectId in chanrec.  In this loop
                         # we reuse chanrec so we have to delete the id file
-                        # howeveer, we first want to update the record to 
+                        # howeveer, we first want to update the record to
                         # have chan_id be the string representation of that
                         # object_id - that makes this consistent with site
-                        # we actually use the return instead of pulling from 
+                        # we actually use the return instead of pulling from
                         # chanrec
                         idobj=result.inserted_id
                         dbchannel.update_one({'_id':idobj},
@@ -1011,7 +1011,7 @@ class Database(pymongo.database.Database):
                               net,":",sta,":",loc,":",chan.code,
                               "for time span ",st," to ",et,
                               " already in channel collection - ignored")
-                
+
         # Tried this to create a geospatial index.   Failing
         # in later debugging for unknown reason.   Decided it
         # should be a done externally anyway as we don't use
@@ -1020,7 +1020,7 @@ class Database(pymongo.database.Database):
         #dbcol.create_index(["coords",GEOSPHERE])
         #
         # For now we will always print this summary information
-        # For expected use it would be essential information 
+        # For expected use it would be essential information
         #
         print("Database.save_inventory processing summary:")
         print("Number of site records processed=",n_site_processed)
@@ -1039,9 +1039,9 @@ class Database(pymongo.database.Database):
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.
         Returns None if there is no match.
-        
+
         The seed modifier in the name is to emphasize this method is
-        for data originating as the SEED format that use net:sta:loc:chan 
+        for data originating as the SEED format that use net:sta:loc:chan
         as the primary index.
 
         :param net:  network name to match
@@ -1076,8 +1076,8 @@ class Database(pymongo.database.Database):
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
         This method uses a restricted query to match the
-        keys given and returns a dict of the document contents 
-        associated with that key.  
+        keys given and returns a dict of the document contents
+        associated with that key.
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.  If not used
         the first occurence will be returned (usually ill adivsed)
@@ -1194,27 +1194,27 @@ class Database(pymongo.database.Database):
             picklestr=pickle.dumps(event)
             rec={}
             #rec['source_id']=source_id
-            rec['source_lat']=o.latitude
-            rec['source_lon']=o.longitude
+            rec['latitude']=o.latitude
+            rec['longitude']=o.longitude
             # It appears quakeml puts source depths in meter
             # convert to km
-            # also obspy's catalog object seesm to allow depth to be 
-            # a None so we have to test for that condition to avoid 
+            # also obspy's catalog object seesm to allow depth to be
+            # a None so we have to test for that condition to avoid
             # aborts
             if o.depth == None:
                 depth=0.0
             else:
                 depth=o.depth/1000.0
-            rec['source_depth']=depth
+            rec['depth']=depth
             otime=o.time
             # This attribute of UTCDateTime is the epoch time
             # In mspass we only story time as epoch times
-            rec['source_time']=otime.timestamp
+            rec['time']=otime.timestamp
             rec['magnitude']=m.mag
             rec['magnitude_type']=m.magnitude_type
             rec['serialized_event']=picklestr
             result=dbcol.insert_one(rec)
-            # We use the string representation of the objectid of this 
+            # We use the string representation of the objectid of this
             # document as a unique source id - same as site and channel
             idobj=result.inserted_id
             dbcol.update_one({'_id':idobj},
@@ -1226,18 +1226,18 @@ class Database(pymongo.database.Database):
         """
         Return a bson record of source data matching the unique id
         defined by source_id.   The idea is that magic string would
-        be extraced from another document (e.g. in an arrival collection) 
-        and used to look up the event with which it is associated in 
-        the source collection.  
-        
-        This function is a relic and may be depricated.  I originally 
+        be extraced from another document (e.g. in an arrival collection)
+        and used to look up the event with which it is associated in
+        the source collection.
+
+        This function is a relic and may be depricated.  I originally
         had a different purpose.
         """
         dbsource = self.source
-        x=dbsource.find({'source_id' : source_id})
+        x=dbsource.find_one({'source_id' : source_id})
         return x
 
-    
+
 
 
 class Client(pymongo.MongoClient):
@@ -1280,4 +1280,3 @@ class Client(pymongo.MongoClient):
         return Database(
             self, name, codec_options, read_preference,
             write_concern, read_concern)
-
