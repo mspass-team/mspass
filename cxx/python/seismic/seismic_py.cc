@@ -102,13 +102,13 @@ public:
 PYBIND11_MODULE(seismic, m) {
   m.attr("__name__") = "mspasspy.ccore.seismic";
   m.doc() = "A submodule for seismic namespace of ccore";
-  
+
   /* We need one of these for each std::vector container to make them function correctly*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
   py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector");
   py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
 
-   
+
   py::class_<SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
     .def(py::init<>())
     .def(py::init<const SlownessVector&>())
@@ -129,7 +129,7 @@ PYBIND11_MODULE(seismic, m) {
     .def_readwrite("start",&TimeWindow::start,"Start time of the window")
     .def_readwrite("end",&TimeWindow::end,"End time of the window")
   ;
-  
+
   py::enum_<TimeReferenceType>(m,"TimeReferenceType")
     .value("Relative",TimeReferenceType::Relative)
     .value("UTC",TimeReferenceType::UTC)
@@ -342,6 +342,40 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<const TimeSeries&>())
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
+      .def(py::init([](py::dict d, py::array_t<double, py::array::f_style | py::array::forcecast> b) {
+        py::buffer_info info = b.request();
+        if (info.ndim != 1)
+          throw MsPASSError("CoreTimeSeries constructor:  Incompatible buffer dimension!", ErrorSeverity::Invalid);
+        size_t npts = info.shape[0];
+        Metadata md;
+        md=py::cast<Metadata>(py::module_::import("mspasspy.ccore.utility").attr("Metadata")(d));
+        BasicTimeSeries bts;
+        double dt=md.get_double("delta");
+        bts.set_dt(dt);
+        double t0=md.get_double("starttime");
+        bts.set_t0(t0);
+        /* We invoke the BasicTimeSeries method for set_npts which sets the
+        internal protected npts attribute of the base class.  We then set
+        npts is the metadata.   This trick allows the use of initialization of
+        the  std::vector container only once with the push back below.
+        Otherwise we could do an initalization zeros followed by insertion.
+        This algorithm will be slightly faster. */
+        bts.set_npts(npts);
+        md.put("npts",npts);  // don't assume npts is set in metadata
+        /* We only support UTC for this constructor assuming it is only used
+        to go back and forth from obspy trace objects. */
+        bts.set_tref(TimeReferenceType::UTC);
+        ProcessingHistory emptyph;
+        double *dptr;
+        vector<double> sbuf;
+        sbuf.reserve(npts);   // A standard efficiency trick for std::vector
+        /* Initialize dptr here for clarity instead of putting it inside the
+        initialization block of the for loop - clearer to me anyway */
+        dptr=(double*)(info.ptr);
+        for(size_t i=0;i<npts;++i,++dptr) sbuf.push_back(*dptr);
+        auto v = new TimeSeries(bts,md,emptyph,sbuf);
+        return v;
+      }))
       .def("load_history",&TimeSeries::load_history,
          "Load ProcessingHistory from another data object that contains relevant history")
       // Not sure this constructor needs to be exposed to python
@@ -409,6 +443,11 @@ PYBIND11_MODULE(seismic, m) {
     //    to function properlty
     .def_readwrite("member",&Ensemble<TimeSeries>::member,
             "Vector of TimeSeries objects defining the ensemble")
+    /* this small lambda is needed because python has no equivalent of
+   a dynamic_cast.  It just returns the ensemble metadata */
+    .def("_get_ensemble_md",[](Ensemble<TimeSeries> &self){
+        return dynamic_cast<Metadata&>(self);
+    })
     .def("__getitem__", [](Ensemble<TimeSeries> &self, const size_t i) {
       return self.member.at(i);
     })
@@ -454,6 +493,11 @@ PYBIND11_MODULE(seismic, m) {
     //    to function properlty
     .def_readwrite("member",&Ensemble<Seismogram>::member,
             "Vector of Seismogram objects defining the ensemble")
+    /* this small lambda is needed because python has no equivalent of
+   a dynamic_cast.  It just returns the ensemble metadata */
+    .def("_get_ensemble_md",[](Ensemble<Seismogram> &self){
+        return dynamic_cast<Metadata&>(self);
+    })
     .def("__getitem__", [](Ensemble<Seismogram> &self, const size_t i) {
       return self.member.at(i);
     })

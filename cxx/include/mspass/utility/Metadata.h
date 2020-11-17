@@ -122,6 +122,7 @@ other attributes.
 \param rhs is the new metadata to be insert/replace on the lhs.
 */
   Metadata& operator+=(const Metadata& rhs) noexcept;
+  /*! Add two Metadata objects.   Uses operator+=*/
   const Metadata operator+(const Metadata& other) const;
   /* All the getters - all but the template are wrappers with the type
   fixed */
