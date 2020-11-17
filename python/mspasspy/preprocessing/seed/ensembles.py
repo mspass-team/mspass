@@ -337,10 +337,10 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
             query={'time':{'$gte':tlow,'$lte':thigh}}
             matchid=ens['_id']
             ens_match_arg={'_id' : matchid}
-            print('debug - query:',query)
-            print('range between ',UTCDateTime(tlow),'->',UTCDateTime(thigh))
+            #print('debug - query:',query)
+            #print('range between ',UTCDateTime(tlow),'->',UTCDateTime(thigh))
             n=dbsource.count_documents(query)
-            print('debug - found ',n,' documents')
+            #print('debug - found ',n,' documents')
             if n==0:
                 if verbose:
                     print('link_source_collection:  no match in source for time=',
@@ -351,7 +351,7 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
                 #print('debug - query returned:',srcrec)
                 #only in this situation will we update the document
                 source_id=srcrec['source_id']
-                print('debug - matchid and source_id=',matchid,source_id)
+                #print('debug - matchid and source_id=',matchid,source_id)
                 if prefer_evid:
                     if 'evid' in srcrec:
                         evid=srcrec['evid']
@@ -647,7 +647,8 @@ def load_channel_data(db,ens):
 def load_arrivals_by_id(db,tsens,
         phase='P',
         required_key_map={'phase':'phase','time':'arrival.time'},
-        optional_key_map={'iphase':'iphase','deltim':'deltim'}):
+        optional_key_map={'iphase':'iphase','deltim':'deltim'},
+        verbose=False):
     """
     Special prototype function to load arrival times in arrival collection
     to TimeSeries data in a TimeSeriesEnsemble. Match is a fixed query 
@@ -673,6 +674,7 @@ def load_arrivals_by_id(db,tsens,
       always test for an empty ensemble after running this function.
     :param optional_key_map:  similar to required_key_map but missing attributes
       only geneate a complaint message and the data will be left live
+    :param verbose:  print some messages otherwise only posted to elog
       
     :return: count of number of live members in the ensemble at completion
     """
@@ -698,6 +700,8 @@ def load_arrivals_by_id(db,tsens,
                     d.elog.log_error(algorithm,
                       "No matching arrival for source_id="+source_id+" and net:sta ="+net+':'+sta,
                       ErrorSeverity.Invalid)
+                    if verbose:
+                        print("No matching arrival for source_id="+source_id+" and net:sta ="+net+':'+sta)
                     d.kill()
                 else:
                     cursor=dbarrival.find(query)
@@ -707,9 +711,12 @@ def load_arrivals_by_id(db,tsens,
                         d.elog.log_error(algorithm,
                           "Multiple documents match source_id="+source_id+" and net:sta ="+net+':'+sta+"  Using first found",
                           ErrorSeverity.Complaint)
-                        print('debug:  multiple docs match - printing full documents of all matches')
-                        for rec in cursor:
-                            print(rec)
+                        if verbose:
+                            print('debug:  multiple docs match - printing full documents of all matches.  Will use first')
+                            for rec in cursor:
+                                print(rec)
+                            cursor.rewind()
+                        rec=cursor.next()
                     for k in required_key_map:
                         if k in rec:
                             x=rec[k]
@@ -720,6 +727,8 @@ def load_arrivals_by_id(db,tsens,
                                 "Required attribute with key="+k+" not found in matching arrival document - data killed",
                                ErrorSeverity.Invalid)
                             d.kill()
+                            if verbose:
+                                print("Required attribute with key="+k+" not found in matching arrival document - data killed")
                     for k in optional_key_map:
                         if k in rec:
                             x=rec[k]
@@ -729,9 +738,13 @@ def load_arrivals_by_id(db,tsens,
                             d.elog.log_error(algorithm,
                                 "Optional attribute with key="+k+" was not found in matching arrival document and cannot be loaded",
                                 ErrorSeverity.Complaint)
+                            if verbose:
+                                print("Optional attribute with key="+k+" was not found in matching arrival document and cannot be loaded")
 
     else:
         message="Enemble metadata does not contain required source_id attribute - killing all data in this ensemble"
+        if verbose:
+            print(message)
         for d in tsens.member:
             d.elog.log_error('load_arrivals_by_id',message,ErrorSeverity.Invalid)
             d.kill()
