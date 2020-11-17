@@ -3,7 +3,7 @@ from matplotlib import pyplot
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.algorithms.basic import ExtractComponent
-import mspasspy.algorithms as alg
+import mspasspy.ccore.algorithms.amplitudes as alg
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1., color='k',
                    normalize=False):
