@@ -85,9 +85,9 @@ class Undertaker(mspasspy.db.Database):
                ErrorSeverity.Invalid)
         for x in d.member:
             if x.live:
-                newens.append(x)
+                newens.member.append(x)
             else:
-                bodies.append(x)
+                bodies.member.append(x)
                 if bury:
                     self._save_elog(d.id,d.elog)
         return [newens,bodies]
