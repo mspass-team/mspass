@@ -10,10 +10,10 @@ from mspasspy.ccore.utility import (MsPASSError,
 import pandas as pd
 from obspy import UTCDateTime
 def load_css30_arrivals(db,filename,attribute_names=['evid',
-                'source.lat',
-                'source.lon',
-                'source.depth',
-                'source.time',
+                'source_lat',
+                'source_lon',
+                'source_depth',
+                'source_time',
                 'mb',
                 'ms',
                 'sta',
@@ -184,10 +184,10 @@ def set_source_id_from_evid(db,collection='arrival'):
         number_arrivals += 1
     return [number_arrivals,number_set,evid_set,not_set]
 def extract_unique_css30_sources(filename,attribute_names=['evid',
-                'source.lat',
-                'source.lon',
-                'source.depth',
-                'source.time',
+                'source_lat',
+                'source_lon',
+                'source_depth',
+                'source_time',
                 'mb',
                 'ms',
                 'sta',
@@ -229,10 +229,10 @@ def extract_unique_css30_sources(filename,attribute_names=['evid',
     sources=dict()
     for d in recs:
         evid=d['evid']
-        lat=d['source.lat']
-        lon=d['source.lon']
-        depth=d['source.depth']
-        time=d['source.time']
+        lat=d['source_lat']
+        lon=d['source_lon']
+        depth=d['source_depth']
+        time=d['source_time']
         #this depends upon container replacing content when keys match
         # inefficient but should work
         sources[evid]={'evid' : evid,
