@@ -143,9 +143,9 @@ def test_Trace2TimeSeries():
     assert ts.t0 == test_Trace2TimeSeries.tr1.stats.starttime.timestamp
     assert ts.npts == test_Trace2TimeSeries.tr1.stats.npts
 
-    assert ts.get('network') == test_Trace2TimeSeries.tr1.stats['network']
-    assert ts.get('station') == test_Trace2TimeSeries.tr1.stats['station']
-    assert ts.get('channel') == test_Trace2TimeSeries.tr1.stats['channel']
+    assert ts.get('net') == test_Trace2TimeSeries.tr1.stats['network']
+    assert ts.get('sta') == test_Trace2TimeSeries.tr1.stats['station']
+    assert ts.get('chan') == test_Trace2TimeSeries.tr1.stats['channel']
     assert ts.get('calib') == test_Trace2TimeSeries.tr1.stats['calib']
 
 def test_Seismogram2Stream():

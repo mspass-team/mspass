@@ -266,6 +266,13 @@ def Trace2TimeSeries(trace,history=None):
     if history!=None:
         dout.load_history(history)
     dout.set_live()
+    # The following dead_mspass attribute is used by our decorator API
+    # to determine whether an object was dead before the conversion.
+    try:
+        if trace.dead_mspass:
+            dout.live = False
+    except AttributeError:
+        pass
     return dout
 
 

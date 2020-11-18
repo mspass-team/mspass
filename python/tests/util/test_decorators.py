@@ -94,7 +94,7 @@ def test_mspass_func_wrapper():
 @timeseries_as_trace
 def dummy_func_timeseries_as_trace(d, any=None):
     d.data = np.array([0, 1, 2])
-    d.stats['chan'] = 'Z'
+    d.stats['channel'] = 'Z'
     any.data = np.array([2,3,4])
 
 
