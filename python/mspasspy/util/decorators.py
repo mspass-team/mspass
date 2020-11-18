@@ -201,10 +201,13 @@ def timeseries_copy_helper(ts1, ts2):
 
 
 def timeseries_ensemble_copy_helper(es1, es2):
-    if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member):])
     for i in range(len(es1.member)):
         timeseries_copy_helper(es1.member[i], es2.member[i])
+    # fixme: not sure in what algorithm the length of es1 and es2 would be different
+    # also, the following does not address uninitiated history issues in the extended elements
+    # same problem applies to the seismogram_ensemble_copy_helper
+    if len(es2.member) > len(es1.member):
+        es1.member.extend(es2.member[len(es1.member):])
 
 
 @decorator
@@ -260,10 +263,10 @@ def seismogram_copy_helper(seis1, seis2):
 
 
 def seismogram_ensemble_copy_helper(es1, es2):
-    if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member):])
     for i in range(len(es1.member)):
         seismogram_copy_helper(es1.member[i], es2.member[i])
+    if len(es2.member) > len(es1.member):
+        es1.member.extend(es2.member[len(es1.member):])
 
 
 @decorator
