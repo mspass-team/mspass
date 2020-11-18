@@ -200,6 +200,13 @@ def timeseries_copy_helper(ts1, ts2):
     ts1.data = ts2.data
 
 
+def timeseries_ensemble_copy_helper(es1, es2):
+    if len(es2.member) > len(es1.member):
+        es1.member.extend(es2.member[len(es1.member):])
+    for i in range(len(es1.member)):
+        timeseries_copy_helper(es1.member[i], es2.member[i])
+
+
 @decorator
 def timeseries_as_trace(func, *args, **kwargs):
     """
@@ -250,6 +257,13 @@ def seismogram_copy_helper(seis1, seis2):
     for k in seis2.keys():  # other metadata copy
         seis1[k] = seis2[k]  # override previous metadata is ok, since they are consistent
     seis1.data = seis2.data
+
+
+def seismogram_ensemble_copy_helper(es1, es2):
+    if len(es2.member) > len(es1.member):
+        es1.member.extend(es2.member[len(es1.member):])
+    for i in range(len(es1.member)):
+        seismogram_copy_helper(es1.member[i], es2.member[i])
 
 
 @decorator
@@ -341,10 +355,10 @@ def timeseries_ensemble_as_stream(func, *args, **kwargs):
     if converted:
         for i in converted_args_ids:
             tse = converted_args[i].toTimeSeriesEnsemble()
-            args[i].member = tse.member
+            timeseries_ensemble_copy_helper(args[i], tse)
         for k in converted_kwargs_keys:
             tse = converted_kwargs[k].toTimeSeriesEnsemble()
-            kwargs[k].member = tse.member
+            timeseries_ensemble_copy_helper(kwargs[k], tse)
     return res
 
 
@@ -385,10 +399,10 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
     if converted:
         for i in converted_args_ids:
             seis_e = converted_args[i].toSeismogramEnsemble()
-            args[i].member = seis_e.member
+            seismogram_ensemble_copy_helper(args[i], seis_e)
         for k in converted_kwargs_keys:
             seis_e = converted_kwargs[k].toSeismogramEnsemble()
-            kwargs[k].member = seis_e.member
+            seismogram_ensemble_copy_helper(kwargs[k], seis_e)
     return res
 
 
