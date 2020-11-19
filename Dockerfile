@@ -11,7 +11,8 @@ RUN apt-get update \
        python3-dev python3-pip \
        openjdk-8-jdk \
        git cmake gfortran gdb \
-       liblapack-dev libboost-dev libboost-serialization-dev libyaml-dev \
+       liblapack-dev libboost-dev libboost-serialization-dev libyaml-dev 
+       zip unzip\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
