@@ -46,6 +46,10 @@ RUN ln -s /usr/local/spark/bin/pyspark /usr/bin/pyspark
 
 # Patch pyspark for machines don't have localhost defined in /etc/hosts
 RUN sed -i 's/localhost/127.0.0.1/' /usr/local/spark/python/pyspark/accumulators.py
+RUN unzip /usr/local/spark/python/lib/pyspark.zip \
+    && sed -i 's/localhost/127.0.0.1/' ./pyspark/accumulators.py \
+    && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
+    && rm -r ./pyspark
 
 # Install Dask through pip
 RUN pip3 --no-cache-dir install "dask[complete]" 
