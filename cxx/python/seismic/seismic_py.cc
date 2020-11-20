@@ -219,8 +219,8 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
-    .def(py::init<const std::vector<CoreTimeSeries>&,const unsigned int>())
     .def(py::init<const Metadata&,const bool>(),"Construct from Metadata with read from file option")
+    .def(py::init<const std::vector<CoreTimeSeries>&,const unsigned int>())
     .def("set_dt",&CoreSeismogram::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreSeismogram::set_npts,
