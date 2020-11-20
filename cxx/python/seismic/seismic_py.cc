@@ -301,38 +301,51 @@ PYBIND11_MODULE(seismic, m) {
         stringstream sstm;
         boost::archive::text_oarchive artm(sstm);
         artm<<tmatrix;
-        // This is a very slow solution, but using the axiom make it work
-        //before you make it fast
-        stringstream ssu;
-        boost::archive::text_oarchive aru(ssu);
-        aru<<self.u;
-        return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
-          cardinal, orthogonal,sstm.str(),
-          ssu.str());
+        //This creates a numpy array alias from the vector container
+        //without a move or copy of the data
+        size_t u_size = self.u.rows()*self.u.columns();
+        if(u_size==0){
+          py::array_t<double, py::array::f_style> darr(u_size,NULL);
+          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
+            cardinal, orthogonal,sstm.str(),
+            u_size, darr);
+        } else {
+          py::array_t<double, py::array::f_style> darr(u_size,self.u.get_address(0,0));
+          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
+            cardinal, orthogonal,sstm.str(),
+            u_size, darr);
+        }
       },
       [](py::tuple t) {
-       string sbuf=t[0].cast<std::string>();
-       Metadata md;
-       md=Metadata(restore_serialized_metadata(sbuf));
-       stringstream ssbts(t[1].cast<std::string>());
-       boost::archive::text_iarchive arbts(ssbts);
-       BasicTimeSeries bts;
-       arbts>>bts;
-       stringstream sscorets(t[2].cast<std::string>());
-       boost::archive::text_iarchive arcorets(sscorets);
-       ProcessingHistory corets;
-       arcorets>>corets;
-       bool cardinal=t[3].cast<bool>();
-       bool orthogonal=t[4].cast<bool>();
-       stringstream sstm(t[5].cast<std::string>());
-       boost::archive::text_iarchive artm(sstm);
-       dmatrix tmatrix;
-       artm>>tmatrix;
-       stringstream ssu(t[6].cast<std::string>());
-       boost::archive::text_iarchive aru(ssu);
-       dmatrix u;
-       aru>>u;
-       return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
+        string sbuf=t[0].cast<std::string>();
+        Metadata md;
+        md=Metadata(restore_serialized_metadata(sbuf));
+        stringstream ssbts(t[1].cast<std::string>());
+        boost::archive::text_iarchive arbts(ssbts);
+        BasicTimeSeries bts;
+        arbts>>bts;
+        stringstream sscorets(t[2].cast<std::string>());
+        boost::archive::text_iarchive arcorets(sscorets);
+        ProcessingHistory corets;
+        arcorets>>corets;
+        bool cardinal=t[3].cast<bool>();
+        bool orthogonal=t[4].cast<bool>();
+        stringstream sstm(t[5].cast<std::string>());
+        boost::archive::text_iarchive artm(sstm);
+        dmatrix tmatrix;
+        artm>>tmatrix;
+        size_t u_size = t[6].cast<size_t>();
+        py::array_t<double, py::array::f_style> darr;
+        darr=t[7].cast<py::array_t<double, py::array::f_style>>();
+        py::buffer_info info = darr.request();
+        if(u_size==0) {
+          dmatrix u;
+          return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
+        } else {
+          dmatrix u(3, u_size/3);
+          memcpy(u.get_address(0,0), info.ptr, sizeof(double) * u_size);
+          return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
+        }
      }
      ))
     ;
