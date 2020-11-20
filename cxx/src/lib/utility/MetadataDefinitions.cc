@@ -415,6 +415,8 @@ MDtype str2mdt(string tstr)
     mdt_this=MDtype::String;
   else if((tstr=="boolean") || (tstr=="Boolean") || (tstr=="bool") )
     mdt_this=MDtype::Boolean;
+  else if((tstr=="double_array") )
+    mdt_this=MDtype::Double_Array;
   else
     throw MsPASSError("MetadataDefinitions::pfreader:  type value="
       + tstr+" not recognized");

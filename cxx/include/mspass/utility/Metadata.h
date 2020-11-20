@@ -485,6 +485,7 @@ enum class MDtype{
     Int64,
     String,
     Boolean,
+    Double_Array,
     Invalid
 };
 /*! \brief Used in Metadata to defined type of Metadata associated with

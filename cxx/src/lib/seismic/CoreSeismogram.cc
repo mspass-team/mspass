@@ -1,6 +1,9 @@
 #include <float.h>
 #include <math.h>
 #include <sstream>
+#include <boost/any.hpp>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 #include "misc/blas.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/MsPASSError.h"
@@ -10,6 +13,7 @@ namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;
+namespace py=pybind11;
 /*
  *  Start with all the constructors.
  *
@@ -106,15 +110,28 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         this->nsamp = this->get_long("npts");
         /* Assume the data t0 is UTC. */
         this->set_tref(TimeReferenceType::UTC);
-        tmatrix[0][0]=this->get_double("U11");
-        tmatrix[1][0]=this->get_double("U21");
-        tmatrix[2][0]=this->get_double("U31");
-        tmatrix[0][1]=this->get_double("U12");
-        tmatrix[1][1]=this->get_double("U22");
-        tmatrix[2][1]=this->get_double("U32");
-        tmatrix[0][2]=this->get_double("U13");
-        tmatrix[1][2]=this->get_double("U23");
-        tmatrix[2][2]=this->get_double("U33");
+        /* tmatrix should be put in as a python object of ndarray type */
+        auto tmatrix_py = boost::any_cast<py::object>(this->get_any("tmatrix"));
+        if(py::isinstance<py::array>(tmatrix_py)) {
+            auto tmatrix_ary = tmatrix_py.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
+            py::buffer_info info = tmatrix_ary.request();
+            if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
+                (info.ndim == 1 && info.shape[0] == 9)
+                )
+                this->set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
+            else
+                throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 matrix"),
+                      ErrorSeverity::Invalid));
+        } else if (py::isinstance<dmatrix>(tmatrix_py)) {
+            auto tmatrix_ary = tmatrix_py.cast<dmatrix>();
+            if (tmatrix_ary.rows() != 3 || tmatrix_ary.columns() != 3)
+                throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 matrix"),
+                      ErrorSeverity::Invalid));
+            this->set_transformation_matrix(tmatrix_ary);
+        } else {
+            throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix is missing or its type is not recognized"),
+                  ErrorSeverity::Invalid));
+        }
         components_are_cardinal=this->tmatrix_is_cardinal();
         if(components_are_cardinal)
           components_are_orthogonal=true;
@@ -153,9 +170,12 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
           as dead */
           this->u.zero();
         }
-    }
-    catch (...)
-    {
+    } catch (MsPASSError& mpe) {
+        throw(mpe);
+    } catch (boost::bad_any_cast& be) {
+        throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix type is not recognized"),
+                ErrorSeverity::Invalid));
+    } catch (...) {
       throw;
     };
 }
@@ -707,6 +727,7 @@ bool CoreSeismogram::set_transformation_matrix(const dmatrix& A)
 {
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix[i][j]=A(i,j);
+    this->put_object("tmatrix", py::cast(this->get_transformation_matrix()));
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)
@@ -726,6 +747,7 @@ bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
 {
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix[i][j]=a[i][j];
+    this->put_object("tmatrix", py::cast(this->get_transformation_matrix()));
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)

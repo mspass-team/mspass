@@ -244,41 +244,9 @@ BasicTimeSeries:
     concept: Value of a time shift applied to a standard (normally UTC standard)
     readonly: false
 ThreeComponentData:
-  - name: U11
-    type: double
-    concept:  Row 1,  column 1 of 3C data transformation matrix
-    readonly: false
-  - name: U21
-    type: double
-    concept:  Row 2,  column 1 of 3C data transformation matrix
-    readonly: false
-  - name: U31
-    type: double
-    concept:  Row 3,  column 1 of 3C data transformation matrix
-    readonly: false
-  - name: U12
-    type: double
-    concept:  Row 1,  column 2 of 3C data transformation matrix
-    readonly: false
-  - name: U22
-    type: double
-    concept:  Row 2,  column 2 of 3C data transformation matrix
-    readonly: false
-  - name: U32
-    type: double
-    concept:  Row 3,  column 2 of 3C data transformation matrix
-    readonly: false
-  - name: U13
-    type: double
-    concept:  Row 1,  column 3 of 3C data transformation matrix
-    readonly: false
-  - name: U23
-    type: double
-    concept:  Row 2,  column 3 of 3C data transformation matrix
-    readonly: false
-  - name: U33
-    type: double
-    concept:  Row 3,  column 3 of 3C data transformation matrix
+  - name: tmatrix
+    type: double_array
+    concept:  3C data transformation matrix
     readonly: false
 Magnitude:
   - name: ms

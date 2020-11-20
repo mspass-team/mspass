@@ -260,9 +260,12 @@ PYBIND11_MODULE(seismic, m) {
       },
       [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
         py::buffer_info info = tm.request();
-        if (info.ndim != 2 || info.shape[0] != 3 || info.shape[1] != 3)
-          throw py::value_error("transform expects a 3x3 matrix");
-        self.set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
+        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
+          (info.ndim == 1 && info.shape[0] == 9))
+          self.set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
+        else
+          throw(MsPASSError(string("transformation_matrix should be a 3x3 matrix"),
+                ErrorSeverity::Invalid));
       },"3x3 transformation matrix")
     .def(py::self += py::self)
     /* Place holder for data array.   Probably want this exposed through

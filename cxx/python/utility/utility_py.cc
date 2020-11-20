@@ -225,6 +225,7 @@ PYBIND11_MODULE(utility, m) {
     .value("Int64",MDtype::Int64)
     .value("String",MDtype::String)
     .value("Boolean",MDtype::Boolean)
+    .value("Double_Array",MDtype::Double_Array)
     .value("Invalid",MDtype::Invalid)
   ;
 

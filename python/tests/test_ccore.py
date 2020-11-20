@@ -5,7 +5,8 @@ import pickle
 import numpy as np
 import pytest
 
-from mspasspy.ccore.seismic import (Seismogram,
+from mspasspy.ccore.seismic import (CoreSeismogram,
+                                    Seismogram,
                                     SeismogramEnsemble,
                                     SlownessVector,
                                     TimeSeries,
@@ -234,7 +235,13 @@ def test_Metadata():
     md_copy = Metadata({2:2,3:30})
     md += md_copy
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
-
+        
+    # Error found with real data
+    #dic = {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000, 'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538, 'iphase': 'P', 'loc': '', 'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2', 'byteorder': '>', 'record_length': 4096, 'filesize': 726344704}, 'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000, 'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090, 'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538}
+    #md = Metadata(dic)
+    #md_copy = pickle.loads(pickle.dumps(md))
+    #for i in md:
+    #    assert md[i] == md_copy[i]
 
 @pytest.fixture(params=[Seismogram, SeismogramEnsemble, 
                         TimeSeries, TimeSeriesEnsemble])
@@ -314,6 +321,52 @@ def test_TimeSeries():
     assert ts.time(100) == 0.1
     assert ts.sample_number(0.0998) == 100
 
+def test_CoreSeismogram():
+    md = Metadata()
+    md['delta'] = 0.01
+    md['starttime'] = 0.0
+    md['npts'] = 100
+    # test metadata constructor
+    md['tmatrix'] = np.random.rand(3,3)
+    cseis = CoreSeismogram(md, False)
+    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    md['tmatrix'] = dmatrix(np.random.rand(3,3))
+    cseis = CoreSeismogram(md, False)
+    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    md['tmatrix'] = np.random.rand(9)
+    cseis = CoreSeismogram(md, False)
+    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3,3)).all()
+    md['tmatrix'] = np.random.rand(1,9)
+    cseis = CoreSeismogram(md, False)
+    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3,3)).all()
+    md['tmatrix'] = np.random.rand(9,1)
+    cseis = CoreSeismogram(md, False)
+    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3,3)).all()
+
+    # test whether the setter of transformation_matrix updates metadata correctly
+    tm = np.random.rand(1,9)
+    cseis.transformation_matrix = tm
+    assert (cseis.transformation_matrix == tm.reshape(3,3)).all()
+    assert (cseis.transformation_matrix == cseis['tmatrix']).all()
+
+    # test exceptions
+    md['tmatrix'] = np.random.rand(4,2)
+    with pytest.raises(MsPASSError, match = "should be a 3x3 matrix"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = dmatrix(np.random.rand(2,4))
+    with pytest.raises(MsPASSError, match = "should be a 3x3 matrix"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = 42
+    with pytest.raises(MsPASSError, match = "not recognized"):
+        CoreSeismogram(md, False)
+    md.clear('tmatrix')
+    with pytest.raises(MsPASSError, match = "Error trying to extract"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = {4:2}
+    with pytest.raises(MsPASSError, match = "tmatrix is missing or its type is not recognized"):
+        CoreSeismogram(md, False)
+
+
 def test_Seismogram():
     seis = Seismogram()
     seis.npts = 100
@@ -336,6 +389,8 @@ def test_Seismogram():
     seis.npts = 10
     assert (seis.data[0:3,4:10] == 0).all()
 
+    seis.data = dmatrix(np.random.rand(3,100))
+    seis.sync_npts()
     seis_copy = pickle.loads(pickle.dumps(seis))
     assert seis_copy.t0 == seis.t0
     assert seis_copy.dt == seis.dt
