@@ -2,8 +2,8 @@ import numpy
 from matplotlib import pyplot
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
-from mspasspy.ccore.algorithms.basic import ExtractComponent
-import mspasspy.ccore.algorithms.amplitudes as alg
+from mspasspy.ccore.algorithms.basic import ExtractComponent,EnsembleComponent
+from mspasspy.algorithms.window import scale as alg_scale
 
 def wtva_raw(section, t0, dt, ranges=None, scale=1., color='k',
                    normalize=False):
@@ -681,13 +681,13 @@ class SeismicPlotter:
         # to sort absolute values and return perf level - should use faster
         # max value when perf is 100%
         if(isinstance(d,SeismogramEnsemble)):
-            alg.scale(d,scale_by_section=True,level=self.scale)
+            alg_scale(d,scale_by_section=True,level=self.scale)
         elif(isinstance(d,TimeSeriesEnsemble)):
-            alg.scale(d,scale_by_section=True,level=self.scale)
+            alg_scale(d,scale_by_section=True,level=self.scale)
         elif(isinstance(d,TimeSeries)):
-            alg.scale(d,level=self.scale)
+            alg_scale(d,level=self.scale)
         elif(isinstance(d,Seismogram)):
-            alg.scale(d,level=self.scale)
+            alg_scale(d,level=self.scale)
         else:
             raise RuntimeError('SeismicPlotter._normalize:  Received unsupported data type=',type(d))
     def _add_3C_titles(self):
