@@ -171,10 +171,6 @@ Attributes:
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: LPSPOL
-    type: boolean
-    concept: True if channel components have positive polarity (SAC)
-    readonly: false
 # These are attributes for source data.   This schema does not support multiple
 # source locations for a single seismic event.   We use source for the table name
 # instead of event or origin to avoid make that clear.   An event-origin
@@ -215,6 +211,7 @@ Attributes:
     readonly: true
     unique_id: source_id
     collection: source
+RAW:
   - name: evid
     type: int
     concept:  event id - used in CSS3.0 as the identifier of a particular seismic source
@@ -345,11 +342,11 @@ MongoDb:
     concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
     readonly: false
     collection: wf
-  - name: gridfs_wf_id
+  - name: gridfs_id
     type: string
     concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
     readonly: false 
-    collection: gridfs_wf
+    collection: gridfs
 # These are assorted attributes that can be used in wf but have not logical 
 # grouping
 Other:
