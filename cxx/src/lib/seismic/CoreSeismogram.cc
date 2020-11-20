@@ -239,6 +239,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         ss << base_error
            << "missing hang or vang variable in component TimeSeries objects received"<<endl;
         ss << "Message posted by Metadata::get_double:  "<<mde.what()<<endl;
+	throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
     // These are loaded just for convenience
     t0_component[0]=ts[0].t0();
