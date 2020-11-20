@@ -286,7 +286,7 @@ std::string serialize_metadata(const Metadata& md)
   try{
     ostringstream ss;
     /* We do this to make sure we don't truncate precision */
-    ss<<setprecision(14);
+    ss<<setprecision(17);
     ss << const_cast<Metadata&>(md);
     return std::string(ss.str());
   }catch(...){throw;};

@@ -288,7 +288,7 @@ PYBIND11_MODULE(seismic, m) {
         string sbuf;
         sbuf=serialize_metadata(self);
         stringstream ssbts;
-        ssbts << std::setprecision(15);
+        ssbts << std::setprecision(17);
         boost::archive::text_oarchive arbts(ssbts);
         arbts << dynamic_cast<const BasicTimeSeries&>(self);
         stringstream sscorets;
@@ -401,7 +401,7 @@ PYBIND11_MODULE(seismic, m) {
           string sbuf;
           sbuf=serialize_metadata(self);
           stringstream ssbts;
-          ssbts << std::setprecision(15);
+          ssbts << std::setprecision(17);
           boost::archive::text_oarchive arbts(ssbts);
           arbts << dynamic_cast<const BasicTimeSeries&>(self);
           stringstream sscorets;
