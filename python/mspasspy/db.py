@@ -14,10 +14,14 @@ import bson.errors
 import bson.objectid
 import gridfs
 import pymongo
+import numpy as np
+from array import array
 
 from mspasspy.ccore.seismic import (BasicTimeSeries,
                             Seismogram,
-                            TimeReferenceType)
+                            TimeReferenceType,
+                            TimeSeries,
+                            DoubleVector)
 from mspasspy.ccore.utility import (MetadataDefinitions,
                             dmatrix,
                             ErrorLogger,
@@ -88,6 +92,186 @@ class Database(pymongo.database.Database):
     where databasename is variable and the name of the database you
     wish to access with this handle.
     """
+    def __init__(self, *args, **kwargs):
+        super(Database, self).__init__(*args, **kwargs)
+        self.metadata_def = MetadataDefinitions()
+
+    def set_metadata_definition(self, definition):
+        self.metadata_def = definition
+
+    def read_data(self, object_id, collection="wf", load_history=True, metadata_def=None):
+        """
+
+        :param metadata_def:
+        :param load_history:
+        :param object_id:
+        :type object_id: ~bson.objectid.ObjectId
+        :param collection:
+        :return:
+        """
+        col = self[collection]
+        object = col.find_one({'_id': object_id})
+        if not object:
+            return None
+
+        mspass_object = None
+        if object['type'] == 'TimeSeries':
+            mspass_object = TimeSeries()
+        elif object['type'] == 'Seismogram':
+            mspass_object = Seismogram()
+        else:
+            return None
+
+        # 1. build metadata as dict
+        md = {}
+        wf_keys = ['npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'net', 'sta', 'loc',
+                   'dir', 'dfile', 'foff', 'gridfs_wf_id', 'url', 'type', 'elog_ids', 'history_id', 'storage_mode']
+        for k in object:
+            if k == '_id':
+                continue
+            if k in wf_keys:
+                if isinstance(object[k], bson.objectid.ObjectId):
+                    md[k] = str(object[k])
+                else:
+                    md[k] = object[k]
+            else:
+                md[k] = object[k]
+        md['wf_id'] = str(object['_id'])
+
+        site = self['site'].find_one({'_id': object['site_id']})
+        md['site_lat'] = site['lat']
+        md['site_lon'] = site['lon']
+        md['site_elev'] = site['elev']
+        md['net'] = site['net']
+        md['sta'] = site['sta']
+        md['loc'] = site['loc']
+        md['site_id'] = str(object['site_id'])
+
+        source = self['site'].find_one({'_id': object['source_id']})
+        md['source_lat'] = source['lat']
+        md['source_lon'] = source['lon']
+        md['source_depth'] = source['depth']
+        md['source_time'] = source['time']
+        md['source_id'] = str(object['source_id'])
+
+        if object['type'] == 'TimeSeries':
+            channel = self['site'].find_one({'_id': object['channel_id']})
+            md['chan'] = channel['chan']
+            md['hang'] = channel['hang']
+            md['vang'] = channel['vang']
+            md['chan_id'] = str(object['channel_id'])
+
+        read_metadata_def = self.metadata_def if not metadata_def else metadata_def
+        for k in md:
+            if read_metadata_def.is_defined(k):
+                if type(md[k]) != read_metadata_def.type(k):
+                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
+                mspass_object.put(k, md[k])
+
+        mspass_object.live = True
+
+        # fixme solve the following consistency problems
+        mspass_object.npts = mspass_object['npts']
+        mspass_object.dt = mspass_object['dt']
+        mspass_object.tref = mspass_object['tref']
+        mspass_object.starttime = mspass_object['starttime']
+        # seis trans matrix
+
+        # 2.load data from different modes
+        mode = mspass_object['storage_mode']
+        if mode == "file":
+            self._read_data_from_dfile(mspass_object)
+        elif mode == "gridfs":
+            mspass_object = self.cleanup_read_data3C_from_gridfs(mspass_object)  # fixme need testing
+        elif mode == "url":
+            pass  # todo for future
+        else:
+            raise TypeError("Unknown storage mode: {}".format(mode))
+
+        # 3.load history
+
+        return mspass_object
+
+    def save_data(self, mspass_object, storage_mode, metadata_mode, dfile=None, dir=None,
+                  exclude=None, collection='wf', metadata_def=None):
+
+        # 1. save data
+        if storage_mode == "file":
+            if dfile:
+                mspass_object['dfile'] = dfile
+                mspass_object['dir'] = dir
+            self._save_data_to_dfile(mspass_object)
+        elif storage_mode == "gridfs":
+            update = False
+            if mspass_object['storage_mode'] == "gridfs":
+                update = True
+            mspass_object['gridfs_wf_id'] = self._save_data3C_to_gridfs(mspass_object,
+                                                                        update=update)  # fixme need testing
+        elif storage_mode == "url":
+            pass  # todo for future
+        else:
+            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+        mspass_object['storage_mode'] = storage_mode
+
+        # 2. save history
+        history_col = self['history']
+
+        # 3. save error logs
+        id_list = self._save_elog(mspass_object['wf_id', mspass_object.elog])
+        mspass_object['elog_ids'].appen(id_list)
+
+        # 4. save metadata
+        self.update_metadata(mspass_object, metadata_mode, exclude, collection, metadata_def)
+
+    def update_metadata(self, metadata_dict, metadata_mode, exclude=None, collection='wf', metadata_def=None):
+        update_all = False
+        if metadata_mode == 'updateall':
+            update_all = True
+        self.metadata_def.clear_aliases(metadata_dict)
+
+        col = self[collection]
+        insert_dict = {}
+        read_metadata_def = self.metadata_def if not metadata_def else metadata_def
+        skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_id', 'source_lat', 'source_lon',
+                     'source_depth', 'source_time', 'source_id', 'chan', 'hang', 'vang', 'chan_id',
+                     'net', 'sta', 'loc']
+        for k in metadata_dict:
+            if read_metadata_def.is_defined(k) and (k not in skip_list):
+                if type(metadata_dict[k]) != read_metadata_def.type(k):
+                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
+                if not read_metadata_def.readonly(k) or update_all:
+                    insert_dict[k] = metadata_dict[k]
+
+        filter = {'_id': bson.objectid.ObjectId(metadata_dict['wf_id'])}
+        col.update_one(filter, insert_dict)
+
+        if update_all:
+            # site
+            insert_dict = {}
+            filter = {'_id': bson.objectid.ObjectId(metadata_dict['site_id'])}
+            insert_dict['lat'] = metadata_dict['site_lat']
+            insert_dict['lon'] = metadata_dict['site_lon']
+            insert_dict['elev'] = metadata_dict['site_elev']
+            self['site'].update_one(filter, insert_dict)
+
+            # source
+            insert_dict = {}
+            filter = {'_id': bson.objectid.ObjectId(metadata_dict['source_id'])}
+            insert_dict['lat'] = metadata_dict['source_lat']
+            insert_dict['lon'] = metadata_dict['source_lon']
+            insert_dict['depth'] = metadata_dict['source_depth']
+            insert_dict['starttime'] = metadata_dict['source_time'] # fixme
+            self['source'].update_one(filter, insert_dict)
+
+            # channel
+            if 'channel_id' in metadata_dict:
+                insert_dict = {}
+                filter = {'_id': bson.objectid.ObjectId(metadata_dict['channel_id'])}
+                insert_dict['chan'] = metadata_dict['chan']
+                insert_dict['hang'] = metadata_dict['hang']
+                insert_dict['vang'] = metadata_dict['vang']
+                self['channel'].update_one(filter, insert_dict)
+
     def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
         """
         Loads a Seismogram object from MongoDB based on ObjectId.
@@ -384,7 +568,7 @@ class Database(pymongo.database.Database):
             self._save_elog(oidstr,d.elog)
             return error_count
 
-    def _save_elog(self, oidstr, elog):
+    def _save_elog(self, oidstr, elog, collection='error_logs'):
         """
         Save error log for a data object.
 
@@ -402,29 +586,51 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
-        n=elog.size()
-        if(n==0):
+        n = elog.size()
+        if (n == 0):
             return
-        errs=elog.get_error_log()
-        jobid=elog.get_job_id()
-        docentry={'job_id':jobid}
-        oidlst=[]
+        errs = elog.get_error_log()
+        jobid = elog.get_job_id()
+        docentry = {'job_id': jobid}
+        oidlst = []
         for i in range(n):
-            x=errs[i]
-            docentry['algorithm']=x.algorithm
-            docentry['badness']=str(x.badness)
-            docentry['error_message']=x.message
-            docentry['process_id']=x.p_id
-            docentry['wf_id']=oidstr
+            x = errs[i]
+            docentry['algorithm'] = x.algorithm
+            docentry['badness'] = str(x.badness)
+            docentry['error_message'] = x.message
+            docentry['process_id'] = x.p_id
+            docentry['wf_id'] = oidstr
             try:
-                oid=self.elog.insert_one(docentry)
+                oid = self[collection].insert_one(docentry)  # fixme problem
                 oidlst.append(oid)
             except:
                 raise RuntimeError("Failure inserting error messages to elog collection")
         return oidlst
 
     @staticmethod
-    def _save_data3C_to_dfile(d):
+    def _read_data_from_dfile(d):
+        di = d.get_string('dir')
+        dfile = d.get_string('dfile')
+        foff = d.get('foff')
+        fname = os.path.join(di, dfile)
+        with open(fname, mode='rb') as fh:
+            fh.seek(foff)
+            float_array = array('d')
+            if isinstance(d, TimeSeries):
+                float_array.fromstring(fh.read(d.get('npts') * 8))
+                d.data = DoubleVector(float_array)
+            elif isinstance(d, Seismogram):
+                float_array.fromstring(fh.read(d.get('npts') * 8 * 3))
+                print(len(float_array))
+                d.data = dmatrix(3, d.get('npts'))
+                for i in range(3):
+                    for j in range(d.get('npts')):
+                        d.data[i, j] = float_array[i * d.get('npts') + j]
+            else:
+                raise TypeError("only TimeSeries and Seismogram are supported")
+
+    @staticmethod
+    def _save_data_to_dfile(d):
         """
         Saves sample data as a binary dump of the sample data.
 
@@ -440,40 +646,29 @@ class Database(pymongo.database.Database):
         the object d.   Caller should test for negative return and post the error
         to the database to help debug data problems.
         """
-        try:
-            di=d.get_string('dir')
-            dfile=d.get_string('dfile')
-        except:
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "Data missing dir and/or dfile - sample data were not saved",
-                ErrorSeverity.Invalid)
-            return -1
+        di = d.get_string('dir')
+        dfile = d.get_string('dfile')
         fname = os.path.join(di, dfile)
-        try:
-            os.makedirs(os.path.dirname(fname), exist_ok=True)
-            with open(fname,mode='a+b') as fh:
-                foff=fh.seek(0,2)
-                # We convert the sample data to a bytearray (bytes is just an
-                # immutable bytearray) to allow raw writes.  This seems to works
-                # because u is a buffer object.   Seems a necessary evil because
-                # pybind11 wrappers and pickle are messy.  This seems a clean
-                # solution for a minimal cose (making a copy before write)
-                ub=bytes(d.u)
-                fh.write(ub)
-        except:
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "IO error writing data to file = " + fname,
-                ErrorSeverity.Invalid)
-            return -1
-        else:
-            di = os.path.dirname(os.path.realpath(fname))
-            dfile = os.path.basename(os.path.realpath(fname))
-            d.put('dir', di)
-            d.put('dfile', dfile)
-            d.put('foff', foff)
-            return(foff)
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        with open(fname, mode='a+b') as fh:
+            foff = fh.seek(0, 2)
+            # We convert the sample data to a bytearray (bytes is just an
+            # immutable bytearray) to allow raw writes.  This seems to works
+            # because u is a buffer object.   Seems a necessary evil because
+            # pybind11 wrappers and pickle are messy.  This seems a clean
+            # solution for a minimal cose (making a copy before write)
+            if isinstance(d, TimeSeries):
+                ub = bytes(np.array(d.data))  # fixme DoubleVector
+            elif isinstance(d, Seismogram):
+                ub = bytes(d.data)
+            else:
+                raise TypeError("only TimeSeries and Seismogram are supported")
+            fh.write(ub)
+        di = os.path.dirname(os.path.realpath(fname))
+        dfile = os.path.basename(os.path.realpath(fname))
+        d.put('dir', di)
+        d.put('dfile', dfile)
+        d.put('foff', foff)
 
     def _save_data3C_to_gridfs(self, d, fscol='gridfs_wf', update=False):
         """
@@ -502,37 +697,21 @@ class Database(pymongo.database.Database):
         :raise: Should never throw an exception, but caller should test and save
         error log if it is not empty.
         """
-        try:
-            gfsh=gridfs.GridFS(self,collection=fscol)
-            if(update):
-                try:
-                    ids=d.get_string('gridfs_wf_id')
-                    oldid=bson.objectid.ObjectId(ids)
-                    if(gfsh.exists(oldid)):
-                        gfsh.delete(oldid)
-                except RuntimeError:
-                    d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "Error fetching object id defined by key gridfs_wf_id",
-                        ErrorSeverity.Complaint)
-                else:
-                    d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "GridFS failed to delete data with gridfs_wf_id = " + ids,
-                        ErrorSeverity.Complaint)
-            ub=bytes(d.u)
-            # pickle dumps returns its result as a byte stream - dump (without the s)
-            # used in file writer writes to a file
-            file_id = gfsh.put(pickle.dumps(ub))
-            d.put_string('gridfs_wf_id',str(file_id))
-        except:
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "IO Error",
-                        ErrorSeverity.Invalid)
-            return -1
+        gfsh = gridfs.GridFS(self, collection=fscol)
+        if (update):
+            ids = d.get_string('gridfs_wf_id')
+            oldid = bson.objectid.ObjectId(ids)
+            if (gfsh.exists(oldid)):
+                gfsh.delete(oldid)
+        if isinstance(d, Seismogram):
+            ub = bytes(d.data)
         else:
-            return file_id
+            ub = bytes(np.array(d.data))
+        # pickle dumps returns its result as a byte stream - dump (without the s)
+        # used in file writer writes to a file
+        file_id = gfsh.put(pickle.dumps(ub))
+        d.put_string('gridfs_wf_id', str(file_id))
+        return file_id
 
     def _read_data3C_from_gridfs(self, md, elogtmp=ErrorLogger(), fscol='gridfs_wf'):
         """
@@ -664,18 +843,16 @@ class Database(pymongo.database.Database):
         x=struct.unpack(fmt,ub)
         # Validate sizes. For now we post a message making the data invalid
         # and set live false if there is a size mismatch.
-        if(len(x)==(3*d.ns)):
-            d.u=dmatrix(3,d.ns)
-            ii=0
+        if len(x) == (3 * d.ns):
+            d.data = dmatrix(3, d.ns)
+            ii = 0
             for i in range(3):
                 for j in range(d.ns):
-                    d.u[i,j]=x[ii]
+                    d.data[i, j] = x[ii]
         else:
-            emess="Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
-            % (len(x),(3*d.ns))
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() + emess,
-                        ErrorSeverity.Invalid)
+            emess = "Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
+                    % (len(x), (3 * d.ns))
+            raise ValueError(emess)
         # Necessary step for efficiency.  Seismogram constructor here
         # incorrectly marks data copied form metadata object as changed
         # This could lead to unnecessary database transaction with updates
