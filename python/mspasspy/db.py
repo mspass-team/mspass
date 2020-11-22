@@ -617,7 +617,7 @@ class Database(pymongo.database.Database):
             fh.seek(foff)
             float_array = array('d')
             if isinstance(d, TimeSeries):
-                float_array.fromstring(fh.read(d.get('npts') * 8))
+                float_array.frombytes(fh.read(d.get('npts') * 8))
                 d.data = DoubleVector(float_array)
             elif isinstance(d, Seismogram):
                 float_array.fromstring(fh.read(d.get('npts') * 8 * 3))

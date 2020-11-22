@@ -45,7 +45,7 @@ def read_data(d):
     with open(fname, mode='rb') as fh:
         fh.seek(foff)
         float_array = array('d')
-        float_array.fromstring(fh.read(d.get('nofbytes')))
+        float_array.frombytes(fh.read(d.get('nofbytes')))
         d.data = DoubleVector(float_array)
 
 
