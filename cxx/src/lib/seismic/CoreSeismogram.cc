@@ -225,8 +225,10 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     // Load up these temporary arrays inside this try block and arrange to
     // throw an exception if required metadata are missing
     try {
-        // WARNING hang and vang attributes stored in metadata
-        // always assumed to be radians
+        /* WARNING hang and vang attributes in Metadata 
+        are always assumed to have been read from a database where they 
+        were stored in degrees.  We convert these to radians below to 
+        compute the transformation matrix. */
         hang[0]=ts[0].get_double("hang");
         hang[1]=ts[1].get_double("hang");
         hang[2]=ts[2].get_double("hang");
@@ -241,6 +243,12 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         ss << "Message posted by Metadata::get_double:  "<<mde.what()<<endl;
 	throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
+    /* We couldn't get here if hang and vang were not set on comp 0 so 
+       we don't test for that condition.  We do need to clear hang and vang
+       from result here, however, as both attributes are meaningless 
+       for a 3C seismogram */
+    this->clear("hang");
+    this->clear("vang");
     // These are loaded just for convenience
     t0_component[0]=ts[0].t0();
     t0_component[1]=ts[1].t0();
