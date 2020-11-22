@@ -20,7 +20,7 @@ def find_channel(collection):
     # net channel station scheme
 
 
-def test_save_data(d):
+def save_data(d):
     di = d.get_string('dir')
     dfile = d.get_string('dfile')
     fname = os.path.join(di, dfile)
@@ -37,7 +37,7 @@ def test_save_data(d):
     d.put('foff', foff)
 
 
-def test_read_data(d):
+def read_data(d):
     di = d.get_string('dir')
     dfile = d.get_string('dfile')
     foff = d.get('foff')
@@ -54,14 +54,14 @@ if __name__ == "__main__":
     s.data = DoubleVector(np.random.rand(255))
     s['dir'] = './'
     s['dfile'] = 'test_op'
-    test_save_data(s)
+    save_data(s)
 
     s2 = TimeSeries()
     for k in s:
         s2[k] = s[k]
     s2.data = DoubleVector([])
     print(len(s2.data))
-    test_read_data(s2)
+    read_data(s2)
     print(len(s2.data))
     assert all(a == b for a, b in zip(s.data, s2.data))
     # client = MongoClient('localhost', 27017)
