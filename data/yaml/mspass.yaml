@@ -310,10 +310,15 @@ MongoDb:
     concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
     readonly: false
     collection: wf
-  - name: gridfs_id
+  - name: gridfs.gridfs_id
     type: string
-    concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
+    concept: Holds string representation of the ObjectID used to index waveform data in wf.gridfs collection.
     readonly: false 
+    collection: gridfs
+  - name: url.url
+    type: string
+    concept: Holds string representation of the ObjectID used to index waveform data in wf.url collection.
+    readonly: false
     collection: gridfs
 # These are assorted attributes that can be used in wf but have not logical 
 # grouping
