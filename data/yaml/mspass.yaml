@@ -66,38 +66,38 @@ Attributes:
     readonly: true
     unique_id: site_id
     collection: site
-  - name: site.lat
+  - name: site_lat
     type: double
     concept:  latitude of a seismic station/instrument in degrees
-    aliases: STLA site_lat
+    aliases: STLA site.lat
     readonly: true
     unique_id:  site_id
     collection: site
-  - name: site.lon
+  - name: site_lon
     type: double
     concept:  longitude of a seismic station/instrument in degrees
-    aliases: STLO stlo site_lon
+    aliases: STLO stlo site.lon
     readonly: true
     unique_id:  site_id
     collection: site
-  - name: site.elev
+  - name: site_elev
     type: double
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: STEL stel site_elev
+    aliases: STEL stel site.elev
     readonly: true
     unique_id:  site_id
     collection: site
-  - name: site.starttime
+  - name: site_starttime
     type: double
     concept:  Time of seismic station/instrument starts recording
-    aliases: site_starttime
+    aliases: site.starttime
     readonly: true
     unique_id:  site_id
     collection: site
-  - name: site.endtime
+  - name: site_endtime
     type: double
     concept:  Time of seismic station/instrument ends recording
-    aliases: site_endtime
+    aliases: site.endtime
     readonly: true
     unique_id:  site_id
     collection: site
@@ -115,59 +115,59 @@ Attributes:
     readonly: true
     unique_id: channel_id
     collection: channel
-  - name: channel.hang
+  - name: channel_hang
     type: double
     concept:  Azimuth (in degree) of a seismometer component - horizontal angle
     aliases: hang CMPAZ
     readonly: true
     unique_id: channel_id
     collection: channel
-  - name: channel.vang
+  - name: channel_vang
     type: double
     concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
     aliases: vang CMPINC
     readonly: true
     unique_id: channel_id
     collection: channel
-  - name: channel.lat
+  - name: channel_lat
     type: double
     concept:  latitude of a seismic station/instrument in degrees
     aliases: channel_lat
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: channel.lon
+  - name: channel_lon
     type: double
     concept:  longitude of a seismic station/instrument in degrees
     aliases: channel_lon
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: channel.elev
+  - name: channel_elev
     type: double
     concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
     aliases: channel_elev
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: channel.edepth
+  - name: channel_edepth
     type: double
     concept:  depth of a seismic station/instrument in km
-    aliases: channel_edepth
+    aliases: channel.edepth
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: channel.starttime
+  - name: channel_starttime
     type: double
     concept:  Time of channel starts recording
-    aliases: channel_starttime
+    aliases: channel.starttime
     readonly: true
     unique_id:  channel_id
     collection: channel
-  - name: channel.endtime
+  - name: channel_endtime
     type: double
     concept:  Time of channel ends recording
-    aliases: channel_endtime
+    aliases: channel.endtime
     readonly: true
     unique_id:  channel_id
     collection: channel
@@ -183,31 +183,31 @@ Attributes:
     readonly:  false
     unique_id:  source_id
     collection:  source
-  - name: source.lat
+  - name: source_lat
     type: double
     concept: Latitude (in degrees) of the hypocenter of seismic source
-    aliases:  source_lat EVLA origin.lat
+    aliases:  source.lat EVLA origin.lat
     readonly: true
     unique_id: source_id
     collection: source
-  - name: source.lon
+  - name: source_lon
     type: double
     concept: Longitude (in degrees) of the hypocenter of seismic source
-    aliases:  source_lon EVLO origin.lon
+    aliases:  source.lon EVLO origin.lon
     readonly: true
     unique_id: source_id
     collection: source
-  - name: source.depth
+  - name: source_depth
     type: double
     concept: Depth (in km) of the hypocenter of seismic source
-    aliases: source_depth EVDP origin.depth
+    aliases: source.depth EVDP origin.depth
     readonly: true
     unique_id: source_id
     collection: source
-  - name: source.time
+  - name: source_time
     type: double
     concept: Origin time of the hypocenter of seismic source (epoch time)
-    aliases: source_time origin.time
+    aliases: source.time origin.time
     readonly: true
     unique_id: source_id
     collection: source
@@ -269,21 +269,21 @@ Magnitude:
     unique_id: souce_id
     collection: source
 External_files:
-  - name: file.dfile
+  - name: dfile
     type: string
     concept: External data file name.
-    aliases: dfile wfdisc.dfile wfprocess.dfile
+    aliases: file.dfile wfdisc.dfile wfprocess.dfile
     readonly: false
-  - name: file.dir
+  - name: dir
     type: string
     concept: Directory path to an external file (always used with dfile)
-    aliases: dir wfdisc.dir wfprocess.dir
+    aliases: file.dir wfdisc.dir wfprocess.dir
     readonly: false
-  - name: file.foff
+  - name: foff
     type: int
     concept:  Offset in bytes from beginning of a file to first data sample.
     readonly: false
-    aliases: foff wfdisc.foff wfprocess.foff
+    aliases: file.foff wfdisc.foff wfprocess.foff
 SeismicPhases:
   - name: phase
     type: string
@@ -314,7 +314,18 @@ MongoDb:
     type: string
     concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
     readonly: false 
-    collection: gridfs
+    collection: fs.files
+  - name: history_id
+    type: string
+    concept:  Holds string representation of the ObjectID used to define an unique entry in history collection.
+    readonly: false
+    collection: history
+# TODO We need to support string_array type before enable the following.
+#  - name: elog_id
+#    type: string_array
+#    concept: Holds string representation of the ObjectID used to define an unique entry in elog collection.
+#    readonly: false 
+#    collection: elog
 # These are assorted attributes that can be used in wf but have not logical 
 # grouping
 Other:
