@@ -18,7 +18,10 @@ import numpy as np
 from array import array
 
 from mspasspy.ccore.seismic import (BasicTimeSeries,
+                            TimeSeries,
                             Seismogram,
+                            CoreSeismogram,
+                            CoreTimeSeries,
                             TimeReferenceType,
                             TimeSeries,
                             DoubleVector)
@@ -26,7 +29,7 @@ from mspasspy.ccore.utility import (MetadataDefinitions,
                             dmatrix,
                             ErrorLogger,
                             ErrorSeverity)
-#from mspasspy.io.converter import dict2Metadata, Metadata2dict
+
 
 from obspy import Inventory
 from obspy import UTCDateTime
@@ -114,20 +117,18 @@ class Database(pymongo.database.Database):
         if not object:
             return None
 
-        mspass_object = None
-        if object['type'] == 'TimeSeries':
-            mspass_object = TimeSeries()
-        elif object['type'] == 'Seismogram':
-            mspass_object = Seismogram()
-        else:
-            return None
-
         # 1. build metadata as dict
         md = {}
-        wf_keys = ['npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'net', 'sta', 'loc',
-                   'dir', 'dfile', 'foff', 'gridfs_wf_id', 'url', 'type', 'elog_ids', 'history_id', 'storage_mode']
+        wf_keys = ['npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'history_id', 'storage_mode',
+                   'gridfs_id', 'url', 'dir', 'dfile', 'foff', 'site_id', 'source_id', 'chan_id']
+        # fixme type?
+
         for k in object:
             if k == '_id':
+                md['wf_id'] = str(object[k])
+                continue
+            if k == 'elog_ids':
+                md['elog_ids'] = [str(id) for id in object[k]]
                 continue
             if k in wf_keys:
                 if isinstance(object[k], bson.objectid.ObjectId):
@@ -135,47 +136,55 @@ class Database(pymongo.database.Database):
                 else:
                     md[k] = object[k]
             else:
-                md[k] = object[k]
-        md['wf_id'] = str(object['_id'])
+                md[k] = object[k] # fixme issue gary proposed
 
         site = self['site'].find_one({'_id': object['site_id']})
         md['site_lat'] = site['lat']
         md['site_lon'] = site['lon']
         md['site_elev'] = site['elev']
+        md['site_starttime'] = site['starttime']
+        md['site_endtime'] = site['endtime']
         md['net'] = site['net']
         md['sta'] = site['sta']
         md['loc'] = site['loc']
-        md['site_id'] = str(object['site_id'])
 
         source = self['site'].find_one({'_id': object['source_id']})
         md['source_lat'] = source['lat']
         md['source_lon'] = source['lon']
         md['source_depth'] = source['depth']
         md['source_time'] = source['time']
-        md['source_id'] = str(object['source_id'])
 
         if object['type'] == 'TimeSeries':
             channel = self['site'].find_one({'_id': object['channel_id']})
             md['chan'] = channel['chan']
-            md['hang'] = channel['hang']
-            md['vang'] = channel['vang']
-            md['chan_id'] = str(object['channel_id'])
+            md['channel_hang'] = channel['hang']
+            md['channel_vang'] = channel['vang']
+            md['channel_lat'] = channel['lat']
+            md['channel_lon'] = channel['lon']
+            md['channel_elev'] = channel['elev']
+            md['channel_edepth'] = channel['edepth']
+            md['channel_starttime'] = channel['starttime']
+            md['channel_endtime'] = channel['endtime']
 
         read_metadata_def = self.metadata_def if not metadata_def else metadata_def
         for k in md:
             if read_metadata_def.is_defined(k):
                 if type(md[k]) != read_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
-                mspass_object.put(k, md[k])
 
-        mspass_object.live = True
-
-        # fixme solve the following consistency problems
-        mspass_object.npts = mspass_object['npts']
-        mspass_object.dt = mspass_object['dt']
-        mspass_object.tref = mspass_object['tref']
-        mspass_object.starttime = mspass_object['starttime']
-        # seis trans matrix
+        # mspass_object.npts = mspass_object['npts']
+        # mspass_object.dt = mspass_object['dt']
+        # mspass_object.tref = mspass_object['tref']
+        # mspass_object.starttime = mspass_object['starttime']
+        # if 'tmatrix' in mspass_object:
+        #     mspass_object.tmatrix = mspass_object['tmatrix']
+        if object['dtype'] == 'TimeSeries':
+            bts = BasicTimeSeries()
+            mspass_object = CoreTimeSeries(bts, md)
+        elif object['dtype'] == 'Seismogram':
+            mspass_object = Seismogram(CoreSeismogram(md, load_data=False))
+        else:
+            return None
 
         # 2.load data from different modes
         mode = mspass_object['storage_mode']
@@ -189,15 +198,19 @@ class Database(pymongo.database.Database):
             raise TypeError("Unknown storage mode: {}".format(mode))
 
         # 3.load history
+        if load_history:
+            res = self['history'].find_one({'_id': object['history_id']})
+            mspass_object.load_history(pickle.loads(pickle.dumps(res['history_binary'])))
 
+        mspass_object.live = True
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode, metadata_mode, dfile=None, dir=None,
+    def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
                   exclude=None, collection='wf', metadata_def=None):
 
         # 1. save data
         if storage_mode == "file":
-            if dfile:
+            if dfile: # new file
                 mspass_object['dfile'] = dfile
                 mspass_object['dir'] = dir
             self._save_data_to_dfile(mspass_object)
@@ -205,7 +218,7 @@ class Database(pymongo.database.Database):
             update = False
             if mspass_object['storage_mode'] == "gridfs":
                 update = True
-            mspass_object['gridfs_wf_id'] = self._save_data3C_to_gridfs(mspass_object,
+            mspass_object['gridfs_id'] = self._save_data3C_to_gridfs(mspass_object,
                                                                         update=update)  # fixme need testing
         elif storage_mode == "url":
             pass  # todo for future
@@ -215,62 +228,47 @@ class Database(pymongo.database.Database):
 
         # 2. save history
         history_col = self['history']
+        history_binary = pickle.dumps(mspass_object.get_nodes()) # fixme verifying
+        if 'history_id' in mspass_object:
+            # overwrite history
+            filter = {'_id': bson.objectid.ObjectId(mspass_object['history_id'])}
+            history_col.find_one_and_replace(filter, {'history_binary': history_binary})
+        else:
+            id = history_col.insert_one({'history_binary': history_binary}).inserted_id
+            mspass_object['history_id'] = str(id)
 
         # 3. save error logs
-        id_list = self._save_elog(mspass_object['wf_id', mspass_object.elog])
-        mspass_object['elog_ids'].appen(id_list)
+        mspass_object['elog_ids'].append(self._save_elog(mspass_object['wf_id'], mspass_object.elog))
+        # elog ids will be updated in the wf col when saving metadata
 
         # 4. save metadata
-        self.update_metadata(mspass_object, metadata_mode, exclude, collection, metadata_def)
+        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_def)
 
-    def update_metadata(self, metadata_dict, metadata_mode, exclude=None, collection='wf', metadata_def=None):
-        update_all = False
-        if metadata_mode == 'updateall':
-            update_all = True
-        self.metadata_def.clear_aliases(metadata_dict)
-
+    def update_metadata(self, metadata_dict, update_all=False, exclude=None, collection='wf', metadata_def=None):
         col = self[collection]
         insert_dict = {}
-        read_metadata_def = self.metadata_def if not metadata_def else metadata_def
-        skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_id', 'source_lat', 'source_lon',
-                     'source_depth', 'source_time', 'source_id', 'chan', 'hang', 'vang', 'chan_id',
-                     'net', 'sta', 'loc']
+
+        update_metadata_def = self.metadata_def if not metadata_def else metadata_def
+        update_metadata_def.clear_aliases(metadata_dict)
+
+        # _id and attributes in other collections
+        skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
+                     'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
+                     'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
+                     'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
         for k in metadata_dict:
-            if read_metadata_def.is_defined(k) and (k not in skip_list):
-                if type(metadata_dict[k]) != read_metadata_def.type(k):
+            if k in exclude or k in skip_list:
+                continue
+            if update_metadata_def.is_defined(k):
+                if type(metadata_dict[k]) != update_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
-                if not read_metadata_def.readonly(k) or update_all:
+                if not update_metadata_def.readonly(k):
                     insert_dict[k] = metadata_dict[k]
+            elif update_all:
+                insert_dict[k] = metadata_dict[k]
 
         filter = {'_id': bson.objectid.ObjectId(metadata_dict['wf_id'])}
-        col.update_one(filter, insert_dict)
-
-        if update_all:
-            # site
-            insert_dict = {}
-            filter = {'_id': bson.objectid.ObjectId(metadata_dict['site_id'])}
-            insert_dict['lat'] = metadata_dict['site_lat']
-            insert_dict['lon'] = metadata_dict['site_lon']
-            insert_dict['elev'] = metadata_dict['site_elev']
-            self['site'].update_one(filter, insert_dict)
-
-            # source
-            insert_dict = {}
-            filter = {'_id': bson.objectid.ObjectId(metadata_dict['source_id'])}
-            insert_dict['lat'] = metadata_dict['source_lat']
-            insert_dict['lon'] = metadata_dict['source_lon']
-            insert_dict['depth'] = metadata_dict['source_depth']
-            insert_dict['starttime'] = metadata_dict['source_time'] # fixme
-            self['source'].update_one(filter, insert_dict)
-
-            # channel
-            if 'channel_id' in metadata_dict:
-                insert_dict = {}
-                filter = {'_id': bson.objectid.ObjectId(metadata_dict['channel_id'])}
-                insert_dict['chan'] = metadata_dict['chan']
-                insert_dict['hang'] = metadata_dict['hang']
-                insert_dict['vang'] = metadata_dict['vang']
-                self['channel'].update_one(filter, insert_dict)
+        col.update_one(filter, {'$set': insert_dict})
 
     def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
         """
@@ -587,7 +585,7 @@ class Database(pymongo.database.Database):
         Return:  List of ObjectID of inserted
         """
         n = elog.size()
-        if (n == 0):
+        if n == 0:
             return
         errs = elog.get_error_log()
         jobid = elog.get_job_id()
@@ -601,8 +599,8 @@ class Database(pymongo.database.Database):
             docentry['process_id'] = x.p_id
             docentry['wf_id'] = oidstr
             try:
-                oid = self[collection].insert_one(docentry)  # fixme problem
-                oidlst.append(oid)
+                oid = self[collection].insert_one(docentry).inserted_id  # fixme problem
+                oidlst.append(str(oid))
             except:
                 raise RuntimeError("Failure inserting error messages to elog collection")
         return oidlst
@@ -666,8 +664,6 @@ class Database(pymongo.database.Database):
             fh.write(ub)
         di = os.path.dirname(os.path.realpath(fname))
         dfile = os.path.basename(os.path.realpath(fname))
-        d.put('dir', di)
-        d.put('dfile', dfile)
         d.put('foff', foff)
 
     def _save_data3C_to_gridfs(self, d, fscol='gridfs_wf', update=False):
