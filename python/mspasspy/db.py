@@ -64,23 +64,10 @@ def _tmatrix_from_md(md):
     return A
 
 def _sync_metadata(d):
-    if(d.tref == TimeReferenceType.Relative):
+    if d.tref == TimeReferenceType.Relative:
         d.put_string('time_standard','relative')
     else:
         d.put_string('time_standard','UTC')
-    # Because of inheritance we can use this same function for both TimeSeries
-    # and Seismogram objects
-    if(isinstance(d,Seismogram)):
-        U=d.transformation_matrix
-        d.put_double('U11',U[0,0])
-        d.put_double('U12',U[0,1])
-        d.put_double('U13',U[0,2])
-        d.put_double('U21',U[1,0])
-        d.put_double('U22',U[1,1])
-        d.put_double('U23',U[1,2])
-        d.put_double('U31',U[2,0])
-        d.put_double('U32',U[2,1])
-        d.put_double('U33',U[2,2])
 
 class Database(pymongo.database.Database):
     """
@@ -121,24 +108,14 @@ class Database(pymongo.database.Database):
         md = {}
         wf_keys = ['npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'history_id', 'storage_mode',
                    'gridfs_id', 'url', 'dir', 'dfile', 'foff', 'site_id', 'source_id', 'chan_id']
-        # fixme type?
 
         for k in object:
             if k == '_id':
                 md['wf_id'] = str(object[k])
                 continue
-            if k == 'elog_ids':
-                md['elog_ids'] = [str(id) for id in object[k]]
-                continue
-            if k in wf_keys:
-                if isinstance(object[k], bson.objectid.ObjectId):
-                    md[k] = str(object[k])
-                else:
-                    md[k] = object[k]
-            else:
-                md[k] = object[k] # fixme issue gary proposed
+            md[k] = object[k]
 
-        site = self['site'].find_one({'_id': object['site_id']})
+        site = self['site'].find_one({'_id': bson.objectid.ObjectId(object['site_id'])})
         md['site_lat'] = site['lat']
         md['site_lon'] = site['lon']
         md['site_elev'] = site['elev']
@@ -148,14 +125,14 @@ class Database(pymongo.database.Database):
         md['sta'] = site['sta']
         md['loc'] = site['loc']
 
-        source = self['site'].find_one({'_id': object['source_id']})
+        source = self['site'].find_one({'_id': bson.objectid.ObjectId(object['source_id'])})
         md['source_lat'] = source['lat']
         md['source_lon'] = source['lon']
         md['source_depth'] = source['depth']
         md['source_time'] = source['time']
 
         if object['type'] == 'TimeSeries':
-            channel = self['site'].find_one({'_id': object['channel_id']})
+            channel = self['site'].find_one({'_id': bson.objectid.ObjectId(object['channel_id'])})
             md['chan'] = channel['chan']
             md['channel_hang'] = channel['hang']
             md['channel_vang'] = channel['vang']
@@ -172,15 +149,9 @@ class Database(pymongo.database.Database):
                 if type(md[k]) != read_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
 
-        # mspass_object.npts = mspass_object['npts']
-        # mspass_object.dt = mspass_object['dt']
-        # mspass_object.tref = mspass_object['tref']
-        # mspass_object.starttime = mspass_object['starttime']
-        # if 'tmatrix' in mspass_object:
-        #     mspass_object.tmatrix = mspass_object['tmatrix']
         if object['dtype'] == 'TimeSeries':
             bts = BasicTimeSeries()
-            mspass_object = CoreTimeSeries(bts, md)
+            mspass_object = TimeSeries(CoreTimeSeries(bts, md))
         elif object['dtype'] == 'Seismogram':
             mspass_object = Seismogram(CoreSeismogram(md, load_data=False))
         else:
@@ -191,7 +162,7 @@ class Database(pymongo.database.Database):
         if mode == "file":
             self._read_data_from_dfile(mspass_object)
         elif mode == "gridfs":
-            mspass_object = self.cleanup_read_data3C_from_gridfs(mspass_object)  # fixme need testing
+            self._read_data_from_gridfs(mspass_object)
         elif mode == "url":
             pass  # todo for future
         else:
@@ -199,10 +170,11 @@ class Database(pymongo.database.Database):
 
         # 3.load history
         if load_history:
-            res = self['history'].find_one({'_id': object['history_id']})
+            res = self['history'].find_one({'_id': bson.objectid.ObjectId(object['history_id'])})
             mspass_object.load_history(pickle.loads(pickle.dumps(res['history_binary'])))
 
         mspass_object.live = True
+        mspass_object.clear_modified() # fixme is it ok to put this here?
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
@@ -215,13 +187,9 @@ class Database(pymongo.database.Database):
                 mspass_object['dir'] = dir
             self._save_data_to_dfile(mspass_object)
         elif storage_mode == "gridfs":
-            update = False
-            if mspass_object['storage_mode'] == "gridfs":
-                update = True
-            mspass_object['gridfs_id'] = self._save_data3C_to_gridfs(mspass_object,
-                                                                        update=update)  # fixme need testing
+            self._save_data_to_gridfs(mspass_object)
         elif storage_mode == "url":
-            pass  # todo for future
+            pass
         else:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
         mspass_object['storage_mode'] = storage_mode
@@ -238,335 +206,40 @@ class Database(pymongo.database.Database):
             mspass_object['history_id'] = str(id)
 
         # 3. save error logs
-        mspass_object['elog_ids'].append(self._save_elog(mspass_object['wf_id'], mspass_object.elog))
+        self._save_elog(mspass_object)
         # elog ids will be updated in the wf col when saving metadata
 
         # 4. save metadata
         self.update_metadata(mspass_object, update_all, exclude, collection, metadata_def)
 
-    def update_metadata(self, metadata_dict, update_all=False, exclude=None, collection='wf', metadata_def=None):
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection='wf', metadata_def=None):
         col = self[collection]
         insert_dict = {}
+        _sync_metadata(mspass_object) # fixme we better don't do this
 
         update_metadata_def = self.metadata_def if not metadata_def else metadata_def
-        update_metadata_def.clear_aliases(metadata_dict)
+        update_metadata_def.clear_aliases(mspass_object)
 
-        # _id and attributes in other collections
+        # skip _id and attributes in other collections
         skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
                      'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
                      'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
                      'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
-        for k in metadata_dict:
+        for k in mspass_object:
             if k in exclude or k in skip_list:
                 continue
             if update_metadata_def.is_defined(k):
-                if type(metadata_dict[k]) != update_metadata_def.type(k):
+                if type(mspass_object[k]) != update_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
                 if not update_metadata_def.readonly(k):
-                    insert_dict[k] = metadata_dict[k]
+                    insert_dict[k] = mspass_object[k]
             elif update_all:
-                insert_dict[k] = metadata_dict[k]
+                insert_dict[k] = mspass_object[k]
 
-        filter = {'_id': bson.objectid.ObjectId(metadata_dict['wf_id'])}
+        filter = {'_id': bson.objectid.ObjectId(mspass_object['wf_id'])}
         col.update_one(filter, {'$set': insert_dict})
 
-    def load3C(self, oid, mdef = MetadataDefinitions(), smode = 'gridfs'):
-        """
-        Loads a Seismogram object from MongoDB based on ObjectId.
-
-        This is a core reader for Seismogram objects with MongoDB.  The unique
-        document in the wf collection is selected by ObjectID (oid arg).
-        That oid is used to select a unique waveform document.
-        Samples can be read from system files or from gridfs.
-
-        A string attribute extracted from the database with the key 'storage_mode' is
-        normally used to tell the mode to use to fetch the sample
-        data.   If that attribute is not found the method defined in the smode
-        argument will be attempted.   When smode is gridfs, the method will
-        load the Metadata from the wf collection which must include the string attribute
-        wf_id.   It access the sample data from the gridfs_wf
-        collection after creating a buffer space for the sample data.
-        when smod is file the sample data is read by a C++ function that
-        uses a raw binary read.
-
-        This method was designed to never abort.  If the read failed the
-        boolean attribute of Seismogram called 'live' will be set false.
-        Both fatal and nonfatal errors will be posted to the elog member of
-        Seismogram.  Callers should test live and handle fatal and nonfatal
-        errors as appropriate to the algorithm.
-
-        :param oid: is the ObjectId in the wf collection to be read
-        :param mdef: is a MetadataDefinitions object used to validate types stored
-            in the database against what is expected for a given name.
-            In reading this is a necessary cross check to reduce errors
-            from incorrect expectations of the contents of a name:value pair
-            found in the document associated with this waveform.
-        :param smode: sets the expected method for saving sample data.
-            (Metadata are normally stored in a single document of the wf collection)
-            Supported values at present are 'file' and 'gridfs' matching
-            allowed values for the storage_mode attribute.
-
-        :Returns:  Seismogram data object loaded.
-        :rtype: Seismogram
-        :raise:  May throw a RuntimeError exception in one of several
-        error conditions.   Nonfatal errors will be posted to the error
-        log on the returned object.
-        """
-        try:
-            wfcol=self.wf
-            findkey={'_id':oid}
-            pymd=wfcol.find_one(findkey)
-            # We create a temporary ErrorLogger object to hold any
-            # errors encountered in the conversion cross check agains
-            # MetadataDefinitions
-            elogtmp=ErrorLogger()
-            md=dict2Metadata(pymd,mdef,elogtmp)
-            mode=smode
-            try:
-                smtest=md.get_string('storage_mode')
-                mode=smtest
-                if(not ((smtest=='gridfs')or(smtest=='file'))):
-                    mode=smode
-                    elogtmp.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "Required attribute storage_mode has invalid value=" + smtest \
-                        + "Using default of "+smode+" passed by argument smode\n",
-                        ErrorSeverity.Complaint)
-            except:
-                elogtmp.log_error(sys._getframe().f_code.co_name,
-                    traceback.format_exc() \
-                    + "Required attribute storage_mode not found in document read from db\n" \
-                    + "Using default of " + smode + " passed by argument smode\n",
-                    ErrorSeverity.Complaint)
-            if(mode=='gridfs'):
-                # Like this function this one should never throw an exception
-                # but only post errors to d.elog
-                d=self._read_data3C_from_gridfs(md,elogtmp)
-                return d
-            else:
-                try:
-                    # This C++ constructor can fail for a variety of reasons
-                    # but all return a RuntimeError exception.  I uses
-                    # a generic catch to be safe.  I would like
-                    # to be able to retrieve the what string for the std::exception
-                    # to which a RuntimeError is a subclass,
-                    # but that doesn't seem possible.  To fix this
-                    # I believe we would need to implement a custom exception
-                    # in pybind11
-                    d=Seismogram(md)
-                    d.elog=elogtmp
-                    return d
-                except:
-                    derr=Seismogram()
-                    derr.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "Failure in file based constructor\n"+
-                        "Most likely problem is that dir and/or defile are invalid\n",
-                        ErrorSeverity.Invalid)
-                    return derr
-
-        except:
-            # Should only land here for an unexpected exception.  To
-            # be consistent with this being equivalent to a noexcept function
-            # in C++ we create an empty Seismogram and post message to
-            # it's error log.
-            derr=Seismogram()
-            derr.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "Unexpected exception - debug required for a bug fix",
-                ErrorSeverity.Invalid)
-            return derr
-
-    def save3C(self, d, mdef = MetadataDefinitions(), smode="gridfs", mmode="save"):
-            """
-            Save mspass::Seismogram object in MongoDB.
-
-            This is a core method to save Seismogram objects in MongoDB.   It uses a
-            feature in the C library (MongoDBConverter) along with capabilities built
-            into the data object to add two important features:  (1) we can do pure
-            updates to database attributes for pure Metadata procedures as well as full
-            writes of new data, and (2) Seismogram has an error log feature that is
-            dumped to a separate document (elog) if it has any entries.   Any data
-            with sever errors are silently dropped assuming the user will use the
-            error log document to backtrack problems.
-
-            This method will immediately attempt to
-            open a connection to the wf and elog collections.  An assumption of
-            that algorithm is that doing so is lightweight and the simplification of
-            a single argument is preferable to requiring two args that have to be
-            checked for consistency.  If you don't want to clobber an existing
-            database just create an empty scratch database before calling this
-            method for the first time.
-
-            :param d: Seismogram object to be saved.  Not if d is marked dead (live false)
-                the method attempts to write an entry in elog to save the error
-                messages posted for that seismogram.
-            :param mdef: is a MetadataDefinitions object for schema used by d
-            :param smode: mnemonic for SamplelMODE.   Options are currently supported:
-            (1) 'file' - use the dir and dfile attributes to write sample
-                data as a raw dump with fwrite.  File is ALWAYS appended so user
-                can either change dir and/or defile and write to a new file or
-                append to the parent data.   The method will fail if dir or
-                dfile are not defined in this mode.
-            (2) 'gridfs' - (default) data are stored internally in MongoDB's gridfs system
-            (3) 'unchanged' - do not save the data.  This mode is required when mmode
-                is set to updatemd (used for pure Metadata manipulations for efficiency)
-            :param mmode: mnemonic for MetadataMODE.   Supported options are:
-            (1) 'save' - contents are saved dropping all marked readonly (default)
-            (2) 'saveall' - all Metadata attributes are saved even if marked readonly
-                (most useful for temporary data saved inside a job stream)
-            (3) 'updatemd' - run an update to the document of Metadata that have
-                changed.  Nothing else is altered in this case. If smode is not set
-                unchanged the method will throw a RuntimeError exception in
-                the mode.  Similarly, if the ObjectID was set invalid, which is
-                used internally whenever sample data are altered, the method will
-                abort with a RuntimeError exception.
-            (4) 'updateall' - both Metadata and sample data will be updated.  Note
-                this mode should not be used if smode is set to 'file' as it is
-                nearly guaranteed to create inaccessible holes in files.  A
-                warning message is posted in this situation, but the program
-                will blunder on.
-
-            :return: Number of errors posted to ErrorLogger and saved in the database
-            :rtype: integer
-            :raise: should be surrounded by a RuntimeError exception handler.  The method
-                can abort with several illegal argument combinations
-            """
-            # First we do a series of sanity checks to avoid writing garbage
-            error_count=0
-            try:
-                if( not ((smode=='file') or (smode=='gridfs') or (smode=='unchanged'))):
-                    raise RuntimeError('Illegal value for smode = ' + smode)
-                if( not ((mmode=='save') or (mmode=='saveall') or (mmode=='updatemd')
-                or (mmode=='updateall') ) ):
-                    raise RuntimeError('Illegal value for mmode = ' + mmode)
-                if( (mmode=='updatemd') and (smode=='unchanged')):
-                    raise RuntimeError('Illegal combination of mmode and smode')
-                if( (mmode=='updateall')and(smode=='file')):
-                    d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + 'mmode set to updateall for file mode output\n'\
-                        + 'This may cause stranded data in existing files\n'\
-                        + 'Consider using smode set to gridfs', ErrorSeverity.Informational)
-                    error_count+=1
-            except RuntimeError:
-                raise
-            try:
-                # Now open the wf collections
-                wfcol=self.wf
-                if(d.live):
-                    #Make sure the stored attributes in a Seismogram are consistent
-                    #synced with Metadata as when we save to the database we assume
-                    #use the Metadata attributes to build the update document.
-                    _sync_metadata(d)
-                    if( (mmode=='save') or (mmode=='saveall') ):
-                        if(smode=='file'):
-                            foff = self._save_data3C_to_dfile(d)
-                            if(foff == -1):
-                                error_count += 1
-                                return error_count
-                            d.put_long('foff',foff)
-                            d.put_string('storage_mode','file')
-                        elif(smode=='gridfs'):
-                            fileoid=self._save_data3C_to_gridfs(d)
-                            d.put_string('gridfs_wf_id',str(fileoid))
-                            d.put_string('storage_mode','gridfs')
-                        updict=d.todict()
-                        if(mmode=='save'):
-                            for key in list(updict):
-                                if(not mdef.writeable(key)):
-                                    del updict[key]
-                        # ObjectId is dropped for now, but may want to save str representation
-                        newid=wfcol.insert_one(updict).inserted_id
-                        # Because we trap condition of an invalid mmode we can do just an else instead of This
-                        #elif( (mmode=='updatemd') or (mmode=="updateall")):
-                        #
-                        # insert_one creates a new copy so we need to post the
-                        # new ObjectId
-                        d.put_string('wf_id',str(newid))
-                    else:
-                        # Make sure the oid string is valid
-                        oid=bson.objectid.ObjectId()
-                        try:
-                            oidstr=d.get_string('wf_id')
-                            oid=bson.objectid.ObjectId(oidstr)
-                        except RuntimeError:
-                            d.elog.log_error(sys._getframe().f_code.co_name,
-                                traceback.format_exc() \
-                                + "Error in attempting an update\n" \
-                                + "Required key wf_id, which is a string representation of parent ObjectId, not found\n" \
-                                + "Cannot peform an update - updated data will not be saved",
-                                ErrorSeverity.Invalid)
-                            error_count += 1
-                            return error_count
-                        except bson.errors.InvalidId:
-                            d.elog.log_error(sys._getframe().f_code.co_name,
-                                traceback.format_exc() \
-                                + "Error in attempting an update\n" \
-                                + "ObjectId string = " + oidstr + " is not a valid ObjectId string\n" \
-                                + "Cannot perform an update - this data will be not be saved",
-                                ErrorSeverity.Invalid)
-                            error_count+=1
-                            return error_count
-                        else:
-                            # assume oid is valid, maybe should do a find_one first but for now handle with exception
-                            updict=d.todict()
-                            if(mmode=='updatemd'):
-                                for key in list(updict):
-                                    if(not mdef.writeable(key)):
-                                        del updict[key]
-                            if(len(updict)>0):
-                                try:
-                                    ur=wfcol.update_one({'_id': oid},{'$set':updict})
-                                except:
-                                    # This perhaps should be a fatal error
-                                    d.elog.log_error(sys._getframe().f_code.co_name,
-                                        traceback.format_exc() \
-                                        + "Metadata update operation failed with MongoDB\n" \
-                                        + "All parts of this Seismogram will be dropped",
-                                        ErrorSeverity.Invalid)
-                                    error_count+=1
-                                    return error_count
-                                # This silently skips case when no Metadata were modified
-                                # That situation would be common if only the sample
-                                # data were changed and  no metadata operations
-                                # were performed
-                                if(ur.modified_count <=0):
-                                    emess = "metadata attribute not changed\n "
-                                    d.elog.log_error(sys._getframe().f_code.co_name,
-                                        traceback.format_exc() + emess,
-                                        ErrorSeverity.Informational)
-                                    error_count+=1
-                            if(mmode=="updateall"):
-                                if(smode=='file'):
-                                    self._save_data3C_to_dfile(d)
-                                elif(smode=='gridfs'):
-                                #BROKEN - this needs to be changed to an update mode
-                                # Working on more primitives first, but needs to be fixed
-                                    self._save_data3C_to_gridfs(d,update=True)
-                                else:
-                                    if(not(smode=='unchanged')):
-                                        d.elog.log_error(sys._getframe().f_code.co_name,
-                                            traceback.format_exc() \
-                                            + "Unrecognized value for smode = " \
-                                            + smode + " Assumed to be unchanged\n" \
-                                            + "That means only Metadata for these data were saved and sample data were left unchanged",
-                                            ErrorSeverity.Suspect)
-                                        error_count+=1
-            except:
-                # Not sure what of if update_one can throw an exception.  docstring does not say
-                d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "something threw an unexpected exception",
-                        ErrorSeverity.Invalid)
-                error_count+=1
-            # always save the error log.  Done before exit in case any of the
-            # python functions posted errors
-            oidstr=d.get_string('wf_id')
-            self._save_elog(oidstr,d.elog)
-            return error_count
-
-    def _save_elog(self, oidstr, elog, collection='error_logs'):
+    def _save_elog(self, data, collection='error_logs'):
         """
         Save error log for a data object.
 
@@ -584,6 +257,8 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
+        oidstr = data['wf_id']
+        elog = data.elog
         n = elog.size()
         if n == 0:
             return
@@ -598,12 +273,11 @@ class Database(pymongo.database.Database):
             docentry['error_message'] = x.message
             docentry['process_id'] = x.p_id
             docentry['wf_id'] = oidstr
-            try:
-                oid = self[collection].insert_one(docentry).inserted_id  # fixme problem
-                oidlst.append(str(oid))
-            except:
-                raise RuntimeError("Failure inserting error messages to elog collection")
-        return oidlst
+            oid = self[collection].insert_one(docentry).inserted_id  # fixme problem
+            oidlst.append(str(oid))
+        if not data['elog_ids']:
+            data['elog_ids'] = []
+        data['elog_ids'].append(oidlst)
 
     @staticmethod
     def _read_data_from_dfile(d):
@@ -664,9 +338,11 @@ class Database(pymongo.database.Database):
             fh.write(ub)
         di = os.path.dirname(os.path.realpath(fname))
         dfile = os.path.basename(os.path.realpath(fname))
+        d.put('dir', di)
+        d.put('dfile', dfile)
         d.put('foff', foff)
 
-    def _save_data3C_to_gridfs(self, d, fscol='gridfs_wf', update=False):
+    def _save_data_to_gridfs(self, d):
         """
         Save a Seismogram object sample data to MongoDB gridfs_wf collection.
 
@@ -682,10 +358,6 @@ class Database(pymongo.database.Database):
         :param d: is the Seismogram to be saved
         :param fscol: is the gridfs collection name to save the data in
             (default is 'gridfs_wf')
-        :param update: is a Boolean. When true the existing sample data will be
-            deleted and then replaced by the data in d. When false (default)
-            the data will be saved an given a new ObjectId saved to
-            d with key gridfs_wf_id.
         :return: object_id of the document used to store the data in gridfs
             -1 if something failed.  In that condition a generic error message
             is posted to elog.    Caller should dump elog only after
@@ -693,23 +365,19 @@ class Database(pymongo.database.Database):
         :raise: Should never throw an exception, but caller should test and save
         error log if it is not empty.
         """
-        gfsh = gridfs.GridFS(self, collection=fscol)
-        if (update):
-            ids = d.get_string('gridfs_wf_id')
-            oldid = bson.objectid.ObjectId(ids)
-            if (gfsh.exists(oldid)):
-                gfsh.delete(oldid)
+        gfsh = gridfs.GridFS(self)
+        ids = d.get_string('gridfs_id')
+        oid = bson.objectid.ObjectId(ids)
+        if gfsh.exists(oid):
+            gfsh.delete(oid)
         if isinstance(d, Seismogram):
             ub = bytes(d.data)
         else:
             ub = bytes(np.array(d.data))
-        # pickle dumps returns its result as a byte stream - dump (without the s)
-        # used in file writer writes to a file
         file_id = gfsh.put(pickle.dumps(ub))
-        d.put_string('gridfs_wf_id', str(file_id))
-        return file_id
+        d.put_string('gridfs_id', str(file_id))
 
-    def _read_data3C_from_gridfs(self, md, elogtmp=ErrorLogger(), fscol='gridfs_wf'):
+    def _read_data_from_gridfs(self, d):
         """
         Load a Seismogram object stored as a gridfs file.
 
@@ -747,114 +415,25 @@ class Database(pymongo.database.Database):
         """
         # First make sure we have a valid id string.  No reason to procede if
         # not the case
-        try:
-            idstr=md.get_string('gridfs_wf_id')
-        except:
-            elogtmp.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "Required attribute gridfs_wf_id is not defined - null Seismogram returned",
-                ErrorSeverity.Invalid)
-            dbad=Seismogram()
-            dbad.elog=elogtmp
-            return dbad
-        try:
-            dataid=bson.objectid.ObjectId(idstr)
-        except bson.errors.InvalidId:
-            d=Seismogram()
-            d.elog=elogtmp
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "ObjectId = " + idstr + " appears to not be defined a valid objectid",
-                ErrorSeverity.Invalid)
-            return d
-        try:
-            # Now we need to build an empty BasicTimeSeries object to be used
-            # to construct our working Seismogram
-            bts=BasicTimeSeries()
-            bts.ns=md.get_long('npts')
-            bts.t0=md.get_double('starttime')
-            bts.dt=md.get_double('delta')
-        except RuntimeError:
-            d=Seismogram()
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "One of required attributes (npts, starttime, and delta) were not defined",
-                ErrorSeverity.Invalid)
-            return d
-        d=Seismogram(bts,md,elogtmp)
-        # Before finishing we have to handle the unusual issue in mspass
-        # of handling relative and absolute time.  This is complicated by
-        # needing the distinction been data that were born relative versus
-        # becoming relative from absolute from a time shift.   This section
-        # handles that in a robust way.   First, if the Metadata extracted from
-        # MongoDB don't have the time standard defined, we assume UTC.
-        try:
-            trefstr=md.get_string('time_standard')
-            if(trefstr=='relative'):
-                d.tref=TimeReferenceType.relative
-                try:
-                    t0shift=d.get_double('t0_shift')
-                    d.force_t0_shift(t0shift)
-                except:
-                    d.elog.log_error(sys._getframe().f_code.co_name,
-                        traceback.format_exc() \
-                        + "read_data3C_from_gridfs(WARNING):  " \
-                        + "Data are marked relative but t0_shift is not defined",
-                        ErrorSeverity.Suspect)
-        except RuntimeError:
-            d.tref=TimeReferenceType.UTC
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "string attribute time_standard was not defined - defaulting to UTC",
-                ErrorSeverity.Complaint)
-
-        else:
-            # we intentionally are loose on what trefstr is - default to utc this way
-            d.tref=TimeReferenceType.UTC
-        # finally need to deal with the transformation matrix
-        try:
-            A=_tmatrix_from_md(md)
-            d.transformation_matrix = A
-        except  RuntimeError:
-            Iden=dmatrix(3,3)
-            Iden.zero()
+        dataid = bson.objectid.ObjectId(d.get_string('gridfs_id'))
+        gfsh = gridfs.GridFS(self)
+        fh = gfsh.get(file_id=dataid)
+        ub = pickle.load(fh)
+        fmt = "@%dd" % int(len(ub)/8)
+        x = struct.unpack(fmt, ub)
+        if isinstance(d, TimeSeries):
+            d.data = DoubleVector(x)
+        elif isinstance(d, Seismogram):
+            if len(x) != (3 * d['npts']):
+                emess = "Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
+                        % (len(x), (3 * d['npts']))
+                raise ValueError(emess)
+            d.data = dmatrix(3, d['npts'])
             for i in range(3):
-                Iden[i,i]=1.0
-            d.transformation_matrix = A
-            d.elog.log_error(sys._getframe().f_code.co_name,
-                traceback.format_exc() \
-                + "Metadata extracted from database are missing transformation matrix definition\n" +
-                "Defaulting to identity matrix",ErrorSeverity.Suspect)
-        # Now we actually retrieve the sample data.
-        gfsh=gridfs.GridFS(self,collection=fscol)
-        # This retrieves only a handle to the file object matching ObjectId=dataid
-        # This probably needs an error handler, but the documentation does not
-        # make it clear what happens if the return is null
-        fh=gfsh.get(file_id=dataid)
-        ub=pickle.load(fh)
-        # this sets the format string in the obscure way for struct to
-        # match total number of data points.  These are converted to
-        # a tuple with that many doubles
-        fmt="@%dd" % int(len(ub)/8)
-        x=struct.unpack(fmt,ub)
-        # Validate sizes. For now we post a message making the data invalid
-        # and set live false if there is a size mismatch.
-        if len(x) == (3 * d.ns):
-            d.data = dmatrix(3, d.ns)
-            ii = 0
-            for i in range(3):
-                for j in range(d.ns):
-                    d.data[i, j] = x[ii]
+                for j in range(d['npts']):
+                    d.data[i, j] = x[i * d['npts'] + j]
         else:
-            emess = "Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
-                    % (len(x), (3 * d.ns))
-            raise ValueError(emess)
-        # Necessary step for efficiency.  Seismogram constructor here
-        # incorrectly marks data copied form metadata object as changed
-        # This could lead to unnecessary database transaction with updates
-        d.clear_modified()
-        return d
-
+            raise TypeError("only TimeSeries and Seismogram are supported")
 
 
 
