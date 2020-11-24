@@ -1,7 +1,3 @@
-import os
-
-from bson.objectid import ObjectId
-import gridfs
 import mongomock
 from mongomock.gridfs import enable_gridfs_integration
 import numpy as np
@@ -12,7 +8,7 @@ from mspasspy.ccore.seismic import Seismogram
 from mspasspy.ccore.utility import dmatrix
 from mspasspy.db import (Client,
                          Database)
-from mspasspy.io.seispp import index_data
+from mspasspy.util.seispp import index_data
 
 class TestClient():
     

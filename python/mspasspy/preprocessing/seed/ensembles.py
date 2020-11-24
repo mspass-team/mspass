@@ -12,7 +12,7 @@ from mspasspy.ccore.utility import (Metadata,
                                     )
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
 #from mspasspy.io.converter import Trace2TimeSeries
-from mspasspy.io.converter import Trace2TimeSeries
+from mspasspy.util.converter import Trace2TimeSeries
 
 def obspy_mseed_file_indexer(file):
     """

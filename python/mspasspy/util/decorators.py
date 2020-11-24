@@ -1,20 +1,10 @@
 from decorator import decorator
-import numpy as np
 
-from obspy.core.stream import Stream
-from obspy.core.trace import Trace, Stats
-
-from mspasspy.io.converter import (TimeSeries2Trace,
-                                   Seismogram2Stream,
-                                   TimeSeriesEnsemble2Stream,
-                                   SeismogramEnsemble2Stream,
-                                   Stream2Seismogram,
-                                   Trace2TimeSeries,
-                                   Stream2TimeSeriesEnsemble,
-                                   Stream2SeismogramEnsemble)
+from mspasspy.util.converter import (Stream2Seismogram,
+                                     Trace2TimeSeries)
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, TimeReferenceType
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.util import logging_helper
 
 

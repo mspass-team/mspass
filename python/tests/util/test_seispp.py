@@ -1,8 +1,7 @@
 import mongomock
-import pytest
 
 from mspasspy.db import Database
-from mspasspy.io.seispp import index_data
+from mspasspy.util.seispp import index_data
 
 def setup_function(function):
     client = mongomock.MongoClient('localhost')

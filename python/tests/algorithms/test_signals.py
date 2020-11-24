@@ -1,11 +1,8 @@
 import sys
-import pytest
 import obspy
 import obspy.signal.cross_correlation
 import numpy as np
-from obspy import UTCDateTime, read, Trace
-
-from mspasspy.ccore.seismic import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
+from obspy import UTCDateTime, read
 
 # module to test
 sys.path.append("python/tests")
@@ -14,9 +11,7 @@ sys.path.append("python/mspasspy/algorithms")
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
-                    get_live_seismogram_ensemble,
-                    get_stream,
-                    get_trace)
+                    get_live_seismogram_ensemble)
 
 from signals import (filter,
                      detrend,
@@ -24,20 +19,12 @@ from signals import (filter,
                      correlate,
                      correlate_template,
                      correlate_stream_template,
-                     correlation_detector,
                      templates_max_similarity,
                      xcorr_3c,
                      xcorr_max,
                      xcorr_pick_correction)
 
-from mspasspy.io.converter import (TimeSeries2Trace,
-                                   Seismogram2Stream,
-                                   TimeSeriesEnsemble2Stream,
-                                   SeismogramEnsemble2Stream,
-                                   Stream2Seismogram,
-                                   Trace2TimeSeries,
-                                   Stream2TimeSeriesEnsemble,
-                                   Stream2SeismogramEnsemble)
+from mspasspy.util.converter import (Trace2TimeSeries)
 
 def test_filter():
     ts = get_live_timeseries()
