@@ -1,4 +1,3 @@
-from obspy import read
 from obspy import UTCDateTime
 from obspy.clients.fdsn import Client
 
@@ -17,7 +16,6 @@ d = client.get_waveforms("IU", "ANMO", "00", "LH*", t, t + 60 * 60)
 
 from mspasspy.ccore import MetadataDefinitions
 from mspasspy.ccore import MDDefFormat
-import mspasspy.io.converter
 
 print("Loading MetadataDefinitions")
 mdef=MetadataDefinitions("obspy_namespace.pf",MDDefFormat.PF)

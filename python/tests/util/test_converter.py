@@ -1,35 +1,23 @@
-import pytest
 import numpy as np
 import obspy
 import bson.objectid
 import sys
 
 sys.path.append("python/tests")
-from helper import (get_live_seismogram,
-                    get_live_timeseries,
-                    get_live_timeseries_ensemble,
+from helper import (get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
 from mspasspy.ccore.utility import (dmatrix,
-                                    ErrorLogger,
-                                    MDtype,
-                                    Metadata,
-                                    MetadataDefinitions)
+                                    Metadata)
 from mspasspy.ccore.seismic import (DoubleVector,
                                     Seismogram,
-                                    TimeSeries,
-                                    TimeSeriesEnsemble,
-                                    SeismogramEnsemble)
-from mspasspy.io.converter import (dict2Metadata, 
-                                   Metadata2dict, 
-                                   TimeSeries2Trace, 
-                                   Seismogram2Stream, 
-                                   Trace2TimeSeries,
-                                   Stream2Seismogram,
-                                   TimeSeriesEnsemble2Stream,
-                                   Stream2TimeSeriesEnsemble,
-                                   SeismogramEnsemble2Stream,
-                                   Stream2SeismogramEnsemble)
+                                    TimeSeries)
+from mspasspy.util.converter import (dict2Metadata,
+                                     Metadata2dict,
+                                     TimeSeries2Trace,
+                                     Seismogram2Stream,
+                                     Trace2TimeSeries,
+                                     Stream2Seismogram)
 
 def setup_function(function):
     ts_size = 255    

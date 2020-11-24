@@ -1,14 +1,9 @@
-import numpy as np
-
 import obspy.signal.filter
 import obspy.signal.detrend
 import obspy.signal.cross_correlation
 import obspy.signal.interpolation
 import obspy.core.utcdatetime
-from obspy.core.stream import Stream
-from obspy.core.trace import Trace
 
-from mspasspy.util import logging_helper
 from mspasspy.util.decorators import (mspass_func_wrapper,
                                       mspass_func_wrapper_multi,
                                       timeseries_as_trace,
@@ -16,14 +11,8 @@ from mspasspy.util.decorators import (mspass_func_wrapper,
                                       timeseries_ensemble_as_stream,
                                       seismogram_ensemble_as_stream)
 
-from mspasspy.io.converter import (TimeSeries2Trace,
-                                   Seismogram2Stream,
-                                   TimeSeriesEnsemble2Stream,
-                                   SeismogramEnsemble2Stream,
-                                   Stream2Seismogram,
-                                   Trace2TimeSeries,
-                                   Stream2TimeSeriesEnsemble,
-                                   Stream2SeismogramEnsemble)
+from mspasspy.util.converter import (Stream2Seismogram,
+                                     Stream2TimeSeriesEnsemble)
 
 @mspass_func_wrapper
 @timeseries_as_trace

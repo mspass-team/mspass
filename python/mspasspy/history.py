@@ -1,7 +1,5 @@
 import pymongo
 
-from mspasspy.ccore.utility import AntelopePf
-from mspasspy.io.converter import Metadata2dict
 
 def get_jobid(db):
     """ 
