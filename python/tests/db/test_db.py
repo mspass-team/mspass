@@ -3,12 +3,21 @@ from mongomock.gridfs import enable_gridfs_integration
 import numpy as np
 import pymongo
 import pytest
+import sys
 
-from mspasspy.ccore.seismic import Seismogram
-from mspasspy.ccore.utility import dmatrix
-from mspasspy.db import (Client,
-                         Database)
+from mspasspy.ccore.seismic import Seismogram, TimeSeries
+from mspasspy.ccore.utility import dmatrix, ErrorSeverity
 from mspasspy.util.seispp import index_data
+from bson.objectid import ObjectId
+
+sys.path.append("python/tests")
+sys.path.append("python/mspasspy/db/")
+from database import Database
+from client import Client
+from helper import (get_live_seismogram,
+                    get_live_timeseries,
+                    get_live_timeseries_ensemble,
+                    get_live_seismogram_ensemble)
 
 class TestClient():
     
@@ -41,19 +50,19 @@ class TestDatabase():
         client = mongomock.MongoClient('localhost')
         Database.__bases__ = (mongomock.database.Database,)
         self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
-        index_data("python/tests/data/sample", self.db)
+        # index_data("python/tests/data/sample", self.db)
 
-        ts_size = 255    
+        npts = 255
         sampling_rate = 20.0
         s1 = Seismogram()
-        s1.data = dmatrix(3, ts_size)
+        s1.data = dmatrix(3, npts)
         for i in range(3):
-            for j in range(ts_size):
+            for j in range(npts):
                 s1.data[i, j] = np.random.rand()
         s1.live = True
         s1.dt = 1/sampling_rate
         s1.t0 = 0
-        s1.npts = ts_size
+        s1.npts = npts
         s1.put('net', 'IU')
 
         s2 = Seismogram(s1)
@@ -65,7 +74,7 @@ class TestDatabase():
         s1_file.put('dir', di)
         s1_file.put('dfile', dfile)
 
-        self.ts_size = ts_size
+        self.npts = npts
         self.sampling_rate = sampling_rate
         self.dir = di
         self.dfile = dfile
@@ -73,53 +82,48 @@ class TestDatabase():
         self.s1_file = s1_file
         self.s2 = s2
 
-    def teardown_class(self):
+    def test_save_elogs(self):
+        tmp_ts = get_live_timeseries()
+        tmp_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational) # multi elogs fix me
+        errs = tmp_ts.elog.get_error_log()
+        self.db._save_elog(tmp_ts)
+        assert len(tmp_ts['elog_ids']) != 0
+        for err, id in zip(errs, tmp_ts['elog_ids']):
+            res = self.db['error_logs'].find_one({'_id': ObjectId(id)})
+            assert res['algorithm'] == err.algorithm
+            assert res['error_message'] == err.message
+
+        # empty logs
+        tmp_ts = get_live_timeseries()
+        errs = tmp_ts.elog.get_error_log()
+        self.db._save_elog(tmp_ts)
+        assert len(tmp_ts['elog_ids']) == 0
+
+    def test_save_and_read_data(self):
+        tmp_seis = get_live_seismogram()
+        tmp_seis['dir'] = 'python/tests/data/'
+        tmp_seis['dfile'] = 'test_db_output'
+        self.db._save_data_to_dfile(tmp_seis)
+        tmp_seis_2 = Seismogram()
+        tmp_seis_2.npts = 255
+        tmp_seis_2['dir'] = tmp_seis['dir']
+        tmp_seis_2['dfile'] = tmp_seis['dfile']
+        tmp_seis_2['foff'] = tmp_seis['foff']
+        self.db._read_data_from_dfile(tmp_seis_2)
+        assert all(a.any() == b.any() for a,b in zip(tmp_seis.data, tmp_seis_2.data))
+
+    def test_save_and_read_gridfs(self):
+        tmp_seis = get_live_seismogram()
+        self.db._save_data_to_gridfs(tmp_seis)
+        tmp_seis_2 = Seismogram()
+        tmp_seis_2.npts = 255
+        tmp_seis_2['gridfs_id'] = tmp_seis['gridfs_id']
+        self.db._read_data_from_gridfs(tmp_seis_2)
+        assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
+
+    def tearup(self):
         pass
-        # os.remove('python/tests/tmp/tmp_db_Database.test')
 
-    def test_load3C(self):
-        pass
-
-    def test_save3C(self):
-        pass
-        # FIXME: When something threw an unexpected exception there is no garantee that 'wf_id' is already defined.
-        # with pytest.raises(RuntimeError, match=r".*value for smode.*"):
-        #     self.db.save3C(self.s1, smode='wrong')
-        # with pytest.raises(RuntimeError, match=r".*value for mmode.*"):
-        #     self.db.save3C(self.s1, mmode='wrong')
-        # with pytest.raises(RuntimeError, match=r".*mmode and smode.*"):
-        #     self.db.save3C(self.s1, smode='unchanged', mmode='updatemd')
-
-        # s1tmp = Seismogram(self.s1)
-        # assert self.db.save3C(s1tmp, mmode='save', smode='file') == 1
-        # assert 'missing dir' in s1tmp.elog.get_error_log()[0].message
-
-        # assert self.db.save3C(self.s1_file, mmode='save', smode='file') == 0
-        # assert self.db.wf.count_documents({"_id": ObjectId(self.s1_file.get('wf_id'))}) == 1
-        # doc1_file = self.db.wf.find({"_id": ObjectId(self.s1_file.get('wf_id'))})[0]
-        # assert os.path.realpath(os.path.join(doc1_file['dir'], doc1_file['dfile'])) \
-        #     == os.path.realpath(os.path.join(self.dir, self.dfile))
-        # assert doc1_file['npts'] == self.ts_size
-        # assert doc1_file['delta'] == 1/self.sampling_rate
-        # with pytest.raises(KeyError):
-        #     doc1_file['net']
-
-        # assert self.db.save3C(self.s1, mmode='save', smode='gridfs') == 0
-        # # FIXME: '_id' should not be used in the find method below. Need to fix the schema.
-        # assert self.db.wf.count_documents({"_id": ObjectId(self.s1.get('wf_id'))}) == 1
-        # doc1 = self.db.wf.find({"_id": ObjectId(self.s1.get('wf_id'))})[0]
-        # assert doc1['npts'] == self.ts_size
-        # assert doc1['delta'] == 1/self.sampling_rate
-        # with pytest.raises(KeyError):
-        #     doc1['net']
-        
-        # assert self.db.save3C(self.s2, mmode='saveall', smode='gridfs') == 0
-        # assert self.db.wf.count_documents({"_id": ObjectId(self.s2.get('wf_id'))}) == 1
-        # doc2 = self.db.wf.find({"_id": ObjectId(self.s2.get('wf_id'))})[0]
-        # assert doc2['npts'] == self.ts_size
-        # assert doc2['delta'] == 1/self.sampling_rate
-        # assert doc2['net'] == self.s2.get('net')
-
-        # assert self.db.save3C(self.s1_file, mmode='saveall', smode='unchanged') == 0
-        # doc1_file = self.db.wf.find({"_id": ObjectId(self.s1_file.get('wf_id'))})[0]
-        # assert doc1_file['net'] == self.s1_file.get('net')
+if __name__ == '__main__':
+    pass

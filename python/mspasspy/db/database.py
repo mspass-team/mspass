@@ -35,34 +35,6 @@ from obspy import Inventory
 from obspy import UTCDateTime
 from obspy import Catalog
 
-def _tmatrix_from_md(md):
-    """
-    Helper function to parse md to build and set a transformation matrix.
-
-    A Seismgogram object has an embedded transformation matrix that needs to
-    be set for the object to be properly defined.   In MsPASS we do that
-    through Metadata attributes loaded from MongoDB with special tags U11,U12, etc.
-    This function fetches the 9 numbers required to define such a matrix and
-    return them in a ccore.dmatrix object.
-
-    :param md:  Metadata assumed to contain U11, U12, etc. attribures
-
-    :return: 3x3 transformation matrix extracted from md attributes
-    :rtype: dmatrix
-    :raise:   Will throw a RuntimeError if any of the tmatrix attributes are not in md
-    """
-    A=dmatrix(3,3)
-    A[0,0]=md.get_double('U11')   # names have fortran indexing but dmatrix is C
-    A[1,0]=md.get_double('U21')
-    A[2,0]=md.get_double('U31')
-    A[0,1]=md.get_double('U12')
-    A[1,1]=md.get_double('U22')
-    A[2,1]=md.get_double('U32')
-    A[0,2]=md.get_double('U13')
-    A[1,2]=md.get_double('U23')
-    A[2,2]=md.get_double('U33')
-    return A
-
 def _sync_metadata(d):
     if d.tref == TimeReferenceType.Relative:
         d.put_string('time_standard','relative')
@@ -174,7 +146,7 @@ class Database(pymongo.database.Database):
             mspass_object.load_history(pickle.loads(pickle.dumps(res['history_binary'])))
 
         mspass_object.live = True
-        mspass_object.clear_modified() # fixme is it ok to put this here?
+        mspass_object.clear_modified()
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
@@ -205,6 +177,8 @@ class Database(pymongo.database.Database):
             id = history_col.insert_one({'history_binary': history_binary}).inserted_id
             mspass_object['history_id'] = str(id)
 
+        # create object id
+
         # 3. save error logs
         self._save_elog(mspass_object)
         # elog ids will be updated in the wf col when saving metadata
@@ -215,16 +189,20 @@ class Database(pymongo.database.Database):
     def update_metadata(self, mspass_object, update_all=False, exclude=None, collection='wf', metadata_def=None):
         col = self[collection]
         insert_dict = {}
-        _sync_metadata(mspass_object) # fixme we better don't do this
+        _sync_metadata(mspass_object)
 
         update_metadata_def = self.metadata_def if not metadata_def else metadata_def
-        update_metadata_def.clear_aliases(mspass_object)
+        update_metadata_def.clear_aliases(mspass_object) # fixme copy meta data
+        for k in mspass_object:
+            if not str(mspass_object[k]).strip():
+                mspass_object.clear(k)
 
         # skip _id and attributes in other collections
         skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
                      'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
                      'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
                      'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
+        # to do only update modified data
         for k in mspass_object:
             if k in exclude or k in skip_list:
                 continue
@@ -236,8 +214,12 @@ class Database(pymongo.database.Database):
             elif update_all:
                 insert_dict[k] = mspass_object[k]
 
-        filter = {'_id': bson.objectid.ObjectId(mspass_object['wf_id'])}
-        col.update_one(filter, {'$set': insert_dict})
+        if 'wf_id' not in mspass_object:
+            wf_id = str(col.insert_one(insert_dict).inserted_id)
+            mspass_object['wf_id'] = wf_id
+        else:
+            filter = {'_id': bson.objectid.ObjectId(mspass_object['wf_id'])}
+            col.update_one(filter, {'$set': insert_dict})
 
     def _save_elog(self, data, collection='error_logs'):
         """
@@ -257,30 +239,34 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
-        oidstr = data['wf_id']
+        # oidstr = data['wf_id']
+        # if not oidstr:
+        #     raise KeyError("waveform objectid is not found in data")
         elog = data.elog
         n = elog.size()
         if n == 0:
             return
         errs = elog.get_error_log()
         jobid = elog.get_job_id()
-        docentry = {'job_id': jobid}
         oidlst = []
         for i in range(n):
             x = errs[i]
+            docentry = {'job_id': jobid}
             docentry['algorithm'] = x.algorithm
             docentry['badness'] = str(x.badness)
             docentry['error_message'] = x.message
             docentry['process_id'] = x.p_id
-            docentry['wf_id'] = oidstr
-            oid = self[collection].insert_one(docentry).inserted_id  # fixme problem
+            # docentry['wf_id'] = oidstr # 4. fixme wf_id needed?
+            oid = self[collection].insert_one(docentry).inserted_id
             oidlst.append(str(oid))
-        if not data['elog_ids']:
+        if 'elog_ids' not in data:
             data['elog_ids'] = []
-        data['elog_ids'].append(oidlst)
+        data['elog_ids'].extend(oidlst)
 
     @staticmethod
     def _read_data_from_dfile(d):
+        if ('dir' not in d) or ('dfile' not in d) or ('foff' not in d):
+            raise KeyError("one of the keys: dir, dfile, foff is missing")
         di = d.get_string('dir')
         dfile = d.get_string('dfile')
         foff = d.get('foff')
@@ -289,9 +275,13 @@ class Database(pymongo.database.Database):
             fh.seek(foff)
             float_array = array('d')
             if isinstance(d, TimeSeries):
+                if not d.is_defined('npts'):
+                    raise KeyError("npts is not defined")
                 float_array.frombytes(fh.read(d.get('npts') * 8))
                 d.data = DoubleVector(float_array)
             elif isinstance(d, Seismogram):
+                if not d.is_defined('npts'):
+                    raise KeyError("npts is not defined")
                 float_array.fromstring(fh.read(d.get('npts') * 8 * 3))
                 print(len(float_array))
                 d.data = dmatrix(3, d.get('npts'))
@@ -318,17 +308,14 @@ class Database(pymongo.database.Database):
         the object d.   Caller should test for negative return and post the error
         to the database to help debug data problems.
         """
+        if ('dir' not in d) or ('dfile' not in d):
+            raise KeyError("one of dir, dfile is missing")
         di = d.get_string('dir')
         dfile = d.get_string('dfile')
         fname = os.path.join(di, dfile)
         os.makedirs(os.path.dirname(fname), exist_ok=True)
         with open(fname, mode='a+b') as fh:
             foff = fh.seek(0, 2)
-            # We convert the sample data to a bytearray (bytes is just an
-            # immutable bytearray) to allow raw writes.  This seems to works
-            # because u is a buffer object.   Seems a necessary evil because
-            # pybind11 wrappers and pickle are messy.  This seems a clean
-            # solution for a minimal cose (making a copy before write)
             if isinstance(d, TimeSeries):
                 ub = bytes(np.array(d.data))  # fixme DoubleVector
             elif isinstance(d, Seismogram):
@@ -366,10 +353,11 @@ class Database(pymongo.database.Database):
         error log if it is not empty.
         """
         gfsh = gridfs.GridFS(self)
-        ids = d.get_string('gridfs_id')
-        oid = bson.objectid.ObjectId(ids)
-        if gfsh.exists(oid):
-            gfsh.delete(oid)
+        if d.is_defined('gridfs_id'):
+            ids = d.get_string('gridfs_id')
+            oid = bson.objectid.ObjectId(ids)
+            if gfsh.exists(oid):
+                gfsh.delete(oid)
         if isinstance(d, Seismogram):
             ub = bytes(d.data)
         else:
@@ -415,6 +403,8 @@ class Database(pymongo.database.Database):
         """
         # First make sure we have a valid id string.  No reason to procede if
         # not the case
+        if not d.is_defined('gridfs_id'):
+            raise KeyError("gridfs_id is not defined")
         dataid = bson.objectid.ObjectId(d.get_string('gridfs_id'))
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=dataid)
@@ -424,6 +414,8 @@ class Database(pymongo.database.Database):
         if isinstance(d, TimeSeries):
             d.data = DoubleVector(x)
         elif isinstance(d, Seismogram):
+            if not d.is_defined('npts'):
+                raise KeyError("npts is not defined")
             if len(x) != (3 * d['npts']):
                 emess = "Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
                         % (len(x), (3 * d['npts']))
