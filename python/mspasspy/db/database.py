@@ -26,6 +26,7 @@ from mspasspy.ccore.seismic import (BasicTimeSeries,
                             TimeSeries,
                             DoubleVector)
 from mspasspy.ccore.utility import (MetadataDefinitions,
+                            Metadata,
                             dmatrix,
                             ErrorLogger,
                             ErrorSeverity)
@@ -34,12 +35,6 @@ from mspasspy.ccore.utility import (MetadataDefinitions,
 from obspy import Inventory
 from obspy import UTCDateTime
 from obspy import Catalog
-
-def _sync_metadata(d):
-    if d.tref == TimeReferenceType.Relative:
-        d.put_string('time_standard','relative')
-    else:
-        d.put_string('time_standard','UTC')
 
 class Database(pymongo.database.Database):
     """
@@ -177,49 +172,93 @@ class Database(pymongo.database.Database):
             id = history_col.insert_one({'history_binary': history_binary}).inserted_id
             mspass_object['history_id'] = str(id)
 
-        # create object id
+        new_insertion = False
+        if 'wf_id' not in mspass_object:
+            new_insertion = True
 
         # 3. save error logs
-        self._save_elog(mspass_object)
-        # elog ids will be updated in the wf col when saving metadata
+        self._save_elog(mspass_object) # elog ids will be updated in the wf col when saving metadata
 
         # 4. save metadata
         self.update_metadata(mspass_object, update_all, exclude, collection, metadata_def)
 
+        # 5. need to save the wf_id if the mspass_object is saved at the first time
+        if new_insertion:
+            col = self['error_logs']
+            for id in mspass_object['elog_ids']:
+                filter = {'_id': bson.objectid.ObjectId(id)}
+                col.update_one(filter, {'$set': {'wf_id': mspass_object['wf_id']}})
+
     def update_metadata(self, mspass_object, update_all=False, exclude=None, collection='wf', metadata_def=None):
+        if exclude is None:
+            exclude = []
         col = self[collection]
         insert_dict = {}
-        _sync_metadata(mspass_object)
 
+        self._sync_metadata_before_update(mspass_object)
+        copied_metadata = Metadata(mspass_object)
         update_metadata_def = self.metadata_def if not metadata_def else metadata_def
-        update_metadata_def.clear_aliases(mspass_object) # fixme copy meta data
-        for k in mspass_object:
-            if not str(mspass_object[k]).strip():
-                mspass_object.clear(k)
+        update_metadata_def.clear_aliases(copied_metadata)
+
+        for k in copied_metadata:
+            if not str(copied_metadata[k]).strip():
+                copied_metadata.clear(k)
 
         # skip _id and attributes in other collections
         skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
                      'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
                      'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
                      'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
-        # to do only update modified data
-        for k in mspass_object:
+        for k in copied_metadata:
             if k in exclude or k in skip_list:
                 continue
             if update_metadata_def.is_defined(k):
-                if type(mspass_object[k]) != update_metadata_def.type(k):
+                if type(copied_metadata[k]) != self._mspass_type_helper(update_metadata_def.type(k)):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(k)))
                 if not update_metadata_def.readonly(k):
-                    insert_dict[k] = mspass_object[k]
+                    insert_dict[k] = copied_metadata[k]
             elif update_all:
-                insert_dict[k] = mspass_object[k]
+                insert_dict[k] = copied_metadata[k]
 
-        if 'wf_id' not in mspass_object:
+        if 'wf_id' not in copied_metadata:
             wf_id = str(col.insert_one(insert_dict).inserted_id)
             mspass_object['wf_id'] = wf_id
         else:
-            filter = {'_id': bson.objectid.ObjectId(mspass_object['wf_id'])}
+            filter = {'_id': bson.objectid.ObjectId(copied_metadata['wf_id'])}
             col.update_one(filter, {'$set': insert_dict})
+
+    def detele_wf(self):
+        pass
+
+    def delete_gridfs(self):
+        pass
+
+    def _mspass_type_helper(self, type):
+        if str(type) == 'MDtype.Double':
+            return float
+        elif str(type) == 'MDtype.String':
+            return str
+        elif str(type) == 'MDtype.Boolean':
+            return bool
+        elif str(type) == 'MDtype.Double_Array':
+            return list
+        elif str(type) == 'MDtype.Int64' or str(type) == 'MDtype.Int32':
+            return int
+        else:
+            return None
+
+    def _sync_metadata_before_update(self, d):
+        if d.tref == TimeReferenceType.Relative:
+            d.put_string('time_standard', 'relative')
+        else:
+            d.put_string('time_standard', 'UTC')
+        if 'dtype' not in d:
+            if isinstance(d, TimeSeries):
+                d['dtype'] = 'TimeSeries'
+            elif isinstance(d, Seismogram):
+                d['dtype'] = 'Seismogram'
+            else:
+                raise TypeError("only TimeSeries and Seismogram are supported")
 
     def _save_elog(self, data, collection='error_logs'):
         """
@@ -239,9 +278,9 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
-        # oidstr = data['wf_id']
-        # if not oidstr:
-        #     raise KeyError("waveform objectid is not found in data")
+        oidstr = None
+        if 'wf_id' in data:
+            oidstr = data['wf_id']
         elog = data.elog
         n = elog.size()
         if n == 0:
@@ -251,12 +290,10 @@ class Database(pymongo.database.Database):
         oidlst = []
         for i in range(n):
             x = errs[i]
-            docentry = {'job_id': jobid}
-            docentry['algorithm'] = x.algorithm
-            docentry['badness'] = str(x.badness)
-            docentry['error_message'] = x.message
-            docentry['process_id'] = x.p_id
-            # docentry['wf_id'] = oidstr # 4. fixme wf_id needed?
+            docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
+                        'error_message': x.message, 'process_id': x.p_id}
+            if oidstr:
+                docentry['wf_id'] = oidstr
             oid = self[collection].insert_one(docentry).inserted_id
             oidlst.append(str(oid))
         if 'elog_ids' not in data:
@@ -282,7 +319,7 @@ class Database(pymongo.database.Database):
             elif isinstance(d, Seismogram):
                 if not d.is_defined('npts'):
                     raise KeyError("npts is not defined")
-                float_array.fromstring(fh.read(d.get('npts') * 8 * 3))
+                float_array.frombytes(fh.read(d.get('npts') * 8 * 3))
                 print(len(float_array))
                 d.data = dmatrix(3, d.get('npts'))
                 for i in range(3):
@@ -417,7 +454,7 @@ class Database(pymongo.database.Database):
             if not d.is_defined('npts'):
                 raise KeyError("npts is not defined")
             if len(x) != (3 * d['npts']):
-                emess = "Size mismatch in sample data.  Number of points in gridfs file = %d but expected %d" \
+                emess = "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d" \
                         % (len(x), (3 * d['npts']))
                 raise ValueError(emess)
             d.data = dmatrix(3, d['npts'])
