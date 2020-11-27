@@ -128,6 +128,46 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
                 throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 matrix"),
                       ErrorSeverity::Invalid));
             this->set_transformation_matrix(tmatrix_ary);
+        } else if (py::isinstance<py::list>(tmatrix_py)) {
+            dmatrix tmatrix_ary(3,3);
+            double* ptr = tmatrix_ary.get_address(0,0);
+            if(py::len(tmatrix_py) == 9) {
+                int i = 0;
+                for (auto item : tmatrix_py) {
+                    try{
+                        *(ptr+i) = item.cast<double>();
+                        i++;
+                    } catch (...) {
+                        throw(MsPASSError(string("CoreSeismogram constructor:  the elements of tmatrix in the Metadata should be float"),
+                              ErrorSeverity::Invalid));
+                    }
+                }
+            } else if(py::len(tmatrix_py) == 3) {
+                int i = 0;
+                for (auto items : tmatrix_py) {
+                    if(!py::isinstance<py::list>(items))
+                        throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 list of list"),
+                              ErrorSeverity::Invalid));
+                    else if (py::len(items) != 3)
+                        throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 list of list"),
+                              ErrorSeverity::Invalid));
+                    else {
+                        for (auto item : items) {
+                            try{
+                                *(ptr+i) = item.cast<double>();
+                                i++;
+                            } catch (...) {
+                                throw(MsPASSError(string("CoreSeismogram constructor:  the elements of tmatrix in the Metadata should be float"),
+                                    ErrorSeverity::Invalid));
+                            }
+                        }
+                    }
+                }
+            } else {
+                throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a list of 9 floats or a 3x3 list of list"),
+                    ErrorSeverity::Invalid));
+            }
+            this->set_transformation_matrix(tr(tmatrix_ary));
         } else {
             throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix is missing or its type is not recognized"),
                   ErrorSeverity::Invalid));
