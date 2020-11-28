@@ -354,7 +354,11 @@ def test_CoreSeismogram():
     tm = np.random.rand(1,9)
     cseis.transformation_matrix = tm
     assert (cseis.transformation_matrix == tm.reshape(3,3)).all()
-    assert (cseis.transformation_matrix == cseis['tmatrix']).all()
+    assert np.isclose(cseis.transformation_matrix, np.array(cseis['tmatrix']).reshape(3,3)).all()
+    tm = np.random.rand(9).tolist()
+    cseis.transformation_matrix = tm
+    assert np.isclose(cseis.transformation_matrix, np.array(tm).reshape(3,3)).all()
+    assert np.isclose(cseis.transformation_matrix, np.array(cseis['tmatrix']).reshape(3,3)).all()
 
     # test exceptions
     md['tmatrix'] = np.random.rand(4,2)
@@ -370,7 +374,7 @@ def test_CoreSeismogram():
     with pytest.raises(MsPASSError, match = "Error trying to extract"):
         CoreSeismogram(md, False)
     md['tmatrix'] = {4:2}
-    with pytest.raises(MsPASSError, match = "tmatrix is missing or its type is not recognized"):
+    with pytest.raises(MsPASSError, match = "type is not recognized"):
         CoreSeismogram(md, False)
     
     md['tmatrix'] = np.random.rand(9).tolist()

@@ -413,6 +413,17 @@ matrix when the coordinates are cardinal (i.e. ENZ).
    not 3x3.
    */
   bool set_transformation_matrix(const double a[3][3]);
+/*! \brief Define the transformaton matrix with a python object.
+
+ \param a is a python object of 9 elements with types of dmatrix, numpy array, or list.
+
+ \return true if the given transformation matrix is an identity
+   meaning components_are_cardinal gets set true.
+   false if the test for an identity matrix fails.
+ \exception Will throw a MsPASSError if the input type or dimension is not recognized.
+   */
+  bool set_transformation_matrix(pybind11::object a);
+
 /*! Returns true of components are cardinal. */
 	bool cardinal()const {return components_are_cardinal;};
 /*! Return true if the components are orthogonal. */

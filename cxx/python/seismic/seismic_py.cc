@@ -259,14 +259,8 @@ PYBIND11_MODULE(seismic, m) {
         stride[1] = sizeof(double) * 3;
         return py::array(py::dtype(py::format_descriptor<double>::format()), size, stride, c->data(), capsule);
       },
-      [](CoreSeismogram &self, py::array_t<double, py::array::c_style | py::array::forcecast> tm) {
-        py::buffer_info info = tm.request();
-        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
-          (info.ndim == 1 && info.shape[0] == 9))
-          self.set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
-        else
-          throw(MsPASSError(string("transformation_matrix should be a 3x3 matrix"),
-                ErrorSeverity::Invalid));
+      [](CoreSeismogram &self, py::object tm) {
+        self.set_transformation_matrix(tm);
       },"3x3 transformation matrix")
     .def(py::self += py::self)
     /* Place holder for data array.   Probably want this exposed through
