@@ -204,6 +204,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const size_t>())
+    .def(py::init<const BasicTimeSeries&, const Metadata&>())
     .def("set_dt",&CoreTimeSeries::set_dt,
       "Set data sample interval (overrides BasicTimeSeries virtual method)")
     .def("set_npts",&CoreTimeSeries::set_npts,
