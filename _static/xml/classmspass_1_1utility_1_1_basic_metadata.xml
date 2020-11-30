@@ -1,0 +1,259 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_basic_metadata" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>mspass::utility::BasicMetadata</compoundname>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</derivedcompoundref>
+    <includes refid="_basic_metadata_8h" local="no">BasicMetadata.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::utility::BasicMetadata::~BasicMetadata</definition>
+        <argsstring>()</argsstring>
+        <name>~BasicMetadata</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="17" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" bodystart="17" bodyend="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a1790a8b30ed7bb2f9e6b9ebffd6155ef" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>int</type>
+        <definition>virtual int mspass::utility::BasicMetadata::get_int</definition>
+        <argsstring>(const std::string key) const =0</argsstring>
+        <name>get_int</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462">get_int</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="18" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a9165cfdea79974e629d94d0142adf371" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>double</type>
+        <definition>virtual double mspass::utility::BasicMetadata::get_double</definition>
+        <argsstring>(const std::string key) const =0</argsstring>
+        <name>get_double</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02">get_double</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="19" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a1dac44e02436791b7bdd2a2b9f278b3d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool mspass::utility::BasicMetadata::get_bool</definition>
+        <argsstring>(const std::string key) const =0</argsstring>
+        <name>get_bool</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3">get_bool</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="20" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1a4c96a06a69b18e8f1ca1897ba87ceaae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string mspass::utility::BasicMetadata::get_string</definition>
+        <argsstring>(const std::string key) const =0</argsstring>
+        <name>get_string</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a">get_string</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="21" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1addfa968c481e8c2d883a5ee0a8574d7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void mspass::utility::BasicMetadata::put</definition>
+        <argsstring>(const std::string key, const double val)=0</argsstring>
+        <name>put</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f">put</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="22" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1ac1f7986dd9007cdc2615f0b7a1c542e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void mspass::utility::BasicMetadata::put</definition>
+        <argsstring>(const std::string key, const int val)=0</argsstring>
+        <name>put</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1">put</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="23" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1aa0195094122a714ac43e113083041314" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void mspass::utility::BasicMetadata::put</definition>
+        <argsstring>(const std::string key, const bool val)=0</argsstring>
+        <name>put</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d">put</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="24" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_basic_metadata_1ab777d4098cc92fa2189315a219579a30" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void mspass::utility::BasicMetadata::put</definition>
+        <argsstring>(const std::string key, const std::string val)=0</argsstring>
+        <name>put</name>
+        <reimplementedby refid="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb">put</reimplementedby>
+        <param>
+          <type>const std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="25" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Abstract base class for <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> concept. </para>    </briefdescription>
+    <detaileddescription>
+<para>A core idea in MsPASS is the idea of a generic header that allows storage and retrieval of arbitrary attributes. This base class forces support for the standard basic data types. </para>    </detaileddescription>
+    <inheritancegraph>
+      <node id="28">
+        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="21" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="25" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>mspass::seismic::CoreSeismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
+        <childnode refid="21" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="26" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="23">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>mspass::seismic::CoreTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
+        <childnode refid="21" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>mspass::utility::AntelopePf</label>
+        <link refid="classmspass_1_1utility_1_1_antelope_pf"/>
+        <childnode refid="21" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" line="15" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/BasicMetadata.h" bodystart="14" bodyend="26"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1dac44e02436791b7bdd2a2b9f278b3d" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>get_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a9165cfdea79974e629d94d0142adf371" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>get_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1790a8b30ed7bb2f9e6b9ebffd6155ef" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>get_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a4c96a06a69b18e8f1ca1897ba87ceaae" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>get_string</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1addfa968c481e8c2d883a5ee0a8574d7e" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1ac1f7986dd9007cdc2615f0b7a1c542e5" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1aa0195094122a714ac43e113083041314" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1ab777d4098cc92fa2189315a219579a30" prot="public" virt="pure-virtual"><scope>mspass::utility::BasicMetadata</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::utility::BasicMetadata</scope><name>~BasicMetadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

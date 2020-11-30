@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1seismic_1_1_ensemble" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::Ensemble</compoundname>
+    <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename</type>
+        <declname>Tdata</declname>
+        <defname>Tdata</defname>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; Tdata &gt;</type>
+        <definition>std::vector&lt;Tdata&gt; mspass::seismic::Ensemble&lt; Tdata &gt;::member</definition>
+        <argsstring></argsstring>
+        <name>member</name>
+        <briefdescription>
+<para>Container holding data objects. </para>        </briefdescription>
+        <detaileddescription>
+<para>An ensemble is defined as a collection of data objects linked by some property that is normally defined by data sharing a comomon data-value pair. The data are stored here in a vector container. We make this vector public because the assumption is the member objects can be large and copying with a getter would be a serious inefficiently. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="19" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::Ensemble</definition>
+        <argsstring>()</argsstring>
+        <name>Ensemble</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="21" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="21" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1aa3206817575b4239ec80237b3f4f837b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::Ensemble</definition>
+        <argsstring>(const size_t n)</argsstring>
+        <name>Ensemble</name>
+        <param>
+          <type>const size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Reserve space but build empty ensemble. </para>        </briefdescription>
+        <detaileddescription>
+<para>Often we know what the size of an ensemble is before we start building it. This constructor reserve space but marks all members dead.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>-</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>expected number of members. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="30" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1ae61caab62fca548faddc8c2a274b7668" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::Ensemble</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md, const size_t n)</argsstring>
+        <name>Ensemble</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Partial constructor to clone metadata and set aside n slots but no data </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="32" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="32" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1af9d4e39db1491f8aac9d9227440216de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::Ensemble</definition>
+        <argsstring>(const Ensemble &amp;parent)</argsstring>
+        <name>Ensemble</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="37" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="37" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a9bbd6973446b481568db91fbe81d365d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+        <definition>Ensemble&amp; mspass::seismic::Ensemble&lt; Tdata &gt;::operator=</definition>
+        <argsstring>(const Ensemble &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard assignment operator. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="40" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="40" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1aa22da9d7d189ad4cb76388e2034c2566" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Tdata &amp;</type>
+        <definition>Tdata&amp; mspass::seismic::Ensemble&lt; Tdata &gt;::operator[]</definition>
+        <argsstring>(const size_t n) const try</argsstring>
+        <name>operator[]</name>
+        <param>
+          <type>const size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="59" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="59" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1aaaf0bfa2db3d54e83213c2d5364fd7c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::catch</definition>
+        <argsstring>(...)</argsstring>
+        <name>catch</name>
+        <param>
+          <type>...</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="62" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::update_metadata</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;newmd) try</argsstring>
+        <name>update_metadata</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>newmd</declname>
+        </param>
+        <briefdescription>
+<para>updates ensemble header (Metadata). </para>        </briefdescription>
+        <detaileddescription>
+<para>Sometime it is helpful to change a group of header attributes stored in the Metadata component. Rather than do a bunch of puts this uses operator += to update the header. Note this operator uses the property that any existing attributes with the same key as one in the updates set will be replaced with the update.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>newmd</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>contains new Metadata to use for updates. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="74" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="74" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1aaaf0bfa2db3d54e83213c2d5364fd7c3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::Ensemble&lt; Tdata &gt;::catch</definition>
+        <argsstring>(...)</argsstring>
+        <name>catch</name>
+        <param>
+          <type>...</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="79" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::sync_metadata</definition>
+        <argsstring>()</argsstring>
+        <name>sync_metadata</name>
+        <briefdescription>
+<para>copy ensemble metadata to all members. </para>        </briefdescription>
+        <detaileddescription>
+<para>An ensemble has global metadata, but each member is required to have a metadata component. This method takes the ensemble metadata and copies it to each of the member objects. The operation will overwrite previous key:value pairs in a member that are also present in the ensemble metadata. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="88" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="88" bodyend="96"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="99">
+        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="100" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="100">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="101" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="101">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="102">
+        <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="103" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="103">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="104" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="104">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="8" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="7" bodyend="97"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>append_chain</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>begin</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1aaaf0bfa2db3d54e83213c2d5364fd7c3" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>catch</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1aaaf0bfa2db3d54e83213c2d5364fd7c3" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>catch</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>change_key</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>changed_or_set</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>clear</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>clear_modified</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>end</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a12693d17a307b72ee3263b34eaa49a41" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Ensemble</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1aa3206817575b4239ec80237b3f4f837b" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Ensemble</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1ae61caab62fca548faddc8c2a274b7668" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Ensemble</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1af9d4e39db1491f8aac9d9227440216de" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Ensemble</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>get_any</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>get_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>get_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>get_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>get_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>get_string</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>is_defined</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>keys</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" prot="protected" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>md</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>member</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>modified</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a9bbd6973446b481568db91fbe81d365d" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::Ensemble</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1aa22da9d7d189ad4cb76388e2034c2566" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_object</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_string</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>size</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>sync_metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>type</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>update_metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>~BasicMetadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a6d06560c0b169240031c6a274dc7990f" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>~Metadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

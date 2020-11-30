@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1seismic_1_1_time_window" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::TimeWindow</compoundname>
+    <includes refid="_time_window_8h" local="no">TimeWindow.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::seismic::TimeWindow::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Start time of the window. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="19" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::seismic::TimeWindow::end</definition>
+        <argsstring></argsstring>
+        <name>end</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>End time of the window. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="23" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeWindow::TimeWindow</definition>
+        <argsstring>()</argsstring>
+        <name>TimeWindow</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="27" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="27" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeWindow::TimeWindow</definition>
+        <argsstring>(const double ts, const double te)</argsstring>
+        <name>TimeWindow</name>
+        <param>
+          <type>const double</type>
+          <declname>ts</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>te</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Parameterized constructor. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- start time </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>te</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- end time </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="33" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_1aa60d739dcbe3bbd2bfec0f7532d9a110" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+        <definition>TimeWindow mspass::seismic::TimeWindow::shift</definition>
+        <argsstring>(const double tshift)</argsstring>
+        <name>shift</name>
+        <param>
+          <type>const double</type>
+          <declname>tshift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a new time window translated by tshift argument. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="37" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="37" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::TimeWindow::length</definition>
+        <argsstring>()</argsstring>
+        <name>length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the window length </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="47" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="47" bodyend="50"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Defines a time window. </para>    </briefdescription>
+    <detaileddescription>
+<para>Time windows are a common concept in time series analysis and seismology in particular. The object definition here has no concept of a time standard. It simply defines an interval in terms of a pair of real numbers. </para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="14" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="13" bodyend="51"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>end</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>length</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1aa60d739dcbe3bbd2bfec0f7532d9a110" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>start</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>TimeWindow</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindow</scope><name>TimeWindow</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

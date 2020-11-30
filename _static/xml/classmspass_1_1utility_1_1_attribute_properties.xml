@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_attribute_properties" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::AttributeProperties</compoundname>
+    <includes refid="_attribute_map_8h" local="no">AttributeMap.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_properties_1a12f02918df43099193132f8ac213926c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AttributeProperties::db_attribute_name</definition>
+        <argsstring></argsstring>
+        <name>db_attribute_name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Name for this parameter as the attribute name in some database table. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="27" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_properties_1a1484220177f25b1c735b9fe5ff4f5211" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AttributeProperties::db_table_name</definition>
+        <argsstring></argsstring>
+        <name>db_table_name</name>
+        <briefdescription>
+<para>Database table name from which this attribute was loaded. Relational databases always share attribute names with multiple tables. This is a fundamental axiom in relational database theory. Because an attribute of the same name may or may not be related in different tables it is necessary to define the parent table to avoid ambiguity. Note that in MsPASS a common convention is that a db_attribute_name may contain the parent table implicity (e.g. wfdisc.sta) but code using this object should not assume this. User should assume the correct table name is stored here. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="37" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_properties_1a7fb564de0eb17ef42d3affee8b6bed52" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AttributeProperties::internal_name</definition>
+        <argsstring></argsstring>
+        <name>internal_name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Internal name used to reference this parameter. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="39" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" prot="public" static="no" mutable="no">
+        <type>MDtype</type>
+        <definition>MDtype mspass::utility::AttributeProperties::mdt</definition>
+        <argsstring></argsstring>
+        <name>mdt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Type of this parameter. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="41" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_attribute_properties_1aa15f63627f9fc558154cb6ecb6e829a4" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::utility::AttributeProperties::is_key</definition>
+        <argsstring></argsstring>
+        <name>is_key</name>
+        <briefdescription>
+<para>Defines if parameter is a key in it&apos;s parent table. Keys in a relational database are special attributes and it is useful to tag a parameter as being a key or not a key. When true this attribute indicates a parameter is a key for db_table_name. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="46" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1a8ef6b79ad0c3275e4cc01a41e7e9a3e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AttributeProperties::AttributeProperties</definition>
+        <argsstring>()</argsstring>
+        <name>AttributeProperties</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. Creates a null object with MTtype set to invalid. This constructor exists to avoid automatic construction with no parameters, but it should not be used. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="50" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AttributeMap.cc" bodystart="13" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1a0e69bc8b50b01c8e060674dde29e13fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AttributeProperties::AttributeProperties</definition>
+        <argsstring>(const std::string)</argsstring>
+        <name>AttributeProperties</name>
+        <param>
+          <type>const std::string</type>
+        </param>
+        <briefdescription>
+<para>Create using a string description. The standard construction of an associative array uses this constructor driven by a series of input lines. The input line that is parsed must contain these member attributes in the following order:<orderedlist>
+<listitem><para>internal_name</para></listitem><listitem><para>db_attribute_name</para></listitem><listitem><para>db_table_name</para></listitem><listitem><para>mdt. </para></listitem></orderedlist>
+</para>        </briefdescription>
+        <detaileddescription>
+<para>The mdt field must be one of &quot;REAL&quot;, &quot;real&quot;, &quot;STRING&quot;, &quot;string&quot;, &quot;INT&quot;, &quot;int&quot;, &quot;BOOL&quot;, &quot;BOOLEAN&quot;, &quot;bool&quot;, or &quot;boolean&quot;. Any other field with cause this constructor to throw an exception. <parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MetadataError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is thrown for parsing errors. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="65" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1a216c27dc7134e98c9207c91478fe9f56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AttributeProperties::AttributeProperties</definition>
+        <argsstring>(const AttributeProperties &amp;)</argsstring>
+        <name>AttributeProperties</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref> &amp;</type>
+          <defname>apin</defname>
+        </param>
+        <briefdescription>
+<para>Standard copy constructor. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="67" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AttributeMap.cc" bodystart="92" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1aae97b6a0258d3d30037dc380b200c4f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref> &amp;</type>
+        <definition>AttributeProperties &amp; mspass::utility::AttributeProperties::operator=</definition>
+        <argsstring>(const AttributeProperties &amp;)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref> &amp;</type>
+          <defname>apin</defname>
+        </param>
+        <briefdescription>
+<para>Standard assignment operator. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="69" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AttributeMap.cc" bodystart="100" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_attribute_properties_1a2b95f3e68ff097960cbc5b1aa25f275e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>string mspass::utility::AttributeProperties::fully_qualified_name</definition>
+        <argsstring>() const</argsstring>
+        <name>fully_qualified_name</name>
+        <briefdescription>
+<para>Returns full name. </para>        </briefdescription>
+        <detaileddescription>
+<para>Database attribute names can and often do occur in multiple tables. This method returns a full name that is used to uniquely define that attribute in a particular table. Although this could be generalized, for the present this is always returned in the form used by Antelope/datascope: that is the string is if the form table.attribute. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="77" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AttributeMap.cc" bodystart="110" bodyend="115"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1_attribute_properties_1a831a46f77fe6c6f7e6d005e730fbfc99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend std::ostream &amp;</type>
+        <definition>std::ostream&amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;ofs, const AttributeProperties &amp;d)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>ofs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="78" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Defines properties of a database attribute and link to internal names. </para>    </briefdescription>
+    <detaileddescription>
+<para>This object is used to define the relationship between a parameter stored externally (originally conceived as a database attribute general enough for any externally imposed naming convention) with a particular name with some internal naming convention. This object defines the relationship for one internal parameter and it&apos;s external properties. Arrays of these objects or (as used in the <ref refid="classmspass_1_1utility_1_1_attribute_map" kindref="compound">AttributeMap</ref> object in MsPASS) associate arrays can be used to define relationships for a complete set of parameter names. Note this could have been called a struct since all the attributes are public. </para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" line="24" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h" bodystart="23" bodyend="79"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a8ef6b79ad0c3275e4cc01a41e7e9a3e9" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>AttributeProperties</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a0e69bc8b50b01c8e060674dde29e13fa" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>AttributeProperties</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a216c27dc7134e98c9207c91478fe9f56" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>AttributeProperties</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a12f02918df43099193132f8ac213926c" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>db_attribute_name</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a1484220177f25b1c735b9fe5ff4f5211" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>db_table_name</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a2b95f3e68ff097960cbc5b1aa25f275e" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>fully_qualified_name</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a7fb564de0eb17ef42d3affee8b6bed52" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>internal_name</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1aa15f63627f9fc558154cb6ecb6e829a4" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>is_key</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1afb7d089e6e87cb43f714aabfa68134c1" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>mdt</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1a831a46f77fe6c6f7e6d005e730fbfc99" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1utility_1_1_attribute_properties_1aae97b6a0258d3d30037dc380b200c4f8" prot="public" virt="non-virtual"><scope>mspass::utility::AttributeProperties</scope><name>operator=</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

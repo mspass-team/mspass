@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1dmatrix__index__error" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::dmatrix_index_error</compoundname>
+    <basecompoundref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" prot="public" virt="non-virtual">mspass::utility::MsPASSError</basecompoundref>
+    <includes refid="dmatrix_8h" local="no">dmatrix.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__index__error_1a6203e573bcea10c72dd7c15eb5b33b30" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix_index_error::row</definition>
+        <argsstring></argsstring>
+        <name>row</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="50" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__index__error_1ab3e9f90e34e6c8bf1aec0cde6209a83e" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix_index_error::column</definition>
+        <argsstring></argsstring>
+        <name>column</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="50" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__index__error_1ac791f3ef8c4991917d2b1ca26ed5c442" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix_index_error::nrr</definition>
+        <argsstring></argsstring>
+        <name>nrr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="51" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix__index__error_1abfde810a7deb93584c096139d82a4002" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix_index_error::ncc</definition>
+        <argsstring></argsstring>
+        <name>ncc</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="51" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix__index__error_1a9d0a8b2452be207e0561febc700a6fa4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix_index_error::dmatrix_index_error</definition>
+        <argsstring>(const size_t nrmax, const size_t ncmax, const size_t ir, const size_t ic)</argsstring>
+        <name>dmatrix_index_error</name>
+        <param>
+          <type>const size_t</type>
+          <declname>nrmax</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>ncmax</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>ir</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>ic</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Basic constructor for this error object. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nrmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of rows in matrix </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ncmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of columns in matrix </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ir</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>row index requested </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>ic</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column index requested </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="36" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="36" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix__index__error_1a1e97dec70113857724d8e9302f7a0d53" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix_index_error::~dmatrix_index_error</definition>
+        <argsstring>()</argsstring>
+        <name>~dmatrix_index_error</name>
+        <exceptions> throw ()</exceptions>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="48" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="48" bodyend="48"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>special convenience class for matrix indexing errors. </para>    </briefdescription>
+    <detaileddescription>
+<para>Thrown by a dmatrix if a requested index is outside the bounds of the matrix dimension.</para><sect1 id="classmspass_1_1utility_1_1dmatrix__index__error_1autotoc_md0">
+<title>\author Gary L. Pavlis</title>
+</sect1>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="84">
+        <label>mspass::utility::MsPASSError</label>
+        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
+        <childnode refid="85" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="85">
+        <label>std::exception</label>
+      </node>
+      <node id="83">
+        <label>mspass::utility::dmatrix_index_error</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
+        <childnode refid="84" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="87">
+        <label>mspass::utility::MsPASSError</label>
+        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
+        <childnode refid="88" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="88">
+        <label>std::exception</label>
+      </node>
+      <node id="86">
+        <label>mspass::utility::dmatrix_index_error</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
+        <childnode refid="87" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="27" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="26" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>badness</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1ab3e9f90e34e6c8bf1aec0cde6209a83e" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>column</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1a9d0a8b2452be207e0561febc700a6fa4" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>dmatrix_index_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>message</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a78088c104a7c2a47e41ce8ecdf5513cd" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a0f75099c3f9c8130b44398601753745f" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af209344a8eb784695556f02b7df481c9" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1abfde810a7deb93584c096139d82a4002" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>ncc</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1ac791f3ef8c4991917d2b1ca26ed5c442" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>nrr</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1a6203e573bcea10c72dd7c15eb5b33b30" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>row</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>severity</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>what</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix__index__error_1a1e97dec70113857724d8e9302f7a0d53" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix_index_error</scope><name>~dmatrix_index_error</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

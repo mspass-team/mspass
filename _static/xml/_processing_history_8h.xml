@@ -1,0 +1,496 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="_processing_history_8h" kind="file" language="C++">
+    <compoundname>ProcessingHistory.h</compoundname>
+    <includes local="no">string</includes>
+    <includes local="no">list</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">map</includes>
+    <includes local="no">boost/serialization/map.hpp</includes>
+    <includes local="no">boost/serialization/serialization.hpp</includes>
+    <includes local="no">boost/uuid/uuid.hpp</includes>
+    <includes local="no">boost/uuid/uuid_generators.hpp</includes>
+    <includes local="no">boost/uuid/uuid_io.hpp</includes>
+    <includes local="no">boost/uuid/uuid_serialize.hpp</includes>
+    <includes local="no">boost/archive/text_iarchive.hpp</includes>
+    <includes local="no">boost/archive/text_oarchive.hpp</includes>
+    <includes refid="_error_logger_8h" local="yes">mspass/utility/ErrorLogger.h</includes>
+    <includedby refid="_seismogram_8h" local="yes">/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h</includedby>
+    <includedby refid="_time_series_8h" local="yes">/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeries.h</includedby>
+    <includedby refid="_seismogram_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Seismogram.cc</includedby>
+    <includedby refid="_processing_history_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ProcessingHistory.cc</includedby>
+    <incdepgraph>
+      <node id="702">
+        <label>list</label>
+      </node>
+      <node id="705">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="711">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="709">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="700">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h"/>
+        <childnode refid="701" relation="include">
+        </childnode>
+        <childnode refid="702" relation="include">
+        </childnode>
+        <childnode refid="703" relation="include">
+        </childnode>
+        <childnode refid="704" relation="include">
+        </childnode>
+        <childnode refid="705" relation="include">
+        </childnode>
+        <childnode refid="706" relation="include">
+        </childnode>
+        <childnode refid="707" relation="include">
+        </childnode>
+        <childnode refid="708" relation="include">
+        </childnode>
+        <childnode refid="709" relation="include">
+        </childnode>
+        <childnode refid="710" relation="include">
+        </childnode>
+        <childnode refid="711" relation="include">
+        </childnode>
+        <childnode refid="712" relation="include">
+        </childnode>
+        <childnode refid="713" relation="include">
+        </childnode>
+      </node>
+      <node id="701">
+        <label>string</label>
+      </node>
+      <node id="704">
+        <label>map</label>
+      </node>
+      <node id="719">
+        <label>exception</label>
+      </node>
+      <node id="712">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="714">
+        <label>unistd.h</label>
+      </node>
+      <node id="703">
+        <label>vector</label>
+      </node>
+      <node id="708">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="717">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="718" relation="include">
+        </childnode>
+        <childnode refid="719" relation="include">
+        </childnode>
+      </node>
+      <node id="718">
+        <label>iostream</label>
+      </node>
+      <node id="710">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="716">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="713">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="714" relation="include">
+        </childnode>
+        <childnode refid="702" relation="include">
+        </childnode>
+        <childnode refid="715" relation="include">
+        </childnode>
+        <childnode refid="711" relation="include">
+        </childnode>
+        <childnode refid="712" relation="include">
+        </childnode>
+        <childnode refid="706" relation="include">
+        </childnode>
+        <childnode refid="716" relation="include">
+        </childnode>
+        <childnode refid="717" relation="include">
+        </childnode>
+        <childnode refid="713" relation="include">
+        </childnode>
+      </node>
+      <node id="707">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="706">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="715">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="720">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h"/>
+        <childnode refid="721" relation="include">
+        </childnode>
+        <childnode refid="728" relation="include">
+        </childnode>
+      </node>
+      <node id="729">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
+        <link refid="_time_series_w_gaps_8h_source"/>
+      </node>
+      <node id="725">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="722" relation="include">
+        </childnode>
+        <childnode refid="723" relation="include">
+        </childnode>
+        <childnode refid="724" relation="include">
+        </childnode>
+      </node>
+      <node id="721">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="722" relation="include">
+        </childnode>
+        <childnode refid="723" relation="include">
+        </childnode>
+        <childnode refid="724" relation="include">
+        </childnode>
+        <childnode refid="725" relation="include">
+        </childnode>
+        <childnode refid="726" relation="include">
+        </childnode>
+        <childnode refid="727" relation="include">
+        </childnode>
+      </node>
+      <node id="723">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
+        <link refid="algorithms_8h_source"/>
+      </node>
+      <node id="724">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
+        <link refid="amplitudes_8h_source"/>
+      </node>
+      <node id="722">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
+      <node id="726">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
+        <link refid="_seismogram_w_gaps_8h_source"/>
+      </node>
+      <node id="728">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="722" relation="include">
+        </childnode>
+        <childnode refid="723" relation="include">
+        </childnode>
+        <childnode refid="724" relation="include">
+        </childnode>
+        <childnode refid="725" relation="include">
+        </childnode>
+        <childnode refid="727" relation="include">
+        </childnode>
+        <childnode refid="729" relation="include">
+        </childnode>
+      </node>
+      <node id="727">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Taper.h</label>
+        <link refid="_taper_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classmspass_1_1utility_1_1_basic_processing_history" prot="public">mspass::utility::BasicProcessingHistory</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_node_data" prot="public">mspass::utility::NodeData</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_processing_history" prot="public">mspass::utility::ProcessingHistory</innerclass>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_PROCESSING_HISTORY_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_PROCESSING_HISTORY_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;list&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/map.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/serialization.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_generators.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_io.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_serialize.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/text_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ErrorLogger.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">//#include<sp/>&quot;mspass/seismic/Ensemble.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
+<codeline lineno="24"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>ProcessingStatus</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/>RAW,</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/>ORIGIN,</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>VOLATILE,</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/>SAVED,</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/>UNDEFINED</highlight></codeline>
+<codeline lineno="31"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="40"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>AtomicType</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>SEISMOGRAM,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>TIMESERIES,</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>UNDEFINED</highlight></codeline>
+<codeline lineno="45"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="65"><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>SAVED_ID_KEY(</highlight><highlight class="stringliteral">&quot;NODEDATA_AT_SAVE&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="69" refid="classmspass_1_1utility_1_1_basic_processing_history" refkind="compound"><highlight class="keyword">class<sp/><sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref></highlight></codeline>
+<codeline lineno="70"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/>jid=std::string();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/>jnm=std::string();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>(){};</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>jobname,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>jobid)</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/>jid=jobid;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>jnm=jobname;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/>jid=parent.jid;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/>jnm=parent.jnm;</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96" refid="classmspass_1_1utility_1_1_basic_processing_history_1ac02ca16b83b616ade105d6694ffb6f7d" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history_1ac02ca16b83b616ade105d6694ffb6f7d" kindref="member">number_of_stages</ref>(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;};</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>std::string<sp/>jobid()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="98"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>jid;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_jobid(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>newjid)</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>jid=newjid;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>std::string<sp/>jobname()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="106"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>jnm;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_jobname(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>jobname)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>jnm=jobname;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>jnm=parent.jnm;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>jid=parent.jid;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>std::string<sp/>jid;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>std::string<sp/>jnm;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>jid;</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>jnm;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="133"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="142" refid="classmspass_1_1utility_1_1_node_data" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref></highlight></codeline>
+<codeline lineno="143"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="146" refid="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" refkind="member"><highlight class="normal"><sp/><sp/>mspass::utility::ProcessingStatus<sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" kindref="member">status</ref>;</highlight></codeline>
+<codeline lineno="148" refid="classmspass_1_1utility_1_1_node_data_1a0f0df95910b9712e36d3a8389c0c9f38" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a0f0df95910b9712e36d3a8389c0c9f38" kindref="member">uuid</ref>;</highlight></codeline>
+<codeline lineno="150" refid="classmspass_1_1utility_1_1_node_data_1aa7c6f56ceca095d0af31f456d75954a4" refkind="member"><highlight class="normal"><sp/><sp/>mspass::utility::AtomicType<sp/><ref refid="classmspass_1_1utility_1_1_node_data_1aa7c6f56ceca095d0af31f456d75954a4" kindref="member">type</ref>;</highlight></codeline>
+<codeline lineno="152" refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" kindref="member">stage</ref>;</highlight></codeline>
+<codeline lineno="161" refid="classmspass_1_1utility_1_1_node_data_1a040189091bc8458cc84b7a3781856643" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_node_data_1a040189091bc8458cc84b7a3781856643" kindref="member">algorithm</ref>;</highlight></codeline>
+<codeline lineno="171" refid="classmspass_1_1utility_1_1_node_data_1aa51f302e3e070fd072255e1d1af9073f" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_node_data_1aa51f302e3e070fd072255e1d1af9073f" kindref="member">algid</ref>;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>standard<sp/>elements<sp/>could<sp/>be<sp/>defaulted,<sp/>but<sp/>we<sp/>implement<sp/>them</highlight></codeline>
+<codeline lineno="173"><highlight class="comment"><sp/><sp/>explicitly<sp/>for<sp/>clarity<sp/>-<sp/>implemented<sp/>in<sp/>the<sp/>cc<sp/>file.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>();</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator!=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>status;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>uuid;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>type;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>stage;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algorithm;</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algid;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="191"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="257" refid="classmspass_1_1utility_1_1_processing_history" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_basic_processing_history" kindref="compound">BasicProcessingHistory</ref></highlight></codeline>
+<codeline lineno="258"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref><sp/>elog;</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>();</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>jobnm,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>jid);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_empty()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_raw()</highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_origin()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_volatile()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_saved()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>number_of_stages()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_as_origin(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>uuid,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>define_as_raw=</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"><sp/><sp/>std::string<sp/>new_ensemble_process(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="400"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;ProcessingHistory*&gt;<sp/>parents,</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>create_newid=</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="418"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_one_input(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>data_to_add);</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add_many_inputs(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;ProcessingHistory*&gt;&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="428"><highlight class="normal"></highlight></codeline>
+<codeline lineno="434"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>merge(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>data_to_add);</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>accumulate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>newinput);</highlight></codeline>
+<codeline lineno="455"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Clean<sp/>up<sp/>inconsistent<sp/>uuids<sp/>that<sp/>can<sp/>be<sp/>produced<sp/>by<sp/>reduce.</highlight></codeline>
+<codeline lineno="456"><highlight class="comment"></highlight></codeline>
+<codeline lineno="457"><highlight class="comment"><sp/><sp/>In<sp/>a<sp/>spark<sp/>reduce<sp/>operation<sp/>it<sp/>is<sp/>possible<sp/>to<sp/>create<sp/>multiple<sp/>uuid<sp/>keys</highlight></codeline>
+<codeline lineno="458"><highlight class="comment"><sp/><sp/>for<sp/>inputs<sp/>to<sp/>the<sp/>same<sp/>algorithm<sp/>instance.<sp/><sp/>That<sp/>happpens<sp/>because</highlight></codeline>
+<codeline lineno="459"><highlight class="comment"><sp/><sp/>the<sp/>mechanism<sp/>used<sp/>by<sp/>ProcessingHistory<sp/>to<sp/>define<sp/>the<sp/>process<sp/>history</highlight></codeline>
+<codeline lineno="460"><highlight class="comment"><sp/><sp/>tree<sp/>is<sp/>not<sp/>associative.<sp/><sp/><sp/>When<sp/>a<sp/>reduce<sp/>gets<sp/>sprayed<sp/>across<sp/>multiple</highlight></codeline>
+<codeline lineno="461"><highlight class="comment"><sp/><sp/>nodes<sp/>multiple<sp/>initializations<sp/>can<sp/>occur<sp/>that<sp/>make<sp/>artifical</highlight></codeline>
+<codeline lineno="462"><highlight class="comment"><sp/><sp/>inconsitent<sp/>uuids.<sp/><sp/>This<sp/>method<sp/>should<sp/>normally<sp/>be<sp/>called<sp/>after<sp/>a<sp/>reduce</highlight></codeline>
+<codeline lineno="463"><highlight class="comment"><sp/><sp/>operator<sp/>if<sp/>history<sp/>is<sp/>being<sp/>preserved<sp/>or<sp/>the<sp/>history<sp/>chain<sp/>may<sp/>be</highlight></codeline>
+<codeline lineno="464"><highlight class="comment"><sp/><sp/>foobarred<sp/>-<sp/>no<sp/>invalid<sp/>just<sp/>mess<sp/>up<sp/>with<sp/>extra<sp/>branches<sp/>in<sp/>the<sp/>processing</highlight></codeline>
+<codeline lineno="465"><highlight class="comment"><sp/><sp/>tree.</highlight></codeline>
+<codeline lineno="466"><highlight class="comment"></highlight></codeline>
+<codeline lineno="467"><highlight class="comment"><sp/><sp/>A<sp/>VERY<sp/>IMPORTANT<sp/>limitation<sp/>of<sp/>the<sp/>algorithm<sp/>used<sp/>by<sp/>this<sp/>method</highlight></codeline>
+<codeline lineno="468"><highlight class="comment"><sp/><sp/>is<sp/>that<sp/>the<sp/>combination<sp/>of<sp/>algorithm<sp/>and<sp/>algid<sp/>in<sp/>&quot;this&quot;<sp/>MUST<sp/>be<sp/>unique<sp/>for<sp/>a</highlight></codeline>
+<codeline lineno="469"><highlight class="comment"><sp/><sp/>given<sp/>job<sp/>run<sp/>when<sp/>a<sp/>reduce<sp/>is<sp/>called.<sp/><sp/>i.e.<sp/>if<sp/>an<sp/>earlier<sp/>workflow<sp/>had</highlight></codeline>
+<codeline lineno="470"><highlight class="comment"><sp/><sp/>used<sp/>alg<sp/>and<sp/>algid<sp/>but<sp/>with<sp/>a<sp/>different<sp/>jobid<sp/>and<sp/>jobname<sp/>the<sp/>distintion</highlight></codeline>
+<codeline lineno="471"><highlight class="comment"><sp/><sp/>cannot<sp/>be<sp/>detected<sp/>with<sp/>this<sp/>algorithm.<sp/><sp/><sp/>This<sp/>means<sp/>our<sp/>global<sp/>history</highlight></codeline>
+<codeline lineno="472"><highlight class="comment"><sp/><sp/>handling<sp/>must<sp/>guarantee<sp/>algid<sp/>is<sp/>unique<sp/>for<sp/>each<sp/>run.</highlight></codeline>
+<codeline lineno="473"><highlight class="comment"></highlight></codeline>
+<codeline lineno="474"><highlight class="comment"><sp/><sp/>\return<sp/>unique<sp/>uuid<sp/>for<sp/>alg,algid<sp/>match<sp/>set<sp/>in<sp/>the<sp/>history<sp/>chain.</highlight></codeline>
+<codeline lineno="475"><highlight class="comment"><sp/><sp/><sp/><sp/>Note<sp/>if<sp/>there<sp/>are<sp/>no<sp/>duplicates<sp/>it<sp/>simply<sp/>returns<sp/>the<sp/>only<sp/>one<sp/>it<sp/>finds.</highlight></codeline>
+<codeline lineno="476"><highlight class="comment"><sp/><sp/><sp/><sp/>If<sp/>there<sp/>are<sp/>duplicates<sp/>it<sp/>returns<sp/>the<sp/>lexically<sp/>smallest<sp/>(first<sp/>in</highlight></codeline>
+<codeline lineno="477"><highlight class="comment"><sp/><sp/><sp/><sp/>alphabetic<sp/>order)<sp/>uuid.<sp/><sp/>Most<sp/>importantly<sp/>if<sp/>there<sp/>is<sp/>no<sp/>match<sp/>or<sp/>if</highlight></codeline>
+<codeline lineno="478"><highlight class="comment"><sp/><sp/><sp/><sp/>history<sp/>is<sp/>empty<sp/>it<sp/>returns<sp/>the<sp/>string<sp/>UNDEFINED.</highlight></codeline>
+<codeline lineno="479"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="480"><highlight class="normal"><sp/><sp/>std::string<sp/>clean_accumulate_uuids();</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/>std::string<sp/>new_map(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ,</highlight></codeline>
+<codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ProcessingStatus<sp/>newstatus=ProcessingStatus::VOLATILE);</highlight></codeline>
+<codeline lineno="535"><highlight class="normal"><sp/><sp/>std::string<sp/>new_map(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ,</highlight></codeline>
+<codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>data_to_clone,</highlight></codeline>
+<codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>ProcessingStatus<sp/>newstatus=ProcessingStatus::VOLATILE);</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"></highlight></codeline>
+<codeline lineno="575"><highlight class="normal"><sp/><sp/>std::string<sp/>map_as_saved(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid,</highlight></codeline>
+<codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>AtomicType<sp/>typ);</highlight></codeline>
+<codeline lineno="578"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear();</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/>std::multimap&lt;std::string,mspass::utility::NodeData&gt;<sp/>get_nodes()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"></highlight></codeline>
+<codeline lineno="595" refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" kindref="member">stage</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="596"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="597"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>current_stage;</highlight></codeline>
+<codeline lineno="598"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="600" refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" refkind="member"><highlight class="normal"><sp/><sp/>ProcessingStatus<sp/><ref refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" kindref="member">status</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="601"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="602"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>current_status;</highlight></codeline>
+<codeline lineno="603"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="609" refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" kindref="member">id</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="610"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="611"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>current_id;</highlight></codeline>
+<codeline lineno="612"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="614" refid="classmspass_1_1utility_1_1_processing_history_1a50c8a73d47538a94eddccd53bdfa183a" refkind="member"><highlight class="normal"><sp/><sp/>std::pair&lt;std::string,std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_processing_history_1a50c8a73d47538a94eddccd53bdfa183a" kindref="member">created_by</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="615"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/>std::pair&lt;std::string,std::string&gt;<sp/>result(algorithm,algid);</highlight></codeline>
+<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="618"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="625"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref><sp/>current_nodedata()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="632"><highlight class="normal"><sp/><sp/>std::string<sp/>newid();</highlight></codeline>
+<codeline lineno="638"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>number_inputs()</highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="647"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>number_inputs(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>uuidstr)</highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="648"><highlight class="normal"></highlight></codeline>
+<codeline lineno="657"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_id(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>newid);</highlight></codeline>
+<codeline lineno="658"><highlight class="normal"></highlight></codeline>
+<codeline lineno="671"><highlight class="normal"><sp/><sp/>std::list&lt;mspass::utility::NodeData&gt;<sp/>inputs(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>id_to_find)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="672"><highlight class="normal"></highlight></codeline>
+<codeline lineno="674"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="675"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>We<sp/>make<sp/>this<sp/>protected<sp/>to<sp/>simplify<sp/>expected<sp/>extensions.<sp/><sp/>In<sp/>particular,</highlight></codeline>
+<codeline lineno="676"><highlight class="comment">the<sp/>process<sp/>of<sp/>reconstructing<sp/>history<sp/>is<sp/>a<sp/>complicated<sp/>process<sp/>we<sp/>don&apos;t</highlight></codeline>
+<codeline lineno="677"><highlight class="comment">want<sp/>to<sp/>add<sp/>as<sp/>baggage<sp/>to<sp/>regular<sp/>data.<sp/><sp/>Hence,<sp/>tools<sp/>to<sp/>reconstruct<sp/>history</highlight></codeline>
+<codeline lineno="678"><highlight class="comment">(provenance)<sp/>are<sp/>expected<sp/>to<sp/>extend<sp/>this<sp/>class.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="679"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="680"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>map<sp/>defines<sp/>connections<sp/>of<sp/>each<sp/>data<sp/>object<sp/>to<sp/>others.<sp/><sp/>Key<sp/>is<sp/>the</highlight></codeline>
+<codeline lineno="681"><highlight class="comment"><sp/><sp/>uuid<sp/>of<sp/>a<sp/>given<sp/>object<sp/>and<sp/>the<sp/>values<sp/>(second)<sp/>associated<sp/>with</highlight></codeline>
+<codeline lineno="682"><highlight class="comment"><sp/><sp/>that<sp/>key<sp/>are<sp/>the<sp/>inputs<sp/>used<sp/>to<sp/>create<sp/>the<sp/>data<sp/>defined<sp/>by<sp/>the<sp/>key<sp/>uuid<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="683"><highlight class="normal"><sp/><sp/>std::multimap&lt;std::string,mspass::utility::NodeData&gt;<sp/>nodes;</highlight></codeline>
+<codeline lineno="684"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="685"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/><sp/>This<sp/>set<sp/>of<sp/>private<sp/>variables<sp/>are<sp/>the<sp/>values<sp/>of<sp/>attributes<sp/>for</highlight></codeline>
+<codeline lineno="686"><highlight class="comment"><sp/><sp/>the<sp/>same<sp/>concepts<sp/>in<sp/>the<sp/>NodeData<sp/>struct/class.<sp/><sp/><sp/>We<sp/>break<sp/>them<sp/>out<sp/>as</highlight></codeline>
+<codeline lineno="687"><highlight class="comment"><sp/><sp/>single<sp/>variables<sp/>because<sp/>they<sp/>are<sp/>not<sp/>always<sp/>set<sp/>lumped<sp/>together.<sp/><sp/>Hence</highlight></codeline>
+<codeline lineno="688"><highlight class="comment"><sp/><sp/>there<sp/>are<sp/>also<sp/>separate<sp/>getters<sp/>and<sp/>setters<sp/>for<sp/>each.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="689"><highlight class="normal"><sp/><sp/>ProcessingStatus<sp/>current_status;</highlight></codeline>
+<codeline lineno="690"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>uuid<sp/>of<sp/>current<sp/>data<sp/>object<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="691"><highlight class="normal"><sp/><sp/>std::string<sp/>current_id;</highlight></codeline>
+<codeline lineno="692"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>current_stage;</highlight></codeline>
+<codeline lineno="693"><highlight class="normal"><sp/><sp/>AtomicType<sp/>mytype;</highlight></codeline>
+<codeline lineno="694"><highlight class="normal"><sp/><sp/>std::string<sp/>algorithm;</highlight></codeline>
+<codeline lineno="695"><highlight class="normal"><sp/><sp/>std::string<sp/>algid;</highlight></codeline>
+<codeline lineno="696"><highlight class="normal"></highlight></codeline>
+<codeline lineno="697"><highlight class="normal"></highlight></codeline>
+<codeline lineno="698"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>boost::serialization::access;</highlight></codeline>
+<codeline lineno="699"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">template</highlight><highlight class="normal">&lt;</highlight><highlight class="keyword">class</highlight><highlight class="normal"><sp/>Archive&gt;</highlight></codeline>
+<codeline lineno="700"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>serialize(Archive&amp;<sp/>ar,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>version)</highlight></codeline>
+<codeline lineno="701"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="702"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>boost::serialization::base_object&lt;BasicProcessingHistory&gt;(*this);</highlight></codeline>
+<codeline lineno="703"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>nodes;</highlight></codeline>
+<codeline lineno="704"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>current_status;</highlight></codeline>
+<codeline lineno="705"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>current_id;</highlight></codeline>
+<codeline lineno="706"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>current_stage;</highlight></codeline>
+<codeline lineno="707"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>mytype;</highlight></codeline>
+<codeline lineno="708"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algorithm;</highlight></codeline>
+<codeline lineno="709"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>algid;</highlight></codeline>
+<codeline lineno="710"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ar<sp/>&amp;<sp/>elog;</highlight></codeline>
+<codeline lineno="711"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="712"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="713"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>function<sp/>prototypes<sp/>of<sp/>helpers<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="714"><highlight class="normal"></highlight></codeline>
+<codeline lineno="730"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>Tdata&gt;</highlight></codeline>
+<codeline lineno="731"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>append_input(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Tdata&amp;<sp/>d,<sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>his)</highlight></codeline>
+<codeline lineno="732"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="733"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(d.live())</highlight></codeline>
+<codeline lineno="734"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="735"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref><sp/>*ptr=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="keyword">const<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(&amp;d);</highlight></codeline>
+<codeline lineno="736"><highlight class="normal"><sp/><sp/><sp/><sp/>his.<ref refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" kindref="member">add_one_input</ref>(*ptr);</highlight></codeline>
+<codeline lineno="737"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="738"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="739"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>this<sp/>pair<sp/>of<sp/>functions<sp/>did<sp/>things<sp/>that<sp/>were<sp/>methods<sp/>in<sp/>an<sp/>earlier</highlight></codeline>
+<codeline lineno="740"><highlight class="comment">prototype.<sp/><sp/>What<sp/>they<sp/>do<sp/>is<sp/>still<sp/>useful<sp/>but<sp/>making<sp/>them<sp/>functions</highlight></codeline>
+<codeline lineno="741"><highlight class="comment">reduced<sp/>the<sp/>baggage<sp/>in<sp/>the<sp/>ProcessingHistory<sp/>class.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="742"><highlight class="normal"></highlight></codeline>
+<codeline lineno="756"><highlight class="normal">std::list&lt;std::tuple&lt;int,std::string,std::string&gt;&gt;</highlight></codeline>
+<codeline lineno="757"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>algorithm_history(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>h);</highlight></codeline>
+<codeline lineno="777"><highlight class="normal">std::list&lt;std::string&gt;<sp/>algorithm_outputs(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>h,</highlight></codeline>
+<codeline lineno="778"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>algid);</highlight></codeline>
+<codeline lineno="779"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="780"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="781"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessingHistory.h"/>
+  </compounddef>
+</doxygen>

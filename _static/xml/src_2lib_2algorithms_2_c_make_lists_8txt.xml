@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="src_2lib_2algorithms_2_c_make_lists_8txt_1a477f2d8ff7ef94cf313f3b513e94494b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>FILE</definition>
+        <argsstring>(GLOB sources_alg_basics agc.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc tseries_helpers.cc) FILE(GLOB sources_amplitudes amplitudes.cc) include_directories($</argsstring>
+        <name>FILE</name>
+        <param>
+          <type>GLOB sources_alg_basics agc.cc seismogram_helpers.cc slice_and_dice.cc sparse_convolve.cc tseries_helpers.</type>
+          <declname>cc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/CMakeLists.txt" line="1" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/CMakeLists.txt" bodystart="1" bodyend="11"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal">FILE(GLOB<sp/>sources_alg_basics<sp/></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>agc.cc<sp/></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>seismogram_helpers.cc<sp/></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>slice_and_dice.cc<sp/></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>sparse_convolve.cc<sp/></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>tseries_helpers.cc)</highlight></codeline>
+<codeline lineno="7"><highlight class="normal">FILE(GLOB<sp/>sources_amplitudes<sp/></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>amplitudes.cc)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">include_directories(</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/>${Boost_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/>${pybind11_INCLUDE_DIR}</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/>${PYTHON_INCLUDE_DIRS}</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal">add_library(alg_basics<sp/>STATIC<sp/>${sources_alg_basics})</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">add_library(amplitudes<sp/>STATIC<sp/>${sources_amplitudes})</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">target_link_libraries(alg_basics<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
+<codeline lineno="20"><highlight class="normal">target_link_libraries(amplitudes<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">file(WRITE<sp/>${CMAKE_BINARY_DIR}/src/dummy.cc<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal">add_library(algorithms<sp/>${CMAKE_BINARY_DIR}/src/dummy.cc)</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">target_link_libraries(algorithms<sp/>PUBLIC<sp/>alg_basics<sp/>amplitudes<sp/>deconvolution)</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">install<sp/>(TARGETS<sp/>algorithms<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+    </programlisting>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

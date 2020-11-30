@@ -1,0 +1,315 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_error_logger" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::ErrorLogger</compoundname>
+    <includes refid="_error_logger_8h" local="no">ErrorLogger.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_error_logger_1a0f90328f98d881c73e70281967211b41" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::job_id</definition>
+        <argsstring></argsstring>
+        <name>job_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="109" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_error_logger_1a6795f0fbec41addf06077f7aa8d36ba8" prot="private" static="no" mutable="no">
+        <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt;</type>
+        <definition>std::list&lt;LogData&gt; mspass::utility::ErrorLogger::allmessages</definition>
+        <argsstring></argsstring>
+        <name>allmessages</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="110" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a83df0e1e0bd7429646416a99e5eae60b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ErrorLogger::ErrorLogger</definition>
+        <argsstring>()</argsstring>
+        <name>ErrorLogger</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="63" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a5989e703c95cade0f3929de8f63edd10" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ErrorLogger::ErrorLogger</definition>
+        <argsstring>(int job)</argsstring>
+        <name>ErrorLogger</name>
+        <param>
+          <type>int</type>
+          <declname>job</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="64" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="64" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a79f494e5eaa29dd10e6089ff8f1a8e49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ErrorLogger::ErrorLogger</definition>
+        <argsstring>(const ErrorLogger &amp;parent)</argsstring>
+        <name>ErrorLogger</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="68" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="52" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1ab61d1b8f391a571fa5660b93bad98c7d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::utility::ErrorLogger::set_job_id</definition>
+        <argsstring>(int jid)</argsstring>
+        <name>set_job_id</name>
+        <param>
+          <type>int</type>
+          <declname>jid</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="69" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a38e65725d45dd26a2e39b1ddd726463a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::get_job_id</definition>
+        <argsstring>()</argsstring>
+        <name>get_job_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="70" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::log_error</definition>
+        <argsstring>(const mspass::utility::MsPASSError &amp;merr)</argsstring>
+        <name>log_error</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref> &amp;</type>
+          <declname>merr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Logs one error message.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>merr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- many mspass procedures throw <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> objects. This simplifies the process of posting them to an error log.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>size of error log after insertion. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="78" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="70" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a51545bad29895f7c1393ccbfed6e2aa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::log_error</definition>
+        <argsstring>(const std::string alg, const std::string mess, const mspass::utility::ErrorSeverity level)</argsstring>
+        <name>log_error</name>
+        <param>
+          <type>const std::string</type>
+          <declname>alg</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>mess</declname>
+        </param>
+        <param>
+          <type>const mspass::utility::ErrorSeverity</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Log one a message directly with a specified severity.</para><para>This is a convenience overload of log_error. It splits the <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> components as arguments with a default that allows a default behavior of Invalid as the error state.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>alg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is name of algorithm posting this message </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>mess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the message to be posted. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the badness level to be set with the message. (default is ErrorSeverity::Invalid).</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>size of error log after insertion. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="92" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="76" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::log_verbose</definition>
+        <argsstring>(const std::string alg, const std::string mess)</argsstring>
+        <name>log_verbose</name>
+        <param>
+          <type>const std::string</type>
+          <declname>alg</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>mess</declname>
+        </param>
+        <briefdescription>
+<para>Log a verbose message marking it informational. </para>        </briefdescription>
+        <detaileddescription>
+<para>Frequently programs need a verbose option to log something of interest that is not an error but potentially useful. This alternate logging method posts the string mess and marks it Informational. Returns the size of the log after insertion. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="102" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="83" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1adef316fcec8af2b6ef30b4d290ac0bfb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt;</type>
+        <definition>std::list&lt;LogData&gt; mspass::utility::ErrorLogger::get_error_log</definition>
+        <argsstring>() const</argsstring>
+        <name>get_error_log</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="103" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="103" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a13450cb0a04da9b190832a73834fb6cf" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::utility::ErrorLogger::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="104" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="104" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a1168408b473c80d078bfc2e8bd98bb75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+        <definition>ErrorLogger &amp; mspass::utility::ErrorLogger::operator=</definition>
+        <argsstring>(const ErrorLogger &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="105" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="61" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &gt;</type>
+        <definition>list&lt; LogData &gt; mspass::utility::ErrorLogger::worst_errors</definition>
+        <argsstring>() const</argsstring>
+        <name>worst_errors</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return an std::list container with most serious error level marked. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="107" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="96" bodyend="132"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_error_logger_1a014d32cf9f8f5ae560fe30a6af610420" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::utility::ErrorLogger::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="113" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="113" bodyend="117"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Container to hold error logs for a data object. </para>    </briefdescription>
+    <detaileddescription>
+<para>This class is intended mainly to be added to data objects in mspass to provide a scalable, thread safe method for logging errors. Atomic mspass data objects (e.g. seismograms and time series objects) all use this class to log errors and mark data with ambiguous states. The log can explain why data is an invalid state, but can also contain debug information normally enabled by something like a verbose option to a program. </para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="61" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="60" bodyend="118"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a6795f0fbec41addf06077f7aa8d36ba8" prot="private" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>allmessages</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a83df0e1e0bd7429646416a99e5eae60b" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a5989e703c95cade0f3929de8f63edd10" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a79f494e5eaa29dd10e6089ff8f1a8e49" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>ErrorLogger</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1adef316fcec8af2b6ef30b4d290ac0bfb" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>get_error_log</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a38e65725d45dd26a2e39b1ddd726463a" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>get_job_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a0f90328f98d881c73e70281967211b41" prot="private" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>job_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a51545bad29895f7c1393ccbfed6e2aa2" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>log_verbose</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a1168408b473c80d078bfc2e8bd98bb75" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a014d32cf9f8f5ae560fe30a6af610420" prot="private" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>serialize</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1ab61d1b8f391a571fa5660b93bad98c7d" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>set_job_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a13450cb0a04da9b190832a73834fb6cf" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>size</name></member>
+      <member refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" prot="public" virt="non-virtual"><scope>mspass::utility::ErrorLogger</scope><name>worst_errors</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

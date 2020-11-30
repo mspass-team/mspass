@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="utility_8h" kind="file" language="C++">
+    <compoundname>utility.h</compoundname>
+    <includes local="no">string</includes>
+    <includes refid="dmatrix_8h" local="no">mspass/utility/dmatrix.h</includes>
+    <includedby refid="mspass_8h" local="yes">/home/travis/build/wangyinz/mspass/cxx/include/mspass/mspass.h</includedby>
+    <includedby refid="_attribute_map_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AttributeMap.cc</includedby>
+    <includedby refid="_metadata_definitions_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</includedby>
+    <incdepgraph>
+      <node id="759">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="761">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="754">
+        <label>string</label>
+      </node>
+      <node id="763">
+        <label>exception</label>
+      </node>
+      <node id="760">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="758">
+        <label>vector</label>
+      </node>
+      <node id="757">
+        <label>sstream</label>
+      </node>
+      <node id="762">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="756" relation="include">
+        </childnode>
+        <childnode refid="763" relation="include">
+        </childnode>
+      </node>
+      <node id="753">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/utility.h</label>
+        <link refid="utility_8h"/>
+        <childnode refid="754" relation="include">
+        </childnode>
+        <childnode refid="755" relation="include">
+        </childnode>
+      </node>
+      <node id="756">
+        <label>iostream</label>
+      </node>
+      <node id="755">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="754" relation="include">
+        </childnode>
+        <childnode refid="756" relation="include">
+        </childnode>
+        <childnode refid="757" relation="include">
+        </childnode>
+        <childnode refid="758" relation="include">
+        </childnode>
+        <childnode refid="759" relation="include">
+        </childnode>
+        <childnode refid="760" relation="include">
+        </childnode>
+        <childnode refid="761" relation="include">
+        </childnode>
+        <childnode refid="762" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="764">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/utility.h</label>
+        <link refid="utility_8h"/>
+        <childnode refid="765" relation="include">
+        </childnode>
+      </node>
+      <node id="765">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*<sp/>This<sp/>header<sp/>is<sp/>to<sp/>contain<sp/>assorted<sp/>useful<sp/>C<sp/>and<sp/>C++<sp/>procedures<sp/></highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/><sp/><sp/>appropriate<sp/>for<sp/>the<sp/>tag<sp/>utility.h.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;mspass/utility/dmatrix.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref>{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal">std::string<sp/>data_directory();</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_rows(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="36"><highlight class="normal">std::vector&lt;double&gt;<sp/>normalize_columns(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/utility.h"/>
+  </compounddef>
+</doxygen>

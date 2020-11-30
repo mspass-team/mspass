@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_vector_statistics" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::VectorStatistics</compoundname>
+    <includes refid="_vector_statistics_8h" local="no">VectorStatistics.h</includes>
+    <templateparamlist>
+      <param>
+        <type>class</type>
+        <declname>T</declname>
+        <defname>T</defname>
+      </param>
+    </templateparamlist>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_vector_statistics_1ac1859153950bb8de386012c41a090cc6" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; T &gt;</type>
+        <definition>std::vector&lt;T&gt; mspass::utility::VectorStatistics&lt; T &gt;::d</definition>
+        <argsstring></argsstring>
+        <name>d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="48" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1ae3ddde97cedb562028c3a0343bd48e47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::VectorStatistics&lt; T &gt;::VectorStatistics</definition>
+        <argsstring>(std::vector&lt; T &gt; din)</argsstring>
+        <name>VectorStatistics</name>
+        <param>
+          <type>std::vector&lt; T &gt;</type>
+          <declname>din</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Primary constructor.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>din</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is vector container from which statistics are to be derived. Currently assume default sort is used. Probably should have an optional order template parameter for the container. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="21" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="51" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1aa1e96022417eb6440ea57974d8d7a51e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::VectorStatistics&lt; T &gt;::VectorStatistics</definition>
+        <argsstring>(T *din, int n)</argsstring>
+        <name>VectorStatistics</name>
+        <param>
+          <type>T *</type>
+          <declname>din</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from a C style pointer to an array of T. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="23" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="59" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a228eee3fbd69e158a2cc0a62d855c7e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::median</definition>
+        <argsstring>()</argsstring>
+        <name>median</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return median </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="25" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="68" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1ae7d0a4345dac7fa5644dbb9169b1f5a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::mean</definition>
+        <argsstring>()</argsstring>
+        <name>mean</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the mean </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="27" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="77" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a5f4e279cde8acf41e6f77b3e01c8ee70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::q1_4</definition>
+        <argsstring>()</argsstring>
+        <name>q1_4</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the lower quartile. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="29" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="87" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a45eb0fa880a9f72b08e9cb92c9725c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::q3_4</definition>
+        <argsstring>()</argsstring>
+        <name>q3_4</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the upper (3/4) quartile. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="31" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="114" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1ad409053118c0a4c6c3dc63b0c200250f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::interquartile</definition>
+        <argsstring>()</argsstring>
+        <name>interquartile</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the interquartile (q3/4 - q1/4) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="33" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="141" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a8c88cf0408b2ff57da862b57fd87deb8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::mad</definition>
+        <argsstring>(T center)</argsstring>
+        <name>mad</name>
+        <param>
+          <type>T</type>
+          <declname>center</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the median absolute distance robust measure of spread. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="35" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="149" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a4f4fe42ae9c9cee2463fedbb21241a56" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::ssq</definition>
+        <argsstring>()</argsstring>
+        <name>ssq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return sum of squares. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="37" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="164" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1adf7ccfac2a3d89a8c39a3a260a244dc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::upper_bound</definition>
+        <argsstring>()</argsstring>
+        <name>upper_bound</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return largest value in the data set. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="39" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="171" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1ae1afa19142b902cd4934d2db0725e24f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::lower_bound</definition>
+        <argsstring>()</argsstring>
+        <name>lower_bound</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return smallest value in the data set. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="41" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="175" bodyend="178"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1adc1896ab0a7ba080ec4c0740e0506c36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::range</definition>
+        <argsstring>()</argsstring>
+        <name>range</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return full range of data (largest - smallest) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="43" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="179" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_vector_statistics_1a6d1e26b40cf27a90b97871b5302a55b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>T</type>
+        <definition>T mspass::utility::VectorStatistics&lt; T &gt;::quantile</definition>
+        <argsstring>(size_t n)</argsstring>
+        <name>quantile</name>
+        <param>
+          <type>size_t</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return nth value from the sorted data that is the nth 1-quantile. Will throw a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> if n exceed the data length. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="46" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="186" bodyend="195"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Generic object to compute common robust statistics from a vector container of data. </para>    </briefdescription>
+    <detaileddescription>
+<para>Robust estimators commonly use statistics based on ranked data. This fits naturally with an STL vector container that is by definition sortable by a standard method. This object has methods that return common statistics derived from sorted vector data. </para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" line="14" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/VectorStatistics.h" bodystart="13" bodyend="49"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1ac1859153950bb8de386012c41a090cc6" prot="private" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>d</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1ad409053118c0a4c6c3dc63b0c200250f" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>interquartile</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1ae1afa19142b902cd4934d2db0725e24f" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>lower_bound</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a8c88cf0408b2ff57da862b57fd87deb8" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>mad</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1ae7d0a4345dac7fa5644dbb9169b1f5a6" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>mean</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a228eee3fbd69e158a2cc0a62d855c7e6" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>median</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a5f4e279cde8acf41e6f77b3e01c8ee70" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>q1_4</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a45eb0fa880a9f72b08e9cb92c9725c92" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>q3_4</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a6d1e26b40cf27a90b97871b5302a55b1" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>quantile</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1adc1896ab0a7ba080ec4c0740e0506c36" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>range</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1a4f4fe42ae9c9cee2463fedbb21241a56" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>ssq</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1adf7ccfac2a3d89a8c39a3a260a244dc7" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>upper_bound</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1ae3ddde97cedb562028c3a0343bd48e47" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>VectorStatistics</name></member>
+      <member refid="classmspass_1_1utility_1_1_vector_statistics_1aa1e96022417eb6440ea57974d8d7a51e" prot="public" virt="non-virtual"><scope>mspass::utility::VectorStatistics</scope><name>VectorStatistics</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

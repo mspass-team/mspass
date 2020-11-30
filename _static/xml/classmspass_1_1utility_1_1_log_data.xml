@@ -1,0 +1,259 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_log_data" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::LogData</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1a51d8dbbff398cccfa3e853fd55690cb0" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::utility::LogData::job_id</definition>
+        <argsstring></argsstring>
+        <name>job_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="18" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1af419f98dd2dc772769bf0b71312de16f" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::utility::LogData::p_id</definition>
+        <argsstring></argsstring>
+        <name>p_id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="19" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1a5c5ea0cf75d3d15d0152139d47dfeaa3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::LogData::algorithm</definition>
+        <argsstring></argsstring>
+        <name>algorithm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="20" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1a3a1eb58388113c866f28dc76df22e154" prot="public" static="no" mutable="no">
+        <type>mspass::utility::ErrorSeverity</type>
+        <definition>mspass::utility::ErrorSeverity mspass::utility::LogData::badness</definition>
+        <argsstring></argsstring>
+        <name>badness</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="21" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_log_data_1afc4b20a2fe4c3ab0331e3a05c6c89f5e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::LogData::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="22" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1ad706d7c53a40a474e31712a44117534e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::LogData::LogData</definition>
+        <argsstring>()</argsstring>
+        <name>LogData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="23" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="23" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1adc3c00e5dc191b90cfc32cb0b148f6bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::LogData::LogData</definition>
+        <argsstring>(const int jid, const std::string alg, const mspass::utility::MsPASSError &amp;merr)</argsstring>
+        <name>LogData</name>
+        <param>
+          <type>const int</type>
+          <declname>jid</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>alg</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref> &amp;</type>
+          <declname>merr</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Normal constuctor from a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> or child of same.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>jid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the value to assign to job_id. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is assigned to algorithm attribute. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>merr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is parsed to fill the message and severity fields. Note p_id is always fetched with the system call getpid in the constructor. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="30" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="8" bodyend="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::LogData::LogData</definition>
+        <argsstring>(const int jid, const std::string alg, const std::string msg, const mspass::utility::ErrorSeverity lvl)</argsstring>
+        <name>LogData</name>
+        <param>
+          <type>const int</type>
+          <declname>jid</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>alg</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>msg</declname>
+        </param>
+        <param>
+          <type>const mspass::utility::ErrorSeverity</type>
+          <declname>lvl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Normal constuctor from strings.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>jid</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the value to assign to job_id. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>alg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is assigned to algorithm attribute. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>msg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the error message. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lvl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the error severity. Note p_id is always fetched with the system call getpid in the constructor. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="38" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ErrorLogger.cc" bodystart="17" bodyend="24"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1_log_data_1a5dd42ce5ba18a84c251894ba81877184" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend std::ostream &amp;</type>
+        <definition>std::ostream&amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;, LogData &amp;)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="39" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_log_data_1aab6f0707ed510ba391be183d2da74f54" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::utility::LogData::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="43" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="43" bodyend="50"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" line="16" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ErrorLogger.h" bodystart="15" bodyend="51"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a5c5ea0cf75d3d15d0152139d47dfeaa3" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>algorithm</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a3a1eb58388113c866f28dc76df22e154" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>badness</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a51d8dbbff398cccfa3e853fd55690cb0" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>job_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1ad706d7c53a40a474e31712a44117534e" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>LogData</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1adc3c00e5dc191b90cfc32cb0b148f6bb" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>LogData</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a672a6557b891cb6b8ce736edc2b30b2b" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>LogData</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1afc4b20a2fe4c3ab0331e3a05c6c89f5e" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>message</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1a5dd42ce5ba18a84c251894ba81877184" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1af419f98dd2dc772769bf0b71312de16f" prot="public" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>p_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_log_data_1aab6f0707ed510ba391be183d2da74f54" prot="private" virt="non-virtual"><scope>mspass::utility::LogData</scope><name>serialize</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

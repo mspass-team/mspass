@@ -1,0 +1,383 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="namespacemspass_1_1algorithms_1_1amplitudes" kind="namespace" language="C++">
+    <compoundname>mspass::algorithms::amplitudes</compoundname>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991" prot="public" static="no">
+        <name>ScalingMethod</name>
+        <enumvalue id="dummy_1a06feda79ea43acddafc6490d70fe8991aa21e600ebbe2eab6697e3087ee1fdb9f" prot="public">
+          <name>Peak</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="dummy_1a06feda79ea43acddafc6490d70fe8991a6a04f9e9b7a0c60c00fe0daa2e12eca0" prot="public">
+          <name>RMS</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Use peak amplitude method - equivalent to Linfinity norm </para>          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="dummy_1a06feda79ea43acddafc6490d70fe8991aa9cd85059c37be2ad6de4d3b33338986" prot="public">
+          <name>ClipPerc</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Use RMS amplitude method - L2 norm of data. </para>          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="dummy_1a06feda79ea43acddafc6490d70fe8991a93720e823d9d9af2323095152cb82906" prot="public">
+          <name>MAD</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Use a percent clip scaling method as used in seismic unix.</para><para>Use median absolute deviation scaling - a form of L1 norm </para>          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="18" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="17" bodyend="23"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="amplitudes_8h_1aa0a17feb9807a734a5392c315bf6fb46" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::PeakAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;d)</argsstring>
+        <name>PeakAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="9" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="14" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1ab03e48fee66c761ec81d488464a3dad2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::PeakAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
+        <name>PeakAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="10" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="24" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1ab7a8bbe38038b955d8f1353fd9558d33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::RMSAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;d)</argsstring>
+        <name>RMSAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="11" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="46" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a6e6dd6a5248288bb6aab9e0dc5031d18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::RMSAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
+        <name>RMSAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="12" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="51" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a0c93191178dcb1441656480f68b03374" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::PerfAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;d, const double perf)</argsstring>
+        <name>PerfAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>perf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="13" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="66" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1aef7dd38212242e77f54e46146fecbf21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::PerfAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, const double perf)</argsstring>
+        <name>PerfAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>perf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="14" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="77" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a4f79946a40fdc2e1df68592b26317420" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::MADAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;d)</argsstring>
+        <name>MADAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="15" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="94" bodyend="97"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a6b94e081655549c532607655f467e003" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::MADAmplitude</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
+        <name>MADAmplitude</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="16" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/amplitudes.cc" bodystart="98" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1ab09ae85e7dbc65c63a62b9d463fa203b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::algorithms::amplitudes::scale_factor_key</definition>
+        <argsstring>(&quot;calib&quot;)</argsstring>
+        <name>scale_factor_key</name>
+        <param>
+          <type>&quot;calib&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="24" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a292b348870be2434e739d596f155fbf0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Tdata</type>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::scale</definition>
+        <argsstring>(Tdata &amp;d, const ScalingMethod method, const double level)</argsstring>
+        <name>scale</name>
+        <param>
+          <type>Tdata &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const ScalingMethod</type>
+          <declname>method</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+<para>Scaling function for atomic data objects in mspass. </para>        </briefdescription>
+        <detaileddescription>
+<para>An atomic data object in this case means a class that is a child of Metadata and BasictimeSeries. The function pulls the existing value for scale_factor_key (calib), computes a scale factor based on computed amplitude metric by specified method, scales the to have that metric be that defined by level, and then sets the value associated with scale_factor_key appropriately to define conversion back to the original units.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and RMSAmplitude are defined for d. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sets the scaling metric defined through ScalingMethod eum class. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>has two different contexts. For PerfAmplitude it must be a a number n with 0&lt;n&lt;=1.0 </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>computed amplitude </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="46" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="46" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1a832ea3f3d389cb4417f81e7712b65c19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Tdata</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::amplitudes::scale_ensemble_members</definition>
+        <argsstring>(mspass::seismic::Ensemble&lt; Tdata &gt; &amp;d, const ScalingMethod &amp;method, const double level)</argsstring>
+        <name>scale_ensemble_members</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; Tdata &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const ScalingMethod &amp;</type>
+          <declname>method</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>level</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Generic function to scale ensembles.</para><para>This function is the ensemble version of the scale function defined elsewhere in this file. It applies a scaling member by member using the scale function for each. The template is for member data type.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sets the scaling metric defined through ScalingMethod eum class. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>has two different contexts. For PerfAmplitude it must be a a number n with 0&lt;n&lt;=1.0</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>vector of computed amplitudes </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="106" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="106" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="amplitudes_8h_1ae189abc306db43f917c0c805fd62dce5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Tdata</type>
+          </param>
+        </templateparamlist>
+        <type>double</type>
+        <definition>double mspass::algorithms::amplitudes::scale_ensemble</definition>
+        <argsstring>(mspass::seismic::Ensemble&lt; Tdata &gt; &amp;d, const ScalingMethod &amp;method, const double level, const bool use_mean)</argsstring>
+        <name>scale_ensemble</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; Tdata &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const ScalingMethod &amp;</type>
+          <declname>method</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>level</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>use_mean</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Generic function to apply an ensemble average scale factor.</para><para>Sometimes we want to preserve true relative amplitudes between members of an ensemble but we need to scale the overall data to some range (e.g order 1 for plotting). Use this function to do that for ensembles. The scale_ensemble_members function, in contrast, scales each member separately.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be scale. Works only if overloaded functions PeakAmplitude, PerfAmplitude, MADAmplitude, and RMSAmplitude are defined for ensemble members. Currently that means CoreTimeSeries and CoreSeismogram. Note in mspass this assumes history preservation is handled in python wrappers. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>method</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sets the scaling metric defined through ScalingMethod eum class. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>level</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>has two different contexts. For PerfAmplitude it must be a a number n with 0&lt;n&lt;=1.0 </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>use_mean</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>(boolean) when true use the mean log amplitude to set the gain. Default uses median.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>computed average amplitude </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="145" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" bodystart="145" bodyend="215"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/amplitudes.h" line="8" column="1"/>
+  </compounddef>
+</doxygen>

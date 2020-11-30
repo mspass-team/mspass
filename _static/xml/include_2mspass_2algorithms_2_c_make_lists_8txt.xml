@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="include_2mspass_2algorithms_2_c_make_lists_8txt" kind="file" language="C++">
+    <compoundname>CMakeLists.txt</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal">FILE(GLOB<sp/>seismic_headers<sp/>*.h)</highlight></codeline>
+<codeline lineno="2"><highlight class="normal">install<sp/>(FILES<sp/>${seismic_headers}<sp/>DESTINATION<sp/>include/<ref refid="namespacemspass" kindref="compound">mspass</ref>/algorithms)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
+    </programlisting>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/CMakeLists.txt"/>
+  </compounddef>
+</doxygen>

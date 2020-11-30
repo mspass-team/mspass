@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="namespacemspass_1_1seismic" kind="namespace" language="C++">
+    <compoundname>mspass::seismic</compoundname>
+    <innerclass refid="classmspass_1_1seismic_1_1_basic_taper" prot="public">mspass::seismic::BasicTaper</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public">mspass::seismic::BasicTimeSeries</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public">mspass::seismic::CoreSeismogram</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_core_time_series" prot="public">mspass::seismic::CoreTimeSeries</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_cosine_taper" prot="public">mspass::seismic::CosineTaper</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_data_gap" prot="public">mspass::seismic::DataGap</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_ensemble" prot="public">mspass::seismic::Ensemble</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_linear_taper" prot="public">mspass::seismic::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_seismogram" prot="public">mspass::seismic::Seismogram</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_seismogram_w_gaps" prot="public">mspass::seismic::SeismogramWGaps</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_slowness_vector" prot="public">mspass::seismic::SlownessVector</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_time_series" prot="public">mspass::seismic::TimeSeries</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_time_series_w_gaps" prot="public">mspass::seismic::TimeSeriesWGaps</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_time_window" prot="public">mspass::seismic::TimeWindow</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
+    <innerclass refid="classmspass_1_1seismic_1_1_vector_taper" prot="public">mspass::seismic::VectorTaper</innerclass>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="_basic_time_series_8h_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no">
+        <name>TimeReferenceType</name>
+        <enumvalue id="dummy_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" prot="public">
+          <name>UTC</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Use an absolute (usually UTC) time base - previously absolute in SEISPP. </para>          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="dummy_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" prot="public">
+          <name>Relative</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+<para>Time is relative to some other standard like shot time </para>          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Type of time standard for time series data. </para>        </briefdescription>
+        <detaileddescription>
+<para>Time series data have two common standards. Absolute time means the time is an epoch time. Relative means time is some other arbitrary reference. An example is an arrival time reference frame where all data are set with time zero defined by a set of arrival time picks. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="14" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="14" bodyend="17"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="_ensemble_8h_1a9bdfc71411e6ef751bb5daa7e97987d0" prot="public" static="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
+        <definition>typedef Ensemble&lt;TimeSeries&gt; mspass::seismic::TimeSeriesEnsemble</definition>
+        <argsstring></argsstring>
+        <name>TimeSeriesEnsemble</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Useful alias for Ensemble&lt;TimeSeries&gt; </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="99" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="_ensemble_8h_1accd4b8b7754c4bec01071aad61edf3cc" prot="public" static="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt;</type>
+        <definition>typedef Ensemble&lt;Seismogram&gt; mspass::seismic::ThreeComponentEnsemble</definition>
+        <argsstring></argsstring>
+        <name>ThreeComponentEnsemble</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Useful alias for Ensemble&lt;Seismogram&gt; </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" line="101" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="_taper_8cc_1ac593dcd952e8270c874be5c630039d3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::headcos</definition>
+        <argsstring>(double t0, double t1, double t)</argsstring>
+        <name>headcos</name>
+        <param>
+          <type>double</type>
+          <declname>t0</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Taper.cc" line="180" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="180" bodyend="189"/>
+      </memberdef>
+      <memberdef kind="function" id="_taper_8cc_1aca4e4a41dbb0cd855873ae1296a2a416" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::tailcos</definition>
+        <argsstring>(double t0, double t1, double t)</argsstring>
+        <name>tailcos</name>
+        <param>
+          <type>double</type>
+          <declname>t0</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Taper.cc" line="190" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="190" bodyend="198"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="6" column="1"/>
+  </compounddef>
+</doxygen>

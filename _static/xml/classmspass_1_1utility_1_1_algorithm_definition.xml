@@ -1,0 +1,244 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_algorithm_definition" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::AlgorithmDefinition</compoundname>
+    <includes refid="_process_manager_8h" local="no">ProcessManager.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1a5710be2a0e914ed47c80cb12a72f4e91" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::nm</definition>
+        <argsstring></argsstring>
+        <name>nm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="115" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1a865187a8175d8624cdf20f637e99a6cc" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::myid</definition>
+        <argsstring></argsstring>
+        <name>myid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="116" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1adac0168534adcf656625144fa5037e6a" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::input_type</definition>
+        <argsstring></argsstring>
+        <name>input_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="117" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_algorithm_definition_1ad706e56cf2c6e1ae07f1c120e9b0379c" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::output_type</definition>
+        <argsstring></argsstring>
+        <name>output_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="118" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
+        <argsstring>()</argsstring>
+        <name>AlgorithmDefinition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor.</para><para>This consructor is realy the same as what would be automatically generated. We define it to be clear and because I think pybind11 may need this declaration to allow a python wrapper for a default constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="51" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
+        <argsstring>(const std::string name, const std::string typin, const std::string typout, const std::string id)</argsstring>
+        <name>AlgorithmDefinition</name>
+        <param>
+          <type>const std::string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>typin</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>typout</declname>
+        </param>
+        <param>
+          <type>const std::string</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Primary constructor.</para><para>This constructor sets the two primary attributes of this object. name is a descriptive (unique) name assigned to the algorithm and id is a unique id key. In MsPASS it is the string representation of the ObjectID assigned to the MongoDB document holding the parameter data that defines this instance of an algorithm.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the algorithm&apos;s (unique) name </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a unique id string defining the parameters that were used for this instance of an algorithm. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="64" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="64" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a02dd4777ac17f4c8ac2131dc594f5263" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::AlgorithmDefinition::AlgorithmDefinition</definition>
+        <argsstring>(const AlgorithmDefinition &amp;parent)</argsstring>
+        <name>AlgorithmDefinition</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="72" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="72" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a450718baca75f269b4e5305a221a6e0c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::name</definition>
+        <argsstring>() const</argsstring>
+        <name>name</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="79" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="79" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::AlgorithmDefinition::id</definition>
+        <argsstring>() const</argsstring>
+        <name>id</name>
+        <briefdescription>
+<para>return the id as a string. </para>        </briefdescription>
+        <detaileddescription>
+<para>In MsPASS the id is normally a MongoDB ObjectID string representation of the documnt saved in the database that holds the paramters defining a particular algorithm instance. If the algorithm has no parameters this string will be null. Callers should test that condition by calling the length method of std::string to verify the id is not zero length </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="90" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="90" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::utility::AlgorithmDefinition::set_id</definition>
+        <argsstring>(const std::string id)</argsstring>
+        <name>set_id</name>
+        <param>
+          <type>const std::string</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Set a new id string.</para><para>The id straing is used to define a unique instance of an algorithm for a particular set of parameters. This is the only putter for this class because it is the only attribute that should ever be changed after construction. The reason is the name and type constraints are fixed, but id defines a particular instance that may be variable. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="101" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1ac3530e744955be31cfda8abc75375b73" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+        <definition>AlgorithmDefinition&amp; mspass::utility::AlgorithmDefinition::operator=</definition>
+        <argsstring>(const AlgorithmDefinition &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="103" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="103" bodyend="113"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_algorithm_definition_1a96d0b39dbc12bbb07cf925d57c55893f" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::utility::AlgorithmDefinition::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="121" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="121" bodyend="125"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Lightweight data structure to completely describe an algorithm. </para>    </briefdescription>
+    <detaileddescription>
+<para>Processing data always involves application of one or more algorithms. Most algorithms have one to many parameters that define the algorithm&apos;s detailed behavior. Because the size of parametric input can sometimes be huge MsPASS needed a way to carry a concise summary of algorithms applied to data. The issue is complicated by the fact that the same algorithm may be applied to data at diffrent stages with different parameters (e.g. bandpass filters applied before and after deconvolution). To address this problem we save input parameters for any instance of an algorithm in MongoDB as a document in the history collection. This implementation uses a simple string to define a particular instance. In the current implementation of MsPASS that is set as the string representation of the ObjectID defined for that document. An alternative would be UUID as used in TimeSeries and Seismogram objects, but we prefer the ObjectID string here as it is a guaranteed unique key by MongoDB, always has an index defined for the collection, and reduces the size of the history collection by not requiring a uuid attribute.</para><para>Any algorithm for which no optional parameters are needed will have the id field empty.</para><para>A special case is readers that act as origins from &quot;raw&quot; which may not literally be &quot;raw&quot; but is just a signal that a reader initiated a history chain. For readers input_type is set to &quot;NotApplicable&quot; and output_type is to be defined for that reader. Readers may or may not have control parameters. </para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="44" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="43" bodyend="126"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a23ca24b9ba072a9a874044c7d16116f0" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>AlgorithmDefinition</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a7cc0aa96863729272c2a0f1a61b086e5" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>AlgorithmDefinition</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a02dd4777ac17f4c8ac2131dc594f5263" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>AlgorithmDefinition</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>id</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1adac0168534adcf656625144fa5037e6a" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>input_type</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a865187a8175d8624cdf20f637e99a6cc" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>myid</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a450718baca75f269b4e5305a221a6e0c" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>name</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a5710be2a0e914ed47c80cb12a72f4e91" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>nm</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1ac3530e744955be31cfda8abc75375b73" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1ad706e56cf2c6e1ae07f1c120e9b0379c" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>output_type</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a96d0b39dbc12bbb07cf925d57c55893f" prot="private" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>serialize</name></member>
+      <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a68aacda33ad00fd84803b51013e8b4ff" prot="public" virt="non-virtual"><scope>mspass::utility::AlgorithmDefinition</scope><name>set_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

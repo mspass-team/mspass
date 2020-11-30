@@ -1,0 +1,441 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1seismic_1_1_time_series_w_gaps" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::TimeSeriesWGaps</compoundname>
+    <basecompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</basecompoundref>
+    <basecompoundref refid="classmspass_1_1seismic_1_1_data_gap" prot="public" virt="non-virtual">mspass::seismic::DataGap</basecompoundref>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeSeriesWGaps::TimeSeriesWGaps</definition>
+        <argsstring>()</argsstring>
+        <name>TimeSeriesWGaps</name>
+        <briefdescription>
+<para>Constructor. </para>        </briefdescription>
+        <detaileddescription>
+<para>Will need a set of conastructors. Requires some thought as how to set gap is an issue. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeSeriesWGaps::TimeSeriesWGaps</definition>
+        <argsstring>(const TimeSeriesWGaps &amp;parent)</argsstring>
+        <name>TimeSeriesWGaps</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="15" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ad60b9b5ef539e354d48ba7abc01409b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
+        <definition>TimeSeriesWGaps&amp; mspass::seismic::TimeSeriesWGaps::operator=</definition>
+        <argsstring>(const TimeSeriesWGaps &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="16" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a364cc91f8c6943a99720fd220a0afb14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::TimeSeriesWGaps::~TimeSeriesWGaps</definition>
+        <argsstring>()</argsstring>
+        <name>~TimeSeriesWGaps</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="17" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::TimeSeriesWGaps::ator</definition>
+        <argsstring>(const double tshift)</argsstring>
+        <name>ator</name>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611">ator</reimplements>
+        <param>
+          <type>const double</type>
+          <declname>tshift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Absolute to relative time conversion. Sometimes we want to convert data from absolute time (epoch times) to a relative time standard. Examples are conversions to travel time using an event origin time or shifting to an arrival time reference frame. This operation simply switches the tref variable and alters t0 by tshift.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tshift</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- time shift applied to data before switching data to relative time mode. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::TimeSeriesWGaps::rtoa</definition>
+        <argsstring>(const double tshift)</argsstring>
+        <name>rtoa</name>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1afe633ff8b3ebedc52b22c25c0f572c3c">rtoa</reimplements>
+        <param>
+          <type>const double</type>
+          <declname>tshift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database. This operation simply switches the tref variable and alters t0 by tshift.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tshift</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- time shift applied to data before switching data to absolute time mode.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+NOTE: This method is maintained only for backward compatibility. May be depricated in favor of method that uses internally stored private shift variable. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::TimeSeriesWGaps::rtoa</definition>
+        <argsstring>()</argsstring>
+        <name>rtoa</name>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b">rtoa</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para><para>This method returns data previously converted to relative back to absolute using the internally stored time shift attribute.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="56" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::TimeSeriesWGaps::shift</definition>
+        <argsstring>(const double dt)</argsstring>
+        <name>shift</name>
+        <reimplements refid="classmspass_1_1seismic_1_1_basic_time_series_1a35bf7426cc825e9b3dcf3226816d8316">shift</reimplements>
+        <param>
+          <type>const double</type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Shift the reference time.</para><para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="63" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::TimeSeriesWGaps::zero_gaps</definition>
+        <argsstring>()</argsstring>
+        <name>zero_gaps</name>
+        <reimplements refid="classmspass_1_1seismic_1_1_data_gap_1ad57272fa5685b99efb01bd4c740900d6">zero_gaps</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Force all data inside data gaps to zero. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="221">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="222" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="216">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="217" relation="public-inheritance">
+        </childnode>
+        <childnode refid="221" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="223">
+        <label>mspass::seismic::DataGap</label>
+        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
+      </node>
+      <node id="218">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="219">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="220" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="215">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="216" relation="public-inheritance">
+        </childnode>
+        <childnode refid="223" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="220">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="222">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="217">
+        <label>mspass::seismic::CoreTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
+        <childnode refid="218" relation="public-inheritance">
+        </childnode>
+        <childnode refid="219" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="230">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="231" relation="public-inheritance">
+        </childnode>
+        <childnode refid="232" relation="usage">
+          <edgelabel>elog</edgelabel>
+        </childnode>
+      </node>
+      <node id="225">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="226" relation="public-inheritance">
+        </childnode>
+        <childnode refid="230" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="233">
+        <label>mspass::seismic::DataGap</label>
+        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
+      </node>
+      <node id="227">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="228">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="229" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="224">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="225" relation="public-inheritance">
+        </childnode>
+        <childnode refid="233" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="232">
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
+      </node>
+      <node id="229">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="231">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="226">
+        <label>mspass::seismic::CoreTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
+        <childnode refid="227" relation="public-inheritance">
+        </childnode>
+        <childnode refid="228" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="7" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="6" bodyend="68"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>accumulate</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_gap</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_many_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_one_input</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>append_chain</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ator</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a28dd8e5f6b22ab7b24b522cafb8f91c5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a8b077e34de9e1e0a25c24e781c1d235d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a50db83159f5d5fd204c2a8d74a43649a" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8945a16bf52101d89dbc6f7b907b3fd9" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>begin</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>change_key</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>changed_or_set</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>clean_accumulate_uuids</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" prot="public" virt="non-virtual" ambiguityscope="mspass::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>clear</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>clear</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>clear_gaps</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>clear_modified</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aed10ca1cc8781f4557bc547341d61587" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a50c8a73d47538a94eddccd53bdfa183a" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>created_by</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>current_nodedata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>dead</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>dt</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>elog</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>end</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>endtime</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>force_t0_shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>gaps</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5d6876ed25c3f5d93052239ec828a3c5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_any</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a52b0394b444f6db307945284ac6e5f8a" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_nodes</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>get_string</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>has_gap</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>id</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1aec695e46a390b9cf55f1919af803fb33" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_defined</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_empty</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a2d3e9e782c3422fcde7a022179aadce1" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_gap</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1adf3621238e5e44ac3c8fb014b24420b4" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_gap</name></member>
+      <member refid="classmspass_1_1seismic_1_1_data_gap_1a52dcbddf4937cb18da6e3486ce8cf84c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_gap</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a477b2020ad7e3c753999e3906cd8eb58" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_origin</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a440cedfda00fd0b7211ed4673f09426e" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_raw</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a35cd2643171f354ded06e1a34681961d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_saved</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a8cfd15514483fc2701e53ba1be8412e9" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>is_volatile</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1ac3ffa201ded102104675f2daccd379d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>jid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a6d8756ffc6b2b0a3b068d2014c2f8a6c" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>jnm</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a42047587403f5f37567a870f23554da6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>jobid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a16963d48a18867fe480a276ac5d32844" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>jobname</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>keys</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>kill</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>live</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a7fe9d22283889a1fa68fbbd0c229008d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>load_history</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ab5152d2f6a4706e635d6ca16e68b9bcc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>map_as_saved</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1af564bb9ced4cc480d71a1e13c3fa582e" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>md</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>mdt</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>merge</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>Metadata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>mlive</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>modified</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>mt0</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a4179eb1f453e094c541f8c4a7b5ea3d0" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_ensemble_process</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a75af2861c06a905968cc9c727b8cc877" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_map</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ae0225ef6ba03dc64ebb711bb54b1554d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_map</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>newid</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ad6acef2beb453d7034ab86087a3936aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>nodes</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>nsamp</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>number_of_stages</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator*=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ad60b9b5ef539e354d48ba7abc01409b7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1abdea57bd025f81cc00375db3a7e1c854" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::TimeSeries::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::BasicTimeSeries::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::BasicProcessingHistory::"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a78c4def2e3503ba2fbdadf3c02b733a7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a225e2e1941f342f3764c2c27854ad2f6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a80dc3ba4e28743d0b13c105dc62428aa" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ProcessingHistory</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab2162ed3e7349998ee06ace77645bf77" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aec776bbbbf8528903432d9b30d1272d8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aefee14db8cda9c7143a0eb7bf2d1be1f" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a11ef6cbc1adec7964e2d9c3a4ead15b1" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab3989b1152e9b7b3dcce36aaec89f46d" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1adc016a9bb2288f1f0a7687cfa6844ceb" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1add02049febdc316d70d0fb62e96b2e36" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_bool</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aafaa017f0e16f37a81a6abdb406a1e08" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_double</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5fe91d35373564958386f08915b7ce3c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_int</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ab1ede27ae9810767832f0879ccbfd234" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_long</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1aa8402af6778236df398ff0fe25911e21" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_object</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>put_string</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>rtoa</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>rtoa</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>s</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>samprate</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_as_origin</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_dt</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1aec67690fe76c0d6c41dc096bc2f400ae" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_id</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1abe8702f0b485cea3357b92c9f0226023" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_jobid</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1af6c7149734faa2c0b4d51fa8e317db27" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_jobname</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_live</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_t0</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>set_tref</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1e83b446d82202d808504429b0257eb0" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>shifted</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>size</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>stage</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a1ef35389afcd6d4305442a3720398a34" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>status</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>sync_npts</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>t0</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>t0shift</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>t0shift_is_valid</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>time_is_relative</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>time_is_UTC</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>time_reference</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a45c61ee8b73600c3576f8f750f926311" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a08f3ad76e126f1e26fbabeca1d9e7796" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a1d23975e71b4fe23b21dd6a7a9f10a46" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1aa631eb4114fc29b2152e048eba1bc218" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a518cbd17b96169fe12db31f80c82fc8c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a6a4b2b0864ba62341790fc16d6aa222c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>TimeSeriesWGaps</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>timetype</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>tref</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>type</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>zero_gaps</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicMetadata</name></member>
+      <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a54309603aef4519ce67980b3cf58aef2" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicProcessingHistory</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a2839e2405b168e0f1ad4d236f31eac8e" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~BasicTimeSeries</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a6d06560c0b169240031c6a274dc7990f" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~Metadata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a364cc91f8c6943a99720fd220a0afb14" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>~TimeSeriesWGaps</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

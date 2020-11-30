@@ -1,0 +1,482 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="namespacemspass_1_1algorithms" kind="namespace" language="C++">
+    <compoundname>mspass::algorithms</compoundname>
+    <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="algorithms_8h_1ae367c50f064c9ecfb2f81c8727cf9871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::agc</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const double twin)</argsstring>
+        <name>agc</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>twin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="34" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1abf60265509588e936ec28743209765ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
+        <definition>Seismogram mspass::algorithms::WindowData3C</definition>
+        <argsstring>(const mspass::seismic::Seismogram &amp;parent, const mspass::seismic::TimeWindow &amp;tw)</argsstring>
+        <name>WindowData3C</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref> &amp;</type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Extracts a requested time window of data from a parent Seismogram object. </para>        </briefdescription>
+        <detaileddescription>
+<para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para><para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para></simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger Seismogram object to be windowed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="50" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="25" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a46c0597193ca17ed189004b0c8404f31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::WindowData</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;parent, const mspass::seismic::TimeWindow &amp;tw)</argsstring>
+        <name>WindowData</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref> &amp;</type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Extracts a requested time window of data from a parent TimeSeries object. </para>        </briefdescription>
+        <detaileddescription>
+<para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para><para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para></simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger TimeSeries object to be windowed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="67" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="78" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1aea85321dad99e16a7d79c51f8e27cf08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;mspass::seismic::Seismogram&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;din, std::string key, mspass::seismic::TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>din</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Return a new Seismogram in an arrival time (relative) refernce frame. </para>        </briefdescription>
+        <detaileddescription>
+<para>An arrival time reference means that the time is set to relative and zero is defined as an arrival time extracted from the metadata area of the object. The key used to extract the arrival time used for the conversion is passed as a variable as this requires some flexibility. To preserve the absolute time standard in this conversion the 0 time computed from the arrival time field is used to compute the absolute time of the start of the output seismogram as atime+t0. This result is stored in the metadata field keyed by the word &quot;time&quot;. This allows one to convert the data back to an absolute time standard if they so desire, but it is less flexible than the input key method.</para><para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>SeisppError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>for errors in extracting required information from metadata area.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>din</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is input seismogram </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the metadata key used to find the arrival time to use as a reference. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a TimeWindow object that defines the window of data to extract around the desired arrival time. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="91" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a19d44e8cfc241d0d36787df6decc7832" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::ExtractComponent</definition>
+        <argsstring>(const mspass::seismic::Seismogram &amp;tcs, const unsigned int component)</argsstring>
+        <name>ExtractComponent</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>tcs</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>component</declname>
+        </param>
+        <briefdescription>
+<para>Extract one component from a Seismogram and create a TimeSeries object from it. </para>        </briefdescription>
+        <detaileddescription>
+<para>Copies all Metadata from parent Seismogram to build a TimeSeries object. This will often leave relics of the transformation matrix components in the header so be aware. If the processing history section is not marked as empty new_map will be called to record this algorithm was involked. The algid saved is internally set to the form &quot;component=n&quot; where n is 0, 1, or 2. With one simple argument the baggage of maintaining that detail seems unnecessary. This is a variant that may cause problems downstream so I&apos;m noting that to be aware as this system develops.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tcs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the Seismogram to convert. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>component</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the component to extract (0, 1, or 2)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>function will throw a MsPASSError if the component number is illegal</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>TimeSeries of component requested </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="114" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="187" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a9ac94cc21d2059d2e7853e31f697de0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::ThreeComponentEnsemble</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;mspass::seismic::ThreeComponentEnsemble&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(mspass::seismic::ThreeComponentEnsemble &amp;din, std::string key, mspass::seismic::TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::ThreeComponentEnsemble</ref> &amp;</type>
+          <declname>din</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Returns a gather of Seismograms in an arrival time reference fram. </para>        </briefdescription>
+        <detaileddescription>
+<para>An arrival time reference means that the time is set to relative and zero is defined as an arrival time extracted from the metadata area of each member object.</para><para><parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>SeisppError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>for errors in extracting required information from metadata area.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>din</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is input gather </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the metadata key used to find the arrival time to use as a reference. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a TimeWindow object that defines the window of data to extract around the desired arrival time. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="130" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
+        <definition>Ensemble&lt; TimeSeries &gt; mspass::algorithms::ExtractComponent</definition>
+        <argsstring>(const mspass::seismic::Ensemble&lt; mspass::seismic::Seismogram &gt; &amp;d, const unsigned int comp)</argsstring>
+        <name>ExtractComponent</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>comp</declname>
+        </param>
+        <briefdescription>
+<para>Extract one component from a 3C ensemble. </para>        </briefdescription>
+        <detaileddescription>
+<para>This function creates an ensemble of TimeSeries objects that are a specified component extracted from an ensemble of 3C objects. It clones the metadata of the parent for the output ensemble metadata. Each member is created by a call to the (overloaded) function that extracts a component from each member of the parent. That function currently also clones the metadata. That is notable as there are metadata components that make sense only on each side of the transformation. A notable problem at this writing is that the Seismogram converter does not set hang and vang in the output. This might cause downstream problems - REMOVE THIS COMMENT WHEN THAT IS FIXED.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the input ensemble. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>comp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the component number to extract.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Ensemble&lt;TimeSeries&gt; of component comp data. </para></simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Will</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>throw a MsPASSError exception if the ensemble input is incompatible or the component number is not 0,1, or 2. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="152" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="218" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::sparse_convolve</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;wavelet, const mspass::seismic::CoreSeismogram &amp;d)</argsstring>
+        <name>sparse_convolve</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>wavelet</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Sparse time domain convolution. Sometimes with modeling we have an data series (d) that is sparse that we want to convolve with a wavelet to produce a simulation data for deconvolution. This small function implements a sparse convolution algorithm in the time domain. It uses a daxpy sum only summing components of d testing nonzero. Note if d is not sparse this reduces to normal convolution with a daxpy algorithm. The cost is marginally higher than a dense time domain convolution, especially if the size of the wavelet is larger since then the sum over the size of the wavelet will dominate over the single test for zeros in d. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>wavelet</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the wavelet to be convolved with d (not sparse) </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the sparse data vector (dominated by zeros). </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="169" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt;</type>
+        <definition>shared_ptr&lt;Seismogram&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(Seismogram &amp;tcsi, string arrival_time_key, TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>tcsi</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>arrival_time_key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="45" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="45" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt; &gt;</type>
+        <definition>shared_ptr&lt;Ensemble&lt;Seismogram&gt; &gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(Ensemble&lt; Seismogram &gt; &amp;tcei, string arrival_time_key, TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt; &amp;</type>
+          <declname>tcei</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>arrival_time_key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="139" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="139" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="seismogram__helpers_8cc_1a5989a2f816a058b5a8b94a67dea74ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::HorizontalRotation</definition>
+        <argsstring>(Seismogram &amp;d, double phi)</argsstring>
+        <name>HorizontalRotation</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>phi</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="169" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="169" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="tseries__helpers_8cc_1acfbeb2b441c657883388adfa3afa3577" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
+        <definition>shared_ptr&lt;TimeSeries&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(TimeSeries &amp;tcsi, string arrival_time_key, TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>tcsi</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>arrival_time_key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" line="47" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" bodystart="47" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="tseries__helpers_8cc_1a1fefa3293b0058518db2146461c6dca0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref> &gt;</type>
+        <definition>shared_ptr&lt;TimeSeriesEnsemble&gt; mspass::algorithms::ArrivalTimeReference</definition>
+        <argsstring>(TimeSeriesEnsemble &amp;tcei, string arrival_time_key, TimeWindow tw)</argsstring>
+        <name>ArrivalTimeReference</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref> &amp;</type>
+          <declname>tcei</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>arrival_time_key</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" line="134" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/algorithms/tseries_helpers.cc" bodystart="134" bodyend="166"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/algorithms/algorithms.h" line="10" column="1"/>
+  </compounddef>
+</doxygen>

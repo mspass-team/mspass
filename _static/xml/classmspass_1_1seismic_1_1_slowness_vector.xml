@@ -1,0 +1,276 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1seismic_1_1_slowness_vector" kind="class" language="C++" prot="public">
+    <compoundname>mspass::seismic::SlownessVector</compoundname>
+    <includes refid="_slowness_vector_8h" local="no">SlownessVector.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::ux</definition>
+        <argsstring></argsstring>
+        <name>ux</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>East-west component of slowness vector. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="20" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::uy</definition>
+        <argsstring></argsstring>
+        <name>uy</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>North-south component of slowness vector. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="24" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1seismic_1_1_slowness_vector_1a5c629e1494fdc05f659ce0117ca14da3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::azimuth0</definition>
+        <argsstring></argsstring>
+        <name>azimuth0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="77" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::SlownessVector::SlownessVector</definition>
+        <argsstring>()</argsstring>
+        <name>SlownessVector</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="28" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="10" bodyend="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a8664ecf16b378a69aba5d65d1c081bb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::SlownessVector::SlownessVector</definition>
+        <argsstring>(const double ux0, const double uy0, const double az0=0.0)</argsstring>
+        <name>SlownessVector</name>
+        <param>
+          <type>const double</type>
+          <declname>ux0</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>uy0</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>az0</declname>
+          <defval>0.0</defval>
+        </param>
+        <briefdescription>
+<para>Fully parameterized constructor. </para>        </briefdescription>
+        <detaileddescription>
+<para>A slowness vector is defined by it&apos;s components. There is one ambiguity, however, with a zero slowness vector. That is, normally direction of propagation is inferred from the vector azimuth. A zero slowness vector has physical significance (normal incidence) but presents and ambiguity in this regard. We use a defaulted az0 parameter to specify the azimuth that should be used if the magnitude of slowness vector is 0.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ux0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- set x (EW) component to this value. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>uy0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- set y (NS) component to this value. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>az0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- use this as azimuth (radians) if this is a zero slowness vector (default 0.0) </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="43" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="22" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a21e501ef79733211c170489039d80acc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::seismic::SlownessVector::SlownessVector</definition>
+        <argsstring>(const SlownessVector &amp;)</argsstring>
+        <name>SlownessVector</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <defname>old</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="47" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="16" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a2e1d2b9fb9e0267ffa99ccf3291f5540" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::mag</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>mag</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Computes the magntitude of the slowness vector. Value returned is in units of seconds/kilometer. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="52" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="63" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a6ae77a796e8927aa61c01821a89ea944" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::azimuth</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>azimuth</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the propagation direction defined by a slowness vector. Azimuth is a direction clockwise from north in the standard geographic convention. Value returned is in radians. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="58" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="67" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1aa786c744259c0305097e99ab89505c31" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::seismic::SlownessVector::baz</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>baz</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the back azimuth direction defined by a slowness vector. A back azimuth is 180 degrees away from the direction of propagation and points along the great circle path directed back to the source point from a given position. The value returned is in radians. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="65" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="79" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1af71bd0577298577ffb0d543263476393" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+        <definition>SlownessVector &amp; mspass::seismic::SlownessVector::operator=</definition>
+        <argsstring>(const SlownessVector &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+<para>Standard assignment operator. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="67" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="28" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1af53475ecb69cf24893ea1276aa3d8fc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+        <definition>SlownessVector &amp; mspass::seismic::SlownessVector::operator+=</definition>
+        <argsstring>(const SlownessVector &amp;other)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="69" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="38" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a00f994c209cf2930198f56c901f94b49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+        <definition>SlownessVector &amp; mspass::seismic::SlownessVector::operator-=</definition>
+        <argsstring>(const SlownessVector &amp;other)</argsstring>
+        <name>operator-=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="71" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="44" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1ab100906c11327f5ad6bdfb720d21a08e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref></type>
+        <definition>const SlownessVector mspass::seismic::SlownessVector::operator+</definition>
+        <argsstring>(const SlownessVector &amp;other) const</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="73" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="50" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_slowness_vector_1a62ae0b9cc0a675a2cfddbafd8b1f3c38" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref></type>
+        <definition>const SlownessVector mspass::seismic::SlownessVector::operator-</definition>
+        <argsstring>(const SlownessVector &amp;other) const</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_slowness_vector" kindref="compound">SlownessVector</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="75" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/SlownessVector.cc" bodystart="55" bodyend="59"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Slowness vector object. </para>    </briefdescription>
+    <detaileddescription>
+<para>Slowness vectors are a seismology concept used to describe wave propagation. A slowness vector points in the direction of propagation of a wave with a magnitude equal to the slowness (1/velocity) of propagation. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
+</para>    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" line="15" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/SlownessVector.h" bodystart="14" bodyend="78"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a6ae77a796e8927aa61c01821a89ea944" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>azimuth</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a5c629e1494fdc05f659ce0117ca14da3" prot="private" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>azimuth0</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1aa786c744259c0305097e99ab89505c31" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>baz</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a2e1d2b9fb9e0267ffa99ccf3291f5540" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>mag</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1ab100906c11327f5ad6bdfb720d21a08e" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1af53475ecb69cf24893ea1276aa3d8fc3" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a62ae0b9cc0a675a2cfddbafd8b1f3c38" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a00f994c209cf2930198f56c901f94b49" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1af71bd0577298577ffb0d543263476393" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>SlownessVector</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a8664ecf16b378a69aba5d65d1c081bb7" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>SlownessVector</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a21e501ef79733211c170489039d80acc" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>SlownessVector</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>ux</name></member>
+      <member refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" prot="public" virt="non-virtual"><scope>mspass::seismic::SlownessVector</scope><name>uy</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

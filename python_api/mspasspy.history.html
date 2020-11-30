@@ -1,0 +1,401 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mspasspy.history &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspass::Metadata" href="../cxx_api/mspass.Metadata.html" />
+    <link rel="prev" title="mspasspy.io" href="mspasspy.io.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference_manual.html">Reference Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../reference_manual.html#python-api">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.io.html">mspasspy.io</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mspasspy.history</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#c-api">C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#mspass-schema">MsPASS Schema</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../reference_manual.html">Reference Manual</a> &raquo;</li>
+        
+      <li>mspasspy.history</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/python_api/mspasspy.history.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-mspasspy.history">
+<span id="mspasspy-history"></span><h1>mspasspy.history<a class="headerlink" href="#module-mspasspy.history" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="mspasspy.history.HistoryLogger">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">HistoryLogger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em>, <em class="sig-param"><span class="n">job</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.HistoryLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for generic, global history/provenance preservation in MsPASS.
+The main concept of this object that a pymongo script to run a processing
+job would create this object or one of it’s children to preserve the 
+global run parameters for the a processing sequence.   We limit that to 
+mean a sequence of processing algorithms that have a set of predefined
+parameters that control their behaviour.  The global parameters are 
+preserved in a special collection in MongoDB we give the (fixed) name
+of “history”.</p>
+<dl class="py method">
+<dt id="mspasspy.history.HistoryLogger.register">
+<code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">partype</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.HistoryLogger.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an algorithm’s signature to preserve processing history.
+Each algorithm in a processing chains should be registered by this
+mechanism before starting a mspass processing chain.  The 
+register method should be called in the order in which the algorithms are 
+applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alg</strong> – is the name of the algorithm that will be run.  Assumed to be
+a string.</p></li>
+<li><p><strong>partype</strong> – defines the format of the data defining input parameters
+to this algorithm (Must be either ‘dict’ or ‘AntelopePf’)</p></li>
+<li><p><strong>params</strong> – is the actual input data. Actual type of this data 
+this arg references will depend up partype.  partype defines 
+the type of the object expect (dict in this case means a python
+dict object)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raise</dt>
+<dd class="field-even"><p>Throws a RuntimeError with a message if partype is not on the 
+list of supported parameter types</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.history.HistoryLogger.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.HistoryLogger.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the contents to the history collection.</p>
+<p>The doc created in a save is more or less an image of the 
+structure of this object translated to a python dict</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.history.basic_history_data">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">basic_history_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">job</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.basic_history_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a pure data object that if it were written in C could be 
+defined as a struct.   It holds the data used to define the 
+parameters for a given algorithm.</p>
+<dl class="py method">
+<dt id="mspasspy.history.basic_history_data.load_algorithm_args">
+<code class="sig-name descname">load_algorithm_args</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">argdict</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.basic_history_data.load_algorithm_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads parameters defined to a set of function arguments.</p>
+<p>Simple algorithms without a lot of parameters often simply need a 
+set of argument values.   Here we require this to be defined by 
+a set of key:value pairs that map to dict.  We also consider this
+the lowest common denominator for a parameter definition so make
+it a part of the base class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alg</strong> – This should be a string defining the algorithm being registered.</p></li>
+<li><p><strong>argdict</strong> – This should be a dict of key:value pairs defining input 
+parameters.  For algorithms defined at the top level by a python
+function this should match the names of parameters in the arg list.
+For C++ functions wrapped with pybind11 it should match the arg 
+keys defined in the wrappers.   The key string will be used for
+key:value pair in BSON written to MongoDB.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.history.get_jobid">
+<code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">get_jobid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.get_jobid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask MongoDB for the a valid jobid.</p>
+<p>All processing jobs should have a call to this function at the beginning 
+of the job script.  It simply queries MongoDB for the largest current 
+value of the key “jobid” in the history collection.   If the history 
+collection is empty it returns 1 under a bias that a jobid of 0 is
+illogical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>top level database handle returned by a call to MongoClient.database</em>) – database handle</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.history.pf_history_data">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">pf_history_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">job</span></em>, <em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">pf</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.pf_history_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.history.basic_history_data" title="mspasspy.history.basic_history_data"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.history.basic_history_data</span></code></a></p>
+<p>Loads history data container with data from an AntelopePf object.</p>
+<p>mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter 
+inputs.  The file structure is identical to the
+Antelope Pf file syntax.   The API to an AntelopePF is not, however, 
+the same as the python bindings in Antelope as it handles Tbl 
+and Arr sections completely differently more in line with alternatives
+like YAML.   This method converts the data in an AntelopePf to a python 
+dict that can be dumped directly to MongoDB with pymongo’s insert 
+methods. Converting the MongoDB document back to a pf structure requires
+the inverse operator that does not exist, but should eventually be 
+created if this approach sees extensive use.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.history.pfbranch_to_dict">
+<code class="sig-prename descclassname">mspasspy.history.</code><code class="sig-name descname">pfbranch_to_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pf</span></em>, <em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.history.pfbranch_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursive function to convert a single branch in an AntelopePf to a python dict.</p>
+<p>This function utilizes recursion to follow a chain of arbitrary length of 
+branches defined in an AntelopePf object.   Result is a dict with a chain of 
+dicts of the same length.  i.e. if AntelopePf has 3 levels of branches
+the dict will have a 3 levels of associative arrays keyed by the same
+branch names as the Arr items in the original Pf file.  Note this should
+be called from the top level one branch at a time.  i.e. for the parent
+AntelopePf this function should be called once for each returned key by 
+pf.arr_keys().</p>
+<p>Note that at each level Tbl&amp; sections of the original pf are parsed to 
+be converted to lists of strings with each line of the Tbl section being
+one string in the list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pf</strong> – is an AntelopePf.  Recursive calls use get_branch outputs 
+that return one of these.</p></li>
+<li><p><strong>key</strong> (<em>string</em>) – key used to access the branch requested</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>python dict translation of AntelopePf branch structure</p>
+</dd>
+<dt class="field-odd">Raise</dt>
+<dd class="field-odd"><p>RunTime errors are possible from the ccore methods that are called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../cxx_api/mspass.Metadata.html" class="btn btn-neutral float-right" title="mspass::Metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mspasspy.io.html" class="btn btn-neutral float-left" title="mspasspy.io" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ian Wang
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

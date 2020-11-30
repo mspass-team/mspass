@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::MsPASSError</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">exception</basecompoundref>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1_antelope_pf_error" prot="public" virt="non-virtual">mspass::utility::AntelopePfError</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1dmatrix__index__error" prot="public" virt="non-virtual">mspass::utility::dmatrix_index_error</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1dmatrix__size__error" prot="public" virt="non-virtual">mspass::utility::dmatrix_size_error</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1_metadata_get_error" prot="public" virt="non-virtual">mspass::utility::MetadataGetError</derivedcompoundref>
+    <includes refid="_ms_p_a_s_s_error_8h" local="no">MsPASSError.h</includes>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::MsPASSError::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Holds error message that can be printed with log_error method. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="114" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" static="no" mutable="no">
+        <type>ErrorSeverity</type>
+        <definition>ErrorSeverity mspass::utility::MsPASSError::badness</definition>
+        <argsstring></argsstring>
+        <name>badness</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Defines the severity of this error - see enum class above </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="116" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::MsPASSError::MsPASSError</definition>
+        <argsstring>()</argsstring>
+        <name>MsPASSError</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor built inline. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="46" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="46" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a78088c104a7c2a47e41ce8ecdf5513cd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::MsPASSError::MsPASSError</definition>
+        <argsstring>(const std::string mess, const char *howbad)</argsstring>
+        <name>MsPASSError</name>
+        <param>
+          <type>const std::string</type>
+          <declname>mess</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>howbad</declname>
+        </param>
+        <briefdescription>
+<para>Construct from a std::string with badness defined by keywords in a string. </para>        </briefdescription>
+        <detaileddescription>
+<para>Sometimes it is easier and more readable to use a string literal to define the error class. This uses that approach.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the error message posted. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>howbad</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a string to translate to one of the allowed enum values. The allowed values are the same as the enum defined in this file: FATAL,Invalid,Suspect,Complaint,Debug,Informational. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="60" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="60" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a0f75099c3f9c8130b44398601753745f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::MsPASSError::MsPASSError</definition>
+        <argsstring>(const std::string mess, const ErrorSeverity s=ErrorSeverity::Invalid)</argsstring>
+        <name>MsPASSError</name>
+        <param>
+          <type>const std::string</type>
+          <declname>mess</declname>
+        </param>
+        <param>
+          <type>const ErrorSeverity</type>
+          <declname>s</declname>
+          <defval>ErrorSeverity::Invalid</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from a string with enum defining severity.</para><para>This should be the normal form of this error object to throw. Default of the enum allows simpler usage for most errors.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>mess</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the error message to be posted. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the severity enum (default Invalid). </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="75" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="75" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af209344a8eb784695556f02b7df481c9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::MsPASSError::MsPASSError</definition>
+        <argsstring>(const char *mess, const ErrorSeverity s)</argsstring>
+        <name>MsPASSError</name>
+        <param>
+          <type>const char *</type>
+          <declname>mess</declname>
+        </param>
+        <param>
+          <type>const ErrorSeverity</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from a char * and severity enum. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="82" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="82" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::utility::MsPASSError::log_error</definition>
+        <argsstring>()</argsstring>
+        <name>log_error</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Sends error message thrown by MsPASS library functions to standard error. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="89" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="89" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::utility::MsPASSError::log_error</definition>
+        <argsstring>(std::ostream &amp;ofs)</argsstring>
+        <name>log_error</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>ofs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Overloaded method for sending error message to other than stderr. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="93" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="93" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char* mspass::utility::MsPASSError::what</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>what</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This overrides the method in std::exception to load our string. This allows handlers to use the what method and get the error string from seisp. Idea copied from: <ulink url="http://www.cplusplus.com/doc/tutorial/exceptions/">http://www.cplusplus.com/doc/tutorial/exceptions/</ulink></para><para>pybind11 limitations make it problematic for python error handlers to get the output of the severity method or even get to the badness attribute. See the cc code for the implementation detail. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="107" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="107" bodyend="107"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>ErrorSeverity</type>
+        <definition>ErrorSeverity mspass::utility::MsPASSError::severity</definition>
+        <argsstring>() const</argsstring>
+        <name>severity</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return error severity as the enum value. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="109" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="109"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Base class for error object thrown by MsPASS library routines. </para>    </briefdescription>
+    <detaileddescription>
+<para>This is the generic error object thrown by the MsPASS library. it is similar in concept to basic error objects described in various books by Stroustrup. The base object contains only a simple generic message and a virtual log_error method common to all MsPASS error objects that are it&apos;s descendents. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
+</para>    </detaileddescription>
+    <inheritancegraph>
+      <node id="135">
+        <label>mspass::utility::MsPASSError</label>
+        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
+        <childnode refid="136" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="136">
+        <label>std::exception</label>
+      </node>
+      <node id="138">
+        <label>mspass::utility::dmatrix_index_error</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
+        <childnode refid="135" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="137">
+        <label>mspass::utility::AntelopePfError</label>
+        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
+        <childnode refid="135" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="140">
+        <label>mspass::utility::MetadataGetError</label>
+        <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
+        <childnode refid="135" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="139">
+        <label>mspass::utility::dmatrix_size_error</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
+        <childnode refid="135" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="141">
+        <label>mspass::utility::MsPASSError</label>
+        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
+        <childnode refid="142" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="142">
+        <label>std::exception</label>
+      </node>
+    </collaborationgraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" line="40" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="39" bodyend="117"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>badness</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ab66bb8b76a50addea48e18663744ca94" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>log_error</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" prot="protected" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>message</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a19f527c5f3f2e761e51c9b2d478d02c6" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a78088c104a7c2a47e41ce8ecdf5513cd" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a0f75099c3f9c8130b44398601753745f" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af209344a8eb784695556f02b7df481c9" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>MsPASSError</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>severity</name></member>
+      <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" virt="non-virtual"><scope>mspass::utility::MsPASSError</scope><name>what</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

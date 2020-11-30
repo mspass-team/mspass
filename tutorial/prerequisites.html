@@ -1,0 +1,301 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Prerequisites &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Use of Metadata, MetadataDefinitions, and AntelopePf" href="metadata_pf.html" />
+    <link rel="prev" title="Key Concepts" href="concepts.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concepts.html">Key Concepts</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Prerequisites</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-docker">Setting up Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#downloading-the-mspass-container-image">Downloading the MsPASS Container Image</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+        
+      <li>Prerequisites</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorial/prerequisites.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="prerequisites">
+<span id="tutorial-prerequisites"></span><h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
+<p>There are two distinctly different steps needed to set up your system for
+MsPASS with Docker: (1) installing Docker and docker-compose, and (2)
+configuration of the virtual machine environment for running mspass.</p>
+<div class="section" id="setting-up-docker">
+<h2>Setting up Docker<a class="headerlink" href="#setting-up-docker" title="Permalink to this headline">¶</a></h2>
+<p>To install Docker on machines that you have root access, please refer to
+the guide <a class="reference external" href="https://docs.docker.com/v17.12/docker-for-mac/install/">here</a>.</p>
+<p>On Macs, Docker is a normal package available for download
+<a class="reference external" href="https://www.docker.com/">here</a>. It is installed in the standard
+manner most Mac user’s will be familiar with. It is installed in the
+Applications folder. To launch the docker daemon simply double click the
+application icon in the usual Mac way. It will create an icon on the
+task bar that can be used to terminate the daemon and a few other tasks
+that are described in the documentation for the software.</p>
+<p>For Linux system Docker would normally be installed through the package
+manager used by that flavor of unix. For example,
+<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04">here</a>
+is a useful source for Ubuntu.</p>
+<p>For linux systems we note two issues you may encounter that will speed
+this process:</p>
+<ol class="arabic simple">
+<li><p>Without some tricks Docker can only be run with a sudo command. That
+means each <code class="docutils literal notranslate"><span class="pre">docker</span></code> call below would need to be change to <code class="docutils literal notranslate"><span class="pre">sudo</span>
+<span class="pre">docker</span></code>. You can manipulate groups to get your user name in the same
+group as Docker to avoid that. There are variants in Unix about how groups are handled.
+<a class="reference external" href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04">Follow this link</a>
+for instructions on Ubuntu. You also may find it necessary to restart
+your machine to get the revised groups to be recognized.</p></li>
+<li><p>You will need both docker and docker-compose. Unix package managers
+may split them. e.g. on Ubuntu you need to use <code class="docutils literal notranslate"><span class="pre">apt-get</span></code> for both the
+key <code class="docutils literal notranslate"><span class="pre">docker</span></code> and <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code>.</p></li>
+</ol>
+<p>To proceed from here we assume Docker has been installed and the Docker
+daemon is running in the background.</p>
+</div>
+<div class="section" id="downloading-the-mspass-container-image">
+<h2>Downloading the MsPASS Container Image<a class="headerlink" href="#downloading-the-mspass-container-image" title="Permalink to this headline">¶</a></h2>
+<p>Once you have docker setup properly, use the following command in a
+terminal to pull the MsPASS image from Docker Hub to your local machine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>Be patient as this can take a few minutes. Note you can run this command
+from anywhere. It loads data only in the virtual machine data space so
+you will not see anything happen in the directory where you run this
+command but it will eat off a few hundred megabytes on your disk. Any
+data created and stored inside the container will be opaque from the
+local system (outside) except for the ones in the directories that are
+mounted to the container.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="metadata_pf.html" class="btn btn-neutral float-right" title="Use of Metadata, MetadataDefinitions, and AntelopePf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="concepts.html" class="btn btn-neutral float-left" title="Key Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ian Wang
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

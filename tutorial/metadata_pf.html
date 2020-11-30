@@ -1,0 +1,1043 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Use of Metadata, MetadataDefinitions, and AntelopePf &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Reference Manual" href="../reference_manual.html" />
+    <link rel="prev" title="Prerequisites" href="prerequisites.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="concepts.html">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Use of Metadata, MetadataDefinitions, and AntelopePf</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Metadata">Metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#MetadataDefinitions">MetadataDefinitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#AntelopePf">AntelopePf</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
+        
+      <li>Use of Metadata, MetadataDefinitions, and AntelopePf</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/tutorial/metadata_pf.ipynb.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Use-of-Metadata,-MetadataDefinitions,-and-AntelopePf">
+<h1>Use of Metadata, MetadataDefinitions, and AntelopePf<a class="headerlink" href="#Use-of-Metadata,-MetadataDefinitions,-and-AntelopePf" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Metadata">
+<h2>Metadata<a class="headerlink" href="#Metadata" title="Permalink to this headline">¶</a></h2>
+<p>MsPASS makes extensive use of a C++ object we call Metadata. A Metadata object is one of a many options we could have used to define the generalization of the idea of a header familar to many seismologists. Headers are used, for example, in SAC and all seismic reflection packages we are aware of. A “header”, however, can be thought of as a implementation detail for a more general concept: fetching parameters with a name-value pair relationship. We use Metadata in preference to a python dict
+because the implementation is cleaner at the C++ level. It is also, in principle, faster since the same methods visible through python wrapper are accesible in C++ code. The purpose of this tutorial is to give users familiarity of this core class used for a wide variety of purposes.</p>
+<p>This tutorial first teaches how to utilize the Metadata object in python. When that is understood, we move to the AntelopePf, which is a child of Metadata with expanded capabilities.</p>
+<p>We have to tell python what a Metadata object is. We use the following common python incantation:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from mspasspy.ccore import Metadata
+</pre></div>
+</div>
+</div>
+<p>We can then create an empty Metadata container in the standard python way.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>md=Metadata()
+</pre></div>
+</div>
+</div>
+<p>The Metadata container is more flexible, but in MsPASS to provide a cleaner mapping to MongoDB we restrict the contents to the four lowest common demoninator types native to most computer languages: * real numbers, which are always promoted in MsPASS to double (64 bit floats) * integers, which are always promoted to 64 bit signed ints * character strings, which are handled in C++ as string objects and wrapped to python strings. i.e. the conversion between C++ and python strings should be
+seamless. * booleans - meaning values that are “True” or “False” in python.</p>
+<p>There are putters can create each of these core types by a clear name convention:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>md.put_double(&quot;real_example&quot;,10.45)
+md.put_long(&quot;int_example&quot;,42)
+md.put_string(&quot;foo&quot;,&quot;bar&quot;)  # the classic programmer idiom
+md.put_bool(&quot;bool_example&quot;,True)
+</pre></div>
+</div>
+</div>
+<p>There are also “overloaded” versions of the same that can depend on the python interpreters rules for assigning type from a literal. These four lines do nearly the same thing as the previous four lines of python code:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>md.put(&quot;overreal&quot;,99.45)
+md.put(&quot;overint&quot;,2)
+md.put(&quot;overstr&quot;,&quot;foobar&quot;)
+md.put(&quot;overbool&quot;,False)
+</pre></div>
+</div>
+</div>
+<p>C++ code could use operator&lt;&lt; to dump the contents of md, but we currently have no equivalent in python. For now you need to use getters. This small example shows getters to pull a subset of the 8 entries currently stored in md.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>x=md.get_double(&#39;overreal&#39;)
+i=md.get_long(&#39;int_example&#39;)
+s=md.get_string(&#39;foo&#39;)
+b=md.get_bool(&#39;bool_example&#39;)
+print(&quot;real example =&quot;,x)
+print(&quot;int example=&quot;,i)
+print(&quot;string example=&quot;,s)
+print(&quot;boolean example=&quot;,b)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+real example = 99.45
+int example= 42
+string example= bar
+boolean example= True
+</pre></div></div>
+</div>
+<p>In interactive scripts or for testing it is often helpful to know what data are defined. For that purpose we provide the keys method used as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>keys=md.keys()
+print(keys)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;bool_example&#39;, &#39;overstr&#39;, &#39;foo&#39;, &#39;real_example&#39;, &#39;overbool&#39;, &#39;overint&#39;, &#39;int_example&#39;, &#39;overreal&#39;}
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="MetadataDefinitions">
+<h2>MetadataDefinitions<a class="headerlink" href="#MetadataDefinitions" title="Permalink to this headline">¶</a></h2>
+<p>A thorny problem in real data analysis with header attributes, which is what Metadata generalizes, is that the type of a parameter must match what is stored. For example, if we tried to fetch the parameter “foo” from md as an integer or real value, the result would make no sense. The Metadata class will throw a C++ exception that your python code may need to handle. The current wrappers for Metadata cast the exception message to a stock python RuntimeError. Hence, if you have a section of code
+where a key-value pair may not be defined or is subject to a type mismatch, you should use a construct like the the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>try:
+    s=md.get_string(&quot;foo&quot;)  # this will work
+    x=md.get_double(&quot;foo&quot;)  # this will throw an exception we need to handle
+except Exception as e:
+    print(repr(e))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RuntimeError(&#39;Error in Metadata get method.   Type mismatch in attem to get data with key=foo\nboost::any bad_any_cast wrote this message:  \nboost::bad_any_cast: failed conversion using boost::any_cast\nTrying to convert to data of type=float\nActual entry has type=std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;\n&#39;,)
+</pre></div></div>
+</div>
+<p>This example uses a best practice catcher that uses the base class Exception and the built in repr function to convert the RuntimeError to a more readable form. It is remains a bit ugly because of mismatch is handling the newline (<span class="math">\n</span>) character in ipython, but the gist of the error message should be clear.</p>
+<p>The general problem of data types with attributes like those we extract from Metadata has two end members in the computing world: (1) python, which is completely agnostic about type, and (2) strongly typed languages like C/C++ and FORTRAN. Since MsPASS is a hybrid with C++ implementation of some compute intensive, core algorithms and python for higher level processing this clash in concept has to be handled. An additional constraint comes from the use of MongoDB or any database engine. Chaos
+will reign if a name key is used for attributes of different types; a problem far too easy to create even accidentally with python. Since the main purpose of MsPASS is to provide a framework for handling long-running, compute intensive data processing jobs, we have to enforce some type restrictions on attributes to avoid mysterious downstream behaviour and bugs that are difficult to impossible to find. We do this through a core mspass object we call MetadataDefinitions. More about the philosphy
+and design concepts of MetadataDefinitions can be found in the User’s Manual (hyperlink to proper page). Here we focus on how MetadataDefinitions should be used in a workflow.</p>
+<p>Any MsPASS job using any of the ccore data objects should near the top of the job script contain this line:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from mspasspy.ccore import MetadataDefinitions
+mdef=MetadataDefinitions()
+</pre></div>
+</div>
+</div>
+<p>The import line, of course, could be mixed with other import commands at the top of your processing script. The point here is the call to the default constructor for MetadataDefinitions(). That step initiates a read of a configuration file that defines the MsPASS default attribute namespace. The full details of the default namespace can be found in tables in the User’s Manual (hyperlink).</p>
+<p>First, let’s look at the full set of keys for the default namespace:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>mdkeys=mdef.keys()
+print(mdkeys)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;U11&#39;, &#39;U12&#39;, &#39;U13&#39;, &#39;U21&#39;, &#39;U22&#39;, &#39;U23&#39;, &#39;U31&#39;, &#39;U32&#39;, &#39;U33&#39;, &#39;calib&#39;, &#39;chan&#39;, &#39;chanid&#39;, &#39;delta&#39;, &#39;dfile&#39;, &#39;dir&#39;, &#39;foff&#39;, &#39;gridfs_idstr&#39;, &#39;hang&#39;, &#39;iphase&#39;, &#39;loc&#39;, &#39;mb&#39;, &#39;ms&#39;, &#39;net&#39;, &#39;npts&#39;, &#39;oid_site&#39;, &#39;oid_source&#39;, &#39;orid&#39;, &#39;phase&#39;, &#39;sampling_rate&#39;, &#39;site_elev&#39;, &#39;site_id&#39;, &#39;site_lat&#39;, &#39;site_lon&#39;, &#39;source_depth&#39;, &#39;source_id&#39;, &#39;source_lat&#39;, &#39;source_lon&#39;, &#39;source_time&#39;, &#39;sta&#39;, &#39;starttime&#39;, &#39;storage_mode&#39;, &#39;t0_shift&#39;, &#39;time_standard&#39;, &#39;vang&#39;, &#39;wfid_string&#39;]
+</pre></div></div>
+</div>
+<p>You can find the type of any key through the type method. This script prints the full table of types for all defined keys:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>for k in mdkeys:
+    t=mdef.type(k)
+    print(k,&#39; has type=&#39;,t)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+U11  has type= MDtype.Double
+U12  has type= MDtype.Double
+U13  has type= MDtype.Double
+U21  has type= MDtype.Double
+U22  has type= MDtype.Double
+U23  has type= MDtype.Double
+U31  has type= MDtype.Double
+U32  has type= MDtype.Double
+U33  has type= MDtype.Double
+calib  has type= MDtype.Double
+chan  has type= MDtype.String
+chanid  has type= MDtype.Int64
+delta  has type= MDtype.Double
+dfile  has type= MDtype.String
+dir  has type= MDtype.String
+foff  has type= MDtype.Int64
+gridfs_idstr  has type= MDtype.String
+hang  has type= MDtype.Double
+iphase  has type= MDtype.String
+loc  has type= MDtype.String
+mb  has type= MDtype.Double
+ms  has type= MDtype.Double
+net  has type= MDtype.String
+npts  has type= MDtype.Int64
+oid_site  has type= MDtype.String
+oid_source  has type= MDtype.String
+orid  has type= MDtype.Int64
+phase  has type= MDtype.String
+sampling_rate  has type= MDtype.Double
+site_elev  has type= MDtype.Double
+site_id  has type= MDtype.Int64
+site_lat  has type= MDtype.Double
+site_lon  has type= MDtype.Double
+source_depth  has type= MDtype.Double
+source_id  has type= MDtype.Int64
+source_lat  has type= MDtype.Double
+source_lon  has type= MDtype.Double
+source_time  has type= MDtype.Double
+sta  has type= MDtype.String
+starttime  has type= MDtype.Double
+storage_mode  has type= MDtype.String
+t0_shift  has type= MDtype.Double
+time_standard  has type= MDtype.String
+vang  has type= MDtype.Double
+wfid_string  has type= MDtype.String
+</pre></div></div>
+</div>
+<p>While writing a script if you aren’t sure what a key represents you can use the concept method. Here, for example, we ask for a brief description of what the attribute “vang” should be:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>s=mdef.concept(&#39;vang&#39;)
+print(s)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Inclination from +up (in degree) of a seismometer component - vertical angle
+</pre></div></div>
+</div>
+<p>To provide a mechanism for MsPASS to legacy packages like SAC, the MetadataDefinitions object has a generic aliases mechanism. For example, if we wanted to know alternative names that can be handled automatically for the attribute called “source_lat”, we can issue this command:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>print(mdef.aliases(&#39;source_lat&#39;))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;EVLA&#39;, &#39;origin.lat&#39;]
+</pre></div></div>
+</div>
+<p>This shows that we can use the SAC name, EVLA, or the Antelope name, origin.lat, for an alternative to source_lat and it will be handled automatically by database readers and writers.</p>
+<p>There are a collection of other useful methods defined in for MetadataObject for dealing with aliases. The following script illustrates their use:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>if(mdef.is_alias(&#39;EVLA&#39;)):
+    print(&#39;EVLA is a valid alias&#39;)
+    ukey=mdef.unique_name(&#39;EVLA&#39;)
+    print(&#39;The unique key for EVLA for database records is &#39;,ukey)
+if(mdef.has_alias(&#39;source_lat&#39;)):
+    print(&#39;The keyword source_lat has one or more aliases defined&#39;)
+    print(&#39;Valid aliases are&#39;,mdef.aliases(&#39;source_lat&#39;))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+EVLA is a valid alias
+The unique key for EVLA for database records is  (&#39;source_lat&#39;, MDtype.Double)
+The keyword source_lat has one or more aliases defined
+Valid aliases are [&#39;EVLA&#39;, &#39;origin.lat&#39;]
+</pre></div></div>
+</div>
+<p>The use of aliases is an important component of MsPASS to simplify utilizing legacy software as part of a workflow. A typical example would be some specialized program that was built around the SAC data format or an anticipated development in MsPASS of running SAC from a MsPASS workflow. To support that type of application MsPASS has two methods in <em>MetadataDefinitions</em> called <em>apply_aliases</em> and the inverse called <em>clear_aliases</em>. The following small script demonstrates a small example:</p>
+<p>MetadataDefinitions has what could be called advanced methods for handling a feature of MongoDB we found useful called “normalization”. (See <a class="reference external" href="https://docs.mongodb.com/manual/core/data-model-design/">https://docs.mongodb.com/manual/core/data-model-design/</a> for the concepts of normalization in MongoDB) The key point is that some attributes like receiver coordinates and response information are better stored in a single place and found by a cross-reference mechanism rather than being duplicated many times or risk mistakes from incorrect associations.
+Methods available to support this feature are:</p>
+<ol class="arabic simple">
+<li><p><em>is_ normalized</em> - test whether an attribute is expected to be normalized</p></li>
+<li><p><em>collection</em> - return the MongoDB collection name where the master of an attribute should be located.</p></li>
+<li><p><em>readonly, writeable</em> - test for whether an attribute is marked readonly. Normalized data are normally marked readonly* (immutable) because they should be set only on construction and never altered by a processing workflow.</p></li>
+<li><p><em>set_readonly, set_writeable</em> - backdoor methods to set (set_readonly) or override locks (set_writeable) on an attribute. These functions should not be used unless essential.</p></li>
+</ol>
+<p>Finally, there are two methods for manually defining new attributes not defined in the master namespace.</p>
+<ol class="arabic simple">
+<li><p><em>add</em> - define a new attribute with type and concept properties</p></li>
+<li><p><em>add_alias</em> - define a new alias for an existing attribute.</p></li>
+</ol>
+<p>These also should be used with caution as it is preferable for custom applications to edit the master list used to construct MetadataDefinitions objects.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from mspasspy.ccore import CoreSeismogram
+def printmd(md):
+    keys=md.keys()
+    for k in keys:
+        print(&quot;Value with key=&quot;,k,&quot; is &quot;,md[k])
+
+# We create an seismogram object to demonstrate these are used for data objects
+sacmd=CoreSeismogram(100)
+sacmd.put_double(&quot;source_lat&quot;,10.0)
+sacmd.put_double(&quot;source_lon&quot;,-75.0)
+sacmd.put_double(&quot;source_depth&quot;,10.0)
+sacmd.put_double(&quot;site_lat&quot;,45.0)
+sacmd.put_double(&quot;site_lon&quot;,55.0)
+print(&quot;Initial metadata with MsPASS names&quot;)
+printmd(sacmd)
+# This creates the list of aliases to apply - the names are the alias names
+# Note STEL is not actually defined above - illustrates handling of unset aliases
+aliaslist=[&quot;EVLA&quot;,&quot;EVLO&quot;,&quot;EVDP&quot;,&quot;STLA&quot;,&quot;STLO&quot;,&quot;STEL&quot;]
+mdef.apply_aliases(sacmd,aliaslist)
+print(&quot;Metadata after apply_aliases&quot;)
+printmd(sacmd)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Initial metadata with MsPASS names
+Value with key= site_lon  is  55.0
+Value with key= starttime  is  0.0
+Value with key= source_lat  is  10.0
+Value with key= npts  is  100
+Value with key= delta  is  1.0
+Value with key= source_lon  is  -75.0
+Value with key= source_depth  is  10.0
+Value with key= site_lat  is  45.0
+Metadata after apply_aliases
+Value with key= EVLO  is  -75.0
+Value with key= starttime  is  0.0
+Value with key= npts  is  100
+Value with key= EVDP  is  10.0
+Value with key= delta  is  1.0
+Value with key= EVLA  is  10.0
+Value with key= STLO  is  55.0
+Value with key= STLA  is  45.0
+</pre></div></div>
+</div>
+<p>Notice that apply_aliases silently skipped the inconsistency that <em>site_elev</em> is not defined in sacmd. That was an intentional design because we expect global alias lists (e.g. applying a set of fixed aliases for sac, obspy, or Antelope) to be the norm.</p>
+<p>Also notice that three additional Metadata attributes appeared when the printmd function was called: starttime(real), npts (integer), and delta (real). These are three attributes wired into private variables in the mspass data objects. The C++ api guarantees these Metadata name-value pairs are consistent with internal values. They appear in this output because the printmd lists all defined Metadata fields. Note finally printmd uses the alternative access method for Metadata fields using the key
+in the same syntax as a python dict. For purely pythonic interactions that approach is appropriate because python just returns the right type. In contrast calling a method like get_double that is dogmatic about type will generate an exception if the type does not match. Which you should use will depend on context.</p>
+<p>The <em>clear_aliases</em> method of <em>MetadataDefiniions</em> will restore all entries to the standard value as illustrated here:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>mdef.clear_aliases(sacmd)
+printmd(sacmd)
+</pre></div>
+</div>
+</div>
+<p>The <em>apply_aliases</em> and <em>clear_aliases</em> methods provide a generic support for working with different namespaces. The cost of applying them is not large, but not tiny either. For efficiency avoid unnecessary alias definitions by grouping processes using a common namespace when possible. On the other hand, when a block of processing steps requiring aliases are finished you should immediately call <em>clear_aliases</em> to avoid downstream errors. We emphasize <em>clear_aliases</em> resets ALL metadata
+defined as an alias by the MetadataDefinitions object.</p>
+</div>
+<div class="section" id="AntelopePf">
+<h2>AntelopePf<a class="headerlink" href="#AntelopePf" title="Permalink to this headline">¶</a></h2>
+<p>The Metadata object is an implementation of the core idea of fetching an attribute defined by a name-value pair, where the name is what is commonly called a key and the value is the data we want to associate with the key. As we just saw this maps exactly into the concept of a header that has been proven a useful concept since the earliest days of seismic data processing pioneered by the oil and gas industry in the 1960s.</p>
+<p>The <em>AntelopePf</em> is an implementation of a different, but related problem in all data processing. Almost any algorithm has at least one tunable parameter that needs to be defined. In general, the more generic an algorithm is the more parameters will be needed to define the way it should behave. In the early days of data processing this problem was often solved by creating special format “input files” that a program read at startup. Computer scientists realized decades ago that this was a generic
+problem and thus had generic solutions. Hundreds of solutions to this problem exist with configuration files of various formats. Today the most common is probably xml. We elected to no use xml for our initial development of mspass for two reasons: 1. xml is not a human readable format, but a language for robots (computers). It is very hard for a human being to create a valid xml file by entering the data manually. We needed a format that was easy for a human to construct. 2. Many seismologists
+utilize BRTT’s “parameter files”, because of the generous license agreement BRTT provides for U.S. scientists. Furthermore, both of primary authors of MsPASS were familiar with parameter files and we had an open source implementation we could build on from Pavlis’s plane wave migration code.</p>
+<p>We thus adopted the “parameter files” syntax to implement an extension of Metadata we call an <em>AntelopePf</em>. The <em>AntelopePf</em> is a child of <em>Metadata</em> so the same methods introduced for <em>Metadata</em> can be used for an <em>AntelopePf</em>. The use, however, is more than a little subtle and is best understood from an example.</p>
+<p>Let’s look at a concrete example of the kind of complex parameter file that <em>AntelopePf</em> was designed to handle. The following is the default configuration for a new deconvolution routine in MsPASS we call CNR3CDecon (for Colored Noise 3C (Three-component) Deconvolution):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">########################################################################</span>
+<span class="n">operator_nfft</span> <span class="mi">4096</span>
+<span class="c1">#damping_factor 1000.0</span>
+<span class="n">damping_factor</span> <span class="mf">1.0</span>
+<span class="n">snr_regularization_floor</span> <span class="mf">2.0</span>
+<span class="n">target_sample_interval</span> <span class="mf">0.05</span>
+<span class="n">deconvolution_data_window_start</span> <span class="o">-</span><span class="mf">2.0</span>
+<span class="n">deconvolution_data_window_end</span> <span class="mf">30.0</span>
+<span class="n">time_bandwidth_product</span> <span class="mf">4.5</span>
+<span class="n">number_tapers</span> <span class="mi">8</span>
+<span class="n">shaping_wavelet_dt</span> <span class="mf">0.05</span>
+<span class="n">shaping_wavelet_type</span> <span class="n">ricker</span>
+<span class="n">shaping_wavelet_frequency</span> <span class="mf">1.0</span>
+<span class="n">shaping_wavelet_frequency_for_inverse</span> <span class="mf">0.5</span>
+<span class="n">noise_window_start</span> <span class="o">-</span><span class="mf">30.0</span>
+<span class="n">noise_window_end</span> <span class="o">-</span><span class="mf">5.0</span>
+
+<span class="n">taper_type</span> <span class="n">cosine</span>
+<span class="n">CosineTaper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+  <span class="n">data_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+    <span class="n">front0</span> <span class="o">-</span><span class="mf">2.0</span>
+    <span class="n">front1</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">tail1</span> <span class="mf">27.0</span>
+    <span class="n">tail0</span> <span class="mf">29.5</span>
+  <span class="p">}</span>
+  <span class="n">wavelet_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+   <span class="n">front0</span> <span class="o">-</span><span class="mf">0.75</span>
+   <span class="n">front1</span> <span class="o">-</span><span class="mf">0.25</span>
+   <span class="n">tail1</span> <span class="mf">2.5</span>
+   <span class="n">tail0</span> <span class="mf">3.0</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">LinearTaper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+  <span class="n">data_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+    <span class="n">front0</span> <span class="o">-</span><span class="mf">2.0</span>
+    <span class="n">front1</span> <span class="o">-</span><span class="mf">1.0</span>
+    <span class="n">tail1</span> <span class="mf">27.0</span>
+    <span class="n">tail0</span> <span class="mf">29.5</span>
+  <span class="p">}</span>
+  <span class="n">wavelet_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
+   <span class="n">front0</span> <span class="o">-</span><span class="mf">0.75</span>
+   <span class="n">front1</span> <span class="o">-</span><span class="mf">0.25</span>
+   <span class="n">tail1</span> <span class="mf">2.5</span>
+   <span class="n">tail0</span> <span class="mf">3.0</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">########################################################################</span>
+</pre></div>
+</div>
+<p>We have supplied a copy of the data above in a file called data/test.pf. You should then be able to load this file with the following:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>from mspasspy.ccore import AntelopePf
+pf=AntelopePf(&#39;data/test.pf&#39;)
+</pre></div>
+</div>
+</div>
+<p>Parameters outside the curly brackets and the “&amp;Arr” tags are handled by Metadat methods - they are simple name value pairs. Here are a couple examples. You can extend these to test your knowledge.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>print(&quot;Simple parameter operator_nfft has this value:&quot;,pf.get_long(&quot;operator_nfft&quot;))
+print(&quot;Simple parameter damping_factor has this value:&quot;,pf.get_double(&quot;damping_factor&quot;))
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Simple parameter operator_nfft has this value: 4096
+Simple parameter damping_factor has this value: 1.0
+</pre></div></div>
+</div>
+<p><em>AntelopePf</em> extends <em>Metadata</em> with two primary methods: <em>get_branch</em> and <em>get_tbl</em>. This little code fragment illustrates the <em>get_branch</em> method:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>pfb1=pf.get_branch(&#39;CosineTaper&#39;)
+# Note the example pf has no simple name-value pairs under the CosineTaper tag.
+# This illustrates that is o
+keys=pfb1.keys()
+print(&#39;Metadata keys for CosineTaper branch  (an empty list)&#39;,keys)
+pfb2=pfb1.get_branch(&#39;wavelet_taper&#39;)
+keys=pfb2.keys()
+print(&#39;Metadata keys found for wavelet_taper branch: &#39;,keys)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Metadata keys for CosineTaper branch  (an empty list) set()
+Metadata keys found for wavelet_taper branch:  {&#39;front0&#39;, &#39;tail0&#39;, &#39;tail1&#39;, &#39;front1&#39;}
+</pre></div></div>
+</div>
+<p>This particular example is a little unusual in that the result of the first get_branch call has simple name-value pairs, but only two branches. It also doesn’t demonstrate have data that can be fetched with the other <em>AntelopePf</em> extension called <em>get_tbl</em>. To see, here is the default parameter file for the Antelope contrib program export_to_mspass that can be used to take a data set defined by an Antelope database and import it to MsPASS.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">required</span> <span class="o">&amp;</span><span class="n">Tbl</span><span class="p">{</span>
+<span class="n">dt</span> <span class="n">delta</span> <span class="n">real</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">depth</span> <span class="n">source_depth</span> <span class="n">real</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">lat</span> <span class="n">source_lat</span> <span class="n">real</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">lon</span> <span class="n">source_lon</span> <span class="n">real</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">time</span> <span class="n">source_time</span> <span class="n">real</span>
+<span class="n">site</span><span class="o">.</span><span class="n">lat</span> <span class="n">site_lat</span> <span class="n">real</span>
+<span class="n">site</span><span class="o">.</span><span class="n">lon</span> <span class="n">site_lon</span> <span class="n">real</span>
+<span class="n">site</span><span class="o">.</span><span class="n">elev</span> <span class="n">site_elev</span> <span class="n">real</span>
+<span class="n">nsamp</span> <span class="n">npts</span> <span class="nb">int</span>
+<span class="n">sta</span> <span class="n">sta</span> <span class="n">string</span>
+<span class="n">evid</span> <span class="n">source_id</span> <span class="nb">int</span>
+<span class="n">U11</span> <span class="n">U11</span> <span class="n">real</span>
+<span class="n">U12</span> <span class="n">U12</span> <span class="n">real</span>
+<span class="n">U13</span> <span class="n">U13</span> <span class="n">real</span>
+<span class="n">U21</span> <span class="n">U21</span> <span class="n">real</span>
+<span class="n">U22</span> <span class="n">U22</span> <span class="n">real</span>
+<span class="n">U23</span> <span class="n">U23</span> <span class="n">real</span>
+<span class="n">U31</span> <span class="n">U31</span> <span class="n">real</span>
+<span class="n">U32</span> <span class="n">U32</span> <span class="n">real</span>
+<span class="n">U33</span> <span class="n">U33</span> <span class="n">real</span>
+<span class="p">}</span>
+<span class="n">optional</span> <span class="o">&amp;</span><span class="n">Tbl</span><span class="p">{</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">mb</span> <span class="n">mb</span> <span class="n">real</span>
+<span class="n">origin</span><span class="o">.</span><span class="n">ms</span> <span class="n">ms</span> <span class="n">real</span>
+<span class="n">arrival</span><span class="o">.</span><span class="n">iphase</span> <span class="n">iphase</span> <span class="n">string</span>
+<span class="n">assoc</span><span class="o">.</span><span class="n">phase</span> <span class="n">phase</span> <span class="n">string</span>
+<span class="n">orid</span> <span class="n">orid</span> <span class="nb">int</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The above data are contained in another file data/test2.pf. You should be able to load it by running the following:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>pf2=AntelopePf(&#39;data/test2.pf&#39;)
+tbllist=pf2.get_tbl(&#39;optional&#39;)
+print(tbllist)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;origin.mb mb real&#39;, &#39;origin.ms ms real&#39;, &#39;arrival.iphase iphase string&#39;, &#39;assoc.phase phase string&#39;, &#39;orid orid int&#39;]
+</pre></div></div>
+</div>
+<p>This example illustrates the <em>get_tbl</em> method returns the data between the “optional &amp;Tbl{” and the “}” at the end of the data file as a python list of strings - one list element per line. This can be used by any program where the input can be defined as a sequence of lines. This example uses a format where token 1 is the antelope database attribute name that is to be fetch, token 2 is the name that is to be assigned for the export file, and token 3 is the name used to define the type of the
+data expected (Antelope’s database has type constraints for the same reasons we noted above).</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../reference_manual.html" class="btn btn-neutral float-right" title="Reference Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="prerequisites.html" class="btn btn-neutral float-left" title="Prerequisites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Ian Wang
+
+    </p>
+  </div> 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

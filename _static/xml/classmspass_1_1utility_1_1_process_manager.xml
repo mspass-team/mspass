@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1_process_manager" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::ProcessManager</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1a9b237dd6d6053730df5b543f039fbb86" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::ProcessManager::jobnm</definition>
+        <argsstring></argsstring>
+        <name>jobnm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="160" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1ac0b07c03a99d2d0cfbf1245f8a7924a4" prot="private" static="no" mutable="no">
+        <type>boost::uuids::uuid</type>
+        <definition>boost::uuids::uuid mspass::utility::ProcessManager::job_uuid</definition>
+        <argsstring></argsstring>
+        <name>job_uuid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="161" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1ab0ff389f8bdd8bd3d58a888d96412795" prot="private" static="no" mutable="no">
+        <type>boost::uuids::random_generator</type>
+        <definition>boost::uuids::random_generator mspass::utility::ProcessManager::gen</definition>
+        <argsstring></argsstring>
+        <name>gen</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="162" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1_process_manager_1aad3d9df4ed6b972930c35638a85f5539" prot="private" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::vector&lt; <ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref> &gt; &gt;</type>
+        <definition>std::map&lt;std::string,std::vector&lt;AlgorithmDefinition&gt; &gt; mspass::utility::ProcessManager::algs</definition>
+        <argsstring></argsstring>
+        <name>algs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="163" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="163" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1ac62d64c793d72cadf5c1db06c8c66891" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ProcessManager::ProcessManager</definition>
+        <argsstring>()</argsstring>
+        <name>ProcessManager</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="130" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="10" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1af49b8b04b35a80ec0aeb79c353780b44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::ProcessManager::ProcessManager</definition>
+        <argsstring>(std::string fname)</argsstring>
+        <name>ProcessManager</name>
+        <param>
+          <type>std::string</type>
+          <declname>fname</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="131" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1aaa301ed833cabae45f586489b50f6a8a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref></type>
+        <definition>AlgorithmDefinition mspass::utility::ProcessManager::algorithm</definition>
+        <argsstring>(const std::string name, const size_t instance=0) const</argsstring>
+        <name>algorithm</name>
+        <param>
+          <type>const std::string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>instance</declname>
+          <defval>0</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="132" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/ProcessManager.cc" bodystart="52" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a4a05c8dd5ce8dd62b907a85a4e93c77e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::ProcessManager::jobname</definition>
+        <argsstring>() const</argsstring>
+        <name>jobname</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="134" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a65e084c97224c230593b9e64b6afcf47" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::ProcessManager::jobid</definition>
+        <argsstring>() const</argsstring>
+        <name>jobid</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="138" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="138" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string mspass::utility::ProcessManager::new_newid</definition>
+        <argsstring>()</argsstring>
+        <name>new_newid</name>
+        <briefdescription>
+<para>Get a new UUID to define unique job run. </para>        </briefdescription>
+        <detaileddescription>
+<para>MsPASS data objects are tagged with a UUID to properly handle processing history. Procedures can call his method to get a uuid based on boost&apos;s random_generator. We keep the generator in this object because web conversations suggest construction of random_generator is expensive in time and needs to not be done at the object level.</para><para><simplesect kind="return"><para>new uuid definign this job in string form. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="153" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="153" bodyend="158"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_process_manager_1a998b0c7fefcbb80f0c07ee404ad014f6" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::utility::ProcessManager::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="166" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="166" bodyend="171"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" line="128" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/ProcessManager.h" bodystart="127" bodyend="172"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1aaa301ed833cabae45f586489b50f6a8a" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>algorithm</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1aad3d9df4ed6b972930c35638a85f5539" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>algs</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1ab0ff389f8bdd8bd3d58a888d96412795" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>gen</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1ac0b07c03a99d2d0cfbf1245f8a7924a4" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>job_uuid</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1a65e084c97224c230593b9e64b6afcf47" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>jobid</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1a4a05c8dd5ce8dd62b907a85a4e93c77e" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>jobname</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1a9b237dd6d6053730df5b543f039fbb86" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>jobnm</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>new_newid</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1ac62d64c793d72cadf5c1db06c8c66891" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>ProcessManager</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1af49b8b04b35a80ec0aeb79c353780b44" prot="public" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>ProcessManager</name></member>
+      <member refid="classmspass_1_1utility_1_1_process_manager_1a998b0c7fefcbb80f0c07ee404ad014f6" prot="private" virt="non-virtual"><scope>mspass::utility::ProcessManager</scope><name>serialize</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

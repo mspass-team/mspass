@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="_antelope_pf_8h" kind="file" language="C++">
+    <compoundname>AntelopePf.h</compoundname>
+    <includes local="no">list</includes>
+    <includes local="no">string</includes>
+    <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
+    <includedby refid="mspass_8h" local="yes">/home/travis/build/wangyinz/mspass/cxx/include/mspass/mspass.h</includedby>
+    <includedby refid="_attribute_map_8h" local="yes">/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h</includedby>
+    <includedby refid="_antelope_pf_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/AntelopePf.cc</includedby>
+    <includedby refid="metadata__helpers_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/metadata_helpers.cc</includedby>
+    <includedby refid="_metadata_definitions_8cc" local="yes">/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</includedby>
+    <incdepgraph>
+      <node id="527">
+        <label>list</label>
+      </node>
+      <node id="529">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="530" relation="include">
+        </childnode>
+        <childnode refid="531" relation="include">
+        </childnode>
+        <childnode refid="532" relation="include">
+        </childnode>
+        <childnode refid="527" relation="include">
+        </childnode>
+        <childnode refid="533" relation="include">
+        </childnode>
+        <childnode refid="534" relation="include">
+        </childnode>
+        <childnode refid="535" relation="include">
+        </childnode>
+        <childnode refid="536" relation="include">
+        </childnode>
+        <childnode refid="537" relation="include">
+        </childnode>
+        <childnode refid="538" relation="include">
+        </childnode>
+        <childnode refid="540" relation="include">
+        </childnode>
+      </node>
+      <node id="540">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="528" relation="include">
+        </childnode>
+      </node>
+      <node id="528">
+        <label>string</label>
+      </node>
+      <node id="531">
+        <label>map</label>
+      </node>
+      <node id="539">
+        <label>exception</label>
+      </node>
+      <node id="534">
+        <label>fstream</label>
+      </node>
+      <node id="536">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="530">
+        <label>typeinfo</label>
+      </node>
+      <node id="535">
+        <label>sstream</label>
+      </node>
+      <node id="537">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="538">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="533" relation="include">
+        </childnode>
+        <childnode refid="539" relation="include">
+        </childnode>
+      </node>
+      <node id="526">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h"/>
+        <childnode refid="527" relation="include">
+        </childnode>
+        <childnode refid="528" relation="include">
+        </childnode>
+        <childnode refid="529" relation="include">
+        </childnode>
+      </node>
+      <node id="533">
+        <label>iostream</label>
+      </node>
+      <node id="532">
+        <label>set</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="543">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeMap.h</label>
+        <link refid="_attribute_map_8h_source"/>
+        <childnode refid="542" relation="include">
+        </childnode>
+        <childnode refid="544" relation="include">
+        </childnode>
+      </node>
+      <node id="541">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h"/>
+        <childnode refid="542" relation="include">
+        </childnode>
+        <childnode refid="543" relation="include">
+        </childnode>
+      </node>
+      <node id="542">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
+      <node id="544">
+        <label>/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AttributeCrossReference.h</label>
+        <link refid="_attribute_cross_reference_8h_source"/>
+        <childnode refid="542" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classmspass_1_1utility_1_1_antelope_pf" prot="public">mspass::utility::AntelopePf</innerclass>
+    <innerclass refid="classmspass_1_1utility_1_1_antelope_pf_error" prot="public">mspass::utility::AntelopePfError</innerclass>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
+    <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_ANTELOPE_PF_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_ANTELOPE_PF_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;list&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
+<codeline lineno="18"><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>pftbl_key(</highlight><highlight class="stringliteral">&quot;AntelopePfTbl&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>pfarr_key(</highlight><highlight class="stringliteral">&quot;AntelopePfArr&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="61" refid="classmspass_1_1utility_1_1_antelope_pf" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="65" refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" kindref="member">AntelopePf</ref>():<ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>(){};</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" kindref="member">AntelopePf</ref>(std::string<sp/>pfbase);</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" kindref="member">AntelopePf</ref>(std::list&lt;std::string&gt;<sp/>lines);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1aec63cc4c7b66e36254ee469f09d50abb" kindref="member">AntelopePf</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1a64065097fb1ebc22192ce455cbeca3fb" kindref="member">get_tbl</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" kindref="member">get_branch</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1a118fb63722ad11707cb2fbd58df5f6e6" kindref="member">arr_keys</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>std::list&lt;std::string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1ada5c4a1b9407cb17a0fa953946473211" kindref="member">tbl_keys</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1adcf3ebf85924a353c9c2d8d6666c4068" kindref="member">ConvertToMetadata</ref>();</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1ac19f21b1716e98b66ea05fa4c128ce3d" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_1af61da804652e1b6c6791147ae4b27aab" kindref="member">pfwrite</ref>(std::ostream&amp;<sp/>ofs);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,std::list&lt;std::string&gt;<sp/>&gt;<sp/>pftbls;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>used<sp/>for<sp/>nested<sp/>Arrs<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>std::map&lt;std::string,<sp/>AntelopePf&gt;<sp/>pfbranches;</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>method<sp/>is<sp/>used<sp/>to<sp/>implemetn<sp/>PFPATH<sp/>-<sp/>it<sp/>is<sp/>called<sp/>for</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>each<sp/>secondary<sp/>file<sp/>in<sp/>the<sp/>PFPATH<sp/>chain.<sp/><sp/><sp/>Returns<sp/>the<sp/>number<sp/>of</highlight></codeline>
+<codeline lineno="156"><highlight class="comment"><sp/><sp/><sp/><sp/>items<sp/>changed<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>merge_pfmf(<ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref>&amp;<sp/>m);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="166" refid="classmspass_1_1utility_1_1_antelope_pf_error" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref></highlight></codeline>
+<codeline lineno="167"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref>(){</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message=std::string(</highlight><highlight class="stringliteral">&quot;AntelopePfError-&gt;undefined<sp/>error&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref>(std::string<sp/>mess)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message=</highlight><highlight class="stringliteral">&quot;AntelopePfError<sp/>object<sp/>message=&quot;</highlight><highlight class="normal">+mess;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*mess)</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>message=std::string(</highlight><highlight class="stringliteral">&quot;AntelopePfError<sp/>object<sp/>message=&quot;</highlight><highlight class="normal">)+mess;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>log_error(){</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cerr<sp/>&lt;&lt;<sp/>message&lt;&lt;std::endl;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="183"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Procedural<sp/>functions<sp/>using<sp/>AntelopePf<sp/>object<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal">MetadataList<sp/>get_mdlist(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref>&amp;<sp/>m,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>tag);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref><sp/>pfread(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>fname);</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass<sp/>namespace<sp/>declaration</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/AntelopePf.h"/>
+  </compounddef>
+</doxygen>

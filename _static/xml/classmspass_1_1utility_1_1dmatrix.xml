@@ -1,0 +1,682 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="classmspass_1_1utility_1_1dmatrix" kind="class" language="C++" prot="public">
+    <compoundname>mspass::utility::dmatrix</compoundname>
+    <derivedcompoundref refid="classmspass_1_1utility_1_1dvector" prot="public" virt="non-virtual">mspass::utility::dvector</derivedcompoundref>
+    <includes refid="dmatrix_8h" local="no">dmatrix.h</includes>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::utility::dmatrix::ary</definition>
+        <argsstring></argsstring>
+        <name>ary</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="246" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="246" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" prot="protected" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="247" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="247" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" prot="protected" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix::nrr</definition>
+        <argsstring></argsstring>
+        <name>nrr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="248" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="248" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" prot="protected" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix::ncc</definition>
+        <argsstring></argsstring>
+        <name>ncc</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="248" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="248" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="friend">
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend class</type>
+        <definition>friend class boost::serialization::access</definition>
+        <argsstring></argsstring>
+        <name>boost::serialization::access</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="250" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="250" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix operator*</definition>
+        <argsstring>(const dmatrix &amp;A, const dmatrix &amp;B)</argsstring>
+        <name>operator*</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>A</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>B</declname>
+        </param>
+        <briefdescription>
+<para>Procedure to multiply two matrices. This could be implemented with a dmatrix::operator but this was an existing procedure known to work that I didn&apos;t choose to mess with. Sizes must be compatible or an exception will be thrown. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the left matrix for the multiply. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the right matrix for the multiply. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>will be thrown if the columns in A are not equal to the rows in B. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A*B </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="184" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="139" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1a1235b36bd8ed567716baccd72745e250" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix operator*</definition>
+        <argsstring>(const double &amp;s, const dmatrix &amp;A) noexcept</argsstring>
+        <name>operator*</name>
+        <param>
+          <type>const double &amp;</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>A</declname>
+        </param>
+        <briefdescription>
+<para>Scale a matrix by a constant. </para>        </briefdescription>
+        <detaileddescription>
+<para>This procedure will multiply all elements of a matrix by a constant. The linear algebra concept of scaling a matrix.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the scaling factor </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the matrix to be scaled </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>sA </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="197" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="161" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1ac8bd8f853d25a05e32f9e4c152d6af61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix tr</definition>
+        <argsstring>(const dmatrix &amp;A) noexcept</argsstring>
+        <name>tr</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>A</declname>
+        </param>
+        <briefdescription>
+<para>Transpose a matrix. </para>        </briefdescription>
+        <detaileddescription>
+<para>A standard matrix operation is to transpose a matrix (reversing rows and columns). This takes input A and returns A^T.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- matrix to transpose. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A transposed </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="207" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="190" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="friend" id="classmspass_1_1utility_1_1dmatrix_1a16be1d0ed64f705413d3c57a3d848320" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>friend std::ostream &amp;</type>
+        <definition>std::ostream&amp; operator&lt;&lt;</definition>
+        <argsstring>(std::ostream &amp;os, dmatrix &amp;A)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>os</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>A</declname>
+        </param>
+        <briefdescription>
+<para>Text output operator. </para>        </briefdescription>
+        <detaileddescription>
+<para>Output is ascii data written in the matrix layout. Note this can create huge lines and a lot of output for a large matrix so use carefully. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>os</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the std::ostream to contain data. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be written </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="232" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix::dmatrix</definition>
+        <argsstring>()</argsstring>
+        <name>dmatrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. Produces a 1x1 matrix as a place holder. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="105" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="8" bodyend="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aea80185e12adfb47dbe177c4dc23d206" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix::dmatrix</definition>
+        <argsstring>(const size_t nr, const size_t nc)</argsstring>
+        <name>dmatrix</name>
+        <param>
+          <type>const size_t</type>
+          <declname>nr</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>nc</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Basic constructor. Allocates space for nr x nc array and initializes to zeros.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of rows to allocate for this matrix. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nc</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>number of columns to allocate for this matrix. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="112" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="15" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a46f1bdcaccfa8ae6dee639498864a8cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix::dmatrix</definition>
+        <argsstring>(const dmatrix &amp;other)</argsstring>
+        <name>dmatrix</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="114" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="31" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aef2e20478c6d9adb649e37b59812cb42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::utility::dmatrix::~dmatrix</definition>
+        <argsstring>()</argsstring>
+        <name>~dmatrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Destructor - releases any matrix memory. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="116" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="39" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1adb1442ad936c98c4191a59072b834d97" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::utility::dmatrix::operator()</definition>
+        <argsstring>(const size_t rowindex, const size_t colindex) const</argsstring>
+        <name>operator()</name>
+        <param>
+          <type>const size_t</type>
+          <declname>rowindex</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>colindex</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Indexing operator to fetch an array element.</para><para>Can also be used to set an element as a left hand side (e.g. A(2,4)=2.0;).</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>rowindex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>row to fetch </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>colindex</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>column to fetch. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>value of matrix element at position (rowindex,colindex) </para></simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername><ref refid="classmspass_1_1utility_1_1dmatrix__index__error" kindref="compound">dmatrix_index_error</ref></parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is thrown if request is out of range </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="126" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="44" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a6a83c5587d0da1e9acc1a74e097171e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double &amp;</type>
+        <definition>double &amp; mspass::utility::dmatrix::operator()</definition>
+        <argsstring>(size_t r, size_t c)</argsstring>
+        <name>operator()</name>
+        <param>
+          <type>size_t</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="127" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="56" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a05d02bb630bf3a4b9180f81aca0f835e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+        <definition>dmatrix &amp; mspass::utility::dmatrix::operator=</definition>
+        <argsstring>(const dmatrix &amp;other)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard assignment operator </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="129" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="89" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a2cdc2349f9f027d6caa41379ac7c8a3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+        <definition>dmatrix &amp; mspass::utility::dmatrix::operator+=</definition>
+        <argsstring>(const dmatrix &amp;other)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Add one matrix to another. </para>        </briefdescription>
+        <detaileddescription>
+<para>Matrix addition is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>A</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the matrix to be added to this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>throws</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a <ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref> if other and this are not the same size. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="139" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="101" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a2b2f4889e00cd1d42e7100cfb8791fcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+        <definition>dmatrix &amp; mspass::utility::dmatrix::operator-=</definition>
+        <argsstring>(const dmatrix &amp;other)</argsstring>
+        <name>operator-=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Subtract one matrix to another. </para>        </briefdescription>
+        <detaileddescription>
+<para>Matrix subtraction is a standard operation but demands the two matrices to be added are the same size. Hence, an exception will happen if you use this operator with a size mismatch.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the matrix to be subracted from to this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>throws</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a <ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref> if other and this are not the same size. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="149" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="111" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ab96bc752b9fb5a1d33a628d8fbae8953" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix mspass::utility::dmatrix::operator+</definition>
+        <argsstring>(const dmatrix &amp;other) const</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Operator to add two matrices.</para><para>This operator is similar to += but is the operator used in constructs like X=A+B. Like += other and this must be the same size or an exception will be thrown.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>matrix to be added </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>throws</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a <ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref> if other and this are not the same size. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="159" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="121" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ac5c5bfbf8873f0deeea6143b07c09574" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix mspass::utility::dmatrix::operator-</definition>
+        <argsstring>(const dmatrix &amp;other) const</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Operator to add two matrices.</para><para>This operator is similar to -= but is the operator used in constructs like X=A-B. Like -= other and this must be the same size or an exception will be thrown.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>matrix to be added </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>throws</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a <ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref> if other and this are not the same size. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="169" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="129" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a29b6eb66bce64a8a2a0102e3bbb4c83a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></type>
+        <definition>dmatrix mspass::utility::dmatrix::operator*</definition>
+        <argsstring>(double s) const noexcept</argsstring>
+        <name>operator*</name>
+        <param>
+          <type>double</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="198" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="178" bodyend="185"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::utility::dmatrix::get_address</definition>
+        <argsstring>(size_t r, size_t c) const</argsstring>
+        <name>get_address</name>
+        <param>
+          <type>size_t</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>size_t</type>
+          <declname>c</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="224" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="71" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1a178f65f7f0efb2c99980c8c81cf71bca" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix::rows</definition>
+        <argsstring>() const</argsstring>
+        <name>rows</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return number of rows in this matrix. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="234" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="228" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t mspass::utility::dmatrix::columns</definition>
+        <argsstring>() const</argsstring>
+        <name>columns</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return number of columns in this matrix. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="236" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="232" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>vector&lt; size_t &gt; mspass::utility::dmatrix::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <briefdescription>
+<para>Return a vector with 2 elements giving the size. </para>        </briefdescription>
+        <detaileddescription>
+<para>This function returns an std::vector with 2 elements with size information. first component is rows, second is columns. This simulates the matlab size function. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="242" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="219" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::utility::dmatrix::zero</definition>
+        <argsstring>()</argsstring>
+        <name>zero</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Initialize a matrix to all zeros. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="244" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="215" bodyend="218"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1dmatrix_1af732bb42a0673e01443cf74fd89576d2" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Archive</type>
+          </param>
+        </templateparamlist>
+        <type>void</type>
+        <definition>void mspass::utility::dmatrix::serialize</definition>
+        <argsstring>(Archive &amp;ar, const unsigned int version)</argsstring>
+        <name>serialize</name>
+        <param>
+          <type>Archive &amp;</type>
+          <declname>ar</declname>
+        </param>
+        <param>
+          <type>const unsigned int</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="251" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="251" bodyend="256"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Lightweight, simple matrix object. </para>    </briefdescription>
+    <detaileddescription>
+<para>This class defines a lightweight, simple double precision matrix. Provides basic matrix functionality. Note that elements of the matrix are stored internally in FORTRAN order but using C style indexing. That is, all indices begin at 0, not 1 and run to size - 1. Further, FORTRAN order means the elements are actually ordered in columns as in FORTRAN in a continuous, logical block of memory. This allow one to use the BLAS functions to access the elements of the matrix. As usual be warned this is useful for efficiency and speed, but completely circumvents the bounds checking used by methods in the object.</para><para><simplesect kind="author"><para>Robert R and Gary L. Pavlis </para></simplesect>
+</para>    </detaileddescription>
+    <inheritancegraph>
+      <node id="80">
+        <label>mspass::utility::dmatrix</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix"/>
+      </node>
+      <node id="81">
+        <label>mspass::utility::dvector</label>
+        <link refid="classmspass_1_1utility_1_1dvector"/>
+        <childnode refid="80" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" line="102" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="101" bodyend="257"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1af195802dbdd085947b290aaf6c73ce02" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>ary</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ac98d07dd8f7b70e16ccb9a01abf56b9c" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>boost::serialization::access</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>columns</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>dmatrix</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1aea80185e12adfb47dbe177c4dc23d206" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>dmatrix</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a46f1bdcaccfa8ae6dee639498864a8cf" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>dmatrix</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ae40ad36efea03496d79e95c91b675060" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>get_address</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1afe5aed11a5f0456ccc0ffd0f79d61a43" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>length</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1aba0bb81f3c3ed1b9c86efd4229c2f557" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>ncc</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a89c689d30cb1543bd4b1a7d6104a8d6d" prot="protected" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>nrr</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1adb1442ad936c98c4191a59072b834d97" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator()</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a6a83c5587d0da1e9acc1a74e097171e6" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator()</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator*</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a1235b36bd8ed567716baccd72745e250" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator*</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a29b6eb66bce64a8a2a0102e3bbb4c83a" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator*</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ab96bc752b9fb5a1d33a628d8fbae8953" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a2cdc2349f9f027d6caa41379ac7c8a3c" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ac5c5bfbf8873f0deeea6143b07c09574" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a2b2f4889e00cd1d42e7100cfb8791fcc" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a16be1d0ed64f705413d3c57a3d848320" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator&lt;&lt;</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a05d02bb630bf3a4b9180f81aca0f835e" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1a178f65f7f0efb2c99980c8c81cf71bca" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>rows</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1af732bb42a0673e01443cf74fd89576d2" prot="private" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>serialize</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>size</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ac8bd8f853d25a05e32f9e4c152d6af61" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>tr</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>zero</name></member>
+      <member refid="classmspass_1_1utility_1_1dmatrix_1aef2e20478c6d9adb649e37b59812cb42" prot="public" virt="non-virtual"><scope>mspass::utility::dmatrix</scope><name>~dmatrix</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
