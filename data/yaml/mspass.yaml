@@ -1,369 +1,428 @@
 # Notes on the format of this master configuration file
-# Multiple groups of attributes can be defined in indented sections.  The
-# top level master is Attributes.  Exensions should be added in groups with
-# appropriate names.  All will be parsed.
 #
-# All real number values should have type: set to double because python float
-# today is always a 64 bit entity which to C++ is a double
+# The schema of the Database and the Metadata container are defined in 
+# corresponding sections.
 #
-# For each entry these keys are required:  name, type, and concept.
-# If aliases is missing it means tehre are none.  You can also just have no entry after the keyword
-# readonly is a boolean.  If is present it will be taken as true unless explicitly marked false
-#   Hence, normally just omit this for atributes that are to be automatically written
-#   and updated.
-# unique_id and table are required ONLY if readonly is true.   These are used to
-#   reference what MongoDB calls the normalized data model.  This feature is used
-#   attributes that are stable, stored in one place (table), and readonly.
-#   unique_id is a key to access data in table (a document in mongodb).  See
-#   documentation for a full description of the concepts
-Attributes:
-# These are required attributes in an obspy trace object.  We keep them here
-# to make that clear
-  - name: npts
-    type: int
-    concept: Number of data samples
-    aliases: nsamp wfdisc.nsamp
-  - name: delta
-    type: double
-    concept: Data sample interval in seconds
-    aliases: dt
-  - name: sampling_rate
-    type: double
-    concept: Data sampling frequency in Hz=1/s
-  - name: starttime
-    type: double
-    concept: Time of first sample of data (epoch time or relative to some other time mark)
-    aliases: t0 time
-  - name: calib
-    type: double
-    concept: Nominal conversion factor for changing sample data to ground motion units.
-# These are additional attributes for the static site collection/table
-  - name: site_id
-    type: string
-    concept:  String representation of ObjectId used to define a particular instrument/seismic station
-    # this is not marked readonly as needs to be saved always in wf
-    readonly:  false
-    unique_id:  site_id
-    collection:  site
-  - name: net
-    type: string
-    concept: network code (net component of SEED net:sta:chan)
-    aliases: network site.net channel.net wfdisc.net
-    readonly: true
-    unique_id: site_id
-    collection: site
-  - name: sta
-    type: string
-    concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-    aliases: station site.sta channel.sta wfdisc.sta KSTNM
-    readonly: true
-    unique_id: site_id
-    collection: site
-  - name: loc
-    type: string
-    concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
-    aliases: location site.loc channel.loc
-    readonly: true
-    unique_id: site_id
-    collection: site
-  - name: site_lat
-    type: double
-    concept:  latitude of a seismic station/instrument in degrees
-    aliases: STLA site.lat
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_lon
-    type: double
-    concept:  longitude of a seismic station/instrument in degrees
-    aliases: STLO stlo site.lon
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_elev
-    type: double
-    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: STEL stel site.elev
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_starttime
-    type: double
-    concept:  Time of seismic station/instrument starts recording
-    aliases: site.starttime
-    readonly: true
-    unique_id:  site_id
-    collection: site
-  - name: site_endtime
-    type: double
-    concept:  Time of seismic station/instrument ends recording
-    aliases: site.endtime
-    readonly: true
-    unique_id:  site_id
-    collection: site
-# These define the css3.0 sitechan minimal Attributes which is renamed as channel here
-  - name: channel_id
-    type: string
-    concept:  String representation of ObjectId used to define a particular component of data
-    readonly:  false
-    unique_id:  channel_id
-    collection:  channel
-  - name: chan
-    type: string
-    concept:  channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
-    aliases: channel KCMPNM channel.chan wfdisc.chan
-    readonly: true
-    unique_id: channel_id
-    collection: channel
-  - name: channel_hang
-    type: double
-    concept:  Azimuth (in degree) of a seismometer component - horizontal angle
-    aliases: hang CMPAZ
-    readonly: true
-    unique_id: channel_id
-    collection: channel
-  - name: channel_vang
-    type: double
-    concept:  Inclination from +up (in degree) of a seismometer component - vertical angle
-    aliases: vang CMPINC
-    readonly: true
-    unique_id: channel_id
-    collection: channel
-  - name: channel_lat
-    type: double
-    concept:  latitude of a seismic station/instrument in degrees
-    aliases: channel_lat
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-  - name: channel_lon
-    type: double
-    concept:  longitude of a seismic station/instrument in degrees
-    aliases: channel_lon
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-  - name: channel_elev
-    type: double
-    concept:  elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-    aliases: channel_elev
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-  - name: channel_edepth
-    type: double
-    concept:  depth of a seismic station/instrument in km
-    aliases: channel.edepth
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-  - name: channel_starttime
-    type: double
-    concept:  Time of channel starts recording
-    aliases: channel.starttime
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-  - name: channel_endtime
-    type: double
-    concept:  Time of channel ends recording
-    aliases: channel.endtime
-    readonly: true
-    unique_id:  channel_id
-    collection: channel
-# These are attributes for source data.   This schema does not support multiple
-# source locations for a single seismic event.   We use source for the table name
-# instead of event or origin to avoid make that clear.   An event-origin
-# capability is probably possible, but would create baggage for the primary
-# use goal of mspass
-  - name: source_id
-    type: string
-    concept:  String representation of ObjectId used to define a particular seismic source
-    # this is not marked readonly as needs to be saved always in wf
-    readonly:  false
-    unique_id:  source_id
-    collection:  source
-  - name: source_lat
-    type: double
-    concept: Latitude (in degrees) of the hypocenter of seismic source
-    aliases:  source.lat EVLA origin.lat
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_lon
-    type: double
-    concept: Longitude (in degrees) of the hypocenter of seismic source
-    aliases:  source.lon EVLO origin.lon
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_depth
-    type: double
-    concept: Depth (in km) of the hypocenter of seismic source
-    aliases: source.depth EVDP origin.depth
-    readonly: true
-    unique_id: source_id
-    collection: source
-  - name: source_time
-    type: double
-    concept: Origin time of the hypocenter of seismic source (epoch time)
-    aliases: source.time origin.time
-    readonly: true
-    unique_id: source_id
-    collection: source
-RAW:
-  - name: evid
-    type: int
-    concept:  event id - used in CSS3.0 as the identifier of a particular seismic source
-    readonly:  false
-    unique_id:  source_id
-    collection:  source 
-    alias: event.evid
-  - name: orid
-    type: int
-    concept:  origin id - used in CSS3.0 to handle multiple hypocenter locations of a common source
-    readonly:  false
-    unique_id:  source_id
-    collection:  source 
-    alias: origin.orid event.orid
-  - name: KEVNM
-    type: string
-    concept: Event name 
-    readonly: false
-  - name: IEVTYP
-    type:  int
-    concept:  Event type code as used in SAC
-    readonly: false
-BasicTimeSeries:
-  - name: time_standard
-    type: string
-    concept:  Defines time standard for meaning of t0 of a seismogram (default should be UTC)
-    readonly: false
-  - name: t0_shift
-    type: double
-    concept: Value of a time shift applied to a standard (normally UTC standard)
-    readonly: false
-ThreeComponentData:
-  - name: tmatrix
-    type: double_array
-    concept:  3C data transformation matrix
-    readonly: false
-Magnitude:
-  - name: ms
-    type: double
-    concept: Surface wave magnitude
-    readonly: true
-    unique_id: souce_id
-    collection: source
-  - name: mb
-    type: double
-    concept: Body wave magnitude
-    readonly: true
-    unique_id: souce_id
-    collection: source
-  - name: magnitude
-    type: double
-    concept: generic magnitude attribute
-    readonly: false
-    aliases: MAG
-    unique_id: souce_id
-    collection: source
-External_files:
-  - name: dfile
-    type: string
-    concept: External data file name.
-    aliases: file.dfile wfdisc.dfile wfprocess.dfile
-    readonly: false
-  - name: dir
-    type: string
-    concept: Directory path to an external file (always used with dfile)
-    aliases: file.dir wfdisc.dir wfprocess.dir
-    readonly: false
-  - name: foff
-    type: int
-    concept:  Offset in bytes from beginning of a file to first data sample.
-    readonly: false
-    aliases: file.foff wfdisc.foff wfprocess.foff
-SeismicPhases:
-  - name: phase
-    type: string
-    concept: Phase name assigned by an analyst to a pick
-    readonly: false
-  - name: iphase
-    type: string
-    concept:  Indicated phase (from CSS3.0) - phase name from travel time curve association
-    readonly: false
-  - name: seaz
-    type: double
-    concept: Station to event azimuth
-    readonly: false
-    aliases: BAZ
-  - name: esaz
-    type: double
-    concept: Event to station azimuth
-    readonly: false
-    aliases: AZ
-MongoDb:
-# This set of parameters are essential for mspass, but are intimately linked to MongoDB
-  - name: wf_id
-    type: string
-    concept:  Holds string representation of the ObjectID used to define an unique entry in wf collection.
-    readonly: false
-    collection: wf
-  - name: gridfs_id
-    type: string
-    concept: Holds string representation of the ObjectID used to index waveform data in gridfs_wf collection.
-    readonly: false 
-    collection: fs.files
-  - name: history_id
-    type: string
-    concept:  Holds string representation of the ObjectID used to define an unique entry in history collection.
-    readonly: false
-    collection: history
-# TODO We need to support string_array type before enable the following.
-#  - name: elog_id
-#    type: string_array
-#    concept: Holds string representation of the ObjectID used to define an unique entry in elog collection.
-#    readonly: false 
-#    collection: elog
-# These are assorted attributes that can be used in wf but have not logical 
-# grouping
-Other:
-  - name: units
-    type:  string
-    concept:  Physical units of sample data (nm/s is normal assumed default)
-    readonly: false
-    aliases: idep,IDEP
-  - name: DEPMIN
-    type: double
-    concept: Maximum amplitude of a signal
-    readonly: false
-    aliases: depmin
-  - name: DEPMAX
-    type: double
-    concept: Minimum amplitude of a signal
-    readonly: false
-    aliases: depmax
-  - name: DEPMEN
-    type: double
-    concept: Mean amplitude of a signal
-    readonly: false
-    aliases: depmen
-  - name: jdate
-    type: int
-    concept: Julian date string as used in CSS3.0
-    readonly: false
-  - name: IZTYPE
-    type: int
-    concept: Reference time type as used by SAC
-    readonly: false
-    aliases: TimeReferenceType
-  - name: dist
-    type: double
-    concept: Source receiver distance
-    readonly: false
-    aliases: assoc.delta,GCARC
-  - name: distance_units
-    type: string
-    concept: Units of dist attribute
-    readonly: false
+# The keys under Database defines the collection names. Each collection 
+# can have a base and a schema key. The base key can be used to derive 
+# new collections with a existing one. The schema can then define keys 
+# that override the base. Each entry of the schema should at least have 
+# its type defined. The types need to be compatible to BSON. If the 
+# optional key is absent, the attribute will be assumed required by default. 
+# All required attributes need to be defined in all entries of the collection.
+# The reference key defines an attribute that is referenced from a different 
+# collection, it will by default assume the type to be the same unless 
+# otherwise specified (probably only as a array type).
+#
+# The keys under Metadata defines the metadata to be used for each type of 
+# MsPASS basic object. The base key acts the same as the Database ones. The 
+# entries under schema should have a collection name defined. The reader will 
+# insert the properties of the attributes from the database collections 
+# defined above. The "_" pattern of names with its collection name as prefix 
+# will be automatically resolved (note that the behavior under the hood is 
+# slightly different for the IDs). The readonly key will be used to test 
+# whether an attribute in the data object can be saved to the database. All 
+# the keys that are defined but without a readonly entry will by default 
+# treated as readonly.
+#
+# The design of wf_Seismogram and Seismogram needs to be further revised.
+
+Database:
+  wf_TimeSeries:
+    schema:
+      _id:
+        type: objectId
+        concept: ObjectId used to define a data object
+      npts:
+        type: int
+        concept: Number of data samples
+        aliases: [nsamp, wfdisc.nsamp]
+      delta:
+        type: double
+        concept: Data sample interval in seconds
+        aliases: [dt]
+      sampling_rate:
+        type: double
+        concept: Data sampling frequency in Hz=1/s
+        optional: true
+      starttime:
+        type: double
+        concept: Time of first sample of data (epoch time or relative to some other time mark)
+        aliases: [t0, time]
+      time_standard:
+        type: string
+        concept: Defines time standard for meaning of t0 (default should be UTC)
+      calib:
+        type: double
+        concept: Nominal conversion factor for changing sample data to ground motion units.
+      storage_mode:
+        type: string
+        concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+      dir:
+        type: string
+        concept: Directory path to an external file (always used with dfile)
+        aliases: [file.dir, wfdisc.dir, wfprocess.dir]
+        optional: true
+      dfile:
+        type: string
+        concept: External data file name.
+        aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
+        optional: true
+      foff:
+        type: int
+        concept: Offset in bytes from beginning of a file to first data sample.
+        aliases: [file.foff, wfdisc.foff, wfprocess.foff]
+        optional: true
+      url:
+        type: string
+        concept: Url to external data file.
+        optional: true
+      gridfs_id:
+        type: objectId
+        concept: The _id of data file in the fs.files collection.
+        optional: true
+      site_id:
+        reference: site
+      channel_id:
+        reference: channel
+      source_id:
+        reference: source
+        optional: true
+      history_object_id:
+        reference: history_object
+        optional: true
+      elog_id:
+        type: array
+        reference: elog
+        optional: true
+
+  wf_Seismogram:
+    base: wf_TimeSeries
+    schema:
+      tmatrix:
+        type: array
+        concept: Three-component data's transformation matrix
+      channel_id:
+        type: array
+        reference: channel
+
+  site:
+    schema:
+      _id:
+        type: objectId
+        concept: ObjectId used to define a particular instrument/seismic station
+      net:
+        type: string
+        concept: network code (net component of SEED net:sta:chan)
+        aliases: [network, site.net, channel.net, wfdisc.net]
+      sta:
+        type: string
+        concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+        aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
+      loc:
+        reference: channel
+        optional: true
+      lat:
+        type: double
+        concept: latitude of a seismic station/instrument in degrees
+        aliases: [STLA, site.lat]
+      lon:
+        type: double
+        concept: longitude of a seismic station/instrument in degrees
+        aliases: [STLO, stlo, site.lon]
+      elev:
+        type: double
+        concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+        aliases: [STEL, stel, site.elev]
+      starttime:
+        type: double
+        concept: Time of seismic station/instrument starts recording
+        aliases: [site.starttime]
+      endtime:
+        type: double
+        concept: Time of seismic station/instrument ends recording
+        aliases: [site.endtime]
+
+  channel:
+    schema:
+      _id:
+        type: objectId
+        concept: ObjectId used to define a particular component of data
+      net:
+        reference: site
+      sta:
+        reference: site
+      loc:
+        type: string
+        concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
+        aliases: [location, site.loc, channel.loc]
+        optional: true
+      chan:
+        type: string
+        concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
+        aliases: [channel, KCMPNM, channel.chan, wfdisc.chan]
+      lat:
+        type: double
+        concept: latitude of a seismic station/instrument in degrees
+        aliases: [channel_lat]
+      lon:
+        type: double
+        concept: longitude of a seismic station/instrument in degrees
+        aliases: [channel_lon]
+      elev:
+        type: double
+        concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
+        aliases: [channel_elev]
+      edepth:
+        type: double
+        concept: depth of a seismic station/instrument in km
+        aliases: [channel_edepth]
+      hang:
+        type: double
+        concept:  Azimuth (in degree) of a seismometer component - horizontal angle
+        aliases: [CMPAZ]
+      vang:
+        type: double
+        concept: Inclination from +up (in degree) of a seismometer component - vertical angle
+        aliases: [CMPINC]
+      starttime:
+        type: double
+        concept: Time of channel starts recording
+        aliases: [channel_starttime]
+      endtime:
+        type: double
+        concept: Time of channel ends recording
+        aliases: [channel_endtime]
+
+  source:
+    schema:
+      _id:
+        type: objectId
+        concept: ObjectId used to define a particular seismic source
+      lat:
+        type: double
+        concept: Latitude (in degrees) of the hypocenter of seismic source
+        aliases: [source.lat, EVLA, origin.lat]
+      lon:
+        type: double
+        concept: Longitude (in degrees) of the hypocenter of seismic source
+        aliases: [source.lon, EVLO, origin.lon]
+      depth:
+        type: double
+        concept: Depth (in km) of the hypocenter of seismic source
+        aliases: [source.depth, EVDP, origin.depth]
+      time:
+        type: double
+        concept: Origin time of the hypocenter of seismic source (epoch time)
+        aliases: [source.time, origin.time]
+      magnitude:
+        type: double
+        concept: Generic magnitude attribute
+        aliases: [MAG]
+
+  # According to https://docs.mongodb.com/manual/core/document/#the-id-field
+  # UUID should be saved as BSON's BinData type.
+  history_object:
+    schema:
+      _id:
+        type: binData 
+        concept: UUID used to define an unique entry in history collection.
+      nodedata:
+        type: object 
+        concept: serialized content of ProcessingHistory.
+
+  elog:
+    schema:
+      _id:
+        type: objectId
+        concept: ObjectID used to define an unique entry in elog collection.
+      logdata:
+        type: object 
+        concept: serialized content of ErrorLogger.
+
+
+Metadata:
+  TimeSeries:
+    schema:
+      _id:
+        collection: wf_TimeSeries
+        readonly: false
+      npts:
+        collection: wf_TimeSeries
+        readonly: false
+      delta:
+        collection: wf_TimeSeries
+        readonly: false
+      sampling_rate:
+        collection: wf_TimeSeries
+        readonly: false
+      starttime:
+        collection: wf_TimeSeries
+        readonly: false
+      time_standard:
+        collection: wf_TimeSeries
+        readonly: false
+      calib:
+        collection: wf_TimeSeries
+        readonly: false
+      site_id:
+        collection: wf_TimeSeries
+        readonly: false
+      channel_id:
+        collection: wf_TimeSeries
+        readonly: false
+      source_id:
+        collection: wf_TimeSeries
+        readonly: false
+      net:
+        collection: site
+        readonly: true
+      sta:
+        collection: site
+        readonly: true
+      site_lat:
+        collection: site
+        readonly: true
+      site_lon:
+        collection: site
+        readonly: true
+      site_elev:
+        collection: site
+        readonly: true
+      site_starttime:
+        collection: site
+        readonly: true
+      site_endtime:
+        collection: site
+        readonly: true
+      loc:
+        collection: channel
+        readonly: true
+      chan:
+        collection: channel
+        readonly: true
+      channel_hang:
+        collection: channel
+        readonly: true
+      channel_vang:
+        collection: channel
+        readonly: true
+      channel_lat:
+        collection: channel
+        readonly: true
+      channel_lon:
+        collection: channel
+        readonly: true
+      channel_elev:
+        collection: channel
+        readonly: true
+      channel_edepth:
+        collection: channel
+        readonly: true
+      channel_starttime:
+        collection: channel
+        readonly: true
+      channel_endtime:
+        collection: channel
+        readonly: true    
+      source_lat:
+        collection: source
+        readonly: true
+      source_lon:
+        collection: source
+        readonly: true
+      source_depth:
+        collection: source
+        readonly: true
+      source_time:
+        collection: source
+        readonly: true
+      source_magnitude:
+        collection: source
+        readonly: true
+      
+  Seismogram:
+    base: TimeSeries
+    schema:
+      tmatrix:
+        collection: wf_Seismogram
+        readonly: false
+      channel_id:
+        collection: wf_Seismogram
+        readonly: false
+
+  # These are assorted attributes that can be used in Metadata
+  Other:
+    schema:
+      KEVNM:
+        type: string
+        concept: Event name 
+        readonly: false
+      IEVTYP:
+        type:  int
+        concept: Event type code as used in SAC
+        readonly: false
+      units:
+        type:  string
+        concept: Physical units of sample data (nm/s is normal assumed default)
+        readonly: false
+        aliases: [idep, IDEP]
+      DEPMIN:
+        type: double
+        concept: Maximum amplitude of a signal
+        readonly: false
+        aliases: [depmin]
+      DEPMAX:
+        type: double
+        concept: Minimum amplitude of a signal
+        readonly: false
+        aliases: [depmax]
+      DEPMEN:
+        type: double
+        concept: Mean amplitude of a signal
+        readonly: false
+        aliases: [depmen]
+      jdate:
+        type: int
+        concept: Julian date string as used in CSS3.0
+        readonly: false
+      IZTYPE:
+        type: int
+        concept: Reference time type as used by SAC
+        readonly: false
+        aliases: [TimeReferenceType]
+      dist:
+        type: double
+        concept: Source receiver distance
+        readonly: false
+        aliases: [assoc.delta, GCARC]
+      distance_units:
+        type: string
+        concept: Units of dist attribute
+        readonly: false
+      phase:
+        type: string
+        concept: Phase name assigned by an analyst to a pick
+        readonly: false
+      iphase:
+        type: string
+        concept: Indicated phase (from CSS3.0) - phase name from travel time curve association
+        readonly: false
+      seaz:
+        type: double
+        concept: Station to event azimuth
+        readonly: false
+        aliases: [BAZ]
+      esaz:
+        type: double
+        concept: Event to station azimuth
+        readonly: false
+        aliases: [AZ]
+      ms:
+        type: double
+        concept: Surface wave magnitude
+        readonly: true
+      mb:
+        type: double
+        concept: Body wave magnitude
+        readonly: true
