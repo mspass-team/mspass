@@ -12,7 +12,7 @@
 # All required attributes need to be defined in all entries of the collection.
 # The reference key defines an attribute that is referenced from a different 
 # collection, it will by default assume the type to be the same unless 
-# otherwise specified (probably only as a array type).
+# otherwise specified (probably only as a list type).
 #
 # The keys under Metadata defines the metadata to be used for each type of 
 # MsPASS basic object. The base key acts the same as the Database ones. The 
@@ -92,7 +92,7 @@ Database:
         reference: history_object
         optional: true
       elog_id:
-        type: array
+        type: list
         reference: elog
         optional: true
 
@@ -100,11 +100,12 @@ Database:
     base: wf_TimeSeries
     schema:
       tmatrix:
-        type: array
+        type: list
         concept: Three-component data's transformation matrix
       channel_id:
-        type: array
+        type: list
         reference: channel
+        optional: true
 
   site:
     schema:
@@ -221,11 +222,13 @@ Database:
         aliases: [MAG]
 
   # According to https://docs.mongodb.com/manual/core/document/#the-id-field
-  # UUID should be saved as BSON's BinData type.
+  # UUID should be saved as BSON's BinData type. We should do the conversion 
+  # implicitly. Will need to explore the bson API:
+  # https://pymongo.readthedocs.io/en/stable/api/bson/index.html 
   history_object:
     schema:
       _id:
-        type: binData 
+        type: string
         concept: UUID used to define an unique entry in history collection.
       nodedata:
         type: object 
