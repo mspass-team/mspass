@@ -46,6 +46,20 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         env_vars: OS,PYTHON
-        path_to_write_report: ./coverage/codecov_report.txt
         verbose: true
-    
+    - name: Build Documentation
+      if: ${{ matrix.python-version == '3.8' }}
+      run: |
+        export MSPASS_HOME=$(pwd)
+        pip install -r docs/requirements.txt
+        cd docs 
+        ls
+        make html
+    - name: Deploy to GitHub Pages 
+      if: ${{ github.ref == 'refs/heads/master' && matrix.python-version == '3.8' }}
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages 
+        FOLDER: docs/build/html 
+        CLEAN: false
