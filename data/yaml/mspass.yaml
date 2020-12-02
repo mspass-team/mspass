@@ -345,14 +345,82 @@ Metadata:
         readonly: true
       
   Seismogram:
-    base: TimeSeries
     schema:
+      _id:
+        collection: wf_Seismogram
+        readonly: false
+      npts:
+        collection: wf_Seismogram
+        readonly: false
+      delta:
+        collection: wf_Seismogram
+        readonly: false
+      sampling_rate:
+        collection: wf_Seismogram
+        readonly: false
+      starttime:
+        collection: wf_Seismogram
+        readonly: false
+      time_standard:
+        collection: wf_Seismogram
+        readonly: false
+      calib:
+        collection: wf_Seismogram
+        readonly: false
+      site_id:
+        collection: wf_Seismogram
+        readonly: false
+      channel_id:
+        collection: wf_Seismogram
+        readonly: false
+      source_id:
+        collection: wf_Seismogram
+        readonly: false
       tmatrix:
         collection: wf_Seismogram
         readonly: false
       channel_id:
         collection: wf_Seismogram
         readonly: false
+      net:
+        collection: site
+        readonly: true
+      sta:
+        collection: site
+        readonly: true
+      loc:
+        collection: site
+        readonly: true 
+      site_lat:
+        collection: site
+        readonly: true
+      site_lon:
+        collection: site
+        readonly: true
+      site_elev:
+        collection: site
+        readonly: true
+      site_starttime:
+        collection: site
+        readonly: true
+      site_endtime:
+        collection: site
+        readonly: true
+      source_lat:
+        collection: source
+        readonly: true
+      source_lon:
+        collection: source
+        readonly: true
+      source_depth:
+        collection: source
+        readonly: true
+      source_time:
+        collection: source
+        readonly: true
+      source_magnitude:
+        collection: source
+        readonly: true
 
   # These are assorted attributes that can be used in Metadata
   Other:
