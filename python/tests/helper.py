@@ -23,9 +23,16 @@ def get_live_seismogram():
     seis.dt = 1 / sampling_rate
     seis.t0 = 0
     seis.npts = ts_size
-    seis.put('net', 'IU')
+    # seis.put('net', 'IU')
     seis.put('npts', ts_size)
     seis.put('sampling_rate', sampling_rate)
+    seis.tref = TimeReferenceType.UTC
+    seis.t0 = datetime.utcnow().timestamp()
+    seis['delta'] = 0.1
+    seis['calib'] = 0.1
+    seis['site_id'] = str(bson.objectid.ObjectId())
+    seis['channel_id'] = str(bson.objectid.ObjectId())
+    seis['source_id'] = str(bson.objectid.ObjectId())
     seis.data = dmatrix(3, ts_size)
     for i in range(3):
         for j in range(ts_size):
@@ -38,7 +45,7 @@ def get_live_timeseries():
     ts.set_live()
     ts.dt = 1 / sampling_rate
     ts.npts = ts_size
-    ts.put('net', 'IU')
+    # ts.put('net', 'IU')
     ts.put('npts', ts_size)
     ts.put('sampling_rate', sampling_rate)
     ts.tref = TimeReferenceType.UTC
