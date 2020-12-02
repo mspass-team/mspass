@@ -1,0 +1,66 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.6', '3.8']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install CXX Dependencies
+      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pymongo numpy obspy pytest mongomock pytest-cov codecov "dask[complete]"
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Install Apache Spark
+      run: |
+        mkdir -p /opt
+        wget -q -O /opt/spark.tgz https://archive.apache.org/dist/spark/spark-3.0.0/spark-3.0.0-bin-hadoop2.7.tgz
+        tar xzf /opt/spark.tgz -C /opt/
+        rm /opt/spark.tgz
+        export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7
+        echo "SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7" >> $GITHUB_ENV
+        export PATH=$PATH:/opt/spark-3.0.0-bin-hadoop2.7/bin
+        echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
+        python -m pip install pyspark pytest-spark
+    - name: Install
+      run: python setup.py build --debug install
+    - name: Test with pytest
+      run: |
+        export MSPASS_HOME=$(pwd)
+        pytest --cov=mspasspy python/tests/
+        make test -C build/temp.*/
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        env_vars: OS,PYTHON
+        verbose: true
+    - name: Build Documentation
+      if: ${{ matrix.python-version == '3.8' }}
+      run: |
+        export MSPASS_HOME=$(pwd)
+        sudo apt-get update && sudo apt-get install -yq doxygen pandoc
+        pip install -r docs/requirements.txt
+        cd docs 
+        ls
+        make html
+    - name: Deploy to GitHub Pages 
+      if: ${{ github.ref == 'refs/heads/master' && matrix.python-version == '3.8' }}
+      uses: JamesIves/github-pages-deploy-action@3.7.1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages 
+        FOLDER: docs/build/html 
+        CLEAN: false
