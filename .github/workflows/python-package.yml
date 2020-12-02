@@ -32,6 +32,7 @@ jobs:
         rm /opt/spark.tgz
         export SPARK_HOME=/opt/spark-3.0.0-bin-hadoop2.7
         export PATH=$PATH:/opt/spark-3.0.0-bin-hadoop2.7/bin
+        python -m pip install pyspark pytest-spark
     - name: Install
       run: python setup.py build --debug install
     - name: Test with pytest
