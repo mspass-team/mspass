@@ -117,7 +117,7 @@ class Database(pymongo.database.Database):
 
         if object['dtype'] == 'TimeSeries':
             mspass_object = TimeSeries({k:md[k] for k in md}, np.ndarray([0], dtype=np.float64))
-            mspass_object.npts = md['npts'] # fixme
+            mspass_object.npts = md['npts']  # fixme
         elif object['dtype'] == 'Seismogram':
             mspass_object = Seismogram(CoreSeismogram(md, False))
         else:
