@@ -19,7 +19,7 @@ jobs:
     - name: Create Build Environment
       shell: bash
       working-directory: ${{runner.workspace}}/cxx
-      run: cmake -E make_directory ${{runner.workspace}}/cxx/build
+      run: mkdir build
 
     - name: Configure CMake
       shell: bash
