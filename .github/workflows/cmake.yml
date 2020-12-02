@@ -13,13 +13,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install Dependencies
-      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
+    #- name: Install Dependencies
+    #  run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
 
     - name: Create Build Environment
       shell: bash
-      working-directory: ${{runner.workspace}}/cxx
-      run: mkdir build
+      run: |
+        pwd
+        ls
+        cd cxx
+        mkdir build
 
     - name: Configure CMake
       shell: bash
