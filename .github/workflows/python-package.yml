@@ -7,8 +7,9 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ['3.5', '3.8']
+        python-version: ['3.6', '3.8']
 
     steps:
     - uses: actions/checkout@v2
@@ -16,6 +17,8 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install CXX Dependencies
+      run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
