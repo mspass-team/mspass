@@ -6,28 +6,6 @@
     <includes refid="_basic_time_series_8h" local="yes">mspass/seismic/BasicTimeSeries.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1036">
-        <label>/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
-        <link refid="_basic_time_series_8cc"/>
-        <childnode refid="1037" relation="include">
-        </childnode>
-        <childnode refid="1038" relation="include">
-        </childnode>
-        <childnode refid="1042" relation="include">
-        </childnode>
-      </node>
-      <node id="1040">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="1044">
-        <label>exception</label>
-      </node>
-      <node id="1037">
-        <label>ostream</label>
-      </node>
-      <node id="1041">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
       <node id="1038">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
@@ -38,6 +16,19 @@
         <childnode refid="1041" relation="include">
         </childnode>
       </node>
+      <node id="1040">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="1036">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
+        <link refid="_basic_time_series_8cc"/>
+        <childnode refid="1037" relation="include">
+        </childnode>
+        <childnode refid="1038" relation="include">
+        </childnode>
+        <childnode refid="1042" relation="include">
+        </childnode>
+      </node>
       <node id="1042">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
@@ -45,6 +36,15 @@
         </childnode>
         <childnode refid="1044" relation="include">
         </childnode>
+      </node>
+      <node id="1044">
+        <label>exception</label>
+      </node>
+      <node id="1037">
+        <label>ostream</label>
+      </node>
+      <node id="1041">
+        <label>boost/archive/text_oarchive.hpp</label>
       </node>
       <node id="1039">
         <label>math.h</label>
@@ -161,6 +161,6 @@
 <codeline lineno="100"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="101"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc"/>
   </compounddef>
 </doxygen>

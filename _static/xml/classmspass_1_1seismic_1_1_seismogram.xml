@@ -18,7 +18,7 @@
 <para>Default constructor. Only runs subclass default constructors. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="18" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="18" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="18" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="18" bodyend="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -43,7 +43,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="33" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="11"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="33" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="11"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -79,7 +79,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="51" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="51" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -120,7 +120,7 @@
 <para>This constructor build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from all the pieces that define this highest level object in mspass. This constructor is planned to be hidden from python programmers and not exposed with pybind11 wrappers because is has some potentially undesirable side effects if not used carefully. The primary purpose of this constructor is for serialization and deserializaton in spark with pickle. The pickle interface is purely in C for this function so again python programmers don&apos;t need to see this constructor. The parameter names are obvious because they are associated one for one with the objects they are used to construct. The only exceptions are card and ortho which are booleans used to set the internal booleans components_are_cardinal and components_are_orthogonal respectively (two internals users should not mess with). tm is also a dmatrix representation the tmatrix stored internally as a 2d C array, but we use the dmatrix to mesh with serialization. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="70" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="22" bodyend="42"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="70" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="22" bodyend="42"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -179,7 +179,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="93" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="93" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -196,7 +196,7 @@
 <para>Standard copy constructor. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="98" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="98" bodyend="100"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="98" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="98" bodyend="100"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
@@ -213,7 +213,7 @@
 <para>Standard assignment operator. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="102" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="78" bodyend="86"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="102" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="78" bodyend="86"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -238,7 +238,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="111" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="87" bodyend="90"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="111" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="87" bodyend="90"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -349,7 +349,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" line="15" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="13" bodyend="112"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="13" bodyend="112"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_many_inputs</name></member>

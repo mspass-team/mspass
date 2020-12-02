@@ -6,22 +6,6 @@
     <includes local="no">string</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1392">
-        <label>string</label>
-      </node>
-      <node id="1395">
-        <label>exception</label>
-      </node>
-      <node id="1390">
-        <label>/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/MsPASSError.cc</label>
-        <link refid="_ms_p_a_s_s_error_8cc"/>
-        <childnode refid="1391" relation="include">
-        </childnode>
-        <childnode refid="1392" relation="include">
-        </childnode>
-        <childnode refid="1393" relation="include">
-        </childnode>
-      </node>
       <node id="1393">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
@@ -30,8 +14,24 @@
         <childnode refid="1395" relation="include">
         </childnode>
       </node>
+      <node id="1392">
+        <label>string</label>
+      </node>
+      <node id="1395">
+        <label>exception</label>
+      </node>
       <node id="1394">
         <label>iostream</label>
+      </node>
+      <node id="1390">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MsPASSError.cc</label>
+        <link refid="_ms_p_a_s_s_error_8cc"/>
+        <childnode refid="1391" relation="include">
+        </childnode>
+        <childnode refid="1392" relation="include">
+        </childnode>
+        <childnode refid="1393" relation="include">
+        </childnode>
       </node>
       <node id="1391">
         <label>cstring</label>
@@ -142,6 +142,6 @@
 <codeline lineno="97"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="98"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
-    <location file="/home/travis/build/wangyinz/mspass/cxx/src/lib/utility/MsPASSError.cc"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MsPASSError.cc"/>
   </compounddef>
 </doxygen>

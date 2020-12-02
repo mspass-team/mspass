@@ -16,7 +16,7 @@
 <para>Will need a set of conastructors. Requires some thought as how to set gap is an issue. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -33,7 +33,7 @@
 <para>Copy constructor. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="15" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="15" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ad60b9b5ef539e354d48ba7abc01409b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="16" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="16" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a364cc91f8c6943a99720fd220a0afb14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -63,7 +63,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="17" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="17" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -89,7 +89,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -115,7 +115,7 @@
 NOTE: This method is maintained only for backward compatibility. May be depricated in favor of method that uses internally stored private shift variable. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -129,7 +129,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
 <para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para><para>This method returns data previously converted to relative back to absolute using the internally stored time shift attribute.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="56" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="56" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -147,7 +147,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
 <para>Shift the reference time.</para><para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="63" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="63" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -161,7 +161,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
 <para>Force all data inside data gaps to zero. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="1"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -283,7 +283,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="7" column="1" bodyfile="/home/travis/build/wangyinz/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="6" bodyend="68"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" bodystart="6" bodyend="68"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_gap</name></member>
