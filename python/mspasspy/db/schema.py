@@ -4,14 +4,14 @@ Tools to define the schema of Metadata.
 import os
 
 import yaml
-#import schema
+import schema
 
 from mspasspy.ccore.utility import MsPASSError
 
 class SchemaBase:
     def __init__(self, schema_file=None):
         if schema_file is None and 'MSPASS_HOME' in os.environ:
-            schema_file = os.environ['MSPASS_HOME'] + 'data/yaml/mspass.yaml'
+            schema_file = os.path.abspath(os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
         else:
             schema_file = os.path.abspath(os.path.dirname(__file__) + '/../data/yaml/mspass.yaml')
         try:
