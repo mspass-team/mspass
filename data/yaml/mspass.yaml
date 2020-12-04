@@ -29,9 +29,10 @@
 
 Database:
   wf_TimeSeries:
+    default: True
     schema:
       _id:
-        type: objectId
+        type: ObjectID
         concept: ObjectId used to define a data object
       npts:
         type: int
@@ -78,7 +79,7 @@ Database:
         concept: Url to external data file.
         optional: true
       gridfs_id:
-        type: objectId
+        type: ObjectID
         concept: The _id of data file in the fs.files collection.
         optional: true
       site_id:
@@ -108,9 +109,10 @@ Database:
         optional: true
 
   site:
+    default: True
     schema:
       _id:
-        type: objectId
+        type: ObjectID
         concept: ObjectId used to define a particular instrument/seismic station
       net:
         type: string
@@ -147,7 +149,7 @@ Database:
   channel:
     schema:
       _id:
-        type: objectId
+        type: ObjectID
         concept: ObjectId used to define a particular component of data
       net:
         reference: site
@@ -198,7 +200,7 @@ Database:
   source:
     schema:
       _id:
-        type: objectId
+        type: ObjectID
         concept: ObjectId used to define a particular seismic source
       lat:
         type: double
@@ -231,16 +233,16 @@ Database:
         type: string
         concept: UUID used to define an unique entry in history collection.
       nodedata:
-        type: object 
+        type: bytes
         concept: serialized content of ProcessingHistory.
 
   elog:
     schema:
       _id:
-        type: objectId
+        type: ObjectID
         concept: ObjectID used to define an unique entry in elog collection.
       logdata:
-        type: object 
+        type: bytes
         concept: serialized content of ErrorLogger.
 
 
