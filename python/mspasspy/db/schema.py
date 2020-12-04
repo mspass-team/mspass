@@ -5,6 +5,7 @@ import os
 
 import yaml
 import schema
+import bson.objectid
 
 from mspasspy.ccore.utility import MsPASSError
 
@@ -28,6 +29,18 @@ class SchemaBase:
         except schema.SchemaError as e:
             raise MsPASSError('The schema definition is not valid', 'Fatal') from e
         self._raw = schema_dic
+    
+    def __getitem__(self, key):
+        try:
+            return getattr(self, key)
+        except AttributeError as ae:
+            raise MsPASSError('The schema of ' + key + ' is not defined', 'Invalid') from ae
+
+    def __delitem__(self, key):
+        try:
+            return delattr(self, key)
+        except AttributeError as ae:
+            raise MsPASSError('The schema of ' + key + ' is not defined', 'Invalid') from ae
 
 class SchemaDefinitionBase:
     _main_dic = {}
@@ -172,14 +185,31 @@ class SchemaDefinitionBase:
 
     def type(self, key):
         """
-        Return the type of an attribute.
+        Return the type of an attribute. If not recognized, it returns None.
 
         :param key: The name that defines the attribute of interest
         :type key: str
-        :return: `True` if the key is defined
-        :rtype: list
+        :return: type of the attribute associated with ``key``
+        :rtype: class:`type`
         """
-        return self._main_dic[key]['type']
+        tp = self._main_dic[key]['type'].strip().casefold()
+        if tp in ['int', 'integer']:
+            return int
+        if tp in ['double', 'float']:
+            return float
+        if tp in ['str', 'string']:
+            return str
+        if tp in ['bool', 'boolean']:
+            return bool
+        if tp in ['dict']:
+            return dict
+        if tp in ['list']:
+            return list
+        if tp in ['objectid']:
+            return bson.objectid.ObjectId
+        if tp in ['bytes', 'byte', 'object']:
+            return bytes
+        return None
 
     def unique_name(self, aliasname):
         """
@@ -203,9 +233,89 @@ class SchemaDefinitionBase:
 class DatabaseSchema(SchemaBase):
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
+        self._default_dic = {}
         for collection in self._raw['Database']:
             setattr(self, collection, DBSchemaDefinition(self._raw['Database'], collection))
+            if 'default' in self._raw['Database'][collection] and self._raw['Database'][collection]['default']:
+                # This split can generate an empty string if the collection name starts with _. Need to document that.
+                self._default_dic[collection.split("_", 1)[0]] = collection
 
+    def __setitem__(self, key, value):
+        if not isinstance(value, DBSchemaDefinition):
+            raise MsPASSError('value is not a DBSchemaDefinition', 'Invalid')
+        setattr(self, key, value)
+
+    def default(self, name):
+        """
+        Return the schema definition of a default collection.
+
+        This method is used when multiple collections of the same concept is defined.
+        For example, the wf_TimeSeries and wf_Seismogram are both collections that
+        are used for data objects (characterized by their common wf prefix). The
+        Database API needs a default wf collection to operate on when no collection
+        name is explicitly given. In this case, this default_name method can be used.
+        Note that if requested name has no default collection defined, it will throw
+        an exception.
+
+        :param name: The requested default collection
+        :type name: str
+        :return: the schema definition of the default collection
+        :rtype: class:`mspasspy.db.schema.DBSchemaDefinition`
+        :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined
+        """
+        if name not in self._default_dic:
+            raise MsPASSError(name + ' has no default defined' 'Invalid')
+        return getattr(self, self._default_dic[name])
+    
+    def default_name(self, name):
+        """
+        Return the name of a default collection.
+
+        This method is behaves similar to the default method, but it only returns the
+        name as a string instead.
+
+        :param name: The requested default collection
+        :type name: str
+        :return: the name of the default collection
+        :rtype: str
+        :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined
+        """
+        if name not in self._default_dic:
+            raise MsPASSError(name + ' has no default defined' 'Invalid')
+        return self._default_dic[name]
+
+    def set_default(self, collection: str, default: str=None):
+        """
+        Set a collection as the default.
+        
+        This method is used to change the default collections (e.g., switching between 
+        wf_TimeSeries and wf_Seismogram). If ``default`` is not given, it will try to
+        infer one from ``collection`` at the first occurrence of "_" 
+        (e.g., wf_TimeSeries will become wf). 
+
+        :param collection: The name of the targetting collection
+        :type collection: str
+        :param default: the default name to be set to
+        :type default: str, optional
+        """
+        if not hasattr(self, collection):
+            raise MsPASSError(collection + ' is not a defined collection' 'Invalid')
+        if default is None:
+            self._default_dic[collection.split("_", 1)[0]] = collection
+        else:
+            self._default_dic[default] = collection
+
+    def unset_default(self, default: str):
+        """
+        Unset a default.
+        
+        This method does nothing if ``default`` is not defined.
+
+        :param default: the default name to be unset
+        :type default: str
+        """
+        if default in self._default_dic:
+            self._default_dic.pop(default)
 
 class DBSchemaDefinition(SchemaDefinitionBase):
     def __init__(self, schema_dic, collection_str):
@@ -253,6 +363,10 @@ class MetadataSchema(SchemaBase):
         dbschema = DatabaseSchema(schema_file)
         for collection in self._raw['Metadata']:
             setattr(self, collection, MDSchemaDefinition(self._raw['Metadata'], collection, dbschema))
+    def __setitem__(self, key, value):
+        if not isinstance(value, MDSchemaDefinition):
+            raise MsPASSError('value is not a MDSchemaDefinition', 'Invalid')
+        setattr(self, key, value)
 
 
 class MDSchemaDefinition(SchemaDefinitionBase):
