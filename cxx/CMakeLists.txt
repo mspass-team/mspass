@@ -71,14 +71,14 @@ if (NOT BLAS_FOUND)
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_BINARY_DIR}/openblas
     )
-  set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+  set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.a)
 endif ()
 
 find_package (LAPACK)
 if (NOT LAPACK_FOUND AND NOT BLAS_FOUND)
   message (STATUS "Use OpenBLAS for LAPACK")
-  set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
-  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+  set (BLAS_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.a)
+  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.a)
 elseif (NOT LAPACK_FOUND)
   message (STATUS "Building OpenBLAS for LAPACK")
   include (cmake/openblas.cmake)
@@ -86,7 +86,7 @@ elseif (NOT LAPACK_FOUND)
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_BINARY_DIR}/openblas
     )
-  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.so)
+  set (LAPACK_LIBRARIES ${PROJECT_BINARY_DIR}/openblas/lib/libopenblas.a)
 endif ()
 
 include (FortranCInterface)
