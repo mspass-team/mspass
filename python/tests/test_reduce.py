@@ -107,9 +107,9 @@ def dask_reduce(input):
 
 def spark_reduce(input, sc):
     data = sc.parallelize(input)
-    zero = get_live_timeseries()
-    zero.data = DoubleVector(np.zeros(255))
-    res = data.fold(zero, lambda a, b: stack(a, b, preserve_history=True, instance='3'))
+    # zero = get_live_timeseries()
+    # zero.data = DoubleVector(np.zeros(255))
+    res = data.reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'))
     return res
 
 
@@ -124,12 +124,14 @@ def test_reduce_dask_spark(spark_context):
     dask_res = dask_reduce(l)
     assert np.isclose(res, dask_res.data).all()
     assert np.isclose(res, spark_res.data).all()
+    assert len(res) == len(spark_res.data)
 
 
 if __name__ == "__main__":
-    a1 = get_live_seismogram()
-    a2 = get_live_seismogram()
-    print(a1.data[0, 0])
-    print(a2.data[0, 0])
-    a1 += a2
-    print(a1.data[0, 0])
+    test_reduce_dask_spark()
+    # a1 = get_live_seismogram()
+    # a2 = get_live_seismogram()
+    # print(a1.data[0, 0])
+    # print(a2.data[0, 0])
+    # a1 += a2
+    # print(a1.data[0, 0])
