@@ -30,9 +30,9 @@ def get_live_seismogram():
     seis.t0 = datetime.utcnow().timestamp()
     seis['delta'] = 0.1
     seis['calib'] = 0.1
-    seis['site_id'] = str(bson.objectid.ObjectId())
-    seis['channel_id'] = str(bson.objectid.ObjectId())
-    seis['source_id'] = str(bson.objectid.ObjectId())
+    seis['site_id'] = bson.objectid.ObjectId()
+    seis['channel_id'] = [bson.objectid.ObjectId()]
+    seis['source_id'] = bson.objectid.ObjectId()
     seis.data = dmatrix(3, ts_size)
     for i in range(3):
         for j in range(ts_size):
@@ -52,9 +52,9 @@ def get_live_timeseries():
     ts.t0 = datetime.utcnow().timestamp()
     ts['delta'] = 0.1
     ts['calib'] = 0.1
-    ts['site_id'] = str(bson.objectid.ObjectId())
-    ts['channel_id'] = str(bson.objectid.ObjectId())
-    ts['source_id'] = str(bson.objectid.ObjectId())
+    ts['site_id'] = bson.objectid.ObjectId()
+    ts['channel_id'] = bson.objectid.ObjectId()
+    ts['source_id'] = bson.objectid.ObjectId()
     ts.set_as_origin('test', '0', '0',
                      AtomicType.TIMESERIES)
     ts.data = DoubleVector(np.random.rand(ts_size))

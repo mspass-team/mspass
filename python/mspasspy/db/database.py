@@ -30,6 +30,7 @@ from mspasspy.ccore.utility import (MetadataDefinitions,
                                     dmatrix,
                                     ErrorLogger,
                                     ErrorSeverity, ProcessingHistory)
+from mspasspy.db.schema import MetadataSchema
 
 
 from obspy import Inventory
@@ -51,12 +52,12 @@ class Database(pymongo.database.Database):
     """
     def __init__(self, *args, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
-        self.metadata_def = MetadataDefinitions()
+        self.metadata_schema = MetadataSchema()
 
-    def set_metadata_definition(self, definition):
-        self.metadata_def = definition
+    def set_metadata_definition(self, schema):
+        self.metadata_schema = schema
 
-    def read_data(self, object_id, collection="wf", load_history=True, metadata_def=None):
+    def read_data(self, object_id, collection, load_history=True, metadata_schema=None):
         """
 
         :param metadata_def:
@@ -66,6 +67,8 @@ class Database(pymongo.database.Database):
         :param collection:
         :return:
         """
+        if collection not in ['wf_TimeSeries', 'wf_Seismogram']:
+            raise KeyError("only wf_TimeSeries and wf_Seismogram are supported")
         col = self[collection]
         object = col.find_one({'_id': object_id})
         if not object:
@@ -74,13 +77,10 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object:
-            if k == '_id':
-                md['wf_id'] = str(object[k])
-                continue
             md[k] = object[k]
 
         # fixme assert not none?
-        site = self['site'].find_one({'_id': bson.objectid.ObjectId(object['site_id'])})
+        site = self['site'].find_one({'_id': object['site_id']})
         md['site_lat'] = site['lat']
         md['site_lon'] = site['lon']
         md['site_elev'] = site['elev']
@@ -90,15 +90,15 @@ class Database(pymongo.database.Database):
         md['sta'] = site['sta']
         md['loc'] = site['loc']
 
-        source = self['source'].find_one({'_id': bson.objectid.ObjectId(object['source_id'])})
+        source = self['source'].find_one({'_id': object['source_id']})
         md['source_lat'] = source['lat']
         md['source_lon'] = source['lon']
         md['source_depth'] = source['depth']
         md['source_time'] = source['time']
-        # md['source_magnitude'] = source['magnitude'] # fixme
+        md['source_magnitude'] = source['magnitude']
 
         if object['dtype'] == 'TimeSeries':
-            channel = self['channel'].find_one({'_id': bson.objectid.ObjectId(object['channel_id'])})
+            channel = self['channel'].find_one({'_id': object['channel_id']})
             md['chan'] = channel['chan']
             md['channel_hang'] = channel['hang']
             md['channel_vang'] = channel['vang']
@@ -109,10 +109,15 @@ class Database(pymongo.database.Database):
             md['channel_starttime'] = channel['starttime']
             md['channel_endtime'] = channel['endtime']
 
-        read_metadata_def = self.metadata_def if not metadata_def else metadata_def
+        schema = self.metadata_schema if not metadata_schema else metadata_schema
+        if object['dtype'] == 'TimeSeries':
+            read_metadata_def = schema.TimeSeries
+        else:
+            read_metadata_def = schema.Seismogram
+
         for k in md:
             if read_metadata_def.is_defined(k):
-                if type(md[k]) != self._mspass_type_helper(read_metadata_def.type(k)):
+                if type(md[k]) != read_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
         if object['dtype'] == 'TimeSeries':
@@ -143,7 +148,7 @@ class Database(pymongo.database.Database):
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
-                  exclude=None, collection='wf', metadata_def=None):
+                  exclude=None, collection=None, metadata_schema=None):
 
         # 1. save data
         if storage_mode == "file":
@@ -160,27 +165,42 @@ class Database(pymongo.database.Database):
         mspass_object['storage_mode'] = storage_mode
 
         # 2. save metadata
-        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_def)
+        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_schema)
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection='wf', metadata_def=None):
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None):
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
         # 1. save history
         self._save_history(mspass_object)
 
         # 2. save error logs
         new_insertion = False
-        if 'wf_id' not in mspass_object:
+        if '_id' not in mspass_object:
             new_insertion = True
         self._save_elog(mspass_object)  # elog ids will be updated in the wf col when saving metadata
 
         # 3. save metadata in wf
         if exclude is None:
             exclude = []
-        col = self[collection]
         insert_dict = {}
+
+        if collection:
+            col = self[collection]
+        else:
+            if isinstance(mspass_object, TimeSeries):
+                col = self['wf_TimeSeries']
+            else:
+                col = self['wf_Seismogram']
 
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)
-        update_metadata_def = self.metadata_def if not metadata_def else metadata_def
+
+        schema = self.metadata_schema if not metadata_schema else metadata_schema
+        if isinstance(mspass_object, TimeSeries):
+            update_metadata_def = schema.TimeSeries
+        else:
+            update_metadata_def = schema.Seismogram
         update_metadata_def.clear_aliases(copied_metadata)
 
         for k in copied_metadata:
@@ -188,7 +208,7 @@ class Database(pymongo.database.Database):
                 copied_metadata.clear(k)
 
         # skip _id and attributes in other collections
-        skip_list = ['wf_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
+        skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
                      'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
                      'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
                      'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
@@ -196,48 +216,33 @@ class Database(pymongo.database.Database):
             if k in exclude or k in skip_list:
                 continue
             if update_metadata_def.is_defined(k):
-                if type(copied_metadata[k]) != self._mspass_type_helper(update_metadata_def.type(k)):
+                if type(copied_metadata[k]) != update_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
                 if not update_metadata_def.readonly(k):
                     insert_dict[k] = copied_metadata[k]
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
-        if 'wf_id' not in copied_metadata:
-            wf_id = str(col.insert_one(insert_dict).inserted_id)
-            mspass_object['wf_id'] = wf_id
+        if '_id' not in copied_metadata:
+            mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
         else:
-            filter = {'_id': bson.objectid.ObjectId(copied_metadata['wf_id'])}
+            filter = {'_id': copied_metadata['_id']}
             col.update_one(filter, {'$set': insert_dict})
 
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
             col = self['error_logs']
             for id in mspass_object['elog_ids']:
-                filter = {'_id': bson.objectid.ObjectId(id)}
-                col.update_one(filter, {'$set': {'wf_id': mspass_object['wf_id']}})
+                filter = {'_id': id}
+                col.update_one(filter, {'$set': {'wf_id': mspass_object['_id']}})
 
-    def detele_wf(self, wf_id, collection='wf'):
-        self[collection].delete_one({'_id': wf_id})
+    def detele_wf(self, object_id, collection):
+        self[collection].delete_one({'_id': object_id})
 
     def delete_gridfs(self, gridfs_id):
         gfsh = gridfs.GridFS(self)
         if gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
-
-    def _mspass_type_helper(self, type):
-        if str(type) == 'MDtype.Double':
-            return float
-        elif str(type) == 'MDtype.String':
-            return str
-        elif str(type) == 'MDtype.Boolean':
-            return bool
-        elif str(type) == 'MDtype.Double_Array':
-            return list
-        elif str(type) == 'MDtype.Int64' or str(type) == 'MDtype.Int32':
-            return int
-        else:
-            return None
 
     def _sync_metadata_before_update(self, d):
         if d.tref == TimeReferenceType.Relative:
@@ -252,22 +257,23 @@ class Database(pymongo.database.Database):
             else:
                 raise TypeError("only TimeSeries and Seismogram are supported")
 
-    def _save_history(self, mspass_object, collection='history'):
+    def _save_history(self, mspass_object, collection='history_object'):
         history_col = self[collection]
         history_binary = pickle.dumps(ProcessingHistory(mspass_object))
+        # todo jobname jobid
         if 'history_id' in mspass_object:
             # overwrite history
-            filter = {'_id': bson.objectid.ObjectId(mspass_object['history_id'])}
-            history_col.find_one_and_replace(filter, {'history_binary': history_binary})
+            filter = {'_id': mspass_object['history_id']}
+            history_col.find_one_and_replace(filter, {'nodesdata': history_binary})
         else:
-            id = history_col.insert_one({'history_binary': history_binary}).inserted_id
-            mspass_object['history_id'] = str(id)
+            id = history_col.insert_one({'nodesdata': history_binary}).inserted_id
+            mspass_object['history_id'] = id
 
-    def _load_history(self, mspass_object, collection='history'):
+    def _load_history(self, mspass_object, collection='history_object'):
         if 'history_id' not in mspass_object:
             raise KeyError("history_id not found")
-        res = self[collection].find_one({'_id': bson.objectid.ObjectId(mspass_object['history_id'])})
-        mspass_object.load_history(pickle.loads(res['history_binary']))
+        res = self[collection].find_one({'_id': mspass_object['history_id']})
+        mspass_object.load_history(pickle.loads(res['nodesdata']))
 
     def _save_elog(self, data, collection='error_logs'):
         """
@@ -289,9 +295,9 @@ class Database(pymongo.database.Database):
         """
         if 'elog_ids' not in data:
             data['elog_ids'] = []
-        oidstr = None
-        if 'wf_id' in data:
-            oidstr = data['wf_id']
+        oid = None
+        if '_id' in data:
+            oid = data['_id']
         elog = data.elog
         n = elog.size()
         if n == 0:
@@ -303,10 +309,9 @@ class Database(pymongo.database.Database):
             x = errs[i]
             docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
                         'error_message': x.message, 'process_id': x.p_id}
-            if oidstr:
-                docentry['wf_id'] = oidstr
-            oid = self[collection].insert_one(docentry).inserted_id
-            oidlst.append(str(oid))
+            if oid:
+                docentry['wf_id'] = oid
+            oidlst.append(self[collection].insert_one(docentry).inserted_id)
         data['elog_ids'].extend(oidlst)
 
     @staticmethod
@@ -400,16 +405,14 @@ class Database(pymongo.database.Database):
         """
         gfsh = gridfs.GridFS(self)
         if d.is_defined('gridfs_id'):
-            ids = d.get_string('gridfs_id')
-            oid = bson.objectid.ObjectId(ids)
+            oid = d['gridfs_id']
             if gfsh.exists(oid):
                 gfsh.delete(oid)
         if isinstance(d, Seismogram):
             ub = bytes(d.data)
         else:
             ub = bytes(np.array(d.data))
-        file_id = gfsh.put(pickle.dumps(ub))
-        d.put_string('gridfs_id', str(file_id))
+        d['gridfs_id'] = gfsh.put(pickle.dumps(ub))
 
     def _read_data_from_gridfs(self, d):
         """
@@ -451,7 +454,7 @@ class Database(pymongo.database.Database):
         # not the case
         if not d.is_defined('gridfs_id'):
             raise KeyError("gridfs_id is not defined")
-        dataid = bson.objectid.ObjectId(d.get_string('gridfs_id'))
+        dataid = d['gridfs_id']
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=dataid)
         ub = pickle.load(fh)

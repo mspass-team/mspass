@@ -12,6 +12,8 @@ import sys
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, MetadataDefinitions, Metadata
+
+from mspasspy.db.schema import MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -56,26 +58,26 @@ class TestDatabase():
         client = mongomock.MongoClient('localhost')
         Database.__bases__ = (mongomock.database.Database,)
         self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
-        self.metadata_def = MetadataDefinitions()
+        self.metadata_def = MetadataSchema()
 
-        ts = get_live_timeseries()
-        ts['test'] = ' '  # empty key
-        ts['extra1'] = 'extra1'
-        ts['extra2'] = 'extra2'  # exclude
-        ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        ts.clear('starttime')
-        ts['t0'] = datetime.utcnow().timestamp()
+        self.test_ts = get_live_timeseries()
+        self.test_ts['test'] = ' '  # empty key
+        self.test_ts['extra1'] = 'extra1'
+        self.test_ts['extra2'] = 'extra2'  # exclude
+        self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        self.test_ts.clear('starttime')
+        self.test_ts['t0'] = datetime.utcnow().timestamp()
 
-        seis = get_live_seismogram()
-        seis['test'] = ' '  # empty key
-        seis['extra1'] = 'extra1'
-        seis['extra2'] = 'extra2'  # exclude
-        seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        seis.clear('starttime')
-        seis['t0'] = datetime.utcnow().timestamp()
-        seis['tmatrix'] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        self.test_seis = get_live_seismogram()
+        self.test_seis['test'] = ' '  # empty key
+        self.test_seis['extra1'] = 'extra1'
+        self.test_seis['extra2'] = 'extra2'  # exclude
+        self.test_seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        self.test_seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        self.test_seis.clear('starttime')
+        self.test_seis['t0'] = datetime.utcnow().timestamp()
+        self.test_seis['tmatrix'] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
         site_id = ObjectId()
         channel_id = ObjectId()
@@ -89,14 +91,11 @@ class TestDatabase():
         self.db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'magnitude': 1.0})
 
-        seis['site_id'] = str(site_id)
-        seis['source_id'] = str(source_id)
-        ts['site_id'] = str(site_id)
-        ts['source_id'] = str(source_id)
-        ts['channel_id'] = str(channel_id)
-
-        self.test_seis = seis
-        self.test_ts = ts
+        self.test_seis['site_id'] = site_id
+        self.test_seis['source_id'] = source_id
+        self.test_ts['site_id'] = site_id
+        self.test_ts['source_id'] = source_id
+        self.test_ts['channel_id'] = channel_id
 
 
     def test_save_elogs(self):
@@ -107,7 +106,7 @@ class TestDatabase():
         self.db._save_elog(tmp_ts)
         assert len(tmp_ts['elog_ids']) != 0
         for err, id in zip(errs, tmp_ts['elog_ids']):
-            res = self.db['error_logs'].find_one({'_id': ObjectId(id)})
+            res = self.db['error_logs'].find_one({'_id': id})
             assert res['algorithm'] == err.algorithm
             assert res['error_message'] == err.message
 
@@ -178,7 +177,7 @@ class TestDatabase():
         self.db._read_data_from_gridfs(tmp_ts_2)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
-        id = ObjectId(tmp_ts['gridfs_id'])
+        id = tmp_ts['gridfs_id']
         assert id
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(id)
@@ -191,10 +190,10 @@ class TestDatabase():
             assert err == KeyError("gridfs_id is not defined")
 
     def test_mspass_type_helper(self):
-        assert type([1.0, 1.2]) == self.db._mspass_type_helper(self.metadata_def.type('tmatrix'))
-        assert type(1) == self.db._mspass_type_helper(self.metadata_def.type('npts'))
-        assert type(1.1) == self.db._mspass_type_helper(self.metadata_def.type('delta'))
-        assert type('1') == self.db._mspass_type_helper(self.metadata_def.type('site_id'))
+        schema = self.metadata_def.Seismogram
+        assert type([1.0, 1.2]) == schema.type('tmatrix')
+        assert type(1) == schema.type('npts')
+        assert type(1.1) == schema.type('delta')
 
     def test_save_load_history(self):
         ts = get_live_timeseries()
@@ -203,7 +202,7 @@ class TestDatabase():
         nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
         self.db._save_history(ts)
-        res = self.db['history'].find_one({'_id': ObjectId(ts['history_id'])})
+        res = self.db['history_object'].find_one({'_id': ts['history_id']})
         assert res
 
         ts_2 = TimeSeries()
@@ -221,24 +220,25 @@ class TestDatabase():
         ts = copy.deepcopy(self.test_ts)
         exclude = ['extra2']
         self.db.update_metadata(ts, update_all=True, exclude=exclude)
-        res = self.db['wf'].find_one({'_id': ObjectId(ts['wf_id'])})
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
         assert res['starttime'] == ts['t0']
         assert 'test' not in res
         assert 'extra2' not in res
         assert res['extra1'] == 'extra1'
         assert 'net' not in res
-        assert 'wf_id' in ts
+        assert '_id' in ts
         assert 'history_id' in ts
-        res = self.db['history'].find_one({'_id': ObjectId(ts['history_id'])})
+        res = self.db['history_object'].find_one({'_id': ts['history_id']})
         assert res
         assert ts['elog_ids']
         for id in ts['elog_ids']:
-            res = self.db['error_logs'].find_one({'_id': ObjectId(id)})
-            assert res['wf_id'] == ts['wf_id']
+            res = self.db['error_logs'].find_one({'_id': id})
+            assert res['wf_id'] == ts['_id']
 
         ts['extra1'] = 'extra1+'
         self.db.update_metadata(ts, update_all=True, exclude=exclude)
-        res = self.db['wf'].find_one({'_id': ObjectId(ts['wf_id'])})
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
         with pytest.raises(TypeError) as err:
@@ -249,14 +249,18 @@ class TestDatabase():
     def test_save_read_data(self):
         # new object
         # read data
-        seis2 = self.db.read_data(ObjectId())
+        with pytest.raises(KeyError) as err:
+            seis2 = self.db.read_data(ObjectId(), 'wrong')
+            assert err == KeyError("only wf_TimeSeries and wf_Seismogram are supported")
+
+        seis2 = self.db.read_data(ObjectId(), 'wf_Seismogram')
         assert not seis2
 
         seis = copy.deepcopy(self.test_seis)
         self.db.save_data(seis, storage_mode='gridfs', update_all=True, exclude=['extra2'])
-        seis2 = self.db.read_data(ObjectId(seis['wf_id']))
+        seis2 = self.db.read_data(seis['_id'], 'wf_Seismogram')
 
-        wf_keys = ['wf_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
+        wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
                    'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_ids', 'history_id',
                    'time_standard', 'tmatrix']
         for key in wf_keys:
@@ -264,8 +268,9 @@ class TestDatabase():
                 assert seis[key] == seis2[key]
         assert 'test' not in seis2
         assert 'extra2' not in seis2
+        assert seis['channel_id'] == seis2['channel_id']
 
-        res = self.db['site'].find_one({'_id': ObjectId(seis['site_id'])})
+        res = self.db['site'].find_one({'_id': seis['site_id']})
         assert seis2['site_lat'] == res['lat']
         assert seis2['site_lon'] == res['lon']
         assert seis2['site_elev'] == res['elev']
@@ -275,15 +280,16 @@ class TestDatabase():
         assert seis2['sta'] == res['sta']
         assert seis2['loc'] == res['loc']
 
-        res = self.db['source'].find_one({'_id': ObjectId(seis['source_id'])})
+        res = self.db['source'].find_one({'_id': seis['source_id']})
         assert seis2['source_lat'] == res['lat']
         assert seis2['source_lon'] == res['lon']
         assert seis2['source_depth'] == res['depth']
         assert seis2['source_time'] == res['time']
+        assert seis2['source_magnitude'] == res['magnitude']
 
         ts = copy.deepcopy(self.test_ts)
         self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
-        ts2 = self.db.read_data(ObjectId(ts['wf_id']))
+        ts2 = self.db.read_data(ts['_id'], 'wf_TimeSeries')
 
         for key in wf_keys:
             if key in ts:
@@ -291,7 +297,7 @@ class TestDatabase():
         assert 'test' not in ts2
         assert 'extra2' not in ts2
 
-        res = self.db['site'].find_one({'_id': ObjectId(ts['site_id'])})
+        res = self.db['site'].find_one({'_id': ts['site_id']})
         assert ts2['site_lat'] == res['lat']
         assert ts2['site_lon'] == res['lon']
         assert ts2['site_elev'] == res['elev']
@@ -301,13 +307,14 @@ class TestDatabase():
         assert ts2['sta'] == res['sta']
         assert ts2['loc'] == res['loc']
 
-        res = self.db['source'].find_one({'_id': ObjectId(ts['source_id'])})
+        res = self.db['source'].find_one({'_id': ts['source_id']})
         assert ts2['source_lat'] == res['lat']
         assert ts2['source_lon'] == res['lon']
         assert ts2['source_depth'] == res['depth']
         assert ts2['source_time'] == res['time']
+        assert ts2['source_magnitude'] == res['magnitude']
 
-        res = self.db['channel'].find_one({'_id': ObjectId(ts['channel_id'])})
+        res = self.db['channel'].find_one({'_id': ts['channel_id']})
         assert ts2['chan'] == res['chan']
         assert ts2['channel_hang'] == res['hang']
         assert ts2['channel_vang'] == res['vang']
@@ -326,7 +333,7 @@ class TestDatabase():
         # file
         self.db.save_data(seis, storage_mode='file', dir='./python/tests/data/', dfile='test_db_output',
                           update_all=True, exclude=['extra2'])
-        seis2 = self.db.read_data(ObjectId(seis['wf_id']))
+        seis2 = self.db.read_data(seis['_id'], 'wf_Seismogram')
         assert seis2['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
 
@@ -334,7 +341,7 @@ class TestDatabase():
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
         res = self.db['wf'].find_one({'_id': id})
         assert res
-        self.db.detele_wf(id)
+        self.db.detele_wf(id, 'wf')
         res = self.db['wf'].find_one({'_id': id})
         assert not res
 
@@ -342,9 +349,9 @@ class TestDatabase():
         ts = copy.deepcopy(self.test_ts)
         self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
         gfsh = gridfs.GridFS(self.db)
-        assert gfsh.exists(ObjectId(ts['gridfs_id']))
-        self.db.delete_gridfs(ObjectId(ts['gridfs_id']))
-        assert not gfsh.exists(ObjectId(ts['gridfs_id']))
+        assert gfsh.exists(ts['gridfs_id'])
+        self.db.delete_gridfs(ts['gridfs_id'])
+        assert not gfsh.exists(ts['gridfs_id'])
 
     def teardown_class(self):
         os.remove('python/tests/data/test_db_output')
