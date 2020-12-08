@@ -17,10 +17,9 @@ class SchemaBase:
             schema_file = os.path.abspath(os.path.dirname(__file__) + '/../data/yaml/mspass.yaml')
         try:
             with open(schema_file, 'r') as stream:
-                try:
                     schema_dic = yaml.safe_load(stream)
-                except yaml.YAMLError as e:
-                    raise MsPASSError('Cannot parse schema definition file: ' + schema_file, 'Fatal') from e
+        except yaml.YAMLError as e:
+            raise MsPASSError('Cannot parse schema definition file: ' + schema_file, 'Fatal') from e
         except EnvironmentError as e:
             raise MsPASSError('Cannot open schema definition file: ' + schema_file, 'Fatal') from e
         
@@ -392,8 +391,8 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
                 self._main_dic[key] = compiled_attr
 
-            if 'aliases' in attr:
-                self._alias_dic.update({item:key for item in attr['aliases']})
+            if 'aliases' in self._main_dic[key]:
+                self._alias_dic.update({item:key for item in self._main_dic[key]['aliases']})
                 
     def collection(self, key):
         """
