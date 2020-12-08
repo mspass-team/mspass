@@ -1,7 +1,7 @@
 #ifndef _MSPASS_BUTTERWORTH_H_
 #define _MSPASS_BUTTERWORTH_H_
-#include "mspass/seismic/CoreTimeSeries.h"
-#include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/TimeSeries.h"
+#include "mspass/seismic/Seismogram.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 namespace mspass::algorithms{
 /*! \brief MsPASS implementation of Butterworth filter as processing object.
@@ -154,8 +154,10 @@ public:
   mspass::seismic::CoreTimeSeries impulse_response(const int n);
   /* Note these alter data inplace */
   void apply(mspass::seismic::CoreTimeSeries& d);
+  void apply(mspass::seismic::TimeSeries& d);
   void apply(std::vector<double>& d);
   void apply(mspass::seismic::CoreSeismogram& d);
+  void apply(mspass::seismic::Seismogram& d);
   mspass::algorithms::deconvolution::ComplexArray transfer_function(const int n);
   /*! \brief set the sample interval assumed for input data.
 

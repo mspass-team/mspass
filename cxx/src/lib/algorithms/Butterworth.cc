@@ -1,3 +1,4 @@
+#include "sstream"
 #include <math.h>
 #include "misc/blas.h"
 #include "mspass/algorithms/Butterworth.h"
@@ -245,10 +246,68 @@ CoreTimeSeries Butterworth::impulse_response(const int n)
 	this->apply(result.s);
 	return result;
 }
+/* Fraction of 1/dt used to cause disabling low pass (upper) corner*/
+const double FHighFloor(0.45);  //90% of Nyquist
 void Butterworth::apply(mspass::seismic::CoreTimeSeries& d)
 {
 	double d_dt=d.dt();
-	if(this->dt != d_dt) this->change_dt(d_dt);
+	if(this->dt != d_dt)
+	{
+		/* Here we throw an exception if a requested sample rate is
+		illegal */
+		double fhtest=d_dt/(this->dt);
+		if(fhtest>FHighFloor)
+		{
+			stringstream ss;
+			ss << "Butterworth::apply:  automatic dt change error"<<endl
+			  << "Current operator dt="<<this->dt<<" data dt="<<d_dt<<endl
+				<< "Change would produce a corner too close to Nyquist"
+				<< " and create an unstable filter"<<endl
+				<< "Use a different filter operator for data with this sample rate"
+				<< endl;
+			throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+		}
+		this->change_dt(d_dt);
+	}
+	this->apply(d.s);
+}
+/* We use ErrorLogger and blunder on with TimeSeries objects instead of
+throwing an exception when the upper corner is bad. */
+void Butterworth::apply(mspass::seismic::TimeSeries& d)
+{
+	double d_dt=d.dt();
+	if(this->dt != d_dt)
+	{
+		/* Here we throw an exception if a requested sample rate is
+		illegal */
+		double fhtest=d_dt/(this->dt);
+		if(use_hi && (fhtest>FHighFloor))
+		{
+			/*In this case we temporarily disable the upper corner and
+			cache the old dt to restore it before returning. */
+			double olddt=this->dt;
+			double flow_old=this->f3db_lo;
+			use_hi=false;
+			this->apply(d.s);
+			use_hi=true;
+			this->dt=olddt;
+			this->f3db_lo=flow_old;
+			stringstream ss;
+			ss <<"Auto adjust for sample rate change error"<<endl
+			  << "Upper corner of filter="<<this->high_corner()
+			  << " is near or above Nyquist frequency for requested sample "
+				<< "interval="<<this->dt<<endl
+				<< "Disabling upper corner (lowpass) and applying filter anyway"
+				<<endl;
+			d.elog.log_error(string("Butterworth::apply"),
+			          ss.str(),ErrorSeverity::Complaint);
+			/* With this logic we have separate return here */
+		}
+		else
+		{
+			this->change_dt(d_dt);
+		}
+	}
 	this->apply(d.s);
 }
 /* Reverse a vector of doubles in place using a pointer algorithm
@@ -294,11 +353,69 @@ void Butterworth::apply(vector<double>& d)
 
 void Butterworth::apply(CoreSeismogram& d)
 {
+	/* we could just handle a MsPASSError to take care of exceptions
+	thrown by apply if the sample rate is illegal, but this is more adaptable. */
+	try{
+		double d_dt=d.dt();
+		if(this->dt != d_dt) this->change_dt(d_dt);
+		/* We copy each component to this buffer, filter, and then copy
+		back.  Not as efficient as if we used a strike parameter in the filter
+		functions, but I did not want to rewrite those functions. */
+		vector<double> comp;
+		int npts=d.npts();
+		comp.reserve(npts);
+		/* This initializes the buffer to allow us a simpler loop from 0 to 2
+		using the blas function dcopy to handle the skip for a fortran style
+		array used for storing the 3c data in  u*/
+		for(auto i=0;i<npts;++i)comp.push_back(0.0);
+		for(auto k=0;k<3;++k)
+		{
+			dcopy(npts,d.u.get_address(k,0),3,&(comp[0]),1);
+			this->apply(comp);
+			dcopy(npts,&(comp[0]),1,d.u.get_address(k,0),3);
+		}
+	}catch(...){throw;};
+}
+/* The logic used here is identical to the apply method for TimeSeries to
+log errors and with an internal return.  Difference is the need to handle
+3 components. */
+void Butterworth::apply(mspass::seismic::Seismogram& d)
+{
+
+
 	double d_dt=d.dt();
-	if(this->dt != d_dt) this->change_dt(d_dt);
-	/* We copy each component to this buffer, filter, and then copy
-	back.  Not as efficient as if we used a strike parameter in the filter
-	functions, but I did not want to rewrite those functions. */
+	if(this->dt != d_dt)
+	{
+		/* Here we throw an exception if a requested sample rate is
+		illegal */
+		double fhtest=d_dt/(this->dt);
+		if(use_hi && (fhtest>FHighFloor))
+		{
+			/*In this case we temporarily disable the upper corner and
+			cache the old dt to restore it before returning. */
+			double olddt=this->dt;
+			double flow_old=this->f3db_lo;
+			use_hi=false;
+			this->apply(d);
+			use_hi=true;
+			this->dt=olddt;
+			this->f3db_lo=flow_old;
+			stringstream ss;
+			ss <<"Auto adjust for sample rate change error"<<endl
+			  << "Upper corner of filter="<<this->high_corner()
+			  << " is near or above Nyquist frequency for requested sample "
+				<< "interval="<<this->dt<<endl
+				<< "Disabling upper corner (lowpass) and applying filter anyway"
+				<<endl;
+			d.elog.log_error(string("Butterworth::apply"),
+			   ss.str(),ErrorSeverity::Complaint);
+			/* With this logic we have separate return here */
+		}
+		else
+		{
+			this->change_dt(d_dt);
+		}
+	}
 	vector<double> comp;
 	int npts=d.npts();
 	comp.reserve(npts);
