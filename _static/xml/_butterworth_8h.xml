@@ -1,0 +1,387 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="_butterworth_8h" kind="file" language="C++">
+    <compoundname>Butterworth.h</compoundname>
+    <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
+    <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
+    <includes local="yes">mspass/algorithms/deconvolution/ComplexArray.h</includes>
+    <includedby refid="_butterworth_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc</includedby>
+    <incdepgraph>
+      <node id="104">
+        <label>list</label>
+      </node>
+      <node id="96">
+        <label>mspass/seismic/BasicTimeSeries.h</label>
+        <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="97" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+      </node>
+      <node id="115">
+        <label>boost/serialization/map.hpp</label>
+      </node>
+      <node id="129">
+        <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="98">
+        <label>boost/archive/text_iarchive.hpp</label>
+      </node>
+      <node id="121">
+        <label>mspass/utility/ErrorLogger.h</label>
+        <link refid="_error_logger_8h_source"/>
+        <childnode refid="122" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="123" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="116" relation="include">
+        </childnode>
+        <childnode refid="124" relation="include">
+        </childnode>
+        <childnode refid="110" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+      </node>
+      <node id="131">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="110">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="105" relation="include">
+        </childnode>
+        <childnode refid="111" relation="include">
+        </childnode>
+      </node>
+      <node id="119">
+        <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="135">
+        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
+      </node>
+      <node id="128">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="113" relation="include">
+        </childnode>
+        <childnode refid="105" relation="include">
+        </childnode>
+        <childnode refid="107" relation="include">
+        </childnode>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="129" relation="include">
+        </childnode>
+        <childnode refid="130" relation="include">
+        </childnode>
+        <childnode refid="131" relation="include">
+        </childnode>
+        <childnode refid="110" relation="include">
+        </childnode>
+      </node>
+      <node id="92">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
+        <link refid="_butterworth_8h"/>
+        <childnode refid="93" relation="include">
+        </childnode>
+        <childnode refid="125" relation="include">
+        </childnode>
+        <childnode refid="135" relation="include">
+        </childnode>
+      </node>
+      <node id="114">
+        <label>mspass/utility/ProcessingHistory.h</label>
+        <link refid="_processing_history_8h_source"/>
+        <childnode refid="113" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+        <childnode refid="115" relation="include">
+        </childnode>
+        <childnode refid="116" relation="include">
+        </childnode>
+        <childnode refid="117" relation="include">
+        </childnode>
+        <childnode refid="118" relation="include">
+        </childnode>
+        <childnode refid="119" relation="include">
+        </childnode>
+        <childnode refid="120" relation="include">
+        </childnode>
+        <childnode refid="98" relation="include">
+        </childnode>
+        <childnode refid="99" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+      </node>
+      <node id="113">
+        <label>string</label>
+      </node>
+      <node id="94">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+      </node>
+      <node id="102">
+        <label>map</label>
+      </node>
+      <node id="111">
+        <label>exception</label>
+      </node>
+      <node id="106">
+        <label>fstream</label>
+      </node>
+      <node id="133">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="113" relation="include">
+        </childnode>
+      </node>
+      <node id="130">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="108">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="99">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="134">
+        <label>mspass/seismic/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
+      </node>
+      <node id="132">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
+      </node>
+      <node id="112">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="113" relation="include">
+        </childnode>
+      </node>
+      <node id="93">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="94" relation="include">
+        </childnode>
+        <childnode refid="114" relation="include">
+        </childnode>
+      </node>
+      <node id="101">
+        <label>typeinfo</label>
+      </node>
+      <node id="122">
+        <label>unistd.h</label>
+      </node>
+      <node id="95">
+        <label>vector</label>
+      </node>
+      <node id="118">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="107">
+        <label>sstream</label>
+      </node>
+      <node id="109">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="126">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="127" relation="include">
+        </childnode>
+        <childnode refid="95" relation="include">
+        </childnode>
+        <childnode refid="100" relation="include">
+        </childnode>
+        <childnode refid="128" relation="include">
+        </childnode>
+        <childnode refid="96" relation="include">
+        </childnode>
+        <childnode refid="94" relation="include">
+        </childnode>
+        <childnode refid="132" relation="include">
+        </childnode>
+        <childnode refid="133" relation="include">
+        </childnode>
+        <childnode refid="134" relation="include">
+        </childnode>
+      </node>
+      <node id="97">
+        <label>math.h</label>
+      </node>
+      <node id="105">
+        <label>iostream</label>
+      </node>
+      <node id="120">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="124">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="117">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="103">
+        <label>set</label>
+      </node>
+      <node id="116">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="125">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="126" relation="include">
+        </childnode>
+        <childnode refid="114" relation="include">
+        </childnode>
+        <childnode refid="121" relation="include">
+        </childnode>
+      </node>
+      <node id="123">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="127">
+        <label>memory</label>
+      </node>
+      <node id="100">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
+        <childnode refid="101" relation="include">
+        </childnode>
+        <childnode refid="102" relation="include">
+        </childnode>
+        <childnode refid="103" relation="include">
+        </childnode>
+        <childnode refid="104" relation="include">
+        </childnode>
+        <childnode refid="105" relation="include">
+        </childnode>
+        <childnode refid="106" relation="include">
+        </childnode>
+        <childnode refid="107" relation="include">
+        </childnode>
+        <childnode refid="108" relation="include">
+        </childnode>
+        <childnode refid="109" relation="include">
+        </childnode>
+        <childnode refid="110" relation="include">
+        </childnode>
+        <childnode refid="112" relation="include">
+        </childnode>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_MSPASS_BUTTERWORTH_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_MSPASS_BUTTERWORTH_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ComplexArray.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1algorithms" kindref="compound">mspass::algorithms</ref>{</highlight></codeline>
+<codeline lineno="35" refid="classmspass_1_1algorithms_1_1_butterworth" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref>();</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>zerophase,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable_lo,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable_hi,</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstoplo,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astoplo,</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpasslo,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apasslo,</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpasshi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apasshi,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstophi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astophi,</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval);</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;<sp/>md);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>zerophase,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable_lo,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>enable_hi,</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npolelo,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f3dblo,</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npolehi,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f3dbhi,</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a89009fa487f8a4090c5bce0c4af662cb" kindref="member">Butterworth</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a7602075f3fe8f56e891331c98264d1a5" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a7b54d5d5966a85092d45ebebd0b88498" kindref="member">impulse_response</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Note<sp/>these<sp/>alter<sp/>data<sp/>inplace<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>apply(std::vector&lt;double&gt;&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/>mspass::algorithms::deconvolution::ComplexArray<sp/>transfer_function(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="173" refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" kindref="member">change_dt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dtnew)</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;f3db_lo<sp/>*=<sp/>(dtnew/(this-&gt;dt));</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;f3db_hi<sp/>*=<sp/>(dtnew/(this-&gt;dt));</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;dt=dtnew;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>low_corner()</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>f3db_lo/dt;</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>high_corner()</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>f3db_hi/dt;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npoles_low(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>npoles_lo;};</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npoles_high(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>npoles_hi;};</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>current_dt(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>dt;};</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>use_lo,use_hi;</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>zerophase;</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>bfdesign<sp/>sets<sp/>npoles<sp/>and<sp/>3db<sp/>points<sp/>based<sp/>on<sp/>specified<sp/>band<sp/>properties.</highlight></codeline>
+<codeline lineno="195"><highlight class="comment"><sp/><sp/>These<sp/>stored<sp/>these<sp/>when<sp/>the<sp/>constructor<sp/>calls<sp/>bfdesign<sp/>for<sp/>high<sp/>and</highlight></codeline>
+<codeline lineno="196"><highlight class="comment"><sp/><sp/>low<sp/>pass<sp/>elements.<sp/>Names<sp/>should<sp/>make<sp/>clear<sp/>which<sp/>is<sp/>which.<sp/>These<sp/>are</highlight></codeline>
+<codeline lineno="197"><highlight class="comment"><sp/><sp/>always<sp/>stored<sp/>in<sp/>nondimensional<sp/>form<sp/>(f_nd=f*dt)*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f3db_lo,<sp/>f3db_hi;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npoles_lo,<sp/>npoles_hi;</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt;</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>three<sp/>functions<sp/>are<sp/>nearly<sp/>exact<sp/>copies<sp/>of<sp/>seismic<sp/>unix</highlight></codeline>
+<codeline lineno="202"><highlight class="comment"><sp/><sp/>functions<sp/>with<sp/>a<sp/>couple<sp/>of<sp/>differences:</highlight></codeline>
+<codeline lineno="203"><highlight class="comment"><sp/><sp/>1.<sp/><sp/>All<sp/>floats<sp/>in<sp/>the<sp/>su<sp/>code<sp/>are<sp/>made<sp/>double<sp/>here<sp/>to<sp/>mesh<sp/>with<sp/>modern<sp/>arch</highlight></codeline>
+<codeline lineno="204"><highlight class="comment"><sp/><sp/>2.<sp/><sp/>bfhighpass<sp/>is<sp/>changed<sp/>to<sp/>bflowpass<sp/>and<sp/>bflowpass<sp/>is<sp/>changed<sp/>to<sp/>bfhighcut<sp/>to<sp/>mesh</highlight></codeline>
+<codeline lineno="205"><highlight class="comment"><sp/><sp/>with<sp/>the<sp/>names<sp/>used<sp/>here<sp/>more<sp/>cleanly.<sp/><sp/>that<sp/>is,<sp/>pass<sp/>and<sp/>cut<sp/>define</highlight></codeline>
+<codeline lineno="206"><highlight class="comment"><sp/><sp/>the<sp/>opposite<sp/>sense<sp/>of<sp/>a<sp/>filter<sp/>and<sp/>it<sp/>gets<sp/>very<sp/>confusing<sp/>when<sp/>the</highlight></codeline>
+<codeline lineno="207"><highlight class="comment"><sp/><sp/>terms<sp/>get<sp/>mixed<sp/>up<sp/>in<sp/>the<sp/>same<sp/>set<sp/>of<sp/>code.<sp/><sp/>This<sp/>way<sp/>low<sp/>always<sp/>means<sp/>the</highlight></codeline>
+<codeline lineno="208"><highlight class="comment"><sp/><sp/>low<sp/>end<sp/>of<sp/>the<sp/>pass<sp/>band<sp/>and<sp/>high<sp/>is<sp/>the<sp/>high<sp/>end<sp/>of<sp/>the<sp/>pass<sp/>band.</highlight></codeline>
+<codeline lineno="209"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>bfdesign<sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpass,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apass,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstop,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astop,</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*npoles,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*f3db);</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>bfhighcut<sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npoles,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f3db,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>p[],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>q[]);</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>bflowcut<sp/>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>npoles,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>f3db,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>p[],<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>q[]);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>These<sp/>internal<sp/>methods<sp/>use<sp/>internal<sp/>dt<sp/>value<sp/>to<sp/>call<sp/>bfdesign<sp/>with</highlight></codeline>
+<codeline lineno="216"><highlight class="comment"><sp/><sp/>nondimensional<sp/>frequencies.<sp/>Hence<sp/>they<sp/>should<sp/>always<sp/>be<sp/>called<sp/>after</highlight></codeline>
+<codeline lineno="217"><highlight class="comment"><sp/><sp/>a<sp/>change<sp/>in<sp/>dt.<sp/><sp/>They<sp/>are<sp/>also<sp/>handy<sp/>to<sp/>contain<sp/>common<sp/>code<sp/>for<sp/>constructors.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_lo(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstop,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpass,</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astop,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apass);</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_hi(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstop,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpass,</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astop,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apass);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="223"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>end</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h"/>
+  </compounddef>
+</doxygen>

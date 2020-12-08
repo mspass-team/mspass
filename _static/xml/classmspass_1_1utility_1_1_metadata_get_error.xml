@@ -131,23 +131,6 @@
     <detaileddescription>
 <para>This is a convenience class used to construct a more informative set of errors when get operations fail. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="130">
-        <label>mspass::utility::MsPASSError</label>
-        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
-        <childnode refid="131" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="131">
-        <label>std::exception</label>
-      </node>
-      <node id="129">
-        <label>mspass::utility::MetadataGetError</label>
-        <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
-        <childnode refid="130" relation="public-inheritance">
-        </childnode>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="133">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
@@ -161,6 +144,23 @@
         <label>mspass::utility::MetadataGetError</label>
         <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
         <childnode refid="133" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="136">
+        <label>mspass::utility::MsPASSError</label>
+        <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
+        <childnode refid="137" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="137">
+        <label>std::exception</label>
+      </node>
+      <node id="135">
+        <label>mspass::utility::MetadataGetError</label>
+        <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
+        <childnode refid="136" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

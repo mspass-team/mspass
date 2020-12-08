@@ -1,6 +1,7 @@
 var searchData=
 [
   ['cardinal',['cardinal',['../classmspass_1_1seismic_1_1_core_seismogram.html#a1dd1a9469bca89f7e07c6aa928dc4a09',1,'mspass::seismic::CoreSeismogram']]],
+  ['change_5fdt',['change_dt',['../classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00',1,'mspass::algorithms::Butterworth']]],
   ['change_5fkey',['change_key',['../classmspass_1_1utility_1_1_metadata.html#a20c1da469f6e0a073b291a680425f9e8',1,'mspass::utility::Metadata']]],
   ['clear',['clear',['../classmspass_1_1utility_1_1_metadata.html#ae22a5ea6e0c16796f2a12feaaea38f21',1,'mspass::utility::Metadata::clear()'],['../classmspass_1_1utility_1_1_processing_history.html#a42865512c68a26b85b394825a1629729',1,'mspass::utility::ProcessingHistory::clear()']]],
   ['clear_5faliases',['clear_aliases',['../classmspass_1_1utility_1_1_metadata_definitions.html#a4f0cfa4c13b688f301e261c0c404632e',1,'mspass::utility::MetadataDefinitions']]],

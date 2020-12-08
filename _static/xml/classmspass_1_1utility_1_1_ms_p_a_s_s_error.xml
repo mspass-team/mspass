@@ -207,48 +207,48 @@
 <para>This is the generic error object thrown by the MsPASS library. it is similar in concept to basic error objects described in various books by Stroustrup. The base object contains only a simple generic message and a virtual log_error method common to all MsPASS error objects that are it&apos;s descendents. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
 </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="135">
+      <node id="138">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
-        <childnode refid="136" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="136">
-        <label>std::exception</label>
-      </node>
-      <node id="138">
-        <label>mspass::utility::dmatrix_index_error</label>
-        <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
-        <childnode refid="135" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="137">
-        <label>mspass::utility::AntelopePfError</label>
-        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
-        <childnode refid="135" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="140">
-        <label>mspass::utility::MetadataGetError</label>
-        <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
-        <childnode refid="135" relation="public-inheritance">
+        <childnode refid="139" relation="public-inheritance">
         </childnode>
       </node>
       <node id="139">
+        <label>std::exception</label>
+      </node>
+      <node id="141">
+        <label>mspass::utility::dmatrix_index_error</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
+        <childnode refid="138" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="140">
+        <label>mspass::utility::AntelopePfError</label>
+        <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
+        <childnode refid="138" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="143">
+        <label>mspass::utility::MetadataGetError</label>
+        <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
+        <childnode refid="138" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="142">
         <label>mspass::utility::dmatrix_size_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
-        <childnode refid="135" relation="public-inheritance">
+        <childnode refid="138" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="141">
+      <node id="144">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
-        <childnode refid="142" relation="public-inheritance">
+        <childnode refid="145" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="142">
+      <node id="145">
         <label>std::exception</label>
       </node>
     </collaborationgraph>

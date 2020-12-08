@@ -943,56 +943,56 @@
     <detaileddescription>
 <para>This class is intended to be used as a parent for any data object in MsPASS that should be considered atomic. It is designed to completely preserve the chain of processing algorithms applied to any atomic data to put it in it&apos;s current state. It is designed to save that information during processing with the core information that can then be saved to define the state. Writers for atomic objects inheriting this class should arrange to save the data contained in it to history collection in MongoDB. Note that actually doing the inverse is a different problem that are expected to be implemented as extesions of this class to be used in special programs used to reconstrut a data workflow and the processing chain applied to produce any final output.</para><para>The design was complicated by the need to keep the history data from causing memory bloat. A careless implementation could be prone to that problem even for modest chains, but we were particularly worried about iterative algorithms that could conceivably multiply the size of out of control. There was also the fundamental problem of dealing with transient versus data stored in longer term storage instead of just in memory. Our implementation was simplified by using the concept of a unique id with a Universal Unique IDentifier. (UUID) Our history mechanism assumes each data object has a uuid assigned to it on creation by an implementation id of the one object this particular record is associated with on dependent mechanism. That is, whenever a new object is created in MsPASS using the history feature one of these records will be created for each data object that is defined as atomic. This string defines unique key for the object it could be connected to with the this pointer. The parents of the current object are defined by the inputs data structure below.</para><para>In the current implementation id is string representation of a uuid maintained by each atomic object. We use a string to maximize flexibility at a minor cost for storage.</para><para>Names used imply the following concepts: raw - means the data is new input to mspass (raw data from data center, field experiment, or simulation). That tag means no prior history can be reconstructed. origin - top-level ancestor of current data. The top of a processing chain is always tagged as an origin. A top level can also be &quot;raw&quot; but not necessarily. In particular, readers that load partially processed data should mark the data read as an origin, but not raw. stage - all processed data objects that are volatile elements within a workflow are defined as a stage. They are presumed to leave their existence known only through ancestory preserved in the processing chain. A stage becomes a potential root only when it is saved by a writer where the writer will mark that position as a save. Considered calling this a branch, but that doesn&apos;t capture the concept right since we require this mechanism to correctly perserve splits into multiple outputs. We preserve that cleanly for each data object. That is, the implementation make it easy to reconstruct the history of a single final data object, but reconstructing interlinks between objects in an overall processing flow will be a challenge. That was a necessary compomise to avoid memory bloat. The history is properly viewed as a tree branching from a single root (the final output) to leaves that define all it&apos;s parents.</para><para>The concepts of raw, origin, and stage are implemented with the enum class defined above called ProcessingStatus. Each history record has that as an attribute, but each call to new_stage updates a copy kept inside this object to simplify the python wrappers. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="145">
+      <node id="148">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="146" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="149">
-        <label>mspass::seismic::TimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="145" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="150">
-        <label>mspass::seismic::TimeSeriesWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
         <childnode refid="149" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="148">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="147" relation="public-inheritance">
+      <node id="152">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="148" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="146">
+      <node id="153">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="152" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="151">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="150" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="149">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="147">
+      <node id="150">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="145" relation="public-inheritance">
+        <childnode refid="148" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="151">
+      <node id="154">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="152" relation="public-inheritance">
+        <childnode refid="155" relation="public-inheritance">
         </childnode>
-        <childnode refid="153" relation="usage">
+        <childnode refid="156" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
       </node>
-      <node id="153">
+      <node id="156">
         <label>mspass::utility::ErrorLogger</label>
         <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-      <node id="152">
+      <node id="155">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>

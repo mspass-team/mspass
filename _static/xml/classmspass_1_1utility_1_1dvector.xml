@@ -139,18 +139,6 @@
     <detaileddescription>
 <para>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="96">
-        <label>mspass::utility::dmatrix</label>
-        <link refid="classmspass_1_1utility_1_1dmatrix"/>
-      </node>
-      <node id="95">
-        <label>mspass::utility::dvector</label>
-        <link refid="classmspass_1_1utility_1_1dvector"/>
-        <childnode refid="96" relation="public-inheritance">
-        </childnode>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="98">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
@@ -159,6 +147,18 @@
         <label>mspass::utility::dvector</label>
         <link refid="classmspass_1_1utility_1_1dvector"/>
         <childnode refid="98" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="100">
+        <label>mspass::utility::dmatrix</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix"/>
+      </node>
+      <node id="99">
+        <label>mspass::utility::dvector</label>
+        <link refid="classmspass_1_1utility_1_1dvector"/>
+        <childnode refid="100" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

@@ -1,6 +1,7 @@
 var searchData=
 [
   ['id',['id',['../classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d',1,'mspass::utility::ProcessingHistory::id()'],['../classmspass_1_1utility_1_1_algorithm_definition.html#ae249ed54773be28bc994b347106eb11b',1,'mspass::utility::AlgorithmDefinition::id()']]],
+  ['impulse_5fresponse',['impulse_response',['../classmspass_1_1algorithms_1_1_butterworth.html#a7b54d5d5966a85092d45ebebd0b88498',1,'mspass::algorithms::Butterworth']]],
   ['inputs',['inputs',['../classmspass_1_1utility_1_1_processing_history.html#aec695e46a390b9cf55f1919af803fb33',1,'mspass::utility::ProcessingHistory']]],
   ['internal',['internal',['../classmspass_1_1utility_1_1_attribute_cross_reference.html#a2264349fe7d2093900fa9b56ef84b96b',1,'mspass::utility::AttributeCrossReference']]],
   ['internal_5fnames',['internal_names',['../classmspass_1_1utility_1_1_attribute_cross_reference.html#a33b5a77e159f3e114bbfccb24e3fff61',1,'mspass::utility::AttributeCrossReference']]],

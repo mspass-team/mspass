@@ -7,6 +7,7 @@
     <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="algorithms_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</includedby>
     <includedby refid="amplitudes_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</includedby>
+    <includedby refid="_butterworth_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</includedby>
     <includedby refid="_ensemble_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</includedby>
     <includedby refid="_taper_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</includedby>
     <includedby refid="_time_series_w_gaps_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</includedby>
@@ -16,243 +17,249 @@
     <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc</includedby>
     <includedby refid="_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc</includedby>
     <incdepgraph>
-      <node id="450">
+      <node id="500">
         <label>list</label>
       </node>
-      <node id="442">
+      <node id="492">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="443" relation="include">
+        <childnode refid="493" relation="include">
         </childnode>
-        <childnode refid="444" relation="include">
+        <childnode refid="494" relation="include">
         </childnode>
-        <childnode refid="445" relation="include">
+        <childnode refid="495" relation="include">
         </childnode>
       </node>
-      <node id="461">
+      <node id="511">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="444">
+      <node id="494">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="467">
+      <node id="517">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="468" relation="include">
+        <childnode refid="518" relation="include">
         </childnode>
-        <childnode refid="450" relation="include">
+        <childnode refid="500" relation="include">
         </childnode>
-        <childnode refid="469" relation="include">
+        <childnode refid="519" relation="include">
         </childnode>
-        <childnode refid="444" relation="include">
+        <childnode refid="494" relation="include">
         </childnode>
-        <childnode refid="445" relation="include">
+        <childnode refid="495" relation="include">
         </childnode>
-        <childnode refid="462" relation="include">
+        <childnode refid="512" relation="include">
         </childnode>
-        <childnode refid="470" relation="include">
+        <childnode refid="520" relation="include">
         </childnode>
-        <childnode refid="456" relation="include">
+        <childnode refid="506" relation="include">
         </childnode>
-        <childnode refid="467" relation="include">
+        <childnode refid="517" relation="include">
         </childnode>
       </node>
-      <node id="456">
+      <node id="506">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="451" relation="include">
+        <childnode refid="501" relation="include">
         </childnode>
-        <childnode refid="457" relation="include">
+        <childnode refid="507" relation="include">
         </childnode>
       </node>
-      <node id="465">
+      <node id="515">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="460">
+      <node id="510">
         <label>mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
-        <childnode refid="459" relation="include">
+        <childnode refid="509" relation="include">
         </childnode>
-        <childnode refid="450" relation="include">
+        <childnode refid="500" relation="include">
         </childnode>
-        <childnode refid="441" relation="include">
+        <childnode refid="491" relation="include">
         </childnode>
-        <childnode refid="448" relation="include">
+        <childnode refid="498" relation="include">
         </childnode>
-        <childnode refid="461" relation="include">
+        <childnode refid="511" relation="include">
         </childnode>
-        <childnode refid="462" relation="include">
+        <childnode refid="512" relation="include">
         </childnode>
-        <childnode refid="463" relation="include">
+        <childnode refid="513" relation="include">
         </childnode>
-        <childnode refid="464" relation="include">
+        <childnode refid="514" relation="include">
         </childnode>
-        <childnode refid="465" relation="include">
+        <childnode refid="515" relation="include">
         </childnode>
-        <childnode refid="466" relation="include">
+        <childnode refid="516" relation="include">
         </childnode>
-        <childnode refid="444" relation="include">
+        <childnode refid="494" relation="include">
         </childnode>
-        <childnode refid="445" relation="include">
+        <childnode refid="495" relation="include">
         </childnode>
-        <childnode refid="467" relation="include">
+        <childnode refid="517" relation="include">
         </childnode>
       </node>
-      <node id="459">
+      <node id="509">
         <label>string</label>
       </node>
-      <node id="440">
+      <node id="490">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
-        <childnode refid="441" relation="include">
+        <childnode refid="491" relation="include">
         </childnode>
-        <childnode refid="442" relation="include">
+        <childnode refid="492" relation="include">
         </childnode>
-        <childnode refid="446" relation="include">
+        <childnode refid="496" relation="include">
         </childnode>
       </node>
-      <node id="448">
+      <node id="498">
         <label>map</label>
       </node>
-      <node id="457">
+      <node id="507">
         <label>exception</label>
       </node>
-      <node id="452">
+      <node id="502">
         <label>fstream</label>
       </node>
-      <node id="454">
+      <node id="504">
         <label>boost/any.hpp</label>
       </node>
-      <node id="445">
+      <node id="495">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="458">
+      <node id="508">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="459" relation="include">
+        <childnode refid="509" relation="include">
         </childnode>
       </node>
-      <node id="439">
+      <node id="489">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h</label>
         <link refid="_time_series_8h"/>
-        <childnode refid="440" relation="include">
+        <childnode refid="490" relation="include">
         </childnode>
-        <childnode refid="460" relation="include">
+        <childnode refid="510" relation="include">
         </childnode>
       </node>
-      <node id="447">
+      <node id="497">
         <label>typeinfo</label>
       </node>
-      <node id="468">
+      <node id="518">
         <label>unistd.h</label>
       </node>
-      <node id="441">
+      <node id="491">
         <label>vector</label>
       </node>
-      <node id="464">
+      <node id="514">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="453">
+      <node id="503">
         <label>sstream</label>
       </node>
-      <node id="455">
+      <node id="505">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="443">
+      <node id="493">
         <label>math.h</label>
       </node>
-      <node id="451">
+      <node id="501">
         <label>iostream</label>
       </node>
-      <node id="466">
+      <node id="516">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="470">
+      <node id="520">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="463">
+      <node id="513">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="449">
+      <node id="499">
         <label>set</label>
       </node>
-      <node id="462">
+      <node id="512">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="469">
+      <node id="519">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="446">
+      <node id="496">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="447" relation="include">
+        <childnode refid="497" relation="include">
         </childnode>
-        <childnode refid="448" relation="include">
+        <childnode refid="498" relation="include">
         </childnode>
-        <childnode refid="449" relation="include">
+        <childnode refid="499" relation="include">
         </childnode>
-        <childnode refid="450" relation="include">
+        <childnode refid="500" relation="include">
         </childnode>
-        <childnode refid="451" relation="include">
+        <childnode refid="501" relation="include">
         </childnode>
-        <childnode refid="452" relation="include">
+        <childnode refid="502" relation="include">
         </childnode>
-        <childnode refid="453" relation="include">
+        <childnode refid="503" relation="include">
         </childnode>
-        <childnode refid="454" relation="include">
+        <childnode refid="504" relation="include">
         </childnode>
-        <childnode refid="455" relation="include">
+        <childnode refid="505" relation="include">
         </childnode>
-        <childnode refid="456" relation="include">
+        <childnode refid="506" relation="include">
         </childnode>
-        <childnode refid="458" relation="include">
+        <childnode refid="508" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="473">
+      <node id="525">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
+        <link refid="_butterworth_8h_source"/>
+      </node>
+      <node id="523">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="474">
+      <node id="524">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
-      <node id="471">
+      <node id="521">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h</label>
         <link refid="_time_series_8h"/>
-        <childnode refid="472" relation="include">
+        <childnode refid="522" relation="include">
         </childnode>
-        <childnode refid="473" relation="include">
+        <childnode refid="523" relation="include">
         </childnode>
-        <childnode refid="474" relation="include">
+        <childnode refid="524" relation="include">
         </childnode>
-        <childnode refid="475" relation="include">
+        <childnode refid="525" relation="include">
         </childnode>
-        <childnode refid="476" relation="include">
+        <childnode refid="526" relation="include">
         </childnode>
-        <childnode refid="477" relation="include">
+        <childnode refid="527" relation="include">
+        </childnode>
+        <childnode refid="528" relation="include">
         </childnode>
       </node>
-      <node id="477">
+      <node id="528">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
       </node>
-      <node id="475">
+      <node id="526">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
-        <childnode refid="472" relation="include">
+        <childnode refid="522" relation="include">
         </childnode>
-        <childnode refid="473" relation="include">
+        <childnode refid="523" relation="include">
         </childnode>
-        <childnode refid="474" relation="include">
+        <childnode refid="524" relation="include">
         </childnode>
       </node>
-      <node id="472">
+      <node id="522">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
         <link refid="mspass_8h_source"/>
       </node>
-      <node id="476">
+      <node id="527">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
       </node>

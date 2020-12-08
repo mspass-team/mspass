@@ -736,68 +736,68 @@
 <para>A three-component seismogram is a common concept in seismology. The concept used here is that a three-component seismogram is a time series with a 3-vector as the data at each time step. As a result the data are stored internally as a matrix with row defining the component number (C indexing 0,1,2) and the column defining the time variable. The object inherits common concepts of a time series through the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> object. Auxiliary parameters are defined for the object through inheritance of a Metadata object. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
 </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="52">
+      <node id="54">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="51">
+      <node id="53">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="52" relation="public-inheritance">
-        </childnode>
-        <childnode refid="53" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="53">
-        <label>mspass::utility::Metadata</label>
-        <link refid="classmspass_1_1utility_1_1_metadata"/>
         <childnode refid="54" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="56">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
         <childnode refid="55" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="54">
+      <node id="55">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="56" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="58">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="57" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="56">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="55">
+      <node id="57">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="51" relation="public-inheritance">
+        <childnode refid="53" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="61">
+      <node id="63">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="58">
+      <node id="60">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="57">
+      <node id="59">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="58" relation="public-inheritance">
+        <childnode refid="60" relation="public-inheritance">
         </childnode>
-        <childnode refid="59" relation="public-inheritance">
+        <childnode refid="61" relation="public-inheritance">
         </childnode>
-        <childnode refid="61" relation="usage">
+        <childnode refid="63" relation="usage">
           <edgelabel>u</edgelabel>
         </childnode>
       </node>
-      <node id="59">
+      <node id="61">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="60" relation="public-inheritance">
+        <childnode refid="62" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="60">
+      <node id="62">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
