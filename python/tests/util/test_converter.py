@@ -125,7 +125,7 @@ def test_Trace2TimeSeries():
     # TODO: aliases handling is not tested. Not clear what the
     #  expected behavior should be. 
     ts = Trace2TimeSeries(test_Trace2TimeSeries.tr1)
-    assert all(ts.data == test_Trace2TimeSeries.tr1.data)
+    assert np.isclose(ts.data, test_Trace2TimeSeries.tr1.data).all()
     assert ts.live == True
     assert ts.dt == test_Trace2TimeSeries.tr1.stats.delta
     assert ts.t0 == test_Trace2TimeSeries.tr1.stats.starttime.timestamp
@@ -152,9 +152,9 @@ def test_Stream2Seismogram():
     # TODO: need to refine the test as well as the behavior of the function.
     # Right now when cardinal is false, azimuth and dip needs to be defined. 
     seis = Stream2Seismogram(test_Stream2Seismogram.stream, cardinal = True)
-    assert all(np.array(seis.data)[0] == test_Stream2Seismogram.stream[0].data)
-    assert all(np.array(seis.data)[1] == test_Stream2Seismogram.stream[1].data)
-    assert all(np.array(seis.data)[2] == test_Stream2Seismogram.stream[2].data)
+    assert np.isclose(np.array(seis.data)[0], test_Stream2Seismogram.stream[0].data).all()
+    assert np.isclose(np.array(seis.data)[1], test_Stream2Seismogram.stream[1].data).all()
+    assert np.isclose(np.array(seis.data)[2], test_Stream2Seismogram.stream[2].data).all()
 
 def test_TimeSeriesEnsemble_as_Stream():
     # use data object to verify converter
@@ -163,7 +163,7 @@ def test_TimeSeriesEnsemble_as_Stream():
     tse_c = stream.toTimeSeriesEnsemble()
     assert len(tse) == len(tse_c)
     for k in range(3):
-        assert all(a == b for a,b in zip(tse.member[k].data, tse_c.member[k].data))
+        assert np.isclose(tse.member[k].data, tse_c.member[k].data).all()
 
     # dead member is also dead after conversion
     tse.member[0].kill()
@@ -181,7 +181,8 @@ def test_SeismogramEnsemble_as_Stream():
     seis_e_c = stream.toSeismogramEnsemble()
     assert len(seis_e) == len(seis_e_c)
     for k in range(3):
-        assert all(a.any() == b.any() for a, b in zip(seis_e.member[k].data, seis_e_c.member[k].data))
+        for i in range(3):
+            assert np.isclose(seis_e.member[k].data[i], seis_e_c.member[k].data[i]).all()
 
     # dead member is also dead after conversion
     seis_e.member[0].kill()

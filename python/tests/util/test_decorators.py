@@ -106,8 +106,8 @@ def test_timeseries_as_trace():
     dummy_func_timeseries_as_trace(ts, ts2)
     assert len(cp) != len(ts.data)
     assert len(cp2) != len(ts2.data)
-    assert all(a == b for a,b in zip([0,1,2], ts.data))
-    assert all(a == b for a, b in zip([2,3,4], ts2.data))
+    np.isclose([0,1,2], ts.data).all()
+    np.isclose([2,3,4], ts2.data).all()
     assert ts['chan'] == 'Z'
 
 
@@ -147,16 +147,16 @@ def test_timeseries_ensemble_as_stream():
     cp = TimeSeriesEnsemble(tse)
     dummy_func_timeseries_ensemble_as_stream(tse)
     assert len(tse.member) == 5
-    assert all(a == b for a,b in zip(cp.member[0].data, tse.member[0].data))
-    assert all(a == b for a, b in zip(cp.member[1].data, tse.member[1].data))
+    np.isclose(cp.member[0].data, tse.member[0].data).all()
+    np.isclose(cp.member[0].data, tse.member[1].data).all()
 
     tse = get_live_timeseries_ensemble(2)
     assert len(tse.member) == 2
     cp = TimeSeriesEnsemble(tse)
     dummy_func_timeseries_ensemble_as_stream_2(data=tse)
     assert len(tse.member) == 5
-    assert all(a == b for a, b in zip(cp.member[0].data, tse.member[0].data))
-    assert all(a == b for a, b in zip(cp.member[1].data, tse.member[1].data))
+    np.isclose(cp.member[0].data, tse.member[0].data).all()
+    np.isclose(cp.member[0].data, tse.member[1].data).all()
 
 @seismogram_ensemble_as_stream
 def dummy_func_seismogram_ensemble_as_stream(data):
@@ -178,16 +178,16 @@ def test_seismogram_ensemble_as_stream():
     cp = SeismogramEnsemble(seis_e)
     dummy_func_seismogram_ensemble_as_stream(seis_e)
     assert len(seis_e.member) == 3
-    assert all(a.any() == b.any() for a,b in zip(cp.member[0].data, seis_e.member[0].data))
-    assert all(a.any() == b.any() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
+    assert all(np.isclose(a, b).all() for a,b in zip(cp.member[0].data, seis_e.member[0].data))
+    assert all(np.isclose(a, b).all() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
 
     seis_e = get_live_seismogram_ensemble(2)
     assert len(seis_e.member) == 2
     cp = SeismogramEnsemble(seis_e)
     dummy_func_seismogram_ensemble_as_stream_2(data=seis_e)
     assert len(seis_e.member) == 3
-    assert all(a.any() == b.any() for a, b in zip(cp.member[0].data, seis_e.member[0].data))
-    assert all(a.any() == b.any() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
+    assert all(np.isclose(a, b).all() for a, b in zip(cp.member[0].data, seis_e.member[0].data))
+    assert all(np.isclose(a, b).all() for a, b in zip(cp.member[1].data, seis_e.member[1].data))
 
 
 @mspass_func_wrapper
@@ -225,7 +225,7 @@ def test_all_decorators():
     cp = np.array(ts.data)
     dummy_func_2(ts, preserve_history=True, instance='0')
     assert len(cp) != len(ts.data)
-    assert all(a == b for a, b in zip([0, 1, 2], ts.data))
+    np.isclose([0, 1, 2], ts.data).all()
     assert ts.number_of_stages() == 1
 
     # test seismogram_as_stream
