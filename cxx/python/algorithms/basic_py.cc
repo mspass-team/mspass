@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 
 #include <mspass/algorithms/algorithms.h>
+#include <mspass/algorithms/Butterworth.h>
+#include <mspass/utility/Metadata.h>
 
 namespace mspass {
 namespace mspasspy {
@@ -12,8 +14,39 @@ using namespace mspass::algorithms;
 
 PYBIND11_MODULE(basic, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.basic";
-  m.doc() = "A submodule for algorithms namespace of ccore"; 
+  m.doc() = "A submodule for algorithms namespace of ccore with common algorithms"; 
 
+  py::class_<mspass::algorithms::Butterworth>
+              (m,"Butterworth","Butterworth filter operator processing object")
+    .def(py::init<>())
+    .def(py::init<const bool, const bool, const bool,
+        const double, const double, const double, const double, 
+	const double, const double, const double, const double,
+	const double> ())
+    .def(py::init<const mspass::utility::Metadata&>())
+    .def(py::init<const bool, const bool, const bool,
+        const int, const double, const int, const double, const double>())
+    .def(py::init<const Butterworth&>())
+    .def("impulse_response",&Butterworth::impulse_response,
+         "Return impulse response")
+    .def("transfer_function",&Butterworth::transfer_function,
+         "Return transfer function in a complex valued array")
+    .def("change_dt",&Butterworth::change_dt,
+         "Change sample interval defining the operator (does not change corners) ")
+    .def("apply",py::overload_cast<mspass::seismic::CoreTimeSeries&>
+         (&Butterworth::apply),"Apply the predefined filter to a TimeSeries object")
+    .def("apply",py::overload_cast<std::vector<double>&>(&Butterworth::apply),
+    	"Apply the predefined filter to a vector of data")
+    .def("apply",py::overload_cast<mspass::seismic::CoreSeismogram&>
+         (&Butterworth::apply),"Apply the predefined filter to a 3c Seismogram object")
+    .def("dt",&Butterworth::current_dt,"Current sample interval used for nondimensionalizing frequencies")
+    .def("low_corner",&Butterworth::low_corner,"Return low frequency f3d point")
+    .def("high_corner",&Butterworth::high_corner,"Return high frequency 3db point")
+    .def("npole_low",&Butterworth::npoles_low,
+      "Return number of poles for the low frequency (high-pass aka low-cut) filter definition")
+    .def("npole_high",&Butterworth::npoles_high,
+      "Return number of poles for the high frequency (low-pass aka high-cut) filter definition")
+  ;
   m.def("ArrivalTimeReference",
       py::overload_cast<Seismogram&,std::string,TimeWindow>
           (&ArrivalTimeReference),
