@@ -22,7 +22,7 @@ jobs:
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pymongo numpy obspy pytest mongomock pytest-cov codecov "dask[complete]"
+        python -m pip install pymongo numpy obspy pytest mongomock pytest-cov codecov "dask[complete]" schema
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Install Apache Spark
       run: |
