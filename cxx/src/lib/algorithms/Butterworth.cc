@@ -443,7 +443,7 @@ ComplexArray Butterworth::transfer_function(const int nfft)
 }
 /* the next 3 functions are nearly idenitical to C code with the same name
 sans the Butterworth class tag. The only change is float was changed to
-double.*/
+double.  All methods below here are private*/
 
 void Butterworth::bfdesign (double fpass, double apass, double fstop, double astop,
 	int *npoles, double *f3db)

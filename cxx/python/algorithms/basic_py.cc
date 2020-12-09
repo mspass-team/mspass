@@ -40,14 +40,20 @@ PYBIND11_MODULE(basic, m) {
     .def("apply",py::overload_cast<std::vector<double>&>(&Butterworth::apply),
     	"Apply the predefined filter to a vector of data")
     .def("apply",py::overload_cast<mspass::seismic::Seismogram&>
-         (&Butterworth::apply),"Apply the predefined filter to a 3c Seismogram object")
-    .def("dt",&Butterworth::current_dt,"Current sample interval used for nondimensionalizing frequencies")
+         (&Butterworth::apply),
+         "Apply the predefined filter to a 3c Seismogram object")
+    .def("dt",&Butterworth::current_dt,
+      "Current sample interval used for nondimensionalizing frequencies")
     .def("low_corner",&Butterworth::low_corner,"Return low frequency f3d point")
     .def("high_corner",&Butterworth::high_corner,"Return high frequency 3db point")
     .def("npoles_low",&Butterworth::npoles_low,
       "Return number of poles for the low frequency (high-pass aka low-cut) filter definition")
     .def("npoles_high",&Butterworth::npoles_high,
       "Return number of poles for the high frequency (low-pass aka high-cut) filter definition")
+    .def("filter_type",&Butterworth::filter_type,
+      "Return a description of the filter type")
+    .def("is_zerophase",&Butterworth::is_zerophase,
+      "Returns True if operator defines a zerophase filter")
   ;
   m.def("ArrivalTimeReference",
       py::overload_cast<Seismogram&,std::string,TimeWindow>

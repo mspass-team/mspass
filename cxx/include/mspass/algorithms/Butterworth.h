@@ -37,7 +37,7 @@ class Butterworth
 public:
   /*! \brief Default constructor.
 
-  The default constructor id not do nothing.  The default generates an
+  The default constructor does not define a null.  The default generates an
   antialiasing filter identical to the default in the antialias function
   in seismic unix.   That is it produces a low pass filter with
   a band edge (pass parameter) at 60% of Nyquist and a stop edge at
@@ -149,15 +149,131 @@ public:
   time scale (time method) of a time series object.
 
   \param n is the number of samples to generate to characterize the impulse
-  response.
+  response.  The function is always returned centered on the vector of
+  length n and t0 of the TimeSeries is set to make that impulse point
+  be time 0.
   */
   mspass::seismic::CoreTimeSeries impulse_response(const int n);
-  /* Note these alter data inplace */
+  /*! \brief pply the filter to a CoreTimeSeries object.
+
+  This method alters the data vector inside d in place and changes no
+  other parts of the data.   Automatic switching of data sample rate is
+  used on the operator.  That is, if the sample rate of the data is
+  different than the operator sample rate the internal operator
+  coefficients will be adjusted to the new sample rate.  The operator
+  sample rate will also be changed to the sample rate of d whenever
+  the sample rate changes from the previous call.
+
+  This method has a safety to prevent irrational sample rate changes.
+  The IRR filter used to compute a Butterworth filter becomes unstable if
+  the low pass filter component (high corner) approach Nyquist or worse
+  exceed Nyquist.   This method will throw a MsPASSError exception if the
+  sample rate of d is too low for the filter high corner.
+  (current 90% of Nyquist).  When this error is throw the data will be
+  unaltered and the internal sample rate will be left in the previous state.
+
+  \param d input data to be filtered - altered in place.
+  \exception throws a MsPASSError if the hi corner is inconsistent with the
+  sample rate of d
+  */
   void apply(mspass::seismic::CoreTimeSeries& d);
+  /*! \brief Apply the filter to a CoreTimeSeries object.
+
+  This method alters the data vector inside d in place and changes no
+  other parts of the data.   Automatic switching of data sample rate is
+  used on the operator.  That is, if the sample rate of the data is
+  different than the operator sample rate the internal operator
+  coefficients will be adjusted to the new sample rate.  The operator
+  sample rate will also be changed to the sample rate of d whenever
+  the sample rate changes from the previous call.
+
+  This method has a safety to prevent irrational sample rate changes.
+  The IRR filter used to compute a Butterworth filter becomes unstable if
+  the low pass filter component (high corner) approach Nyquist or worse
+  exceed Nyquist.   This method will automatically disable the high corner
+  (lowpass) component of the filter if the corner approaches or exceed
+  Nyquist.  When that happens the internal sample rate is restored to the
+  previous value and a complaint message is posted to elog of d.
+
+  \param d input data to be filtered - altered in place.
+  \exception none, but callers should consider checking for errors posted to
+  elog
+  */
   void apply(mspass::seismic::TimeSeries& d);
+  /*! \brief Filter a raw vector of data.
+
+  Use this method to apply the filter to a raw vector of data.  The
+  C++ interface uses an std::vector container, but the python api in MsPASS
+  allows this to be a double numpy array or any iterable version of a
+  vector container (meaning storage as a contiguous block of memory).
+  If this method is used it is assumed the sample interval defined for the
+  operator is the same as the for the input data.
+
+  \param d is the data to be filtered (note the data are altered in place)
+  */
   void apply(std::vector<double>& d);
+  /*! \brief Apply the filter to a CoreSeismogram object.
+
+  This method alters the data vector inside d in place and changes no
+  other parts of the data.   Automatic switching of data sample rate is
+  used on the operator.  That is, if the sample rate of the data is
+  different than the operator sample rate the internal operator
+  coefficients will be adjusted to the new sample rate.  The operator
+  sample rate will also be changed to the sample rate of d whenever
+  the sample rate changes from the previous call.
+
+  This method has a safety to prevent irrational sample rate changes.
+  The IRR filter used to compute a Butterworth filter becomes unstable if
+  the low pass filter component (high corner) approach Nyquist or worse
+  exceed Nyquist.   This method will throw a MsPASSError exception if the
+  sample rate of d is too low for the filter high corner.
+  (current 90% of Nyquist).   When this error is throw the data will be
+  unaltered and the internal sample rate will be left in the previous state.
+
+  \param d input data to be filtered - altered in place.
+  \exception throws a MsPASSError if the hi corner is inconsistent with the
+  sample rate of d
+  */
   void apply(mspass::seismic::CoreSeismogram& d);
+  /*! \brief Apply the filter to a CoreTimeSeries object.
+
+  This method alters the data vector inside d in place and changes no
+  other parts of the data.   Automatic switching of data sample rate is
+  used on the operator.  That is, if the sample rate of the data is
+  different than the operator sample rate the internal operator
+  coefficients will be adjusted to the new sample rate.  The operator
+  sample rate will also be changed to the sample rate of d whenever
+  the sample rate changes from the previous call.
+
+  This method has a safety to prevent irrational sample rate changes.
+  The IRR filter used to compute a Butterworth filter becomes unstable if
+  the low pass filter component (high corner) approach Nyquist or worse
+  exceed Nyquist.   This method will automatically disable the high corner
+  (lowpass) component of the filter if the corner approaches or exceed
+  Nyquist.  When that happens the internal sample rate is restored to the
+  previous value and a complaint message is posted to elog of d.
+
+  \param d input data to be filtered - altered in place.
+  \exception none, but callers should consider checking for errors posted to
+  elog
+  */
   void apply(mspass::seismic::Seismogram& d);
+  /*! \brief Return the response of the filter in the frequency domain.
+
+  The impulse response of any linear system can always be characterized by
+  either the time domain response to spike signal or the alternative
+  frequency domain version of the same function commonly called the
+  transfer function.  This method returns the transfer funtion as a
+  mspass::algorithms::deconvolution::ComplexArray container.  Use methods
+  in that object to get amplitude and phase response functions.
+
+  \param n is the number of points that should be used to characterize the
+  transfer function.  Note because we are dealing with strictly real valued
+  signals the array returned will be folded at the Nyquist frequency in the
+  standard way of all FFT implementations (current implementation uses the
+  fft in the gnu scientific library that definitely does that).
+
+  */
   mspass::algorithms::deconvolution::ComplexArray transfer_function(const int n);
   /*! \brief set the sample interval assumed for input data.
 
@@ -169,6 +285,12 @@ public:
   are altered when this function is called.  If the frequency intervals
   change the expectation is the user will create a new instance of this
   object.
+
+  Warning:  this routine does not implement the safeties built into
+  TimeSeries and Seismogram apply methods.  It will silently change the upper
+  corner to an unstable position if called inappropriately.
+
+  \param dtnew is the new sample interval to set for the operator.
   */
   void change_dt(const double dtnew)
   {
@@ -176,17 +298,56 @@ public:
     this->f3db_hi *= (dtnew/(this->dt));
     this->dt=dtnew;
   };
-  double low_corner()
+  /*! Return the low frequency 3db corner (in Hz).*/
+  double low_corner() const
   {
     return f3db_lo/dt;
   };
-  double high_corner()
+  /*! Return the high frequency 3db corner (in Hz).*/
+  double high_corner() const
   {
     return f3db_hi/dt;
   };
-  int npoles_low(){return npoles_lo;};
-  int npoles_high(){return npoles_hi;};
-  double current_dt(){return dt;};
+  /*! Return the number of poles defining the highpass (lowcut) element
+  of the filter.*/
+  int npoles_low() const {return npoles_lo;};
+  /*! Return the number of poles defining the lowpass (highcut) element
+  of the filter.*/
+  int npoles_high() const {return npoles_hi;};
+  /*! Return the current operator sample interval.*/
+  double current_dt()const {return dt;};
+  /*! Return a string defining the type of operator this filter defines.
+  Currently can be one of the following:  bandpass, lowpass, or highpass.
+  It is possible to construct a band reject filter with the right
+  constructor, but the implementation of this method will not detect that
+  condition.  A band reject filter will be incorrectly tagged bandpass.
+  The algorithm just looks to see which  of the band edges are defined
+  (the hi and lo concepts described above) and guesses the filter type.
+  If both are off it returns "Undefined".
+  */
+  std::string filter_type() const
+  {
+    if(use_lo)
+    {
+      if(use_hi)
+        return std::string("bandpass");
+      else
+        return std::string("highpass");
+    }
+    else
+    {
+      if(use_hi)
+        return std::string("lowpass");
+      else
+        return std::string("Undefined");
+    }
+  };
+  /*! Return true if the filter is defined as a zero phase filter.
+  Returns false if it is minimum phase. */
+  bool is_zerophase() const
+  {
+    return zerophase;
+  };
 private:
   bool use_lo,use_hi;
   bool zerophase;
