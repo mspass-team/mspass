@@ -1079,107 +1079,147 @@
 <codeline lineno="851"><highlight class="normal"><sp/><sp/>dscal(3*this-&gt;npts(),scale,ptr,1);</highlight></codeline>
 <codeline lineno="852"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="853"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="854"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_dt(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval)</highlight></codeline>
+<codeline lineno="854"><highlight class="normal">CoreSeismogram&amp;<sp/>CoreSeismogram::operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>data)</highlight></codeline>
 <codeline lineno="855"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="856"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_dt(sample_interval);</highlight></codeline>
-<codeline lineno="857"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="858"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;delta&quot;</highlight><highlight class="normal">,sample_interval);</highlight></codeline>
-<codeline lineno="859"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="860"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
-<codeline lineno="861"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
-<codeline lineno="862"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;dt&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="863"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
-<codeline lineno="864"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="865"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
-<codeline lineno="866"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="867"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,sample_interval);</highlight></codeline>
-<codeline lineno="868"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="869"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="870"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="871"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_t0(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0in)</highlight></codeline>
-<codeline lineno="872"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="873"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_t0(t0in);</highlight></codeline>
-<codeline lineno="874"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="875"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;starttime&quot;</highlight><highlight class="normal">,t0in);</highlight></codeline>
-<codeline lineno="876"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="877"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
-<codeline lineno="878"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
-<codeline lineno="879"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;t0&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="880"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;time&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="881"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
-<codeline lineno="882"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="883"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
-<codeline lineno="884"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="885"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,t0in);</highlight></codeline>
-<codeline lineno="886"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="887"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="888"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="889"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_npts(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>npts)</highlight></codeline>
-<codeline lineno="890"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="891"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(npts);</highlight></codeline>
-<codeline lineno="892"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
-<codeline lineno="893"><highlight class="comment"><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="894"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)npts);</highlight></codeline>
-<codeline lineno="895"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="896"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
-<codeline lineno="897"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
-<codeline lineno="898"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="899"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;wfdisc.nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="900"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
-<codeline lineno="901"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="902"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
-<codeline lineno="903"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="904"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)npts);</highlight></codeline>
-<codeline lineno="905"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="906"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="907"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>method<sp/>has<sp/>the<sp/>further<sp/>complication<sp/>that<sp/>npts<sp/>sets<sp/>the<sp/>size<sp/>of<sp/>the</highlight></codeline>
-<codeline lineno="908"><highlight class="comment"><sp/><sp/>data<sp/>matrix.<sp/><sp/><sp/>Here<sp/>we<sp/>resize<sp/>the<sp/>matrix<sp/>and<sp/>initialize<sp/>it<sp/>to<sp/>0s.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="909"><highlight class="normal"><sp/><sp/>this-&gt;u=<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(3,npts);</highlight></codeline>
-<codeline lineno="910"><highlight class="normal"><sp/><sp/>this-&gt;u.zero();</highlight></codeline>
-<codeline lineno="911"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="912"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::sync_npts()</highlight></codeline>
-<codeline lineno="913"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="914"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nsamp<sp/>!=<sp/>this-&gt;u.columns())<sp/>{</highlight></codeline>
-<codeline lineno="915"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(this-&gt;u.columns());</highlight></codeline>
-<codeline lineno="916"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
-<codeline lineno="917"><highlight class="comment"><sp/><sp/><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="918"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)nsamp);</highlight></codeline>
-<codeline lineno="919"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="920"><highlight class="normal"><sp/><sp/><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
-<codeline lineno="921"><highlight class="normal"><sp/><sp/><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
-<codeline lineno="922"><highlight class="normal"><sp/><sp/><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="923"><highlight class="normal"><sp/><sp/><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;wfdisc.nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="924"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
-<codeline lineno="925"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="926"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
-<codeline lineno="927"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="928"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)nsamp);</highlight></codeline>
-<codeline lineno="929"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="930"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="931"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="932"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="933"><highlight class="normal"></highlight></codeline>
-<codeline lineno="934"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword">const</highlight></codeline>
-<codeline lineno="935"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="936"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="937"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
-<codeline lineno="938"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.reserve(3);</highlight></codeline>
-<codeline lineno="939"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;3;++k)</highlight></codeline>
-<codeline lineno="940"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.push_back(this-&gt;u(k,i));</highlight></codeline>
-<codeline lineno="941"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="942"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="943"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="944"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="945"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="946"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="947"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
-<codeline lineno="948"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i=this-&gt;sample_number(t);</highlight></codeline>
-<codeline lineno="949"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;3;++k)</highlight></codeline>
-<codeline lineno="950"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.push_back(this-&gt;u(k,i));</highlight></codeline>
-<codeline lineno="951"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="952"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="953"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="954"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>namespace<sp/>SEISPP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="856"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i,i0,iend;</highlight></codeline>
+<codeline lineno="857"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j,j0=0;</highlight></codeline>
+<codeline lineno="858"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Sun&apos;s<sp/>compiler<sp/>complains<sp/>about<sp/>const<sp/>objects<sp/>without<sp/>this.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="859"><highlight class="normal"><sp/><sp/><sp/><sp/>CoreSeismogram&amp;<sp/>d=</highlight><highlight class="keyword">const_cast&lt;</highlight><highlight class="normal">CoreSeismogram&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(data);</highlight></codeline>
+<codeline lineno="860"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Silently<sp/>do<sp/>nothing<sp/>if<sp/>d<sp/>is<sp/>marked<sp/>dead</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="861"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!d.mlive)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="862"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Silently<sp/>do<sp/>nothing<sp/>if<sp/>d<sp/>does<sp/>not<sp/>overlap<sp/>with<sp/>data<sp/>to<sp/>contain<sp/>sum</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="863"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(d.endtime()&lt;mt0)</highlight></codeline>
+<codeline lineno="864"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>||<sp/>(d.mt0&gt;(this-&gt;endtime()))<sp/>)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="865"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(d.tref!=(this-&gt;tref))</highlight></codeline>
+<codeline lineno="866"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;CoreSeismogram<sp/>+=<sp/>operator<sp/>cannot<sp/>handle<sp/>data<sp/>with<sp/>inconsistent<sp/>time<sp/>base\n&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="867"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
+<codeline lineno="868"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="869"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>First<sp/>we<sp/>have<sp/>to<sp/>determine<sp/>range<sp/>fo<sp/>sum<sp/>for<sp/>d<sp/>into<sp/>this</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="870"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="871"><highlight class="normal"><sp/><sp/><sp/><sp/>i0=d.sample_number(this-&gt;mt0);</highlight></codeline>
+<codeline lineno="872"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(i0&lt;0)</highlight></codeline>
+<codeline lineno="873"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="874"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j=-i0;</highlight></codeline>
+<codeline lineno="875"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>i0=0;</highlight></codeline>
+<codeline lineno="876"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="877"><highlight class="normal"><sp/><sp/><sp/><sp/>iend=d.sample_number(this-&gt;endtime());</highlight></codeline>
+<codeline lineno="878"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(iend&gt;(d.u.columns()-1))</highlight></codeline>
+<codeline lineno="879"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="880"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>iend=d.u.columns()-1;</highlight></codeline>
+<codeline lineno="881"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="882"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="883"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>IMPORTANT:<sp/><sp/>This<sp/>algorithm<sp/>simply<sp/>assumes<sp/>zero_gaps<sp/>has<sp/>been<sp/>called</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="884"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>and/or<sp/>d<sp/>was<sp/>checked<sp/>for<sp/>gaps<sp/>befor<sp/>calling<sp/>this<sp/>operatr.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="885"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>It<sp/>will<sp/>produce<sp/>garbage<sp/>for<sp/>most<sp/>raw<sp/>gap<sp/>(sample<sp/>level)<sp/>marking<sp/>schemes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="886"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="887"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=i0,j=j0;<sp/>i&lt;=iend;<sp/>++i,++j)<sp/>{</highlight></codeline>
+<codeline lineno="888"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;u(0,j)+=d.u(0,i);</highlight></codeline>
+<codeline lineno="889"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;u(1,j)+=d.u(1,i);</highlight></codeline>
+<codeline lineno="890"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;u(2,j)+=d.u(2,i);</highlight></codeline>
+<codeline lineno="891"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="892"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="893"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="894"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_dt(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval)</highlight></codeline>
+<codeline lineno="895"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="896"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_dt(sample_interval);</highlight></codeline>
+<codeline lineno="897"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="898"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;delta&quot;</highlight><highlight class="normal">,sample_interval);</highlight></codeline>
+<codeline lineno="899"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="900"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
+<codeline lineno="901"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
+<codeline lineno="902"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;dt&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="903"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
+<codeline lineno="904"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="905"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
+<codeline lineno="906"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="907"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,sample_interval);</highlight></codeline>
+<codeline lineno="908"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="909"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="910"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="911"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_t0(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0in)</highlight></codeline>
+<codeline lineno="912"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="913"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_t0(t0in);</highlight></codeline>
+<codeline lineno="914"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="915"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;starttime&quot;</highlight><highlight class="normal">,t0in);</highlight></codeline>
+<codeline lineno="916"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="917"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
+<codeline lineno="918"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
+<codeline lineno="919"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;t0&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="920"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;time&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="921"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
+<codeline lineno="922"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="923"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
+<codeline lineno="924"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="925"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,t0in);</highlight></codeline>
+<codeline lineno="926"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="927"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="928"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="929"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_npts(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>npts)</highlight></codeline>
+<codeline lineno="930"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="931"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(npts);</highlight></codeline>
+<codeline lineno="932"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
+<codeline lineno="933"><highlight class="comment"><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="934"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)npts);</highlight></codeline>
+<codeline lineno="935"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="936"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
+<codeline lineno="937"><highlight class="normal"><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
+<codeline lineno="938"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="939"><highlight class="normal"><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;wfdisc.nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="940"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
+<codeline lineno="941"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="942"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
+<codeline lineno="943"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="944"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)npts);</highlight></codeline>
+<codeline lineno="945"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="946"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="947"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>method<sp/>has<sp/>the<sp/>further<sp/>complication<sp/>that<sp/>npts<sp/>sets<sp/>the<sp/>size<sp/>of<sp/>the</highlight></codeline>
+<codeline lineno="948"><highlight class="comment"><sp/><sp/>data<sp/>matrix.<sp/><sp/><sp/>Here<sp/>we<sp/>resize<sp/>the<sp/>matrix<sp/>and<sp/>initialize<sp/>it<sp/>to<sp/>0s.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="949"><highlight class="normal"><sp/><sp/>this-&gt;u=<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(3,npts);</highlight></codeline>
+<codeline lineno="950"><highlight class="normal"><sp/><sp/>this-&gt;u.zero();</highlight></codeline>
+<codeline lineno="951"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="952"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::sync_npts()</highlight></codeline>
+<codeline lineno="953"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="954"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nsamp<sp/>!=<sp/>this-&gt;u.columns())<sp/>{</highlight></codeline>
+<codeline lineno="955"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(this-&gt;u.columns());</highlight></codeline>
+<codeline lineno="956"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
+<codeline lineno="957"><highlight class="comment"><sp/><sp/><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="958"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)nsamp);</highlight></codeline>
+<codeline lineno="959"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="960"><highlight class="normal"><sp/><sp/><sp/><sp/>std::set&lt;string&gt;<sp/>aliases;</highlight></codeline>
+<codeline lineno="961"><highlight class="normal"><sp/><sp/><sp/><sp/>std::set&lt;string&gt;::iterator<sp/>aptr;</highlight></codeline>
+<codeline lineno="962"><highlight class="normal"><sp/><sp/><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="963"><highlight class="normal"><sp/><sp/><sp/><sp/>aliases.insert(</highlight><highlight class="stringliteral">&quot;wfdisc.nsamp&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="964"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliases.begin();aptr!=aliases.end();++aptr)</highlight></codeline>
+<codeline lineno="965"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="966"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_defined(*aptr))</highlight></codeline>
+<codeline lineno="967"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="968"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;put(*aptr,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)nsamp);</highlight></codeline>
+<codeline lineno="969"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="970"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="971"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="972"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="973"><highlight class="normal"></highlight></codeline>
+<codeline lineno="974"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="975"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="976"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="977"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
+<codeline lineno="978"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.reserve(3);</highlight></codeline>
+<codeline lineno="979"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;3;++k)</highlight></codeline>
+<codeline lineno="980"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.push_back(this-&gt;u(k,i));</highlight></codeline>
+<codeline lineno="981"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="982"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="983"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="984"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="985"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="986"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="987"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
+<codeline lineno="988"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i=this-&gt;sample_number(t);</highlight></codeline>
+<codeline lineno="989"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>k=0;k&lt;3;++k)</highlight></codeline>
+<codeline lineno="990"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.push_back(this-&gt;u(k,i));</highlight></codeline>
+<codeline lineno="991"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="992"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="993"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="994"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>namespace<sp/>SEISPP</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc"/>
   </compounddef>
