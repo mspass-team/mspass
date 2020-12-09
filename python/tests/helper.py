@@ -1,6 +1,7 @@
 import numpy as np
 import obspy
 import bson.objectid
+from datetime import datetime
 
 from mspasspy.ccore.utility import (AtomicType,
                                     dmatrix)
@@ -8,7 +9,7 @@ from mspasspy.ccore.seismic import (Seismogram,
                                     TimeSeries,
                                     TimeSeriesEnsemble,
                                     SeismogramEnsemble,
-                                    DoubleVector)
+                                    DoubleVector, TimeReferenceType)
 
 ts_size = 255
 sampling_rate = 20.0
@@ -22,9 +23,16 @@ def get_live_seismogram():
     seis.dt = 1 / sampling_rate
     seis.t0 = 0
     seis.npts = ts_size
-    seis.put('net', 'IU')
+    # seis.put('net', 'IU')
     seis.put('npts', ts_size)
     seis.put('sampling_rate', sampling_rate)
+    seis.tref = TimeReferenceType.UTC
+    seis.t0 = datetime.utcnow().timestamp()
+    seis['delta'] = 0.1
+    seis['calib'] = 0.1
+    seis['site_id'] = bson.objectid.ObjectId()
+    seis['channel_id'] = [bson.objectid.ObjectId()]
+    seis['source_id'] = bson.objectid.ObjectId()
     seis.data = dmatrix(3, ts_size)
     for i in range(3):
         for j in range(ts_size):
@@ -36,11 +44,17 @@ def get_live_timeseries():
     ts = TimeSeries()
     ts.set_live()
     ts.dt = 1 / sampling_rate
-    ts.t0 = 0
     ts.npts = ts_size
-    ts.put('net', 'IU')
+    # ts.put('net', 'IU')
     ts.put('npts', ts_size)
     ts.put('sampling_rate', sampling_rate)
+    ts.tref = TimeReferenceType.UTC
+    ts.t0 = datetime.utcnow().timestamp()
+    ts['delta'] = 0.1
+    ts['calib'] = 0.1
+    ts['site_id'] = bson.objectid.ObjectId()
+    ts['channel_id'] = bson.objectid.ObjectId()
+    ts['source_id'] = bson.objectid.ObjectId()
     ts.set_as_origin('test', '0', '0',
                      AtomicType.TIMESERIES)
     ts.data = DoubleVector(np.random.rand(ts_size))

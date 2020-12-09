@@ -342,12 +342,23 @@ def test_CoreSeismogram():
     md['tmatrix'] = np.random.rand(9,1)
     cseis = CoreSeismogram(md, False)
     assert (cseis.transformation_matrix == md['tmatrix'].reshape(3,3)).all()
+    
+    md['tmatrix'] = np.random.rand(3,3).tolist()
+    cseis = CoreSeismogram(md, False)
+    assert np.isclose(cseis.transformation_matrix, np.array(md['tmatrix']).reshape(3,3)).all()
+    md['tmatrix'] = np.random.rand(9).tolist()
+    cseis = CoreSeismogram(md, False)
+    assert np.isclose(cseis.transformation_matrix, np.array(md['tmatrix']).reshape(3,3)).all()
 
     # test whether the setter of transformation_matrix updates metadata correctly
     tm = np.random.rand(1,9)
     cseis.transformation_matrix = tm
     assert (cseis.transformation_matrix == tm.reshape(3,3)).all()
-    assert (cseis.transformation_matrix == cseis['tmatrix']).all()
+    assert np.isclose(cseis.transformation_matrix, np.array(cseis['tmatrix']).reshape(3,3)).all()
+    tm = np.random.rand(9).tolist()
+    cseis.transformation_matrix = tm
+    assert np.isclose(cseis.transformation_matrix, np.array(tm).reshape(3,3)).all()
+    assert np.isclose(cseis.transformation_matrix, np.array(cseis['tmatrix']).reshape(3,3)).all()
 
     # test exceptions
     md['tmatrix'] = np.random.rand(4,2)
@@ -363,7 +374,25 @@ def test_CoreSeismogram():
     with pytest.raises(MsPASSError, match = "Error trying to extract"):
         CoreSeismogram(md, False)
     md['tmatrix'] = {4:2}
-    with pytest.raises(MsPASSError, match = "tmatrix is missing or its type is not recognized"):
+    with pytest.raises(MsPASSError, match = "type is not recognized"):
+        CoreSeismogram(md, False)
+    
+    md['tmatrix'] = np.random.rand(9).tolist()
+    md['tmatrix'][3] = 'str'
+    with pytest.raises(MsPASSError, match = "should be float"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = np.random.rand(3,4).tolist()
+    with pytest.raises(MsPASSError, match = "should be a 3x3 list of list"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = [1,2,3]
+    with pytest.raises(MsPASSError, match = "should be a 3x3 list of list"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = np.random.rand(2,2).tolist()
+    with pytest.raises(MsPASSError, match = "should be a list of 9 floats or a 3x3 list of list"):
+        CoreSeismogram(md, False)
+    md['tmatrix'] = np.random.rand(3,3).tolist()
+    md['tmatrix'][1][1] = 'str'
+    with pytest.raises(MsPASSError, match = "should be float"):
         CoreSeismogram(md, False)
 
 

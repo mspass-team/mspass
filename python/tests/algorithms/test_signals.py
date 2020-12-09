@@ -1,11 +1,8 @@
 import sys
-import pytest
 import obspy
 import obspy.signal.cross_correlation
 import numpy as np
-from obspy import UTCDateTime, read, Trace
-
-from mspasspy.ccore.seismic import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
+from obspy import UTCDateTime, read
 
 # module to test
 sys.path.append("python/tests")
@@ -14,9 +11,7 @@ sys.path.append("python/mspasspy/algorithms")
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
-                    get_live_seismogram_ensemble,
-                    get_stream,
-                    get_trace)
+                    get_live_seismogram_ensemble)
 
 from signals import (filter,
                      detrend,
@@ -24,20 +19,12 @@ from signals import (filter,
                      correlate,
                      correlate_template,
                      correlate_stream_template,
-                     correlation_detector,
                      templates_max_similarity,
                      xcorr_3c,
                      xcorr_max,
                      xcorr_pick_correction)
 
-from mspasspy.io.converter import (TimeSeries2Trace,
-                                   Seismogram2Stream,
-                                   TimeSeriesEnsemble2Stream,
-                                   SeismogramEnsemble2Stream,
-                                   Stream2Seismogram,
-                                   Trace2TimeSeries,
-                                   Stream2TimeSeriesEnsemble,
-                                   Stream2SeismogramEnsemble)
+from mspasspy.util.converter import (Trace2TimeSeries)
 
 def test_filter():
     ts = get_live_timeseries()
@@ -65,8 +52,8 @@ def test_filter():
     tr.stats.sampling_rate = 20
     tr.filter("bandpass", freqmin=1, freqmax=5)
     filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0')
-    assert all(a == b for a,b in zip(ts.data, tr.data))
-    assert not all(a == b for a, b in zip(ts.data, copy))
+    assert all(abs(a-b) < 0.001 for a,b in zip(ts.data, tr.data))
+    assert not all(abs(a-b) < 0.001 for a, b in zip(ts.data, copy))
 
 def test_detrend():
     ts = get_live_timeseries()
@@ -90,8 +77,8 @@ def test_detrend():
     tr.stats.sampling_rate = 20
     tr.detrend(type="simple")
     detrend(ts, "simple", preserve_history=True, instance='0')
-    assert all(a == b for a, b in zip(ts.data, tr.data))
-    assert not all(a == b for a, b in zip(ts.data, copy))
+    assert all(abs(a-b) < 0.001 for a, b in zip(ts.data, tr.data))
+    assert not all(abs(a-b) < 0.001 for a, b in zip(ts.data, copy))
 
 def test_interpolate():
     ts = get_live_timeseries()
@@ -120,8 +107,8 @@ def test_interpolate():
     tr.stats.sampling_rate = 20
     tr.interpolate(40, method="zero")
     interpolate(ts, 40, method='zero', preserve_history=True, instance='0')
-    assert all(a == b for a, b in zip(ts.data, tr.data))
-    assert not all(a == b for a, b in zip(ts.data, copy))
+    assert all(abs(a-b) < 0.1 for a, b in zip(ts.data, tr.data))
+    assert not all(abs(a-b) < 0.001 for a, b in zip(ts.data, copy))
     assert ts.dt == 1/40
 
 def test_correlate():
@@ -131,7 +118,7 @@ def test_correlate():
     tr2 = ts2.toTrace()
     res1 = correlate(ts1, ts2, 2, preserve_history=True, instance='0')
     res2 = obspy.signal.cross_correlation.correlate(tr1, tr2, 2)
-    assert all(a==b for a,b in zip(res1, res2))
+    assert all(abs(a-b) < 0.001 for a,b in zip(res1, res2))
 
 def test_correlate_template():
     ts1 = get_live_timeseries()
@@ -140,7 +127,7 @@ def test_correlate_template():
     tr2 = ts2.toTrace()
     res1 = correlate_template(ts1, ts2, preserve_history=True, instance='0')
     res2 = obspy.signal.cross_correlation.correlate_template(tr1, tr2)
-    assert all(a == b for a, b in zip(res1, res2))
+    assert all(abs(a-b) < 0.001 for a, b in zip(res1, res2))
 
 def test_correlate_stream_template():
     tse1 = get_live_seismogram()
@@ -150,7 +137,7 @@ def test_correlate_stream_template():
     res1 = correlate_stream_template(tse1, tse2, preserve_history=True, instance='0')
     res2 = obspy.signal.cross_correlation.correlate_stream_template(st1, st2)
     for i in range(3):
-        assert all(a == b for a, b in zip(res1.data[i,:], res2[i].data))
+        assert all(abs(a-b) < 0.001 for a, b in zip(res1.data[i,:], res2[i].data))
 
 def test_correlation_detector():
     template = read().filter('highpass', freq=5).normalize()

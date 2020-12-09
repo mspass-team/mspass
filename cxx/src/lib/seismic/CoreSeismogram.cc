@@ -110,28 +110,8 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         this->nsamp = this->get_long("npts");
         /* Assume the data t0 is UTC. */
         this->set_tref(TimeReferenceType::UTC);
-        /* tmatrix should be put in as a python object of ndarray type */
-        auto tmatrix_py = boost::any_cast<py::object>(this->get_any("tmatrix"));
-        if(py::isinstance<py::array>(tmatrix_py)) {
-            auto tmatrix_ary = tmatrix_py.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
-            py::buffer_info info = tmatrix_ary.request();
-            if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
-                (info.ndim == 1 && info.shape[0] == 9)
-                )
-                this->set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
-            else
-                throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 matrix"),
-                      ErrorSeverity::Invalid));
-        } else if (py::isinstance<dmatrix>(tmatrix_py)) {
-            auto tmatrix_ary = tmatrix_py.cast<dmatrix>();
-            if (tmatrix_ary.rows() != 3 || tmatrix_ary.columns() != 3)
-                throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix in the Metadata should be a 3x3 matrix"),
-                      ErrorSeverity::Invalid));
-            this->set_transformation_matrix(tmatrix_ary);
-        } else {
-            throw(MsPASSError(string("CoreSeismogram constructor:  tmatrix is missing or its type is not recognized"),
-                  ErrorSeverity::Invalid));
-        }
+        /* tmatrix should be put in as a python object of ndarray or list */
+        this->set_transformation_matrix(boost::any_cast<py::object>(this->get_any("tmatrix")));
         components_are_cardinal=this->tmatrix_is_cardinal();
         if(components_are_cardinal)
           components_are_orthogonal=true;
@@ -736,7 +716,10 @@ bool CoreSeismogram::set_transformation_matrix(const dmatrix& A)
 {
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix[i][j]=A(i,j);
-    this->put_object("tmatrix", py::cast(this->get_transformation_matrix()));
+    py::list tmatrix_l;
+    for(int i=0;i<3;++i)
+        for(int j=0;j<3;++j) tmatrix_l.append(A(i, j));
+    this->put_object("tmatrix", tmatrix_l);
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)
@@ -756,7 +739,10 @@ bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
 {
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix[i][j]=a[i][j];
-    this->put_object("tmatrix", py::cast(this->get_transformation_matrix()));
+    py::list tmatrix_l;
+    for(int i=0;i<3;++i)
+        for(int j=0;j<3;++j) tmatrix_l.append(a[i][j]);
+    this->put_object("tmatrix", tmatrix_l);
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)
@@ -771,6 +757,69 @@ bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
         components_are_orthogonal=false;
     }
     return components_are_cardinal;
+}
+bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py)
+{
+    if(py::isinstance<py::array>(tmatrix_py)) {
+        auto tmatrix_ary = tmatrix_py.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
+        py::buffer_info info = tmatrix_ary.request();
+        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
+            (info.ndim == 1 && info.shape[0] == 9)
+           )
+            return this->set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
+        else
+            throw(MsPASSError(string("set_transformation_matrix: tmatrix should be a 3x3 matrix"),
+                    ErrorSeverity::Invalid));
+    } else if (py::isinstance<dmatrix>(tmatrix_py)) {
+        auto tmatrix_ary = tmatrix_py.cast<dmatrix>();
+        if (tmatrix_ary.rows() != 3 || tmatrix_ary.columns() != 3)
+            throw(MsPASSError(string("set_transformation_matrix: tmatrix should be a 3x3 matrix"),
+                    ErrorSeverity::Invalid));
+        return this->set_transformation_matrix(tmatrix_ary);
+    } else if (py::isinstance<py::list>(tmatrix_py)) {
+        dmatrix tmatrix_ary(3,3);
+        double* ptr = tmatrix_ary.get_address(0,0);
+        if(py::len(tmatrix_py) == 9) {
+            int i = 0;
+            for (auto item : tmatrix_py) {
+                try{
+                    *(ptr+i) = item.cast<double>();
+                    i++;
+                } catch (...) {
+                    throw(MsPASSError(string("set_transformation_matrix: the elements of tmatrix should be float"),
+                            ErrorSeverity::Invalid));
+                }
+            }
+        } else if(py::len(tmatrix_py) == 3) {
+            int i = 0;
+            for (auto items : tmatrix_py) {
+                if(!py::isinstance<py::list>(items))
+                    throw(MsPASSError(string("set_transformation_matrix: tmatrix should be a 3x3 list of list"),
+                            ErrorSeverity::Invalid));
+                else if (py::len(items) != 3)
+                    throw(MsPASSError(string("set_transformation_matrix: tmatrix should be a 3x3 list of list"),
+                            ErrorSeverity::Invalid));
+                else {
+                    for (auto item : items) {
+                        try{
+                            *(ptr+i) = item.cast<double>();
+                            i++;
+                        } catch (...) {
+                            throw(MsPASSError(string("set_transformation_matrix: the elements of tmatrix should be float"),
+                                ErrorSeverity::Invalid));
+                        }
+                    }
+                }
+            }
+        } else {
+            throw(MsPASSError(string("set_transformation_matrix: tmatrix should be a list of 9 floats or a 3x3 list of list"),
+                ErrorSeverity::Invalid));
+        }
+        return this->set_transformation_matrix(tr(tmatrix_ary));
+    } else {
+        throw(MsPASSError(string("set_transformation_matrix: tmatrix's type is not recognized"),
+                ErrorSeverity::Invalid));
+    }
 }
 CoreSeismogram& CoreSeismogram::operator=(const CoreSeismogram& seisin)
 {

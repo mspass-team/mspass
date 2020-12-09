@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import pymongo
 import mspasspy.db
 from mspasspy.ccore.seismic import (TimeSeriesEnsemble,SeismogramEnsemble)
 from mspasspy.ccore.utility import (ErrorSeverity,MsPASSError)
@@ -9,7 +8,7 @@ This is a class for handling data marked dead.   The method names are a bit
 tongue in cheek but descriptive.
 @author: Prof. Gary L. Pavlis, Dept. Earth and Atmos. Sci., Indiana University
 """
-class Undertaker(mspasspy.db.Database):
+class Undertaker(mspasspy.db.db.Database):
     """
     Class to handle dead data.  Many for ensembles, but has methods to
     save elog entries for Seismogram or TimeSeries objects marked dead.
