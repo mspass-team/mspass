@@ -60,6 +60,29 @@ def get_live_timeseries():
     ts.data = DoubleVector(np.random.rand(ts_size))
     return ts
 
+# the following sine wave generation is modified from obspy's test at:
+# https://github.com/obspy/obspy/blob/master/obspy/imaging/tests/test_waveform.py
+def get_sin_timeseries():
+    ts = TimeSeries()
+    ts.set_live()
+    ts.dt = 1 / sampling_rate
+    ts.npts = ts_size
+    # ts.put('net', 'IU')
+    ts.put('npts', ts_size)
+    ts.put('sampling_rate', sampling_rate)
+    ts.tref = TimeReferenceType.UTC
+    ts.t0 = datetime.utcnow().timestamp()
+    ts['delta'] = 0.1
+    ts['calib'] = 0.1
+    ts['site_id'] = bson.objectid.ObjectId()
+    ts['channel_id'] = bson.objectid.ObjectId()
+    ts['source_id'] = bson.objectid.ObjectId()
+    ts.set_as_origin('test', '0', '0',
+                     AtomicType.TIMESERIES)
+    curve = np.linspace(0, 2 * np.pi, ts.npts)
+    curve = np.sin(curve) + 0.2 * np.sin(10 * curve)
+    ts.data = DoubleVector(curve)
+    return ts
 
 def get_live_seismogram_ensemble(n):
     seis_e = SeismogramEnsemble()

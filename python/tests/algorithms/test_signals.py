@@ -10,6 +10,7 @@ sys.path.append("python/mspasspy/algorithms")
 
 from helper import (get_live_seismogram,
                     get_live_timeseries,
+                    get_sin_timeseries,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
@@ -100,14 +101,14 @@ def test_interpolate():
     interpolate(ts, 255, method='zero', preserve_history=True, instance='0')
 
     # functionality verification testing
-    ts = get_live_timeseries()
+    ts = get_sin_timeseries()
     tr = obspy.Trace()
     tr.data = np.array(ts.data)
     copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
     tr.interpolate(40, method="zero")
     interpolate(ts, 40, method='zero', preserve_history=True, instance='0')
-    assert all(abs(a-b) < 0.1 for a, b in zip(ts.data, tr.data))
+    assert all(abs(a-b) < 0.001 for a, b in zip(ts.data, tr.data))
     assert not all(abs(a-b) < 0.001 for a, b in zip(ts.data, copy))
     assert ts.dt == 1/40
 
