@@ -16,5 +16,6 @@ var searchData=
   ['is_5forigin',['is_origin',['../classmspass_1_1utility_1_1_processing_history.html#a477b2020ad7e3c753999e3906cd8eb58',1,'mspass::utility::ProcessingHistory']]],
   ['is_5fraw',['is_raw',['../classmspass_1_1utility_1_1_processing_history.html#a440cedfda00fd0b7211ed4673f09426e',1,'mspass::utility::ProcessingHistory']]],
   ['is_5fsaved',['is_saved',['../classmspass_1_1utility_1_1_processing_history.html#a35cd2643171f354ded06e1a34681961d',1,'mspass::utility::ProcessingHistory']]],
-  ['is_5fvolatile',['is_volatile',['../classmspass_1_1utility_1_1_processing_history.html#a8cfd15514483fc2701e53ba1be8412e9',1,'mspass::utility::ProcessingHistory']]]
+  ['is_5fvolatile',['is_volatile',['../classmspass_1_1utility_1_1_processing_history.html#a8cfd15514483fc2701e53ba1be8412e9',1,'mspass::utility::ProcessingHistory']]],
+  ['is_5fzerophase',['is_zerophase',['../classmspass_1_1algorithms_1_1_butterworth.html#a9014cb292cb1c7ca452c80c5cb330b43',1,'mspass::algorithms::Butterworth']]]
 ];

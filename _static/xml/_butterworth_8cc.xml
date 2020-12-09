@@ -564,7 +564,7 @@
 <codeline lineno="248"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="249"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Fraction<sp/>of<sp/>1/dt<sp/>used<sp/>to<sp/>cause<sp/>disabling<sp/>low<sp/>pass<sp/>(upper)<sp/>corner*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="250"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>FHighFloor(0.45);<sp/><sp/></highlight><highlight class="comment">//90%<sp/>of<sp/>Nyquist</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="251"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::apply(<ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">Butterworth::apply</ref>(<ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="252"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>d_dt=d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>();</highlight></codeline>
 <codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;dt<sp/>!=<sp/>d_dt)</highlight></codeline>
@@ -589,7 +589,7 @@
 <codeline lineno="273"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="274"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>We<sp/>use<sp/>ErrorLogger<sp/>and<sp/>blunder<sp/>on<sp/>with<sp/>TimeSeries<sp/>objects<sp/>instead<sp/>of</highlight></codeline>
 <codeline lineno="275"><highlight class="comment">throwing<sp/>an<sp/>exception<sp/>when<sp/>the<sp/>upper<sp/>corner<sp/>is<sp/>bad.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="276"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">Butterworth::apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="277"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>d_dt=d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>();</highlight></codeline>
 <codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;dt<sp/>!=<sp/>d_dt)</highlight></codeline>
@@ -643,7 +643,7 @@
 <codeline lineno="327"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>a<sp/>core<sp/>method.<sp/><sp/>The<sp/>other<sp/>apply<sp/>methods<sp/>just<sp/>call<sp/>his<sp/>one.</highlight></codeline>
 <codeline lineno="328"><highlight class="comment">It<sp/>depends<sp/>on<sp/>a<sp/>property<sp/>of<sp/>seismic<sp/>unix<sp/>implementation<sp/>of<sp/>bw<sp/>Filters</highlight></codeline>
 <codeline lineno="329"><highlight class="comment">that<sp/>allow<sp/>input<sp/>and<sp/>output<sp/>to<sp/>be<sp/>the<sp/>same<sp/>data<sp/>vector*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="330"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::apply(vector&lt;double&gt;&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">Butterworth::apply</ref>(vector&lt;double&gt;&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="331"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(use_lo)</highlight></codeline>
 <codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -667,7 +667,7 @@
 <codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="352"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="353"><highlight class="normal"></highlight></codeline>
-<codeline lineno="354"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::apply(CoreSeismogram&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">Butterworth::apply</ref>(CoreSeismogram&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="355"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>we<sp/>could<sp/>just<sp/>handle<sp/>a<sp/>MsPASSError<sp/>to<sp/>take<sp/>care<sp/>of<sp/>exceptions</highlight></codeline>
 <codeline lineno="357"><highlight class="comment"><sp/><sp/><sp/><sp/>thrown<sp/>by<sp/>apply<sp/>if<sp/>the<sp/>sample<sp/>rate<sp/>is<sp/>illegal,<sp/>but<sp/>this<sp/>is<sp/>more<sp/>adaptable.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -695,7 +695,7 @@
 <codeline lineno="379"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>The<sp/>logic<sp/>used<sp/>here<sp/>is<sp/>identical<sp/>to<sp/>the<sp/>apply<sp/>method<sp/>for<sp/>TimeSeries<sp/>to</highlight></codeline>
 <codeline lineno="380"><highlight class="comment">log<sp/>errors<sp/>and<sp/>with<sp/>an<sp/>internal<sp/>return.<sp/><sp/>Difference<sp/>is<sp/>the<sp/>need<sp/>to<sp/>handle</highlight></codeline>
 <codeline lineno="381"><highlight class="comment">3<sp/>components.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="382"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">Butterworth::apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d)</highlight></codeline>
 <codeline lineno="383"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="384"><highlight class="normal"></highlight></codeline>
 <codeline lineno="385"><highlight class="normal"></highlight></codeline>
@@ -746,7 +746,7 @@
 <codeline lineno="430"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dcopy(npts,&amp;(comp[0]),1,d.<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" kindref="member">u</ref>.get_address(k,0),3);</highlight></codeline>
 <codeline lineno="431"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="432"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="433"><highlight class="normal">ComplexArray<sp/>Butterworth::transfer_function(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfft)</highlight></codeline>
+<codeline lineno="433"><highlight class="normal">ComplexArray<sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a54e766697f72f1ba38b95915805dd6d9" kindref="member">Butterworth::transfer_function</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nfft)</highlight></codeline>
 <codeline lineno="434"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="435"><highlight class="normal"><sp/><sp/><sp/><sp/>CoreTimeSeries<sp/>imp=this-&gt;impulse_response(nfft);</highlight></codeline>
 <codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/>gsl_fft_complex_wavetable<sp/>*wavetable<sp/>=<sp/>gsl_fft_complex_wavetable_alloc<sp/>(nfft);</highlight></codeline>
@@ -759,7 +759,7 @@
 <codeline lineno="443"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="444"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>the<sp/>next<sp/>3<sp/>functions<sp/>are<sp/>nearly<sp/>idenitical<sp/>to<sp/>C<sp/>code<sp/>with<sp/>the<sp/>same<sp/>name</highlight></codeline>
 <codeline lineno="445"><highlight class="comment">sans<sp/>the<sp/>Butterworth<sp/>class<sp/>tag.<sp/>The<sp/>only<sp/>change<sp/>is<sp/>float<sp/>was<sp/>changed<sp/>to</highlight></codeline>
-<codeline lineno="446"><highlight class="comment">double.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="446"><highlight class="comment">double.<sp/><sp/>All<sp/>methods<sp/>below<sp/>here<sp/>are<sp/>private*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="447"><highlight class="normal"></highlight></codeline>
 <codeline lineno="448"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Butterworth::bfdesign<sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fpass,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>apass,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>fstop,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>astop,</highlight></codeline>
 <codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*npoles,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*f3db)</highlight></codeline>

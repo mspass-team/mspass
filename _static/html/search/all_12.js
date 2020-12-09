@@ -13,6 +13,7 @@ var searchData=
   ['timewindowcmp',['TimeWindowCmp',['../classmspass_1_1seismic_1_1_time_window_cmp.html',1,'mspass::seismic']]],
   ['tmatrix',['tmatrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#a30316a5d8ed7794f0d51da0c96d97882',1,'mspass::seismic::CoreSeismogram']]],
   ['tr',['tr',['../classmspass_1_1utility_1_1dmatrix.html#ac8bd8f853d25a05e32f9e4c152d6af61',1,'mspass::utility::dmatrix']]],
+  ['transfer_5ffunction',['transfer_function',['../classmspass_1_1algorithms_1_1_butterworth.html#a54e766697f72f1ba38b95915805dd6d9',1,'mspass::algorithms::Butterworth']]],
   ['transform',['transform',['../classmspass_1_1seismic_1_1_core_seismogram.html#ae9ea31f9e36577a51660c61e0749d4a6',1,'mspass::seismic::CoreSeismogram']]],
   ['tref',['tref',['../classmspass_1_1seismic_1_1_basic_time_series.html#abb88ddef3bab3b3205dfe6c6cfdb91aa',1,'mspass::seismic::BasicTimeSeries']]],
   ['type',['type',['../classmspass_1_1utility_1_1_node_data.html#aa7c6f56ceca095d0af31f456d75954a4',1,'mspass::utility::NodeData::type()'],['../classmspass_1_1utility_1_1_attribute_cross_reference.html#a546084d7cd4b9369ee7db723c3629422',1,'mspass::utility::AttributeCrossReference::type()'],['../classmspass_1_1utility_1_1_metadata_definitions.html#a8472df22024cde279e81c84e9129e4fd',1,'mspass::utility::MetadataDefinitions::type()']]]
