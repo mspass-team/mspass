@@ -212,6 +212,11 @@ Initializes data and sets aside memory for
 /*! Multiply data by a scalar. */
   CoreSeismogram& operator*=(const double);
 /*!
+Summation operator.  Simple version of stack.  Aligns data before
+summing.
+**/
+	CoreSeismogram& operator+=(const CoreSeismogram& d);
+/*!
  Extract a sample from data vector.
 
  A sample in this context means a three-vector at a requested

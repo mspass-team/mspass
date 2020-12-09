@@ -851,6 +851,46 @@ CoreSeismogram& CoreSeismogram::operator*=(const double scale)
   dscal(3*this->npts(),scale,ptr,1);
   return(*this);
 }
+CoreSeismogram& CoreSeismogram::operator+=(const CoreSeismogram& data)
+{
+    size_t i,i0,iend;
+    size_t j,j0=0;
+    // Sun's compiler complains about const objects without this.
+    CoreSeismogram& d=const_cast<CoreSeismogram&>(data);
+    // Silently do nothing if d is marked dead
+    if(!d.mlive) return(*this);
+    // Silently do nothing if d does not overlap with data to contain sum
+    if( (d.endtime()<mt0)
+            || (d.mt0>(this->endtime())) ) return(*this);
+    if(d.tref!=(this->tref))
+        throw MsPASSError("CoreSeismogram += operator cannot handle data with inconsistent time base\n",
+                          ErrorSeverity::Invalid);
+    //
+    // First we have to determine range fo sum for d into this
+    //
+    i0=d.sample_number(this->mt0);
+    if(i0<0)
+    {
+        j=-i0;
+        i0=0;
+    }
+    iend=d.sample_number(this->endtime());
+    if(iend>(d.u.columns()-1))
+    {
+        iend=d.u.columns()-1;
+    }
+    //
+    // IMPORTANT:  This algorithm simply assumes zero_gaps has been called
+    // and/or d was checked for gaps befor calling this operatr.
+    // It will produce garbage for most raw gap (sample level) marking schemes
+    //
+    for(i=i0,j=j0; i<=iend; ++i,++j) {
+        this->u(0,j)+=d.u(0,i);
+        this->u(1,j)+=d.u(1,i);
+        this->u(2,j)+=d.u(2,i);
+    }
+    return(*this);
+}
 void CoreSeismogram::set_dt(const double sample_interval)
 {
   this->BasicTimeSeries::set_dt(sample_interval);

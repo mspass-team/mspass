@@ -427,6 +427,12 @@ def test_Seismogram():
     assert seis_copy.tref == seis.tref
     assert (seis_copy.data[:] == seis.data[:]).all()
 
+    # test the += operator
+    seis1 = Seismogram(seis)
+    seis2 = Seismogram(seis)
+    seis1 += seis2
+    assert (np.isclose(seis1.data[:], seis.data + seis.data)).all()
+
     seis.npts = 0
     assert seis.data.rows() == 0
 
