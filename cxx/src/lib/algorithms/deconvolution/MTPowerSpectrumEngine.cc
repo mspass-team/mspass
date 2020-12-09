@@ -146,13 +146,9 @@ vector<double> MTPowerSpectrumEngine::apply(const vector<double>& d)
   tdata container*/
   int i,j;
   vector<ComplexArray> tdata;
-  cerr << "calling reserve"<<endl;
   tdata.reserve(ntapers);
-  cerr << "Creating work vector"<<endl;
   vector<double> work;
-  cerr << "Calling reserve for second work vector"<<endl;
   work.reserve(taperlen);
-  cerr << "Entering loop over tapers"<<endl;
   for(i=0; i<ntapers; ++i)
   {
     work.clear();
