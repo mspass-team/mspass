@@ -428,7 +428,11 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     double newt0;
     newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
     this->wavelet.set_t0(newt0);
-
+    //debug
+    /*cout << "Wavelet t, data"<<endl;
+    for(auto kw=0;kw<FFTDeconOperator::nfft;++kw)
+      cout << wavelet.time(kw)<<" "<<wavelet.s[kw]<<endl;
+*/
     switch(algorithm)
     {
       /* Note all the algorithms here alter wavelet by applying a taper */
@@ -521,7 +525,7 @@ void CNR3CDecon::compute_gwl_inverse()
 {
   try{
     if(taper_data) wavelet_taper->apply(this->wavelet);
-    ComplexArray cwvec(this->wavelet.npts(),this->wavelet.s);
+    ComplexArray cwvec(this->wavelet.npts(),&(this->wavelet.s[0]));
     gsl_fft_complex_forward(cwvec.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     /* This computes the (regularized) denominator for the decon operator*/
@@ -589,7 +593,7 @@ void CNR3CDecon::compute_gdamp_inverse()
   try{
     if(taper_data) wavelet_taper->apply(this->wavelet);
     /* Assume if we got here wavelet.npts() == nfft*/
-    ComplexArray b_fft(this->wavelet.npts(),this->wavelet.s);
+    ComplexArray b_fft(this->wavelet.npts(),&(this->wavelet.s[0]));
     gsl_fft_complex_forward(b_fft.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
     ComplexArray conj_b_fft(b_fft);
@@ -606,6 +610,8 @@ void CNR3CDecon::compute_gdamp_inverse()
     maxnoise=max_element(psnoise.spectrum.begin(),psnoise.spectrum.end());
     //Spectrum is power but need amplitude in this context so sqrt here
     double scaled_noise_floor=noise_floor*sqrt(*maxnoise);
+    //debug
+    //cout << "Damping values used with f"<<endl;
 
     for(int k=0;k<nfft;++k)
     {
@@ -628,8 +634,12 @@ void CNR3CDecon::compute_gdamp_inverse()
       be a form of the standard damped least squares inverse */
       theta=theta*theta;
       /* ptr points to the real part - an oddity of this interface */
+      //Debug test - make pure damping
       *ptr += theta;
+      //Debug
+      //cout << f<<" "<<theta<<" "<<namp<<endl;
     }
+    /*
     double *d0=new double[FFTDeconOperator::nfft];
     for(int k=0;k<FFTDeconOperator::nfft;++k) d0[k]=0.0;
     d0[0]=1.0;
@@ -637,6 +647,8 @@ void CNR3CDecon::compute_gdamp_inverse()
     delete [] d0;
     gsl_fft_complex_forward(delta0.ptr(),1,FFTDeconOperator::nfft,wavetable,workspace);
     winv=(conj_b_fft*delta0)/denom;
+    */
+    winv=conj_b_fft/denom;
   }catch(...){throw;};
 }
 Seismogram CNR3CDecon::process()
@@ -661,7 +673,9 @@ Seismogram CNR3CDecon::process()
     {
       TimeSeries work;
       work=TimeSeries(ExtractComponent(decondata,k),"Invalid");
+      /* Debug - temporarily remove taper
       if(taper_data) data_taper->apply(work);
+      */
       wvec.clear();
       int ntocopy=FFTDeconOperator::nfft;
       if(ntocopy>work.npts()) ntocopy=work.npts();
@@ -669,7 +683,10 @@ Seismogram CNR3CDecon::process()
       for(j=ntocopy;j<FFTDeconOperator::nfft;++j)
                    wvec.push_back(0.0);
 
-      ComplexArray numerator(FFTDeconOperator::nfft,wvec);
+      ComplexArray numerator(FFTDeconOperator::nfft,&(wvec[0]));
+      //Debug
+      //cout << "numerator data after taper for component="<<k<<endl;
+      //for(j=0;j<FFTDeconOperator::nfft;++j)cout<<real(numerator[j])<<endl;
       gsl_fft_complex_forward(numerator.ptr(),1,FFTDeconOperator::nfft,
             wavetable,workspace);
       /* This loop computes QCMetrics of bandwidth fraction that
@@ -678,6 +695,8 @@ Seismogram CNR3CDecon::process()
       double snrmax;
       snrmax=1.0;
       nhighsnr=0;
+      //debug
+      //cout << "Spectrum f, signal, noise, snr"<<endl;
       for(j=0;j<FFTDeconOperator::nfft/2;++j)
       {
         double f;
@@ -686,6 +705,9 @@ Seismogram CNR3CDecon::process()
         double sigamp=abs(z);
         double namp=psnoise.amplitude(f);
         double snr=sigamp/namp;
+        //Debug
+        //cout <<f<<" "<< sigamp<<" "<<namp<<" "<<snr<<endl;
+
         if(snr>snrmax) snrmax=snr;
         if(snr>band_snr_floor) ++nhighsnr;
       }
@@ -698,6 +720,10 @@ Seismogram CNR3CDecon::process()
           wavetable, workspace);
       wvec.clear();
       for(j=0;j<FFTDeconOperator::nfft;++j) wvec.push_back(rftmp[j].real());
+      //debug
+      //cout << "Raw deconvolved data before time shift (re,im)"<<endl;
+      //for(j=0;j<FFTDeconOperator::nfft;++j) cout << wvec[j]<<" "<<rftmp[j].imag()<<endl;
+      //cout << "Function output uses time shift="<<t0_shift<<endl;
       /* Note we used a time domain shift instead of using a linear phase
       shift in the frequency domain because time domain operator has a lower
       operation count than the frequency domain algorithm and is thus more
