@@ -56,8 +56,7 @@ def test_reduce_stack():
     stack(seis1, seis2)
     res = np.array(seis_cp) + np.array(seis2.data)
     for i in range(3):
-        # assert np.isclose(seis1.data[i], res[i]).all() # fixme
-        pass
+        assert np.isclose(seis1.data[i], res[i]).all() # fixme
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
@@ -79,8 +78,7 @@ def test_reduce_stack():
     for i in range(2):
         res = np.array(seis_e1_cp.member[i].data) + np.array(seis_e2.member[i].data)
         for j in range(3):
-            # assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
-            pass
+            assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
 
 
 def test_reduce_stack_exception():
