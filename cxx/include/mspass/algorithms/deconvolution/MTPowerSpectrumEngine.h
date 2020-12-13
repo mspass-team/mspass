@@ -56,7 +56,24 @@ public:
   \exception throw a MsPASSError if the size of d does not match operator length
   */
   std::vector<double> apply(const std::vector<double>& d);
-  double df(){return deltaf;};
+  double df() const {return deltaf;};
+
+  std::vector<double> frequencies();
+  /*! Retrieve the taper length.*/
+  int taper_length() const
+  {
+    return taperlen;
+  };
+  /*! Retrieve time-bandwidth product.*/
+  double time_bandwidth_product()  const
+  {
+    return tbp;
+  };
+  /*! Return number of tapers used by this engine. */
+  int number_tapers() const
+  {
+    return ntapers;
+  };
   /*! \brief PUtter equivalent of df.
 
   The computation of the Rayleigh bin size (dt) is actually quote trivial but
@@ -74,13 +91,7 @@ public:
   {
     deltaf=1.0/(dt*static_cast<double>(taperlen));
     return deltaf;
-  }
-  std::vector<double> frequencies();
-  /*! Retrieve the taper length.*/
-  int taper_length()
-  {
-    return taperlen;
-  }
+  };
 private:
   int taperlen;
   int ntapers;

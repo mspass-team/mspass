@@ -81,6 +81,7 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     generalized_water_level */
     this->noise_floor=pf.get_double("noise_floor");
     this->snr_regularization_floor=pf.get_double("snr_regularization_floor");
+    this->snr_bandwidth=pf.get_double("snr_for_bandwidth_estimator");
     this->operator_dt=pf.get_double("target_sample_interval");
     double ts,te;
     ts=pf.get_double("deconvolution_data_window_start");
@@ -106,6 +107,16 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
       pfcopy.put("operator_nfft",nfftneeded);
       this->shapingwavelet=ShapingWavelet(pfcopy);
     }
+    /* ShapingWavelet has more options than can be accepted in this algorithm
+    so this test is needed */
+    string swname=this->shapingwavelet.type();
+    if( !( (swname == "ricker") || (swname == "butterworth") ) )
+    {
+      throw MsPASSError(string("CNR3CDecon(AntelopePf constructor):  ")
+          + "Cannot use shaping wavelet type="+swname
+          + "\nMust be either ricker or butterworth for this algorithm",
+          ErrorSeverity::Invalid);
+    }
     FFTDeconOperator::change_size(nextPowerOf2(minwinsize));
     ts=pf.get_double("noise_window_start");
     te=pf.get_double("noise_window_end");
@@ -116,6 +127,9 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     this->specengine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);
     string sval;
     sval=pf.get_string("taper_type");
+    /* New parameter added for dynamic bandwidth adjustment feature implemented
+    december 2020 */
+    decon_bandwidth_cutoff=pf.get_double("decon_bandwidth_cutoff");
     if(sval=="linear")
     {
       double f0,f1,t1,t0;
@@ -196,12 +210,17 @@ CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   shapingwavelet(parent.shapingwavelet),
   psnoise(parent.psnoise),
   psnoise_data(parent.psnoise_data),
+  pssignal(parent.pssignal),
+  pswavelet(parent.pswavelet),
   decondata(parent.decondata),
   wavelet(parent.wavelet),
   wavelet_taper(parent.wavelet_taper),
   data_taper(parent.data_taper),
   ao_fft(parent.ao_fft),
+  wavelet_bwd(parent.wavelet_bwd),
+  signal_bwd(parent.signal_bwd),
   wavelet_snr(parent.wavelet_snr)
+
 {
   algorithm=parent.algorithm;
   taper_data=parent.taper_data;
@@ -210,8 +229,10 @@ CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   damp=parent.damp;
   noise_floor=parent.noise_floor;
   snr_regularization_floor=parent.snr_regularization_floor;
+  snr_bandwidth=parent.snr_bandwidth;
   band_snr_floor=parent.band_snr_floor;
   regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
+  decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;
   for(int k=0;k<3;++k)
   {
     signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
@@ -228,6 +249,8 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     specengine=parent.specengine;
     psnoise=parent.psnoise;
     psnoise_data=parent.psnoise_data;
+    pssignal=parent.pssignal;
+    pswavelet=parent.pswavelet;
     decondata=parent.decondata;
     wavelet=parent.wavelet;
     shapingwavelet=parent.shapingwavelet;
@@ -239,8 +262,12 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     damp=parent.damp;
     noise_floor=parent.noise_floor;
     snr_regularization_floor=parent.snr_regularization_floor;
+    snr_bandwidth=parent.snr_bandwidth;
     band_snr_floor=parent.band_snr_floor;
     regularization_bandwidth_fraction=parent.regularization_bandwidth_fraction;
+    decon_bandwidth_cutoff=parent.decon_bandwidth_cutoff;
+    wavelet_bwd=parent.wavelet_bwd;
+    signal_bwd=parent.signal_bwd;
     for(int k=0;k<3;++k)
     {
       signal_bandwidth_fraction[k]=parent.signal_bandwidth_fraction[k];
@@ -318,6 +345,110 @@ int CNR3CDecon::TestSeismogramInput(Seismogram& d,const int wcomp,const bool loa
   }
   return error_count;
 }
+
+/* Helper function estimates signal bandwidth scanning a signal spectrum
+defined as complex array and noise spectrum defined by a power spectrum.
+Algorithm searches from f*tbw forward to find frequency where snr exceeds
+snr_threshold.   It then does the reverse from 80% of Nyquist (a common
+corner for modern instruments using dsp chips and fir antialias filters).
+To avoid issues with lines in noise spectra snr must exceed the threshold
+by more than 2*tbw frequency bins for an edge to be defined.  The edge back is
+defined as 2*tbw*df from the first point satisfying that constraint.  */
+BandwidthData EstimateBandwidth(const double signal_df,
+  const PowerSpectrum& s, const PowerSpectrum& n,
+    const double snr_threshold, const double tbp)
+{
+  /* Set the starting search points at low (based on noise tbp) and high (80% fny)
+  sides */
+  double flow_start, fhigh_start;
+  flow_start=(n.df)*tbp;
+  fhigh_start=s.Nyquist()*0.8;
+  double df_test_range=2.0*tbp*(n.df);
+  int s_range=s.nf();
+  BandwidthData result;
+  /* First search from flow_start in increments of signal_df to find low
+  edge.*/
+  double f, sigamp, namp, snrnow;
+  double f_mark;
+  int istart=s.sample_number(flow_start);
+  bool searching(false);
+  int i;
+  for(i=istart;i<s_range;++i)
+  {
+    f=s.frequency(i);
+    /* We use amplitude snr not power snr*/
+    sigamp=sqrt(s.spectrum[i]);
+    namp=n.amplitude(f);
+    snrnow=sigamp/namp;
+    if(snrnow>snr_threshold)
+    {
+      if(searching)
+      {
+        if((f-f_mark)>=df_test_range)
+        {
+          result.low_edge_f=f_mark;
+          break;
+        }
+      }
+      else
+      {
+        f_mark=f;
+        result.low_edge_snr=snrnow;
+        searching=true;
+      }
+    }
+    else
+    {
+      if(searching)
+      {
+        searching=false;
+        f_mark=f;
+      }
+    }
+  }
+  /* Return the zeroed result object if no data exceeded the snr threshold.*/
+  if(i>=(s_range-1)) return result;
+  /* Now search from the high end to find upper band edge - same algorithm
+  reversed direction. */
+  istart=s.sample_number(fhigh_start);
+  for(i=istart;i>=0;--i)
+  {
+    f=s.frequency(i);
+    f=signal_df*static_cast<double>(i);
+    sigamp=sqrt(s.spectrum[i]);
+    namp=n.amplitude(f);
+    snrnow=sigamp/namp;
+    if(snrnow>snr_threshold)
+    {
+      if(searching)
+      {
+        if((f_mark-f)>=df_test_range)
+        {
+          result.high_edge_f=f_mark;
+          break;
+        }
+      }
+      else
+      {
+        f_mark=f;
+        result.high_edge_snr=snrnow;
+        searching=true;
+      }
+    }
+    else
+    {
+      if(searching)
+      {
+        searching=false;
+        f_mark=f;
+      }
+    }
+  }
+  return result;
+}
+/* this method is really just a wrapper for the Seismogram, boolean
+overloaded function.   It is appropriate only for conventional rf estimates
+where the vertical/longitudinal defines the wavelet.  */
 void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
 {
   try{
@@ -380,12 +511,19 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
 
     double newt0=decondata.t0() - operator_dt*static_cast<double>(winlength);
     decondata.set_t0(newt0);
-    //decondata.t0 -= operator_dt*static_cast<double>(winlength);
+    /* We need to compute the power spectrum of the signal here.  It is used
+    to compute the bandwidth of the shaping wavelet in process.   This is the
+    ONLY place right now this is computed.  Caution in order if there are
+    changes in implementation later. */
+    this->pssignal=this->ThreeCPower(decondata);
     if(nload)
     {
       Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
       this->loadnoise_data(ntmp);
     }
+    signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),
+        pssignal,psnoise_data,snr_bandwidth,
+          specengine.time_bandwidth_product());
   }catch(...){throw;};
 }
 /* Note we intentionally do not trap nfft size mismatch in this function because
@@ -428,6 +566,12 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     double newt0;
     newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
     this->wavelet.set_t0(newt0);
+    this->pswavelet=this->specengine.apply(this->wavelet);
+    /* for now use the same snr floor as regularization - may need to be an
+    independent parameter */
+    this->wavelet_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),pswavelet,
+      psnoise,snr_bandwidth,specengine.time_bandwidth_product());
+
     //debug
     /*cout << "Wavelet t, data"<<endl;
     for(auto kw=0;kw<FFTDeconOperator::nfft;++kw)
@@ -465,22 +609,7 @@ void CNR3CDecon::loadnoise_data(const Seismogram& n)
       for(int i=0;i<n.npts();++i)
         for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
     }
-    /* We always compute noise as total of three component power spectra
-    normalized by number of components - sum of squares */
-    TimeSeries tswork;
-    for(int k=0;k<3;++k)
-    {
-      tswork=TimeSeries(ExtractComponent(work,k),"Invalid");
-      if(k==0)
-        this->psnoise_data = this->specengine.apply(tswork);
-      else
-        this->psnoise_data += this->specengine.apply(tswork);
-    }
-    /* We define total power as the average on all three
-    componens */
-    double scl=1.0/3.0;
-    for(int i=0;i<this->psnoise_data.nf();++i)
-         this->psnoise_data.spectrum[i]*=scl;
+    this->psnoise_data=this->ThreeCPower(work);
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise_data(const PowerSpectrum& d)
@@ -618,6 +747,7 @@ void CNR3CDecon::compute_gdamp_inverse()
       double *ptr;
       ptr=denom.ptr(k);
       double f;
+
       f=df*static_cast<double>(k);
       if(f>fNy) f=2.0*fNy-f;  // Fold frequency axis
       double namp=psnoise.amplitude(f);
@@ -651,12 +781,81 @@ void CNR3CDecon::compute_gdamp_inverse()
     winv=conj_b_fft/denom;
   }catch(...){throw;};
 }
+/* This is a small helper used in process.  Made a function in case this
+required a more elaborate method later - i.e. BandwidthData could change. */
+BandwidthData band_overlap(const BandwidthData& b1, const BandwidthData& b2)
+{
+  BandwidthData overlap;
+  if(b1.low_edge_f < b2.low_edge_f)
+  {
+    overlap.low_edge_f = b2.low_edge_f;
+    overlap.low_edge_snr = b2.low_edge_snr;
+  }
+  else
+  {
+    overlap.low_edge_f = b1.low_edge_f;
+    overlap.low_edge_snr = b1.low_edge_snr;
+  }
+  if(b1.high_edge_f > b2.high_edge_f)
+  {
+    overlap.high_edge_f = b2.high_edge_f;
+    overlap.high_edge_snr = b2.high_edge_snr;
+  }
+  else
+  {
+    overlap.high_edge_f = b1.high_edge_f;
+    overlap.high_edge_snr = b1.high_edge_snr;
+  }
+  if(b2.f_range<=b1.f_range)
+    overlap.f_range=b2.f_range;
+  else
+    overlap.f_range=b1.f_range;
+  return overlap;
+}
+/* another helper used below - posts bandwidth data to Metadata.  Put in
+a function to make sure it all is in one place */
+void post_bandwidth_data(Seismogram& d,const BandwidthData& bwd)
+{
+  d.put("CRN3CDecon_low_corner",bwd.low_edge_f);
+  d.put("CNR3CDecon_high_corner",bwd.high_edge_f);
+  d.put("CNR3CDecon_bandwidth",bwd.bandwidth());
+  d.put("CNR3CDecon_low_f_snr",bwd.low_edge_snr);
+  d.put("CNR3CDecon_high_f_snr",bwd.high_edge_snr);
+}
 Seismogram CNR3CDecon::process()
 {
   const string base_error("CNR3CDecon::process method:  ");
   int j,k;
   try{
+    /* Immediately determine the data bandwidth for efficiency.
+    If the data have insufficient bandwith return a null Seismogram
+    with only Metadata and no data.   Do, however, post a mesage to
+    elog in that situation assuming it will be saved to database an
+    can be queried to tell what data were deleted for this reason.
+    Some of the tests here are more cautious than needed as load
+    functions should catch useless data before getting this far. */
+    BandwidthData bo;
+    bo=band_overlap(wavelet_bwd, signal_bwd);
+    /* Note both of the quantities in this test must be in consistent
+    untis of dB */
+    if(bo.bandwidth()<(this->decon_bandwidth_cutoff))
+    {
+      /* this is a bit inefficient to create this work space and immediately
+      destroy it but will do it this way until this proves to be a performance
+      problem. */
+      Seismogram no_can_do(decondata);
+      no_can_do.u=mspass::utility::dmatrix(1,1);
+      /* Be sure this is marked dead */
+      no_can_do.kill();
+      stringstream ss;
+      ss << "Killed because estimated bandwidth="<<bo.bandwidth()
+         << " dB is below threshold of "<< this->decon_bandwidth_cutoff<<endl;
+      no_can_do.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Invalid);
+      return no_can_do;
+    }
+    this->update_shaping_wavelet(bo);
     Seismogram rfest(decondata);
+    post_bandwidth_data(rfest,bo);
     /* This is used to apply a shift to the fft outputs to put signals
     at relative time 0 */
     int t0_shift;
@@ -664,7 +863,7 @@ Seismogram CNR3CDecon::process()
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* This is the proper mspass way to preserve history */
-    rfest.append_chain("process_sequence","CNR3CDecon");
+    //rfest.append_chain("process_sequence","CNR3CDecon");
     if(rfest.npts()!=FFTDeconOperator::nfft) rfest.u=dmatrix(3,FFTDeconOperator::nfft);
     int nhighsnr;
     double df;
@@ -809,4 +1008,50 @@ Metadata CNR3CDecon::QCMetrics()
   result.put("signalbf2",signal_bandwidth_fraction[2]);
   return result;
 }
+void CNR3CDecon::update_shaping_wavelet(const BandwidthData& bwd)
+{
+  string wtype;
+  wtype=shapingwavelet.type();
+  if(wtype=="butterworth")
+  {
+    /* For now always use 2 poles as that produces a decent looking wavelet*/
+    shapingwavelet=ShapingWavelet(2,bwd.low_edge_f,2,bwd.high_edge_f,
+        this->operator_dt,FFTDeconOperator::nfft);
+  }else if(wtype=="ricker")
+  {
+    double favg=(bwd.high_edge_f-bwd.low_edge_f)/2.0;
+    shapingwavelet=ShapingWavelet(favg);
+  }else
+  {
+    /* this really shouldn't happen but trap it anyway for completeness.
+    Because it shouldn't happen we set the severity fatal*/
+    throw MsPASSError(string("CNR3CDecon::update_shaping_wavelet:  ")
+           + "shaping wavelet has unsupported type defined="+wtype,
+         ErrorSeverity::Fatal);
+  }
+}
+
+PowerSpectrum CNR3CDecon::ThreeCPower(const Seismogram& d)
+{
+  try{
+    PowerSpectrum avg3c;
+    TimeSeries tswork;
+    for(int k=0;k<3;++k)
+    {
+      tswork=TimeSeries(ExtractComponent(d,k),"Invalid");
+      if(k==0)
+        avg3c = this->specengine.apply(tswork);
+      else
+        avg3c += this->specengine.apply(tswork);
+    }
+    /* We define total power as the average on all three
+    componens */
+    double scl=1.0/3.0;
+    for(int i=0;i<avg3c.nf();++i)
+         avg3c.spectrum[i]*=scl;
+    return avg3c;
+  }catch(...){throw;};
+}
+
+
 } //end namespace
