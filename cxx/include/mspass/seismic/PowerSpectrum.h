@@ -3,7 +3,8 @@
 #include <vector>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/ErrorLogger.h"
-namespace mspass::algorithms::deconvolution{
+namespace mspass::seismic
+{
 /*! Class defining the concept of a power psectrum. */
 class PowerSpectrum : public mspass::utility::Metadata
 {

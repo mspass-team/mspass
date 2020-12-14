@@ -11,6 +11,8 @@
 #include <mspass/seismic/TimeSeries.h>
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/seismic/Ensemble.h>
+#include <mspass/seismic/PowerSpectrum.h>
+#include <mspass/seismic/Taper.h>
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
@@ -96,6 +98,28 @@ public:
       BasicTimeSeries,
       set_t0,
       d0in);
+  }
+};
+
+/* Trampoline class for BasicTaper - used for family of taper classes*/
+class PyBasicTaper : public BasicTaper
+{
+public:
+  int apply(TimeSeries& d)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      int,
+      BasicTaper,
+      TimeSeries&,
+      d);
+  }
+  int apply(Seismogram& d)
+  {
+    PYBIND11_OVERLOAD_PURE(
+      int,
+      BasicTaper,
+      Seismogram&,
+      d);
   }
 };
 
@@ -540,7 +564,69 @@ PYBIND11_MODULE(seismic, m) {
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
   ;
 
+  /* This following would be the normal way to expose this class to python, but it generates and
+  error for reasons described in this issues page of pybind11:
+  https://github.com/pybind/pybind11/issues/633
+  I (glp) could not find and immediate solution but use the bandaid solution here of removing the
+  Metadata bindings to this class.   For the time being that will not present a problem, but it
+  should be fixed long term.   Could, for example, add a "get_metadata" lambda in the pybind11
+  code that would dynamic cast the PowerSpectrum and return the Metadata.  I think that would work, but
+  it would be better to figure out how to allow Metadata to be used.   Might be as easy as
+  putting the PowerSpectrum file in the utility module.  Here is the class binding that
+  creates an import error:
+    py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
+  Here is the one that works but doesn't provide Metadata functionality */
+    py::class_<PowerSpectrum>(m,"PowerSpectrum",
+                  "Container for power spectrum estimates")
+      .def(py::init<>())
+      .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
+      .def(py::init<const PowerSpectrum&>())
+      .def("nf",&PowerSpectrum::nf,"Return number of frequencies in this spectral estimate")
+      .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
+      .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
+      .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
+      .def_readonly("df",&PowerSpectrum::df,"Frequency bin size")
+      .def_readonly("spectrum_type",&PowerSpectrum::spectrum_type,
+          "Descriptive name of method used to generate spectrum")
+      .def_readonly("spectrum",&PowerSpectrum::spectrum,
+          "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
+      .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
+    ;
+    py::class_<BasicTaper,PyBasicTaper>(m,"BasicTaper",
+                     "Base class for family of taper algorithms")
+      .def(py::init<>())
+      /* note sure virtual classes need a definition here */
+      /*
+      .def("apply",py::overload_cast<TimeSeries&>(&BasicTaper::apply),
+         "TimeSeries overload of base class")
+      .def("apply",py::overload_cast<Seismogram&>(&BasicTaper::apply))
+      */
+    ;
+    py::class_<LinearTaper,BasicTaper>(m,"LinearTaper",
+       "Define a ramp taper function")
+      .def(py::init<>())
+      .def(py::init<const double, const double, const double, const double>())
+      .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),"Apply taper to a scalar TimeSeries object")
+      .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),"Apply taper to a Seismogram (3C) object")
+    ;
+    py::class_<CosineTaper,BasicTaper>(m,"CosineTaper",
+       "Define a taper using a half period cosine function")
+      .def(py::init<>())
+      .def(py::init<const double, const double, const double, const double>())
+      .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),"Apply taper to a scalar TimeSeries object")
+      .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),"Apply taper to a Seismogram (3C) object")
+    ;
+    py::class_<VectorTaper,BasicTaper>(m,"VectorTaper",
+       "Define generic taper function with a parallel vector of weights")
+      .def(py::init<>())
+      .def(py::init<const std::vector<double>>())
+      .def("apply",py::overload_cast<TimeSeries&>(&VectorTaper::apply),
+        "Apply taper to a scalar TimeSeries object")
+      .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
+         "Apply taper to a Seismogram (3C) object")
+    ;
 }
+
 
 } // namespace mspasspy
 } // namespace mspass

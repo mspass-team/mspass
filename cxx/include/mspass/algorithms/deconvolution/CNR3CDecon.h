@@ -6,7 +6,7 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
-#include "mspass/algorithms/deconvolution/PowerSpectrum.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/Taper.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
@@ -193,7 +193,7 @@ public:
    it through loadnoise.
 
    */
-  void loadnoise_data(const PowerSpectrum& n);
+  void loadnoise_data(const mspass::seismic::PowerSpectrum& n);
   /*! \brief Load data defining the wavelet to use for deconvolution.
 
     This algorithm assumes a deterministic model for deconvolution.  That is, we have
@@ -236,7 +236,7 @@ public:
    it through loadnoise.
 
    */
-  void loadnoise_wavelet(const PowerSpectrum& n);
+  void loadnoise_wavelet(const mspass::seismic::PowerSpectrum& n);
   /* These same names are used in ScalarDecon but we don't inherit them
   here because this algorithm is 3C data centric there is a collision
   with the ScalarDecon api because of it.  */
@@ -286,17 +286,17 @@ private:
   of the inverse.  It should normally be created from a longer window
   than the data.
   */
-  PowerSpectrum psnoise;
+  mspass::seismic::PowerSpectrum psnoise;
   /* This contains the power spectrum of the data used to estimate
      snr-based QC estimates.   It can be the same as the data but
      not necessarily.
   */
-  PowerSpectrum psnoise_data;
+  mspass::seismic::PowerSpectrum psnoise_data;
   /* Because of the design of the algorithm we also have to save a power
   spectral estimate for the wavelet and data signals.  We use those when
   automatic bandwidth adjustment is enabled.*/
-  PowerSpectrum pssignal;
-  PowerSpectrum pswavelet;
+  mspass::seismic::PowerSpectrum pssignal;
+  mspass::seismic::PowerSpectrum pswavelet;
   /* Cached data to be deconvolved - result of loaddata methds*/
   mspass::seismic::Seismogram decondata;
   /* Cached wavelet for deconvolution - result of loadwavelet*/
@@ -340,7 +340,7 @@ private:
   int TestSeismogramInput(mspass::seismic::Seismogram& d,const int comp,const bool loaddata);
   void compute_gwl_inverse();
   void compute_gdamp_inverse();
-  PowerSpectrum ThreeCPower(const mspass::seismic::Seismogram& d);
+  mspass::seismic::PowerSpectrum ThreeCPower(const mspass::seismic::Seismogram& d);
   void update_shaping_wavelet(const BandwidthData& bwd);
 };
 }  // End namespace

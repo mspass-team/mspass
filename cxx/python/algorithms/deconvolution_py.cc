@@ -6,7 +6,7 @@
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
 #include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
 #include <mspass/algorithms/deconvolution/CNR3CDecon.h>
-#include <mspass/algorithms/deconvolution/PowerSpectrum.h>
+
 namespace mspass {
 namespace mspasspy {
 
@@ -196,39 +196,7 @@ PYBIND11_MODULE(deconvolution, m) {
     .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
     .def("QCMetrics",&CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
   ;
-/* This following would be the normal way to expose this class to python, but it generates and 
-error for reasons described in this issues page of pybind11:
-https://github.com/pybind/pybind11/issues/633
-I (glp) could not find and immediate solution but use the bandaid solution here of removing the 
-Metadata bindings to this class.   For the time being that will not present a problem, but it 
-should be fixed long term.   Could, for example, add a "get_metadata" lambda in the pybind11 
-code that would dynamic cast the PowerSpectrum and return the Metadata.  I think that would work, but
-it would be better to figure out how to allow Metadata to be used.   Might be as easy as 
-putting the PowerSpectrum file in the utility module.  Here is the class binding that 
-creates an import error:
-  py::class_<PowerSpectrum,Metadata>(m,"PowerSpectrum",
-Here is the one that works but doesn't provide Metadata functionality */
-  py::class_<PowerSpectrum>(m,"PowerSpectrum",
-                "Container for power spectrum estimates")
-    .def(py::init<>())
-    .def(py::init<const Metadata&,const vector<double>&,const double,const string>())
-    .def(py::init<const PowerSpectrum&>())
-    .def("nf",&PowerSpectrum::nf,"Return number of frequencies in this spectral estimate")
-    .def("frequency",&PowerSpectrum::frequency,"Return frequency of sample number of spectrum vector")
-    .def("Nyquist",&PowerSpectrum::Nyquist,"Return Nyquist frequency")
-    .def("sample_number",&PowerSpectrum::sample_number,"Return sample number of a given frequency")
-    .def_readonly("df",&PowerSpectrum::df,"Frequency bin size")
-    .def_readonly("spectrum_type",&PowerSpectrum::spectrum_type,
-        "Descriptive name of method used to generate spectrum")
-    .def_readonly("spectrum",&PowerSpectrum::spectrum,
-        "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
-    .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
-  ;
-  m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
-    py::return_value_policy::copy,
-    py::arg("d"),
-    py::arg("i0") )
-  ;
+
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
       "Processing object used compute multitaper power spectrum estimates from time series data")
     .def(py::init<>())
@@ -249,6 +217,11 @@ Here is the one that works but doesn't provide Metadata functionality */
     .def("set_df",&MTPowerSpectrumEngine::set_df,
       "Change the assumed frequency bin sample interval")
   ;
+  m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
+      py::return_value_policy::copy,
+      py::arg("d"),
+      py::arg("i0") )
+    ;
 }
 
 } // namespace mspasspy

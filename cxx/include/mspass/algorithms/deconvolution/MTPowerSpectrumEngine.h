@@ -7,7 +7,7 @@
 #include <gsl/gsl_fft_complex.h>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/dmatrix.h"
-#include "mspass/algorithms/deconvolution/PowerSpectrum.h"
+#include "mspass/seismic/PowerSpectrum.h"
 
 namespace mspass::algorithms::deconvolution{
 /*! \brief Multittaper power spectral estimator.
@@ -41,7 +41,7 @@ public:
   \param parent is the data to process
   \return vector containing estimated power spwecrum
   */
-  PowerSpectrum apply(const mspass::seismic::TimeSeries& d);
+  mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries& d);
   /*! \brief Low level processing of vector of data.
 
   This is lower level function that processes a raw vector of data.   Since
