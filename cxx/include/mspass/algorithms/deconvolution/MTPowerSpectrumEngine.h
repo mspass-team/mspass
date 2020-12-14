@@ -26,6 +26,7 @@ public:
   MTPowerSpectrumEngine();
   MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers);
   MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
+  ~MTPowerSpectrumEngine();
   //~MTPowerSpectrumEngine();
   MTPowerSpectrumEngine& operator=(const MTPowerSpectrumEngine& parent);
   /*! \process a TimeSeries.
@@ -99,8 +100,8 @@ private:
   mspass::utility::dmatrix tapers;
   /* Frequency bin interval of last data processed.*/
   double deltaf;
-  std::shared_ptr<gsl_fft_complex_wavetable> wavetable;
-  std::shared_ptr<gsl_fft_complex_workspace> workspace;
+  gsl_fft_complex_wavetable *wavetable;
+  gsl_fft_complex_workspace *workspace;
 };
 } //namespace ed
 #endif
