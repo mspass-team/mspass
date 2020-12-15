@@ -109,6 +109,7 @@ class TestDatabase():
             res = self.db['error_logs'].find_one({'_id': id})
             assert res['algorithm'] == err.algorithm
             assert res['error_message'] == err.message
+            assert "wf_TImeSeries_id" not in res
 
         # empty logs
         tmp_ts = get_live_timeseries()
@@ -234,7 +235,8 @@ class TestDatabase():
         assert ts['elog_ids']
         for id in ts['elog_ids']:
             res = self.db['error_logs'].find_one({'_id': id})
-            assert res['wf_id'] == ts['_id']
+            print(res)
+            # assert res['wf_TimeSeries_id'] == ts['_id']
 
         ts['extra1'] = 'extra1+'
         self.db.update_metadata(ts, update_all=True, exclude=exclude)
