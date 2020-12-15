@@ -275,7 +275,7 @@ class Database(pymongo.database.Database):
         res = self[collection].find_one({'_id': mspass_object['history_id']})
         mspass_object.load_history(pickle.loads(res['nodesdata']))
 
-    def _save_elog(self, data, collection='error_logs'):
+    def _save_elog(self, mspass_object, collection='error_logs'):
         """
         Save error log for a data object.
 
@@ -293,12 +293,20 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
-        if 'elog_ids' not in data:
-            data['elog_ids'] = []
+        if 'elog_ids' not in mspass_object:
+            mspass_object['elog_ids'] = []
         oid = None
-        if '_id' in data:
-            oid = data['_id']
-        elog = data.elog
+        if '_id' in mspass_object:
+            oid = mspass_object['_id']
+
+        if isinstance(mspass_object, Seismogram):
+            wf_id_name = 'wf_Seismogram_id'
+        elif isinstance(mspass_object, TimeSeries):
+            wf_id_name = 'wf_TimeSeries_id'
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+        elog = mspass_object.elog
         n = elog.size()
         if n == 0:
             return
@@ -310,9 +318,9 @@ class Database(pymongo.database.Database):
             docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
                         'error_message': x.message, 'process_id': x.p_id}
             if oid:
-                docentry['wf_id'] = oid
+                docentry[wf_id_name] = oid
             oidlst.append(self[collection].insert_one(docentry).inserted_id)
-        data['elog_ids'].extend(oidlst)
+        mspass_object['elog_ids'].extend(oidlst)
 
     @staticmethod
     def _read_data_from_dfile(d):
