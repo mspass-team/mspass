@@ -234,6 +234,12 @@ class Database(pymongo.database.Database):
                 filter = {'_id': id}
                 col.update_one(filter, {'$set': {'wf_id': mspass_object['_id']}})
 
+    def read_ensemble_data(self):
+        pass
+
+    def save_ensemble_data(self):
+        pass
+
     def detele_wf(self, object_id, collection):
         self[collection].delete_one({'_id': object_id})
 

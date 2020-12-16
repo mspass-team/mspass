@@ -332,7 +332,12 @@ class DBSchemaDefinition(SchemaDefinitionBase):
                 k = key
                 if k == attr['reference'] + '_id':
                     k = '_id'
-                foreign_attr = schema_dic[attr['reference']]['schema'][k]
+                refer_dic = schema_dic[attr['reference']]
+                while 'base' in refer_dic:
+                    refer_dic = schema_dic[refer_dic['base']]
+                    if k in refer_dic['schema']:
+                        break
+                foreign_attr = refer_dic['schema'][k]
                 # The order of below operation matters. The behavior is that we only 
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
