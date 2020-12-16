@@ -3,15 +3,18 @@
 #include "misc/blas.h"
 #include "mspass/algorithms/Butterworth.h"
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 namespace mspass::algorithms
 {
 using mspass::algorithms::deconvolution::ComplexArray;
+using mspass::algorithms::deconvolution::circular_shift;
 using mspass::seismic::CoreTimeSeries;
 using mspass::seismic::CoreSeismogram;
 using mspass::seismic::TimeReferenceType;
 using mspass::utility::Metadata;
 using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
+
 using namespace std;
 Butterworth::Butterworth()
 {
@@ -433,6 +436,12 @@ void Butterworth::apply(mspass::seismic::Seismogram& d)
 ComplexArray Butterworth::transfer_function(const int nfft)
 {
 	CoreTimeSeries imp=this->impulse_response(nfft);
+	/* the impulse response function uses a time shift and sets t0 to the
+	required position.  A disconnect with any fft is that will introduce an
+	undesirable phase shift for many algorithms.  We remove it here using our
+	circular shift function */
+	int ishift=imp.sample_number(0.0);
+	imp.s=circular_shift(imp.s,ishift);
 	gsl_fft_complex_wavetable *wavetable = gsl_fft_complex_wavetable_alloc (nfft);
 	gsl_fft_complex_workspace *workspace = gsl_fft_complex_workspace_alloc (nfft);
 	ComplexArray work(nfft,imp.s);
