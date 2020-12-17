@@ -5,7 +5,7 @@ from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, S
 @mspass_reduce_func_wrapper
 def stack(data1, data2, preserve_history=False, instance=None, dryrun=False):
     """
-    This function summarizes the data field of two mspasspy objects, the result will be stored in data1.
+    This function sums the data field of two mspasspy objects, the result will be stored in data1.
     Note it is wrapped by mspass_reduce_func_wrapper, so the history and error logs can be preserved.
 
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
