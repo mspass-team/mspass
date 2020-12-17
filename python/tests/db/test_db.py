@@ -104,8 +104,8 @@ class TestDatabase():
         tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational) # multi elogs fix me
         errs = tmp_ts.elog.get_error_log()
         self.db._save_elog(tmp_ts)
-        assert len(tmp_ts['elog_ids']) != 0
-        for err, id in zip(errs, tmp_ts['elog_ids']):
+        assert len(tmp_ts['elog_id']) != 0
+        for err, id in zip(errs, tmp_ts['elog_id']):
             res = self.db['error_logs'].find_one({'_id': id})
             assert res['algorithm'] == err.algorithm
             assert res['error_message'] == err.message
@@ -115,7 +115,7 @@ class TestDatabase():
         tmp_ts = get_live_timeseries()
         errs = tmp_ts.elog.get_error_log()
         self.db._save_elog(tmp_ts)
-        assert len(tmp_ts['elog_ids']) == 0
+        assert len(tmp_ts['elog_id']) == 0
 
     def test_save_and_read_data(self):
         tmp_seis = get_live_seismogram()
@@ -203,19 +203,19 @@ class TestDatabase():
         nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
         self.db._save_history(ts)
-        res = self.db['history_object'].find_one({'_id': ts['history_id']})
+        res = self.db['history_object'].find_one({'_id': ts['history_object_id']})
         assert res
 
         ts_2 = TimeSeries()
-        ts_2['history_id'] = ts['history_id']
+        ts_2['history_object_id'] = ts['history_object_id']
         self.db._load_history(ts_2)
         loaded_nodes = ts_2.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
         with pytest.raises(KeyError) as err:
-            ts_2.clear('history_id')
+            ts_2.clear('history_object_id')
             self.db._load_history(ts_2)
-            assert err == KeyError("history_id not found")
+            assert err == KeyError("history_object_id not found")
 
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
@@ -229,11 +229,11 @@ class TestDatabase():
         assert res['extra1'] == 'extra1'
         assert 'net' not in res
         assert '_id' in ts
-        assert 'history_id' in ts
-        res = self.db['history_object'].find_one({'_id': ts['history_id']})
+        assert 'history_object_id' in ts
+        res = self.db['history_object'].find_one({'_id': ts['history_object_id']})
         assert res
-        assert ts['elog_ids']
-        for id in ts['elog_ids']:
+        assert ts['elog_id']
+        for id in ts['elog_id']:
             res = self.db['error_logs'].find_one({'_id': id})
             print(res)
             # assert res['wf_TimeSeries_id'] == ts['_id']
@@ -263,7 +263,7 @@ class TestDatabase():
         seis2 = self.db.read_data(seis['_id'], 'wf_Seismogram')
 
         wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
-                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_ids', 'history_id',
+                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id', 'history_object_id',
                    'time_standard', 'tmatrix']
         for key in wf_keys:
             if key in seis:
