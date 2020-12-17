@@ -49,7 +49,7 @@ def test_map_spark_and_dask():
     assert np.isclose(dask_res[0].data, ts_cp.data).all()
 
 
-def test_reduce_stack():
+def backup_test_reduce_stack():
     seis1 = get_live_seismogram()
     seis2 = get_live_seismogram()
     seis_cp = np.array(seis1.data)
@@ -82,6 +82,13 @@ def test_reduce_stack():
         for j in range(3):
             assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
 
+def test_seismogram_addition():
+    seis1 = get_live_seismogram()
+    seis2 = get_live_seismogram()
+    res = np.add(np.array(seis1.data), np.array(seis2.data))
+    seis1 += seis2
+    for i in range(3):
+        assert np.isclose(seis1.data[i], res[i]).all() # fixme
 
 def test_reduce_stack_exception():
     tse1 = get_live_timeseries_ensemble(2)
@@ -128,10 +135,10 @@ def test_reduce_dask_spark(spark_context):
 
 
 if __name__ == "__main__":
-    test_reduce_stack()
-    # a1 = get_live_seismogram()
-    # a2 = get_live_seismogram()
-    # print(a1.data[0, 0])
-    # print(a2.data[0, 0])
-    # a1 += a2
-    # print(a1.data[0, 0])
+    #test_reduce_stack()
+    a1 = get_live_seismogram()
+    a2 = get_live_seismogram()
+    print(a1.data[0, 0])
+    print(a2.data[0, 0])
+    a1 += a2
+    print(a1.data[0, 0])
