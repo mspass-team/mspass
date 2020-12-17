@@ -193,7 +193,7 @@ TimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
   if(tcs.dead()) return TimeSeries();
   try{
     vector<double> scomp;
-    for(size_t i=0;i<tcs.u.columns();++i)
+    for(size_t i=0;i<tcs.npts();++i)
     {
       scomp.push_back(tcs.u(component,i));
     }
