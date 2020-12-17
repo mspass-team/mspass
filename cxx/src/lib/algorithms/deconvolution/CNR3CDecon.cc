@@ -898,7 +898,7 @@ BandwidthData band_overlap(const BandwidthData& b1, const BandwidthData& b2)
 a function to make sure it all is in one place */
 void post_bandwidth_data(Seismogram& d,const BandwidthData& bwd)
 {
-  d.put("CRN3CDecon_low_corner",bwd.low_edge_f);
+  d.put("CNR3CDecon_low_corner",bwd.low_edge_f);
   d.put("CNR3CDecon_high_corner",bwd.high_edge_f);
   d.put("CNR3CDecon_bandwidth",bwd.bandwidth());
   d.put("CNR3CDecon_low_f_snr",bwd.low_edge_snr);
