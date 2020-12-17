@@ -58,11 +58,11 @@ MTPowerSpectrumEngine::MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent
   ntapers=parent.ntapers;
   tbp=parent.tbp;
   deltaf=parent.deltaf;
-  wavetable=parent.wavetable;
-  workspace=parent.workspace;
+  wavetable=gsl_fft_complex_wavetable_alloc (taperlen);
+  workspace=gsl_fft_complex_workspace_alloc (taperlen);
 }
 
-MTPowerSpectrumEngine::MTPowerSpectrumEngine::~MTPowerSpectrumEngine()
+MTPowerSpectrumEngine::~MTPowerSpectrumEngine()
 {
     if(wavetable!=NULL) gsl_fft_complex_wavetable_free (wavetable);
     if(workspace!=NULL) gsl_fft_complex_workspace_free (workspace);
@@ -78,8 +78,6 @@ MTPowerSpectrumEngine& MTPowerSpectrumEngine::operator=(const MTPowerSpectrumEng
     tapers=parent.tapers;
     wavetable = gsl_fft_complex_wavetable_alloc (taperlen);
     workspace = gsl_fft_complex_workspace_alloc (taperlen);
-    wavetable=parent.wavetable;
-    workspace=parent.workspace;
   }
   return *this;
 }

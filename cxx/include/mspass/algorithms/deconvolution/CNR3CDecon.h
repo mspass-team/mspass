@@ -267,6 +267,22 @@ public:
   Each operator commonly has different was to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
+  mspass::seismic::PowerSpectrum wavelet_noise_spectrum()
+  {
+    return psnoise;
+  };
+  mspass::seismic::PowerSpectrum data_noise_spectrum()
+  {
+    return psnoise_data;
+  };
+  mspass::seismic::PowerSpectrum wavelet_spectrum()
+  {
+    return pswavelet;
+  };
+  mspass::seismic::PowerSpectrum data_spectrum()
+  {
+    return pssignal;
+  };
 private:
   CNR3C_algorithms algorithm;
   bool taper_data;  //Set false only if none specified
@@ -279,8 +295,10 @@ private:
   consistent with number of samples expected in this window */
   mspass::seismic::TimeWindow processing_window;
   mspass::seismic::TimeWindow noise_window;
-  /*! Operator used to compute power spectra using multitaper */
-  MTPowerSpectrumEngine specengine;
+  /*! Operator used to compute power spectra using multitaper.
+  Need different ones for diffent contexts to handle mixed window sizes */
+  MTPowerSpectrumEngine signalengine,waveletengine;
+  MTPowerSpectrumEngine dnoise_engine, wnoise_engine;
   ShapingWavelet shapingwavelet;
   /* This contains the noise power spectrum to use for regularization
   of the inverse.  It should normally be created from a longer window

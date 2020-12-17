@@ -26,7 +26,8 @@ using namespace mspass::seismic;
 using namespace mspass::utility;
 using namespace mspass::algorithms;
 
-CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),specengine(),
+CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),
+  signalengine(),waveletengine(),dnoise_engine(),wnoise_engine(),
   shapingwavelet(),psnoise(),psnoise_data(),decondata(),wavelet()
 {
   algorithm=CNR3C_algorithms::undefined;
@@ -45,9 +46,12 @@ CNR3CDecon::CNR3CDecon() : FFTDeconOperator(),specengine(),
   }
 }
 CNR3CDecon::CNR3CDecon(const AntelopePf& pf)
-   : FFTDeconOperator(pf),specengine(),shapingwavelet(pf),psnoise(),
+   : FFTDeconOperator(pf),signalengine(),waveletengine(),
+      dnoise_engine(),wnoise_engine(),shapingwavelet(pf),psnoise(),
       psnoise_data(),decondata(),wavelet()
 {
+//DEBUG
+//cout << "Entering pf constructor"<<endl;
   this->read_parameters(pf);
 }
 /* Note this method assumes BasicMetadata is actually an AntelopePf.*/
@@ -124,7 +128,14 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
     int noise_winlength=round((te-ts)/operator_dt)+1;
     double tbp=pf.get_double("time_bandwidth_product");
     long ntapers=pf.get_long("number_tapers");
-    this->specengine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);
+    this->dnoise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);
+    /* Default wavelet noise window to data window length - adjusted dynamically
+    if changed*/
+    this->wnoise_engine=MTPowerSpectrumEngine(noise_winlength,tbp,ntapers);
+    /* Set initial signal and wavelet engine spectrum estimators to length defined
+    by data window above */
+    this->signalengine=MTPowerSpectrumEngine(this->winlength,tbp,ntapers);
+    this->waveletengine=MTPowerSpectrumEngine(this->winlength,tbp,ntapers);
     string sval;
     sval=pf.get_string("taper_type");
     /* New parameter added for dynamic bandwidth adjustment feature implemented
@@ -206,7 +217,10 @@ void CNR3CDecon::read_parameters(const AntelopePf& pf)
 CNR3CDecon::CNR3CDecon(const CNR3CDecon& parent) :
   processing_window(parent.processing_window),
   noise_window(parent.noise_window),
-  specengine(parent.specengine),
+  signalengine(parent.signalengine),
+  waveletengine(parent.waveletengine),
+  dnoise_engine(parent.dnoise_engine),
+  wnoise_engine(parent.wnoise_engine),
   shapingwavelet(parent.shapingwavelet),
   psnoise(parent.psnoise),
   psnoise_data(parent.psnoise_data),
@@ -246,7 +260,10 @@ CNR3CDecon& CNR3CDecon::operator=(const CNR3CDecon& parent)
     algorithm=parent.algorithm;
     processing_window=parent.processing_window;
     noise_window=parent.noise_window;
-    specengine=parent.specengine;
+    signalengine=parent.signalengine;
+    waveletengine=parent.waveletengine;
+    dnoise_engine=parent.dnoise_engine;
+    wnoise_engine=parent.wnoise_engine;
     psnoise=parent.psnoise;
     psnoise_data=parent.psnoise_data;
     pssignal=parent.pssignal;
@@ -410,11 +427,11 @@ BandwidthData EstimateBandwidth(const double signal_df,
   if(i>=(s_range-1)) return result;
   /* Now search from the high end to find upper band edge - same algorithm
   reversed direction. */
+  searching=false;
   istart=s.sample_number(fhigh_start);
   for(i=istart;i>=0;--i)
   {
     f=s.frequency(i);
-    f=signal_df*static_cast<double>(i);
     sigamp=sqrt(s.spectrum[i]);
     namp=n.amplitude(f);
     snrnow=sigamp/namp;
@@ -451,6 +468,8 @@ overloaded function.   It is appropriate only for conventional rf estimates
 where the vertical/longitudinal defines the wavelet.  */
 void CNR3CDecon::loaddata(Seismogram& d, const int wcomp,const bool loadnoise)
 {
+//DEBUG
+//cout << "entering loaddata"<<endl;
   try{
     if(d.dead()) throw MsPASSError("CNR3CDecon::loaddata method received data marked dead",
 		    ErrorSeverity::Invalid);
@@ -491,7 +510,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
       cerr << "CNR3CDecon:  coding error in loaddata method"<<endl
 	      << "fft buffer size="<<FFTDeconOperator::nfft<<endl
 	      << "winlength is only "<<this->winlength<<endl
-	      << "Expect winlength to be 3 times nfft"<<endl
+	      << "fft length is required to be at least twice winlength"<<endl
 	      << "Debug exit to avoid seg fault"<<endl;
       exit(-1);
     }
@@ -501,16 +520,31 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     decondata.u.zero();
     */
     decondata.set_npts(FFTDeconOperator::nfft);
-    /* Offset by winlength to put zero pad at front of the data.  */
+    double newt0= (-operator_dt*static_cast<double>(winlength));
+    decondata.set_t0(newt0);
+    int k,i,ii;
+    for(i=0;i<dtmp.npts();++i)
+    {
+      ii=decondata.sample_number(dtmp.time(i));
+      if( (ii >=0) && (ii<decondata.npts()) )
+      {
+        for(k=0;k<3;++k)decondata.u(k,ii)=dtmp.u(k,i);
+      }
+    }
+
+    /* This was the old code
     int k,i,ii;
     for(k=0;k<3;++k)
         for(i=0,ii=(this->winlength);i<(this->winlength);++i,++ii)
         {
             decondata.u(k,ii)=dtmp.u(k,i);
         }
-
     double newt0=decondata.t0() - operator_dt*static_cast<double>(winlength);
+    //Debug
+    cout << "in loaddata; initial t0="<<decondata.t0()<<endl
+      << "Changed to "<<newt0<<endl;
     decondata.set_t0(newt0);
+    */
     /* We need to compute the power spectrum of the signal here.  It is used
     to compute the bandwidth of the shaping wavelet in process.   This is the
     ONLY place right now this is computed.  Caution in order if there are
@@ -523,7 +557,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     }
     signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),
         pssignal,psnoise_data,snr_bandwidth,
-          specengine.time_bandwidth_product());
+          signalengine.time_bandwidth_product());
   }catch(...){throw;};
 }
 /* Note we intentionally do not trap nfft size mismatch in this function because
@@ -536,16 +570,35 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
   if(w.npts()<=0) throw MsPASSError("CNR3CDecon::loadwavelet method received an empty TimeSeries (number samples <=0)",
 		  ErrorSeverity::Invalid);
   try{
-    int k,kk;
-    int ns_to_copy;
-    this->wavelet=w;
-    if(w.npts()>(FFTDeconOperator::nfft-this->winlength))
+    /* Automatically and silently adjust the window size if input wavelet
+    length changes.   We always compute the wavelet spectrum from the full
+    signal loaded.   */
+    if(this->waveletengine.taper_length()!=(w.npts()))
     {
-      ns_to_copy=FFTDeconOperator::nfft-2*this->winlength;
+      this->waveletengine=MTPowerSpectrumEngine(w.npts(),
+          this->waveletengine.time_bandwidth_product(),
+          this->waveletengine.number_tapers());
+    }
+    this->pswavelet=this->waveletengine.apply(w);
+    /* for now use the same snr floor as regularization - may need to be an
+    independent parameter */
+    this->wavelet_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),pswavelet,
+      psnoise,snr_bandwidth,waveletengine.time_bandwidth_product());
+    /* Now load the wavelet into the fft buffer area - there are some tricky
+    things to do here to align the data correctly using the relative time
+    reference t0 stored with the TimeSeries data */
+    int k,kk;
+    int ns_to_copy,ntest;
+    this->wavelet=w;
+    ntest=w.npts()-w.sample_number(0.0);
+    if(ntest>(this->winlength))
+    {
+      ns_to_copy=this->winlength;
       stringstream ss;
-      ss<<"loadwavelet method:  size mismatch.  Wavelet received has length="<<w.npts()<<endl
-	      << "This is larger than 3x the processing window length of "<<this->winlength<<endl
-	      << "Wavelet length must be less than or equal to 3x processing window length"<<endl
+      ss<<"loadwavelet method:  size mismatch.  Wavelet received has "<<ntest
+            <<" samples with time>0.0"<<endl
+	      << "This is larger than the processing window length of "<<this->winlength<<endl
+	      << "Wavelet must be contained in the processing window size"<<endl
 	      << "Truncated on the right to processing window length - results may be invalid"
 	      <<endl;
       wavelet.elog.log_error("CNR3CDecon",ss.str(),ErrorSeverity::Complaint);
@@ -559,18 +612,28 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
     for(k=0;k<FFTDeconOperator::nfft;++k)this->wavelet.s.push_back(0.0);
     */
     this->wavelet.set_npts(FFTDeconOperator::nfft);
-    /* this retains winlength zeros at the front */
+    this->wavelet.set_t0(-(this->winlength)*(this->operator_dt));
+//DEBUG
+//cout << "t0 of wavelet stored now wavelet data objec="<<wavelet.t0()<<endl;
+    /* We recycle the variable ntest defined above here for convenience only */
+    for(k=0,ntest=0;k<w.npts();++k)
+    {
+      double t=w.time(k);
+      if(t>=0.0)++ntest;
+      if(ntest>ns_to_copy) break;
+      kk=this->wavelet.sample_number(t);
+      if( (kk>=0) && (kk<this->wavelet.npts()) )
+        this->wavelet.s[kk]=w.s[k];
+    }
+    /* This was the old code fixed Dec 2020 - remove when revision is know to work
     for(k=0,kk=this->winlength;k<ns_to_copy;++k,++kk)this->wavelet.s[kk]=w.s[k];
+    */
     //this->wavelet.t0 -= operator_dt*static_cast<double>(winlength);
     //this->wavelet.ns=FFTDeconOperator::nfft;
-    double newt0;
-    newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
-    this->wavelet.set_t0(newt0);
-    this->pswavelet=this->specengine.apply(this->wavelet);
-    /* for now use the same snr floor as regularization - may need to be an
-    independent parameter */
-    this->wavelet_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),pswavelet,
-      psnoise,snr_bandwidth,specengine.time_bandwidth_product());
+    //double newt0;
+    //newt0=this->wavelet.t0() - operator_dt*static_cast<double>(winlength);
+    //this->wavelet.set_t0(newt0);
+
 
     //debug
     /*cout << "Wavelet t, data"<<endl;
@@ -587,6 +650,8 @@ void CNR3CDecon::loadwavelet(const TimeSeries& w)
       default:
         compute_gdamp_inverse();
     };
+//DEBUG
+//cout << "Exiting loadwavelet"<<endl;
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise_data(const Seismogram& n)
@@ -621,6 +686,8 @@ void CNR3CDecon::loadnoise_data(const PowerSpectrum& d)
 
 void CNR3CDecon::loadnoise_wavelet(const TimeSeries& n)
 {
+//DEBUG
+//cout << "Entering loadnoise_wavelet"<<endl;
   if(n.dead()) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
@@ -632,14 +699,24 @@ void CNR3CDecon::loadnoise_wavelet(const TimeSeries& n)
       TimeWindow twork(n.t0(),n.time(FFTDeconOperator::nfft-1));
       work=WindowData(dynamic_cast<const CoreTimeSeries&>(n),twork);
     }
-    else if(n.npts()<=FFTDeconOperator::nfft)
+    else if(n.npts()<FFTDeconOperator::nfft)
     {
+      work.s.clear();
       work.s.reserve(FFTDeconOperator::nfft);
       for(int i=0;i<n.npts();++i)
         work.s.push_back(n.s[i]);
       for(int i=n.npts();i<FFTDeconOperator::nfft;++i) work.s.push_back(0.0);
     }
-    psnoise=this->specengine.apply(TimeSeries(work,"INVALID"));
+    /* Note the above is totally bypassed if n.npts equal nfft - no need
+    for a new copy because work is a copy of n. */
+    if(n.npts()!=wnoise_engine.taper_length())
+    {
+      wnoise_engine=MTPowerSpectrumEngine(n.npts(),
+        wnoise_engine.time_bandwidth_product(),wnoise_engine.number_tapers());
+    }
+    psnoise=this->wnoise_engine.apply(TimeSeries(work,"INVALID"));
+//DEBUG
+//cout << "Exiting loadnoise_wavelet"<<endl;
   }catch(...){throw;};
 }
 
@@ -654,6 +731,11 @@ void CNR3CDecon::compute_gwl_inverse()
 {
   try{
     if(taper_data) wavelet_taper->apply(this->wavelet);
+    if(this->wavelet.npts() != FFTDeconOperator::nfft)
+    {
+      throw MsPASSError("CNR3CDecon::compute_gwl_inverse():  wavelet size and fft size t0 not match - this should not happen and indicates a bug that needs to be fixed",
+         ErrorSeverity::Fatal);
+    }
     ComplexArray cwvec(this->wavelet.npts(),&(this->wavelet.s[0]));
     gsl_fft_complex_forward(cwvec.ptr(),1,FFTDeconOperator::nfft,
           wavetable,workspace);
@@ -822,8 +904,21 @@ void post_bandwidth_data(Seismogram& d,const BandwidthData& bwd)
   d.put("CNR3CDecon_low_f_snr",bwd.low_edge_snr);
   d.put("CNR3CDecon_high_f_snr",bwd.high_edge_snr);
 }
+/*  DEBUG Temporary for debug - remove or comment out for release */
+/*
+void print_bwdata(const BandwidthData& bwd)
+{
+  cout <<"low edge frequency="<<bwd.low_edge_f<<endl
+   <<"low edge snr="<<bwd.low_edge_snr<< endl
+   << "high edge frequency="<<bwd.high_edge_f <<endl
+   << "high edge snr="<<bwd.high_edge_snr<<endl
+   << "Computed bandwidth (db)="<<bwd.bandwidth()<<endl;
+}
+*/
 Seismogram CNR3CDecon::process()
 {
+//DEBUG
+//cout << "Entering process method"<<endl;
   const string base_error("CNR3CDecon::process method:  ");
   int j,k;
   try{
@@ -836,6 +931,15 @@ Seismogram CNR3CDecon::process()
     functions should catch useless data before getting this far. */
     BandwidthData bo;
     bo=band_overlap(wavelet_bwd, signal_bwd);
+    //DEBUG
+    /*
+    cout << "Bandwidth data from wavelet"<<endl;
+    print_bwdata(wavelet_bwd);
+    cout << "Bandwidth data from 3D data"<<endl;
+    print_bwdata(signal_bwd);
+    cout << "Bandwidth data overlap "<<endl;
+    print_bwdata(bo);
+    */
     /* Note both of the quantities in this test must be in consistent
     untis of dB */
     if(bo.bandwidth()<(this->decon_bandwidth_cutoff))
@@ -860,6 +964,8 @@ Seismogram CNR3CDecon::process()
     at relative time 0 */
     int t0_shift;
     t0_shift= round((-rfest.t0())/rfest.dt());
+    //DEBUG
+    //cout << "time shift applied to output signal="<<t0_shift<<endl;
     vector<double> wvec;
     wvec.reserve(FFTDeconOperator::nfft);
     /* This is the proper mspass way to preserve history */
@@ -927,8 +1033,9 @@ Seismogram CNR3CDecon::process()
       shift in the frequency domain because time domain operator has a lower
       operation count than the frequency domain algorithm and is thus more
       efficient.*/
+      /* Debug - temporarily disable this shift*/
       if(t0_shift!=0)
-        wvec=circular_shift(wvec,t0_shift);
+        wvec=circular_shift(wvec,-t0_shift);
       for(j=0;j<FFTDeconOperator::nfft;++j)rfest.u(k,j)=wvec[j];
     }
     return rfest;
@@ -978,13 +1085,19 @@ TimeSeries CNR3CDecon::actual_output()
       throw;
   };
 }
-TimeSeries CNR3CDecon::inverse_wavelet(double tshift)
+TimeSeries CNR3CDecon::inverse_wavelet(double tshift0)
 {
   try {
     /* Using the time shift of wavelet.t0() may be a bad idea here.  Will
     need to sort that out in debugging behaviour*/
+    double timeshift(tshift0);
+    timeshift+=wavelet.t0();
+    //cout << "wavelet t0="<<wavelet.t0()<<endl;
+    timeshift -= operator_dt*((double)winlength);
+    //Debug
+    //cout << "inverse_wavelet - applying time shift="<<timeshift<<endl;
     CoreTimeSeries invcore(this->FFTDeconOperator::FourierInverse(this->winv,
-        *shapingwavelet.wavelet(),operator_dt,wavelet.t0()));
+        *shapingwavelet.wavelet(),operator_dt,timeshift));
     TimeSeries result(invcore,"Invalid");
     /* Copy the error log from wavelet and post some information parameters
     to metadata */
@@ -1020,7 +1133,7 @@ void CNR3CDecon::update_shaping_wavelet(const BandwidthData& bwd)
   }else if(wtype=="ricker")
   {
     double favg=(bwd.high_edge_f-bwd.low_edge_f)/2.0;
-    shapingwavelet=ShapingWavelet(favg);
+    shapingwavelet=ShapingWavelet(favg,operator_dt,FFTDeconOperator::nfft);
   }else
   {
     /* this really shouldn't happen but trap it anyway for completeness.
@@ -1030,22 +1143,27 @@ void CNR3CDecon::update_shaping_wavelet(const BandwidthData& bwd)
          ErrorSeverity::Fatal);
   }
 }
-
+/* Note this private function should only be called for noise data */
 PowerSpectrum CNR3CDecon::ThreeCPower(const Seismogram& d)
 {
   try{
     PowerSpectrum avg3c;
     TimeSeries tswork;
+    if(d.npts()!=dnoise_engine.taper_length())
+    {
+      dnoise_engine=MTPowerSpectrumEngine(d.npts(),
+         dnoise_engine.time_bandwidth_product(),dnoise_engine.number_tapers());
+    }
     for(int k=0;k<3;++k)
     {
       tswork=TimeSeries(ExtractComponent(d,k),"Invalid");
       if(k==0)
-        avg3c = this->specengine.apply(tswork);
+        avg3c = this->dnoise_engine.apply(tswork);
       else
-        avg3c += this->specengine.apply(tswork);
+        avg3c += this->dnoise_engine.apply(tswork);
     }
     /* We define total power as the average on all three
-    componens */
+    components */
     double scl=1.0/3.0;
     for(int i=0;i<avg3c.nf();++i)
          avg3c.spectrum[i]*=scl;

@@ -189,12 +189,24 @@ PYBIND11_MODULE(deconvolution, m) {
         "Load noise to use for regularization from a seismogram")
     .def("loadnoise_wavelet",py::overload_cast<const PowerSpectrum&>(&CNR3CDecon::loadnoise_wavelet),
         "Load noise to use for regularization from a seismogram")
-    .def("loadwavelet",&CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
+    .def("loadwavelet",&CNR3CDecon::loadwavelet,
+        "Load an externally determined wavelet for deconvolution")
     .def("process",&CNR3CDecon::process,"Process data previously loaded")
-    .def("ideal_output",&CNR3CDecon::ideal_output,"Return ideal output for this operator")
+    .def("ideal_output",&CNR3CDecon::ideal_output,
+        "Return ideal output for this operator")
     .def("actual_output",&CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
-    .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
-    .def("QCMetrics",&CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
+    .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,
+        "Return time domain form of inverse wavelet")
+    .def("QCMetrics",&CNR3CDecon::QCMetrics,
+        "Return set of quality control metrics for this operator")
+    .def("wavelet_noise_spectrum",&CNR3CDecon::wavelet_noise_spectrum,
+        "Return power spectrum of noise used for regularization")
+    .def("data_noise_spectrum",&CNR3CDecon::data_noise_spectrum,
+        "Return power spectrum of noise on 3C data used to define shaping wavelet")
+    .def("wavelet_spectrum",&CNR3CDecon::wavelet_spectrum,
+         "Return power spectrum of wavelet used for deconvolutions")
+    .def("data_spectrum",&CNR3CDecon::data_spectrum,
+         "Return average power spectrum of signal on all 3 components of the data")
   ;
 
   py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
