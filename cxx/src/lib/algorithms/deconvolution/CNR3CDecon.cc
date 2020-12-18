@@ -659,22 +659,7 @@ void CNR3CDecon::loadnoise_data(const Seismogram& n)
   if(n.dead()) throw MsPASSError("CNR3CDecon::loadnoise_data method received data marked dead",
 		    ErrorSeverity::Invalid);
   try{
-    /* If the noise data length is larger than the operator we silenetly
-    truncate it.  If less we zero pad*/
-    CoreSeismogram work(n);
-    if(n.npts()>FFTDeconOperator::nfft)
-    {
-      TimeWindow twork(n.t0(),n.time(FFTDeconOperator::nfft-1));
-      work=WindowData3C(n,twork);
-    }
-    else if(n.npts()<=FFTDeconOperator::nfft)
-    {
-      work.u=dmatrix(3,FFTDeconOperator::nfft);
-      work.u.zero();
-      for(int i=0;i<n.npts();++i)
-        for(int k=0;k<3;++k) work.u(k,i)=n.u(k,i);
-    }
-    this->psnoise_data=this->ThreeCPower(work);
+    this->psnoise_data=this->ThreeCPower(n);
   }catch(...){throw;};
 }
 void CNR3CDecon::loadnoise_data(const PowerSpectrum& d)
