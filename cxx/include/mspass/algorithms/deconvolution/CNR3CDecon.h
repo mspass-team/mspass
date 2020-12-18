@@ -16,14 +16,20 @@ namespace mspass::algorithms::deconvolution{
 This deconvolution operator has the option to determine the optimal
 shaping wavelet on the fly based on data bandwidth.  This class is
 a struct in C++ disguise used to hold the encapsulation of the output
-of function(s) used to estimate the data bandwidth.
+of function(s) used to estimate the data bandwidth.  This class is used
+only internally with CNR3CDecon to hold this information.  It is not
+expected to be visible to python in MsPaSS, for example.
 */
 class BandwidthData
 {
 public:
+  /*! Low corner frequency for band being defined. */
   double low_edge_f;
+  /*! Upper corner frequency for band being defined. */
   double high_edge_f;
+  /*! Signal to noise ratio at lower band edge. */
   double low_edge_snr;
+  /*! Signal to noise ratio at upper band edge. */
   double high_edge_snr;
   /* This is the frequency range of the original data */
   double f_range;
@@ -108,6 +114,11 @@ estimation.  Key features are:
 1. Data are tapered by a generic function with a range of options.
 2.  The output is always a Seismogram, which in MsPASS means 3C data
 3.  The inverse is regularized by a scaled 3C noise estimate.
+4.  Perhaps most importantly the shaping wavelet is computed dynamically
+based on bandwidth estimated from the combination power spectrum estimates
+of the signal and noise for both the data being deconvolved and the
+wavelet used to compute the inverse.  For array methods the two noise
+estimates can be drastically different.
 
 This object is what might be called a processing object.  That is, it
 does not use the model of construction creating the thing it defines
@@ -116,10 +127,10 @@ defines the operator.  Data are processed by first calling one of the
 loaddata and loadnoise methods.  Once valid data is loaded call the process
 method to deconvolve the loaded data. Note this approach assumes the
 data, wavelet, and noise used for the processing are internally consistent.
-The user is warned there a no safeties to validate any consistency because
+The user is warned there a limited safeties to validate any consistency because
 it would be hard to do so without causing more problems that it would
 solve.  In MsPASS we expect to hide this a bit behind some python wrappers
-to create some safeties.
+to create more safety mechanisms.
 */
 //class CNR3CDecon : public mspass::FFTDeconOperator
 class CNR3CDecon : public Base3CDecon, public FFTDeconOperator
@@ -127,10 +138,30 @@ class CNR3CDecon : public Base3CDecon, public FFTDeconOperator
 public:
   /*! Default constructor.  Puts operator in an invalid state.*/
   CNR3CDecon();
+  /*! \brief Construct from a tree of parameters loaded into an AntelopePf object.
+
+  There number of inputs to construct this  operator are quite large.  An
+  AntelelopePf is one way to store this information and the format assumed by
+  this constructor.  Note this object could be constructed from a yaml or
+  xml file, in principle, but for the present we use Antelope's pf file \
+  format.  i.e. a typical program would read a pf file and to construct the
+  object passed as pf. */
   CNR3CDecon(const mspass::utility::AntelopePf& pf);
+  /*! Standard copy constructor. */
   CNR3CDecon(const CNR3CDecon& parent);
+  /*! Standard destructor. */
   ~CNR3CDecon();
   CNR3CDecon& operator=(const CNR3CDecon& parent);
+  /*! \brief Change the setup of the operator on the fly.
+
+  Sometimes an operator needs to have it's properties adjusted on the fly.
+  this method can be used to redefine its operational properties instead of
+  creating a new instance with the constructor.  Use this method with care
+  as it requires the same set of parameters as the AntelopePf constructor.
+  The data are actually passed through the base class for an AntelopePF but
+  currently it is implicitly expected to be data compatible with the pf
+  constructor.
+  */
   void change_parameters(const mspass::utility::BasicMetadata& md);
   /*! \brief Load data with one component used as wavelet estimate.
 
@@ -190,7 +221,9 @@ public:
    The actual noise regularization is computed by this algorithm from an internally
    stored PowerSpectrum object.   This method allows the power spectrum to be computed
    by some other method or using previously computed estimates rather than computing
-   it through loadnoise.
+   it through loadnoise.  For instance, one might want to use a robust
+   form of Welch's method to estimate preevent noise that would be immune to
+   spikes and sporatic noise bursts.
 
    */
   void loadnoise_data(const mspass::seismic::PowerSpectrum& n);
@@ -264,21 +297,35 @@ public:
   mspass::seismic::TimeSeries inverse_wavelet(double tshift);
   /*! \brief Return appropriate quality measures.
 
-  Each operator commonly has different was to measure the quality of the
-  result.  This method should return these in a generic Metadata object. */
+  The QC values return use two concepts:  maximum snr is the largest signal
+  to noise ratio estimated across the band exceeded a specified snr floor
+  for the operator.   "bandwidth fraction" is the fraction of the total
+  frequency band (ie. 0 to Nyquist) exceeding the operator snr floor.
+
+  This function returns the following key-value pairs:
+  waveletbf - bandwidth fraction for wavelet.
+  maxsnr0,maxsnr1,maxsnr2 - maximum signal to noise ratio on each of the
+    three components of the data being deconvolved.
+  signalbf0,signalbf1,signalbf2 - bandwidth fraction for each of the three
+    components of data deconvolved to produce the latest output.
+   */
   mspass::utility::Metadata QCMetrics();
+  /*! Return the power spectrum estimate linked to the wavelet signal. */
   mspass::seismic::PowerSpectrum wavelet_noise_spectrum()
   {
     return psnoise;
   };
+  /*! Return the average 3C power spectrum for the latest loaded noise data. */
   mspass::seismic::PowerSpectrum data_noise_spectrum()
   {
     return psnoise_data;
   };
+  /*! Return the power spectrum of the wavelet signal used for deconvolution. */
   mspass::seismic::PowerSpectrum wavelet_spectrum()
   {
     return pswavelet;
   };
+  /*! Return the power spectrum of the signal loaded for deconvolution. */
   mspass::seismic::PowerSpectrum data_spectrum()
   {
     return pssignal;
