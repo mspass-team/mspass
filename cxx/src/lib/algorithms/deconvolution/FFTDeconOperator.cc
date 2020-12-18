@@ -127,8 +127,6 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray& winv, const 
     /* Testing with matlab prototypes showed Fourier inverse filters
      * showed they created valid results only if the filter used a
      * circular shift of nfft/2.   This sets that as a requirement here. */
-    //int i0(nfft/2);
-    int i0(0);
     int ntest;
     ntest=winv.size();
     if(ntest != nfft) throw MsPASSError(base_error
@@ -142,21 +140,14 @@ CoreTimeSeries FFTDeconOperator::FourierInverse(const ComplexArray& winv, const 
     winv_work *= sw;
     gsl_fft_complex_inverse(winv_work.ptr(),1,nfft,wavetable,workspace);
     CoreTimeSeries result;
-    //result.set_t0(dt*(-(double)i0)+t0parent);
     result.set_t0(t0parent);
-    //result.set_t0(t0parent+(dt*(double)(nfft/2)));
-    //result.set_t0(0.0);
     result.set_dt(dt);
     result.set_live();
     /* Note this new api method initializes s all zeros so we need only set
     the values not use push back below */
     result.set_npts(nfft);
     result.set_tref(TimeReferenceType::Relative);
-    //for(int k=0; k<winv_work.size(); ++k) result.s.push_back(winv_work[k].real());
     for(int k=0; k<winv_work.size(); ++k) result.s[k]=winv_work[k].real();
-    /* This applies tshift */
-    //result.s=circular_shift(result.s,i0);
-    //result.s=circular_shift(result.s,-nfft/2);
     return result;
   }catch(...){throw;};
 }
