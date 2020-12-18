@@ -3,20 +3,26 @@
 #include <vector>
 #include "mspass/utility/Metadata.h"
 #include "mspass/utility/ErrorLogger.h"
-namespace mspass::algorithms::deconvolution{
+namespace mspass::seismic
+{
+/*! Class defining the concept of a power psectrum. */
 class PowerSpectrum : public mspass::utility::Metadata
 {
 public:
   /* The data are public here in keeping with philosophy of TimeSeries and
   Seismogram.  See MsPaSS documentation for motivation.  */
+  /*! frequency bin interval. */
   double df;
+  /*! Frequencey of first sample of spectrum array (usually 0).
+  Be warned a valid construction of a PowerSpectrum requires
+  f0+df*nf() be Nyquist.   */
   double f0;
   std::string spectrum_type;
   std::vector<double> spectrum;
   mspass::utility::ErrorLogger elog;
   PowerSpectrum();
   template <class T> PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,double dfin, std::string nm);
+    const std::vector<T>& d,const double dfin, const std::string nm);
   PowerSpectrum(const PowerSpectrum& parent);
   PowerSpectrum& operator=(const PowerSpectrum& parent);
   /*! \brief Standard accumulation operator.
@@ -46,9 +52,27 @@ public:
   */
   double amplitude(const double f) const;
   int nf()const{return spectrum.size();};
+  double frequency(const int sample_number) const
+  {
+    const std::string base_error("PowerSpectrum::frequency:  ");
+    if(sample_number<0) throw mspass::utility::MsPASSError(base_error
+        + "Sample number parameter passed cannot be negative");
+    if(sample_number>(this->nf())) throw mspass::utility::MsPASSError(base_error
+        + "Sample number parameter passed xceeds range of spectrum array");
+    return f0+sample_number*df;
+  };
+  double Nyquist() const
+  {
+    return frequency(this->nf());
+  };
+  int sample_number(const double f) const
+  {
+    return static_cast<int>(round((f-f0)/df));
+  }
 };
 template <class T> PowerSpectrum::PowerSpectrum(const mspass::utility::Metadata& md,
-    const std::vector<T>& d,double dfin, std::string nm) : mspass::utility::Metadata(md),elog()
+    const std::vector<T>& d,const double dfin,const std::string nm)
+      : mspass::utility::Metadata(md),elog()
 {
   df=dfin;
   f0=0.0;

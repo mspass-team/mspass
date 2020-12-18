@@ -79,7 +79,7 @@ public:
 
 PYBIND11_MODULE(deconvolution, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.deconvolution";
-  m.doc() = "A submodule for deconvolution namespace of ccore.algorithms"; 
+  m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
 
   /* this is a set of deconvolution related classes*/
   py::class_<ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
@@ -170,9 +170,11 @@ PYBIND11_MODULE(deconvolution, m) {
   ;
   */
 
-  py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon","Colored noise regularized three component deconvolution")
+  py::class_<CNR3CDecon,FFTDeconOperator>(m,"CNR3CDecon",
+       "Colored noise regularized three component deconvolution")
     .def(py::init<>())
     .def(py::init<const AntelopePf&>())
+    .def(py::init<const CNR3CDecon&>())
     .def("change_parameters",&CNR3CDecon::change_parameters,
         "Change operator definition")
     .def("loaddata",py::overload_cast<Seismogram&,const int,const bool>(&CNR3CDecon::loaddata),
@@ -187,20 +189,51 @@ PYBIND11_MODULE(deconvolution, m) {
         "Load noise to use for regularization from a seismogram")
     .def("loadnoise_wavelet",py::overload_cast<const PowerSpectrum&>(&CNR3CDecon::loadnoise_wavelet),
         "Load noise to use for regularization from a seismogram")
-    .def("loadwavelet",&CNR3CDecon::loadwavelet,"Load an externally determined wavelet for deconvolution")
+    .def("loadwavelet",&CNR3CDecon::loadwavelet,
+        "Load an externally determined wavelet for deconvolution")
     .def("process",&CNR3CDecon::process,"Process data previously loaded")
-    .def("ideal_output",&CNR3CDecon::ideal_output,"Return ideal output for this operator")
+    .def("ideal_output",&CNR3CDecon::ideal_output,
+        "Return ideal output for this operator")
     .def("actual_output",&CNR3CDecon::actual_output,"Return actual output computed for current wavelet")
-    .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,"Return time domain form of inverse wavelet")
-    .def("QCMetrics",&CNR3CDecon::QCMetrics,"Return set of quality control metrics for this operator")
+    .def("inverse_wavelet",&CNR3CDecon::inverse_wavelet,
+        "Return time domain form of inverse wavelet")
+    .def("QCMetrics",&CNR3CDecon::QCMetrics,
+        "Return set of quality control metrics for this operator")
+    .def("wavelet_noise_spectrum",&CNR3CDecon::wavelet_noise_spectrum,
+        "Return power spectrum of noise used for regularization")
+    .def("data_noise_spectrum",&CNR3CDecon::data_noise_spectrum,
+        "Return power spectrum of noise on 3C data used to define shaping wavelet")
+    .def("wavelet_spectrum",&CNR3CDecon::wavelet_spectrum,
+         "Return power spectrum of wavelet used for deconvolutions")
+    .def("data_spectrum",&CNR3CDecon::data_spectrum,
+         "Return average power spectrum of signal on all 3 components of the data")
   ;
 
-  m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
-    py::return_value_policy::copy,
-    py::arg("d"),
-    py::arg("i0") )
+  py::class_<MTPowerSpectrumEngine>(m,"MTPowerSpectrumEngine",
+      "Processing object used compute multitaper power spectrum estimates from time series data")
+    .def(py::init<>())
+    .def(py::init<const int, const double, const int>(),
+      "Parameterized constructor:  nsamples, tbp, ntapers")
+    .def(py::init<const MTPowerSpectrumEngine&>(),"Copy constructor")
+    .def("apply",py::overload_cast<const mspass::seismic::TimeSeries&>(&MTPowerSpectrumEngine::apply),
+      "Compute from data in a TimeSeries container")
+    .def("apply",py::overload_cast<const std::vector<double>&>(&MTPowerSpectrumEngine::apply),
+      "Compute from data stored in a simple vector container")
+    .def("df",&MTPowerSpectrumEngine::df,"Return frequency bin size")
+    .def("taper_length",&MTPowerSpectrumEngine::taper_length,
+      "Return number of samples assumed by the operator for input data to be processed")
+    .def("time_bandwidth_product",&MTPowerSpectrumEngine::time_bandwidth_product,
+      "Return the time-bandwidth product of this operator")
+    .def("number_tapers",&MTPowerSpectrumEngine::number_tapers,
+      "Return the number of tapers this operator uses for power spectrum estimates")
+    .def("set_df",&MTPowerSpectrumEngine::set_df,
+      "Change the assumed frequency bin sample interval")
   ;
-  
+  m.def("circular_shift",&circular_shift,"Time-domain circular shift operator",
+      py::return_value_policy::copy,
+      py::arg("d"),
+      py::arg("i0") )
+    ;
 }
 
 } // namespace mspasspy

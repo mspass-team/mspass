@@ -53,6 +53,20 @@ public:
        set the fft length.
        */
     ShapingWavelet(mspass::seismic::CoreTimeSeries d,int nfft=0);
+    /*! Construct a Ricker wavelet shaping filter with peak frequency fpeak. */
+    ShapingWavelet(const double fpeak,const double dtin, const int n);
+    /*! Construct a zero phase Butterworth filter wavelet.
+
+    This is the recommended constructor to use for adjustable bandwidth shaping.
+    It is the default for CNR3CDecon.
+    \param npolelo is the number of poles for the low corner
+    \param f3dblo is the 3db point for the low corner of the passband
+    \param nplolehi is the number of poles for the upper corner filter
+    \param f3dbhi is the 3db point for the high corner of the passband.
+    */
+    ShapingWavelet(const int npolelo, const double f3dblo,
+                const int npolehi, const double f3dbhi,
+                    const double dtin, const int n);
     ShapingWavelet(const ShapingWavelet& parent);
     ShapingWavelet& operator=(const ShapingWavelet& parent);
     /*! Return a pointer to the shaping wavelet this object defines in

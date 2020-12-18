@@ -1,15 +1,52 @@
 #ifndef __CNR3C_DECON_H__
 #define __CNR3C_DECON_H__
 #include <vector>
+#include <math.h>
 #include "mspass/utility/AntelopePf.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
-#include "mspass/algorithms/deconvolution/PowerSpectrum.h"
+#include "mspass/seismic/PowerSpectrum.h"
 #include "mspass/seismic/Taper.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::algorithms::deconvolution{
+/*! \brief Holds parameters defining a passband computed from snr.
+
+This deconvolution operator has the option to determine the optimal
+shaping wavelet on the fly based on data bandwidth.  This class is
+a struct in C++ disguise used to hold the encapsulation of the output
+of function(s) used to estimate the data bandwidth.
+*/
+class BandwidthData
+{
+public:
+  double low_edge_f;
+  double high_edge_f;
+  double low_edge_snr;
+  double high_edge_snr;
+  /* This is the frequency range of the original data */
+  double f_range;
+  BandwidthData()
+  {
+    low_edge_f=0.0;
+    high_edge_f=0.0;
+    low_edge_snr=0.0;
+    high_edge_snr=0.0;
+    f_range=0.0;
+  };
+  /*! Return a metric of the estimated bandwidth divided by total frequency range*/
+  double bandwidth_fraction() const
+  {
+    return (high_edge_f-low_edge_f)/f_range;
+  };
+  /*! Return bandwidth in dB. */
+  double bandwidth() const
+  {
+    double ratio=high_edge_f/low_edge_f;
+    return 20.0*log10(ratio);
+  };
+};
 /*! \brief Absract base class for algorithms handling full 3C data.
 */
 class Base3CDecon
@@ -55,7 +92,7 @@ is better.  This makes one symbol do multiple things with changes done in
 the parameter setup as opposed to having to select the right symbolic name
 to construct.  The main difference is it avoids the messy trampoline class
 needed with pybind11 to create wrappers for the python bindings.
-This enum will not be exposed to python as it is totally internal to the 
+This enum will not be exposed to python as it is totally internal to the
 CNR3CDecon class.
 */
 enum class CNR3C_algorithms{
@@ -100,13 +137,13 @@ public:
   Use this method for conventional receiver function data if one of
   components is to be used as the wavelet estimate (conventionally Z or L).
   Optionally they can also load preevent noise defined by the noise
-  window parameters defined by Pf constructor.  
+  window parameters defined by Pf constructor.
 
-  \param d is the data to be loaded.  If loadnoise is true it is assumed to 
+  \param d is the data to be loaded.  If loadnoise is true it is assumed to
     be long enough to span the range of both the signal and noise windows
     defined in constuction.
-  \param wcomp is the component that is used as an estimate of the 
-    wavelet.   In standard P receiver functions this would be the Z 
+  \param wcomp is the component that is used as an estimate of the
+    wavelet.   In standard P receiver functions this would be the Z
     component but for S it would be the radial component
   \param loadnoise when true method also loads noise data from predefined
     window.
@@ -118,57 +155,57 @@ public:
   void loaddata(mspass::seismic::Seismogram& d, const int wcomp,const bool loadnoise=false);
   /*! \brief Load data and optionally load noise.
    *
-   This method must be called before running process to get a unique result. 
+   This method must be called before running process to get a unique result.
    Input data are windowed by the processing window parameters and inserted into
    an internal buffer with sufficient padding to avoid fft circular convolution
-   artifacts.   Noise can optionally be loaded but use that approach ONLY 
-   if the time span of d contains both the processing and noise time windows. 
+   artifacts.   Noise can optionally be loaded but use that approach ONLY
+   if the time span of d contains both the processing and noise time windows.
    Use loadnoise if the input data do not match that model.
 
    \param d is the input data (see note about time span above)
-   \param loadnoise when true the function will attempt to load data for 
-     the noise based regularization from the noise window defined for the operator. 
-   \exception MsPASSError may be thrown for a number of potential error conditions. 
+   \param loadnoise when true the function will attempt to load data for
+     the noise based regularization from the noise window defined for the operator.
+   \exception MsPASSError may be thrown for a number of potential error conditions.
    */
   void loaddata(mspass::seismic::Seismogram& d, const bool loadnoise=false);
   /*! \brief Load noise data directly.
 
    This method can be used to load noise to be used to compute signal to noise
-   related metrics.   The spectrum of the noise is computed from a 
-   mutlitaper spectral estimator for the data passed as n.  Best results will be 
+   related metrics.   The spectrum of the noise is computed from a
+   mutlitaper spectral estimator for the data passed as n.  Best results will be
    obtain if the length of n is larger than the operator size defined by it's
-   internal noise window (defined in constructor by noise_window_start and 
+   internal noise window (defined in constructor by noise_window_start and
    and parameters).   Note for this constructor the actual time of the noise
-   window passed is ignored, but the length it defines is used to define the 
+   window passed is ignored, but the length it defines is used to define the
    length of the computed spectrum.  It is better to have the input noise
    slightly larger than the operator length to be consistent with the expectations
-   of the multitaper method.   If the noise window is short the spectrum is 
-   computed but will be biased to lower amplitudes because of zero padding. 
-   That happens because the operator will not recompute Slepian tapers if the 
-   data are short.   
+   of the multitaper method.   If the noise window is short the spectrum is
+   computed but will be biased to lower amplitudes because of zero padding.
+   That happens because the operator will not recompute Slepian tapers if the
+   data are short.
    */
   void loadnoise_data(const mspass::seismic::Seismogram& n);
   /*! \brief Load noise estimate directly as a PowerSpectrum object.
    *
-   The actual noise regularization is computed by this algorithm from an internally 
+   The actual noise regularization is computed by this algorithm from an internally
    stored PowerSpectrum object.   This method allows the power spectrum to be computed
-   by some other method or using previously computed estimates rather than computing 
-   it through loadnoise. 
+   by some other method or using previously computed estimates rather than computing
+   it through loadnoise.
 
    */
-  void loadnoise_data(const PowerSpectrum& n);
+  void loadnoise_data(const mspass::seismic::PowerSpectrum& n);
   /*! \brief Load data defining the wavelet to use for deconvolution.
 
     This algorithm assumes a deterministic model for deconvolution.  That is, we have
     an estimate of the source wavelet.   In conventional receiver functions this is
-    the vertical or longitudinal component.   In current array methods it is always some 
-    stack (not necessarily a simple average) of vertical or longitudinal data from an ensemble.  
+    the vertical or longitudinal component.   In current array methods it is always some
+    stack (not necessarily a simple average) of vertical or longitudinal data from an ensemble.
 
-    It is VERY IMPORTANT to realize that loadwavelet initiates the calculation of the inverse 
+    It is VERY IMPORTANT to realize that loadwavelet initiates the calculation of the inverse
     for the deconvolution.   That allows this same processing object to be efficiently used in
     array deconvolution and single station deconvolution.   For single station estimates
     loadwavelet should be called on each seismogram.  For array methods loadwavelet should
-    be called once for the ensemble (common source gather) to which a wavelet is linked. 
+    be called once for the ensemble (common source gather) to which a wavelet is linked.
     The inverse is then applied to very signal in the ensemble with process.
 
     \param w is the wavelet.  Must be in relative time with 0 set to the estimated first break time.
@@ -176,30 +213,30 @@ public:
   void loadwavelet(const mspass::seismic::TimeSeries& w);
   /*! \brief Load noise data for wavelet directly.
 
-   This method can be used to load noise to be used for regularization from an 
-   arbitrary time window.   The spectrum of the noise is computed from a 
-   mutlitaper spectral estimator for the data passed as n.  Best results will be 
+   This method can be used to load noise to be used for regularization from an
+   arbitrary time window.   The spectrum of the noise is computed from a
+   mutlitaper spectral estimator for the data passed as n.  Best results will be
    obtain if the length of n is larger than the operator size defined by it's
-   internal noise window (defined in constructor by noise_window_start and 
+   internal noise window (defined in constructor by noise_window_start and
    and parameters).   Note for this constructor the actual time of the noise
-   window passed is ignored, but the length it defines is used to define the 
+   window passed is ignored, but the length it defines is used to define the
    length of the computed spectrum.  It is better to have the input noise
    slightly larger than the operator length to be consistent with the expectations
-   of the multitaper method.   If the noise window is short the spectrum is 
-   computed but will be biased to lower amplitudes because of zero padding. 
-   That happens because the operator will not recompute Slepian tapers if the 
-   data are short.   
+   of the multitaper method.   If the noise window is short the spectrum is
+   computed but will be biased to lower amplitudes because of zero padding.
+   That happens because the operator will not recompute Slepian tapers if the
+   data are short.
    */
   void loadnoise_wavelet(const mspass::seismic::TimeSeries& n);
   /*! \brief Load noise estimate for wavelet signal directly as a PowerSpectrum object.
    *
-   The actual noise regularization is computed by this algorithm from an internally 
+   The actual noise regularization is computed by this algorithm from an internally
    stored PowerSpectrum object.   This method allows the power spectrum to be computed
-   by some other method or using previously computed estimates rather than computing 
-   it through loadnoise. 
+   by some other method or using previously computed estimates rather than computing
+   it through loadnoise.
 
    */
-  void loadnoise_wavelet(const PowerSpectrum& n);
+  void loadnoise_wavelet(const mspass::seismic::PowerSpectrum& n);
   /* These same names are used in ScalarDecon but we don't inherit them
   here because this algorithm is 3C data centric there is a collision
   with the ScalarDecon api because of it.  */
@@ -230,6 +267,22 @@ public:
   Each operator commonly has different was to measure the quality of the
   result.  This method should return these in a generic Metadata object. */
   mspass::utility::Metadata QCMetrics();
+  mspass::seismic::PowerSpectrum wavelet_noise_spectrum()
+  {
+    return psnoise;
+  };
+  mspass::seismic::PowerSpectrum data_noise_spectrum()
+  {
+    return psnoise_data;
+  };
+  mspass::seismic::PowerSpectrum wavelet_spectrum()
+  {
+    return pswavelet;
+  };
+  mspass::seismic::PowerSpectrum data_spectrum()
+  {
+    return pssignal;
+  };
 private:
   CNR3C_algorithms algorithm;
   bool taper_data;  //Set false only if none specified
@@ -237,24 +290,31 @@ private:
   /* Expected time window size in samples
   (computed from processing_window and operator dt)*/
   int winlength;
+  double decon_bandwidth_cutoff;
   /* Defines relative time time window - ignored if length of input is
   consistent with number of samples expected in this window */
   mspass::seismic::TimeWindow processing_window;
   mspass::seismic::TimeWindow noise_window;
-  /*! Operator used to compute power spectra using multitaper */
-  MTPowerSpectrumEngine specengine;
-  /*! Operator always requires a shaping wavelet.*/
+  /*! Operator used to compute power spectra using multitaper.
+  Need different ones for diffent contexts to handle mixed window sizes */
+  MTPowerSpectrumEngine signalengine,waveletengine;
+  MTPowerSpectrumEngine dnoise_engine, wnoise_engine;
   ShapingWavelet shapingwavelet;
   /* This contains the noise power spectrum to use for regularization
   of the inverse.  It should normally be created from a longer window
   than the data.
   */
-  PowerSpectrum psnoise;
-  /* This contains the power spectrum of the data used to estimate 
-     snr-based QC estimates.   It can be the same as the data but 
-     not necessarily. 
+  mspass::seismic::PowerSpectrum psnoise;
+  /* This contains the power spectrum of the data used to estimate
+     snr-based QC estimates.   It can be the same as the data but
+     not necessarily.
   */
-  PowerSpectrum psnoise_data;
+  mspass::seismic::PowerSpectrum psnoise_data;
+  /* Because of the design of the algorithm we also have to save a power
+  spectral estimate for the wavelet and data signals.  We use those when
+  automatic bandwidth adjustment is enabled.*/
+  mspass::seismic::PowerSpectrum pssignal;
+  mspass::seismic::PowerSpectrum pswavelet;
   /* Cached data to be deconvolved - result of loaddata methds*/
   mspass::seismic::Seismogram decondata;
   /* Cached wavelet for deconvolution - result of loadwavelet*/
@@ -262,23 +322,29 @@ private:
   /* As the name suggest we allow different tapers for data and wavelet */
   std::shared_ptr<mspass::seismic::BasicTaper> wavelet_taper;
   std::shared_ptr<mspass::seismic::BasicTaper> data_taper;
-  /* For the colored noise damping algorithm the damper is frequency dependent.   
+  /* For the colored noise damping algorithm the damper is frequency dependent.
      The same issue in water level that requires a floor on the water level
-     applies to damping.   We use noise_floor to create a lower bound on 
-     damper values.   Note the damping constant at each frequency is 
-     damp*noise except where noise is below noise_floor defined relative to 
+     applies to damping.   We use noise_floor to create a lower bound on
+     damper values.   Note the damping constant at each frequency is
+     damp*noise except where noise is below noise_floor defined relative to
      maximum noise value where it is set to n_peak*noise_floor*damp. */
   double damp, noise_floor;
   /* This algorithm uses a mix of damping and water level.   Above this floor,
   which acts a bit like a water level, no regularization is done.  If
   snr is less than this value we regularize with damp*noise_amplitude.
   Note the noise_floor parameter puts a lower bound on the frequency dependent
-  regularization.   If noise amplitude (not power) is less than noise_floor 
+  regularization.   If noise amplitude (not power) is less than noise_floor
   the floor is set like a water level as noise_max*noise_level.*/
   double snr_regularization_floor;
+  /* this parameter does a similar thing to regularization floor but is
+  by the bandwidth estimation algorithm to define the edge of the working
+  frequency band. */
+  double snr_bandwidth;
   //ComplexArray winv;
   /* winv is in FFTDeconOperator*/
   ComplexArray ao_fft;
+  BandwidthData wavelet_bwd;
+  BandwidthData signal_bwd;
   /* We cache wavelet snr time series as it is more efficiently computed during
      the process routine and then used in (optional) qc methods */
   std::vector<double> wavelet_snr;
@@ -292,6 +358,8 @@ private:
   int TestSeismogramInput(mspass::seismic::Seismogram& d,const int comp,const bool loaddata);
   void compute_gwl_inverse();
   void compute_gdamp_inverse();
+  mspass::seismic::PowerSpectrum ThreeCPower(const mspass::seismic::Seismogram& d);
+  void update_shaping_wavelet(const BandwidthData& bwd);
 };
 }  // End namespace
 

@@ -7,7 +7,7 @@
 #include <gsl/gsl_fft_complex.h>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/utility/dmatrix.h"
-#include "mspass/algorithms/deconvolution/PowerSpectrum.h"
+#include "mspass/seismic/PowerSpectrum.h"
 
 namespace mspass::algorithms::deconvolution{
 /*! \brief Multittaper power spectral estimator.
@@ -26,6 +26,7 @@ public:
   MTPowerSpectrumEngine();
   MTPowerSpectrumEngine(const int winsize, const double tbp, const int ntapers);
   MTPowerSpectrumEngine(const MTPowerSpectrumEngine& parent);
+  ~MTPowerSpectrumEngine();
   //~MTPowerSpectrumEngine();
   MTPowerSpectrumEngine& operator=(const MTPowerSpectrumEngine& parent);
   /*! \process a TimeSeries.
@@ -41,7 +42,7 @@ public:
   \param parent is the data to process
   \return vector containing estimated power spwecrum
   */
-  PowerSpectrum apply(const mspass::seismic::TimeSeries& d);
+  mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries& d);
   /*! \brief Low level processing of vector of data.
 
   This is lower level function that processes a raw vector of data.   Since
@@ -56,7 +57,24 @@ public:
   \exception throw a MsPASSError if the size of d does not match operator length
   */
   std::vector<double> apply(const std::vector<double>& d);
-  double df(){return deltaf;};
+  double df() const {return deltaf;};
+
+  std::vector<double> frequencies();
+  /*! Retrieve the taper length.*/
+  int taper_length() const
+  {
+    return taperlen;
+  };
+  /*! Retrieve time-bandwidth product.*/
+  double time_bandwidth_product()  const
+  {
+    return tbp;
+  };
+  /*! Return number of tapers used by this engine. */
+  int number_tapers() const
+  {
+    return ntapers;
+  };
   /*! \brief PUtter equivalent of df.
 
   The computation of the Rayleigh bin size (dt) is actually quote trivial but
@@ -74,13 +92,7 @@ public:
   {
     deltaf=1.0/(dt*static_cast<double>(taperlen));
     return deltaf;
-  }
-  std::vector<double> frequencies();
-  /*! Retrieve the taper length.*/
-  int taper_length()
-  {
-    return taperlen;
-  }
+  };
 private:
   int taperlen;
   int ntapers;
@@ -88,8 +100,8 @@ private:
   mspass::utility::dmatrix tapers;
   /* Frequency bin interval of last data processed.*/
   double deltaf;
-  std::shared_ptr<gsl_fft_complex_wavetable> wavetable;
-  std::shared_ptr<gsl_fft_complex_workspace> workspace;
+  gsl_fft_complex_wavetable *wavetable;
+  gsl_fft_complex_workspace *workspace;
 };
 } //namespace ed
 #endif

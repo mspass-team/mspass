@@ -1,7 +1,7 @@
 #include <sstream>
 #include <cmath>
-#include "mspass/algorithms/deconvolution/PowerSpectrum.h"
-namespace mspass::algorithms::deconvolution
+#include "mspass/seismic/PowerSpectrum.h"
+namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;

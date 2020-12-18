@@ -8,6 +8,7 @@
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/wavelet.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/Butterworth.h"
 namespace mspass::algorithms::deconvolution
 {
 using namespace std;
@@ -53,9 +54,13 @@ ShapingWavelet::ShapingWavelet(const Metadata& md, int nfftin)
             gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
             delete [] r;
         }
+        /* Note for CNR3CDecon the initial values on construction for
+        ricker or butterworth are irrelevant and wasted effort.  We keep
+        them in this class because these forms are needed by the family of
+        scalar deconvolution algorithms */
         else if(wavelettype=="ricker")
         {
-            float fpeak=md.get_double("shaping_wavelet_frequency");
+            float fpeak=(float)md.get_double("shaping_wavelet_frequency");
             //construct wavelet and fft
             r=rickerwavelet(fpeak,(float)dt,nfft);
 //DEBUG
@@ -64,6 +69,18 @@ ShapingWavelet::ShapingWavelet(const Metadata& md, int nfftin)
             w=ComplexArray(nfft,r);
             gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
             delete [] r;
+        }
+        else if(wavelettype=="butterworth")
+        {
+          double f3db_lo, f3db_hi;
+          f3db_lo=md.get_double("f3db_lo");
+          f3db_hi=md.get_double("f3db_hi");
+          int npoles_lo,npoles_hi;
+          npoles_lo=md.get_int("npoles_lo");
+          npoles_hi=md.get_int("npoles_hi");
+          Butterworth bwf(true,true,true,npoles_lo,f3db_lo,npoles_hi,f3db_hi,
+              this->dt);
+          w=bwf.transfer_function(this->nfft);
         }
         /*   This option requires a package to compute zero phase wavelets of
         some specified type and bandwidth.  Previous used antelope filters which
@@ -150,6 +167,37 @@ ShapingWavelet::ShapingWavelet(const Metadata& md, int nfftin)
     {
         throw;
     }
+}
+/* Shortcut for Ricker wavelet - does same thing as pf version but
+scaing sample interval.  Note the use of the copy constructor
+to always make wavelet_name ricker in this case. */
+ShapingWavelet::ShapingWavelet(const double fpeak, const double dtin,
+   const int n) : wavelet_name("ricker")
+{
+  nfft=n;
+  dt=dtin;
+  df=1.0/(dt*static_cast<double>(n));
+  double *r;
+  r=rickerwavelet((float)fpeak,(float)dt,nfft);
+  w=ComplexArray(nfft,r);
+  gsl_fft_complex_wavetable *wavetable;
+  gsl_fft_complex_workspace *workspace;
+  wavetable = gsl_fft_complex_wavetable_alloc (nfft);
+  workspace = gsl_fft_complex_workspace_alloc (nfft);
+  gsl_fft_complex_forward(w.ptr(), 1, nfft, wavetable, workspace);
+  gsl_fft_complex_wavetable_free (wavetable);
+  gsl_fft_complex_workspace_free (workspace);
+  delete [] r;
+}
+ShapingWavelet::ShapingWavelet(const int npolelo, const double f3dblo,
+          const int npolehi, const double f3dbhi,const double dtin, const int n)
+          : wavelet_name("butterworth")
+{
+  nfft=n;
+  dt=dtin;
+  df=1.0/(dt*static_cast<double>(n));
+  Butterworth bwf(true,true,true,npolelo,f3dblo,npolehi,f3dbhi,dtin);
+  w=bwf.transfer_function(nfft);
 }
 ShapingWavelet::ShapingWavelet(const ShapingWavelet& parent) : w(parent.w)
 {
