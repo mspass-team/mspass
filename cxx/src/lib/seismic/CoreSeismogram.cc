@@ -39,12 +39,17 @@ CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata()
             else
                 tmatrix[i][j]=0.0;
 }
-CoreSeismogram::CoreSeismogram(size_t nsamples)
+CoreSeismogram::CoreSeismogram(const size_t nsamples)
     : BasicTimeSeries(),Metadata()
 {
-  this->set_dt(1.0);
-  this->set_t0(0.0);
-  this->set_npts(nsamples);
+  /* IMPORTANT:  this constructor assumes BasicTimeSeries initializes the
+  equivalent of:
+  set_dt(1.0)
+  set_t0(0.0)
+  set_tref(TimeReferenceType::Relative)
+  this->kill() - i.e. marked dead
+  */
+  this->set_npts(nsamples);  // Assume this is an allocator of the 3xnsamples matrix
   components_are_orthogonal=true;
   components_are_cardinal=true;
   for(int i=0; i<3; ++i)
@@ -205,9 +210,9 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     // Load up these temporary arrays inside this try block and arrange to
     // throw an exception if required metadata are missing
     try {
-        /* WARNING hang and vang attributes in Metadata 
-        are always assumed to have been read from a database where they 
-        were stored in degrees.  We convert these to radians below to 
+        /* WARNING hang and vang attributes in Metadata
+        are always assumed to have been read from a database where they
+        were stored in degrees.  We convert these to radians below to
         compute the transformation matrix. */
         hang[0]=ts[0].get_double("hang");
         hang[1]=ts[1].get_double("hang");
@@ -223,9 +228,9 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         ss << "Message posted by Metadata::get_double:  "<<mde.what()<<endl;
 	throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    /* We couldn't get here if hang and vang were not set on comp 0 so 
+    /* We couldn't get here if hang and vang were not set on comp 0 so
        we don't test for that condition.  We do need to clear hang and vang
-       from result here, however, as both attributes are meaningless 
+       from result here, however, as both attributes are meaningless
        for a 3C seismogram */
     this->clear("hang");
     this->clear("vang");
@@ -763,7 +768,7 @@ bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py)
     if(py::isinstance<py::array>(tmatrix_py)) {
         auto tmatrix_ary = tmatrix_py.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
         py::buffer_info info = tmatrix_ary.request();
-        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
+        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) ||
             (info.ndim == 1 && info.shape[0] == 9)
            )
             return this->set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));

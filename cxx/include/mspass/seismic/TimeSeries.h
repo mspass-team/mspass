@@ -15,6 +15,41 @@ class TimeSeries : public mspass::seismic::CoreTimeSeries,
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
   TimeSeries() : mspass::seismic::CoreTimeSeries(),mspass::utility::ProcessingHistory(){};
+  /*! Bare bones constructor allocates space and little else.
+
+  Sometimes it is helpful to construct a skeleton that can be fleshed out
+  manually.   This constructor allocates an nsamples vector and
+  initializes it to all zeros.   The data are marked dead
+  because the assumption is the caller will fill out commonly needed basic
+  Metadata, load some kind of sample data into the data vector, and then
+  call the set_live method when that process is completed.   That kind of
+  manipulation is most common in preparing simulation or test data where
+  the common tags on real data do not exist and need to be defined manually
+  for the simulatioon or test.   The history section is initialized with
+  the default constructor, which currently means it is empty.   If a simulation
+  or test requires a history origin the user must load it manaually.
+
+  \param nsamples is the number of samples needed for storing the data vector.
+    */
+  TimeSeries(const size_t nsamples) : mspass::seismic::CoreTimeSeries(nsamples),
+      mspass::utility::ProcessingHistory(){};
+  /*! Partially construct from components.
+
+      There are times one wants to use the Metadata area as a template to
+      flesh out a CoreTimeSeries as what might be called skin and bones:  skin is
+      Metadata and bones as BasicTimeSeries data.   This constructor initializes
+      those two base classes but does not fully a valid data vector.  It only
+      attempts to fetch the number of points expected for the data vector using
+      the npts metadata (integer) key (i.e. it sets npts to md.get_int("npts")).
+      It then creates the data vector of that length and initialzies it to all zeros.
+
+      This constructor is largely a wrapper for the CoreTimeSeries version
+      with the same signature but it also initalizes the ProcessingHistory
+      to null (calling the default constructor)*/
+  TimeSeries(const BasicTimeSeries& bts,const Metadata& md)
+      : CoreTimeSeries(bts,md),ProcessingHistory()
+  {};
+
   /*!  \brief Construct from lower level CoreTimeSeries.
 
   In MsPASS CoreTimeSeries has the primary functions that define the

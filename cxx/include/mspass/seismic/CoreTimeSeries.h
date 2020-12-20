@@ -39,9 +39,17 @@ or push_front applied to this vector will alter it's length
 so use this only if the size of the data to fill the object is
 already known.
 **/
-	CoreTimeSeries(size_t nsin);
-/*! Construct from components. */
-        CoreTimeSeries(const BasicTimeSeries& bts,const Metadata& md);
+	CoreTimeSeries(const size_t nsin);
+/*! Partially construct from components.
+
+There are times one wants to use the Metadata area as a template to
+flesh out a CoreTimeSeries as what might be called skin and bones:  skin is
+Metadata and bones as BasicTimeSeries data.   This constructor initializes
+those two base classes but does not fully a valid data vector.  It only
+attempts to fetch the number of points expected for the data vector using
+the npts metadata (integer) key (i.e. it sets npts to md.get_int("npts")).
+It then creates the data vector of that length and initialzies it to all zeros.*/
+  CoreTimeSeries(const BasicTimeSeries& bts,const Metadata& md);
 /*!
 Standard copy constructor.
 **/

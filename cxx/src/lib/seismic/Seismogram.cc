@@ -4,10 +4,15 @@ namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;
-
+Seismogram::Seismogram(const size_t nsamples)
+   : CoreSeismogram(nsamples),ProcessingHistory()
+{
+/* Note this constructor body needs no content.  Just a wrapper for CoreSeismogram */
+}
 Seismogram::Seismogram(const CoreSeismogram& d)
     : CoreSeismogram(d),ProcessingHistory()
 {
+  /* Note this constructor body needs no content.  Just a wrapper  */
 }
 Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
     : CoreSeismogram(d),ProcessingHistory()
@@ -19,6 +24,35 @@ Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
   this->ProcessingHistory::set_jobname(string("test"));
   this->ProcessingHistory::set_jobid(string("test"));
 }
+Seismogram::Seismogram(const BasicTimeSeries& bts, const Metadata& md)
+  : CoreSeismogram(md,false),ProcessingHistory()
+{
+  /* the contents of BasicTimeSeries passed will override anything set from
+  Metadata in this section.  Note also the very important use of this
+  for the putters to assure proper resolution of the virtual methods */
+  this->kill();   //set dead because buffer has invalid data
+  this->set_t0(bts.t0());
+  this->set_tref(bts.timetype());
+  this->set_npts(bts.npts());
+  /* The handling of these is kind of awkward in the current api.  Good to
+  hide it here.   Note in current implementation force_t0_shift sets the
+  shift as valid (what shifted tests).  I am slightly worried there are
+  cases where the else block could create an inconsistency with active
+  source data if this method were used to convert raw data.  Careful if
+  this is used in that context where the time reference is defined
+  implicitly as shot time with no tie to an absolute time reference */
+  if(bts.shifted())
+  {
+    double t0shift;
+    t0shift=bts.time_reference();
+    this->force_t0_shift(t0shift);
+  }
+  else
+  {
+    this->force_t0_shift(0.0);
+  }
+}
+
 Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)

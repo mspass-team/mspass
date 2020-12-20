@@ -37,7 +37,8 @@ done, for example, with std::basic_string made equivalent to std::string.
  through inheritance of a Metadata object.
 \author Gary L. Pavlis
 **/
-class CoreSeismogram : public mspass::seismic::BasicTimeSeries , public mspass::utility::Metadata
+class CoreSeismogram : virtual public mspass::seismic::BasicTimeSeries,
+              virtual public mspass::utility::Metadata
 {
 public:
  /*!
@@ -138,7 +139,8 @@ Initializes data and sets aside memory for
 
  \exception  Will throw a MsPASSError if required metadata are missing.
  */
-        CoreSeismogram(const mspass::utility::Metadata& md,const bool load_data=true);
+ CoreSeismogram(const mspass::utility::Metadata& md,const bool load_data=true);
+
 /*!
  Standard copy constructor.
 **/

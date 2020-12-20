@@ -10,12 +10,31 @@ namespace mspass::seismic{
 This is the working version of a three-component seismogram object used
 in the MsPASS framework.   It extends CoreSeismogram by adding
 ProcessingHistory.   */
-class Seismogram : public mspass::seismic::CoreSeismogram,
+class Seismogram : virtual public mspass::seismic::CoreSeismogram,
    public mspass::utility::ProcessingHistory
 {
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
   Seismogram() : mspass::seismic::CoreSeismogram(),mspass::utility::ProcessingHistory(){};
+  /*! Bare bones constructor allocates space and little else.
+
+  Sometimes it is helpful to construct a skeleton that can be fleshed out
+  manually.   This constructor allocates a 3xnsamples array and sets the
+  matrix to all zeros.  It also sets the orientation information to cardinal
+  and defines the data in relative time units.  The data are marked dead
+  because the assumption is the caller will fill out commonly needed basic
+  Metadata, load some kind of sample data into the data matrix, and then
+  call the set_live method when that process is completed.   That kind of
+  manipulation is most common in preparing simulation or test data where
+  the common tags on real data do not exist and need to be defined manually
+  for the simulatioon or test.   The history section is initialized with
+  the default constructor, which currently means it is empty.   If a simulation
+  or test requires a history origin the user must load it manaually.
+
+  \param nsamples is the number of 3c vector samples to iniitalize the
+    object with (creates a 3xnsamples matrix).
+    */
+  Seismogram(const size_t nsamples);
   /*! \brief Construct from lower level CoreSeismogram.
 
   In MsPASS CoreSeismogram has the primary functions that define the
@@ -94,6 +113,35 @@ with serialization.
     const std::string jobid=std::string("UNDEFINED"),
       const std::string readername=std::string("load3C"),
         const std::string algid=std::string("0"));
+
+  /*! \brief Construct from core components creating a buffer initialized to zeros.
+
+  This constructor can be thought of as a variant of the one with this signature:
+  CoreSeismogram(const Metadata& md,const bool load_data);
+  that is a component of the lower level class CoreSeismogram.  The reason is that the algorithm
+  calls that constructor has this construct as its first line:
+  Seismogram(const BasicTimeSeries& bts, const Metadata& md)
+     : CoreSeismogram(md,false)
+  it then overrides any data that constructor loads from Metadata with contents
+  from the BasicTimeSeries base class.   In the process it allocates the space for the
+  data matrix and initialzies it to zeros.  Finally, the top line also contains
+  a call to the default constructor for ProcessingHistory, which currently
+  creates an empty history record.
+
+  Important point:  because the data buffer contains nuill data the object
+  is marked dead.  When valid data is loaded into the data container the
+  user should call the set_live() method to prevent processors from ignoring it.
+
+  This method should only be used as a component to build a Seismogram
+  from pieces that provide a convenient mechanism of assembly.  Use this
+  one only if you have a sound understanding of all the pieces or you can
+  easily get a data object with inconsistencies.
+
+  \param bts - BasicTimeSeries data used as described above.
+  \param md - Metadata used loaded with data and used as described above.
+  */
+  Seismogram(const mspass::seismic::BasicTimeSeries& bts,
+                         const mspass::utility::Metadata& md);
   /*! Standard copy constructor. */
   Seismogram(const Seismogram& parent)
     : mspass::seismic::CoreSeismogram(parent), mspass::utility::ProcessingHistory(parent)
@@ -107,7 +155,7 @@ with serialization.
   history data through this method.
 
   \param h is the ProcessingHistory data to copy into this Seismogram.
-  */  
+  */
   void load_history(const mspass::utility::ProcessingHistory& h);
 };
 }//END mspass::seismic namespace

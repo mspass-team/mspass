@@ -335,7 +335,7 @@ PYBIND11_MODULE(utility, m) {
     .def("is_defined",&Metadata::is_defined,"Test if a key has a defined value")
     .def("__contains__",&Metadata::is_defined,"Test if a key has a defined value")
     .def("append_chain",&Metadata::append_chain,"Create or append to a string attribute that defines a chain")
-    .def("clear",&Metadata::clear,"Clears contents associated with a key")
+    .def("erase",&Metadata::clear,"Delete contents associated with a single key")
     .def("__delitem__",&Metadata::clear,"Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
@@ -861,7 +861,7 @@ PYBIND11_MODULE(utility, m) {
       py::arg("newstatus") = ProcessingStatus::VOLATILE)
     .def("map_as_saved",&ProcessingHistory::map_as_saved,
       "Load data defining this as the end of chain that was or will soon be saved")
-    .def("clear",&ProcessingHistory::clear,
+    .def("clear_history",&ProcessingHistory::clear,
       "Clear this history chain - use with caution")
     .def("get_nodes", &ProcessingHistory::get_nodes,
       "Retrieve the nodes multimap that defines the tree stucture branches")
