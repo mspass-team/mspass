@@ -1,21 +1,22 @@
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/utility/ProcessingHistory.h"
+#include "mspass/utility/ErrorLogger.h"
 namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;
 Seismogram::Seismogram(const size_t nsamples)
-   : CoreSeismogram(nsamples),ProcessingHistory()
+   : CoreSeismogram(nsamples),ProcessingHistory(), elog()
 {
 /* Note this constructor body needs no content.  Just a wrapper for CoreSeismogram */
 }
 Seismogram::Seismogram(const CoreSeismogram& d)
-    : CoreSeismogram(d),ProcessingHistory()
+    : CoreSeismogram(d),ProcessingHistory(),elog()
 {
   /* Note this constructor body needs no content.  Just a wrapper  */
 }
 Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
-    : CoreSeismogram(d),ProcessingHistory()
+    : CoreSeismogram(d),ProcessingHistory(),elog()
 {
   /* Not sure this is a good idea, but will give each instance
   created by this constructor a uuid.*/
@@ -25,7 +26,7 @@ Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
   this->ProcessingHistory::set_jobid(string("test"));
 }
 Seismogram::Seismogram(const BasicTimeSeries& bts, const Metadata& md)
-  : CoreSeismogram(md,false),ProcessingHistory()
+  : CoreSeismogram(md,false),ProcessingHistory(),elog()
 {
   /* the contents of BasicTimeSeries passed will override anything set from
   Metadata in this section.  Note also the very important use of this
@@ -52,21 +53,20 @@ Seismogram::Seismogram(const BasicTimeSeries& bts, const Metadata& md)
     this->force_t0_shift(0.0);
   }
 }
-
+/* Note that the : notation listing base classes only works if
+CoreSeismogram has public virtual.  Without that declaration in the .h
+this would generate compiler errors complaining that x is not a direct
+base of CoreSeismogram.   For some mysterious, probably related reason,
+I couldn't get the dmatrix u to be allowed in the copy construct
+sequence - following the :.  Minor performance hit duplicating a
+default construction of u before calling operator= on the last line of
+this constructor.*/
 Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
+  const ErrorLogger& elg,
   const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)
+     : BasicTimeSeries(b), Metadata(m), ProcessingHistory(his),elog(elg)
 {
-  /* for reasons I couldn't figure out these couldn't appear in the copy
-  constructor chain following the : above.   Compiler complained about
-  these not being a direct base.  Sure there is a way to fix that, but
-  the difference in calling operator= like here is next to nothing.*/
-  BasicTimeSeries bts=dynamic_cast<BasicTimeSeries&>(*this);
-  bts=BasicTimeSeries::operator=(b);
-  Metadata mdthis=dynamic_cast<Metadata&>(*this);
-  mdthis=Metadata::operator=(m);
-  ProcessingHistory histhis=dynamic_cast<ProcessingHistory&>(*this);
-  histhis=ProcessingHistory::operator=(his);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;
@@ -76,7 +76,7 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
 }
 Seismogram::Seismogram(const Metadata& md, const string jobname,
     const string jobid, const string readername,const string algid)
-	: CoreSeismogram(md,true),ProcessingHistory()
+	: CoreSeismogram(md,true),ProcessingHistory(),elog()
 {
   const string algname("SeismogramMDConstructor");
   this->set_jobname(jobname);
@@ -113,6 +113,7 @@ Seismogram& Seismogram::operator=(const Seismogram& parent)
 {
     if(this!=(&parent))
     {
+        this->elog=parent.elog;
         this->CoreSeismogram::operator=(parent);
         this->ProcessingHistory::operator=(parent);
     }

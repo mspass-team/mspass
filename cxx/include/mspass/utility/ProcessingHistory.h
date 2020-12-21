@@ -426,7 +426,7 @@ public:
   */
   void add_many_inputs(const std::vector<ProcessingHistory*>& d);
 
-  /*! \brief Merge the history nodes from another. 
+  /*! \brief Merge the history nodes from another.
 
   \param data_to_add is the ProcessingHistory of the data object to be
     merged.
@@ -707,7 +707,8 @@ private:
       ar & mytype;
       ar & algorithm;
       ar & algid;
-      ar & elog;
+      /* Earlier implementations had elog in ProcessingHistory here. */
+      //ar & elog;
   };
 };
 /* function prototypes of helpers */

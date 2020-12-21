@@ -199,8 +199,9 @@ TimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
     }
     TimeSeries result(dynamic_cast<const BasicTimeSeries&>(tcs),
       dynamic_cast<const Metadata&>(tcs),
-        dynamic_cast<const ProcessingHistory&>(tcs),
-          scomp);
+        tcs.elog,
+          dynamic_cast<const ProcessingHistory&>(tcs),
+            scomp);
     /*we hard code some ProcessingHistory here with the algid defining the
     component number extracted.   This model should work for any algorithm that
     has only one argument that can be represented as a string.  We do do

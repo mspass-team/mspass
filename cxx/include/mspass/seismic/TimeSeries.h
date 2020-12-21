@@ -9,12 +9,24 @@ namespace mspass::seismic{
   in the MsPASS framework.   It extends CoreTimeSeries by adding
   common MsPASS components (ProcessingHistory).  It may evolve with additional
   special features.  */
-class TimeSeries : public mspass::seismic::CoreTimeSeries,
+class TimeSeries : virtual public mspass::seismic::CoreTimeSeries,
    public mspass::utility::ProcessingHistory
 {
 public:
+  /*! Error logging object.
+
+  In MsPASS we use an error logger attached to atomic data objects to
+  provide a mechanism to move nonfatal errors along with data.  This allows
+  errors to be posted in a parallel environment and not be lost of jumbled
+  up by simultaneous writes by multiple threads to the same buffer
+  (stdio functions, for example, aren't thread safe and have that issue)
+  */
+  mspass::utility::ErrorLogger elog;
   /*! Default constructor.   Only runs subclass default constructors. */
-  TimeSeries() : mspass::seismic::CoreTimeSeries(),mspass::utility::ProcessingHistory(){};
+  TimeSeries() : mspass::seismic::CoreTimeSeries(),
+     mspass::utility::ProcessingHistory(),
+       elog()
+  {};
   /*! Bare bones constructor allocates space and little else.
 
   Sometimes it is helpful to construct a skeleton that can be fleshed out
@@ -32,7 +44,8 @@ public:
   \param nsamples is the number of samples needed for storing the data vector.
     */
   TimeSeries(const size_t nsamples) : mspass::seismic::CoreTimeSeries(nsamples),
-      mspass::utility::ProcessingHistory(){};
+      mspass::utility::ProcessingHistory(), elog()
+  {};
   /*! Partially construct from components.
 
       There are times one wants to use the Metadata area as a template to
@@ -47,7 +60,9 @@ public:
       with the same signature but it also initalizes the ProcessingHistory
       to null (calling the default constructor)*/
   TimeSeries(const BasicTimeSeries& bts,const Metadata& md)
-      : CoreTimeSeries(bts,md),ProcessingHistory()
+      : mspass::seismic::CoreTimeSeries(bts,md),
+         mspass::utility::ProcessingHistory(),
+           elog()
   {};
 
   /*!  \brief Construct from lower level CoreTimeSeries.
@@ -66,7 +81,8 @@ public:
    that means a deep copy wherein the data vector is copied.
    */
   TimeSeries(const mspass::seismic::CoreTimeSeries& d)
-    : mspass::seismic::CoreTimeSeries(d),mspass::utility::ProcessingHistory(){};
+    : mspass::seismic::CoreTimeSeries(d),mspass::utility::ProcessingHistory(),elog()
+  {};
   /*! Contruct from a core time series and initialize history as origin.
 
   This constructor is a variant of a similar one built only from a
@@ -96,10 +112,14 @@ parameters are each associated with one of those required pieces and
 are simply copied to build a valid TimeSeries object in the pickle.load
 function */
   TimeSeries(const mspass::seismic::BasicTimeSeries& b,const mspass::utility::Metadata& m,
-          const mspass::utility::ProcessingHistory& mcts, const std::vector<double>& d);
+    const mspass::utility::ErrorLogger& elg,
+      const mspass::utility::ProcessingHistory& mcts,
+        const std::vector<double>& d);
   /*! Standard copy constructor. */
   TimeSeries(const TimeSeries& parent)
-    : mspass::seismic::CoreTimeSeries(parent), mspass::utility::ProcessingHistory(parent){};
+    : mspass::seismic::CoreTimeSeries(parent),
+      mspass::utility::ProcessingHistory(parent),elog(parent.elog)
+  {};
   /*! Standard assignment operator. */
   TimeSeries& operator=(const TimeSeries& parent);
   void load_history(const mspass::utility::ProcessingHistory& h);

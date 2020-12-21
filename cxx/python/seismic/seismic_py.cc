@@ -224,7 +224,7 @@ PYBIND11_MODULE(seismic, m) {
      https://pybind11.readthedocs.io/en/stable/advanced/misc.html#partitioning-code-over-multiple-extension-modules*/
   py::module_::import("mspasspy.ccore.utility");
 
-  py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
+  py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"_CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const size_t>())
@@ -240,7 +240,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::self += py::self)
     .def_readwrite("data",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
   ;
-  py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
+  py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"_CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
@@ -301,7 +301,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const CoreSeismogram&,const std::string>())
     /* Don't think we really want to expose this to python if we don't need to
     .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
-      const ProcessingHistory&, const ErrorLogger&,
+      const ErrorLogger&, const ProcessingHistory&,
       const bool,const bool, const dmatrix&,const dmatrix&>())
       */
     .def(py::init<const Metadata&,std::string,std::string,std::string,std::string>())
@@ -318,6 +318,9 @@ PYBIND11_MODULE(seismic, m) {
         stringstream sscorets;
         boost::archive::text_oarchive arcorets(sscorets);
         arcorets<<dynamic_cast<const ProcessingHistory&>(self);
+        stringstream sselog;
+	boost::archive::text_oarchive arelog(sselog);
+        arelog<<self.elog;
         // these are behind getter/setters
         bool cardinal=self.cardinal();
         bool orthogonal=self.orthogonal();
@@ -348,27 +351,31 @@ PYBIND11_MODULE(seismic, m) {
         boost::archive::text_iarchive arbts(ssbts);
         BasicTimeSeries bts;
         arbts>>bts;
-        stringstream sscorets(t[2].cast<std::string>());
+        stringstream sselog(t[2].cast<std::string>());
+	boost::archive::text_iarchive arelog(sselog);
+	ErrorLogger elog;
+	arelog>>elog;
+        stringstream sscorets(t[3].cast<std::string>());
         boost::archive::text_iarchive arcorets(sscorets);
         ProcessingHistory corets;
         arcorets>>corets;
-        bool cardinal=t[3].cast<bool>();
-        bool orthogonal=t[4].cast<bool>();
-        stringstream sstm(t[5].cast<std::string>());
+        bool cardinal=t[4].cast<bool>();
+        bool orthogonal=t[5].cast<bool>();
+        stringstream sstm(t[6].cast<std::string>());
         boost::archive::text_iarchive artm(sstm);
         dmatrix tmatrix;
         artm>>tmatrix;
-        size_t u_size = t[6].cast<size_t>();
+        size_t u_size = t[7].cast<size_t>();
         py::array_t<double, py::array::f_style> darr;
         darr=t[7].cast<py::array_t<double, py::array::f_style>>();
         py::buffer_info info = darr.request();
         if(u_size==0) {
           dmatrix u;
-          return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
+          return Seismogram(bts,md,elog,corets,cardinal,orthogonal,tmatrix,u);
         } else {
           dmatrix u(3, u_size/3);
           memcpy(u.get_address(0,0), info.ptr, sizeof(double) * u_size);
-          return Seismogram(bts,md,corets,cardinal,orthogonal,tmatrix,u);
+          return Seismogram(bts,md,elog,corets,cardinal,orthogonal,tmatrix,u);
         }
      }
      ))
@@ -381,6 +388,12 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const BasicTimeSeries&,const Metadata&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
+      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem 
+	helpful for python.  Uncomment if this proves false. 
+      .def(py::init<const BasicTimeSeries&, const Metadata&, const ErrorLogger&, const ProcessingHistory&,
+		const std::vector<double>&>())
+	*/
+      /* this is a python only constructor using a dict. */
       .def(py::init([](py::dict d, py::array_t<double, py::array::f_style | py::array::forcecast> b) {
         py::buffer_info info = b.request();
         if (info.ndim != 1)
@@ -412,7 +425,7 @@ PYBIND11_MODULE(seismic, m) {
         initialization block of the for loop - clearer to me anyway */
         dptr=(double*)(info.ptr);
         for(size_t i=0;i<npts;++i,++dptr) sbuf.push_back(*dptr);
-        auto v = new TimeSeries(bts,md,emptyph,sbuf);
+        auto v = new TimeSeries(bts,md,ErrorLogger(),emptyph,sbuf);
         return v;
       }))
       .def("load_history",&TimeSeries::load_history,
@@ -430,6 +443,9 @@ PYBIND11_MODULE(seismic, m) {
           ssbts << std::setprecision(17);
           boost::archive::text_oarchive arbts(ssbts);
           arbts << dynamic_cast<const BasicTimeSeries&>(self);
+	  stringstream sselog;
+	  boost::archive::text_oarchive arelog(sselog);
+	  arelog << self.elog;
           stringstream sscorets;
           boost::archive::text_oarchive arcorets(sscorets);
           arcorets<<dynamic_cast<const ProcessingHistory&>(self);
@@ -446,7 +462,11 @@ PYBIND11_MODULE(seismic, m) {
          boost::archive::text_iarchive arbts(ssbts);
          BasicTimeSeries bts;
          arbts>>bts;
-         stringstream sscorets(t[2].cast<std::string>());
+	 stringstream sselog(t[2].cast<std::string>());
+	 boost::archive::text_iarchive arelog(sselog);
+	 ErrorLogger elog;
+	 arelog >> elog;
+         stringstream sscorets(t[3].cast<std::string>());
          boost::archive::text_iarchive arcorets(sscorets);
          ProcessingHistory corets;
          arcorets>>corets;
@@ -454,12 +474,12 @@ PYBIND11_MODULE(seismic, m) {
          //this but for now this, like Seismogram, is make it work before you
          //make it fast
          py::array_t<double, py::array::f_style> darr;
-         darr=t[3].cast<py::array_t<double, py::array::f_style>>();
+         darr=t[4].cast<py::array_t<double, py::array::f_style>>();
          py::buffer_info info = darr.request();
          std::vector<double> d;
          d.resize(info.shape[0]);
          memcpy(d.data(), info.ptr, sizeof(double) * d.size());
-         return TimeSeries(bts,md,corets,d);;
+         return TimeSeries(bts,md,elog,corets,d);;
        }
      ))
      ;

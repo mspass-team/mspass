@@ -14,6 +14,15 @@ class Seismogram : virtual public mspass::seismic::CoreSeismogram,
    public mspass::utility::ProcessingHistory
 {
 public:
+  /*! Error logging object.
+
+  In MsPASS we use an error logger attached to atomic data objects to
+  provide a mechanism to move nonfatal errors along with data.  This allows
+  errors to be posted in a parallel environment and not be lost of jumbled
+  up by simultaneous writes by multiple threads to the same buffer
+  (stdio functions, for example, aren't thread safe and have that issue)
+  */
+  mspass::utility::ErrorLogger elog;
   /*! Default constructor.   Only runs subclass default constructors. */
   Seismogram() : mspass::seismic::CoreSeismogram(),mspass::utility::ProcessingHistory(){};
   /*! Bare bones constructor allocates space and little else.
@@ -87,7 +96,8 @@ internally as a 2d C array, but we use the dmatrix to mesh
 with serialization.
 */
   Seismogram(const mspass::seismic::BasicTimeSeries& b, const mspass::utility::Metadata& m,
-    const mspass::utility::ProcessingHistory& his,
+    const mspass::utility::ErrorLogger& elg,
+     const mspass::utility::ProcessingHistory& his,
       const bool card, const bool ortho,
         const mspass::utility::dmatrix& tm, const mspass::utility::dmatrix& uin);
   /*! Constructor driven by a Metadata object.
