@@ -3,6 +3,7 @@
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
 #include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/seismic/Seismogram.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass::utility;
@@ -244,7 +245,28 @@ int main(int argc, char **argv)
         cout << "Computed transformation matrix:"<<endl;
         tm=s4.get_transformation_matrix();
         cout << tm<<endl;
-        exit(0);
+	///
+	cout << "Testing Seismogram constructor from CoreSeismogram"<<endl;
+	Seismogram s5(s4);
+	cout << "Transformation matrix - should be same as previous"<<endl;
+	tm = s5.get_transformation_matrix();
+	cout << tm<<endl;
+	if(s5.live())
+		cout << "Result is still marked live"<<endl;
+	else
+	{
+		cout << "Result is marked dead - error"<<endl;
+        	exit(0);
+	}
+	cout << "Testing Seismogram copy constructor"<<endl;
+	Seismogram s6(s5);
+	if(s6.live())
+		cout << "Result is still marked live"<<endl;
+	else
+	{
+		cout << "Result is marked dead - error"<<endl;
+        	exit(0);
+	}
     }
     catch (MsPASSError&  serr)
     {
