@@ -46,7 +46,7 @@
 <codeline lineno="18"><highlight class="normal"></highlight></codeline>
 <codeline lineno="19"><highlight class="normal">add_library(alg_basics<sp/>STATIC<sp/>${sources_alg_basics})</highlight></codeline>
 <codeline lineno="20"><highlight class="normal">add_library(amplitudes<sp/>STATIC<sp/>${sources_amplitudes})</highlight></codeline>
-<codeline lineno="21"><highlight class="normal">target_link_libraries(alg_basics<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">target_link_libraries(alg_basics<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>deconvolution<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
 <codeline lineno="22"><highlight class="normal">target_link_libraries(amplitudes<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>

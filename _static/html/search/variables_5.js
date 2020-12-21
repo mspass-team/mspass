@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gaps',['gaps',['../classmspass_1_1seismic_1_1_data_gap.html#ab83ccd2842b4d16b437cae78f41a1502',1,'mspass::seismic::DataGap']]]
+  ['f0',['f0',['../classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4',1,'mspass::seismic::PowerSpectrum']]]
 ];

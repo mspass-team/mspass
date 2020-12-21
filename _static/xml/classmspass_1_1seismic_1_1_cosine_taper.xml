@@ -143,26 +143,26 @@
     <detaileddescription>
 <para>A sine taper is a common, simple approach to taper data. When applied at the front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0. On the right it defines the same function for the range 0 to pi. The period of the left and right operator can be different. Turn off left or right by giving illegal start and end points and the operator will silently be only one sided. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="75">
+      <node id="76">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="74">
+      <node id="75">
         <label>mspass::seismic::CosineTaper</label>
         <link refid="classmspass_1_1seismic_1_1_cosine_taper"/>
-        <childnode refid="75" relation="public-inheritance">
+        <childnode refid="76" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="77">
+      <node id="78">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="76">
+      <node id="77">
         <label>mspass::seismic::CosineTaper</label>
         <link refid="classmspass_1_1seismic_1_1_cosine_taper"/>
-        <childnode refid="77" relation="public-inheritance">
+        <childnode refid="78" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

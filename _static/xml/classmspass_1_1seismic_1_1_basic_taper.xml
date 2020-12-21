@@ -119,26 +119,26 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="38">
+      <node id="39">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="39">
+      <node id="40">
         <label>mspass::seismic::CosineTaper</label>
         <link refid="classmspass_1_1seismic_1_1_cosine_taper"/>
-        <childnode refid="38" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="40">
-        <label>mspass::seismic::LinearTaper</label>
-        <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
-        <childnode refid="38" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
       <node id="41">
+        <label>mspass::seismic::LinearTaper</label>
+        <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
+        <childnode refid="39" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="42">
         <label>mspass::seismic::VectorTaper</label>
         <link refid="classmspass_1_1seismic_1_1_vector_taper"/>
-        <childnode refid="38" relation="public-inheritance">
+        <childnode refid="39" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

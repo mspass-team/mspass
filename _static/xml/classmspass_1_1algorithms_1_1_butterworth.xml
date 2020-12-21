@@ -121,7 +121,7 @@
 <para>The default constructor does not define a null. The default generates an antialiasing filter identical to the default in the antialias function in seismic unix. That is it produces a low pass filter with a band edge (pass parameter) at 60% of Nyquist and a stop edge at Nyquist. It then calls the su bfdesign function to compute the number of poles and the 3db frequency of the corner to define this filter. These can be retrieved with getters (see below) </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="48" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="16" bodyend="36"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="48" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="19" bodyend="39"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1afb02193564836b8f7396a9acab24a50e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -267,7 +267,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="100" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="37" bodyend="53"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="100" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="40" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1afc7717b15d0d13067e819bfe3a81d806" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -284,7 +284,7 @@
 <para>Construct using tagged valus created from a Metadata container.</para><para>This behaves exactly like the fully parameterized contructor except it gets the parameters from metadata. Metadata keys in initial implementation are identical to the argument names defined above. The best guidance for using this constuctor is to look a the comments in the default parameter file.</para><para>Construct using tagged valus created from a Metadata container </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="113" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="72" bodyend="209"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="113" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="75" bodyend="212"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a85ccda5e0946fd375c03458a90f65c25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -386,7 +386,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="132" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="54" bodyend="70"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="132" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="57" bodyend="73"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a60c3979ede1947661bb25d118bde228c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -403,7 +403,7 @@
 <para>Standard copy conststructor. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="137" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="210" bodyend="220"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="137" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="213" bodyend="223"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a7602075f3fe8f56e891331c98264d1a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1algorithms_1_1_butterworth" kindref="compound">Butterworth</ref> &amp;</type>
@@ -420,7 +420,7 @@
 <para>Standard assignment operator. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="139" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="221" bodyend="235"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="139" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="224" bodyend="238"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a7b54d5d5966a85092d45ebebd0b88498" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
@@ -445,7 +445,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="156" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="236" bodyend="248"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="156" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="239" bodyend="251"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -478,7 +478,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="179" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="251" bodyend="273"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="179" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="254" bodyend="276"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a10c30a560e4dce8a3bc9fe80409cee80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -512,7 +512,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="202" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="276" bodyend="312"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="202" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="279" bodyend="315"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a1b2416893b09cf7edad320a37c521c5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -570,7 +570,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="237" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="354" bodyend="378"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="237" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="357" bodyend="381"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1abb8d56355bb2b23cbf7e96b0b2fa7b24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -604,7 +604,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="260" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="382" bodyend="432"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="260" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="385" bodyend="435"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a54e766697f72f1ba38b95915805dd6d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>mspass::algorithms::deconvolution::ComplexArray</type>
@@ -629,7 +629,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="277" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="433" bodyend="443"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="277" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="436" bodyend="452"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -784,7 +784,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="372" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="448" bodyend="475"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="372" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="457" bodyend="484"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1abc057f5bb2a19e2f1f45c73c0b02ce40" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -819,7 +819,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="374" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="520" bodyend="561"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="374" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="529" bodyend="570"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1ace0ad60d256cb617dad8360363d66c94" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -854,7 +854,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="375" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="477" bodyend="518"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="375" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="486" bodyend="527"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a0dbc8248a1311367bee4be1d5a48b294" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -883,7 +883,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="379" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="562" bodyend="583"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="379" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="571" bodyend="592"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1algorithms_1_1_butterworth_1a37e3d8d4038cf5cbe9dccb9edc22a9fc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -912,7 +912,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="381" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="584" bodyend="605"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h" line="381" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc" bodystart="593" bodyend="614"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

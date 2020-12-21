@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['radius',['radius',['../structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13',1,'mspass::utility::SphericalCoordinate']]]
+  ['phi',['phi',['../structmspass_1_1utility_1_1_spherical_coordinate.html#a2c970fd569ae883e5545f81e58458ef9',1,'mspass::utility::SphericalCoordinate']]]
 ];

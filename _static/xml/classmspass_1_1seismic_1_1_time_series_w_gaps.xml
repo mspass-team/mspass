@@ -169,67 +169,10 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="224">
-        <label>mspass::utility::ProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="225" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="219">
-        <label>mspass::seismic::TimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="220" relation="public-inheritance">
-        </childnode>
-        <childnode refid="224" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="226">
-        <label>mspass::seismic::DataGap</label>
-        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
-      </node>
-      <node id="221">
-        <label>mspass::seismic::BasicTimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
-      </node>
-      <node id="222">
-        <label>mspass::utility::Metadata</label>
-        <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="223" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="218">
-        <label>mspass::seismic::TimeSeriesWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="219" relation="public-inheritance">
-        </childnode>
-        <childnode refid="226" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="223">
-        <label>mspass::utility::BasicMetadata</label>
-        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
-      </node>
-      <node id="225">
-        <label>mspass::utility::BasicProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
-      </node>
-      <node id="220">
-        <label>mspass::seismic::CoreTimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="221" relation="public-inheritance">
-        </childnode>
-        <childnode refid="222" relation="public-inheritance">
-        </childnode>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="233">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
         <childnode refid="234" relation="public-inheritance">
-        </childnode>
-        <childnode refid="235" relation="usage">
-          <edgelabel>elog</edgelabel>
         </childnode>
       </node>
       <node id="228">
@@ -240,7 +183,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <childnode refid="233" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="236">
+      <node id="235">
         <label>mspass::seismic::DataGap</label>
         <link refid="classmspass_1_1seismic_1_1_data_gap"/>
       </node>
@@ -259,12 +202,8 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
         <childnode refid="228" relation="public-inheritance">
         </childnode>
-        <childnode refid="236" relation="public-inheritance">
+        <childnode refid="235" relation="public-inheritance">
         </childnode>
-      </node>
-      <node id="235">
-        <label>mspass::utility::ErrorLogger</label>
-        <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
       <node id="232">
         <label>mspass::utility::BasicMetadata</label>
@@ -280,6 +219,67 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <childnode refid="230" relation="public-inheritance">
         </childnode>
         <childnode refid="231" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="242">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="243" relation="public-inheritance">
+        </childnode>
+        <childnode refid="244" relation="usage">
+          <edgelabel>elog</edgelabel>
+        </childnode>
+      </node>
+      <node id="237">
+        <label>mspass::seismic::TimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series"/>
+        <childnode refid="238" relation="public-inheritance">
+        </childnode>
+        <childnode refid="242" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="245">
+        <label>mspass::seismic::DataGap</label>
+        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
+      </node>
+      <node id="239">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="240">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
+        <childnode refid="241" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="236">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="237" relation="public-inheritance">
+        </childnode>
+        <childnode refid="245" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="244">
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
+      </node>
+      <node id="241">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="243">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="238">
+        <label>mspass::seismic::CoreTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
+        <childnode refid="239" relation="public-inheritance">
+        </childnode>
+        <childnode refid="240" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

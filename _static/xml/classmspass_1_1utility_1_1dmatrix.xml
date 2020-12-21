@@ -637,14 +637,14 @@
 <para>This class defines a lightweight, simple double precision matrix. Provides basic matrix functionality. Note that elements of the matrix are stored internally in FORTRAN order but using C style indexing. That is, all indices begin at 0, not 1 and run to size - 1. Further, FORTRAN order means the elements are actually ordered in columns as in FORTRAN in a continuous, logical block of memory. This allow one to use the BLAS functions to access the elements of the matrix. As usual be warned this is useful for efficiency and speed, but completely circumvents the bounds checking used by methods in the object.</para><para><simplesect kind="author"><para>Robert R and Gary L. Pavlis </para></simplesect>
 </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="82">
+      <node id="83">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="83">
+      <node id="84">
         <label>mspass::utility::dvector</label>
         <link refid="classmspass_1_1utility_1_1dvector"/>
-        <childnode refid="82" relation="public-inheritance">
+        <childnode refid="83" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

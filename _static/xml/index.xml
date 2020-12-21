@@ -486,6 +486,24 @@
     <member refid="classmspass_1_1utility_1_1_node_data_1a7c68693ce88621835e5277e6256edc99" kind="function"><name>operator!=</name></member>
     <member refid="classmspass_1_1utility_1_1_node_data_1adc92573476dc839e02e8d2085401b7aa" kind="function"><name>serialize</name></member>
   </compound>
+  <compound refid="classmspass_1_1seismic_1_1_power_spectrum" kind="class"><name>mspass::seismic::PowerSpectrum</name>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kind="variable"><name>df</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kind="variable"><name>f0</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" kind="variable"><name>spectrum_type</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" kind="variable"><name>spectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" kind="variable"><name>elog</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a787087776cc0ca2b33e24e83cac5f801" kind="function"><name>PowerSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ace419f03d3d017601e16f6b0287cfaf0" kind="function"><name>PowerSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a377c8508a72f2aff53da0d528de12bb7" kind="function"><name>PowerSpectrum</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a5045c9886a94320a3f351058cd3d6ea3" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" kind="function"><name>operator+=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" kind="function"><name>amplitude</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a8cdc3c59b4e204b1b04d0c1951e73076" kind="function"><name>amplitude</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ae4580db0b75a6db419467d2374dfdd80" kind="function"><name>nf</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d" kind="function"><name>frequency</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87" kind="function"><name>Nyquist</name></member>
+    <member refid="classmspass_1_1seismic_1_1_power_spectrum_1abf25df63633c262938c7957c70e4df37" kind="function"><name>sample_number</name></member>
+  </compound>
   <compound refid="classmspass_1_1utility_1_1_processing_history" kind="class"><name>mspass::utility::ProcessingHistory</name>
     <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" kind="variable"><name>elog</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1ad6acef2beb453d7034ab86087a3936aa" kind="variable"><name>nodes</name></member>
@@ -815,6 +833,8 @@
   </compound>
   <compound refid="_ensemble_8h" kind="file"><name>Ensemble.h</name>
   </compound>
+  <compound refid="_power_spectrum_8h" kind="file"><name>PowerSpectrum.h</name>
+  </compound>
   <compound refid="_seismogram_8h" kind="file"><name>Seismogram.h</name>
   </compound>
   <compound refid="_seismogram_w_gaps_8h" kind="file"><name>SeismogramWGaps.h</name>
@@ -876,6 +896,8 @@
   <compound refid="_core_seismogram_8cc" kind="file"><name>CoreSeismogram.cc</name>
   </compound>
   <compound refid="_core_time_series_8cc" kind="file"><name>CoreTimeSeries.cc</name>
+  </compound>
+  <compound refid="_power_spectrum_8cc" kind="file"><name>PowerSpectrum.cc</name>
   </compound>
   <compound refid="_seismogram_8cc" kind="file"><name>Seismogram.cc</name>
   </compound>

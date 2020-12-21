@@ -272,62 +272,62 @@
 <para>This data object extends <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> mainly by adding a vector of scalar data. It uses a Metadata object to contain auxiliary parameters that aren&apos;t essential to define the data object, but which are necessary for some algorithms. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
 </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="68">
+      <node id="69">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="64" relation="public-inheritance">
+        <childnode refid="65" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="65">
+      <node id="66">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="66">
+      <node id="67">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="67" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="69">
-        <label>mspass::seismic::TimeSeriesWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
         <childnode refid="68" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="67">
+      <node id="70">
+        <label>mspass::seismic::TimeSeriesWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
+        <childnode refid="69" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="68">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="64">
+      <node id="65">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="65" relation="public-inheritance">
-        </childnode>
         <childnode refid="66" relation="public-inheritance">
+        </childnode>
+        <childnode refid="67" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="71">
+      <node id="72">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="72">
+      <node id="73">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="73" relation="public-inheritance">
+        <childnode refid="74" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="73">
+      <node id="74">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="70">
+      <node id="71">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="71" relation="public-inheritance">
-        </childnode>
         <childnode refid="72" relation="public-inheritance">
+        </childnode>
+        <childnode refid="73" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
