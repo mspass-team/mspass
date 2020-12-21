@@ -37,8 +37,8 @@ done, for example, with std::basic_string made equivalent to std::string.
  through inheritance of a Metadata object.
 \author Gary L. Pavlis
 **/
-class CoreSeismogram : virtual public mspass::seismic::BasicTimeSeries,
-              virtual public mspass::utility::Metadata
+class CoreSeismogram : public mspass::seismic::BasicTimeSeries,
+              public mspass::utility::Metadata
 {
 public:
  /*!
@@ -146,6 +146,7 @@ Initializes data and sets aside memory for
 **/
 
 	CoreSeismogram(const CoreSeismogram&);
+
 	/* These overload virtual methods in BasicTimeSeries. */
 	/*! \brief Set the sample interval.
 
@@ -254,7 +255,7 @@ to an exception if the the time requested is outside the data range.
 */
         std::vector<double> operator[](const double time)const;
 /*! Standard destructor. */
-	~CoreSeismogram(){};
+	virtual ~CoreSeismogram(){};
 /*!
  Apply inverse transformation matrix to return data to cardinal direction components.
 

@@ -10,8 +10,10 @@ Seismogram::Seismogram(const size_t nsamples)
 {
 /* Note this constructor body needs no content.  Just a wrapper for CoreSeismogram */
 }
+/* For some weird reason we can't call the parallel constructors for
+CoreSeismogram.  Instead we have to call the constructors for the base class.*/
 Seismogram::Seismogram(const CoreSeismogram& d)
-    : CoreSeismogram(d),ProcessingHistory(),elog()
+    : CoreSeismogram(d), ProcessingHistory(),elog()
 {
   /* Note this constructor body needs no content.  Just a wrapper  */
 }
@@ -65,8 +67,10 @@ Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   const ErrorLogger& elg,
   const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)
-     : BasicTimeSeries(b), Metadata(m), ProcessingHistory(his),elog(elg)
+  : ProcessingHistory(his),elog(elg)
 {
+  this->BasicTimeSeries::operator=(b);
+  this->Metadata::operator=(m);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;

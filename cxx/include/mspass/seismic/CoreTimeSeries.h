@@ -13,8 +13,8 @@ that aren't essential to define the data object, but which are necessary
 for some algorithms.
 \author Gary L. Pavlis
 **/
-class CoreTimeSeries: virtual public mspass::seismic::BasicTimeSeries,
-    virtual public mspass::utility::Metadata
+class CoreTimeSeries: public mspass::seismic::BasicTimeSeries,
+    public mspass::utility::Metadata
 {
 public:
 /*!

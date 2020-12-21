@@ -19,8 +19,10 @@ out of the regular order of an object created by inheritance.  I hope
 that does not cause problems. */
 TimeSeries::TimeSeries(const BasicTimeSeries& b, const Metadata& m,
   const ErrorLogger& elg, const ProcessingHistory& his,const vector<double>& d)
-    : BasicTimeSeries(b), Metadata(m), ProcessingHistory(his),elog(elg)
+    : ProcessingHistory(his),elog(elg)
 {
+  this->BasicTimeSeries::operator=(b);
+  this->Metadata::operator=(m);
   this->s=d;
 }
 TimeSeries& TimeSeries::operator=(const TimeSeries& parent)

@@ -9,7 +9,7 @@ namespace mspass::seismic{
   in the MsPASS framework.   It extends CoreTimeSeries by adding
   common MsPASS components (ProcessingHistory).  It may evolve with additional
   special features.  */
-class TimeSeries : virtual public mspass::seismic::CoreTimeSeries,
+class TimeSeries : public mspass::seismic::CoreTimeSeries,
    public mspass::utility::ProcessingHistory
 {
 public:
