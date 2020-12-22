@@ -1,5 +1,4 @@
 #include "mspass/seismic/Seismogram.h"
-#include "mspass/utility/ProcessingHistory.h"
 namespace mspass::seismic
 {
 using namespace std;

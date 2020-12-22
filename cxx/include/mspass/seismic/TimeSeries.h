@@ -2,6 +2,7 @@
 #define _TIMESERIES_H_
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/ProcessingHistory.h"
+#include "mspass/utility/ErrorLogger.h"
 namespace mspass::seismic{
   /*! \brief Implemntation of TimeSeries for MsPASS.
 
