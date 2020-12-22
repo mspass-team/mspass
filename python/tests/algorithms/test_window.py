@@ -10,8 +10,8 @@ import numpy as np
 import pytest
 
 from mspasspy.ccore.seismic import (TimeReferenceType,
-                                    CoreTimeSeries,
-                                    CoreSeismogram,
+                                    _CoreTimeSeries,
+                                    _CoreSeismogram,
                                     TimeSeries,
                                     Seismogram,
                                     TimeSeriesEnsemble, 
@@ -27,7 +27,7 @@ from mspasspy.algorithms.window import scale
 from mspasspy.algorithms.window import WindowData
 
 
-# Build a simple CoreTimeSeries and CoreSeismogram with 
+# Build a simple _CoreTimeSeries and _CoreSeismogram with 
 # 100 points and a small number of spikes that allow checking
 # by a hand calculation
 def setbasics(d, n):
@@ -42,9 +42,9 @@ def setbasics(d, n):
     d.live=True
 
 def test_scale():
-    dts=CoreTimeSeries(9)
+    dts=_CoreTimeSeries(9)
     dir=setbasics(dts,9)
-    d3c=CoreSeismogram(5)
+    d3c=_CoreSeismogram(5)
     setbasics(d3c,5)
     dts.data[0]=3.0
     dts.data[1]=2.0

@@ -1,6 +1,4 @@
 #include "mspass/seismic/Seismogram.h"
-#include "mspass/utility/ProcessingHistory.h"
-#include "mspass/utility/ErrorLogger.h"
 namespace mspass::seismic
 {
 using namespace std;
