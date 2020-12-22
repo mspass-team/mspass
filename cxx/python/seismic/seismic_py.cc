@@ -319,7 +319,7 @@ PYBIND11_MODULE(seismic, m) {
         boost::archive::text_oarchive arcorets(sscorets);
         arcorets<<dynamic_cast<const ProcessingHistory&>(self);
         stringstream sselog;
-	boost::archive::text_oarchive arelog(sselog);
+      	boost::archive::text_oarchive arelog(sselog);
         arelog<<self.elog;
         // these are behind getter/setters
         bool cardinal=self.cardinal();
@@ -333,12 +333,12 @@ PYBIND11_MODULE(seismic, m) {
         size_t u_size = self.u.rows()*self.u.columns();
         if(u_size==0){
           py::array_t<double, py::array::f_style> darr(u_size,NULL);
-          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
+          return py::make_tuple(sbuf,ssbts.str(),sselog.str(),sscorets.str(),
             cardinal, orthogonal,sstm.str(),
             u_size, darr);
         } else {
           py::array_t<double, py::array::f_style> darr(u_size,self.u.get_address(0,0));
-          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),
+          return py::make_tuple(sbuf,ssbts.str(),sselog.str(),sscorets.str(),
             cardinal, orthogonal,sstm.str(),
             u_size, darr);
         }
@@ -352,9 +352,9 @@ PYBIND11_MODULE(seismic, m) {
         BasicTimeSeries bts;
         arbts>>bts;
         stringstream sselog(t[2].cast<std::string>());
-	boost::archive::text_iarchive arelog(sselog);
-	ErrorLogger elog;
-	arelog>>elog;
+        boost::archive::text_iarchive arelog(sselog);
+        ErrorLogger elog;
+        arelog>>elog;
         stringstream sscorets(t[3].cast<std::string>());
         boost::archive::text_iarchive arcorets(sscorets);
         ProcessingHistory corets;
@@ -367,7 +367,7 @@ PYBIND11_MODULE(seismic, m) {
         artm>>tmatrix;
         size_t u_size = t[7].cast<size_t>();
         py::array_t<double, py::array::f_style> darr;
-        darr=t[7].cast<py::array_t<double, py::array::f_style>>();
+        darr=t[8].cast<py::array_t<double, py::array::f_style>>();
         py::buffer_info info = darr.request();
         if(u_size==0) {
           dmatrix u;
@@ -443,16 +443,16 @@ PYBIND11_MODULE(seismic, m) {
           ssbts << std::setprecision(17);
           boost::archive::text_oarchive arbts(ssbts);
           arbts << dynamic_cast<const BasicTimeSeries&>(self);
-	  stringstream sselog;
-	  boost::archive::text_oarchive arelog(sselog);
-	  arelog << self.elog;
+          stringstream sselog;
+          boost::archive::text_oarchive arelog(sselog);
+          arelog << self.elog;
           stringstream sscorets;
           boost::archive::text_oarchive arcorets(sscorets);
           arcorets<<dynamic_cast<const ProcessingHistory&>(self);
           //This creates a numpy array alias from the vector container
           //without a move or copy of the data
           py::array_t<double, py::array::f_style> darr(self.s.size(),&(self.s[0]));
-          return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
+          return py::make_tuple(sbuf,ssbts.str(),sselog.str(),sscorets.str(),darr);
         },
         [](py::tuple t) {
          string sbuf=t[0].cast<std::string>();
@@ -462,10 +462,10 @@ PYBIND11_MODULE(seismic, m) {
          boost::archive::text_iarchive arbts(ssbts);
          BasicTimeSeries bts;
          arbts>>bts;
-	 stringstream sselog(t[2].cast<std::string>());
-	 boost::archive::text_iarchive arelog(sselog);
-	 ErrorLogger elog;
-	 arelog >> elog;
+         stringstream sselog(t[2].cast<std::string>());
+         boost::archive::text_iarchive arelog(sselog);
+         ErrorLogger elog;
+         arelog >> elog;
          stringstream sscorets(t[3].cast<std::string>());
          boost::archive::text_iarchive arcorets(sscorets);
          ProcessingHistory corets;
