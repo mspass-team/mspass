@@ -20,8 +20,7 @@ from array import array
 from mspasspy.ccore.seismic import (BasicTimeSeries,
                             TimeSeries,
                             Seismogram,
-                            CoreSeismogram,
-                            CoreTimeSeries,
+                            _CoreSeismogram,
                             TimeReferenceType,
                             TimeSeries,
                             DoubleVector)
@@ -124,7 +123,7 @@ class Database(pymongo.database.Database):
             mspass_object = TimeSeries({k:md[k] for k in md}, np.ndarray([0], dtype=np.float64))
             mspass_object.npts = md['npts']  # fixme
         elif object['dtype'] == 'Seismogram':
-            mspass_object = Seismogram(CoreSeismogram(md, False))
+            mspass_object = Seismogram(_CoreSeismogram(md, False))
         else:
             return None
 
@@ -205,7 +204,7 @@ class Database(pymongo.database.Database):
 
         for k in copied_metadata:
             if not str(copied_metadata[k]).strip():
-                copied_metadata.clear(k)
+                copied_metadata.erase(k)
 
         # skip _id and attributes in other collections
         skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
