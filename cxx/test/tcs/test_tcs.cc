@@ -2,7 +2,8 @@
 //#include <boost/config.hpp>
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
-#include "mspass/seismic/CoreSeismogram.h"
+#include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/Seismogram.h"
 #include "mspass/utility/AntelopePf.h"
 using namespace std;
 using namespace mspass::utility;
@@ -233,6 +234,8 @@ int main(int argc, char **argv)
 		<< s3.u(1,3) << ", "
 		<< s3.u(2,3) << endl;
 
+	/* We put this to metadata for verification below */
+	s3.put_string("foo","bar");
         CoreSeismogram s4(s3);
         cout << "Testing free_surface_transformation method"<<endl;
 	SlownessVector uvec;
@@ -244,7 +247,67 @@ int main(int argc, char **argv)
         cout << "Computed transformation matrix:"<<endl;
         tm=s4.get_transformation_matrix();
         cout << tm<<endl;
-        exit(0);
+	///
+	cout << "Testing Seismogram constructor from CoreSeismogram"<<endl;
+	Seismogram s5(s4);
+	cout << "Transformation matrix - should be same as previous"<<endl;
+	tm = s5.get_transformation_matrix();
+	cout << tm<<endl;
+	if(s5.live())
+		cout << "Result is still marked live"<<endl;
+	else
+	{
+		cout << "Result is marked dead - error"<<endl;
+        	exit(-1);
+	}
+	cout << "Testing Seismogram copy constructor"<<endl;
+	Seismogram s6(s5);
+	if(s6.live())
+		cout << "Result is still marked live"<<endl;
+	else
+	{
+		cout << "Result is marked dead - error"<<endl;
+        	exit(-1);
+	}
+	/* Test BasicTimeSeries was copied properly and verify 
+	expected set metadata were copied */
+	if( (s5.t0()!=s6.t0()) || (s5.npts()!=s6.npts()) || (s5.dt()!=s6.dt())
+		|| (s5.timetype() != s6.timetype()) )
+	{
+		cout << "Error - copy constructor for Seismogram did not "
+			<< "cleanly copy BasicTimeSeries"<<endl
+			<< "Bug fix is required"<<endl;
+		exit(-1);
+	}
+	try {
+		string strtest;
+		strtest=s5.get_string("foo");
+		if(strtest!="bar")
+		{
+			cout << "Error - test metadata in Seismogram was garbled"<<endl;
+			exit(-1);
+		}
+	}catch( MsPASSError& merr)
+	{
+		cout << merr.what()<<endl;
+		cout << "Partial copy constructor for Seismogram from CoreSeismogram has a problem"<<endl;
+		exit(-1);
+	}
+	try {
+		string strtest;
+		strtest=s6.get_string("foo");
+		if(strtest!="bar")
+		{
+			cout << "Error - test metadata in Seismogram was garbled in Seismogram copy constructor"<<endl;
+			exit(-1);
+		}
+	}catch( MsPASSError& merr)
+	{
+		cout << merr.what();
+		cout << "Seismogram copy constructor has a problem"<<endl;
+		exit(-1);
+	}
+	cout << "Copy constructor for Seismogram passed all tests"<<endl;
     }
     catch (MsPASSError&  serr)
     {
