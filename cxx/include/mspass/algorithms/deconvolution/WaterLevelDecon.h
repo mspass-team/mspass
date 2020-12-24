@@ -15,7 +15,7 @@ public:
     WaterLevelDecon(const mspass::utility::Metadata &md,const std::vector<double> &wavelet,const std::vector<double> &data);
     void changeparameter(const mspass::utility::Metadata &md);
     void process();
-    /*! \brif Return the actual output of the deconvolution operator.
+    /*! \brief Return the actual output of the deconvolution operator.
 
     The actual output is defined as w^-1*w and is compable to resolution
     kernels in linear inverse theory.   Although not required we would

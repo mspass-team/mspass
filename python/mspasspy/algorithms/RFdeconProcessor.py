@@ -395,7 +395,8 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
     try:
         for k in range(3):
             processor.loaddata(result,component=k)
-            x=processor.process()
+            processor.process()
+            x=processor.getresult()
             # overwrite this component's data in the result Seismogram
             # Use some caution handling any size mismatch
             nx=len(x)
@@ -416,6 +417,8 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
     except RuntimeError as err:
         result.kill()
         result.elog.log_error('RFdecon',err.repr(err),ErrorSeverity.Invalid)
+    except:
+        print("RFDecon:  something threw an unexpected exception - results may be invalid")
     finally:
         if(save_history):
             result.new_map('RFdecon',algid,AtomicType.Seismogram)
