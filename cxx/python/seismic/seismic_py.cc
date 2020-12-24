@@ -296,6 +296,8 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<>())
     .def(py::init<const Seismogram&>())
     .def(py::init<const CoreSeismogram&>())
+    .def(py::init<const size_t>())
+    .def(py::init<const BasicTimeSeries&,const Metadata&>())
     .def(py::init<const CoreSeismogram&,const std::string>())
     /* Don't think we really want to expose this to python if we don't need to
     .def(py::init<const BasicTimeSeries&,const Metadata&, const CoreSeismogram,
@@ -375,8 +377,16 @@ PYBIND11_MODULE(seismic, m) {
     py::class_<TimeSeries,CoreTimeSeries,ProcessingHistory>(m,"TimeSeries","mspass scalar time series data object")
       .def(py::init<>())
       .def(py::init<const TimeSeries&>())
+      .def(py::init<const size_t>())
       .def(py::init<const CoreTimeSeries&>())
+      .def(py::init<const BasicTimeSeries&,const Metadata&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
+      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem 
+	helpful for python.  Uncomment if this proves false. 
+      .def(py::init<const BasicTimeSeries&, const Metadata&, const ErrorLogger&, const ProcessingHistory&,
+		const std::vector<double>&>())
+	*/
+      /* this is a python only constructor using a dict. */
       .def(py::init([](py::dict d, py::array_t<double, py::array::f_style | py::array::forcecast> b) {
         py::buffer_info info = b.request();
         if (info.ndim != 1)

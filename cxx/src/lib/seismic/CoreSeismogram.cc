@@ -39,12 +39,17 @@ CoreSeismogram::CoreSeismogram() : BasicTimeSeries(),Metadata()
             else
                 tmatrix[i][j]=0.0;
 }
-CoreSeismogram::CoreSeismogram(size_t nsamples)
+CoreSeismogram::CoreSeismogram(const size_t nsamples)
     : BasicTimeSeries(),Metadata()
 {
-  this->set_dt(1.0);
-  this->set_t0(0.0);
-  this->set_npts(nsamples);
+  /* IMPORTANT:  this constructor assumes BasicTimeSeries initializes the
+  equivalent of:
+  set_dt(1.0)
+  set_t0(0.0)
+  set_tref(TimeReferenceType::Relative)
+  this->kill() - i.e. marked dead
+  */
+  this->set_npts(nsamples);  // Assume this is an allocator of the 3xnsamples matrix
   components_are_orthogonal=true;
   components_are_cardinal=true;
   for(int i=0; i<3; ++i)

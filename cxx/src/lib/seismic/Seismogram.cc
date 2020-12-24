@@ -4,7 +4,13 @@ namespace mspass::seismic
 {
 using namespace std;
 using namespace mspass::utility;
-
+Seismogram::Seismogram(const size_t nsamples)
+   : CoreSeismogram(nsamples),ProcessingHistory()
+{
+/* Note this constructor body needs no content.  Just a wrapper for CoreSeismogram */
+}
+/* For some weird reason we can't call the parallel constructors for
+CoreSeismogram.  Instead we have to call the constructors for the base class.*/
 Seismogram::Seismogram(const CoreSeismogram& d)
     : CoreSeismogram(d),ProcessingHistory()
 {
@@ -19,20 +25,49 @@ Seismogram::Seismogram(const CoreSeismogram& d, const string alg)
   this->ProcessingHistory::set_jobname(string("test"));
   this->ProcessingHistory::set_jobid(string("test"));
 }
+Seismogram::Seismogram(const BasicTimeSeries& bts, const Metadata& md)
+  : CoreSeismogram(md,false),ProcessingHistory()
+{
+  /* the contents of BasicTimeSeries passed will override anything set from
+  Metadata in this section.  Note also the very important use of this
+  for the putters to assure proper resolution of the virtual methods */
+  this->kill();   //set dead because buffer has invalid data
+  this->set_t0(bts.t0());
+  this->set_tref(bts.timetype());
+  this->set_npts(bts.npts());
+  /* The handling of these is kind of awkward in the current api.  Good to
+  hide it here.   Note in current implementation force_t0_shift sets the
+  shift as valid (what shifted tests).  I am slightly worried there are
+  cases where the else block could create an inconsistency with active
+  source data if this method were used to convert raw data.  Careful if
+  this is used in that context where the time reference is defined
+  implicitly as shot time with no tie to an absolute time reference */
+  if(bts.shifted())
+  {
+    double t0shift;
+    t0shift=bts.time_reference();
+    this->force_t0_shift(t0shift);
+  }
+  else
+  {
+    this->force_t0_shift(0.0);
+  }
+}
+/* Note that the : notation listing base classes only works if
+CoreSeismogram has public virtual.  Without that declaration in the .h
+this would generate compiler errors complaining that x is not a direct
+base of CoreSeismogram.   For some mysterious, probably related reason,
+I couldn't get the dmatrix u to be allowed in the copy construct
+sequence - following the :.  Minor performance hit duplicating a
+default construction of u before calling operator= on the last line of
+this constructor.*/
 Seismogram::Seismogram(const BasicTimeSeries& b, const Metadata& m,
   const ProcessingHistory& his,const bool card, const bool ortho,
   const dmatrix& tm, const dmatrix& uin)
+  : ProcessingHistory(his)
 {
-  /* for reasons I couldn't figure out these couldn't appear in the copy
-  constructor chain following the : above.   Compiler complained about
-  these not being a direct base.  Sure there is a way to fix that, but
-  the difference in calling operator= like here is next to nothing.*/
-  BasicTimeSeries bts=dynamic_cast<BasicTimeSeries&>(*this);
-  bts=BasicTimeSeries::operator=(b);
-  Metadata mdthis=dynamic_cast<Metadata&>(*this);
-  mdthis=Metadata::operator=(m);
-  ProcessingHistory histhis=dynamic_cast<ProcessingHistory&>(*this);
-  histhis=ProcessingHistory::operator=(his);
+  this->BasicTimeSeries::operator=(b);
+  this->Metadata::operator=(m);
   components_are_cardinal=card;
   components_are_orthogonal=ortho;
   int i,j;

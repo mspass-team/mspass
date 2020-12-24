@@ -10,12 +10,31 @@ namespace mspass::seismic{
 This is the working version of a three-component seismogram object used
 in the MsPASS framework.   It extends CoreSeismogram by adding
 ProcessingHistory.   */
-class Seismogram : public mspass::seismic::CoreSeismogram,
+class Seismogram : virtual public mspass::seismic::CoreSeismogram,
    public mspass::utility::ProcessingHistory
 {
 public:
   /*! Default constructor.   Only runs subclass default constructors. */
   Seismogram() : mspass::seismic::CoreSeismogram(),mspass::utility::ProcessingHistory(){};
+  /*! Bare bones constructor allocates space and little else.
+
+  Sometimes it is helpful to construct a skeleton that can be fleshed out
+  manually.   This constructor allocates a 3xnsamples array and sets the
+  matrix to all zeros.  It also sets the orientation information to cardinal
+  and defines the data in relative time units.  The data are marked dead
+  because the assumption is the caller will fill out commonly needed basic
+  Metadata, load some kind of sample data into the data matrix, and then
+  call the set_live method when that process is completed.   That kind of
+  manipulation is most common in preparing simulation or test data where
+  the common tags on real data do not exist and need to be defined manually
+  for the simulatioon or test.   The history section is initialized with
+  the default constructor, which currently means it is empty.   If a simulation
+  or test requires a history origin the user must load it manaually.
+
+  \param nsamples is the number of 3c vector samples to iniitalize the
+    object with (creates a 3xnsamples matrix).
+    */
+  Seismogram(const size_t nsamples);
   /*! \brief Construct from lower level CoreSeismogram.
 
   In MsPASS CoreSeismogram has the primary functions that define the
@@ -49,6 +68,21 @@ public:
   \param alg is the algorithm name to set for the origin history record.
   */
   Seismogram(const mspass::seismic::CoreSeismogram& d, const std::string alg);
+  /*! \brief Partial constructor from base classes.
+
+  This is a partial constructor useful sometimes for building a Seismogram
+  object from scratch such as in a simultion.  It clones the Metadata and
+  uses attributes in BasicTimeSeries to build a framework that data can
+  be added into.  It initialzies the data array to npts stored in the
+  BasicTimeSeries passed to the constructor.
+
+  \param bts is the BasicTimeSeries that overrides any md data.
+  \param md is the Metadata cloned to make the partially constructed object.
+  */
+  Seismogram(const mspass::seismic::BasicTimeSeries& bts,
+      const mspass::utility::Metadata& md);
+
+
   /*! \brief Construct from all pieces.
 
 This constructor build a Seismogram object from all the pieces that define
@@ -107,7 +141,7 @@ with serialization.
   history data through this method.
 
   \param h is the ProcessingHistory data to copy into this Seismogram.
-  */  
+  */
   void load_history(const mspass::utility::ProcessingHistory& h);
 };
 }//END mspass::seismic namespace
