@@ -32,7 +32,7 @@ from mspasspy.ccore.utility import (MetadataDefinitions,
                                     dmatrix,
                                     ErrorLogger,
                                     ErrorSeverity, ProcessingHistory)
-from mspasspy.db.schema import MetadataSchema
+from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 from obspy import Inventory
 from obspy import UTCDateTime
@@ -56,6 +56,7 @@ class Database(pymongo.database.Database):
     def __init__(self, *args, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
         self.metadata_schema = MetadataSchema()
+        self.database_schema = DatabaseSchema()
 
     def set_metadata_definition(self, schema):
         self.metadata_schema = schema
@@ -100,7 +101,7 @@ class Database(pymongo.database.Database):
         md['source_time'] = source['time']
         md['source_magnitude'] = source['magnitude']
 
-        if object['dtype'] == 'TimeSeries':
+        if collection == 'wf_TimeSeries':
             channel = self['channel'].find_one({'_id': object['channel_id']})
             md['chan'] = channel['chan']
             md['channel_hang'] = channel['hang']
@@ -113,7 +114,7 @@ class Database(pymongo.database.Database):
             md['channel_endtime'] = channel['endtime']
 
         schema = self.metadata_schema if not metadata_schema else metadata_schema
-        if object['dtype'] == 'TimeSeries':
+        if collection == 'wf_TimeSeries':
             read_metadata_def = schema.TimeSeries
         else:
             read_metadata_def = schema.Seismogram
@@ -123,10 +124,10 @@ class Database(pymongo.database.Database):
                 if type(md[k]) != read_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
-        if object['dtype'] == 'TimeSeries':
+        if collection == 'wf_TimeSeries':
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
             mspass_object.npts = md['npts']  # fixme
-        elif object['dtype'] == 'Seismogram':
+        elif collection == 'wf_Seismogram':
             mspass_object = Seismogram(_CoreSeismogram(md, False))
         else:
             return None
@@ -151,7 +152,7 @@ class Database(pymongo.database.Database):
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
-                  exclude=None, collection=None, metadata_schema=None):
+                  exclude=None, collection=None, database_schema=None):
 
         # 1. save data
         if storage_mode == "file":
@@ -168,9 +169,9 @@ class Database(pymongo.database.Database):
         mspass_object['storage_mode'] = storage_mode
 
         # 2. save metadata
-        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_schema)
+        self.update_metadata(mspass_object, update_all, exclude, collection, database_schema)
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None):
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, database_schema=None):
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -199,11 +200,11 @@ class Database(pymongo.database.Database):
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)
 
-        schema = self.metadata_schema if not metadata_schema else metadata_schema
+        schema = self.database_schema if not database_schema else database_schema
         if isinstance(mspass_object, TimeSeries):
-            update_metadata_def = schema.TimeSeries
+            update_metadata_def = schema.wf_TimeSeries
         else:
-            update_metadata_def = schema.Seismogram
+            update_metadata_def = schema.wf_Seismogram
         update_metadata_def.clear_aliases(copied_metadata)
 
         for k in copied_metadata:
@@ -220,9 +221,9 @@ class Database(pymongo.database.Database):
                 continue
             if update_metadata_def.is_defined(k):
                 if type(copied_metadata[k]) != update_metadata_def.type(k):
-                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
-                if not update_metadata_def.readonly(k):
-                    insert_dict[k] = copied_metadata[k]
+                    if k != 'history_object_id': # fixme to str
+                        raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
+                insert_dict[k] = copied_metadata[k]
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
@@ -235,9 +236,13 @@ class Database(pymongo.database.Database):
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
             col = self['error_logs']
+            if isinstance(mspass_object, Seismogram):
+                wf_id_name = 'wf_Seismogram_id'
+            elif isinstance(mspass_object, TimeSeries):
+                wf_id_name = 'wf_TimeSeries_id'
             for id in mspass_object['elog_id']:
                 filter = {'_id': id}
-                col.update_one(filter, {'$set': {'wf_id': mspass_object['_id']}})
+                col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
 
     def read_ensemble_data(self, objectid_list, collection, load_history=True, metadata_schema=None):
         if collection not in ['wf_TimeSeries', 'wf_Seismogram']:
@@ -249,28 +254,33 @@ class Database(pymongo.database.Database):
             ensemble = SeismogramEnsemble(len(objectid_list))
 
         for i in range(len(objectid_list)):
-            ensemble.member[i] = self.read_data(objectid_list[i], collection, load_history, metadata_schema)
+            ensemble.member.append(self.read_data(objectid_list[i], collection, load_history, metadata_schema))
 
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, storage_mode, collection=None, dfile_list=None, dir_list=None,
-                           update_all=False, exclude_keys=None, exclude_objects=None, metadata_schema=None):
+                           update_all=False, exclude_keys=None, exclude_objects=None, database_schema=None):
+        if not exclude_objects:
+            exclude_objects = []
+
         # 1. save data
         if storage_mode == "file":
             if dfile_list:  # new file
                 j = 0
                 for i in range(len(ensemble_object.member)):
                     if i not in exclude_objects:
-                        ensemble_object.member[i]['dfile'] = dir_list[j]
+                        ensemble_object.member[i]['dfile'] = dfile_list[j]
                         ensemble_object.member[i]['dir'] = dir_list[j]
                         ensemble_object.member[i]['storage_mode'] = storage_mode
                         j += 1
             for i in range(len(ensemble_object.member)):
-                self._save_data_to_dfile(ensemble_object.member[i])
+                if i not in exclude_objects:
+                    self._save_data_to_dfile(ensemble_object.member[i])
         elif storage_mode == "gridfs":
             for i in range(len(ensemble_object.member)):
-                self._save_data_to_gridfs(ensemble_object.member[i])
-                ensemble_object.member[i]['storage_mode'] = storage_mode
+                if i not in exclude_objects:
+                    self._save_data_to_gridfs(ensemble_object.member[i])
+                    ensemble_object.member[i]['storage_mode'] = storage_mode
         elif storage_mode == "url":
             pass
         else:
@@ -278,13 +288,15 @@ class Database(pymongo.database.Database):
 
         # 2. save metadata
         self.update_ensemble_metadata(ensemble_object, update_all, exclude_keys, exclude_objects,
-                                      collection, metadata_schema)
+                                      collection, database_schema)
 
     def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
-                                 collection=None, metadata_schema=None):
+                                 collection=None, database_schema=None):
+        if not exclude_objects:
+            exclude_objects = []
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
-                self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection, metadata_schema)
+                self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection, database_schema)
 
     def read_distributed_data(self, cursors, collection, load_history=True, metadata_schema=None, format='spark',
                               spark_context=None):
@@ -312,13 +324,6 @@ class Database(pymongo.database.Database):
             d.put_string('time_standard', 'relative')
         else:
             d.put_string('time_standard', 'UTC')
-        if 'dtype' not in d:
-            if isinstance(d, TimeSeries):
-                d['dtype'] = 'TimeSeries'
-            elif isinstance(d, Seismogram):
-                d['dtype'] = 'Seismogram'
-            else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
 
     def _save_history(self, mspass_object, collection='history_object'):
         history_col = self[collection]
