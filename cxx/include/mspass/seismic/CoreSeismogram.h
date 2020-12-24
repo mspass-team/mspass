@@ -252,7 +252,7 @@ to an exception if the the time requested is outside the data range.
 */
         std::vector<double> operator[](const double time)const;
 /*! Standard destructor. */
-	~CoreSeismogram(){};
+	virtual ~CoreSeismogram(){};
 /*!
  Apply inverse transformation matrix to return data to cardinal direction components.
 

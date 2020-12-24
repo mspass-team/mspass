@@ -18,11 +18,16 @@ CoreTimeSeries::CoreTimeSeries() : BasicTimeSeries(), Metadata()
     this->set_t0(0.0);
     this->set_npts(0);
 }
-CoreTimeSeries::CoreTimeSeries(size_t nsin) : BasicTimeSeries(), Metadata()
+CoreTimeSeries::CoreTimeSeries(const size_t nsin) : BasicTimeSeries(), Metadata()
 {
-  this->set_dt(1.0);
-  this->set_t0(0.0);
-  /* This assumes current api where set_npts allocates and initializes s
+  /* IMPORTANT:  this constructor assumes BasicTimeSeries initializes the
+  equivalent of:
+  set_dt(1.0)
+  set_t0(0.0)
+  set_tref(TimeReferenceType::Relative)
+  this->kill() - i.e. marked dead
+
+  It further assumes current api where set_npts allocates and initializes s
   to nsin zeros */
   this->CoreTimeSeries::set_npts(nsin);
 }
