@@ -1,4 +1,9 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/operators.h>
+
 
 #include <mspass/algorithms/deconvolution/WaterLevelDecon.h>
 #include <mspass/algorithms/deconvolution/LeastSquareDecon.h>
@@ -6,6 +11,8 @@
 #include <mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h>
 #include <mspass/algorithms/deconvolution/GeneralIterDecon.h>
 #include <mspass/algorithms/deconvolution/CNR3CDecon.h>
+PYBIND11_MAKE_OPAQUE(std::vector<double>);
+
 
 namespace mspass {
 namespace mspasspy {
@@ -81,6 +88,18 @@ PYBIND11_MODULE(deconvolution, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.deconvolution";
   m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
 
+  /* Need this to support returns of std::vector in children of ScalarDecon*/
+  //py::bind_vector<std::vector<double>>(m, "DoubleVector");
+
+  py::class_<std::vector<double>>(m, "DoubleVector")
+    .def(py::init<>())
+    .def("clear", &std::vector<double>::clear)
+    .def("pop_back", &std::vector<double>::pop_back)
+    .def("__len__", [](const std::vector<double> &v) { return v.size(); })
+    .def("__iter__", [](std::vector<double> &v) {
+       return py::make_iterator(v.begin(), v.end());
+    }, py::keep_alive<0, 1>())
+  ;
   /* this is a set of deconvolution related classes*/
   py::class_<ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
     .def("load",&ScalarDecon::load,
