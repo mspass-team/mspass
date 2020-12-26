@@ -19,9 +19,8 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 sys.path.append("python/tests")
-sys.path.append("python/mspasspy/db/")
-from database import Database, read_distributed_data
-from client import Client
+from mspasspy.db.database import Database, read_distributed_data
+from mspasspy.db.client import Client
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
