@@ -501,15 +501,20 @@ class TestDatabase():
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
 
+    @mongomock.patch(servers=(('localhost', 27017),))
     def test_read_distributed_data(self, spark_context):
+        client = pymongo.MongoClient('localhost')
+        db = Database(client, 'mspasspy_test_db', codec_options=client._codec_options,
+                      _store=client._store['mspasspy_test_db'])
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
-        self.db.save_data(ts1, 'gridfs')
-        self.db.save_data(ts2, 'gridfs')
-        self.db.save_data(ts3, 'gridfs')
+        db.save_data(ts1, 'gridfs')
+        db.save_data(ts2, 'gridfs')
+        db.save_data(ts3, 'gridfs')
         cursors = self.db['wf_TimeSeries'].find({})
-        spark_list = read_distributed_data('localhost', 'dbtest', cursors, 'wf_TimeSeries', spark_context=spark_context)
+        spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'wf_TimeSeries',
+                                           spark_context=spark_context)
         list = spark_list.collect()
         # assert len(list) == 3
         # for l in list:

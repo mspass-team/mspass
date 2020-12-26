@@ -41,6 +41,9 @@ from obspy import Catalog
 
 
 def _read_distributed_data(client_arg, db_name, id, collection, load_history=True, metadata_schema=None):
+    from pymongo import MongoClient
+    # from pymongo import database
+    # from mspasspy.db import Database
     client = MongoClient(client_arg)
     db = Database(client, db_name)
     return db.read_data(id, collection, load_history, metadata_schema)
