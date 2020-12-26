@@ -20,7 +20,7 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 sys.path.append("python/mspasspy/db/")
-from database import Database
+from database import Database, read_distributed_data
 from client import Client
 from helper import (get_live_seismogram,
                     get_live_timeseries,
@@ -510,8 +510,8 @@ class TestDatabase():
         self.db.save_data(ts2, 'gridfs')
         self.db.save_data(ts3, 'gridfs')
         cursors = self.db['wf_TimeSeries'].find({})
-        spark_list = self.db.read_distributed_data(cursors, 'wf_TimeSeries', spark_context=spark_context)
-        # list = spark_list.collect()
+        spark_list = read_distributed_data('localhost', 'dbtest', cursors, 'wf_TimeSeries', spark_context=spark_context)
+        list = spark_list.collect()
         # assert len(list) == 3
         # for l in list:
         #     assert l
