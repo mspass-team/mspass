@@ -13,6 +13,7 @@ import bson.errors
 import bson.objectid
 import dask.bag as daskbag
 import findspark
+from pymongo import MongoClient
 from pyspark import SparkConf, SparkContext
 import gridfs
 import pymongo
@@ -39,6 +40,29 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from obspy import Inventory
 from obspy import UTCDateTime
 from obspy import Catalog
+
+
+def _read_distributed_data(client_arg, db_name, id, collection, load_history=True, metadata_schema=None):
+    from pymongo import MongoClient
+    from pymongo import database
+    from mspasspy.db import Database
+    client = MongoClient(client_arg)
+    db = Database(client, db_name, codec_options=client._codec_options, _store=client._store[db_name])
+    return db.read_data(id, collection, load_history, metadata_schema)
+
+
+def read_distributed_data(client_arg, db_name, cursors, collection, load_history=True, metadata_schema=None,
+                          format='spark', spark_context=None):
+    if format == 'spark':
+        list = spark_context.parallelize(cursors)
+        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], collection, load_history,
+                                                           metadata_schema))
+    elif format == 'dask':
+        list = daskbag.from_sequence(cursors)
+        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], collection, load_history,
+                                                           metadata_schema))
+    else:
+        raise TypeError("Only spark and dask are supported")
 
 
 class Database(pymongo.database.Database):
@@ -223,7 +247,7 @@ class Database(pymongo.database.Database):
                 continue
             if update_metadata_def.is_defined(k):
                 if type(copied_metadata[k]) != update_metadata_def.type(k):
-                    if k != 'history_object_id': # fixme to str
+                    if k != 'history_object_id':  # fixme to str
                         raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
                 insert_dict[k] = copied_metadata[k]
             elif update_all:
@@ -300,8 +324,8 @@ class Database(pymongo.database.Database):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection, database_schema)
 
-    def read_distributed_data(self, cursors, collection, load_history=True, metadata_schema=None, format='spark',
-                              spark_context=None):
+    def _read_distributed_data(self, cursors, collection, load_history=True, metadata_schema=None, format='spark',
+                               spark_context=None):
         if format == 'spark':
             list = spark_context.parallelize(cursors)
             return list.map(lambda cur: self.read_data(cur['_id'], collection, load_history, metadata_schema))
@@ -310,8 +334,6 @@ class Database(pymongo.database.Database):
             return list.map(lambda cur: self.read_data(cur['_id'], collection, load_history, metadata_schema))
         else:
             raise TypeError("Only spark and dask are supported")
-
-
 
     def detele_wf(self, object_id, collection):
         self[collection].delete_one({'_id': object_id})
