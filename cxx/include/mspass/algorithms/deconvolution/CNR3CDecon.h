@@ -44,13 +44,21 @@ public:
   /*! Return a metric of the estimated bandwidth divided by total frequency range*/
   double bandwidth_fraction() const
   {
-    return (high_edge_f-low_edge_f)/f_range;
+    if(f_range<=0.0)
+      return 0.0;
+    else
+      return (high_edge_f-low_edge_f)/f_range;
   };
   /*! Return bandwidth in dB. */
   double bandwidth() const
   {
-    double ratio=high_edge_f/low_edge_f;
-    return 20.0*log10(ratio);
+    if(f_range<=0.0)
+	return 0.0;
+    else
+    {
+      double ratio=high_edge_f/low_edge_f;
+      return 20.0*log10(ratio);
+    }
   };
 };
 /*! \brief Absract base class for algorithms handling full 3C data.

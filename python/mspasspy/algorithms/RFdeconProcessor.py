@@ -194,7 +194,7 @@ class RFdeconProcessor:
                 nvector=n 
         self.processor.loadnoise(nvector) 
 
-    def process(self):
+    def apply(self):
         """
         Compute the RF estimate using the algorithm defined internally.
     
@@ -395,8 +395,7 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
     try:
         for k in range(3):
             processor.loaddata(result,component=k)
-            processor.process()
-            x=processor.getresult()
+            x=processor.apply()
             # overwrite this component's data in the result Seismogram
             # Use some caution handling any size mismatch
             nx=len(x)
@@ -418,7 +417,9 @@ def RFdecon(processor,d,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
         result.kill()
         result.elog.log_error('RFdecon',err.repr(err),ErrorSeverity.Invalid)
     except:
-        print("RFDecon:  something threw an unexpected exception - results may be invalid")
+        print("RFDecon:  something threw an unexpected exception - this is a bug and needs to be fixed.\nKilling result from RFdecon.")
+        result.kill()
+        result.elog.log_error('RFdecon','Unexpected exception caught',ErrorSeverity.Invalid)
     finally:
         if(save_history):
             result.new_map('RFdecon',algid,AtomicType.Seismogram)
