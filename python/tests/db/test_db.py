@@ -12,6 +12,7 @@ import sys
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata
+from pyspark import SparkConf, SparkContext
 
 from mspasspy.db.schema import MetadataSchema
 from mspasspy.util import logging_helper
@@ -26,8 +27,9 @@ from helper import (get_live_seismogram,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
+
 class TestClient():
-    
+
     def setup_class(self):
         self.c1 = Client('mongodb://localhost/my_database')
         self.c2 = Client('localhost')
@@ -41,14 +43,15 @@ class TestClient():
 
     def test_get_default_database(self):
         assert self.c1.get_default_database().name == 'my_database'
-        with pytest.raises(pymongo.errors.ConfigurationError, match = 'No default database'):
+        with pytest.raises(pymongo.errors.ConfigurationError, match='No default database'):
             self.c2.get_default_database()
 
     def test_get_database(self):
         assert self.c1.get_database().name == 'my_database'
         assert self.c2.get_database('my_db').name == 'my_db'
-        with pytest.raises(pymongo.errors.ConfigurationError, match = 'No default database'):
+        with pytest.raises(pymongo.errors.ConfigurationError, match='No default database'):
             self.c2.get_database()
+
 
 class TestDatabase():
 
@@ -56,7 +59,7 @@ class TestDatabase():
         enable_gridfs_integration()
         client = mongomock.MongoClient('localhost')
         Database.__bases__ = (mongomock.database.Database,)
-        self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
+        self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store=client._store['dbtest'])
         self.metadata_def = MetadataSchema()
 
         self.test_ts = get_live_timeseries()
@@ -86,7 +89,8 @@ class TestDatabase():
                                     'endtime': datetime.utcnow().timestamp()})
         self.db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
                                        'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
-                                    'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0, 'hang': 1.0})
+                                       'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                                       'hang': 1.0})
         self.db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'magnitude': 1.0})
 
@@ -96,11 +100,10 @@ class TestDatabase():
         self.test_ts['source_id'] = source_id
         self.test_ts['channel_id'] = channel_id
 
-
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
         tmp_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational) # multi elogs fix me
+        tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational)  # multi elogs fix me
         errs = tmp_ts.elog.get_error_log()
         self.db._save_elog(tmp_ts)
         assert len(tmp_ts['elog_id']) != 0
@@ -127,7 +130,7 @@ class TestDatabase():
         tmp_seis_2['dfile'] = tmp_seis['dfile']
         tmp_seis_2['foff'] = tmp_seis['foff']
         self.db._read_data_from_dfile(tmp_seis_2)
-        assert all(a.any() == b.any() for a,b in zip(tmp_seis.data, tmp_seis_2.data))
+        assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         tmp_ts = get_live_timeseries()
         tmp_ts['dir'] = 'python/tests/data/'
@@ -261,7 +264,8 @@ class TestDatabase():
         seis2 = self.db.read_data(seis['_id'], 'wf_Seismogram')
 
         wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
-                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id', 'history_object_id',
+                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id',
+                   'history_object_id',
                    'time_standard', 'tmatrix']
         for key in wf_keys:
             if key in seis:
@@ -420,7 +424,6 @@ class TestDatabase():
         assert res['tst'] != time + 1
         assert res['starttime'] == time_new
 
-
     def test_save_ensemble_data(self):
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
@@ -481,7 +484,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts3)
         self.db.save_ensemble_data(ts_ensemble, 'gridfs')
         res = self.db.read_ensemble_data([ts_ensemble.member[0]['_id'], ts_ensemble.member[1]['_id'],
-                                    ts_ensemble.member[2]['_id']], 'wf_TimeSeries')
+                                          ts_ensemble.member[2]['_id']], 'wf_TimeSeries')
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
@@ -501,28 +504,97 @@ class TestDatabase():
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
 
-    @mongomock.patch(servers=(('localhost', 27017),))
-    def test_read_distributed_data(self, spark_context):
-        client = pymongo.MongoClient('localhost')
-        db = Database(client, 'mspasspy_test_db', codec_options=client._codec_options,
-                      _store=client._store['mspasspy_test_db'])
-        ts1 = copy.deepcopy(self.test_ts)
-        ts2 = copy.deepcopy(self.test_ts)
-        ts3 = copy.deepcopy(self.test_ts)
-        db.save_data(ts1, 'gridfs')
-        db.save_data(ts2, 'gridfs')
-        db.save_data(ts3, 'gridfs')
-        cursors = self.db['wf_TimeSeries'].find({})
-        spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'wf_TimeSeries',
-                                           spark_context=spark_context)
-        list = spark_list.collect()
-        # assert len(list) == 3
-        # for l in list:
-        #     assert l
-        #     assert np.isclose(l.data, ts1.data).all()
 
     def teardown_class(self):
         os.remove('python/tests/data/test_db_output')
 
+def helper(sc):
+    client = pymongo.MongoClient('localhost')
+    db = Database(client, 'mspasspy_test_db')
+
+    test_ts = get_live_timeseries()
+
+    site_id = ObjectId()
+    channel_id = ObjectId()
+    source_id = ObjectId()
+    db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                                'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                                'endtime': datetime.utcnow().timestamp()})
+    db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
+                                   'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
+                                   'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                                   'hang': 1.0})
+    db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
+                                  'depth': 3.1, 'magnitude': 1.0})
+    test_ts['site_id'] = site_id
+    test_ts['source_id'] = source_id
+    test_ts['channel_id'] = channel_id
+
+    ts1 = copy.deepcopy(test_ts)
+    ts2 = copy.deepcopy(test_ts)
+    ts3 = copy.deepcopy(test_ts)
+
+    db.save_data(ts1, 'gridfs')
+    db.save_data(ts2, 'gridfs')
+    db.save_data(ts3, 'gridfs')
+    cursors = db['wf_TimeSeries'].find({})
+    spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'wf_TimeSeries',
+                                       spark_context=sc)
+    list = spark_list.collect()
+    assert len(list) == 3
+    for l in list:
+        assert l
+        assert np.isclose(l.data, test_ts.data).all()
+
+    client = pymongo.MongoClient('localhost')
+    client.drop_database('mspasspy_test_db')
+
+@mongomock.patch(servers=(('localhost', 27017),))
+def test_read_distributed_data(spark_context):
+    client = pymongo.MongoClient('localhost')
+    db = Database(client, 'mspasspy_test_db', _store=client._store['mspasspy_test_db'])
+
+    test_ts = get_live_timeseries()
+
+    site_id = ObjectId()
+    channel_id = ObjectId()
+    source_id = ObjectId()
+    db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                           'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                           'endtime': datetime.utcnow().timestamp()})
+    db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
+                              'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
+                              'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                              'hang': 1.0})
+    db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
+                             'depth': 3.1, 'magnitude': 1.0})
+    test_ts['site_id'] = site_id
+    test_ts['source_id'] = source_id
+    test_ts['channel_id'] = channel_id
+
+    ts1 = copy.deepcopy(test_ts)
+    ts2 = copy.deepcopy(test_ts)
+    ts3 = copy.deepcopy(test_ts)
+
+    db.save_data(ts1, 'gridfs')
+    db.save_data(ts2, 'gridfs')
+    db.save_data(ts3, 'gridfs')
+    cursors = db['wf_TimeSeries'].find({})
+    spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'wf_TimeSeries',
+                                       spark_context=spark_context)
+    list = spark_list.collect()
+    assert len(list) == 3
+    for l in list:
+        assert l
+        assert np.isclose(l.data, test_ts.data).all()
+
+    client = pymongo.MongoClient('localhost')
+    client.drop_database('mspasspy_test_db')
+
+
 if __name__ == '__main__':
-    pass
+    appName = 'mspass-test'
+    master = 'local'
+    conf = SparkConf().setAppName(appName).setMaster(master)
+    sc = SparkContext(conf=conf)
+    helper(sc)
