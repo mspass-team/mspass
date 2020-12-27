@@ -424,7 +424,16 @@ BandwidthData EstimateBandwidth(const double signal_df,
     }
   }
   /* Return the zeroed result object if no data exceeded the snr threshold.*/
-  if(i>=(s_range-1)) return result;
+  if(i>=(s_range-1))
+  {
+    result.low_edge_f=0.0;
+    result.high_edge_f=0.0;
+    result.low_edge_snr=0.0;
+    result.high_edge_snr=0.0;
+    /* This is the most important one to set 0.0*/
+    result.f_range=0.0;
+    return result;
+  } 
   /* Now search from the high end to find upper band edge - same algorithm
   reversed direction. */
   searching=false;
@@ -461,6 +470,7 @@ BandwidthData EstimateBandwidth(const double signal_df,
       }
     }
   }
+  result.f_range=result.high_edge_f-result.low_edge_f;
   return result;
 }
 /* this method is really just a wrapper for the Seismogram, boolean
@@ -549,7 +559,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     to compute the bandwidth of the shaping wavelet in process.   This is the
     ONLY place right now this is computed.  Caution in order if there are
     changes in implementation later. */
-    this->pssignal=this->ThreeCPower(decondata);
+    this->pssignal=this->ThreeCPower(dtmp);
     if(nload)
     {
       Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
@@ -675,33 +685,14 @@ void CNR3CDecon::loadnoise_wavelet(const TimeSeries& n)
 //cout << "Entering loadnoise_wavelet"<<endl;
   if(n.dead()) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received data marked dead",
 		    ErrorSeverity::Invalid);
+  if(n.npts()<=0) throw MsPASSError("CNR3CDecon::loadnoise_wavelet method received an empty data vector.",ErrorSeverity::Invalid);
   try{
-    /* If the noise data length is larger than the operator we silenetly
-    truncate it.  If less we zero pad*/
-    CoreTimeSeries work(n);
-    if(n.npts()>FFTDeconOperator::nfft)
-    {
-      TimeWindow twork(n.t0(),n.time(FFTDeconOperator::nfft-1));
-      work=WindowData(dynamic_cast<const CoreTimeSeries&>(n),twork);
-    }
-    else if(n.npts()<FFTDeconOperator::nfft)
-    {
-      work.s.clear();
-      work.s.reserve(FFTDeconOperator::nfft);
-      for(int i=0;i<n.npts();++i)
-        work.s.push_back(n.s[i]);
-      for(int i=n.npts();i<FFTDeconOperator::nfft;++i) work.s.push_back(0.0);
-    }
-    /* Note the above is totally bypassed if n.npts equal nfft - no need
-    for a new copy because work is a copy of n. */
     if(n.npts()!=wnoise_engine.taper_length())
     {
       wnoise_engine=MTPowerSpectrumEngine(n.npts(),
         wnoise_engine.time_bandwidth_product(),wnoise_engine.number_tapers());
     }
-    psnoise=this->wnoise_engine.apply(TimeSeries(work,"INVALID"));
-//DEBUG
-//cout << "Exiting loadnoise_wavelet"<<endl;
+    psnoise=this->wnoise_engine.apply(n);
   }catch(...){throw;};
 }
 
@@ -890,7 +881,6 @@ void post_bandwidth_data(Seismogram& d,const BandwidthData& bwd)
   d.put("CNR3CDecon_high_f_snr",bwd.high_edge_snr);
 }
 /*  DEBUG Temporary for debug - remove or comment out for release */
-/*
 void print_bwdata(const BandwidthData& bwd)
 {
   cout <<"low edge frequency="<<bwd.low_edge_f<<endl
@@ -899,7 +889,6 @@ void print_bwdata(const BandwidthData& bwd)
    << "high edge snr="<<bwd.high_edge_snr<<endl
    << "Computed bandwidth (db)="<<bwd.bandwidth()<<endl;
 }
-*/
 Seismogram CNR3CDecon::process()
 {
 //DEBUG
@@ -917,14 +906,12 @@ Seismogram CNR3CDecon::process()
     BandwidthData bo;
     bo=band_overlap(wavelet_bwd, signal_bwd);
     //DEBUG
-    /*
     cout << "Bandwidth data from wavelet"<<endl;
     print_bwdata(wavelet_bwd);
     cout << "Bandwidth data from 3D data"<<endl;
     print_bwdata(signal_bwd);
     cout << "Bandwidth data overlap "<<endl;
     print_bwdata(bo);
-    */
     /* Note both of the quantities in this test must be in consistent
     untis of dB */
     if(bo.bandwidth()<(this->decon_bandwidth_cutoff))

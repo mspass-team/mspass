@@ -89,17 +89,8 @@ PYBIND11_MODULE(deconvolution, m) {
   m.doc() = "A submodule for deconvolution namespace of ccore.algorithms";
 
   /* Need this to support returns of std::vector in children of ScalarDecon*/
-  //py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  py::bind_vector<std::vector<double>>(m, "DoubleVector");
 
-  py::class_<std::vector<double>>(m, "DoubleVector")
-    .def(py::init<>())
-    .def("clear", &std::vector<double>::clear)
-    .def("pop_back", &std::vector<double>::pop_back)
-    .def("__len__", [](const std::vector<double> &v) { return v.size(); })
-    .def("__iter__", [](std::vector<double> &v) {
-       return py::make_iterator(v.begin(), v.end());
-    }, py::keep_alive<0, 1>())
-  ;
   /* this is a set of deconvolution related classes*/
   py::class_<ScalarDecon,PyScalarDecon>(m,"ScalarDecon","Base class for scalar TimeSeries data")
     .def("load",&ScalarDecon::load,
