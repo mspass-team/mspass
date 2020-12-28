@@ -1,12 +1,7 @@
 import copy
-import mongomock
 import numpy as np
 import pymongo
-import pytest
 import sys
-from bson.codec_options import CodecOptions
-from bson.raw_bson import RawBSONDocument
-from unittest.mock import patch, Mock
 
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -16,7 +11,10 @@ from mspasspy.db.database import Database, read_distributed_data
 from helper import (get_live_seismogram,
                     get_live_timeseries)
 
+
+
 def test_read_distributed_data(spark_context):
+    Database.__bases__ = (pymongo.database.Database,)
     client = pymongo.MongoClient('localhost')
     client.drop_database('mspasspy_test_db')
 
@@ -62,6 +60,7 @@ def test_read_distributed_data(spark_context):
 
 
 def test_read_distributed_data_dask():
+    Database.__bases__ = (pymongo.database.Database,)
     client = pymongo.MongoClient('localhost')
     client.drop_database('mspasspy_test_db')
 
