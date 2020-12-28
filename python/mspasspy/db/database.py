@@ -13,7 +13,6 @@ import bson.errors
 import bson.objectid
 import dask.bag as daskbag
 from pymongo import MongoClient
-from pytest_mongo import factories
 import gridfs
 import pymongo
 import numpy as np
