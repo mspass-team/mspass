@@ -172,7 +172,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
       u()
 {
     const string base_error("CoreSeismogram constructor from 3 Time Series:  ");
-    size_t i,j;
+    int i,j;
     /* This is needed in case nsamp does not match s.size(0) */
     size_t nstest = ts[component_to_clone].s.size();
     if(nsamp!=nstest) this->nsamp=nstest;
@@ -210,9 +210,9 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     // Load up these temporary arrays inside this try block and arrange to
     // throw an exception if required metadata are missing
     try {
-        /* WARNING hang and vang attributes in Metadata 
-        are always assumed to have been read from a database where they 
-        were stored in degrees.  We convert these to radians below to 
+        /* WARNING hang and vang attributes in Metadata
+        are always assumed to have been read from a database where they
+        were stored in degrees.  We convert these to radians below to
         compute the transformation matrix. */
         hang[0]=ts[0].get_double("hang");
         hang[1]=ts[1].get_double("hang");
@@ -228,9 +228,9 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         ss << "Message posted by Metadata::get_double:  "<<mde.what()<<endl;
 	throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    /* We couldn't get here if hang and vang were not set on comp 0 so 
+    /* We couldn't get here if hang and vang were not set on comp 0 so
        we don't test for that condition.  We do need to clear hang and vang
-       from result here, however, as both attributes are meaningless 
+       from result here, however, as both attributes are meaningless
        for a 3C seismogram */
     this->clear("hang");
     this->clear("vang");
@@ -768,7 +768,7 @@ bool CoreSeismogram::set_transformation_matrix(py::object tmatrix_py)
     if(py::isinstance<py::array>(tmatrix_py)) {
         auto tmatrix_ary = tmatrix_py.cast<py::array_t<double, py::array::c_style | py::array::forcecast>>();
         py::buffer_info info = tmatrix_ary.request();
-        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) || 
+        if ((info.ndim == 2 && info.shape[0]*info.shape[1] == 9) ||
             (info.ndim == 1 && info.shape[0] == 9)
            )
             return this->set_transformation_matrix(static_cast<double(*)[3]>(info.ptr));
@@ -858,8 +858,8 @@ CoreSeismogram& CoreSeismogram::operator*=(const double scale)
 }
 CoreSeismogram& CoreSeismogram::operator+=(const CoreSeismogram& data)
 {
-    size_t i,i0,iend;
-    size_t j,j0=0;
+    int i,iend,jend;
+    size_t j,i0,j0;
     // Sun's compiler complains about const objects without this.
     CoreSeismogram& d=const_cast<CoreSeismogram&>(data);
     // Silently do nothing if d is marked dead
@@ -870,31 +870,95 @@ CoreSeismogram& CoreSeismogram::operator+=(const CoreSeismogram& data)
     if(d.tref!=(this->tref))
         throw MsPASSError("CoreSeismogram += operator cannot handle data with inconsistent time base\n",
                           ErrorSeverity::Invalid);
-    //
-    // First we have to determine range fo sum for d into this
-    //
-    i0=d.sample_number(this->mt0);
-    if(i0<0)
+    /* this defines the range of left and right hand sides to be summed */
+    i=d.sample_number(this->mt0);
+    if(i<0)
     {
-        j=-i0;
-        i0=0;
+      j0=this->sample_number(d.t0());
+      i0=0;
+    }
+    else
+    {
+      j0=0;
+      i0=i;
     }
     iend=d.sample_number(this->endtime());
-    if(iend>(d.u.columns()-1))
+    jend=this->sample_number(d.endtime());
+    if(iend>=(d.npts()))
     {
-        iend=d.u.columns()-1;
+        iend=d.npts()-1;
     }
-    //
-    // IMPORTANT:  This algorithm simply assumes zero_gaps has been called
-    // and/or d was checked for gaps befor calling this operatr.
-    // It will produce garbage for most raw gap (sample level) marking schemes
-    //
-    for(i=i0,j=j0; i<=iend; ++i,++j) {
+    if(jend>=this->npts())
+    {
+      jend=this->npts()-1;
+    }
+    for(i=i0,j=j0; i<=iend && j<=jend; ++i,++j)
+    {
         this->u(0,j)+=d.u(0,i);
         this->u(1,j)+=d.u(1,i);
         this->u(2,j)+=d.u(2,i);
     }
     return(*this);
+}
+/* IMPORTANT:  this code is absolutely identical to that for operator+=
+except the += in the last loop becomes -=.  Any changes in operator+=
+must have exactly the same change here (other than a message with a
+tag to the function)*/
+CoreSeismogram& CoreSeismogram::operator-=(const CoreSeismogram& data)
+{
+    int i,iend,jend;
+    size_t j,i0,j0;
+    // Sun's compiler complains about const objects without this.
+    CoreSeismogram& d=const_cast<CoreSeismogram&>(data);
+    // Silently do nothing if d is marked dead
+    if(!d.mlive) return(*this);
+    // Silently do nothing if d does not overlap with data to contain sum
+    if( (d.endtime()<mt0)
+            || (d.mt0>(this->endtime())) ) return(*this);
+    if(d.tref!=(this->tref))
+        throw MsPASSError("CoreSeismogram += operator cannot handle data with inconsistent time base\n",
+                          ErrorSeverity::Invalid);
+    /* this defines the range of left and right hand sides to be summed */
+    i=d.sample_number(this->mt0);
+    if(i<0)
+    {
+      j0=this->sample_number(d.t0());
+      i0=0;
+    }
+    else
+    {
+      j0=0;
+      i0=i;
+    }
+    iend=d.sample_number(this->endtime());
+    jend=this->sample_number(d.endtime());
+    if(iend>=(d.npts()))
+    {
+        iend=d.npts()-1;
+    }
+    if(jend>=this->npts())
+    {
+      jend=this->npts()-1;
+    }
+    for(i=i0,j=j0; i<=iend && j<=jend; ++i,++j)
+    {
+        this->u(0,j)-=d.u(0,i);
+        this->u(1,j)-=d.u(1,i);
+        this->u(2,j)-=d.u(2,i);
+    }
+    return(*this);
+}
+const CoreSeismogram CoreSeismogram::operator+(const CoreSeismogram& other) const
+{
+  CoreSeismogram result(*this);
+  result += other;
+  return result;
+}
+const CoreSeismogram CoreSeismogram::operator-(const CoreSeismogram& other) const
+{
+  CoreSeismogram result(*this);
+  result -= other;
+  return result;
 }
 void CoreSeismogram::set_dt(const double sample_interval)
 {
@@ -990,7 +1054,9 @@ vector<double> CoreSeismogram::operator[] (const double t) const
 {
     try {
         vector<double> result;
-        size_t i=this->sample_number(t);
+        int i=this->sample_number(t);
+        /* could test for a negative i and i too large but we assume
+        the dmatrix container will throw an exception if it resolves that way*/
         for(int k=0;k<3;++k)
           result.push_back(this->u(k,i));
         return result;
