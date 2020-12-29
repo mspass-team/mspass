@@ -223,7 +223,7 @@ def test_Metadata():
             assert md[i] == md_copy[i]
 
     del md["<class 'numpy.ndarray'>"]
-    md_copy.erase("<class 'numpy.ndarray'>")
+    md_copy.clear("<class 'numpy.ndarray'>")
     assert not "<class 'numpy.ndarray'>" in md
     assert not "<class 'numpy.ndarray'>" in md_copy
     assert md.keys() == md_copy.keys()
@@ -289,7 +289,7 @@ def test_MetadataBase(MetadataBase):
 
     md_copy = MetadataBase(md)
     del md["<class 'numpy.ndarray'>"]
-    md_copy.erase("<class 'numpy.ndarray'>")
+    md_copy.clear("<class 'numpy.ndarray'>")
     assert not "<class 'numpy.ndarray'>" in md
     assert not "<class 'numpy.ndarray'>" in md_copy
     assert md.keys() == md_copy.keys()
@@ -370,7 +370,7 @@ def test_CoreSeismogram():
     md['tmatrix'] = 42
     with pytest.raises(MsPASSError, match = "not recognized"):
         CoreSeismogram(md, False)
-    md.erase('tmatrix')
+    md.clear('tmatrix')
     with pytest.raises(MsPASSError, match = "Error trying to extract"):
         CoreSeismogram(md, False)
     md['tmatrix'] = {4:2}
