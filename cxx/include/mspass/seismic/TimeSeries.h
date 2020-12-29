@@ -107,6 +107,21 @@ function */
     : mspass::seismic::CoreTimeSeries(parent), mspass::utility::ProcessingHistory(parent){};
   /*! Standard assignment operator. */
   TimeSeries& operator=(const TimeSeries& parent);
+  TimeSeries& operator+=(const TimeSeries& d)
+  {
+    dynamic_cast<CoreTimeSeries&>(*this)+=dynamic_cast<const CoreTimeSeries&>(d);
+    return(*this);
+  };
+  TimeSeries& operator*=(const double scale)
+  {
+    dynamic_cast<CoreTimeSeries&>(*this) *= scale;
+    return *this;
+  };
+  TimeSeries& operator-=(const TimeSeries& d)
+  {
+    dynamic_cast<CoreTimeSeries&>(*this)-=dynamic_cast<const CoreTimeSeries&>(d);
+    return(*this);
+  };
   void load_history(const mspass::utility::ProcessingHistory& h);
 };
 }//END mspass::seismic namespace

@@ -60,7 +60,7 @@ It is common to need to ask for the time of a given sample.
 This standardizes this common operation in an obvious way.
 //\param i - sample number to compute time for.
 **/
-	double time(const size_t i)const
+	double time(const int i)const
         {
             return(mt0+mdt*static_cast<double>(i));
         };
@@ -71,7 +71,7 @@ not tested for validity compared to the data range.  This is the
 callers responsibility as this is a common error condition that
 should not require the overhead of an exception.
 **/
-	size_t sample_number(double t)const
+	int sample_number(double t)const
         {
             return(round((t-mt0)/mdt));
         };

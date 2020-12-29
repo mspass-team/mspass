@@ -238,6 +238,10 @@ PYBIND11_MODULE(seismic, m) {
     .def("set_t0",&CoreTimeSeries::set_t0,
       "Set data definition of time of sample 0 (overrides BasicTimeSeries virtual method)")
     .def(py::self += py::self)
+    .def(py::self -= py::self)
+    .def(py::self + py::self)
+    .def(py::self - py::self)
+    .def(py::self *= double())
     .def_readwrite("data",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
   ;
   py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"_CoreSeismogram","Defines basic concepts of a three-component seismogram")
@@ -287,6 +291,10 @@ PYBIND11_MODULE(seismic, m) {
         self.set_transformation_matrix(tm);
       },"3x3 transformation matrix")
     .def(py::self += py::self)
+    .def(py::self -= py::self)
+    .def(py::self + py::self)
+    .def(py::self - py::self)
+    .def(py::self *= double())
     /* Place holder for data array.   Probably want this exposed through
     Seismogram api */
     .def_readwrite("data",&CoreSeismogram::u)
@@ -381,8 +389,8 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const BasicTimeSeries&,const Metadata&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
-      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem 
-	helpful for python.  Uncomment if this proves false. 
+      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem
+	helpful for python.  Uncomment if this proves false.
       .def(py::init<const BasicTimeSeries&, const Metadata&, const ErrorLogger&, const ProcessingHistory&,
 		const std::vector<double>&>())
 	*/

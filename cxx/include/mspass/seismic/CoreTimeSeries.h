@@ -128,14 +128,60 @@ of this data object.
 /*!
 Standard assignment operator.
 **/
-	CoreTimeSeries& operator=(const CoreTimeSeries&);
-/*!
-Summation operator.  Simple version of stack.  Aligns data before
-summing.
+	CoreTimeSeries& operator=(const CoreTimeSeries& parent);
+/*! \brief Summation operator.
+
+Summing data from signals of irregular length requires handling potential
+mismatches in size and overlap.  This behaves the way a += operator should
+logically behave in that situation.  That is, because the lhs is where
+the sum is being accumulated, the size is always controlled by the left hand
+side of the operator.  Any portions of the right hand side that are outside
+the t0 to endtime() of the left hand side are silently discarded.   If the
+start time of the right hand side is greater than t0 or the endtime is less
+than endtime of the lhs there will be discontinuties in the sum there
+the ends of the rhs are inside the range of the lhs.
+
+\param d is other signal to add to this.
+\exception MsPASSError can be thrown if lhs and rhs do not have matching
+time standards.
 **/
 	CoreTimeSeries& operator+=(const CoreTimeSeries& d);
+	/*! Addition operator.
+
+	This operator is implemented in a standard way utilizing operator+=.
+	For data with irregular start and end times that has an important
+	consequence;  the operator is not communative. i.e given x an y
+	z=x+y will not yield the same result as z=y+x.
+	*/
+	const CoreTimeSeries operator+(const CoreTimeSeries& other) const;
+
 /*! Multiply data by a scalar. */
 	CoreTimeSeries& operator*=(const double);
+	/*! \brief Subtraction operator.
+
+	Differencing data from signals of irregular length requires handling potential
+	mismatches in size and overlap.  This behaves the way a -= operator should
+	logically behave in that situation.  That is, because the lhs is where
+	the sum is being accumulated, the size is always controlled by the left hand
+	side of the operator.  Any portions of the right hand side that are outside
+	the t0 to endtime() of the left hand side are silently discarded.   If the
+	start time of the right hand side is greater than t0 or the endtime is less
+	than endtime of the lhs there will be discontinuties in the sum there
+	the ends of the rhs are inside the range of the lhs.
+
+	\param d is other signal to subract from this.
+	\exception MsPASSError can be thrown if lhs and rhs do not have matching
+	time standards.
+	**/
+	CoreTimeSeries& operator-=(const CoreTimeSeries& d);
+	/*! Subtraction operator.
+
+	This operator is implemented in a standard way utilizing operator-=.
+	For data with irregular start and end times that has an important
+	consequence;  the operator is not communative. i.e given x an y
+	z=x-y will not yield the same result as z=-(y-x).
+	*/
+	const CoreTimeSeries operator-(const CoreTimeSeries& other) const;
 /*!
 Extract a sample from data vector with range checking.
 Because the data vector is public in this interface
