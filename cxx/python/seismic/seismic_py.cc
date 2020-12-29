@@ -163,7 +163,7 @@ PYBIND11_MODULE(seismic, m) {
   timetype method
   set_tref
   */
-  py::class_<BasicTimeSeries,PyBasicTimeSeries>(m,"BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
+  py::class_<BasicTimeSeries,PyBasicTimeSeries>(m,"_BasicTimeSeries","Core common concepts for uniformly sampled 1D data")
     .def(py::init<>())
     .def("time",&BasicTimeSeries::time,"Return the computed time for a sample number (integer)")
     .def("sample_number",&BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
@@ -224,7 +224,7 @@ PYBIND11_MODULE(seismic, m) {
      https://pybind11.readthedocs.io/en/stable/advanced/misc.html#partitioning-code-over-multiple-extension-modules*/
   py::module_::import("mspasspy.ccore.utility");
 
-  py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"CoreTimeSeries","Defines basic concepts of a scalar time series")
+  py::class_<CoreTimeSeries,BasicTimeSeries,Metadata>(m,"_CoreTimeSeries","Defines basic concepts of a scalar time series")
     .def(py::init<>())
     .def(py::init<const CoreTimeSeries&>())
     .def(py::init<const size_t>())
@@ -244,7 +244,7 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::self *= double())
     .def_readwrite("data",&CoreTimeSeries::s,"Actual samples are stored in this data vector")
   ;
-  py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"CoreSeismogram","Defines basic concepts of a three-component seismogram")
+  py::class_<CoreSeismogram,BasicTimeSeries,Metadata>(m,"_CoreSeismogram","Defines basic concepts of a three-component seismogram")
     .def(py::init<>())
     .def(py::init<const CoreSeismogram&>())
     .def(py::init<const size_t>())
@@ -389,8 +389,8 @@ PYBIND11_MODULE(seismic, m) {
       .def(py::init<const CoreTimeSeries&>())
       .def(py::init<const BasicTimeSeries&,const Metadata&>())
       .def(py::init<const CoreTimeSeries&,const std::string>())
-      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem
-	helpful for python.  Uncomment if this proves false.
+      /* Not certain we should have this in the python api.  It is used in pickle interface but doesn't seem 
+	helpful for python.  Uncomment if this proves false. 
       .def(py::init<const BasicTimeSeries&, const Metadata&, const ErrorLogger&, const ProcessingHistory&,
 		const std::vector<double>&>())
 	*/
