@@ -97,8 +97,8 @@ Inheritance diagram for mspass::seismic::CoreTimeSeries:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a48794c92ef727de958653b7d395f6b5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a48794c92ef727de958653b7d395f6b5d">CoreTimeSeries</a> ()</td></tr>
 <tr class="separator:a48794c92ef727de958653b7d395f6b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed10ca1cc8781f4557bc547341d61587"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#aed10ca1cc8781f4557bc547341d61587">CoreTimeSeries</a> (size_t nsin)</td></tr>
-<tr class="separator:aed10ca1cc8781f4557bc547341d61587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cb99b254e48280ff9fd674976e53c4e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a0cb99b254e48280ff9fd674976e53c4e">CoreTimeSeries</a> (const size_t nsin)</td></tr>
+<tr class="separator:a0cb99b254e48280ff9fd674976e53c4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae44860d32e7ca37a66eca974546a62ea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#ae44860d32e7ca37a66eca974546a62ea">CoreTimeSeries</a> (const <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html">BasicTimeSeries</a> &amp;bts, const <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> &amp;md)</td></tr>
 <tr class="separator:ae44860d32e7ca37a66eca974546a62ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a8b98447f31911e6e18079541ab7b0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html#a4a8b98447f31911e6e18079541ab7b0d">CoreTimeSeries</a> (const <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html">CoreTimeSeries</a> &amp;)</td></tr>
@@ -333,8 +333,8 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 
 </div>
 </div>
-<a id="aed10ca1cc8781f4557bc547341d61587"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed10ca1cc8781f4557bc547341d61587">&#9670;&nbsp;</a></span>CoreTimeSeries() <span class="overload">[2/4]</span></h2>
+<a id="a0cb99b254e48280ff9fd674976e53c4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cb99b254e48280ff9fd674976e53c4e">&#9670;&nbsp;</a></span>CoreTimeSeries() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -342,7 +342,7 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
         <tr>
           <td class="memname">mspass::seismic::CoreTimeSeries::CoreTimeSeries </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype">const size_t&#160;</td>
           <td class="paramname"><em>nsin</em></td><td>)</td>
           <td></td>
         </tr>
@@ -377,7 +377,8 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Construct from components. </p>
+<p>Partially construct from components.</p>
+<p>There are times one wants to use the Metadata area as a template to flesh out a <a class="el" href="classmspass_1_1seismic_1_1_core_time_series.html" title="Scalar time series data object. ">CoreTimeSeries</a> as what might be called skin and bones: skin is Metadata and bones as <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects. ">BasicTimeSeries</a> data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int("npts")). It then creates the data vector of that length and initialzies it to all zeros. </p>
 
 </div>
 </div>

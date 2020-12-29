@@ -4,7 +4,7 @@
     <compoundname>mspass::seismic::CoreTimeSeries</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
     <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
-    <derivedcompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="virtual">mspass::seismic::TimeSeries</derivedcompoundref>
     <includes refid="_core_time_series_8h" local="no">CoreTimeSeries.h</includes>
       <sectiondef kind="public-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" static="no" mutable="no">
@@ -35,13 +35,13 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="32" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="14" bodyend="20"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aed10ca1cc8781f4557bc547341d61587" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a0cb99b254e48280ff9fd674976e53c4e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>mspass::seismic::CoreTimeSeries::CoreTimeSeries</definition>
-        <argsstring>(size_t nsin)</argsstring>
+        <argsstring>(const size_t nsin)</argsstring>
         <name>CoreTimeSeries</name>
         <param>
-          <type>size_t</type>
+          <type>const size_t</type>
           <declname>nsin</declname>
         </param>
         <briefdescription>
@@ -50,7 +50,7 @@
 <para>Similar to the default constructor but creates a vector of data with nsin samples and initializes all samples to 0.0. This vector can safely be accessed with the vector index operator (i.e. operator []). A corollary is that push_back or push_front applied to this vector will alter it&apos;s length so use this only if the size of the data to fill the object is already known. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="42" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="21" bodyend="28"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="42" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="21" bodyend="33"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -68,10 +68,10 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from components. </para>        </detaileddescription>
+<para>Partially construct from components.</para><para>There are times one wants to use the Metadata area as a template to flesh out a <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> as what might be called skin and bones: skin is Metadata and bones as <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(&quot;npts&quot;)). It then creates the data vector of that length and initialzies it to all zeros. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="44" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="51" bodyend="58"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="52" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="56" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -88,7 +88,7 @@
 <para>Standard copy constructor. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="48" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="31" bodyend="49"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="36" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -114,7 +114,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="62" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="114" bodyend="130"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="70" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="119" bodyend="135"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -140,7 +140,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="84" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="149" bodyend="173"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="92" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="154" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -153,7 +153,7 @@
 <para>This method syncs the npts attribute with the actual size of the vector s. It also syncs aliases in the same way as the set_npts method. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="91" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="174" bodyend="194"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="99" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="179" bodyend="199"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -179,7 +179,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="108" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="131" bodyend="148"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="136" bodyend="153"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -196,7 +196,7 @@
 <para>Standard assignment operator. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="123" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="60" bodyend="69"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="131" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="65" bodyend="74"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -213,7 +213,7 @@
 <para>Summation operator. Simple version of stack. Aligns data before summing. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="128" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="72" bodyend="108"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="77" bodyend="113"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -230,7 +230,7 @@
 <para>Multiply data by a scalar. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="130" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="109" bodyend="113"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="138" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="114" bodyend="118"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -263,7 +263,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="142" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="196" bodyend="208"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="150" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="201" bodyend="213"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -331,7 +331,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="17" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="16" bodyend="143"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="17" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="16" bodyend="151"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>ator</name></member>
@@ -343,7 +343,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>clear</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>clear_modified</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a48794c92ef727de958653b7d395f6b5d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aed10ca1cc8781f4557bc547341d61587" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a0cb99b254e48280ff9fd674976e53c4e" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae44860d32e7ca37a66eca974546a62ea" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>CoreTimeSeries</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>dead</name></member>

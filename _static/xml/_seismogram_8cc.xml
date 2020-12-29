@@ -3,7 +3,6 @@
   <compounddef id="_seismogram_8cc" kind="file" language="C++">
     <compoundname>Seismogram.cc</compoundname>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
-    <includes refid="_processing_history_8h" local="yes">mspass/utility/ProcessingHistory.h</includes>
     <incdepgraph>
       <node id="1273">
         <label>list</label>
@@ -53,8 +52,6 @@
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc</label>
         <link refid="_seismogram_8cc"/>
         <childnode refid="1265" relation="include">
-        </childnode>
-        <childnode refid="1295" relation="include">
         </childnode>
       </node>
       <node id="1286">
@@ -283,96 +280,130 @@
     </detaileddescription>
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ProcessingHistory.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref></highlight></codeline>
-<codeline lineno="4"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" kindref="member">Seismogram::Seismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>d)</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(d),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
-<codeline lineno="10"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="11"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="12"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>alg)</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(d),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
-<codeline lineno="14"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Not<sp/>sure<sp/>this<sp/>is<sp/>a<sp/>good<sp/>idea,<sp/>but<sp/>will<sp/>give<sp/>each<sp/>instance</highlight></codeline>
-<codeline lineno="16"><highlight class="comment"><sp/><sp/>created<sp/>by<sp/>this<sp/>constructor<sp/>a<sp/>uuid.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="17"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">=this-&gt;newid();</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" kindref="member">ProcessingHistory::set_as_origin</ref>(alg,</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,AtomicType::SEISMOGRAM,</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/>this-&gt;ProcessingHistory::set_jobname(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">));</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"><sp/><sp/>this-&gt;ProcessingHistory::set_jobid(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">));</highlight></codeline>
-<codeline lineno="21"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="22"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BasicTimeSeries&amp;<sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>m,</highlight></codeline>
-<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>his,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>card,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ortho,</highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>tm,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>uin)</highlight></codeline>
-<codeline lineno="25"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>for<sp/>reasons<sp/>I<sp/>couldn&apos;t<sp/>figure<sp/>out<sp/>these<sp/>couldn&apos;t<sp/>appear<sp/>in<sp/>the<sp/>copy</highlight></codeline>
-<codeline lineno="27"><highlight class="comment"><sp/><sp/>constructor<sp/>chain<sp/>following<sp/>the<sp/>:<sp/>above.<sp/><sp/><sp/>Compiler<sp/>complained<sp/>about</highlight></codeline>
-<codeline lineno="28"><highlight class="comment"><sp/><sp/>these<sp/>not<sp/>being<sp/>a<sp/>direct<sp/>base.<sp/><sp/>Sure<sp/>there<sp/>is<sp/>a<sp/>way<sp/>to<sp/>fix<sp/>that,<sp/>but</highlight></codeline>
-<codeline lineno="29"><highlight class="comment"><sp/><sp/>the<sp/>difference<sp/>in<sp/>calling<sp/>operator=<sp/>like<sp/>here<sp/>is<sp/>next<sp/>to<sp/>nothing.*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/>BasicTimeSeries<sp/>bts=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal">BasicTimeSeries&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/>bts=BasicTimeSeries::operator=(b);</highlight></codeline>
-<codeline lineno="32"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>mdthis=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
-<codeline lineno="33"><highlight class="normal"><sp/><sp/>mdthis=<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(m);</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref><sp/>histhis=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/>histhis=<ref refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" kindref="member">ProcessingHistory::operator=</ref>(his);</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/>components_are_cardinal=card;</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/>components_are_orthogonal=ortho;</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,j;</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;i&lt;3;++i)</highlight></codeline>
-<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(j=0;j&lt;3;++j)<sp/>tmatrix[i][j]=tm(i,j);</highlight></codeline>
-<codeline lineno="41"><highlight class="normal"><sp/><sp/>this-&gt;u=uin;</highlight></codeline>
-<codeline lineno="42"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="43"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>jobname,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>jobid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>readername,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>algid)</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(md,true),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
-<codeline lineno="46"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>algname(</highlight><highlight class="stringliteral">&quot;SeismogramMDConstructor&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/>this-&gt;set_jobname(jobname);</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/>this-&gt;set_jobid(jobid);</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>try<sp/>to<sp/>read<sp/>uuid<sp/>from<sp/>the<sp/>metadata<sp/>used<sp/>in<sp/>creation<sp/>with<sp/>the</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/><sp/>CoreSeismogram<sp/>constructor.<sp/><sp/><sp/>If<sp/>it<sp/>isn&apos;t<sp/>found<sp/>we<sp/>generate<sp/>it<sp/>from</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/><sp/>the<sp/>random<sp/>number<sp/>generator<sp/>and<sp/>post<sp/>a<sp/>complaint.</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>thisid;</highlight></codeline>
-<codeline lineno="56"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>thisid=this-&gt;get_string(</highlight><highlight class="stringliteral">&quot;uuid&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;set_id(thisid);</highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>sets<sp/>the<sp/>id<sp/>to<sp/>a<sp/>random<sp/>number<sp/>based<sp/>uuid<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>thisid=this-&gt;newid();</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;elog.log_error(algname,</highlight><highlight class="stringliteral">&quot;uuid<sp/>not<sp/>defined.\nSet<sp/>by<sp/>constructor<sp/>to&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+thisid,ErrorSeverity::Complaint);</highlight></codeline>
-<codeline lineno="65"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="66"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>mark_as_raw;</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>mark_as_raw=this-&gt;get_bool(</highlight><highlight class="stringliteral">&quot;rawdata&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;elog.log_error(algname,</highlight><highlight class="stringliteral">&quot;rawdata<sp/>boolean<sp/>not<sp/>found<sp/>-<sp/>default<sp/>to<sp/>false&quot;</highlight><highlight class="normal">,</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Complaint);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/>mark_as_raw=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" kindref="member">ProcessingHistory::set_as_origin</ref>(readername,algid,thisid,</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AtomicType::SEISMOGRAM,mark_as_raw);</highlight></codeline>
-<codeline lineno="77"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="78"><highlight class="normal">Seismogram&amp;<sp/>Seismogram::operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Seismogram&amp;<sp/>parent)</highlight></codeline>
-<codeline lineno="79"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
-<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;CoreSeismogram::operator=(parent);</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" kindref="member">ProcessingHistory::operator=</ref>(parent);</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="86"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Seismogram::load_history(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>h)</highlight></codeline>
-<codeline lineno="88"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" kindref="member">ProcessingHistory::operator=</ref>(h);</highlight></codeline>
-<codeline lineno="90"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="91"><highlight class="normal">}</highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref></highlight></codeline>
+<codeline lineno="3"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram_1a427934e69f38a6e5d195fe6a8563021c" kindref="member">Seismogram::Seismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsamples)</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/>:<sp/>CoreSeismogram(nsamples),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="8"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Note<sp/>this<sp/>constructor<sp/>body<sp/>needs<sp/>no<sp/>content.<sp/><sp/>Just<sp/>a<sp/>wrapper<sp/>for<sp/>CoreSeismogram<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>For<sp/>some<sp/>weird<sp/>reason<sp/>we<sp/>can&apos;t<sp/>call<sp/>the<sp/>parallel<sp/>constructors<sp/>for</highlight></codeline>
+<codeline lineno="12"><highlight class="comment">CoreSeismogram.<sp/><sp/>Instead<sp/>we<sp/>have<sp/>to<sp/>call<sp/>the<sp/>constructors<sp/>for<sp/>the<sp/>base<sp/>class.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(d),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="15"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>d,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>alg)</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(d),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="19"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Not<sp/>sure<sp/>this<sp/>is<sp/>a<sp/>good<sp/>idea,<sp/>but<sp/>will<sp/>give<sp/>each<sp/>instance</highlight></codeline>
+<codeline lineno="21"><highlight class="comment"><sp/><sp/>created<sp/>by<sp/>this<sp/>constructor<sp/>a<sp/>uuid.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">=this-&gt;newid();</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" kindref="member">ProcessingHistory::set_as_origin</ref>(alg,</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,AtomicType::SEISMOGRAM,</highlight><highlight class="keyword">false</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/>this-&gt;ProcessingHistory::set_jobname(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/>this-&gt;ProcessingHistory::set_jobid(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="26"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BasicTimeSeries&amp;<sp/>bts,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/>:<sp/>CoreSeismogram(md,false),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>the<sp/>contents<sp/>of<sp/>BasicTimeSeries<sp/>passed<sp/>will<sp/>override<sp/>anything<sp/>set<sp/>from</highlight></codeline>
+<codeline lineno="31"><highlight class="comment"><sp/><sp/>Metadata<sp/>in<sp/>this<sp/>section.<sp/><sp/>Note<sp/>also<sp/>the<sp/>very<sp/>important<sp/>use<sp/>of<sp/>this</highlight></codeline>
+<codeline lineno="32"><highlight class="comment"><sp/><sp/>for<sp/>the<sp/>putters<sp/>to<sp/>assure<sp/>proper<sp/>resolution<sp/>of<sp/>the<sp/>virtual<sp/>methods<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/>this-&gt;kill();<sp/><sp/><sp/></highlight><highlight class="comment">//set<sp/>dead<sp/>because<sp/>buffer<sp/>has<sp/>invalid<sp/>data</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>this-&gt;set_t0(bts.t0());</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>this-&gt;set_tref(bts.timetype());</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>this-&gt;set_npts(bts.npts());</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>handling<sp/>of<sp/>these<sp/>is<sp/>kind<sp/>of<sp/>awkward<sp/>in<sp/>the<sp/>current<sp/>api.<sp/><sp/>Good<sp/>to</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"><sp/><sp/>hide<sp/>it<sp/>here.<sp/><sp/><sp/>Note<sp/>in<sp/>current<sp/>implementation<sp/>force_t0_shift<sp/>sets<sp/>the</highlight></codeline>
+<codeline lineno="39"><highlight class="comment"><sp/><sp/>shift<sp/>as<sp/>valid<sp/>(what<sp/>shifted<sp/>tests).<sp/><sp/>I<sp/>am<sp/>slightly<sp/>worried<sp/>there<sp/>are</highlight></codeline>
+<codeline lineno="40"><highlight class="comment"><sp/><sp/>cases<sp/>where<sp/>the<sp/>else<sp/>block<sp/>could<sp/>create<sp/>an<sp/>inconsistency<sp/>with<sp/>active</highlight></codeline>
+<codeline lineno="41"><highlight class="comment"><sp/><sp/>source<sp/>data<sp/>if<sp/>this<sp/>method<sp/>were<sp/>used<sp/>to<sp/>convert<sp/>raw<sp/>data.<sp/><sp/>Careful<sp/>if</highlight></codeline>
+<codeline lineno="42"><highlight class="comment"><sp/><sp/>this<sp/>is<sp/>used<sp/>in<sp/>that<sp/>context<sp/>where<sp/>the<sp/>time<sp/>reference<sp/>is<sp/>defined</highlight></codeline>
+<codeline lineno="43"><highlight class="comment"><sp/><sp/>implicitly<sp/>as<sp/>shot<sp/>time<sp/>with<sp/>no<sp/>tie<sp/>to<sp/>an<sp/>absolute<sp/>time<sp/>reference<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(bts.shifted())</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0shift;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>t0shift=bts.time_reference();</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;force_t0_shift(t0shift);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;force_t0_shift(0.0);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>Note<sp/>that<sp/>the<sp/>:<sp/>notation<sp/>listing<sp/>base<sp/>classes<sp/>only<sp/>works<sp/>if</highlight></codeline>
+<codeline lineno="56"><highlight class="comment">CoreSeismogram<sp/>has<sp/>public<sp/>virtual.<sp/><sp/>Without<sp/>that<sp/>declaration<sp/>in<sp/>the<sp/>.h</highlight></codeline>
+<codeline lineno="57"><highlight class="comment">this<sp/>would<sp/>generate<sp/>compiler<sp/>errors<sp/>complaining<sp/>that<sp/>x<sp/>is<sp/>not<sp/>a<sp/>direct</highlight></codeline>
+<codeline lineno="58"><highlight class="comment">base<sp/>of<sp/>CoreSeismogram.<sp/><sp/><sp/>For<sp/>some<sp/>mysterious,<sp/>probably<sp/>related<sp/>reason,</highlight></codeline>
+<codeline lineno="59"><highlight class="comment">I<sp/>couldn&apos;t<sp/>get<sp/>the<sp/>dmatrix<sp/>u<sp/>to<sp/>be<sp/>allowed<sp/>in<sp/>the<sp/>copy<sp/>construct</highlight></codeline>
+<codeline lineno="60"><highlight class="comment">sequence<sp/>-<sp/>following<sp/>the<sp/>:.<sp/><sp/>Minor<sp/>performance<sp/>hit<sp/>duplicating<sp/>a</highlight></codeline>
+<codeline lineno="61"><highlight class="comment">default<sp/>construction<sp/>of<sp/>u<sp/>before<sp/>calling<sp/>operator=<sp/>on<sp/>the<sp/>last<sp/>line<sp/>of</highlight></codeline>
+<codeline lineno="62"><highlight class="comment">this<sp/>constructor.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>BasicTimeSeries&amp;<sp/>b,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>m,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>his,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>card,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>ortho,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>tm,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>uin)</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>:<sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>(his)</highlight></codeline>
+<codeline lineno="67"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::operator=(b);</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(m);</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>components_are_cardinal=card;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>components_are_orthogonal=ortho;</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,j;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;i&lt;3;++i)</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(j=0;j&lt;3;++j)<sp/>tmatrix[i][j]=tm(i,j);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/>this-&gt;u=uin;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="77"><highlight class="normal">Seismogram::Seismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>jobname,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>jobid,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>readername,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>algid)</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>CoreSeismogram(md,true),<ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>()</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>algname(</highlight><highlight class="stringliteral">&quot;SeismogramMDConstructor&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>this-&gt;set_jobname(jobname);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>this-&gt;set_jobid(jobid);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>try<sp/>to<sp/>read<sp/>uuid<sp/>from<sp/>the<sp/>metadata<sp/>used<sp/>in<sp/>creation<sp/>with<sp/>the</highlight></codeline>
+<codeline lineno="86"><highlight class="comment"><sp/><sp/>CoreSeismogram<sp/>constructor.<sp/><sp/><sp/>If<sp/>it<sp/>isn&apos;t<sp/>found<sp/>we<sp/>generate<sp/>it<sp/>from</highlight></codeline>
+<codeline lineno="87"><highlight class="comment"><sp/><sp/>the<sp/>random<sp/>number<sp/>generator<sp/>and<sp/>post<sp/>a<sp/>complaint.</highlight></codeline>
+<codeline lineno="88"><highlight class="comment"><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>thisid;</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>thisid=this-&gt;get_string(</highlight><highlight class="stringliteral">&quot;uuid&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;set_id(thisid);</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>sets<sp/>the<sp/>id<sp/>to<sp/>a<sp/>random<sp/>number<sp/>based<sp/>uuid<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/>thisid=this-&gt;newid();</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;elog.log_error(algname,</highlight><highlight class="stringliteral">&quot;uuid<sp/>not<sp/>defined.\nSet<sp/>by<sp/>constructor<sp/>to&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+thisid,ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>mark_as_raw;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/>mark_as_raw=this-&gt;get_bool(</highlight><highlight class="stringliteral">&quot;rawdata&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>&amp;<sp/>merr)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;elog.log_error(algname,</highlight><highlight class="stringliteral">&quot;rawdata<sp/>boolean<sp/>not<sp/>found<sp/>-<sp/>default<sp/>to<sp/>false&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Complaint);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/>mark_as_raw=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" kindref="member">ProcessingHistory::set_as_origin</ref>(readername,algid,thisid,</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AtomicType::SEISMOGRAM,mark_as_raw);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="112"><highlight class="normal">Seismogram&amp;<sp/>Seismogram::operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Seismogram&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;CoreSeismogram::operator=(parent);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" kindref="member">ProcessingHistory::operator=</ref>(parent);</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Seismogram::load_history(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history" kindref="compound">ProcessingHistory</ref>&amp;<sp/>h)</highlight></codeline>
+<codeline lineno="122"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" kindref="member">ProcessingHistory::operator=</ref>(h);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal">}</highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc"/>
   </compounddef>
