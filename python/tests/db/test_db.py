@@ -66,7 +66,7 @@ class TestDatabase():
         self.test_ts['extra2'] = 'extra2'  # exclude
         self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
         self.test_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        self.test_ts.erase('starttime')
+        self.test_ts.clear('starttime')
         self.test_ts['t0'] = datetime.utcnow().timestamp()
 
         self.test_seis = get_live_seismogram()
@@ -75,7 +75,7 @@ class TestDatabase():
         self.test_seis['extra2'] = 'extra2'  # exclude
         self.test_seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
         self.test_seis.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        self.test_seis.erase('starttime')
+        self.test_seis.clear('starttime')
         self.test_seis['t0'] = datetime.utcnow().timestamp()
         self.test_seis['tmatrix'] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
@@ -141,7 +141,7 @@ class TestDatabase():
         self.db._read_data_from_dfile(tmp_ts_2)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
-        tmp_ts.erase('dir')
+        tmp_ts.clear('dir')
         with pytest.raises(KeyError) as err:
             self.db._read_data_from_dfile(tmp_ts)
             assert err == KeyError("one of the keys: dir, dfile, foff is missing")
@@ -159,7 +159,7 @@ class TestDatabase():
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         with pytest.raises(KeyError) as err:
-            tmp_seis_2.erase('npts')
+            tmp_seis_2.clear('npts')
             self.db._read_data_from_gridfs(tmp_seis_2)
             assert err == KeyError("npts is not defined")
 
@@ -185,7 +185,7 @@ class TestDatabase():
         assert not gfsh.exists(id)
 
         with pytest.raises(KeyError) as err:
-            tmp_ts_2.erase('gridfs_id')
+            tmp_ts_2.clear('gridfs_id')
             self.db._read_data_from_gridfs(tmp_ts_2)
             assert err == KeyError("gridfs_id is not defined")
 
@@ -212,7 +212,7 @@ class TestDatabase():
         assert str(nodes) == str(loaded_nodes)
 
         with pytest.raises(KeyError) as err:
-            ts_2.erase('history_id')
+            ts_2.clear('history_id')
             self.db._load_history(ts_2)
             assert err == KeyError("history_id not found")
 
@@ -360,7 +360,7 @@ if __name__ == '__main__':
     pass
     # ts = get_live_timeseries()
     # ts['t0'] = datetime.utcnow()
-    # ts.erase('starttime')
+    # ts.clear('starttime')
     # me = Metadata(ts)
     # print(me)
     # meta = MetadataDefinitions()

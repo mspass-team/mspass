@@ -61,7 +61,7 @@ class TestSchema():
 
     def test_clear_aliases(self):
         ss = Seismogram()
-        ss.erase('starttime')
+        ss.clear('starttime')
         assert not ss.is_defined('starttime')
         ss['t0'] = 0
         self.mdschema.Seismogram.clear_aliases(ss)
