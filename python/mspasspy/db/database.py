@@ -17,13 +17,12 @@ import pymongo
 import numpy as np
 from array import array
 
-from mspasspy.ccore.seismic import (BasicTimeSeries,
-                            TimeSeries,
-                            Seismogram,
-                            _CoreSeismogram,
-                            TimeReferenceType,
-                            TimeSeries,
-                            DoubleVector)
+from mspasspy.ccore.seismic import (TimeSeries,
+                                    Seismogram,
+                                    _CoreSeismogram,
+                                    TimeReferenceType,
+                                    TimeSeries,
+                                    DoubleVector)
 from mspasspy.ccore.utility import (MetadataDefinitions,
                                     Metadata,
                                     dmatrix,
