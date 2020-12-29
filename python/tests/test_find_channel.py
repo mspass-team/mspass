@@ -5,8 +5,7 @@ import numpy as np
 import struct
 from array import array
 from pymongo import MongoClient
-from mspasspy.ccore.seismic import (BasicTimeSeries,
-                                    Seismogram,
+from mspasspy.ccore.seismic import (Seismogram,
                                     TimeReferenceType,
                                     TimeSeries,
                                     DoubleVector)
