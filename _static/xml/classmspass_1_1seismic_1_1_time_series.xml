@@ -190,6 +190,57 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="109" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="26" bodyend="34"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_1adb6940f2dfd183f0b676cebc3fc0fce3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+        <definition>TimeSeries&amp; mspass::seismic::TimeSeries::operator+=</definition>
+        <argsstring>(const TimeSeries &amp;d)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="110" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="110" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_1a293114ec4431687048e5abfe5d6c426e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+        <definition>TimeSeries&amp; mspass::seismic::TimeSeries::operator*=</definition>
+        <argsstring>(const double scale)</argsstring>
+        <name>operator*=</name>
+        <param>
+          <type>const double</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="115" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="115" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_1a909f903e5a739c4c1bc1af8eadea3e5e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+        <definition>TimeSeries&amp; mspass::seismic::TimeSeries::operator-=</definition>
+        <argsstring>(const TimeSeries &amp;d)</argsstring>
+        <name>operator-=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="120" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="120" bodyend="124"/>
+      </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_1a7fe9d22283889a1fa68fbbd0c229008d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::seismic::TimeSeries::load_history</definition>
@@ -205,7 +256,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="110" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="35" bodyend="38"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="125" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/TimeSeries.cc" bodystart="35" bodyend="38"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -309,7 +360,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="13" bodyend="111"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h" bodystart="13" bodyend="126"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>add_many_inputs</name></member>
@@ -385,12 +436,17 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1a82d681c60d2e64fab12b92e3244ce052" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a95006e7f8009c6d9a5c43d7e086c441b" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>number_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeries</scope><name>number_of_stages</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator*=</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator+</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a293114ec4431687048e5abfe5d6c426e" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator*=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeries</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1adb6940f2dfd183f0b676cebc3fc0fce3" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeries</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeries</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_time_series_1a909f903e5a739c4c1bc1af8eadea3e5e" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeries</scope><name>operator-=</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_1abdea57bd025f81cc00375db3a7e1c854" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::CoreTimeSeries::"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::BasicTimeSeries::"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ab6203063df0564c57f28d76f8d5969ac" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::TimeSeries</scope><name>operator=</name></member>
@@ -414,7 +470,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1afe633ff8b3ebedc52b22c25c0f572c3c" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeries</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeries</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>s</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>sample_number</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>samprate</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>set_as_origin</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeries</scope><name>set_dt</name></member>
@@ -434,7 +490,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>t0shift</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>t0shift_is_valid</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>time</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>time_is_relative</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>time_is_UTC</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeries</scope><name>time_reference</name></member>

@@ -33,7 +33,7 @@
 <para>Defines if the contents of this object are components of an orthogonal basis.</para><para>Most raw 3c seismic data use orthogonal components, but this is not universal. Furthermore, some transformations (e.g. the free surface transformation operator) define transformations to basis sets that are not orthogonal. Because detecting orthogonality from a transformation is a nontrivial thing (rounding error is the complication) this is made a part of the object to simplify a number of algorithms. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="456" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="443" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="500" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="487" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -46,7 +46,7 @@
 <para>Defines of the contents of the object are in Earth cardinal coordinates.</para><para>Cardinal means the cardinal directions at a point on the earth. That is, x1 is positive east, x2 is positive north, and x3 is positive up. Like the components_are_orthogonal variable the purpose of this variable is to simplify common tests for properties of a given data series. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="465" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="465" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="509" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="509" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -59,7 +59,7 @@
 <para>Transformation matrix.</para><para>This is a 3x3 transformation that defines how the data in this object is produced from cardinal coordinates. That is, if u is the contents of this object the data in cardinal directions can be produced by tmatrix^-1 * u. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="473" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="473" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="517" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="517" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -232,7 +232,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="160" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="899" bodyend="915"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="160" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="963" bodyend="979"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -258,7 +258,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="182" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="934" bodyend="956"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="182" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="998" bodyend="1020"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -271,7 +271,7 @@
 <para>This method syncs the npts attribute with the actual size of the dmatrix u. It also syncs aliases in the same way as the set_npts method. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="189" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="957" bodyend="977"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="189" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1021" bodyend="1041"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -297,7 +297,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="206" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="916" bodyend="933"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="206" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="980" bodyend="997"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
@@ -316,6 +316,56 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="210" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="829" bodyend="847"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+        <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator+=</definition>
+        <argsstring>(const CoreSeismogram &amp;d)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Summation operator. </para>        </briefdescription>
+        <detaileddescription>
+<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to add to this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="227" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="859" bodyend="902"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <definition>const CoreSeismogram mspass::seismic::CoreSeismogram::operator+</definition>
+        <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Addition operator.</para><para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="235" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="951" bodyend="956"/>
+      </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
         <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator*=</definition>
@@ -331,24 +381,57 @@
 <para>Multiply data by a scalar. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="213" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="848" bodyend="858"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="237" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="848" bodyend="858"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
-        <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator+=</definition>
+        <definition>CoreSeismogram &amp; mspass::seismic::CoreSeismogram::operator-=</definition>
         <argsstring>(const CoreSeismogram &amp;d)</argsstring>
-        <name>operator+=</name>
+        <name>operator-=</name>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
-        </briefdescription>
+<para>Subtraction operator. </para>        </briefdescription>
         <detaileddescription>
-<para>Summation operator. Simple version of stack. Aligns data before summing. </para>        </detaileddescription>
+<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to subract from this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="218" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="859" bodyend="898"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="254" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="907" bodyend="950"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
+        <definition>const CoreSeismogram mspass::seismic::CoreSeismogram::operator-</definition>
+        <argsstring>(const CoreSeismogram &amp;other) const</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtraction operator.</para><para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="262" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="957" bodyend="962"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -390,7 +473,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="241" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="979" bodyend="988"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="285" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1043" bodyend="1052"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -424,7 +507,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="253" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="989" bodyend="998"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="297" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1053" bodyend="1064"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a22f733f1d159422844f3091450813445" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -437,7 +520,7 @@
 <para>Standard destructor. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="255" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="255" bodyend="255"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="299" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="299" bodyend="299"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -458,7 +541,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="269" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="337" bodyend="442"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="313" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="337" bodyend="442"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -483,7 +566,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="310" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="481" bodyend="551"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="354" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="481" bodyend="551"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a8bfacfda2b33e2df7938695126fbb0db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -509,7 +592,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="336" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="552" bodyend="557"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="380" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="552" bodyend="557"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a895a06c26825e8abe8c8617622cf8d5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -534,7 +617,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="353" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="562" bodyend="605"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="397" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="562" bodyend="605"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -560,7 +643,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="362" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="606" bodyend="641"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="406" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="606" bodyend="641"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -607,7 +690,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="375" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="656" bodyend="719"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="419" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="656" bodyend="719"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aae2950b408052bda849ba07c4ea9b018" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref></type>
@@ -621,7 +704,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="385" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="385" bodyend="391"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="429" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="429" bodyend="435"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -655,7 +738,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="409" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="720" bodyend="742"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="453" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="720" bodyend="742"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ad60b2dca7acfd76ff1f8d677ef609f8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -690,7 +773,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="420" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="743" bodyend="765"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="464" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="743" bodyend="765"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a686a13c4938df315e175cd249a52b74e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -724,7 +807,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="430" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="474" column="1"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -737,7 +820,7 @@
 <para>Returns true of components are cardinal. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="433" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="433" bodyend="433"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="477" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="477" bodyend="477"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a41711bd9b0c88089e6e217f318c01de2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -750,7 +833,7 @@
 <para>Return true if the components are orthogonal. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="435" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="435" bodyend="435"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="479" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="479" bodyend="479"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -763,7 +846,7 @@
 <para>Returns the end time (time associated with last data sample) of this data object. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="440" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="440" bodyend="443"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="484" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="484" bodyend="487"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="private-func">
@@ -778,7 +861,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="477" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="74" bodyend="97"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="521" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="74" bodyend="97"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -853,7 +936,7 @@
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="41" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="40" bodyend="478"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="41" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="40" bodyend="522"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>ator</name></member>
@@ -902,9 +985,12 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>nsamp</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator*=</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreSeismogram</scope><name>operator+</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreSeismogram</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator-=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::BasicTimeSeries::"><scope>mspass::seismic::CoreSeismogram</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreSeismogram</scope><name>operator=</name></member>
@@ -929,7 +1015,7 @@
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>rotate_to_standard</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1afe633ff8b3ebedc52b22c25c0f572c3c" prot="public" virt="virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" virt="virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>rtoa</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>sample_number</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>samprate</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" prot="public" virt="virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>set_dt</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>set_live</name></member>
@@ -946,7 +1032,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>t0shift</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>t0shift_is_valid</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>time</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>time_is_relative</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>time_is_UTC</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreSeismogram</scope><name>time_reference</name></member>

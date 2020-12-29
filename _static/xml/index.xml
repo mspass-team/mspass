@@ -130,8 +130,8 @@
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" kind="function"><name>BasicTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a8945a16bf52101d89dbc6f7b907b3fd9" kind="function"><name>BasicTimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a2839e2405b168e0f1ad4d236f31eac8e" kind="function"><name>~BasicTimeSeries</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" kind="function"><name>time</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" kind="function"><name>sample_number</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" kind="function"><name>time</name></member>
+    <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" kind="function"><name>sample_number</name></member>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kind="function"><name>endtime</name></member>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1e83b446d82202d808504429b0257eb0" kind="function"><name>shifted</name></member>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" kind="function"><name>time_reference</name></member>
@@ -209,8 +209,11 @@
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" kind="function"><name>sync_npts</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" kind="function"><name>set_t0</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" kind="function"><name>operator=</name></member>
-    <member refid="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" kind="function"><name>operator*=</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" kind="function"><name>operator+=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" kind="function"><name>operator+</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" kind="function"><name>operator*=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" kind="function"><name>operator-=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" kind="function"><name>operator-</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" kind="function"><name>operator[]</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" kind="function"><name>operator[]</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_seismogram_1a22f733f1d159422844f3091450813445" kind="function"><name>~CoreSeismogram</name></member>
@@ -239,9 +242,12 @@
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" kind="function"><name>set_npts</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" kind="function"><name>sync_npts</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" kind="function"><name>set_t0</name></member>
-    <member refid="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" kind="function"><name>operator+=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" kind="function"><name>operator+</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" kind="function"><name>operator*=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" kind="function"><name>operator-=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" kind="function"><name>operator-</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" kind="function"><name>operator[]</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_cosine_taper" kind="class"><name>mspass::seismic::CosineTaper</name>
@@ -612,6 +618,9 @@
     <member refid="classmspass_1_1seismic_1_1_time_series_1aa631eb4114fc29b2152e048eba1bc218" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a518cbd17b96169fe12db31f80c82fc8c" kind="function"><name>TimeSeries</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1abdea57bd025f81cc00375db3a7e1c854" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_1adb6940f2dfd183f0b676cebc3fc0fce3" kind="function"><name>operator+=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_1a293114ec4431687048e5abfe5d6c426e" kind="function"><name>operator*=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_series_1a909f903e5a739c4c1bc1af8eadea3e5e" kind="function"><name>operator-=</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_1a7fe9d22283889a1fa68fbbd0c229008d" kind="function"><name>load_history</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kind="class"><name>mspass::seismic::TimeSeriesWGaps</name>

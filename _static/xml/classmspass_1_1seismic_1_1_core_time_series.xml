@@ -114,7 +114,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="70" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="119" bodyend="135"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="70" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="184" bodyend="200"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -140,7 +140,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="92" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="154" bodyend="178"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="92" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="219" bodyend="243"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -153,7 +153,7 @@
 <para>This method syncs the npts attribute with the actual size of the vector s. It also syncs aliases in the same way as the set_npts method. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="99" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="179" bodyend="199"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="99" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="244" bodyend="264"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -179,16 +179,16 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="136" bodyend="153"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="201" bodyend="218"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
         <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator=</definition>
-        <argsstring>(const CoreTimeSeries &amp;)</argsstring>
+        <argsstring>(const CoreTimeSeries &amp;parent)</argsstring>
         <name>operator=</name>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
-          <defname>tsi</defname>
+          <declname>parent</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -208,12 +208,45 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-        </briefdescription>
+<para>Summation operator. </para>        </briefdescription>
         <detaileddescription>
-<para>Summation operator. Simple version of stack. Aligns data before summing. </para>        </detaileddescription>
+<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to add to this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="77" bodyend="113"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="148" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="77" bodyend="119"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref></type>
+        <definition>const CoreTimeSeries mspass::seismic::CoreTimeSeries::operator+</definition>
+        <argsstring>(const CoreTimeSeries &amp;other) const</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Addition operator.</para><para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="156" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="167" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -230,7 +263,57 @@
 <para>Multiply data by a scalar. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="138" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="114" bodyend="118"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="159" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="179" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
+        <definition>CoreTimeSeries &amp; mspass::seismic::CoreTimeSeries::operator-=</definition>
+        <argsstring>(const CoreTimeSeries &amp;d)</argsstring>
+        <name>operator-=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Subtraction operator. </para>        </briefdescription>
+        <detaileddescription>
+<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is other signal to subract from this. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="176" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="124" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref></type>
+        <definition>const CoreTimeSeries mspass::seismic::CoreTimeSeries::operator-</definition>
+        <argsstring>(const CoreTimeSeries &amp;other) const</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtraction operator.</para><para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="184" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="173" bodyend="178"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -263,7 +346,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="150" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="201" bodyend="213"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="196" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="266" bodyend="278"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -331,7 +414,7 @@
         </childnode>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="17" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="16" bodyend="151"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="17" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="16" bodyend="197"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>ator</name></member>
@@ -374,10 +457,13 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>npts</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>nsamp</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator*=</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator+</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator+=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator+=</name></member>
-      <member refid="classmspass_1_1seismic_1_1_core_time_series_1af249b61ac9c100876cbe95aa881b99c0" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual" ambiguityscope="mspass::seismic::BasicTimeSeries::"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::Metadata::"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>operator[]</name></member>
@@ -396,7 +482,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1afe633ff8b3ebedc52b22c25c0f572c3c" prot="public" virt="virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" virt="virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>s</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>sample_number</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>samprate</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" prot="public" virt="virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>set_dt</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>set_live</name></member>
@@ -410,7 +496,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>t0shift</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>t0shift_is_valid</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>time</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>time_is_relative</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>time_is_UTC</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::CoreTimeSeries</scope><name>time_reference</name></member>

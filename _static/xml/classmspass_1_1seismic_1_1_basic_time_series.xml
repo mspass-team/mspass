@@ -142,13 +142,13 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="56" bodyend="56"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::seismic::BasicTimeSeries::time</definition>
-        <argsstring>(const size_t i) const</argsstring>
+        <argsstring>(const int i) const</argsstring>
         <name>time</name>
         <param>
-          <type>const size_t</type>
+          <type>const int</type>
           <declname>i</declname>
         </param>
         <briefdescription>
@@ -167,9 +167,9 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="63" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="63" bodyend="66"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>size_t</type>
-        <definition>size_t mspass::seismic::BasicTimeSeries::sample_number</definition>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::seismic::BasicTimeSeries::sample_number</definition>
         <argsstring>(double t) const</argsstring>
         <name>sample_number</name>
         <param>
@@ -701,7 +701,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>operator=</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1afe633ff8b3ebedc52b22c25c0f572c3c" prot="public" virt="virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>rtoa</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" virt="virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>rtoa</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae0c851ff318ec59c7e670be2fde09ac2" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>sample_number</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>sample_number</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>samprate</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aff7a04b56570c6261be83c854a55a53b" prot="private" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>serialize</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8" prot="public" virt="virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>set_dt</name></member>
@@ -714,7 +714,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>t0</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>t0shift</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>t0shift_is_valid</name></member>
-      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adbf8b52e1536297dc67b361083a6078b" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>time</name></member>
+      <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>time</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>time_is_relative</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>time_is_UTC</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" virt="non-virtual"><scope>mspass::seismic::BasicTimeSeries</scope><name>time_reference</name></member>

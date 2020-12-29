@@ -103,10 +103,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2839e2405b168e0f1ad4d236f31eac8e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a2839e2405b168e0f1ad4d236f31eac8e">~BasicTimeSeries</a> ()</td></tr>
 <tr class="memdesc:a2839e2405b168e0f1ad4d236f31eac8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Virtual destructor.  <a href="#a2839e2405b168e0f1ad4d236f31eac8e">More...</a><br /></td></tr>
 <tr class="separator:a2839e2405b168e0f1ad4d236f31eac8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adbf8b52e1536297dc67b361083a6078b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#adbf8b52e1536297dc67b361083a6078b">time</a> (const size_t i) const</td></tr>
-<tr class="separator:adbf8b52e1536297dc67b361083a6078b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0c851ff318ec59c7e670be2fde09ac2"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#ae0c851ff318ec59c7e670be2fde09ac2">sample_number</a> (double t) const</td></tr>
-<tr class="separator:ae0c851ff318ec59c7e670be2fde09ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438b4f6453a4ff2a46de53dfdf3599c2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a438b4f6453a4ff2a46de53dfdf3599c2">time</a> (const int i) const</td></tr>
+<tr class="separator:a438b4f6453a4ff2a46de53dfdf3599c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe28ca2812a2ac21dd2196385ad106ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">sample_number</a> (double t) const</td></tr>
+<tr class="separator:abe28ca2812a2ac21dd2196385ad106ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8982109d3caaeee15bb5b3a63b89317"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#af8982109d3caaeee15bb5b3a63b89317">endtime</a> () const noexcept</td></tr>
 <tr class="separator:af8982109d3caaeee15bb5b3a63b89317"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e83b446d82202d808504429b0257eb0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#a1e83b446d82202d808504429b0257eb0">shifted</a> () const</td></tr>
@@ -562,8 +562,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 
 </div>
 </div>
-<a id="ae0c851ff318ec59c7e670be2fde09ac2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0c851ff318ec59c7e670be2fde09ac2">&#9670;&nbsp;</a></span>sample_number()</h2>
+<a id="abe28ca2812a2ac21dd2196385ad106ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe28ca2812a2ac21dd2196385ad106ab">&#9670;&nbsp;</a></span>sample_number()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -572,7 +572,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t mspass::seismic::BasicTimeSeries::sample_number </td>
+          <td class="memname">int mspass::seismic::BasicTimeSeries::sample_number </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
@@ -869,8 +869,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
 
 </div>
 </div>
-<a id="adbf8b52e1536297dc67b361083a6078b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adbf8b52e1536297dc67b361083a6078b">&#9670;&nbsp;</a></span>time()</h2>
+<a id="a438b4f6453a4ff2a46de53dfdf3599c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438b4f6453a4ff2a46de53dfdf3599c2">&#9670;&nbsp;</a></span>time()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -881,7 +881,7 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>t0shift</b></td></t
         <tr>
           <td class="memname">double mspass::seismic::BasicTimeSeries::time </td>
           <td>(</td>
-          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramtype">const int&#160;</td>
           <td class="paramname"><em>i</em></td><td>)</td>
           <td> const</td>
         </tr>
