@@ -5,8 +5,7 @@ import numpy as np
 import obspy.core
 
 from mspasspy.ccore.utility import (ErrorSeverity, Metadata)
-from mspasspy.ccore.seismic import (CoreSeismogram,
-                                    CoreTimeSeries,
+from mspasspy.ccore.seismic import (_CoreSeismogram,
                                     Seismogram,
                                     TimeReferenceType,
                                     TimeSeries,
@@ -374,11 +373,11 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
             vang = bundle[i].get_double(dip)
             bundle[i].put('vang', vang)
     # Assume now bundle contains all the pieces we need.   This constructor
-    # for CoreSeismogram should then do the job
+    # for _CoreSeismogram should then do the job
     # This may throw an exception, but we require the caller to handle it
     # All errors returned by this constructor currenlty leave the data INVALID
     # so handler should discard anything with an error
-    dout = CoreSeismogram(bundle, master)
+    dout = _CoreSeismogram(bundle, master)
     res = Seismogram(dout, 'INVALID')
     res.live = True
     return res
