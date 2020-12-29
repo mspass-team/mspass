@@ -207,15 +207,59 @@ Initializes data and sets aside memory for
 /*!
  Standard assignment operator.
 **/
-	CoreSeismogram& operator
-		= (const CoreSeismogram&);
-/*! Multiply data by a scalar. */
-  CoreSeismogram& operator*=(const double);
-/*!
-Summation operator.  Simple version of stack.  Aligns data before
-summing.
-**/
-	CoreSeismogram& operator+=(const CoreSeismogram& d);
+	CoreSeismogram& operator= (const CoreSeismogram&);
+	/*! \brief Summation operator.
+
+	Summing data from signals of irregular length requires handling potential
+	mismatches in size and overlap.  This behaves the way a += operator should
+	logically behave in that situation.  That is, because the lhs is where
+	the sum is being accumulated, the size is always controlled by the left hand
+	side of the operator.  Any portions of the right hand side that are outside
+	the t0 to endtime() of the left hand side are silently discarded.   If the
+	start time of the right hand side is greater than t0 or the endtime is less
+	than endtime of the lhs there will be discontinuties in the sum there
+	the ends of the rhs are inside the range of the lhs.
+
+	\param d is other signal to add to this.
+	\exception MsPASSError can be thrown if lhs and rhs do not have matching
+	time standards.
+	**/
+		CoreSeismogram& operator+=(const CoreSeismogram& d);
+		/*! Addition operator.
+
+		This operator is implemented in a standard way utilizing operator+=.
+		For data with irregular start and end times that has an important
+		consequence;  the operator is not communative. i.e given x an y
+		z=x+y will not yield the same result as z=y+x.
+		*/
+		const CoreSeismogram operator+(const CoreSeismogram& other) const;
+	/*! Multiply data by a scalar. */
+		CoreSeismogram& operator*=(const double);
+		/*! \brief Subtraction operator.
+
+		Differencing data from signals of irregular length requires handling potential
+		mismatches in size and overlap.  This behaves the way a -= operator should
+		logically behave in that situation.  That is, because the lhs is where
+		the sum is being accumulated, the size is always controlled by the left hand
+		side of the operator.  Any portions of the right hand side that are outside
+		the t0 to endtime() of the left hand side are silently discarded.   If the
+		start time of the right hand side is greater than t0 or the endtime is less
+		than endtime of the lhs there will be discontinuties in the sum there
+		the ends of the rhs are inside the range of the lhs.
+
+		\param d is other signal to subract from this.
+		\exception MsPASSError can be thrown if lhs and rhs do not have matching
+		time standards.
+		**/
+		CoreSeismogram& operator-=(const CoreSeismogram& d);
+		/*! Subtraction operator.
+
+		This operator is implemented in a standard way utilizing operator-=.
+		For data with irregular start and end times that has an important
+		consequence;  the operator is not communative. i.e given x an y
+		z=x-y will not yield the same result as z=-(y-x).   
+		*/
+		const CoreSeismogram operator-(const CoreSeismogram& other) const;
 /*!
  Extract a sample from data vector.
 

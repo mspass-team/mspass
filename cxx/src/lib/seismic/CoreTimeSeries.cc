@@ -76,8 +76,9 @@ CoreTimeSeries& CoreTimeSeries::operator=(const CoreTimeSeries& tsi)
 
 CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
 {
-    size_t i,i0,iend;
-    size_t j,j0=0;
+    int i,iend,jend;
+    size_t i0;
+    size_t j,j0;
     // Sun's compiler complains about const objects without this.
     CoreTimeSeries& d=const_cast<CoreTimeSeries&>(data);
     // Silently do nothing if d is marked dead
@@ -88,28 +89,92 @@ CoreTimeSeries& CoreTimeSeries::operator+=(const CoreTimeSeries& data)
     if(d.tref!=(this->tref))
         throw MsPASSError("CoreTimeSeries += operator cannot handle data with inconsistent time base\n",
                           ErrorSeverity::Invalid);
-    //
-    // First we have to determine range fo sum for d into this
-    //
-    i0=d.sample_number(this->mt0);
-    if(i0<0)
+    /* this defines the range of left and right hand sides to be summed */
+    i=d.sample_number(this->mt0);
+    if(i<0)
     {
-        j=-i0;
-        i0=0;
+      j0=this->sample_number(d.t0());
+      i0=0;
+    }
+    else
+    {
+      j0=0;
+      i0=i;
     }
     iend=d.sample_number(this->endtime());
-    if(iend>(d.s.size()-1))
+    jend=this->sample_number(d.endtime());
+    if(iend>=(d.npts()))
     {
-        iend=d.s.size()-1;
+        iend=d.npts()-1;
     }
-    //
-    // IMPORTANT:  This algorithm simply assumes zero_gaps has been called
-    // and/or d was checked for gaps befor calling this operatr.
-    // It will produce garbage for most raw gap (sample level) marking schemes
-    //
-    for(i=i0,j=j0; i<=iend; ++i,++j)
+    if(jend>=this->npts())
+    {
+      jend=this->npts()-1;
+    }
+    //cout << "i0="<<i0<<" j0="<<j0<<" iend="<<iend<<" jend="<<jend<<endl;
+    /*  Now do the actual sum using the computed ranges */
+    for(i=i0,j=j0; i<=iend && j<=jend; ++i,++j)
         this->s[j]+=d.s[i];
     return(*this);
+}
+/* IMPORTANT:  this code is absolutely identical to that for operator+=
+except the += in the last loop becomes -=.  Any changes in operator+=
+must have exactly the same change here (other than a message with a
+tag to the function)*/
+CoreTimeSeries& CoreTimeSeries::operator-=(const CoreTimeSeries& data)
+{
+    int i,iend,jend;
+    size_t i0;
+    size_t j,j0;
+    // Sun's compiler complains about const objects without this.
+    CoreTimeSeries& d=const_cast<CoreTimeSeries&>(data);
+    // Silently do nothing if d is marked dead
+    if(!d.mlive) return(*this);
+    // Silently do nothing if d does not overlap with data to contain sum
+    if( (d.endtime()<mt0)
+            || (d.mt0>(this->endtime())) ) return(*this);
+    if(d.tref!=(this->tref))
+        throw MsPASSError("CoreTimeSeries += operator cannot handle data with inconsistent time base\n",
+                          ErrorSeverity::Invalid);
+    /* this defines the range of left and right hand sides to be summed */
+    i=d.sample_number(this->mt0);
+    if(i<0)
+    {
+      j0=this->sample_number(d.t0());
+      i0=0;
+    }
+    else
+    {
+      j0=0;
+      i0=i;
+    }
+    iend=d.sample_number(this->endtime());
+    jend=this->sample_number(d.endtime());
+    if(iend>=(d.npts()))
+    {
+        iend=d.npts()-1;
+    }
+    if(jend>=this->npts())
+    {
+      jend=this->npts()-1;
+    }
+    //cout << "i0="<<i0<<" j0="<<j0<<" iend="<<iend<<" jend="<<jend<<endl;
+    /*  Now do the actual sum using the computed ranges */
+    for(i=i0,j=j0; i<=iend && j<=jend; ++i,++j)
+        this->s[j]-=d.s[i];
+    return(*this);
+}
+const CoreTimeSeries CoreTimeSeries::operator+(const CoreTimeSeries& other) const
+{
+  CoreTimeSeries result(*this);
+  result += other;
+  return result;
+}
+const CoreTimeSeries CoreTimeSeries::operator-(const CoreTimeSeries& other) const
+{
+  CoreTimeSeries result(*this);
+  result -= other;
+  return result;
 }
 CoreTimeSeries& CoreTimeSeries::operator*=(const double scale)
 {
