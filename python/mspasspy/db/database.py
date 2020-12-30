@@ -12,7 +12,6 @@ import traceback
 import bson.errors
 import bson.objectid
 import dask.bag as daskbag
-from pymongo import MongoClient
 import gridfs
 import pymongo
 import numpy as np
@@ -39,7 +38,7 @@ from obspy import Catalog
 
 
 def _read_distributed_data(client_arg, db_name, id, collection, load_history=True, metadata_schema=None):
-    client = MongoClient(client_arg)
+    client = pymongo.MongoClient(client_arg)
     db = Database(client, db_name)
     return db.read_data(id, collection, load_history, metadata_schema)
 
@@ -170,7 +169,7 @@ class Database(pymongo.database.Database):
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
+    def save_data(self, mspass_object, storage_mode='gridfs', update_all=False, dfile=None, dir=None,
                   exclude=None, collection=None, database_schema=None):
 
         # 1. save data
@@ -254,7 +253,7 @@ class Database(pymongo.database.Database):
 
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
-            col = self['error_logs']
+            col = self['elog']
             if isinstance(mspass_object, Seismogram):
                 wf_id_name = 'wf_Seismogram_id'
             elif isinstance(mspass_object, TimeSeries):
@@ -360,7 +359,7 @@ class Database(pymongo.database.Database):
         res = self[collection].find_one({'_id': mspass_object['history_object_id']})
         mspass_object.load_history(pickle.loads(res['nodesdata']))
 
-    def _save_elog(self, mspass_object, collection='error_logs'):
+    def _save_elog(self, mspass_object, collection='elog'):
         """
         Save error log for a data object.
 
