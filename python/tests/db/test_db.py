@@ -20,8 +20,8 @@ from datetime import datetime
 
 sys.path.append("python/tests")
 sys.path.append("python/mspasspy/db/")
-from database import Database
-from client import Client
+from mspasspy.db.database import Database
+from mspasspy.db.client import Client
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
