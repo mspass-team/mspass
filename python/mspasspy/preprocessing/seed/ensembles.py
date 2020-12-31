@@ -95,10 +95,10 @@ def obspy_mseed_file_indexer(file):
 def dbsave_raw_index(db,pdframe):
     """
     Prototype database save to db for a panda data frame pdframe.
-    This crude version collection name is frozen as raw.  db is
+    This crude version collection name is frozen as wf_miniseed.  db is
     assumed to be the client root for mongodb
     """
-    col=db['seedwf']
+    col=db['wf_miniseed']
     # records is a keyword that makes rows of the dataframe docs for mongo
     dtmp=pdframe.to_dict('records')
     col.insert_many(dtmp)
@@ -117,7 +117,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     scan the seed blockettes to assemble the metadata, but
     that would be a future development.
 
-    This function writes records into a seed_data.enemble collection.
+    This function writes records into a wf_miniseed collection.
     Be warned that the "." in the name is a common convention in
     MongoDB databases but really only defines a unique name and
     does not do any hierarchy of collections as the name might
@@ -148,7 +148,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     concept more clearly with figures.
 
     A design constraint we impose for now is that one file generates
-    on document in the seed_data.ensemble collection.   This means if
+    on document in the wf_miniseed collection.   This means if
     the data for an ensemble is spread through several files it would
     have to be constructed in pieces.  That will require implementing
     a function that merges ensemble data.  That model should make this
@@ -166,7 +166,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     """
 
     try:
-        dbh=db['seed_data.ensemble']
+        dbh=db['wf_miniseed']
         pr=Path(file)
         fullpath=pr.absolute()
         [dirself,dfileself]=os.path.split(fullpath)
@@ -301,15 +301,15 @@ def load_one_ensemble(doc,
 def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
     """
     This prototype function uses a not at all generic method to link data
-    indexed in a seed_data.ensmble collection to source data assumed stored
+    indexed in a wf_miniseed collection to source data assumed stored
     in the source collection.   The algorithm is appropriate ONLY if the
     data are downloaded by obspy with a time window defined by a start time
     equal to the origin time of the event.   We use a generic test to check
-    if the median ensemble start time (pulled from seed_data.ensemble record)
+    if the median ensemble start time (pulled from wf_miniseed record)
     is within +-dt of any origin time in source.   If found we extract the
     source_id of the maching event document and then update the record in
-    seed_data.ensemble being handled.  Tha process is repeated for each
-    document in the seed_data.ensemble collection.
+    wf_miniseed being handled.  Tha process is repeated for each
+    document in the wf_miniseed collection.
 
     To handle css3.0 set the prefer_evid boolean True (default is False).
     When used the program will use a document with an evid set as a match
@@ -325,7 +325,7 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
       evid set when there are multiple matches.
     :param verbose:  when true output will be more verbose.
     """
-    dbwf=db['seed_data.ensemble']
+    dbwf=db['wf_miniseed']
     dbsource=db['source']
     try:
         ensrec=dbwf.find({})
