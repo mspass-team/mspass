@@ -738,11 +738,10 @@ class Database(pymongo.database.Database):
                     print("loc code section coordinates:  ",loc_lat,loc_lon,loc_elev)
                 if self._site_is_not_in_db(rec):
                     result=dbcol.insert_one(rec)
-                    # we use the string representation of object_id of this document as site_id
-                    # this gyration is required to do handle that
-                    idobj=result.inserted_id
-                    site_id=str(idobj)
-                    self.site.update_one({'_id':idobj},{'$set':{'site_id' : site_id}})
+                    # Note this sets site_id to an ObjectID for the insertion
+                    # We use that to define a duplicate we tag as site_id
+                    site_id=result.inserted_id
+                    self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
                     n_site_saved+=1
                     if verbose:
                         print("net:sta:loc=",net,":",sta,":",loc,
@@ -780,15 +779,15 @@ class Database(pymongo.database.Database):
                         result=dbchannel.insert_one(chanrec)
                         # insert_one has an obnoxious behavior in that it
                         # inserts the ObjectId in chanrec.  In this loop
-                        # we reuse chanrec so we have to delete the id file
+                        # we reuse chanrec so we have to delete the id field
                         # howeveer, we first want to update the record to
-                        # have chan_id be the string representation of that
+                        # have chan_id provide an  alternate key to that id
                         # object_id - that makes this consistent with site
                         # we actually use the return instead of pulling from
                         # chanrec
                         idobj=result.inserted_id
                         dbchannel.update_one({'_id':idobj},
-                                             {'$set':{'chan_id' : str(idobj)}})
+                                             {'$set':{'chan_id' : idobj}})
                         del chanrec['_id']
                         n_chan_saved += 1
                         if verbose:
@@ -1005,11 +1004,12 @@ class Database(pymongo.database.Database):
             rec['magnitude_type']=m.magnitude_type
             rec['serialized_event']=picklestr
             result=dbcol.insert_one(rec)
-            # We use the string representation of the objectid of this
-            # document as a unique source id - same as site and channel
+            # the return of an insert_one has the object id of the insertion
+            # set as inserted_id.  We save taht as source_id as a more
+            # intuitive key that _id
             idobj=result.inserted_id
             dbcol.update_one({'_id':idobj},
-                        {'$set':{'source_id' : str(idobj)}})
+                        {'$set':{'source_id' : idobj}})
             nevents += 1
         return nevents
 
