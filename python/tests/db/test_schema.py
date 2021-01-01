@@ -100,7 +100,9 @@ class TestSchema():
     def test_unique_name(self):
         assert self.dbschema.channel.unique_name('CMPAZ') == 'hang'
         assert self.mdschema.TimeSeries.unique_name('CMPINC') == 'channel_vang'
-        with pytest.raises(MsPASSError, match = 'not an alias'):
+        assert self.dbschema.channel.unique_name('hang') == 'hang'
+        assert self.mdschema.TimeSeries.unique_name('channel_vang') == 'channel_vang'
+        with pytest.raises(MsPASSError, match='not defined'):
             self.dbschema.channel.unique_name('test100')
 
     def test_DBSchemaDefinition_reference(self):

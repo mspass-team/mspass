@@ -217,17 +217,19 @@ class SchemaDefinitionBase:
         This method is used to ask the opposite question as aliases. The aliases method 
         returns all acceptable alternatives to a definitive name defined as the key to 
         get said list. This method asks what definitive key should be used to fetch an 
-        attribute.
+        attribute. Note that if the input is already the unique name, it will return itself.
 
         :param aliasname: the name of the alias for which we want the definitive key
         :type aliasname: str
         :return: the name of the definitive key
         :rtype: str
-        :raises mspasspy.ccore.utility.MsPASSError: if aliasname is not an alias or not defined
+        :raises mspasspy.ccore.utility.MsPASSError: if aliasname is not defined
         """
-        if aliasname not in self._alias_dic:
-            raise MsPASSError(aliasname + ' is not an alias or not defined' 'Invalid')
-        return self._alias_dic[aliasname]
+        if aliasname in self._main_dic:
+            return aliasname
+        if aliasname in self._alias_dic:
+            return self._alias_dic[aliasname]
+        raise MsPASSError(aliasname + ' is not defined' 'Invalid')
 
 class DatabaseSchema(SchemaBase):
     def __init__(self, schema_file=None):
