@@ -177,7 +177,7 @@ class SchemaDefinitionBase:
         """
         Get a list of all the unique keys defined.
 
-        :return: `True` if the key is defined
+        :return: list of all the unique keys defined
         :rtype: list
         """
         return self._main_dic.keys()
