@@ -10,8 +10,9 @@ import pymongo
 import pytest
 import sys
 
-from mspasspy.ccore.seismic import Seismogram, TimeSeries
-from mspasspy.ccore.utility import dmatrix, ErrorSeverity, MetadataDefinitions, Metadata
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata
+from pyspark import SparkConf, SparkContext
 
 from mspasspy.db.schema import MetadataSchema
 from mspasspy.util import logging_helper
@@ -19,16 +20,16 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 sys.path.append("python/tests")
-sys.path.append("python/mspasspy/db/")
-from mspasspy.db.database import Database
+from mspasspy.db.database import Database, read_distributed_data
 from mspasspy.db.client import Client
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
+
 class TestClient():
-    
+
     def setup_class(self):
         self.c1 = Client('mongodb://localhost/my_database')
         self.c2 = Client('localhost')
@@ -42,14 +43,15 @@ class TestClient():
 
     def test_get_default_database(self):
         assert self.c1.get_default_database().name == 'my_database'
-        with pytest.raises(pymongo.errors.ConfigurationError, match = 'No default database'):
+        with pytest.raises(pymongo.errors.ConfigurationError, match='No default database'):
             self.c2.get_default_database()
 
     def test_get_database(self):
         assert self.c1.get_database().name == 'my_database'
         assert self.c2.get_database('my_db').name == 'my_db'
-        with pytest.raises(pymongo.errors.ConfigurationError, match = 'No default database'):
+        with pytest.raises(pymongo.errors.ConfigurationError, match='No default database'):
             self.c2.get_database()
+
 
 class TestDatabase():
 
@@ -57,7 +59,7 @@ class TestDatabase():
         enable_gridfs_integration()
         client = mongomock.MongoClient('localhost')
         Database.__bases__ = (mongomock.database.Database,)
-        self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
+        self.db = Database(client, 'dbtest', codec_options=client._codec_options, _store=client._store['dbtest'])
         self.metadata_def = MetadataSchema()
 
         self.test_ts = get_live_timeseries()
@@ -87,7 +89,8 @@ class TestDatabase():
                                     'endtime': datetime.utcnow().timestamp()})
         self.db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
                                        'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
-                                    'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0, 'hang': 1.0})
+                                       'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                                       'hang': 1.0})
         self.db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'magnitude': 1.0})
 
@@ -97,24 +100,24 @@ class TestDatabase():
         self.test_ts['source_id'] = source_id
         self.test_ts['channel_id'] = channel_id
 
-
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
         tmp_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
-        tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational) # multi elogs fix me
+        tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational)  # multi elogs fix me
         errs = tmp_ts.elog.get_error_log()
         self.db._save_elog(tmp_ts)
-        assert len(tmp_ts['elog_ids']) != 0
-        for err, id in zip(errs, tmp_ts['elog_ids']):
+        assert len(tmp_ts['elog_id']) != 0
+        for err, id in zip(errs, tmp_ts['elog_id']):
             res = self.db['error_logs'].find_one({'_id': id})
             assert res['algorithm'] == err.algorithm
             assert res['error_message'] == err.message
+            assert "wf_TImeSeries_id" not in res
 
         # empty logs
         tmp_ts = get_live_timeseries()
         errs = tmp_ts.elog.get_error_log()
         self.db._save_elog(tmp_ts)
-        assert len(tmp_ts['elog_ids']) == 0
+        assert len(tmp_ts['elog_id']) == 0
 
     def test_save_and_read_data(self):
         tmp_seis = get_live_seismogram()
@@ -127,7 +130,7 @@ class TestDatabase():
         tmp_seis_2['dfile'] = tmp_seis['dfile']
         tmp_seis_2['foff'] = tmp_seis['foff']
         self.db._read_data_from_dfile(tmp_seis_2)
-        assert all(a.any() == b.any() for a,b in zip(tmp_seis.data, tmp_seis_2.data))
+        assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         tmp_ts = get_live_timeseries()
         tmp_ts['dir'] = 'python/tests/data/'
@@ -202,19 +205,23 @@ class TestDatabase():
         nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
         self.db._save_history(ts)
-        res = self.db['history_object'].find_one({'_id': ts['history_id']})
+        res = self.db['history_object'].find_one({'_id': ts['history_object_id']})
         assert res
 
         ts_2 = TimeSeries()
-        ts_2['history_id'] = ts['history_id']
+        ts_2['history_object_id'] = ts['history_object_id']
         self.db._load_history(ts_2)
         loaded_nodes = ts_2.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
         with pytest.raises(KeyError) as err:
+<<<<<<< HEAD
             ts_2.erase('history_id')
+=======
+            ts_2.clear('history_object_id')
+>>>>>>> 410340530451ab10b91a8b6381a755120d3b2c3b
             self.db._load_history(ts_2)
-            assert err == KeyError("history_id not found")
+            assert err == KeyError("history_object_id not found")
 
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
@@ -228,13 +235,13 @@ class TestDatabase():
         assert res['extra1'] == 'extra1'
         assert 'net' not in res
         assert '_id' in ts
-        assert 'history_id' in ts
-        res = self.db['history_object'].find_one({'_id': ts['history_id']})
+        assert 'history_object_id' in ts
+        res = self.db['history_object'].find_one({'_id': ts['history_object_id']})
         assert res
-        assert ts['elog_ids']
-        for id in ts['elog_ids']:
+        assert ts['elog_id']
+        for id in ts['elog_id']:
             res = self.db['error_logs'].find_one({'_id': id})
-            assert res['wf_id'] == ts['_id']
+            assert res['wf_TimeSeries_id'] == ts['_id']
 
         ts['extra1'] = 'extra1+'
         self.db.update_metadata(ts, update_all=True, exclude=exclude)
@@ -261,7 +268,8 @@ class TestDatabase():
         seis2 = self.db.read_data(seis['_id'], 'wf_Seismogram')
 
         wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
-                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_ids', 'history_id',
+                   'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id',
+                   'history_object_id',
                    'time_standard', 'tmatrix']
         for key in wf_keys:
             if key in seis:
@@ -353,11 +361,161 @@ class TestDatabase():
         self.db.delete_gridfs(ts['gridfs_id'])
         assert not gfsh.exists(ts['gridfs_id'])
 
+    def test_update_ensemble_metadata(self):
+        ts1 = copy.deepcopy(self.test_ts)
+        ts2 = copy.deepcopy(self.test_ts)
+        ts3 = copy.deepcopy(self.test_ts)
+        self.db.save_data(ts1, 'gridfs')
+        self.db.save_data(ts2, 'gridfs')
+        self.db.save_data(ts3, 'gridfs')
+
+        time = datetime.utcnow().timestamp()
+        ts1['t0'] = time
+        ts1['tst'] = time
+        ts2['t0'] = time
+        ts3['t0'] = time
+        ts_ensemble = TimeSeriesEnsemble()
+        ts_ensemble.member.append(ts1)
+        ts_ensemble.member.append(ts2)
+        ts_ensemble.member.append(ts3)
+
+        self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_objects=[2])
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
+        assert res['starttime'] == time
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts2['_id']})
+        assert res['starttime'] == time
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts3['_id']})
+        assert res['starttime'] != time
+
+        time_new = datetime.utcnow().timestamp()
+        ts_ensemble.member[0]['tst'] = time + 1
+        ts_ensemble.member[0]['starttime'] = time_new
+        self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_keys=['tst'])
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
+        assert res['tst'] != time + 1
+        assert res['starttime'] == time_new
+
+        # using seismogram
+        seis1 = copy.deepcopy(self.test_seis)
+        seis2 = copy.deepcopy(self.test_seis)
+        seis3 = copy.deepcopy(self.test_seis)
+        self.db.save_data(seis1, 'gridfs')
+        self.db.save_data(seis2, 'gridfs')
+        self.db.save_data(seis3, 'gridfs')
+        time = datetime.utcnow().timestamp()
+        seis1['t0'] = time
+        seis1['tst'] = time
+        seis2['t0'] = time
+        seis3['t0'] = time
+        seis_ensemble = SeismogramEnsemble()
+        seis_ensemble.member.append(seis1)
+        seis_ensemble.member.append(seis2)
+        seis_ensemble.member.append(seis3)
+
+        self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_objects=[2])
+        res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
+        assert res['starttime'] == time
+        res = self.db['wf_Seismogram'].find_one({'_id': seis2['_id']})
+        assert res['starttime'] == time
+        res = self.db['wf_Seismogram'].find_one({'_id': seis3['_id']})
+        assert res['starttime'] != time
+
+        time_new = datetime.utcnow().timestamp()
+        seis_ensemble.member[0]['tst'] = time + 1
+        seis_ensemble.member[0]['starttime'] = time_new
+        self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_keys=['tst'])
+        res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
+        assert res['tst'] != time + 1
+        assert res['starttime'] == time_new
+
+    def test_save_ensemble_data(self):
+        ts1 = copy.deepcopy(self.test_ts)
+        ts2 = copy.deepcopy(self.test_ts)
+        ts3 = copy.deepcopy(self.test_ts)
+        ts_ensemble = TimeSeriesEnsemble()
+        ts_ensemble.member.append(ts1)
+        ts_ensemble.member.append(ts2)
+        ts_ensemble.member.append(ts3)
+        dfile_list = ['test_db_output', 'test_db_output']
+        dir_list = ['python/tests/data/', 'python/tests/data/']
+        self.db.save_ensemble_data(ts_ensemble, 'file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
+        res = self.db.read_data(ts_ensemble.member[0]['_id'], 'wf_TimeSeries')
+        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
+        res = self.db.read_data(ts_ensemble.member[2]['_id'], 'wf_TimeSeries')
+        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
+        assert '_id' not in ts_ensemble.member[1]
+
+        self.db.save_ensemble_data(ts_ensemble, 'gridfs', exclude_objects=[1])
+        res = self.db.read_data(ts_ensemble.member[0]['_id'], 'wf_TimeSeries')
+        assert np.isclose(ts_ensemble.member[0].data, res.data).all()
+        assert '_id' not in ts_ensemble.member[1]
+        res = self.db.read_data(ts_ensemble.member[2]['_id'], 'wf_TimeSeries')
+        assert np.isclose(ts_ensemble.member[2].data, res.data).all()
+
+        # using seismogram
+        seis1 = copy.deepcopy(self.test_seis)
+        seis2 = copy.deepcopy(self.test_seis)
+        seis3 = copy.deepcopy(self.test_seis)
+        seis_ensemble = SeismogramEnsemble()
+        seis_ensemble.member.append(seis1)
+        seis_ensemble.member.append(seis2)
+        seis_ensemble.member.append(seis3)
+        self.db.save_ensemble_data(seis_ensemble, 'file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
+        res = self.db.read_data(seis_ensemble.member[0]['_id'], 'wf_Seismogram')
+        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
+        res = self.db.read_data(seis_ensemble.member[2]['_id'], 'wf_Seismogram')
+        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
+        assert '_id' not in seis_ensemble.member[1]
+
+        self.db.save_ensemble_data(seis_ensemble, 'gridfs', exclude_objects=[1])
+        res = self.db.read_data(seis_ensemble.member[0]['_id'], 'wf_Seismogram')
+        assert np.isclose(seis_ensemble.member[0].data, res.data).all()
+        assert '_id' not in seis_ensemble.member[1]
+        res = self.db.read_data(seis_ensemble.member[2]['_id'], 'wf_Seismogram')
+        assert np.isclose(seis_ensemble.member[2].data, res.data).all()
+
+    def test_read_ensemble_data(self):
+        with pytest.raises(KeyError) as err:
+            self.db.read_ensemble_data([], 'other_collection', )
+            assert err == KeyError("only wf_TimeSeries and wf_Seismogram are supported")
+
+        ts1 = copy.deepcopy(self.test_ts)
+        ts2 = copy.deepcopy(self.test_ts)
+        ts3 = copy.deepcopy(self.test_ts)
+        ts_ensemble = TimeSeriesEnsemble()
+        ts_ensemble.member.append(ts1)
+        ts_ensemble.member.append(ts2)
+        ts_ensemble.member.append(ts3)
+        self.db.save_ensemble_data(ts_ensemble, 'gridfs')
+        res = self.db.read_ensemble_data([ts_ensemble.member[0]['_id'], ts_ensemble.member[1]['_id'],
+                                          ts_ensemble.member[2]['_id']], 'wf_TimeSeries')
+        assert len(res.member) == 3
+        for i in range(3):
+            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
+
+        # using seismogram
+        seis1 = copy.deepcopy(self.test_seis)
+        seis2 = copy.deepcopy(self.test_seis)
+        seis3 = copy.deepcopy(self.test_seis)
+        seis_ensemble = SeismogramEnsemble()
+        seis_ensemble.member.append(seis1)
+        seis_ensemble.member.append(seis2)
+        seis_ensemble.member.append(seis3)
+        self.db.save_ensemble_data(seis_ensemble, 'gridfs')
+        res = self.db.read_ensemble_data([seis_ensemble.member[0]['_id'], seis_ensemble.member[1]['_id'],
+                                          seis_ensemble.member[2]['_id']], 'wf_Seismogram')
+        assert len(res.member) == 3
+        for i in range(3):
+            assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
+
+
     def teardown_class(self):
         os.remove('python/tests/data/test_db_output')
 
+
 if __name__ == '__main__':
     pass
+<<<<<<< HEAD
     # ts = get_live_timeseries()
     # ts['t0'] = datetime.utcnow()
     # ts.erase('starttime')
@@ -366,3 +524,5 @@ if __name__ == '__main__':
     # meta = MetadataDefinitions()
     # meta.clear_aliases(me)
     # print(me)
+=======
+>>>>>>> 410340530451ab10b91a8b6381a755120d3b2c3b

@@ -29,7 +29,7 @@
 
 Database:
   wf_TimeSeries:
-    default: True
+    default: wf
     schema:
       _id:
         type: ObjectID
@@ -109,7 +109,6 @@ Database:
         optional: true
 
   site:
-    default: True
     schema:
       _id:
         type: ObjectID
@@ -244,6 +243,14 @@ Database:
       logdata:
         type: bytes
         concept: serialized content of ErrorLogger.
+      wf_Seismogram_id:
+        reference: wf_Seismogram
+        optional: true
+      wf_TimeSeries_id:
+        reference: wf_TimeSeries
+        optional: true
+
+
 
 
 Metadata:

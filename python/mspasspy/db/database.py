@@ -1,4 +1,3 @@
-
 """
 Tools for connecting to MongoDB.
 """
@@ -12,28 +11,54 @@ import traceback
 
 import bson.errors
 import bson.objectid
+import dask.bag as daskbag
+from pymongo import MongoClient
 import gridfs
 import pymongo
 import numpy as np
 from array import array
 
-from mspasspy.ccore.seismic import (TimeSeries,
+from mspasspy.ccore.seismic import (BasicTimeSeries,
+                                    TimeSeries,
                                     Seismogram,
-                                    _CoreSeismogram,
+                                    CoreSeismogram,
+                                    CoreTimeSeries,
                                     TimeReferenceType,
                                     TimeSeries,
-                                    DoubleVector)
+                                    DoubleVector,
+                                    TimeSeriesEnsemble,
+                                    SeismogramEnsemble)
 from mspasspy.ccore.utility import (MetadataDefinitions,
                                     Metadata,
                                     dmatrix,
                                     ErrorLogger,
                                     ErrorSeverity, ProcessingHistory)
-from mspasspy.db.schema import MetadataSchema
-
+from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 from obspy import Inventory
 from obspy import UTCDateTime
 from obspy import Catalog
+
+
+def _read_distributed_data(client_arg, db_name, id, collection, load_history=True, metadata_schema=None):
+    client = MongoClient(client_arg)
+    db = Database(client, db_name)
+    return db.read_data(id, collection, load_history, metadata_schema)
+
+
+def read_distributed_data(client_arg, db_name, cursors, collection, load_history=True, metadata_schema=None,
+                          format='spark', spark_context=None):
+    if format == 'spark':
+        list = spark_context.parallelize(cursors)
+        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], collection, load_history,
+                                                           metadata_schema))
+    elif format == 'dask':
+        list = daskbag.from_sequence(cursors)
+        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], collection, load_history,
+                                                           metadata_schema))
+    else:
+        raise TypeError("Only spark and dask are supported")
+
 
 class Database(pymongo.database.Database):
     """
@@ -48,9 +73,11 @@ class Database(pymongo.database.Database):
     where databasename is variable and the name of the database you
     wish to access with this handle.
     """
+
     def __init__(self, *args, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
         self.metadata_schema = MetadataSchema()
+        self.database_schema = DatabaseSchema()
 
     def set_metadata_definition(self, schema):
         self.metadata_schema = schema
@@ -95,7 +122,7 @@ class Database(pymongo.database.Database):
         md['source_time'] = source['time']
         md['source_magnitude'] = source['magnitude']
 
-        if object['dtype'] == 'TimeSeries':
+        if collection == 'wf_TimeSeries':
             channel = self['channel'].find_one({'_id': object['channel_id']})
             md['chan'] = channel['chan']
             md['channel_hang'] = channel['hang']
@@ -108,7 +135,7 @@ class Database(pymongo.database.Database):
             md['channel_endtime'] = channel['endtime']
 
         schema = self.metadata_schema if not metadata_schema else metadata_schema
-        if object['dtype'] == 'TimeSeries':
+        if collection == 'wf_TimeSeries':
             read_metadata_def = schema.TimeSeries
         else:
             read_metadata_def = schema.Seismogram
@@ -118,11 +145,11 @@ class Database(pymongo.database.Database):
                 if type(md[k]) != read_metadata_def.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
-        if object['dtype'] == 'TimeSeries':
-            mspass_object = TimeSeries({k:md[k] for k in md}, np.ndarray([0], dtype=np.float64))
+        if collection == 'wf_TimeSeries':
+            mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
             mspass_object.npts = md['npts']  # fixme
-        elif object['dtype'] == 'Seismogram':
-            mspass_object = Seismogram(_CoreSeismogram(md, False))
+        elif collection == 'wf_Seismogram':
+            mspass_object = Seismogram(CoreSeismogram(md, False))
         else:
             return None
 
@@ -150,7 +177,7 @@ class Database(pymongo.database.Database):
 
         # 1. save data
         if storage_mode == "file":
-            if dfile: # new file
+            if dfile:  # new file
                 mspass_object['dfile'] = dfile
                 mspass_object['dir'] = dir
             self._save_data_to_dfile(mspass_object)
@@ -163,7 +190,7 @@ class Database(pymongo.database.Database):
         mspass_object['storage_mode'] = storage_mode
 
         # 2. save metadata
-        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_schema)
+        self.update_metadata(mspass_object, update_all, exclude, collection, database_schema)
 
     def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None,
                   skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
@@ -198,11 +225,11 @@ class Database(pymongo.database.Database):
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)
 
-        schema = self.metadata_schema if not metadata_schema else metadata_schema
+        schema = self.database_schema if not database_schema else database_schema
         if isinstance(mspass_object, TimeSeries):
-            update_metadata_def = schema.TimeSeries
+            update_metadata_def = schema.wf_TimeSeries
         else:
-            update_metadata_def = schema.Seismogram
+            update_metadata_def = schema.wf_Seismogram
         update_metadata_def.clear_aliases(copied_metadata)
 
         for k in copied_metadata:
@@ -214,9 +241,9 @@ class Database(pymongo.database.Database):
                 continue
             if update_metadata_def.is_defined(k):
                 if type(copied_metadata[k]) != update_metadata_def.type(k):
-                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
-                if not update_metadata_def.readonly(k):
-                    insert_dict[k] = copied_metadata[k]
+                    if k != 'history_object_id':  # fixme to str
+                        raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
+                insert_dict[k] = copied_metadata[k]
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
@@ -229,9 +256,78 @@ class Database(pymongo.database.Database):
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
             col = self['error_logs']
-            for id in mspass_object['elog_ids']:
+            if isinstance(mspass_object, Seismogram):
+                wf_id_name = 'wf_Seismogram_id'
+            elif isinstance(mspass_object, TimeSeries):
+                wf_id_name = 'wf_TimeSeries_id'
+            for id in mspass_object['elog_id']:
                 filter = {'_id': id}
-                col.update_one(filter, {'$set': {'wf_id': mspass_object['_id']}})
+                col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
+
+    def read_ensemble_data(self, objectid_list, collection, load_history=True, metadata_schema=None):
+        if collection not in ['wf_TimeSeries', 'wf_Seismogram']:
+            raise KeyError("only wf_TimeSeries and wf_Seismogram are supported")
+
+        if collection == 'wf_TimeSeries':
+            ensemble = TimeSeriesEnsemble(len(objectid_list))
+        else:
+            ensemble = SeismogramEnsemble(len(objectid_list))
+
+        for i in range(len(objectid_list)):
+            ensemble.member.append(self.read_data(objectid_list[i], collection, load_history, metadata_schema))
+
+        return ensemble
+
+    def save_ensemble_data(self, ensemble_object, storage_mode, collection=None, dfile_list=None, dir_list=None,
+                           update_all=False, exclude_keys=None, exclude_objects=None, database_schema=None):
+        if not exclude_objects:
+            exclude_objects = []
+
+        # 1. save data
+        if storage_mode == "file":
+            if dfile_list:  # new file
+                j = 0
+                for i in range(len(ensemble_object.member)):
+                    if i not in exclude_objects:
+                        ensemble_object.member[i]['dfile'] = dfile_list[j]
+                        ensemble_object.member[i]['dir'] = dir_list[j]
+                        ensemble_object.member[i]['storage_mode'] = storage_mode
+                        j += 1
+            for i in range(len(ensemble_object.member)):
+                if i not in exclude_objects:
+                    self._save_data_to_dfile(ensemble_object.member[i])
+        elif storage_mode == "gridfs":
+            for i in range(len(ensemble_object.member)):
+                if i not in exclude_objects:
+                    self._save_data_to_gridfs(ensemble_object.member[i])
+                    ensemble_object.member[i]['storage_mode'] = storage_mode
+        elif storage_mode == "url":
+            pass
+        else:
+            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+
+        # 2. save metadata
+        self.update_ensemble_metadata(ensemble_object, update_all, exclude_keys, exclude_objects,
+                                      collection, database_schema)
+
+    def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
+                                 collection=None, database_schema=None):
+        if not exclude_objects:
+            exclude_objects = []
+        for i in range(len(ensemble_object.member)):
+            if i not in exclude_objects:
+                self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection, database_schema)
+
+    def _read_distributed_data(self, cursors, collection, load_history=True, metadata_schema=None, format='spark',
+                               spark_context=None):
+        if format == 'spark':
+            list = spark_context.parallelize(cursors)
+            return list.map(lambda cur: self.read_data(cur['_id'], collection, load_history, metadata_schema))
+        elif format == 'dask':
+            list = daskbag.from_sequence(cursors)
+            return list.map(lambda cur: self.read_data(cur['_id'], collection, load_history, metadata_schema))
+        else:
+            raise TypeError("Only spark and dask are supported")
 
     def detele_wf(self, object_id, collection):
         self[collection].delete_one({'_id': object_id})
@@ -246,33 +342,26 @@ class Database(pymongo.database.Database):
             d.put_string('time_standard', 'relative')
         else:
             d.put_string('time_standard', 'UTC')
-        if 'dtype' not in d:
-            if isinstance(d, TimeSeries):
-                d['dtype'] = 'TimeSeries'
-            elif isinstance(d, Seismogram):
-                d['dtype'] = 'Seismogram'
-            else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
 
     def _save_history(self, mspass_object, collection='history_object'):
         history_col = self[collection]
         history_binary = pickle.dumps(ProcessingHistory(mspass_object))
         # todo jobname jobid
-        if 'history_id' in mspass_object:
+        if 'history_object_id' in mspass_object:
             # overwrite history
-            filter = {'_id': mspass_object['history_id']}
+            filter = {'_id': mspass_object['history_object_id']}
             history_col.find_one_and_replace(filter, {'nodesdata': history_binary})
         else:
             id = history_col.insert_one({'nodesdata': history_binary}).inserted_id
-            mspass_object['history_id'] = id
+            mspass_object['history_object_id'] = id
 
     def _load_history(self, mspass_object, collection='history_object'):
-        if 'history_id' not in mspass_object:
-            raise KeyError("history_id not found")
-        res = self[collection].find_one({'_id': mspass_object['history_id']})
+        if 'history_object_id' not in mspass_object:
+            raise KeyError("history_object_id not found")
+        res = self[collection].find_one({'_id': mspass_object['history_object_id']})
         mspass_object.load_history(pickle.loads(res['nodesdata']))
 
-    def _save_elog(self, data, collection='error_logs'):
+    def _save_elog(self, mspass_object, collection='error_logs'):
         """
         Save error log for a data object.
 
@@ -290,12 +379,20 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
-        if 'elog_ids' not in data:
-            data['elog_ids'] = []
+        if 'elog_id' not in mspass_object:
+            mspass_object['elog_id'] = []
         oid = None
-        if '_id' in data:
-            oid = data['_id']
-        elog = data.elog
+        if '_id' in mspass_object:
+            oid = mspass_object['_id']
+
+        if isinstance(mspass_object, Seismogram):
+            wf_id_name = 'wf_Seismogram_id'
+        elif isinstance(mspass_object, TimeSeries):
+            wf_id_name = 'wf_TimeSeries_id'
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+        elog = mspass_object.elog
         n = elog.size()
         if n == 0:
             return
@@ -307,9 +404,9 @@ class Database(pymongo.database.Database):
             docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
                         'error_message': x.message, 'process_id': x.p_id}
             if oid:
-                docentry['wf_id'] = oid
+                docentry[wf_id_name] = oid
             oidlst.append(self[collection].insert_one(docentry).inserted_id)
-        data['elog_ids'].extend(oidlst)
+        mspass_object['elog_id'].extend(oidlst)
 
     @staticmethod
     def _read_data_from_dfile(d):
@@ -455,7 +552,7 @@ class Database(pymongo.database.Database):
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=dataid)
         ub = pickle.load(fh)
-        fmt = "@%dd" % int(len(ub)/8)
+        fmt = "@%dd" % int(len(ub) / 8)
         x = struct.unpack(fmt, ub)
         if isinstance(d, TimeSeries):
             d.data = DoubleVector(x)
@@ -473,8 +570,6 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-
-
     @staticmethod
     def _extract_locdata(chanlist):
         """
@@ -485,15 +580,15 @@ class Database(pymongo.database.Database):
         many duplicates, but the assumption here is the list
         will always be small
         """
-        alllocs={}
+        alllocs = {}
         for chan in chanlist:
-            alllocs[chan.location_code]=[
-                   chan.start_date,
-                   chan.end_date,
-                   chan.latitude,
-                   chan.longitude,
-                   chan.elevation,
-                   chan.depth]
+            alllocs[chan.location_code] = [
+                chan.start_date,
+                chan.end_date,
+                chan.latitude,
+                chan.longitude,
+                chan.elevation,
+                chan.depth]
         return alllocs
 
     def _site_is_not_in_db(self, record_to_test):
@@ -515,32 +610,33 @@ class Database(pymongo.database.Database):
         using a confusing and ugly query construct.
         """
         dbsite = self.site
-        queryrecord={}
-        queryrecord['net']=record_to_test['net']
-        queryrecord['sta']=record_to_test['sta']
-        queryrecord['loc']=record_to_test['loc']
-        matches=dbsite.find(queryrecord)
+        queryrecord = {}
+        queryrecord['net'] = record_to_test['net']
+        queryrecord['sta'] = record_to_test['sta']
+        queryrecord['loc'] = record_to_test['loc']
+        matches = dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec=matches.count()
-        if(nrec<=0):
+        nrec = matches.count()
+        if (nrec <= 0):
             return True
         else:
             # Now do the linear search on time for a match
-            st0=record_to_test['starttime']
-            et0=record_to_test['endtime']
-            time_fudge_factor=10.0
-            stp=st0+time_fudge_factor
-            stm=st0-time_fudge_factor
-            etp=et0+time_fudge_factor
-            etm=et0-time_fudge_factor
+            st0 = record_to_test['starttime']
+            et0 = record_to_test['endtime']
+            time_fudge_factor = 10.0
+            stp = st0 + time_fudge_factor
+            stm = st0 - time_fudge_factor
+            etp = et0 + time_fudge_factor
+            etm = et0 - time_fudge_factor
             for x in matches:
-                sttest=x['starttime']
-                ettest=x['endtime']
-                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                sttest = x['starttime']
+                ettest = x['endtime']
+                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
                     return False
             return True
+
     def _channel_is_not_in_db(self, record_to_test):
         """
         Small helper functoin for save_inventory.
@@ -553,46 +649,49 @@ class Database(pymongo.database.Database):
         day as in css3.0.
         """
         dbchannel = self.channel
-        queryrecord={}
-        queryrecord['net']=record_to_test['net']
-        queryrecord['sta']=record_to_test['sta']
-        queryrecord['loc']=record_to_test['loc']
-        queryrecord['chan']=record_to_test['chan']
-        matches=dbchannel.find(queryrecord)
+        queryrecord = {}
+        queryrecord['net'] = record_to_test['net']
+        queryrecord['sta'] = record_to_test['sta']
+        queryrecord['loc'] = record_to_test['loc']
+        queryrecord['chan'] = record_to_test['chan']
+        matches = dbchannel.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec=matches.count()
-        if(nrec<=0):
+        nrec = matches.count()
+        if (nrec <= 0):
             return True
         else:
             # Now do the linear search on time for a match
-            st0=record_to_test['starttime']
-            et0=record_to_test['endtime']
-            time_fudge_factor=10.0
-            stp=st0+time_fudge_factor
-            stm=st0-time_fudge_factor
-            etp=et0+time_fudge_factor
-            etm=et0-time_fudge_factor
+            st0 = record_to_test['starttime']
+            et0 = record_to_test['endtime']
+            time_fudge_factor = 10.0
+            stp = st0 + time_fudge_factor
+            stm = st0 - time_fudge_factor
+            etp = et0 + time_fudge_factor
+            etm = et0 - time_fudge_factor
             for x in matches:
-                sttest=x['starttime']
-                ettest=x['endtime']
-                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                sttest = x['starttime']
+                ettest = x['endtime']
+                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
                     return False
             return True
-    def _handle_null_starttime(self,t):
-        if t==None:
+
+    def _handle_null_starttime(self, t):
+        if t == None:
             return UTCDateTime(0.0)
         else:
             return t
-    def _handle_null_endtime(self,t):
+
+    def _handle_null_endtime(self, t):
         # This constant is used below to set endtime to a time
         # in the far future if it is null
-        DISTANTFUTURE=UTCDateTime(2051,1,1,0,0)
-        if t==None:
+        DISTANTFUTURE = UTCDateTime(2051, 1, 1, 0, 0)
+        if t == None:
             return DISTANTFUTURE
         else:
             return t
+
     def save_inventory(self, inv,
                        networks_to_exclude=['SY'],
                        verbose=False):
@@ -655,15 +754,15 @@ class Database(pymongo.database.Database):
 
         dbcol = self.site
         dbchannel = self.channel
-        n_site_saved=0
-        n_chan_saved=0
-        n_site_processed=0
-        n_chan_processed=0
+        n_site_saved = 0
+        n_chan_saved = 0
+        n_site_processed = 0
+        n_chan_processed = 0
         for x in inv:
             # Inventory object I got from webservice download
             # makes the sta variable here a net:sta combination
             # We can get the net code like this
-            net=x.code
+            net = x.code
             # This adds feature to skip data for any net code
             # listed in networks_to_exclude
             if networks_to_exclude != None:
@@ -672,69 +771,69 @@ class Database(pymongo.database.Database):
             # Each x now has a station field, BUT tests I ran
             # say for my example that field has one entry per
             # x.  Hence, we can get sta name like this
-            y=x.stations
-            sta=y[0].code
-            starttime=y[0].start_date
-            endtime=y[0].end_date
-            starttime=self._handle_null_starttime(starttime)
-            endtime=self._handle_null_endtime(endtime)
-            latitude=y[0].latitude
-            longitude=y[0].longitude
+            y = x.stations
+            sta = y[0].code
+            starttime = y[0].start_date
+            endtime = y[0].end_date
+            starttime = self._handle_null_starttime(starttime)
+            endtime = self._handle_null_endtime(endtime)
+            latitude = y[0].latitude
+            longitude = y[0].longitude
             # stationxml files seen to put elevation in m. We
             # always use km so need to convert
-            elevation=y[0].elevation/1000.0
+            elevation = y[0].elevation / 1000.0
             # an obnoxious property of station xml files obspy is giving me
             # is that the start_dates and end_dates on the net:sta section
             # are not always consistent with the channel data.  In particular
             # loc codes are a problem. So we pull the required metadata from
             # the chans data and will override locations and time ranges
             # in station section with channel data
-            chans=y[0].channels
+            chans = y[0].channels
             locdata = self._extract_locdata(chans)
             # Assume loc code of 0 is same as rest
-            #loc=_extract_loc_code(chanlist[0])
-            picklestr=pickle.dumps(x)
-            all_locs=locdata.keys()
+            # loc=_extract_loc_code(chanlist[0])
+            picklestr = pickle.dumps(x)
+            all_locs = locdata.keys()
             for loc in all_locs:
-		# If multiple loc codes are present on the second pass
-		# rec will contain the objectid of the document inserted
-		# in the previous pass - an obnoxious property of insert_one
-		# This initialization guarantees an empty container
-                rec=dict()
-                rec['loc']=loc
-                rec['net']=net
-                rec['sta']=sta
-                lkey=loc
-                loc_tuple=locdata[lkey]
+                # If multiple loc codes are present on the second pass
+                # rec will contain the objectid of the document inserted
+                # in the previous pass - an obnoxious property of insert_one
+                # This initialization guarantees an empty container
+                rec = dict()
+                rec['loc'] = loc
+                rec['net'] = net
+                rec['sta'] = sta
+                lkey = loc
+                loc_tuple = locdata[lkey]
                 # We use these attributes linked to loc code rather than
                 # the station data - experience shows they are not
                 # consistent and we should use this set.
-                loc_lat=loc_tuple[2]
-                loc_lon=loc_tuple[3]
-                loc_elev=loc_tuple[4]
+                loc_lat = loc_tuple[2]
+                loc_lon = loc_tuple[3]
+                loc_elev = loc_tuple[4]
                 # for consistency convert this to km too
-                loc_elev = loc_elev/1000.0
-                loc_edepth=loc_tuple[5]
-                loc_stime=loc_tuple[0]
-                loc_stime=self._handle_null_starttime(loc_stime)
-                loc_etime=loc_tuple[1]
-                loc_etime=self._handle_null_endtime(loc_etime)
-                rec['latitude']=loc_lat
-                rec['longitude']=loc_lon
+                loc_elev = loc_elev / 1000.0
+                loc_edepth = loc_tuple[5]
+                loc_stime = loc_tuple[0]
+                loc_stime = self._handle_null_starttime(loc_stime)
+                loc_etime = loc_tuple[1]
+                loc_etime = self._handle_null_endtime(loc_etime)
+                rec['latitude'] = loc_lat
+                rec['longitude'] = loc_lon
                 # This is MongoDBs way to set a geographic
                 # point - allows spatial queries.  Note longitude
                 # must be first of the pair
-                rec['coords']=[loc_lat,loc_lon]
-                rec['elevation']=loc_elev
-                rec['edepth']=loc_edepth
-                rec['starttime']=starttime.timestamp
-                rec['endtime']=endtime.timestamp
-                if latitude!=loc_lat or longitude!=loc_lon or elevation!=loc_elev:
-                    print(net,":",sta,":",loc,
-                            " (Warning):  station section position is not consistent with loc code position" )
+                rec['coords'] = [loc_lat, loc_lon]
+                rec['elevation'] = loc_elev
+                rec['edepth'] = loc_edepth
+                rec['starttime'] = starttime.timestamp
+                rec['endtime'] = endtime.timestamp
+                if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
+                    print(net, ":", sta, ":", loc,
+                          " (Warning):  station section position is not consistent with loc code position")
                     print("Data in loc code section overrides station section")
-                    print("Station section coordinates:  ",latitude,longitude,elevation)
-                    print("loc code section coordinates:  ",loc_lat,loc_lon,loc_elev)
+                    print("Station section coordinates:  ", latitude, longitude, elevation)
+                    print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
                 if self._site_is_not_in_db(rec):
                     result=dbcol.insert_one(rec)
                     # Note this sets site_id to an ObjectID for the insertion
@@ -743,39 +842,39 @@ class Database(pymongo.database.Database):
                     self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
                     n_site_saved+=1
                     if verbose:
-                        print("net:sta:loc=",net,":",sta,":",loc,
-                            "for time span ",starttime," to ",endtime,
-                            " added to site collection")
+                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " added to site collection")
                 else:
                     if verbose:
-                        print("net:sta:loc=",net,":",sta,":",loc,
-                            "for time span ",starttime," to ",endtime,
-                            " is already in site collection - ignored")
+                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " is already in site collection - ignored")
                 n_site_processed += 1
                 # done with site now handle channel
                 # Because many features are shared we can copy rec
                 # note this has to be a deep copy
-                chanrec=copy.deepcopy(rec)
+                chanrec = copy.deepcopy(rec)
                 # We don't want this baggage in the channel documents
                 # keep them only in the site collection
-                #del chanrec['serialized_inventory']
+                # del chanrec['serialized_inventory']
                 for chan in chans:
-                    chanrec['chan']=chan.code
-                    chanrec['vang']=chan.dip
-                    chanrec['hang']=chan.azimuth
-                    chanrec['edepth']=chan.depth
-                    st=chan.start_date
-                    et=chan.end_date
+                    chanrec['chan'] = chan.code
+                    chanrec['vang'] = chan.dip
+                    chanrec['hang'] = chan.azimuth
+                    chanrec['edepth'] = chan.depth
+                    st = chan.start_date
+                    et = chan.end_date
                     # as above be careful of null values for either end of the time range
-                    st=self._handle_null_starttime(st)
-                    et=self._handle_null_endtime(et)
-                    chanrec['starttime']=st.timestamp
-                    chanrec['endtime']=et.timestamp
+                    st = self._handle_null_starttime(st)
+                    et = self._handle_null_endtime(et)
+                    chanrec['starttime'] = st.timestamp
+                    chanrec['endtime'] = et.timestamp
                     n_chan_processed += 1
-                    if(self._channel_is_not_in_db(chanrec)):
-                        picklestr=pickle.dumps(chan)
-                        chanrec['serialized_channel_data']=picklestr
-                        result=dbchannel.insert_one(chanrec)
+                    if (self._channel_is_not_in_db(chanrec)):
+                        picklestr = pickle.dumps(chan)
+                        chanrec['serialized_channel_data'] = picklestr
+                        result = dbchannel.insert_one(chanrec)
                         # insert_one has an obnoxious behavior in that it
                         # inserts the ObjectId in chanrec.  In this loop
                         # we reuse chanrec so we have to delete the id field
@@ -791,32 +890,32 @@ class Database(pymongo.database.Database):
                         n_chan_saved += 1
                         if verbose:
                             print("net:sta:loc:chan=",
-                              net,":",sta,":",loc,":",chan.code,
-                              "for time span ",st," to ",et,
-                              " added to channel collection")
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " added to channel collection")
                     else:
                         if verbose:
                             print('net:sta:loc:chan=',
-                              net,":",sta,":",loc,":",chan.code,
-                              "for time span ",st," to ",et,
-                              " already in channel collection - ignored")
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " already in channel collection - ignored")
 
         # Tried this to create a geospatial index.   Failing
         # in later debugging for unknown reason.   Decided it
         # should be a done externally anyway as we don't use
         # that feature now - thought of doing so but realized
         # was unnecessary baggage
-        #dbcol.create_index(["coords",GEOSPHERE])
+        # dbcol.create_index(["coords",GEOSPHERE])
         #
         # For now we will always print this summary information
         # For expected use it would be essential information
         #
         print("Database.save_inventory processing summary:")
-        print("Number of site records processed=",n_site_processed)
-        print("number of site records saved=",n_site_saved)
-        print("number of channel records processed=",n_chan_processed)
-        print("number of channel records saved=",n_chan_saved)
-        return tuple([n_site_saved,n_chan_saved,n_site_processed,n_chan_processed])
+        print("Number of site records processed=", n_site_processed)
+        print("number of site records saved=", n_site_saved)
+        print("number of channel records processed=", n_chan_processed)
+        print("number of channel records saved=", n_chan_saved)
+        return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
     def load_seed_station(self, net, sta, loc='NONE', time=-1.0):
         """
@@ -842,24 +941,25 @@ class Database(pymongo.database.Database):
         :return: handle to query result
         :rtype:  MondoDB Cursor object of query result.
         """
-        dbsite=self.site
-        query={}
-        query['net']=net
-        query['sta']=sta
-        if(loc!='NONE'):
-            query['loc']=loc
-        if(time>0.0):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbsite.count_documents(query)
-        if(matchsize==0):
+        dbsite = self.site
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        if (loc != 'NONE'):
+            query['loc'] = loc
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbsite.count_documents(query)
+        if (matchsize == 0):
             return None
         else:
-            stations=dbsite.find(query)
-            if(matchsize>1):
-                print("load_seed_site (WARNING):  query=",query)
-                print("Returned ",matchsize," documents - should be exactly one")
+            stations = dbsite.find(query)
+            if (matchsize > 1):
+                print("load_seed_site (WARNING):  query=", query)
+                print("Returned ", matchsize, " documents - should be exactly one")
             return stations
+
     def load_seed_channel(self, net, sta, chan, loc='NONE', time=-1.0):
         """
         The channel collection is assumed to have a one to one
@@ -882,28 +982,27 @@ class Database(pymongo.database.Database):
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
         """
-        dbchannel=self.channel
-        query={}
-        query['net']=net
-        query['sta']=sta
-        if(loc=='NONE'):
-            query['loc']=""
+        dbchannel = self.channel
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        if (loc == 'NONE'):
+            query['loc'] = ""
         else:
-            query['loc']=loc
-        query['chan']=chan
-        if(time>0.0):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbchannel.count_documents(query)
-        if(matchsize==0):
+            query['loc'] = loc
+        query['chan'] = chan
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbchannel.count_documents(query)
+        if (matchsize == 0):
             return None
         else:
-            channel=dbchannel.find(query)
-            if(matchsize>1):
-                print("load_seed_channel (WARNING):  query=",query)
-                print("Returned ",matchsize," documents - should be exactly one")
+            channel = dbchannel.find(query)
+            if (matchsize > 1):
+                print("load_seed_channel (WARNING):  query=", query)
+                print("Returned ", matchsize, " documents - should be exactly one")
             return channel
-
 
     def load_inventory(self, net=None, sta=None, loc=None, time=None):
         """
@@ -928,26 +1027,26 @@ class Database(pymongo.database.Database):
         query parameters
         :rtype:  obspy Inventory
         """
-        dbsite=self.site
-        query={}
-        if(net!=None):
-            query['net']=net
-        if(sta!=None):
-            query['sta']=sta
-        if(loc!=None):
-            query['loc']=loc
-        if(time!=None):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbsite.count_documents(query)
-        result=Inventory()
-        if(matchsize==0):
+        dbsite = self.site
+        query = {}
+        if (net != None):
+            query['net'] = net
+        if (sta != None):
+            query['sta'] = sta
+        if (loc != None):
+            query['loc'] = loc
+        if (time != None):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbsite.count_documents(query)
+        result = Inventory()
+        if (matchsize == 0):
             return None
         else:
-            stations=dbsite.find(query)
+            stations = dbsite.find(query)
             for s in stations:
-                serialized=s['serialized_inventory']
-                netw=pickle.loads(serialized)
+                serialized = s['serialized_inventory']
+                netw = pickle.loads(serialized)
                 # It might be more efficient to build a list of
                 # Network objects but here we add them one
                 # station at a time.  Note the extend method
@@ -975,27 +1074,27 @@ class Database(pymongo.database.Database):
         # to do: need to change source_id to be a copy of the _id string.
 
         dbcol = self.source
-        nevents=0
+        nevents = 0
         for event in cat:
             # event variable in loop is an Event object from cat
-            o=event.preferred_origin()
-            m=event.preferred_magnitude()
-            picklestr=pickle.dumps(event)
-            rec={}
-            #rec['source_id']=source_id
-            rec['latitude']=o.latitude
-            rec['longitude']=o.longitude
+            o = event.preferred_origin()
+            m = event.preferred_magnitude()
+            picklestr = pickle.dumps(event)
+            rec = {}
+            # rec['source_id']=source_id
+            rec['latitude'] = o.latitude
+            rec['longitude'] = o.longitude
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
             # a None so we have to test for that condition to avoid
             # aborts
             if o.depth == None:
-                depth=0.0
+                depth = 0.0
             else:
-                depth=o.depth/1000.0
-            rec['depth']=depth
-            otime=o.time
+                depth = o.depth / 1000.0
+            rec['depth'] = depth
+            otime = o.time
             # This attribute of UTCDateTime is the epoch time
             # In mspass we only story time as epoch times
             rec['time']=otime.timestamp
@@ -1024,5 +1123,5 @@ class Database(pymongo.database.Database):
         had a different purpose.
         """
         dbsource = self.source
-        x=dbsource.find_one({'source_id' : source_id})
+        x = dbsource.find_one({'source_id': source_id})
         return x
