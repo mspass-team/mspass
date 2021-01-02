@@ -71,17 +71,19 @@ class Database(pymongo.database.Database):
     def set_database_schema(self, schema):
         self.database_schema = schema
 
-    def read_data(self, object_id, object_type='TimeSeries', load_history=True):
+    def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
         if object_type not in ['TimeSeries', 'Seismogram']:
             raise KeyError("only TimeSeries and Seismogram are supported")
 
         schema = self.metadata_schema
         if object_type == 'TimeSeries':
-            read_metadata_def = schema.TimeSeries
+            read_metadata_schema = schema.TimeSeries
         else:
-            read_metadata_def = schema.Seismogram
+            read_metadata_schema = schema.Seismogram
 
-        wf_collection = read_metadata_def.collection('_id')  # use _id to get the collection this object belongs to
+        # use _id to get the collection this object belongs to
+        wf_collection = read_metadata_schema.collection('_id') if not collection else collection
+
         col = self[wf_collection]
         object = col.find_one({'_id': object_id})
         if not object:
@@ -90,12 +92,12 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object:
-            if read_metadata_def.is_defined(k):
+            if read_metadata_schema.is_defined(k):
                 md[k] = object[k]
 
         col_set = set()
-        for k in read_metadata_def.keys():
-            col = read_metadata_def.collection(k)
+        for k in read_metadata_schema.keys():
+            col = read_metadata_schema.collection(k)
             if col:
                 col_set.add(col)
         col_set.discard(wf_collection)
@@ -104,14 +106,14 @@ class Database(pymongo.database.Database):
         for col in col_set:
             col_dict[col] = self[col].find_one({'_id': object[col + '_id']})
 
-        for k in read_metadata_def.keys():
-            col = read_metadata_def.collection(k)
+        for k in read_metadata_schema.keys():
+            col = read_metadata_schema.collection(k)
             if col != wf_collection:
                 md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
 
         for k in md:
-            if read_metadata_def.is_defined(k):
-                if type(md[k]) != read_metadata_def.type(k):
+            if read_metadata_schema.is_defined(k):
+                if type(md[k]) != read_metadata_schema.type(k):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
         if object_type == 'TimeSeries':
@@ -155,7 +157,7 @@ class Database(pymongo.database.Database):
         self.update_metadata(mspass_object, update_all, exclude, collection)
 
         # 2. save data
-        wf_collection = save_schema.collection('_id')
+        wf_collection = save_schema.collection('_id') if not collection else collection
         col = self[wf_collection]
         object = col.find_one({'_id': mspass_object['_id']})
         filter = {'_id': mspass_object['_id']}
@@ -207,25 +209,19 @@ class Database(pymongo.database.Database):
             object = col.find_one({'_id': mspass_object['_id']})
 
         # 1. save history
-        old_history_object_id = None if new_insertion else object['history_object_id']
+        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+        old_history_object_id = None if new_insertion else object[history_obj_id_name]
         history_object_id = self._save_history(mspass_object, old_history_object_id)
 
         # 2. save error logs
-        old_elog_id = None if new_insertion else object['elog_id']
+        elog_id_name = self.database_schema.default_name('elog') + '_id'
+        old_elog_id = None if new_insertion else object[elog_id_name]
         elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
 
         # 3. save metadata in wf
         if exclude is None:
             exclude = []
-        insert_dict = {'history_object_id': history_object_id, 'elog_id': elog_id}
-
-        if collection:
-            col = self[collection]
-        else:
-            if isinstance(mspass_object, TimeSeries):
-                col = self['wf_TimeSeries']
-            else:
-                col = self['wf_Seismogram']
+        insert_dict = {history_obj_id_name: history_object_id, elog_id_name: elog_id}
 
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)
@@ -256,14 +252,11 @@ class Database(pymongo.database.Database):
 
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
-            col = self['elog']
-            if isinstance(mspass_object, Seismogram):
-                wf_id_name = 'wf_Seismogram_id'
-            else:
-                wf_id_name = 'wf_TimeSeries_id'
-            for id in insert_dict['elog_id']:
+            elog_col = self[self.database_schema.default_name('elog')]
+            wf_id_name = wf_collection + '_id'
+            for id in insert_dict[elog_id_name]:
                 filter = {'_id': id}
-                col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
+                elog_col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
 
     def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
         if ensemble_type not in ['TimeSeriesEnsemble', 'SeismogramEnsemble']:
@@ -311,7 +304,9 @@ class Database(pymongo.database.Database):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection)
 
-    def detele_wf(self, object_id, collection='wf_TimeSeries'):
+    def detele_wf(self, object_id, collection=None):
+        if not collection:
+            collection = self.database_schema.default_name('wf')
         self[collection].delete_one({'_id': object_id})
 
     def delete_gridfs(self, gridfs_id):
@@ -325,7 +320,9 @@ class Database(pymongo.database.Database):
         else:
             d.put_string('time_standard', 'UTC')
 
-    def _save_history(self, mspass_object, history_object_id=None, collection='history_object'):
+    def _save_history(self, mspass_object, history_object_id=None, collection=None):
+        if not collection:
+            collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
         history_binary = pickle.dumps(ProcessingHistory(mspass_object))
         # todo jobname jobid
@@ -337,11 +334,13 @@ class Database(pymongo.database.Database):
         else:
             return history_col.insert_one({'nodesdata': history_binary}).inserted_id
 
-    def _load_history(self, mspass_object, history_object_id, collection='history_object'):
+    def _load_history(self, mspass_object, history_object_id, collection=None):
+        if not collection:
+            collection = self.database_schema.default_name('history_object')
         res = self[collection].find_one({'_id': history_object_id})
         mspass_object.load_history(pickle.loads(res['nodesdata']))
 
-    def _save_elog(self, mspass_object, elog_id=None, collection='elog'):
+    def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
         Save error log for a data object.
 
@@ -359,6 +358,9 @@ class Database(pymongo.database.Database):
         elog is the error log object to be saved.
         Return:  List of ObjectID of inserted
         """
+        if not collection:
+            collection = self.database_schema.default_name('elog')
+
         if not elog_id:
             elog_id = []
 
