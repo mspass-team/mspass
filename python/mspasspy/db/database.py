@@ -145,7 +145,7 @@ class Database(pymongo.database.Database):
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
+    def save_data(self, mspass_object, storage_mode, update_all=True, dfile=None, dir=None,
                   exclude=None, collection=None, metadata_schema=None):
 
         # 1. save data
@@ -165,7 +165,11 @@ class Database(pymongo.database.Database):
         # 2. save metadata
         self.update_metadata(mspass_object, update_all, exclude, collection, metadata_schema)
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None):
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None,
+                  skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
+                               'source_lon', 'source_depth', 'source_time', 'chan', 'chan_id', 'channel_hang',
+                               'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
+                               'channel_starttime', 'channel_endtime']):
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -205,11 +209,6 @@ class Database(pymongo.database.Database):
             if not str(copied_metadata[k]).strip():
                 copied_metadata.erase(k)
 
-        # skip _id and attributes in other collections
-        skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
-                     'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
-                     'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
-                     'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
         for k in copied_metadata:
             if k in exclude or k in skip_list:
                 continue

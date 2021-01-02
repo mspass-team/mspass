@@ -226,6 +226,7 @@ def load_one_ensemble(doc,
                   jobid='99999',
                   algid='99999',
                   ensemble_mdkeys=[],  # default is to load nothing for ensemble
+		  apply_calib=False,
                   verbose=False):
     """
     This is a prototype.  Ultimately this should probably be a method
@@ -267,7 +268,7 @@ def load_one_ensemble(doc,
         fname=dir+"/"+dfile
         # Note this algorithm actually should work with any format
         # supported by obspy's read function - should generalize it for release
-        dseis=read(fname,format='mseed')
+        dseis=read(fname,format='mseed',apply_calib=apply_calib)
         if len(ensemble_mdkeys)>0:
             ensemblemd=load_md(doc,ensemble_mdkeys)
         else:
