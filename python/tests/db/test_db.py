@@ -103,14 +103,6 @@ class TestDatabase():
         tmp_ts_2.npts = 255
         self.db._read_data_from_dfile(tmp_ts_2, dir, dfile, foff)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
-        #
-        # tmp_ts.erase('dir')
-        # with pytest.raises(KeyError) as err:
-        #     self.db._read_data_from_dfile(tmp_ts, dir, dfile)
-        #     assert err == KeyError("one of the keys: dir, dfile, foff is missing")
-        # with pytest.raises(KeyError) as err:
-        #     self.db._save_data_to_dfile(tmp_ts)
-        #     assert err == KeyError("one of dir, dfile is missing")
 
     def test_save_and_read_gridfs(self):
         tmp_seis = get_live_seismogram()
@@ -120,10 +112,9 @@ class TestDatabase():
         self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
-        with pytest.raises(KeyError) as err:
+        with pytest.raises(KeyError, match='npts is not defined'):
             tmp_seis_2.erase('npts')
             self.db._read_data_from_gridfs(tmp_seis_2, gridfs_id)
-            assert err == KeyError("npts is not defined")
 
         with pytest.raises(ValueError) as err:
             tmp_seis_2.npts = 254
@@ -199,9 +190,8 @@ class TestDatabase():
     def test_save_read_data(self):
         # new object
         # read data
-        with pytest.raises(KeyError) as err:
+        with pytest.raises(KeyError, match='only TimeSeries and Seismogram are supported'):
             seis2 = self.db.read_data(ObjectId(), 'wrong')
-            assert err == KeyError("only wf_TimeSeries and wf_Seismogram are supported")
 
         seis2 = self.db.read_data(ObjectId(), 'Seismogram')
         assert not seis2
@@ -420,9 +410,8 @@ class TestDatabase():
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
 
     def test_read_ensemble_data(self):
-        with pytest.raises(KeyError) as err:
+        with pytest.raises(KeyError, match='only TimeSeriesEnsemble and SeismogramEnsemble are supported'):
             self.db.read_ensemble_data([], 'other_collection', )
-            assert err == KeyError("only wf_TimeSeries and wf_Seismogram are supported")
 
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
