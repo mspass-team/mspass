@@ -65,7 +65,7 @@ class Database(pymongo.database.Database):
         self.metadata_schema = MetadataSchema()
         self.database_schema = DatabaseSchema()
 
-    def set_metadata_scheme(self, schema):
+    def set_metadata_schema(self, schema):
         self.metadata_schema = schema
 
     def set_database_schema(self, schema):
@@ -74,6 +74,7 @@ class Database(pymongo.database.Database):
     def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
         if object_type not in ['TimeSeries', 'Seismogram']:
             raise KeyError("only TimeSeries and Seismogram are supported")
+        # todo support miniseed, hdf5
 
         schema = self.metadata_schema
         if object_type == 'TimeSeries':
