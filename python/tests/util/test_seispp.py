@@ -1,12 +1,10 @@
-import mongomock
-
 from mspasspy.db import Database
+from mspasspy.db import Client
 from mspasspy.util.seispp import index_data
 
 def setup_function(function):
-    client = mongomock.MongoClient('localhost')
-    Database.__bases__ = (mongomock.database.Database,)
-    function.db = Database(client, 'dbtest', codec_options=client._codec_options, _store = client._store['dbtest'])
+    client = Client('localhost')
+    function.db = Database(client, 'dbtest')
     function.data = "python/tests/data/sample"
 
 # FIXME: index_data will read the whole file to figure out the offset, 

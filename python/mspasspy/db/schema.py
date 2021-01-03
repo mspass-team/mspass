@@ -177,7 +177,7 @@ class SchemaDefinitionBase:
         """
         Get a list of all the unique keys defined.
 
-        :return: `True` if the key is defined
+        :return: list of all the unique keys defined
         :rtype: list
         """
         return self._main_dic.keys()
@@ -217,17 +217,19 @@ class SchemaDefinitionBase:
         This method is used to ask the opposite question as aliases. The aliases method 
         returns all acceptable alternatives to a definitive name defined as the key to 
         get said list. This method asks what definitive key should be used to fetch an 
-        attribute.
+        attribute. Note that if the input is already the unique name, it will return itself.
 
         :param aliasname: the name of the alias for which we want the definitive key
         :type aliasname: str
         :return: the name of the definitive key
         :rtype: str
-        :raises mspasspy.ccore.utility.MsPASSError: if aliasname is not an alias or not defined
+        :raises mspasspy.ccore.utility.MsPASSError: if aliasname is not defined
         """
-        if aliasname not in self._alias_dic:
-            raise MsPASSError(aliasname + ' is not an alias or not defined' 'Invalid')
-        return self._alias_dic[aliasname]
+        if aliasname in self._main_dic:
+            return aliasname
+        if aliasname in self._alias_dic:
+            return self._alias_dic[aliasname]
+        raise MsPASSError(aliasname + ' is not defined', 'Invalid')
 
 class DatabaseSchema(SchemaBase):
     def __init__(self, schema_file=None):
@@ -235,9 +237,9 @@ class DatabaseSchema(SchemaBase):
         self._default_dic = {}
         for collection in self._raw['Database']:
             setattr(self, collection, DBSchemaDefinition(self._raw['Database'], collection))
-            if 'default' in self._raw['Database'][collection] and self._raw['Database'][collection]['default']:
-                # This split can generate an empty string if the collection name starts with _. Need to document that.
-                self._default_dic[collection.split("_", 1)[0]] = collection
+            if 'default' in self._raw['Database'][collection]:
+                self._default_dic[self._raw['Database']
+                [collection]['default']] = collection
 
     def __setitem__(self, key, value):
         if not isinstance(value, DBSchemaDefinition):
@@ -253,8 +255,8 @@ class DatabaseSchema(SchemaBase):
         are used for data objects (characterized by their common wf prefix). The
         Database API needs a default wf collection to operate on when no collection
         name is explicitly given. In this case, this default_name method can be used.
-        Note that if requested name has no default collection defined, it will throw
-        an exception.
+        Note that if requested name has no default collection defined and it is a
+        defined collection, it will treat that collection itself as the default.
 
         :param name: The requested default collection
         :type name: str
@@ -262,9 +264,11 @@ class DatabaseSchema(SchemaBase):
         :rtype: class:`mspasspy.db.schema.DBSchemaDefinition`
         :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined
         """
-        if name not in self._default_dic:
-            raise MsPASSError(name + ' has no default defined' 'Invalid')
-        return getattr(self, self._default_dic[name])
+        if name in self._default_dic:
+            return getattr(self, self._default_dic[name])
+        if name in self._raw['Database']:
+            return getattr(self, name)
+        raise MsPASSError(name + ' has no default defined', 'Invalid')
     
     def default_name(self, name):
         """
@@ -279,9 +283,11 @@ class DatabaseSchema(SchemaBase):
         :rtype: str
         :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined
         """
-        if name not in self._default_dic:
-            raise MsPASSError(name + ' has no default defined' 'Invalid')
-        return self._default_dic[name]
+        if name in self._default_dic:
+            return self._default_dic[name]
+        if name in self._raw['Database']:
+            return name
+        raise MsPASSError(name + ' has no default defined', 'Invalid')
 
     def set_default(self, collection: str, default: str=None):
         """
@@ -298,7 +304,7 @@ class DatabaseSchema(SchemaBase):
         :type default: str, optional
         """
         if not hasattr(self, collection):
-            raise MsPASSError(collection + ' is not a defined collection' 'Invalid')
+            raise MsPASSError(collection + ' is not a defined collection', 'Invalid')
         if default is None:
             self._default_dic[collection.split("_", 1)[0]] = collection
         else:
@@ -332,7 +338,12 @@ class DBSchemaDefinition(SchemaDefinitionBase):
                 k = key
                 if k == attr['reference'] + '_id':
                     k = '_id'
-                foreign_attr = schema_dic[attr['reference']]['schema'][k]
+                refer_dic = schema_dic[attr['reference']]
+                while 'base' in refer_dic:
+                    refer_dic = schema_dic[refer_dic['base']]
+                    if k in refer_dic['schema']:
+                        break
+                foreign_attr = refer_dic['schema'][k]
                 # The order of below operation matters. The behavior is that we only 
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
@@ -353,7 +364,7 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         if key not in self._main_dic:
-            raise MsPASSError(key + ' is not defined' 'Invalid')
+            raise MsPASSError(key + ' is not defined', 'Invalid')
         return self._collection_str if 'reference' not in self._main_dic[key] else self._main_dic[key]['reference']
 
 class MetadataSchema(SchemaBase):
@@ -416,7 +427,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         if key not in self._main_dic:
-            raise MsPASSError(key + ' is not defined' 'Invalid')
+            raise MsPASSError(key + ' is not defined', 'Invalid')
         return True if 'readonly' not in self._main_dic[key] else self._main_dic[key]['readonly']
         
     def writeable(self, key):
@@ -447,7 +458,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         if key not in self._main_dic:
-            raise MsPASSError(key + ' is not defined' 'Invalid')
+            raise MsPASSError(key + ' is not defined', 'Invalid')
         self._main_dic[key]['readonly'] = True
         
     def set_writeable(self, key):
@@ -465,7 +476,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         if key not in self._main_dic:
-            raise MsPASSError(key + ' is not defined' 'Invalid')
+            raise MsPASSError(key + ' is not defined', 'Invalid')
         self._main_dic[key]['readonly'] = False
 
 def _check_format(schema_dic):

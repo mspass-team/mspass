@@ -106,8 +106,9 @@ def test_interpolate():
     tr.data = np.array(ts.data)
     copy = np.array(ts.data)
     tr.stats.sampling_rate = 20
-    tr.interpolate(40, method="zero")
-    interpolate(ts, 40, method='zero', preserve_history=True, instance='0')
+    tr.interpolate(40, method="linear", npts=500)
+    interpolate(ts, 40, method='linear', npts=500, preserve_history=True, instance='0')
+    assert len(ts.data) == len(tr.data)
     assert all(abs(a-b) < 0.001 for a, b in zip(ts.data, tr.data))
     assert not all(abs(a-b) < 0.001 for a, b in zip(ts.data, copy))
     assert ts.dt == 1/40

@@ -19,10 +19,12 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install CXX Dependencies
       run: sudo apt-get update && sudo apt-get install -yq gfortran libboost-dev libboost-serialization-dev liblapack-dev
+    - name: Install MongoDB
+      uses: supercharge/mongodb-github-action@1.3.0
     - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pymongo numpy obspy pytest mongomock pytest-cov codecov "dask[complete]" schema
+        python -m pip install pymongo numpy obspy pytest pytest-cov codecov "dask[complete]" schema
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Install Apache Spark
       run: |
