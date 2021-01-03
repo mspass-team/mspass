@@ -422,9 +422,9 @@ def load_hypocenter_data_by_id(db,ens):
                 "no match found in source collection for source_id="+source_id,
                 ErrorSeverity.Invalid)
         else:
-            ens['source.lat']=srcrec['latitude']
-            ens['source.lon']=srcrec['longitude']
-            ens['source.depth']=srcrec['depth']
+            ens['source_lat']=srcrec['latitude']
+            ens['source_lon']=srcrec['longitude']
+            ens['source_depth']=srcrec['depth']
             ens['source_time']=srcrec['time']
             ens['source_id']=source_id
         return ens
@@ -573,9 +573,9 @@ def load_site_data(db,ens):
                  ErrorSeverity.Invalid)
             else:
                 siterec=dbsite.find_one(query)
-                d['site.lat']=siterec['latitude']
-                d['site.lon']=siterec['longitude']
-                d['site.elev']=siterec['elevation']
+                d['site_lat']=siterec['latitude']
+                d['site_lon']=siterec['longitude']
+                d['site_elev']=siterec['elevation']
                 d['site_id']=siterec['site_id']
                 if n>1:
                     message = ('Muliple (%d) matches found for net %s sta %s with reference time %f'
@@ -647,7 +647,7 @@ def load_channel_data(db,ens):
 
 def load_arrivals_by_id(db,tsens,
         phase='P',
-        required_key_map={'phase':'phase','time':'arrival.time'},
+        required_key_map={'phase':'phase','time':'arrival_time'},
         optional_key_map={'iphase':'iphase','deltim':'deltim'},
         verbose=False):
     """
@@ -754,3 +754,17 @@ def load_arrivals_by_id(db,tsens,
         if d.live:
             nlive+=1
     return nlive
+def erase_seed_metadata(d,keys=['mseed','_format']):
+    """
+    Erase a set of debris obspy's reader adds to stats array that get copied to data.  We 
+    don't need that debris once data are converted to MsPASS data objects and stored in 
+    MongoDB.  Use this function when importing seed data with obspy's reader to 
+    reduce junk in the database. 
+
+    :param d: is the data object to be cleaned (assumed only to be a child of Metadata so 
+      erase will work.
+    :param keys:  list of keys to clear.  Default should be all that is needed for 
+      standard use.
+    """
+    for k in keys:
+        d.erase(k)
