@@ -50,6 +50,13 @@ Database:
         type: double
         concept: Time of first sample of data (epoch time or relative to some other time mark)
         aliases: [t0, time]
+      starttime_shift:
+        type: double
+        concept:  Time shift applied to define relative time of 0.0
+        aliases:  t0shift
+      CanBeConvertToUTC:
+        type:  bool
+        concept:  When true starttime_shift can be used to convert relative time to UTC.
       time_standard:
         type: string
         concept: Defines time standard for meaning of t0 (default should be UTC)
