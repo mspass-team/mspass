@@ -31,6 +31,20 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
                           format='spark', spark_context=None):
+    """
+     This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
+     manner, and return all of the mspasspy objects using the format required by the distributed computing framework
+     (spark RDD or dask bag).
+
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
+    :param object_type: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param load_history: `True` to load object-level history in mspasspy objects.
+    :param format: `spark` or `dask`.
+    :param spark_context: user specified spark context.
+    :return: a spark `RDD` or dask `bag` format of mspasspy objects.
+    """
     if format == 'spark':
         list = spark_context.parallelize(cursors)
         return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))

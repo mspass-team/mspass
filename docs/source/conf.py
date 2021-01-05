@@ -40,6 +40,8 @@ extensions = [
   'm2r',
   'breathe',
   'nbsphinx',
+  'sphinx.ext.todo',
+  'sphinx.ext.viewcode',
 ]
 
 
