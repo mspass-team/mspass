@@ -15,6 +15,7 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 sys.path.append("python/tests")
+
 from mspasspy.db.database import Database, read_distributed_data
 from mspasspy.db.client import Client
 from helper import (get_live_seismogram,
@@ -184,7 +185,7 @@ class TestDatabase():
         assert res['extra1'] == 'extra1+'
 
         with pytest.raises(TypeError) as err:
-            ts.put_string('npts', '121')
+            ts.put_string('npts', 'xyz')
             self.db.update_metadata(ts)
         assert str(err.value) == "npts has type <class 'str'>, forbidden by definition"
 
