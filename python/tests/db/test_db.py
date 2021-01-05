@@ -147,11 +147,6 @@ class TestDatabase():
         logging_helper.info(ts, 'dummy_func_2', '2')
         nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
-            ts_2.clear('history_object_id')
-            self.db._load_history(ts_2)
-            assert err == KeyError("history_object_id not found")
-
-=======
         history_object_id = self.db._save_history(ts)
         res = self.db['history_object'].find_one({'_id': history_object_id})
         assert res
@@ -161,7 +156,6 @@ class TestDatabase():
         loaded_nodes = ts_2.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
->>>>>>> 235f484d8c9a267235bdbe8bd4eeee13700df029
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
         exclude = ['extra2']
