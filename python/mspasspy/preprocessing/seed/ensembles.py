@@ -766,5 +766,6 @@ def erase_seed_metadata(d,keys=['mseed','_format']):
     :param keys:  list of keys to clear.  Default should be all that is needed for 
       standard use.
     """
-    for k in keys:
-        d.erase(k)
+    for mem in d.member:
+        for k in keys:
+            mem.erase(k)
