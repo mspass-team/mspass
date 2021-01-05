@@ -7,7 +7,7 @@ import pytest
 import sys
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
-from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata
+from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError
 
 from mspasspy.db.schema import MetadataSchema
 from mspasspy.util import logging_helper
@@ -184,10 +184,9 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
-        with pytest.raises(TypeError) as err:
+        with pytest.raises(MsPASSError, match='Failure attempting to convert'):
             ts.put_string('npts', 'xyz')
             self.db.update_metadata(ts)
-        assert str(err.value) == "npts has type <class 'str'>, forbidden by definition"
 
     def test_save_read_data(self):
         # new object

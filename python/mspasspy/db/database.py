@@ -5,12 +5,15 @@ import os
 import copy
 import pickle
 import struct
+from array import array
+
 import dask.bag as daskbag
 import gridfs
 import pymongo
 from bson.objectid import ObjectId
 import numpy as np
-from array import array
+from obspy import Inventory
+from obspy import UTCDateTime
 
 from mspasspy.ccore.seismic import (TimeSeries,
                                     Seismogram,
@@ -20,12 +23,10 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     TimeSeriesEnsemble,
                                     SeismogramEnsemble)
 from mspasspy.ccore.utility import (Metadata,
+                                    MsPASSError,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-
-from obspy import Inventory
-from obspy import UTCDateTime
 
 
 def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
@@ -243,12 +244,11 @@ class Database(pymongo.database.Database):
                 if update_metadata_def.readonly(k):
                     continue
                 if type(copied_metadata[k]) != update_metadata_def.type(k):
-                    # this can throw a TypeError but we let it abort it does
-                    # because it indicates a coding error that needs to be
-                    # handled
-                    recovered=_repair_type_mismatch(k,copied_metadata[k],
-                        update_metadata_def.type(k))
-                    insert_dict[k]=recovered[k]
+                    try:
+                        insert_dict[k] = update_metadata_def.type(k)(copied_metadata[k])
+                    except Exception as err:
+                        raise MsPASSError('Failure attempting to convert {}: {} to {}'.format(
+                            k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
                 else:
                     insert_dict[k] = copied_metadata[k]
             elif update_all:
