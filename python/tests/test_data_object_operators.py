@@ -7,9 +7,9 @@ Created on Mon Dec 28 06:13:20 2020
 
 @author: pavlis
 """
-from mspasspy.ccore.seismic import (CoreTimeSeries,
+from mspasspy.ccore.seismic import (_CoreTimeSeries,
                                     TimeSeries,
-                                    CoreSeismogram,
+                                    _CoreSeismogram,
                                     Seismogram)
 import numpy as np
 
@@ -74,30 +74,30 @@ def make_constant_data_seis(d,t0=0.0,dt=0.1,nsamp=5,val=1.0):
             d.data[k,i]=val 
     return d
 
-d=CoreTimeSeries(10)
+d=_CoreTimeSeries(10)
 d1=make_constant_data_ts(d,nsamp=10)
-dsave=CoreTimeSeries(d1)
-d=CoreTimeSeries(6)
+dsave=_CoreTimeSeries(d1)
+d=_CoreTimeSeries(6)
 d2=make_constant_data_ts(d,t0=-0.2,nsamp=6,val=2.0)
-print('left hand side for operator; CoreTimeSeries')
+print('left hand side for operator; _CoreTimeSeries')
 print(d1)
 print(d1.data)
-print('right had side for operators; CoreTimeSeries ')
+print('right had side for operators; _CoreTimeSeries ')
 print(d2)
 print(d2.data)
-dsave=CoreTimeSeries(d1)
+dsave=_CoreTimeSeries(d1)
 d1+=d2
 print('result of += operator')
 print(d1)
 print(d1.data)
 assert np.allclose(d1.data,[3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
-d1=CoreTimeSeries(dsave)
+d1=_CoreTimeSeries(dsave)
 d=d1+d2
 print('result of binary + operator;  should be same as += just computed')
 print(d)
 print(d.data)
 assert np.allclose(d.data,[3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
-d1=CoreTimeSeries(dsave)
+d1=_CoreTimeSeries(dsave)
 print('Data before calling operator *= with val of 2.5')
 print(d1)
 print(d1.data)
@@ -115,10 +115,10 @@ print(d3.data)
 print('right had side for operators; TimeSeries ')
 print(d4)
 print(d4.data)
-dsave=CoreTimeSeries(d3)
+dsave=_CoreTimeSeries(d3)
 d3=TimeSeries(dsave)
 d3+=d4
-print('result of += operator - should be identical to CoreTimeSeries result')
+print('result of += operator - should be identical to _CoreTimeSeries result')
 print(d3)
 print(d3.data)
 assert np.allclose(d3.data,[3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
@@ -128,7 +128,7 @@ print('result of binary + operator;  should be same as += just computed')
 print(d)
 print(d.data)
 assert np.allclose(d.data,[3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
-d1=CoreTimeSeries(dsave)
+d1=_CoreTimeSeries(dsave)
 d3=TimeSeries(dsave)
 print('Data before calling operator *= with val of 2.5')
 print(d3)
@@ -171,21 +171,21 @@ d3+=d4
 assert np.allclose(d3.data,[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 # Repeat the same test for Seismogram objects 
 # This section is edited cut-paste of above
-# Intentionally do not test CoreSeismogram directly because 
-# currently if it works for Seismogram it will for CoreSeismogram
+# Intentionally do not test _CoreSeismogram directly because 
+# currently if it works for Seismogram it will for _CoreSeismogram
 
-d=CoreSeismogram(10)
+d=_CoreSeismogram(10)
 d1=make_constant_data_seis(d,nsamp=10)
-dsave=CoreSeismogram(d1)
-d=CoreSeismogram(6)
+dsave=_CoreSeismogram(d1)
+d=_CoreSeismogram(6)
 d2=make_constant_data_seis(d,t0=-0.2,nsamp=6,val=2.0)
-print('left hand side for operator; CoreSeismogram')
+print('left hand side for operator; _CoreSeismogram')
 print(d1)
 print(d1.data)
-print('right had side for operators; CoreSeismogram ')
+print('right had side for operators; _CoreSeismogram ')
 print(d2)
 print(d2.data)
-dsave=CoreSeismogram(d1)
+dsave=_CoreSeismogram(d1)
 d1+=d2
 print('result of += operator')
 print(d1)
@@ -193,7 +193,7 @@ print(d1.data)
 assert np.allclose(d1.data,np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
  [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
  [3., 3., 3., 3., 1., 1. ,1., 1., 1., 1.]]))
-d1=CoreSeismogram(dsave)
+d1=_CoreSeismogram(dsave)
 d=d1+d2
 print('result of binary + operator;  should be same as += just computed')
 print(d)
@@ -201,7 +201,7 @@ print(d.data)
 assert np.allclose(d.data,np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
  [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
  [3., 3., 3., 3., 1., 1. ,1., 1., 1., 1.]]))
-d1=CoreSeismogram(dsave)
+d1=_CoreSeismogram(dsave)
 print('Data before calling operator *= with val of 2.5')
 print(d1)
 print(d1.data)
@@ -307,24 +307,24 @@ assert np.allclose(d3.data,np.array([
     
 # Repeat exactly for - test but different numeric results
 # just omit *= tests
-d=CoreTimeSeries(10)
+d=_CoreTimeSeries(10)
 d1=make_constant_data_ts(d,nsamp=10)
-dsave=CoreTimeSeries(d1)
-d=CoreTimeSeries(6)
+dsave=_CoreTimeSeries(d1)
+d=_CoreTimeSeries(6)
 d2=make_constant_data_ts(d,t0=-0.2,nsamp=6,val=2.0)
-print('left hand side for operator; CoreTimeSeries')
+print('left hand side for operator; _CoreTimeSeries')
 print(d1)
 print(d1.data)
-print('right had side for operators; CoreTimeSeries ')
+print('right had side for operators; _CoreTimeSeries ')
 print(d2)
 print(d2.data)
-dsave=CoreTimeSeries(d1)
+dsave=_CoreTimeSeries(d1)
 d1-=d2
 print('result of -= operator')
 print(d1)
 print(d1.data)
 assert np.allclose(d1.data,[-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
-d1=CoreTimeSeries(dsave)
+d1=_CoreTimeSeries(dsave)
 d=d1-d2
 print('result of binary - operator;  should be same as -= just computed')
 print(d)
@@ -340,10 +340,10 @@ print(d3.data)
 print('right had side for operators; TimeSeries ')
 print(d4)
 print(d4.data)
-dsave=CoreTimeSeries(d3)
+dsave=_CoreTimeSeries(d3)
 d3=TimeSeries(dsave)
 d3-=d4
-print('result of -= operator - should be identical to CoreTimeSeries result')
+print('result of -= operator - should be identical to _CoreTimeSeries result')
 print(d3)
 print(d3.data)
 assert np.allclose(d3.data,[-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
@@ -386,21 +386,21 @@ d3-=d4
 assert np.allclose(d3.data,[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 # Repeat the same test for Seismogram objects 
 # This section is edited cut-paste of above
-# Intentionally do not test CoreSeismogram directly because 
-# currently if it works for Seismogram it will for CoreSeismogram
+# Intentionally do not test _CoreSeismogram directly because 
+# currently if it works for Seismogram it will for _CoreSeismogram
 
-d=CoreSeismogram(10)
+d=_CoreSeismogram(10)
 d1=make_constant_data_seis(d,nsamp=10)
-dsave=CoreSeismogram(d1)
-d=CoreSeismogram(6)
+dsave=_CoreSeismogram(d1)
+d=_CoreSeismogram(6)
 d2=make_constant_data_seis(d,t0=-0.2,nsamp=6,val=2.0)
-print('left hand side for operator; CoreSeismogram')
+print('left hand side for operator; _CoreSeismogram')
 print(d1)
 print(d1.data)
-print('right had side for operators; CoreSeismogram ')
+print('right had side for operators; _CoreSeismogram ')
 print(d2)
 print(d2.data)
-dsave=CoreSeismogram(d1)
+dsave=_CoreSeismogram(d1)
 d1-=d2
 print('result of -= operator')
 print(d1)
@@ -408,7 +408,7 @@ print(d1.data)
 assert np.allclose(d1.data,np.array([[-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
  [-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
  [-1., -1., -1., -1., 1., 1. ,1., 1., 1., 1.]]))
-d1=CoreSeismogram(dsave)
+d1=_CoreSeismogram(dsave)
 d=d1-d2
 print('result of binary - operator;  should be same as -= just computed')
 print(d)
