@@ -40,7 +40,7 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     :param db_name: the database name in mongodb.
     :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
     :param object_type: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    :param load_history: `True` to load object-level history in mspasspy objects.
+    :param load_history: `True` to load object-level history into mspasspy objects.
     :param format: `spark` or `dask`.
     :param spark_context: user specified spark context.
     :return: a spark `RDD` or dask `bag` format of mspasspy objects.
@@ -56,6 +56,16 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
 
 
 def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True):
+    """
+     A helper method used in the distributed map operation. It creates a mongodb connection regarding provided
+     configurations, reads data from the database, constructs a mspasspy object and returns it.
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb
+    :param object_type: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    :param load_history: `True` to load object-level history into the mspasspy object.
+    :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    """
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
@@ -71,8 +81,8 @@ class Database(pymongo.database.Database):
     uses a database handle normally created with a variant of this pair
     of commands:
         client=MongoClient()
-        db=client['databasename']
-    where databasename is variable and the name of the database you
+        db=client['database_name']
+    where database_name is variable and the name of the database you
     wish to access with this handle.
     """
 
@@ -152,7 +162,8 @@ class Database(pymongo.database.Database):
 
         # 3.load history
         if load_history:
-            self._load_history(mspass_object, object['history_object_id'])
+            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+            self._load_history(mspass_object, object[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()
