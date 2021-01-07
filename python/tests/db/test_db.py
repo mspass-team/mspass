@@ -306,10 +306,10 @@ class TestDatabase():
         self.db.save_data(ts3, 'gridfs')
 
         time = datetime.utcnow().timestamp()
-        ts1['t0'] = time
+        ts1.t0 = time
         ts1['tst'] = time
-        ts2['t0'] = time
-        ts3['t0'] = time
+        ts2.t0 = time
+        ts3.t0 = time
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -339,10 +339,10 @@ class TestDatabase():
         self.db.save_data(seis2, 'gridfs')
         self.db.save_data(seis3, 'gridfs')
         time = datetime.utcnow().timestamp()
-        seis1['t0'] = time
+        seis1.t0 = time
         seis1['tst'] = time
-        seis2['t0'] = time
-        seis3['t0'] = time
+        seis2.t0 = time
+        seis3.t0 = time
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
