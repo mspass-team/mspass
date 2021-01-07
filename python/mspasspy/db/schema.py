@@ -95,7 +95,8 @@ class SchemaDefinitionBase:
 
         Aliases are needed to support legacy packages, but can cause downstream problem
         if left intact. This method clears any aliases and sets them to the unique_name
-        defined by this object.
+        defined by this object. Note that if the unique_name is already defined, it will
+        silently remove the alias only.
 
         :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`
             or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.
@@ -103,7 +104,10 @@ class SchemaDefinitionBase:
         """
         for key in md.keys():
             if self.is_alias(key):
-                md.change_key(key, self.unique_name(key))
+                if self.unique_name(key) not in md:
+                    md.change_key(key, self.unique_name(key))
+                else:
+                    del md[key]  
 
     def concept(self, key):
         """
