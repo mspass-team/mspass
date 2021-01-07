@@ -284,8 +284,16 @@ class TestDatabase():
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
         res = self.db['wf'].find_one({'_id': id})
         assert res
-        self.db.detele_wf(id, 'wf')
+        self.db.detele_wf(id, "TimeSeries", 'wf')
         res = self.db['wf'].find_one({'_id': id})
+        assert not res
+
+        ts = copy.deepcopy(self.test_ts)
+        self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        self.db.detele_wf(ts['_id'], "TimeSeries")
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert not res
 
     def test_delete_gridfs(self):
