@@ -1187,12 +1187,12 @@ def _sync_time_metadata(mspass_object):
     if mspass_object.time_is_relative():
         if mspass_object.shifted():
             mspass_object['startime_shift']=mspass_object.time_reference()
-            mspass_object['CanBeConvertedToUTC']=True
+            mspass_object['utc_convertible']=True
         else:
-            mspass_object['CanBeConvertedToUTC']=False
+            mspass_object['utc_convertible'] = False
         mspass_object['time_standard']='Relative'
     else:
-        mspass_object['CanBeConvertedToUTC']=True
+        mspass_object['utc_convertible']=True
         mspass_object['time_standard']='UTC'
 def sync_ensemble_metadata(ensemble,do_not_copy=None):
     """

@@ -54,7 +54,7 @@ Database:
         type: double
         concept:  Time shift applied to define relative time of 0.0
         aliases:  t0shift
-      CanBeConvertToUTC:
+      utc_convertible:
         type:  bool
         concept:  When true starttime_shift can be used to convert relative time to UTC.
       time_standard:
