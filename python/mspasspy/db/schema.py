@@ -22,13 +22,13 @@ class SchemaBase:
             raise MsPASSError('Cannot parse schema definition file: ' + schema_file, 'Fatal') from e
         except EnvironmentError as e:
             raise MsPASSError('Cannot open schema definition file: ' + schema_file, 'Fatal') from e
-        
+
         try:
             _check_format(schema_dic)
         except schema.SchemaError as e:
             raise MsPASSError('The schema definition is not valid', 'Fatal') from e
         self._raw = schema_dic
-    
+
     def __getitem__(self, key):
         try:
             return getattr(self, key)
@@ -47,7 +47,7 @@ class SchemaDefinitionBase:
     def add(self, name, attr):
         """
         Add a new entry to the definitions. Note that because the internal
-        container is `dict` if attribute for name is already present it 
+        container is `dict` if attribute for name is already present it
         will be silently replaced.
 
         :param name: The name of the attribute to be added
@@ -63,7 +63,7 @@ class SchemaDefinitionBase:
         if 'aliases' in attr:
             for als in attr['aliases']:
                 self._alias_dic[als] = name
-    
+
     def add_alias(self, key, aliasname):
         """
         Add an alias for key
@@ -75,35 +75,39 @@ class SchemaDefinitionBase:
         """
         self._main_dic[key]['aliases'].append(aliasname)
         self._alias_dic[aliasname] = key
-    
+
     def aliases(self, key):
         """
         Get a list of aliases for a given key.
 
-        :param key: The unique key that has aliases defined. 
+        :param key: The unique key that has aliases defined.
         :type key: str
         :return: A list of aliases associated to the key.
         :rtype: list
         """
         return None if 'aliases' not in self._main_dic[key] else self._main_dic[key]['aliases']
-    
+
     # TODO def apply_aliases
 
     def clear_aliases(self, md):
         """
         Restore any aliases to unique names.
 
-        Aliases are needed to support legacy packages, but can cause downstream problem 
-        if left intact. This method clears any aliases and sets them to the unique_name 
-        defined by this object.
+        Aliases are needed to support legacy packages, but can cause downstream problem
+        if left intact. This method clears any aliases and sets them to the unique_name
+        defined by this object. Note that if the unique_name is already defined, it will
+        silently remove the alias only.
 
-        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram` 
+        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`
             or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.
         :type md: class:`mspasspy.ccore.utility.Metadata`
         """
         for key in md.keys():
             if self.is_alias(key):
-                md.change_key(key, self.unique_name(key))
+                if self.unique_name(key) not in md:
+                    md.change_key(key, self.unique_name(key))
+                else:
+                    del md[key]  
 
     def concept(self, key):
         """
@@ -123,10 +127,10 @@ class SchemaDefinitionBase:
         """
         Test if a key has registered aliases
 
-        Sometimes it is helpful to have alias keys to define a common concept. 
-        For instance, if an attribute is loaded from a relational db one might 
-        want to use alias names of the form table.attribute as an alias to 
-        attribute. has_alias should be called first to establish if a name has 
+        Sometimes it is helpful to have alias keys to define a common concept.
+        For instance, if an attribute is loaded from a relational db one might
+        want to use alias names of the form table.attribute as an alias to
+        attribute. has_alias should be called first to establish if a name has
         an alias. To get a list of aliases call the aliases method.
 
         :param key: key to be tested
@@ -140,7 +144,7 @@ class SchemaDefinitionBase:
         """
         Test if a key is a registered alias
 
-        This asks the inverse question to has_alias. That is, it yields true of the key is 
+        This asks the inverse question to has_alias. That is, it yields true of the key is
         registered as a valid alias. It returns false if the key is not defined at all. Note
         it will yield false if the key is a registered unique name and not an alias.
 
@@ -214,9 +218,9 @@ class SchemaDefinitionBase:
         """
         Get definitive name for an alias.
 
-        This method is used to ask the opposite question as aliases. The aliases method 
-        returns all acceptable alternatives to a definitive name defined as the key to 
-        get said list. This method asks what definitive key should be used to fetch an 
+        This method is used to ask the opposite question as aliases. The aliases method
+        returns all acceptable alternatives to a definitive name defined as the key to
+        get said list. This method asks what definitive key should be used to fetch an
         attribute. Note that if the input is already the unique name, it will return itself.
 
         :param aliasname: the name of the alias for which we want the definitive key
@@ -269,7 +273,7 @@ class DatabaseSchema(SchemaBase):
         if name in self._raw['Database']:
             return getattr(self, name)
         raise MsPASSError(name + ' has no default defined', 'Invalid')
-    
+
     def default_name(self, name):
         """
         Return the name of a default collection.
@@ -292,11 +296,11 @@ class DatabaseSchema(SchemaBase):
     def set_default(self, collection: str, default: str=None):
         """
         Set a collection as the default.
-        
-        This method is used to change the default collections (e.g., switching between 
+
+        This method is used to change the default collections (e.g., switching between
         wf_TimeSeries and wf_Seismogram). If ``default`` is not given, it will try to
-        infer one from ``collection`` at the first occurrence of "_" 
-        (e.g., wf_TimeSeries will become wf). 
+        infer one from ``collection`` at the first occurrence of "_"
+        (e.g., wf_TimeSeries will become wf).
 
         :param collection: The name of the targetting collection
         :type collection: str
@@ -313,7 +317,7 @@ class DatabaseSchema(SchemaBase):
     def unset_default(self, default: str):
         """
         Unset a default.
-        
+
         This method does nothing if ``default`` is not defined.
 
         :param default: the default name to be unset
@@ -344,7 +348,7 @@ class DBSchemaDefinition(SchemaDefinitionBase):
                     if k in refer_dic['schema']:
                         break
                 foreign_attr = refer_dic['schema'][k]
-                # The order of below operation matters. The behavior is that we only 
+                # The order of below operation matters. The behavior is that we only
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
                 compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
@@ -352,7 +356,7 @@ class DBSchemaDefinition(SchemaDefinitionBase):
 
             if 'aliases' in attr:
                 self._alias_dic.update({item:key for item in attr['aliases']})
-    
+
     def reference(self, key):
         """
         Return the collection name that a key is referenced from
@@ -396,7 +400,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 if key.startswith(col_name):
                     s_key = key.replace(col_name + '_', '')
                 foreign_attr = getattr(dbschema,col_name)._main_dic[s_key]
-                # The order of below operation matters. The behavior is that we only 
+                # The order of below operation matters. The behavior is that we only
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
                 compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
@@ -404,7 +408,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
 
             if 'aliases' in self._main_dic[key]:
                 self._alias_dic.update({item:key for item in self._main_dic[key]['aliases']})
-                
+
     def collection(self, key):
         """
         Return the collection name that a key belongs to
@@ -429,7 +433,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         if key not in self._main_dic:
             raise MsPASSError(key + ' is not defined', 'Invalid')
         return True if 'readonly' not in self._main_dic[key] else self._main_dic[key]['readonly']
-        
+
     def writeable(self, key):
         """
         Check if an attribute is writeable. Inverted logic from the readonly method.
@@ -441,16 +445,16 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         return not self.readonly(key)
-    
+
     def set_readonly(self, key):
         """
         Lock an attribute to assure it will not be saved.
 
-        Parameters can be defined readonly. That is a standard feature of this class, 
-        but is normally expected to be set on construction of the object. 
-        There are sometimes reason to lock out a parameter to keep it from being 
-        saved in output. This method allows this. On the other hand, use this feature 
-        only if you fully understand the downstream implications or you may experience 
+        Parameters can be defined readonly. That is a standard feature of this class,
+        but is normally expected to be set on construction of the object.
+        There are sometimes reason to lock out a parameter to keep it from being
+        saved in output. This method allows this. On the other hand, use this feature
+        only if you fully understand the downstream implications or you may experience
         unintended consequences.
 
         :param key: the key for the attribute with properties to be redefined
@@ -460,15 +464,15 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         if key not in self._main_dic:
             raise MsPASSError(key + ' is not defined', 'Invalid')
         self._main_dic[key]['readonly'] = True
-        
+
     def set_writeable(self, key):
         """
         Force an attribute to be writeable.
 
-        Normally some parameters are marked readonly on construction to avoid 
-        corrupting the database with inconsistent data defined with a common 
-        key. (e.g. sta) This method overrides such definitions for any key so 
-        marked. This method should be used with caution as it could have 
+        Normally some parameters are marked readonly on construction to avoid
+        corrupting the database with inconsistent data defined with a common
+        key. (e.g. sta) This method overrides such definitions for any key so
+        marked. This method should be used with caution as it could have
         unintended side effects.
 
         :param key: the key for the attribute with properties to be redefined

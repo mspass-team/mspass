@@ -8,7 +8,7 @@ This is a class for handling data marked dead.   The method names are a bit
 tongue in cheek but descriptive.
 @author: Prof. Gary L. Pavlis, Dept. Earth and Atmos. Sci., Indiana University
 """
-class Undertaker(mspasspy.db.db.Database):
+class Undertaker(mspasspy.db.Database):
     """
     Class to handle dead data.  Many for ensembles, but has methods to
     save elog entries for Seismogram or TimeSeries objects marked dead.
@@ -48,6 +48,14 @@ class Undertaker(mspasspy.db.db.Database):
                 if save_history:
                     self._save_elog(d.id,d.elog)
         return newens
+
+    def cremate(self,d):
+        """
+        Like bury_the_dead but nothing is preserved of the dead.   Functionally equivalent to 
+        bury_the_dead with save_history False, but with a more memorable name.
+        """
+        dlive=self.bury_the_dead(d,False)
+        return dlive
 
     def bring_out_your_dead(self,d,bury=False):
         """

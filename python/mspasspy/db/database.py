@@ -5,11 +5,15 @@ import os
 import copy
 import pickle
 import struct
+from array import array
+
 import dask.bag as daskbag
 import gridfs
 import pymongo
+from bson.objectid import ObjectId
 import numpy as np
-from array import array
+from obspy import Inventory
+from obspy import UTCDateTime
 
 from mspasspy.ccore.seismic import (TimeSeries,
                                     Seismogram,
@@ -19,12 +23,10 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     TimeSeriesEnsemble,
                                     SeismogramEnsemble)
 from mspasspy.ccore.utility import (Metadata,
+                                    MsPASSError,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-
-from obspy import Inventory
-from obspy import UTCDateTime
 
 
 def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
@@ -142,7 +144,7 @@ class Database(pymongo.database.Database):
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode='gridfs', update_all=False, dfile=None, dir=None,
+    def save_data(self, mspass_object, storage_mode='gridfs', update_all=True, dfile=None, dir=None,
                   exclude=None, collection=None):
 
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -153,7 +155,9 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
-
+        # This function is needed to make sure the metadata define the time
+        # standard consistently
+        self._sync_time_metadata(mspass_object)
         # 1. save metadata
         self.update_metadata(mspass_object, update_all, exclude, collection)
 
@@ -239,9 +243,14 @@ class Database(pymongo.database.Database):
             if update_metadata_def.is_defined(k):
                 if update_metadata_def.readonly(k):
                     continue
-                if type(copied_metadata[k]) != update_metadata_def.type(k): # fixme history_object_id str
-                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
-                insert_dict[k] = copied_metadata[k]
+                if type(copied_metadata[k]) != update_metadata_def.type(k):
+                    try:
+                        insert_dict[k] = update_metadata_def.type(k)(copied_metadata[k])
+                    except Exception as err:
+                        raise MsPASSError('Failure attempting to convert {}: {} to {}'.format(
+                            k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
+                else:
+                    insert_dict[k] = copied_metadata[k]
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
@@ -276,7 +285,10 @@ class Database(pymongo.database.Database):
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', collection=None, dfile_list=None, dir_list=None,
-                           update_all=False, exclude_keys=None, exclude_objects=None):
+                           update_all=True, exclude_keys=None, exclude_objects=None):
+        # This pushes ensemble's metadata to each member.  We pass the exclude
+        # keys as the effort required to pass ones not meant for ensemble is tiny
+        self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
         if not exclude_objects:
             exclude_objects = []
 
@@ -799,13 +811,12 @@ class Database(pymongo.database.Database):
                     print("Station section coordinates:  ", latitude, longitude, elevation)
                     print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
                 if self._site_is_not_in_db(rec):
-                    result = dbcol.insert_one(rec)
-                    # we use the string representation of object_id of this document as site_id
-                    # this gyration is required to do handle that
-                    idobj = result.inserted_id
-                    site_id = str(idobj)
-                    self.site.update_one({'_id': idobj}, {'$set': {'site_id': site_id}})
-                    n_site_saved += 1
+                    result=dbcol.insert_one(rec)
+                    # Note this sets site_id to an ObjectID for the insertion
+                    # We use that to define a duplicate we tag as site_id
+                    site_id=result.inserted_id
+                    self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
+                    n_site_saved+=1
                     if verbose:
                         print("net:sta:loc=", net, ":", sta, ":", loc,
                               "for time span ", starttime, " to ", endtime,
@@ -842,15 +853,15 @@ class Database(pymongo.database.Database):
                         result = dbchannel.insert_one(chanrec)
                         # insert_one has an obnoxious behavior in that it
                         # inserts the ObjectId in chanrec.  In this loop
-                        # we reuse chanrec so we have to delete the id file
+                        # we reuse chanrec so we have to delete the id field
                         # howeveer, we first want to update the record to
-                        # have chan_id be the string representation of that
+                        # have chan_id provide an  alternate key to that id
                         # object_id - that makes this consistent with site
                         # we actually use the return instead of pulling from
                         # chanrec
-                        idobj = result.inserted_id
-                        dbchannel.update_one({'_id': idobj},
-                                             {'$set': {'chan_id': str(idobj)}})
+                        idobj=result.inserted_id
+                        dbchannel.update_one({'_id':idobj},
+                                             {'$set':{'chan_id' : idobj}})
                         del chanrec['_id']
                         n_chan_saved += 1
                         if verbose:
@@ -1062,16 +1073,17 @@ class Database(pymongo.database.Database):
             otime = o.time
             # This attribute of UTCDateTime is the epoch time
             # In mspass we only story time as epoch times
-            rec['time'] = otime.timestamp
-            rec['magnitude'] = m.mag
-            rec['magnitude_type'] = m.magnitude_type
-            rec['serialized_event'] = picklestr
-            result = dbcol.insert_one(rec)
-            # We use the string representation of the objectid of this
-            # document as a unique source id - same as site and channel
-            idobj = result.inserted_id
-            dbcol.update_one({'_id': idobj},
-                             {'$set': {'source_id': str(idobj)}})
+            rec['time']=otime.timestamp
+            rec['magnitude']=m.mag
+            rec['magnitude_type']=m.magnitude_type
+            rec['serialized_event']=picklestr
+            result=dbcol.insert_one(rec)
+            # the return of an insert_one has the object id of the insertion
+            # set as inserted_id.  We save taht as source_id as a more
+            # intuitive key that _id
+            idobj=result.inserted_id
+            dbcol.update_one({'_id':idobj},
+                        {'$set':{'source_id' : idobj}})
             nevents += 1
         return nevents
 
@@ -1089,3 +1101,65 @@ class Database(pymongo.database.Database):
         dbsource = self.source
         x = dbsource.find_one({'source_id': source_id})
         return x
+
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the 
+    #       npts or t0 in TimeSeries.
+    @staticmethod
+    def _sync_time_metadata(mspass_object):
+        """
+        MsPASS data objects are designed to cleanly handle what we call relative
+        and UTC time.  This small helper function assures the Metadata of
+        mspass_object are consistent with the internal contents.  That
+        involves posting some special attributes seen below to handle this issue.
+        Since Metadata is volatile we need to be sure these are consistent or
+        timing can be destroyed on data.
+        """
+        # this adds a small overhead but it guarantees Metadata and internal t0
+        # values are consistent.  Shouldn't happen unless the user messes with them
+        # incorrectly, but this safety is prudent to reduce the odds of mysterious
+        # timing errors in data
+        t0 = mspass_object.t0
+        mspass_object.set_t0(t0)
+        # This will need to be modified if we ever expand time types beyond two
+        if mspass_object.time_is_relative():
+            if mspass_object.shifted():
+                mspass_object['startime_shift'] = mspass_object.time_reference()
+                mspass_object['utc_convertible'] = True
+            else:
+                mspass_object['utc_convertible'] = False
+            mspass_object['time_standard'] = 'Relative'
+        else:
+            mspass_object['utc_convertible'] = True
+            mspass_object['time_standard'] = 'UTC'
+
+    @staticmethod
+    def _sync_ensemble_metadata(ensemble, do_not_copy=None):
+        """
+        An ensemble has a Metadata object attached.  The assumption always is
+        that every member of the ensemble is appropriate to associate with the
+        ensemble Metadata attributes.  This function merges the ensembles
+        Metadata to each member using the Metadata += operator.  An optional
+        do_not_copy list of keys can  be supplied.  Keys listed found in the
+        ensemble Metadata will not be pushed to the members.
+
+        :param ensemble: ensemble object (requirement is only that it has
+        Metadata as a parent and contains a members vector of data with
+        their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
+        with members to receive the ensemble attributes.
+        :param do_not_copy: is a list of keys that should not be copied to
+        members.  The default is none.  Keys listed but not in the ensemble
+        Metadata will be silently ignored.
+        """
+        md_to_copy = Metadata(ensemble)
+        if do_not_copy != None:
+            for k in do_not_copy:
+                if md_to_copy.is_defined(k):
+                    md_to_copy.erase(k)
+        for d in ensemble.member:
+            # This needs to be replaced by a new method for
+            # copying metadata.  Using operator += is problematic
+            # for multiple reasons discussed in github issues.
+            for k in md_to_copy.keys():
+                val = md_to_copy[k]
+                d.put(k, val)

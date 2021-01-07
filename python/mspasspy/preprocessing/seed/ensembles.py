@@ -95,10 +95,10 @@ def obspy_mseed_file_indexer(file):
 def dbsave_raw_index(db,pdframe):
     """
     Prototype database save to db for a panda data frame pdframe.
-    This crude version collection name is frozen as raw.  db is
+    This crude version collection name is frozen as wf_miniseed.  db is
     assumed to be the client root for mongodb
     """
-    col=db['seedwf']
+    col=db['wf_miniseed']
     # records is a keyword that makes rows of the dataframe docs for mongo
     dtmp=pdframe.to_dict('records')
     col.insert_many(dtmp)
@@ -117,7 +117,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     scan the seed blockettes to assemble the metadata, but
     that would be a future development.
 
-    This function writes records into a seed_data.enemble collection.
+    This function writes records into a wf_miniseed collection.
     Be warned that the "." in the name is a common convention in
     MongoDB databases but really only defines a unique name and
     does not do any hierarchy of collections as the name might
@@ -148,7 +148,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     concept more clearly with figures.
 
     A design constraint we impose for now is that one file generates
-    on document in the seed_data.ensemble collection.   This means if
+    on document in the wf_miniseed collection.   This means if
     the data for an ensemble is spread through several files it would
     have to be constructed in pieces.  That will require implementing
     a function that merges ensemble data.  That model should make this
@@ -166,7 +166,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     """
 
     try:
-        dbh=db['seed_data.ensemble']
+        dbh=db['wf_miniseed']
         pr=Path(file)
         fullpath=pr.absolute()
         [dirself,dfileself]=os.path.split(fullpath)
@@ -226,6 +226,7 @@ def load_one_ensemble(doc,
                   jobid='99999',
                   algid='99999',
                   ensemble_mdkeys=[],  # default is to load nothing for ensemble
+		  apply_calib=False,
                   verbose=False):
     """
     This is a prototype.  Ultimately this should probably be a method
@@ -267,7 +268,7 @@ def load_one_ensemble(doc,
         fname=dir+"/"+dfile
         # Note this algorithm actually should work with any format
         # supported by obspy's read function - should generalize it for release
-        dseis=read(fname,format='mseed')
+        dseis=read(fname,format='mseed',apply_calib=apply_calib)
         if len(ensemble_mdkeys)>0:
             ensemblemd=load_md(doc,ensemble_mdkeys)
         else:
@@ -301,15 +302,15 @@ def load_one_ensemble(doc,
 def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
     """
     This prototype function uses a not at all generic method to link data
-    indexed in a seed_data.ensmble collection to source data assumed stored
+    indexed in a wf_miniseed collection to source data assumed stored
     in the source collection.   The algorithm is appropriate ONLY if the
     data are downloaded by obspy with a time window defined by a start time
     equal to the origin time of the event.   We use a generic test to check
-    if the median ensemble start time (pulled from seed_data.ensemble record)
+    if the median ensemble start time (pulled from wf_miniseed record)
     is within +-dt of any origin time in source.   If found we extract the
     source_id of the maching event document and then update the record in
-    seed_data.ensemble being handled.  Tha process is repeated for each
-    document in the seed_data.ensemble collection.
+    wf_miniseed being handled.  Tha process is repeated for each
+    document in the wf_miniseed collection.
 
     To handle css3.0 set the prefer_evid boolean True (default is False).
     When used the program will use a document with an evid set as a match
@@ -325,7 +326,7 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
       evid set when there are multiple matches.
     :param verbose:  when true output will be more verbose.
     """
-    dbwf=db['seed_data.ensemble']
+    dbwf=db['wf_miniseed']
     dbsource=db['source']
     try:
         ensrec=dbwf.find({})
@@ -421,9 +422,9 @@ def load_hypocenter_data_by_id(db,ens):
                 "no match found in source collection for source_id="+source_id,
                 ErrorSeverity.Invalid)
         else:
-            ens['source.lat']=srcrec['latitude']
-            ens['source.lon']=srcrec['longitude']
-            ens['source.depth']=srcrec['depth']
+            ens['source_lat']=srcrec['latitude']
+            ens['source_lon']=srcrec['longitude']
+            ens['source_depth']=srcrec['depth']
             ens['source_time']=srcrec['time']
             ens['source_id']=source_id
         return ens
@@ -572,9 +573,9 @@ def load_site_data(db,ens):
                  ErrorSeverity.Invalid)
             else:
                 siterec=dbsite.find_one(query)
-                d['site.lat']=siterec['latitude']
-                d['site.lon']=siterec['longitude']
-                d['site.elev']=siterec['elevation']
+                d['site_lat']=siterec['latitude']
+                d['site_lon']=siterec['longitude']
+                d['site_elev']=siterec['elevation']
                 d['site_id']=siterec['site_id']
                 if n>1:
                     message = ('Muliple (%d) matches found for net %s sta %s with reference time %f'
@@ -646,7 +647,7 @@ def load_channel_data(db,ens):
 
 def load_arrivals_by_id(db,tsens,
         phase='P',
-        required_key_map={'phase':'phase','time':'arrival.time'},
+        required_key_map={'phase':'phase','time':'arrival_time'},
         optional_key_map={'iphase':'iphase','deltim':'deltim'},
         verbose=False):
     """
@@ -753,3 +754,18 @@ def load_arrivals_by_id(db,tsens,
         if d.live:
             nlive+=1
     return nlive
+def erase_seed_metadata(d,keys=['mseed','_format']):
+    """
+    Erase a set of debris obspy's reader adds to stats array that get copied to data.  We 
+    don't need that debris once data are converted to MsPASS data objects and stored in 
+    MongoDB.  Use this function when importing seed data with obspy's reader to 
+    reduce junk in the database. 
+
+    :param d: is the data object to be cleaned (assumed only to be a child of Metadata so 
+      erase will work.
+    :param keys:  list of keys to clear.  Default should be all that is needed for 
+      standard use.
+    """
+    for mem in d.member:
+        for k in keys:
+            mem.erase(k)

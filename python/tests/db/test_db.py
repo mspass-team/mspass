@@ -7,7 +7,7 @@ import pytest
 import sys
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
-from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata
+from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError
 
 from mspasspy.db.schema import MetadataSchema
 from mspasspy.util import logging_helper
@@ -15,12 +15,14 @@ from bson.objectid import ObjectId
 from datetime import datetime
 
 sys.path.append("python/tests")
+
 from mspasspy.db.database import Database, read_distributed_data
 from mspasspy.db.client import Client
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
+
 
 
 class TestDatabase():
@@ -182,10 +184,9 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
-        with pytest.raises(TypeError) as err:
-            ts.put_string('npts', '121')
+        with pytest.raises(MsPASSError, match='Failure attempting to convert'):
+            ts.put_string('npts', 'xyz')
             self.db.update_metadata(ts)
-        assert str(err.value) == "npts has type <class 'str'>, forbidden by definition"
 
     def test_save_read_data(self):
         # new object
@@ -305,10 +306,10 @@ class TestDatabase():
         self.db.save_data(ts3, 'gridfs')
 
         time = datetime.utcnow().timestamp()
-        ts1['t0'] = time
+        ts1.t0 = time
         ts1['tst'] = time
-        ts2['t0'] = time
-        ts3['t0'] = time
+        ts2.t0 = time
+        ts3.t0 = time
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -324,10 +325,10 @@ class TestDatabase():
 
         time_new = datetime.utcnow().timestamp()
         ts_ensemble.member[0]['tst'] = time + 1
-        ts_ensemble.member[0]['starttime'] = time_new
+        ts_ensemble.member[0].t0 = time_new
         self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_keys=['tst'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
-        assert res['tst'] != time + 1
+        assert res['tst'] == time
         assert res['starttime'] == time_new
 
         # using seismogram
@@ -338,10 +339,10 @@ class TestDatabase():
         self.db.save_data(seis2, 'gridfs')
         self.db.save_data(seis3, 'gridfs')
         time = datetime.utcnow().timestamp()
-        seis1['t0'] = time
+        seis1.t0 = time
         seis1['tst'] = time
-        seis2['t0'] = time
-        seis3['t0'] = time
+        seis2.t0 = time
+        seis3.t0 = time
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
@@ -357,10 +358,10 @@ class TestDatabase():
 
         time_new = datetime.utcnow().timestamp()
         seis_ensemble.member[0]['tst'] = time + 1
-        seis_ensemble.member[0]['starttime'] = time_new
+        seis_ensemble.member[0].t0 = time_new
         self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_keys=['tst'])
         res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
-        assert res['tst'] != time + 1
+        assert res['tst'] == time
         assert res['starttime'] == time_new
 
     def test_save_ensemble_data(self):
@@ -536,6 +537,7 @@ def test_read_distributed_data_dask():
 
     client = Client('localhost')
     client.drop_database('mspasspy_test_db')
+
 
 if __name__ == '__main__':
     pass

@@ -127,19 +127,6 @@ variable and alters t0 by tshift.
 \param tshift - time shift applied to data before switching data to relative time mode.
 **/
 	virtual void ator(const double tshift);
-/*!  Relative to absolute time conversion.
- Sometimes we want to convert data from relative time to
- to an absolute time standard.  An example would be converting
- segy shot data to something that could be processed like earthquake
- data in a css3.0 database.
- This operation simply switches the tref
- variable and alters t0 by tshift.
-\param tshift - time shift applied to data before switching data to absolute time mode.
-
-NOTE:  This method is maintained only for backward compatibility.   May be depricated
-   in favor of method that uses internally stored private shift variable.
-**/
-	virtual void rtoa(const double tshift);
 /*! Relative to absolute time conversion.
  Sometimes we want to convert data from relative time to
  to an UTC time standard.  An example would be converting
