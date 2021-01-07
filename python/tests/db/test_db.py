@@ -325,10 +325,10 @@ class TestDatabase():
 
         time_new = datetime.utcnow().timestamp()
         ts_ensemble.member[0]['tst'] = time + 1
-        ts_ensemble.member[0]['starttime'] = time_new
+        ts_ensemble.member[0].t0 = time_new
         self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_keys=['tst'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
-        assert res['tst'] != time + 1
+        assert res['tst'] == time
         assert res['starttime'] == time_new
 
         # using seismogram
@@ -358,10 +358,10 @@ class TestDatabase():
 
         time_new = datetime.utcnow().timestamp()
         seis_ensemble.member[0]['tst'] = time + 1
-        seis_ensemble.member[0]['starttime'] = time_new
+        seis_ensemble.member[0].t0 = time_new
         self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_keys=['tst'])
         res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
-        assert res['tst'] != time + 1
+        assert res['tst'] == time
         assert res['starttime'] == time_new
 
     def test_save_ensemble_data(self):
