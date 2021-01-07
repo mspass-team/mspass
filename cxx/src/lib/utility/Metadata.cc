@@ -365,7 +365,7 @@ void Metadata::change_key(const string oldkey, const string newkey)
   /* We silently do nothing if old is not found */
   if(mdptr!=md.end())
   {
-    md.insert(std::pair<string,boost::any>(newkey,mdptr->second));
+    md.insert_or_assign(newkey, mdptr->second);
     md.erase(mdptr);
   }
 }
