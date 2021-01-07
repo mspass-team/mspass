@@ -1,5 +1,6 @@
 FILE(GLOB sources_alg_basics 
       agc.cc 
+      bundle.cc
       seismogram_helpers.cc 
       slice_and_dice.cc 
       sparse_convolve.cc 

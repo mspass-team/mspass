@@ -169,5 +169,10 @@ for zeros in d.
 mspass::seismic::CoreSeismogram sparse_convolve(
     const mspass::seismic::CoreTimeSeries& wavelet,
 		const mspass::seismic::CoreSeismogram& d);
+std::vector<mspass::seismic::Seismogram> BundleGroup
+    (const std::vector<mspass::seismic::TimeSeries>& d,
+                const size_t i0, const size_t iend);
+mspass::seismic::Ensemble<mspass::seismic::Seismogram> bundle_seed_data
+    (mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d);
 }//End mspass::algorithms namespace encapsulation
 #endif
