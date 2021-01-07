@@ -478,7 +478,7 @@
 <codeline lineno="365"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>silently<sp/>do<sp/>nothing<sp/>if<sp/>old<sp/>is<sp/>not<sp/>found<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="366"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(mdptr!=md.end())</highlight></codeline>
 <codeline lineno="367"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/>md.insert(std::pair&lt;string,boost::any&gt;(newkey,mdptr-&gt;second));</highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/><sp/><sp/>md.insert_or_assign(newkey,<sp/>mdptr-&gt;second);</highlight></codeline>
 <codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/>md.erase(mdptr);</highlight></codeline>
 <codeline lineno="370"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="371"><highlight class="normal">}</highlight></codeline>

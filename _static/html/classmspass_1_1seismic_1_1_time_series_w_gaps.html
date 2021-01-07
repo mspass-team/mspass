@@ -567,9 +567,6 @@ std::set&lt; <a class="el" href="classmspass_1_1seismic_1_1_time_window.html">Ti
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void mspass::seismic::TimeSeriesWGaps::rtoa </td>
@@ -579,11 +576,6 @@ std::set&lt; <a class="el" href="classmspass_1_1seismic_1_1_time_window.html">Ti
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database. This operation simply switches the tref variable and alters t0 by tshift.</p>
 <p>This method overrides the one in <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html" title="Base class for time series objects. ">BasicTimeSeries</a> to correctly reference gaps. </p><dl class="params"><dt>Parameters</dt><dd>
@@ -593,8 +585,6 @@ std::set&lt; <a class="el" href="classmspass_1_1seismic_1_1_time_window.html">Ti
   </dd>
 </dl>
 <p>NOTE: This method is maintained only for backward compatibility. May be depricated in favor of method that uses internally stored private shift variable. </p>
-
-<p>Reimplemented from <a class="el" href="classmspass_1_1seismic_1_1_basic_time_series.html#afe633ff8b3ebedc52b22c25c0f572c3c">mspass::seismic::BasicTimeSeries</a>.</p>
 
 </div>
 </div>

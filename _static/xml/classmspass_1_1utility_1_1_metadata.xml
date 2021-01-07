@@ -937,7 +937,7 @@
         <briefdescription>
 <para>Change the keyword to access an attribute. </para>        </briefdescription>
         <detaileddescription>
-<para>Sometimes it is useful to change the key used to access a particular piece of data. Doing so, for example, is one way to implement an alias (alternative name) for something. The entry for the old key is copied to a entry accessible by the new key. The entry for old is then deleted. This avoids downstream inconsistencies a the cost of possible failures from the translation. This method always returns and will silently do nothing if old is not defined. Note it also ignores readonly and will rename entries marked such.</para><para><parameterlist kind="param"><parameteritem>
+<para>Sometimes it is useful to change the key used to access a particular piece of data. Doing so, for example, is one way to implement an alias (alternative name) for something. The entry for the old key is copied to a entry accessible by the new key. The entry for old is then deleted. This avoids downstream inconsistencies a the cost of possible failures from the translation. This method always returns and will silently do nothing if old is not defined. If the new key is already defined, its content will be replaced by the old&apos;s.</para><para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>oldkey</parametername>
 </parameternamelist>
