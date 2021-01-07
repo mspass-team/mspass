@@ -157,7 +157,7 @@ class Database(pymongo.database.Database):
             save_schema = schema.Seismogram
         # This function is needed to make sure the metadata define the time
         # standard consistently
-        _sync_time_metadata(mspass_object)
+        self._sync_time_metadata(mspass_object)
         # 1. save metadata
         self.update_metadata(mspass_object, update_all, exclude, collection)
 
@@ -288,7 +288,7 @@ class Database(pymongo.database.Database):
                            update_all=True, exclude_keys=None, exclude_objects=None):
         # This pushes ensemble's metadata to each member.  We pass the exclude
         # keys as the effort required to pass ones not meant for ensemble is tiny
-        sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
+        self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
         if not exclude_objects:
             exclude_objects = []
 
@@ -1102,124 +1102,64 @@ class Database(pymongo.database.Database):
         x = dbsource.find_one({'source_id': source_id})
         return x
 
-# These are helper functions related to database usage.  They perform
-# functions that do not require self
-def _repair_type_mismatch(key,value,required_type):
-    """
-    This is a function used by database writers to try to fix mismatched
-    types for Metadata fields.   This is needed because python is loose about
-    type anyway and the Metadata container handles any data it is given.
-    That means a new algorithm can easily post an attribute with a type
-    mismatch between the internal storage and what is expected to be
-    stored in the database.  This little helper function can will repair
-    what it can. If conversion is not possible the return dict has the
-    key set to INVALID and the value returns is an error message that
-    can be printed and/or posted to an ErrorLogger.  Normal return is the
-    key for the dict is the key passed as arg1 and the value is the converted
-    value.
-
-    :param key:  is the key for the value to be converted
-    :param value: is the input value (of wrong type) to attempt to convert
-    :param required_type: a Type object defining what value should be
-       converted to.  Currently must be one of str, int, float, bool,
-       or bson.objectid.ObjectId.
-
-    :return: dict containing the repaired (key,value) pair.  If repair was not possible key
-    will be set to 'FAILURE' and the value will be a string with an
-    informational message the user may choose to print or post to an
-    error log.
-
-    :exception:  Can throw an exception ONLY if the required_type field is
-      not in the list of supported types for MsPASS.  It is a coding error
-      created in maintenance if this throws an exception.
-
-    """
-    try:
-        if required_type is str:
-            x=str(value)
-        elif required_type is int:
-            x=int(value)
-        elif required_type is float:
-            x=float(value)
-        elif required_type is bool:
-            # Note I don't think bool will ever throw a type error but
-            # is subject to confusing behavior if user doesn't realize
-            # the are dealing with a bool
-            x=bool(value)
-        elif required_type is ObjectId:
-            x=ObjectId(value)
-        elif required_type is list:
-            #This needs to throw an exception because it is nearly
-            # guaranteed to be an error caused by setting something incorrectly.
-            raise TypeError("Entry with key="+key
-                +" is expected to be a python list but is of type"+type(value)
-                +"\nSomething probably improperly set this reserved key\n"
-                +"Need to abort or this will cause downstream problems if used")
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the 
+    #       npts or t0 in TimeSeries.
+    @staticmethod
+    def _sync_time_metadata(mspass_object):
+        """
+        MsPASS data objects are designed to cleanly handle what we call relative
+        and UTC time.  This small helper function assures the Metadata of
+        mspass_object are consistent with the internal contents.  That
+        involves posting some special attributes seen below to handle this issue.
+        Since Metadata is volatile we need to be sure these are consistent or
+        timing can be destroyed on data.
+        """
+        # this adds a small overhead but it guarantees Metadata and internal t0
+        # values are consistent.  Shouldn't happen unless the user messes with them
+        # incorrectly, but this safety is prudent to reduce the odds of mysterious
+        # timing errors in data
+        t0 = mspass_object.t0
+        mspass_object.set_t0(t0)
+        # This will need to be modified if we ever expand time types beyond two
+        if mspass_object.time_is_relative():
+            if mspass_object.shifted():
+                mspass_object['startime_shift'] = mspass_object.time_reference()
+                mspass_object['utc_convertible'] = True
+            else:
+                mspass_object['utc_convertible'] = False
+            mspass_object['time_standard'] = 'Relative'
         else:
-            raise TypeError("Error in schema - defines unsupported type="
-                            +str(required_type))
-        return {key : x}
-    except ValueError as err:
-        error_message="Failure attempting to convert value with key="+key
-        error_message+="\nValueError message python posted:  "+str(err)
-        return {'FAILURE' : error_message}
-    #except bson.objectid.InvalidId as bsonerr:
-    except TypeError as bsonerr:
-        error_message="Failure attempting to convert value with key="+key
-        error_message+=" to an ObjectId as the schema requires\n" + "Message posted in python:  "+str(bsonerr)
-        return {'FAILURE' : error_message}
-def _sync_time_metadata(mspass_object):
-    """
-    MsPASS data objects are designed to cleanly handle what we call relative
-    and UTC time.  This small helper function assures the Metadata of
-    mspass_object are consistent with the internal contents.  That
-    involves posting some special attributes seen below to handle this issue.
-    Since Metadata is volatile we need to be sure these are consistent or
-    timing can be destroyed on data.
-    """
-    # this adds a small overhead but it guarantees Metadata and internal t0
-    # values are consistent.  Shouldn't happen unless the user messes with them
-    # incorrectly, but this safety is prudent to reduce the odds of mysterious
-    # timing errors in data
-    t0=mspass_object.t0
-    mspass_object.set_t0(t0)
-    # This will need to be modified if we ever expand time types beyond two
-    if mspass_object.time_is_relative():
-        if mspass_object.shifted():
-            mspass_object['startime_shift']=mspass_object.time_reference()
-            mspass_object['utc_convertible']=True
-        else:
-            mspass_object['utc_convertible'] = False
-        mspass_object['time_standard']='Relative'
-    else:
-        mspass_object['utc_convertible']=True
-        mspass_object['time_standard']='UTC'
-def sync_ensemble_metadata(ensemble,do_not_copy=None):
-    """
-    An ensemble has a Metadata object attached.  The assumption always is
-    that every member of the ensemble is appropriate to associate with the
-    ensemble Metadata attributes.  This function merges the ensembles
-    Metadata to each member using the Metadata += operator.  An optional
-    do_not_copy list of keys can  be supplied.  Keys listed found in the
-    ensemble Metadata will not be pushed to the members.
+            mspass_object['utc_convertible'] = True
+            mspass_object['time_standard'] = 'UTC'
 
-    :param ensemble: ensemble object (requirement is only that it has
-    Metadata as a parent and contains a members vector of data with
-    their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
-    with members to receive the ensemble attributes.
-    :param do_not_copy: is a list of keys that should not be copied to
-    members.  The default is none.  Keys listed but not in the ensemble
-    Metadata will be silently ignored.
-    """
-    md_to_copy=Metadata(ensemble)
-    if do_not_copy!=None:
-        for k in do_not_copy:
-            if md_to_copy.is_defined(k):
-                md_to_copy.erase(k)
-    for d in ensemble.member:
-        # This needs to be replaced by a new method for
-        # copying metadata.  Using operator += is problematic
-        # for multiple reasons discussed in github issues.
-        for k in md_to_copy.keys():
-            val=md_to_copy[k]
-            d.put(k,val)
+    @staticmethod
+    def _sync_ensemble_metadata(ensemble, do_not_copy=None):
+        """
+        An ensemble has a Metadata object attached.  The assumption always is
+        that every member of the ensemble is appropriate to associate with the
+        ensemble Metadata attributes.  This function merges the ensembles
+        Metadata to each member using the Metadata += operator.  An optional
+        do_not_copy list of keys can  be supplied.  Keys listed found in the
+        ensemble Metadata will not be pushed to the members.
+
+        :param ensemble: ensemble object (requirement is only that it has
+        Metadata as a parent and contains a members vector of data with
+        their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
+        with members to receive the ensemble attributes.
+        :param do_not_copy: is a list of keys that should not be copied to
+        members.  The default is none.  Keys listed but not in the ensemble
+        Metadata will be silently ignored.
+        """
+        md_to_copy = Metadata(ensemble)
+        if do_not_copy != None:
+            for k in do_not_copy:
+                if md_to_copy.is_defined(k):
+                    md_to_copy.erase(k)
+        for d in ensemble.member:
+            # This needs to be replaced by a new method for
+            # copying metadata.  Using operator += is problematic
+            # for multiple reasons discussed in github issues.
+            for k in md_to_copy.keys():
+                val = md_to_copy[k]
+                d.put(k, val)
