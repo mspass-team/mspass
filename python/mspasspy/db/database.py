@@ -3,6 +3,7 @@ Tools for connecting to MongoDB.
 """
 import os
 import copy
+import pathlib
 import pickle
 import struct
 from array import array
@@ -32,11 +33,11 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
                           format='spark', spark_context=None):
     if format == 'spark':
-        list = spark_context.parallelize(cursors)
-        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        list_ = spark_context.parallelize(cursors)
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
     elif format == 'dask':
-        list = daskbag.from_sequence(cursors)
-        return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        list_ = daskbag.from_sequence(cursors)
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
     else:
         raise TypeError("Only spark and dask are supported")
 
@@ -88,15 +89,15 @@ class Database(pymongo.database.Database):
         wf_collection = read_metadata_schema.collection('_id') if not collection else collection
 
         col = self[wf_collection]
-        object = col.find_one({'_id': object_id})
-        if not object:
+        object_doc = col.find_one({'_id': object_id})
+        if not object_doc:
             return None
 
         # 1. build metadata as dict
         md = Metadata()
-        for k in object:
+        for k in object_doc:
             if read_metadata_schema.is_defined(k):
-                md[k] = object[k]
+                md[k] = object_doc[k]
 
         col_set = set()
         for k in read_metadata_schema.keys():
@@ -107,7 +108,7 @@ class Database(pymongo.database.Database):
 
         col_dict = {}
         for col in col_set:
-            col_dict[col] = self[col].find_one({'_id': object[col + '_id']})
+            col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
 
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
@@ -126,11 +127,11 @@ class Database(pymongo.database.Database):
             mspass_object = Seismogram(_CoreSeismogram(md, False))
 
         # 2.load data from different modes
-        mode = object['storage_mode']
+        mode = object_doc['storage_mode']
         if mode == "file":
-            self._read_data_from_dfile(mspass_object, object['dir'], object['dfile'], object['foff'])
+            self._read_data_from_dfile(mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'])
         elif mode == "gridfs":
-            self._read_data_from_gridfs(mspass_object, object['gridfs_id'])
+            self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
         elif mode == "url":
             pass  # todo for future
         else:
@@ -138,7 +139,7 @@ class Database(pymongo.database.Database):
 
         # 3.load history
         if load_history:
-            self._load_history(mspass_object, object['history_object_id'])
+            self._load_history(mspass_object, object_doc['history_object_id'])
 
         mspass_object.live = True
         mspass_object.clear_modified()
@@ -149,6 +150,37 @@ class Database(pymongo.database.Database):
 
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
+        if storage_mode not in ['file', 'gridfs']:
+            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+        # below we try to capture permission issue before writing anything to the database.
+        # However, in the case that a storage is almost full, exceptions can still be 
+        # thrown, which could mess up the database record.
+        if storage_mode == 'file':
+            if not dfile and not dir:
+                # Note the following uses the dir and dfile defined in the data object.
+                # It will ignore these two keys already in the collection in an update
+                # transaction, and the dir and dfile in the collection will be replaced.
+                if ('dir' not in mspass_object) or ('dfile' not in mspass_object):
+                    raise ValueError(
+                        'dir or dfile is not specified in data object')
+                dir = os.path.abspath(mspass_object['dir'])
+                dfile = mspass_object['dfile']
+            else:
+                dir = os.path.abspath(dir)
+            fname = os.path.join(dir, dfile)
+            if os.path.exists(fname):
+                if not os.access(fname, os.W_OK):
+                    raise PermissionError(
+                        'No write permission to the save file: {}'.format(fname))
+            else:
+                # the following loop finds the top level of existing parents to fname
+                # and check for write permission to that directory. 
+                for path_item in pathlib.PurePath(fname).parents:
+                    if os.path.exists(path_item):
+                        if not os.access(path_item, os.W_OK | os.X_OK):
+                            raise PermissionError(
+                                'No write permission to the save directory: {}'.format(dir))
+                        break
 
         schema = self.metadata_schema
         if isinstance(mspass_object, TimeSeries):
@@ -164,32 +196,24 @@ class Database(pymongo.database.Database):
         # 2. save data
         wf_collection = save_schema.collection('_id') if not collection else collection
         col = self[wf_collection]
-        object = col.find_one({'_id': mspass_object['_id']})
-        filter = {'_id': mspass_object['_id']}
+        object_doc = col.find_one({'_id': mspass_object['_id']})
+        filter_ = {'_id': mspass_object['_id']}
         update_dict = {'storage_mode': storage_mode}
 
         if storage_mode == "file":
-            if dfile and dir:  # new file
-                foff = self._save_data_to_dfile(mspass_object, dir, dfile)
-            else:
-                if ('dir' not in object) or ('dfile' not in object):
-                    raise ValueError('dir or dfile is not specified in wf collection')
-                dir = object['dir']
-                dfile = object['dfile']
-                foff = self._save_data_to_dfile(mspass_object, dir, dfile)
+            foff = self._save_data_to_dfile(mspass_object, dir, dfile)
             update_dict['dir'] = dir
             update_dict['dfile'] = dfile
             update_dict['foff'] = foff
         elif storage_mode == "gridfs":
-            old_gridfs_id = None if 'gridfs_id' not in object else object['gridfs_id']
+            old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
             gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
             update_dict['gridfs_id'] = gridfs_id
-        elif storage_mode == "url":
-            pass
-        else:
-            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+        #TODO will support url mode later 
+        #elif storage_mode == "url":
+        #    pass
 
-        col.update_one(filter, {'$set': update_dict})
+        col.update_one(filter_, {'$set': update_dict})
 
     def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
 
@@ -204,29 +228,19 @@ class Database(pymongo.database.Database):
 
         wf_collection = update_metadata_def.collection('_id') if not collection else collection
         col = self[wf_collection]
-        object = None
+        object_doc = None
 
         new_insertion = False
         if '_id' not in mspass_object:
             new_insertion = True
 
         if not new_insertion:
-            object = col.find_one({'_id': mspass_object['_id']})
+            object_doc = col.find_one({'_id': mspass_object['_id']})
 
-        # 1. save history
-        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-        old_history_object_id = None if new_insertion else object[history_obj_id_name]
-        history_object_id = self._save_history(mspass_object, old_history_object_id)
-
-        # 2. save error logs
-        elog_id_name = self.database_schema.default_name('elog') + '_id'
-        old_elog_id = None if new_insertion else object[elog_id_name]
-        elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
-
-        # 3. save metadata in wf
+        # 1. create the dict of metadata to be saved in wf
+        insert_dict = {}
         if exclude is None:
             exclude = []
-        insert_dict = {history_obj_id_name: history_object_id, elog_id_name: elog_id}
 
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)
@@ -245,7 +259,8 @@ class Database(pymongo.database.Database):
                     continue
                 if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
                     try:
-                        insert_dict[k] = update_metadata_def.type(k)(copied_metadata[k])
+                        insert_dict[k] = update_metadata_def.type(
+                            k)(copied_metadata[k])
                     except Exception as err:
                         raise MsPASSError('Failure attempting to convert {}: {} to {}'.format(
                             k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
@@ -254,19 +269,31 @@ class Database(pymongo.database.Database):
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
+        # 2. save history
+        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+        old_history_object_id = None if new_insertion else object_doc[history_obj_id_name]
+        history_object_id = self._save_history(mspass_object, old_history_object_id)
+
+        # 3. save error logs
+        elog_id_name = self.database_schema.default_name('elog') + '_id'
+        old_elog_id = None if new_insertion else object_doc[elog_id_name]
+        elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+
+        insert_dict.update({history_obj_id_name: history_object_id, elog_id_name: elog_id})
+
         if '_id' not in copied_metadata:
             mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
         else:
-            filter = {'_id': copied_metadata['_id']}
-            col.update_one(filter, {'$set': insert_dict})
+            filter_ = {'_id': copied_metadata['_id']}
+            col.update_one(filter_, {'$set': insert_dict})
 
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
             elog_col = self[self.database_schema.default_name('elog')]
             wf_id_name = wf_collection + '_id'
-            for id in insert_dict[elog_id_name]:
-                filter = {'_id': id}
-                elog_col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
+            for id_ in insert_dict[elog_id_name]:
+                filter_ = {'_id': id_}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
 
     def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
         if ensemble_type not in ['TimeSeriesEnsemble', 'SeismogramEnsemble']:
@@ -341,8 +368,8 @@ class Database(pymongo.database.Database):
         # todo jobname jobid
         if history_object_id:
             # overwrite history
-            filter = {'_id': history_object_id}
-            history_col.find_one_and_replace(filter, {'nodesdata': history_binary})
+            filter_ = {'_id': history_object_id}
+            history_col.find_one_and_replace(filter_, {'nodesdata': history_binary})
             return history_object_id
         else:
             return history_col.insert_one({'nodesdata': history_binary}).inserted_id
