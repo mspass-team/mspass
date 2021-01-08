@@ -116,7 +116,7 @@ class Database(pymongo.database.Database):
 
         for k in md:
             if read_metadata_schema.is_defined(k):
-                if type(md[k]) != read_metadata_schema.type(k):
+                if not isinstance(md[k], read_metadata_schema.type(k)):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
         if object_type == 'TimeSeries':
@@ -243,7 +243,7 @@ class Database(pymongo.database.Database):
             if update_metadata_def.is_defined(k):
                 if update_metadata_def.readonly(k):
                     continue
-                if type(copied_metadata[k]) != update_metadata_def.type(k):
+                if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
                     try:
                         insert_dict[k] = update_metadata_def.type(k)(copied_metadata[k])
                     except Exception as err:
