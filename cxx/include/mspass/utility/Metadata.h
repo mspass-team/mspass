@@ -402,12 +402,12 @@ other attributes.
   };
   */
   /*! Clear data associated with a particular key. */
-  void clear(const std::string key);
+  void erase(const std::string key);
   /*! Overload for C string*/
   /*
-  void clear(const char* key)
+  void erase(const char* key)
   {
-    return this->clear(string(key));
+    return this->erase(string(key));
   };
   */
   /*! Return the size of the internal map container. */
