@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
@@ -17,62 +18,99 @@ using mspass::utility::MsPASSError;
 using mspass::utility::ErrorSeverity;
 
 using namespace std;
-enum SortKey {NET,STA,CHAN,LOC};
-/*! /brief Function object used for sorting with metadata key.
 
-The stl sort algorithm can use a general function to define order.  This template
-allows sorting a vector of objects containing the SortKey using the
-generic stl sort algorithm.
+/* Cautious comparison of two string metadata fields defined by key.\
+Return -1 if x<y, 0 if x==y, and +1 if x>y.
 
-\param T is the ensemble class type
-\param SO is a SortOrder enum value that is used to define the attribute for
-        sorting.  This has to be an enum as I've found no way to give a function
-        object like this a parameter any other way.
-*/
-template <typename Tdata, SortKey KEY,typename Tkey=std::string> struct greater_metadata
-                : public binary_function<Tdata,Tdata,bool>
+Undefined values require a definition.   two undefined field compare equal but
+and undefined value always compare > a defined field. */
+
+int cautious_compare(const TimeSeries& x, const TimeSeries& y, const string key)
 {
-  bool operator()(Tdata x, Tdata y)
+  if(x.is_defined(key))
   {
-    string key;
-    switch(KEY)
+    if(y.is_defined(key))
     {
-      case STA:
-        key="sta";
-        break;
-      case CHAN:
-        key="chan";
-        break;
-      case LOC:
-        key="loc";
-        break;
-      case NET:
-      default:
-        key="net";
-    };
-    Tkey valx,valy;
-    /* This seems necessary because of the namespace complications.
-       Ancestor of this function in XcorProcessingEngine didn't require
-       this complexity.  There may be another way to do this - the compiler
-       suggests a "use 'template' keyword" but I'll us this 
-    */
-    mspass::utility::Metadata *xptr,*yptr;
-    xptr=dynamic_cast<Metadata*>(&x);
-    yptr=dynamic_cast<Metadata*>(&y);
-    try{
-      valx=xptr->get<Tkey>(key);
-    }catch(...){return true;};
-    try{
-      valy=yptr->get<Tkey>(key);
-    }catch(...){return false;};
-    if(valx>valy)
-      return true;
+      string valx,valy;
+      valx=x.get<string>(key);
+      valy=y.get<string>(key);
+      if(valx>valy)
+        return 1;
+      else if(valx==valy)
+        return 0;
+      else
+        return -1;
+    }
     else
-      return false;
+    {
+      /* x_defined and y_undefined here - x_defined >y_undefined*/
+      return 1;
+
+    }
+  }else if(y.is_defined(key))
+  {
+    /* x_undefined and y_defined - x_undefined < y_defined */
+    return -1;
   }
+  else
+  {
+    /* Both undefined - weak order requires return false. */
+    return 0;
+  }
+}
+struct greater_seedorder
+{
+  /* Note this sort so undefined will be less than any defined value.
+  Could be the reverse but an arbitrary choice */
+  bool operator()(TimeSeries x, TimeSeries y)
+  {
+    int retnet,retsta,retloc,retchan;
+    retnet=cautious_compare(x,y,"net");
+    switch(retnet)
+    {
+      case -1:
+        return false;
+      case +1:
+        return true;
+      case 0:
+      default:
+        retsta=cautious_compare(x,y,"sta");
+        switch(retsta)
+        {
+          case -1:
+            return false;
+          case +1:
+            return true;
+          case 0:
+          default:
+            retloc=cautious_compare(x,y,"loc");
+            switch(retloc)
+            {
+              case -1:
+                return false;
+              case +1:
+                return true;
+              case 0:
+              default:
+                retchan=cautious_compare(x,y,"chan");
+                switch(retchan)
+                {
+                  case +1:
+                    return true;
+                  default:
+                    /* Weak order as the final condition is strictly > so
+                    equal case only here returns false */
+                    return false;
+                };
+            };
+        };
+    };
+  };
 };
+
 /* Helper for below.  Returns a pair of iterators than can be passed to
-sort.  */
+sort.  Not it is important that the end of the range not returned as
+the result of the end method as that is one past the end.*/
 pair<vector<TimeSeries>::iterator,vector<TimeSeries>::iterator>
   find_range(vector<TimeSeries>::iterator anchor,
     vector<TimeSeries>::iterator end_of_data, string key)
@@ -82,6 +120,8 @@ pair<vector<TimeSeries>::iterator,vector<TimeSeries>::iterator>
   for(dptr=anchor;dptr!=end_of_data;++dptr)
   {
     string thisval=dptr->get<string>(key);
+    //DEBUG
+    cout << thisval<<endl;
     if(thisval!=testval)
     {
       /* Just calling break works because we set dlast.  Behaves the same
@@ -94,129 +134,7 @@ pair<vector<TimeSeries>::iterator,vector<TimeSeries>::iterator>
         (anchor,dlast);
 }
 
-void seed_sort(Ensemble<TimeSeries>& d)
-{
-  const string base_error("bundle_seed_data:  ");
-  /* This algorithm uses four string keys used in seed to define a unique
-  seismic channel.   We first do a safety check to validate metadata.
-  We require:
-  1.  net is all or none.  If no members have net set the net sort is just
-      bypassed. What we can't allow is some set and some not set.
-  2.  sta and chan are dogmatically required to be set in every member
-  3.  loc is treated like net.  It must be all or none
-  */
-  bool use_net,use_loc,found_null(false),found_set(false);
-  vector<TimeSeries>::iterator dptr;
-  for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
-  {
-    if(dptr->live())
-    {
-      if(dptr->is_defined("net"))
-        found_set=true;
-      else
-      {
-        found_null=true;
-        break;   //any null requires a bypass
-      }
-      /* As soon as we find a mismatch we need to abort */
-      if(found_null && found_set)
-      {
-        throw MsPASSError(base_error+"ensemble has net set of some but not all members",
-            ErrorSeverity::Invalid);
-      }
-    }
-  }
-  if(found_set)
-    use_net=true;
-  else
-    use_net=false;
-  /* Same test for loc */
-  found_null=false;
-  found_set=false;
-  for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
-  {
-    if(dptr->live())
-    {
-      if(dptr->is_defined("loc"))
-        found_set=true;
-      else
-      {
-        found_null=true;
-        break;
-      }
-      /* As soon as we find a mismatch we need to abort */
-      if(found_null && found_set)
-      {
-        throw MsPASSError(base_error+"ensemble has loc set of some but not all members",
-            ErrorSeverity::Invalid);
-      }
-    }
-  }
-  if(found_set)
-    use_loc=true;
-  else
-    use_loc=false;
-  for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
-  {
-    if(dptr->live())
-    {
-      if(!dptr->is_defined("sta"))
-      {
-        throw MsPASSError(base_error+"ensemble has a live member without sta set",
-          ErrorSeverity::Invalid);
-      }
-      if(!dptr->is_defined("chan"))
-      {
-        throw MsPASSError(base_error+"ensemble has a live member without chan set",
-          ErrorSeverity::Invalid);
-      }
-    }
-  }
-  /* Now we go through a staged sort in the order net, sta, loc, chan.
-  loc is treated differently to allow null loc codes */
-  if(use_net)
-  {
-    sort(d.member.begin(),d.member.end(),
-        greater_metadata<TimeSeries,NET,std::string>());
-  }
-  pair< vector<TimeSeries>::iterator, vector<TimeSeries>::iterator> range;
-  /* We have to do next sorts in groups. There is probably a way to do this
-  with stl algorithms but I use this hand rolled function defind above*/
-  vector<TimeSeries>::iterator dptr0;  /* Anchor for forward searches */
-  dptr0=d.member.begin();
-  /* A bit of a weird loop that only terminates on the break but it is the
-  correct logic*/
-  while(true)
-  {
-    range=find_range(dptr0,d.member.end(),string("sta"));
-    sort(range.first,range.second,greater_metadata<TimeSeries,STA,std::string>());
-    dptr0=range.second;
-    if(dptr0==d.member.end()) break;
-    ++dptr0;
-  }
-  if(use_loc)
-  {
-    while(true)
-    {
-      range=find_range(dptr0,d.member.end(),string("loc"));
-      sort(range.first,range.second,greater_metadata<TimeSeries,LOC,std::string>());
-      dptr0=range.second;
-      if(dptr0==d.member.end()) break;
-      ++dptr0;
-    }
-  }
-  /* Final sort is by chan.  The seed standard requires chan names to sort
-  cleanly for 3c bundles.  e.g. mixing BHZ, BHN, BHE, HHZ, HHN, and HHE yields
-  the order BHE, BHN, BHZ, HHE, HHN, HHZ.*/
-  while(true)
-  {
-    range=find_range(dptr0,d.member.end(),string("chan"));
-    sort(range.first,range.second,greater_metadata<TimeSeries,CHAN,std::string>());
-    dptr0=range.second;
-    if(dptr0==d.member.end()) break;
-    ++dptr0;
-  }
-}
+
 /* This function is useful standalone as a way o bundle data assembled
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
 groupings that are irregular.   The algorithm has three fundamental assumption s
@@ -240,7 +158,7 @@ must match and obvious metadata like hang and vang are required. */
 vector<Seismogram> BundleGroup(std::vector<TimeSeries>& d,
   const size_t i0, const size_t iend)
 {
-  const string algname("BundleGroup");  
+  const string algname("BundleGroup");
   vector<Seismogram> result;
   try{
     /* We use the first two characters in chan names to define groupings.
@@ -345,7 +263,15 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
 {
   string algname("bundle_seed_data");
   try{
-    seed_sort(d);
+    std::sort(d.member.begin(),d.member.end(),greater_seedorder());
+    //Debug
+    for(auto dtmp=d.member.begin();dtmp!=d.member.end();++dtmp)
+    {
+      cout << dtmp->get<string>("net")<<" "
+        << dtmp->get<string>("sta")<<" "
+        << dtmp->get<string>("loc")<<" "
+        << dtmp->get<string>("chan")<<endl;
+    }
     /* this constructor clones the ensemble metadata */
     Ensemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
     vector<TimeSeries>::iterator dptr;
@@ -395,13 +321,19 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
         sta=dptr->get<string>("sta");
         chan=dptr->get<string>("chan");
         if( (lastnet!=net || laststa!=sta || lastloc!=loc) ||
-               (dptr==d.member.end()) )
+               (dptr==(d.member.end() - 1)) )
         {
-          iend=i-1;
+          /* The end condition has to be handled specially because when
+          we reach the end we have attempt a bundle.   Inside the ensemble
+          the test is against the previous values of the seed keys*/
+          if(dptr==(d.member.end()-1))
+            iend=i;
+          else
+            iend=i-1;
           /*Silently drop incomplete groups */
-          if((i-i0)>3)
+          if((iend-i0)>=2)  //Use iend to handle end condition instead of i
           {
-            if((i-i0) == 3)
+            if((iend-i0) == 2)
             {
               vector<CoreTimeSeries> work;
               vector<ProcessingHistory*> hvec;
@@ -431,6 +363,11 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
               for(auto k=0;k<dgrp.size();++k) ens3c.member.push_back(dgrp[k]);
             }
           }
+          laststa=sta;
+          lastnet=net;
+          lastloc=loc;
+          lastchan=chan;
+          i0=i;
         }
       }
     }
