@@ -174,7 +174,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     const string base_error("CoreSeismogram constructor from 3 Time Series:  ");
     int i,j;
     /* This is needed in case nsamp does not match s.size(0) */
-    size_t nstest = ts[component_to_clone].s.size();
+    int nstest = ts[component_to_clone].s.size();
     if(nsamp!=nstest) this->nsamp=nstest;
     /* this method allocates u and sets the proper metadata for npts*/
     this->CoreSeismogram::set_npts(this->nsamp);
@@ -232,8 +232,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
        we don't test for that condition.  We do need to clear hang and vang
        from result here, however, as both attributes are meaningless
        for a 3C seismogram */
-    this->clear("hang");
-    this->clear("vang");
+    this->erase("hang");
+    this->erase("vang");
     // These are loaded just for convenience
     t0_component[0]=ts[0].t0();
     t0_component[1]=ts[1].t0();
@@ -275,8 +275,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         tsmax=max(tsmax,t0_component[2]);
         temin=min(ts[0].endtime(),ts[1].endtime());
         temin=min(temin,ts[2].endtime());
-        nstest=round((temin-tsmax)/mdt);
-        if(nsamp<=0)
+        nstest=(int)round((temin-tsmax)/mdt);
+        if(nstest<=0)
           throw MsPASSError(base_error
                 +"Irregular time windows of components have no overlap",
                         ErrorSeverity::Invalid);
