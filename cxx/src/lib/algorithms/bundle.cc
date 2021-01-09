@@ -265,6 +265,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
   try{
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());
     //Debug
+    /*
     for(auto dtmp=d.member.begin();dtmp!=d.member.end();++dtmp)
     {
       cout << dtmp->get<string>("net")<<" "
@@ -272,10 +273,10 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
         << dtmp->get<string>("loc")<<" "
         << dtmp->get<string>("chan")<<endl;
     }
+    */
     /* this constructor clones the ensemble metadata */
     Ensemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
     vector<TimeSeries>::iterator dptr;
-    bool use_net(false),use_loc(false);
     string laststa,lastloc,lastchan,lastnet;
     string net(""),sta,chan,loc("");
     size_t i0,iend;
@@ -288,13 +289,19 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
         /* These things need to all be initialized by the first member*/
         if(dptr->is_defined("net"))
         {
-          use_net=true;
           lastnet=dptr->get<string>("net");
+        }
+        else
+        {
+          lastnet="Undefined";
         }
         if(dptr->is_defined("loc"))
         {
-          use_loc=true;
           lastloc=dptr->get<string>("loc");
+        }
+        else
+        {
+          lastloc="Undefined";
         }
         laststa=dptr->get<string>("sta");
         lastchan=dptr->get<string>("chan");
@@ -302,21 +309,21 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
       }
       else
       {
-        if(use_net)
+        if(dptr->is_defined("net"))
         {
           net=dptr->get<string>("net");
         }
         else
         {
-          net="";
+          net="Undefined";
         }
-        if(use_loc)
+        if(dptr->is_defined("loc"))
         {
           loc=dptr->get<string>("loc");
         }
         else
         {
-          loc="";
+          loc="Undefined";
         }
         sta=dptr->get<string>("sta");
         chan=dptr->get<string>("chan");
