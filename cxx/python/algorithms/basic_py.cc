@@ -108,6 +108,18 @@ PYBIND11_MODULE(basic, m) {
     py::arg("d"),
     py::arg("twin") )
   ;
+  m.def("_bundle_seed_data",&bundle_seed_data,
+    "Create SeismogramEnsemble from sorted TimeSeriesEnsemble",
+    py::return_value_policy::copy,
+    py::arg("d") )
+    ;
+  m.def("_BundleGroup",&BundleGroup,
+    "Bundle a seed grouping of TimeSeries that form one Seismogram",
+    py::return_value_policy::copy,
+    py::arg("d"),
+    py::arg("i0"),
+    py::arg("iend") )
+    ;
 }
 
 } // namespace mspasspy
