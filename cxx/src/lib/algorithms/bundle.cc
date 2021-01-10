@@ -108,32 +108,6 @@ struct greater_seedorder
   };
 };
 
-/* Helper for below.  Returns a pair of iterators than can be passed to
-sort.  Not it is important that the end of the range not returned as
-the result of the end method as that is one past the end.*/
-pair<vector<TimeSeries>::iterator,vector<TimeSeries>::iterator>
-  find_range(vector<TimeSeries>::iterator anchor,
-    vector<TimeSeries>::iterator end_of_data, string key)
-{
-  string testval=anchor->get<string>(key);
-  vector<TimeSeries>::iterator dptr,dlast;
-  for(dptr=anchor;dptr!=end_of_data;++dptr)
-  {
-    string thisval=dptr->get<string>(key);
-    //DEBUG
-    cout << thisval<<endl;
-    if(thisval!=testval)
-    {
-      /* Just calling break works because we set dlast.  Behaves the same
-      that way if the for loop goes to its end. */
-      break;
-    }
-    dlast=dptr;
-  }
-  return pair<vector<TimeSeries>::iterator,vector<TimeSeries>::iterator>
-        (anchor,dlast);
-}
-
 
 /* This function is useful standalone as a way o bundle data assembled
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
