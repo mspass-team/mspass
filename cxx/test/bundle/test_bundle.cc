@@ -94,8 +94,15 @@ void print_output(const Ensemble<Seismogram>& e)
 {
   string sta,chan,loc,net;
   cout <<"net sta chan loc npts fill_values"<<endl;
-  for(auto d=e.member.begin();d!=e.member.end();++d)
+  int i(0);
+  for(auto d=e.member.begin();d!=e.member.end();++d,++i)
   {
+    /* Exception kill but insert dead Seismogram objects so
+    we flag them in this print function */
+    if(d->dead())
+    {
+      cout << "Ensemble member "<<i<<" was killed"<<endl;
+    }
     if(d->is_defined("net"))
     {
       cout << d->get_string("net")<<" ";
@@ -140,6 +147,33 @@ bool compare_stas(const Ensemble<Seismogram>& d,const vector<string>& pattern)
     if(sta!=pattern[i]) return false;
   }
   return true;
+}
+/* used in exception handler tests */
+int count_live(const Ensemble<Seismogram>& d)
+{
+  int count=0;
+  for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr)
+  {
+    if(dptr->live()) ++count;
+  }
+  return count;
+}
+void print_ensemble_errors(const Ensemble<Seismogram>& d)
+{
+  int count=0;
+  for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr,++count)
+  {
+    if(dptr->dead())
+    {
+      cout << "Member number "<< count << " marked dead with this error message"<<endl;
+      list<LogData> errors=dptr->elog.get_error_log();
+      for(auto e=errors.begin();e!=errors.end();++e)
+      {
+        /* Just print algorithm and message */
+        cout << e->algorithm << " generated this message:  "<<e->message<<endl;
+      }
+    }
+  }
 }
 int main(int argc, char **argv)
 {
@@ -269,4 +303,20 @@ int main(int argc, char **argv)
   assert(fabs(ens3c.member[9].endtime()-0.68)/0.68 < FLT_EPSILON);
   assert(fabs(ens3c.member[10].t0() - 0.2)/0.2 < FLT_EPSILON);
   assert(fabs(ens3c.member[10].endtime()-0.98)/0.98 < FLT_EPSILON);
+  cout << "Testing exception handlers for unrepairable data"<<endl;
+  ens4=ens0;
+  oldt0=ens4.member[0].t0();
+  /* this will make a member without an overlap that will cause an exception
+  to be thrown */
+  ens4.member[0].set_t0(oldt0+1000.0);
+  /* This will generate an irregular sample rate error */
+  ens4.member[5].set_dt(0.5);
+  ens3c=bundle_seed_data(ens4);
+  cout << "test Ensemble output size="<<ens3c.member.size()<<endl;
+  int nlive=count_live(ens3c);
+  cout << "This should say number marked live is 10"<<endl;
+  cout << "Number marked live="<<nlive<<endl;
+  cout << "This should show two different errors and define last two members as marked dead"<<endl;
+  print_ensemble_errors(ens3c);
+  assert(nlive==10);
 }

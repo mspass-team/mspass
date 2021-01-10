@@ -223,8 +223,16 @@ vector<Seismogram> BundleGroup(std::vector<TimeSeries>& d,
             }
           }
         }
-        Seismogram d3c(CoreSeismogram(bundle),algname);
-        if(hvec.size()==3) d3c.add_many_inputs(hvec);
+        Seismogram d3c;
+        try{
+          d3c=Seismogram(CoreSeismogram(bundle),algname);
+          if(hvec.size()==3) d3c.add_many_inputs(hvec);
+        }
+        catch(MsPASSError& err)
+        {
+          d3c.kill();
+          d3c.elog.log_error(err);
+        };
         result.push_back(d3c);
       }
     }
@@ -327,8 +335,15 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
                   hvec.push_back(dynamic_cast<ProcessingHistory*>(&d.member[i0+k]));
                 }
               }
-              Seismogram d3c(CoreSeismogram(work),algname);
-              if(hvec.size()==3) d3c.add_many_inputs(hvec);
+              Seismogram d3c;
+              try{
+                d3c=Seismogram(CoreSeismogram(work),algname);
+                if(hvec.size()==3) d3c.add_many_inputs(hvec);
+              }catch(MsPASSError& err)
+              {
+                d3c.elog.log_error(err);
+                d3c.kill();
+              }
               ens3c.member.push_back(d3c);
             }
             else
@@ -351,6 +366,13 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
           i0=i;
         }
       }
+    }
+    //DEBUG
+    cout << "Ensemble Error Sizes"<<endl;
+    for(auto eptr=ens3c.member.begin();eptr!=ens3c.member.end();++eptr)
+    {
+      if(eptr->dead()) cout << "Next is marked dead"<<endl;
+      cout << eptr->elog.size()<<endl;
     }
     return ens3c;
   }catch(...){throw;};
