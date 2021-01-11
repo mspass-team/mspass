@@ -337,10 +337,12 @@ class Database(pymongo.database.Database):
                     continue
                 if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
                     try:
+                        # The following convert the actual value in a dict to a required type.
+                        # This is because the return of type() is the class reference.
                         insert_dict[k] = update_metadata_def.type(
                             k)(copied_metadata[k])
                     except Exception as err:
-                        raise MsPASSError('Failure attempting to convert {}: {} to {}'.format(
+                        raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
                             k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
                 else:
                     insert_dict[k] = copied_metadata[k]
