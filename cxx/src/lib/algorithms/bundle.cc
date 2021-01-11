@@ -367,13 +367,6 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
         }
       }
     }
-    //DEBUG
-    cout << "Ensemble Error Sizes"<<endl;
-    for(auto eptr=ens3c.member.begin();eptr!=ens3c.member.end();++eptr)
-    {
-      if(eptr->dead()) cout << "Next is marked dead"<<endl;
-      cout << eptr->elog.size()<<endl;
-    }
     return ens3c;
   }catch(...){throw;};
 }
