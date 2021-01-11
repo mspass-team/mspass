@@ -31,6 +31,23 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
                           format='spark', spark_context=None):
+    """
+     This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
+     manner, and return all of the mspasspy objects using the format required by the distributed computing framework
+     (spark RDD or dask bag).
+
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
+    :param object_type: either "TimeSeries" or "Seismogram"
+    :type object_type: :class:`str`
+    :param load_history: `True` to load object-level history into mspasspy objects.
+    :param format: "spark" or "dask".
+    :type format: :class:`str`
+    :param spark_context: user specified spark context.
+    :type spark_context: :class:`pyspark.SparkContext`
+    :return: a spark `RDD` or dask `bag` format of mspasspy objects.
+    """
     if format == 'spark':
         list = spark_context.parallelize(cursors)
         return list.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
@@ -42,6 +59,19 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
 
 
 def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True):
+    """
+     A helper method used in the distributed map operation. It creates a mongodb connection with provided
+     configurations, reads data from the database, constructs a mspasspy object and returns it.
+
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb
+    :type id: :class:'bson.objectid.ObjectId'.
+    :param object_type: either "TimeSeries" or "Seismogram".
+    :type object_type: :class:`str`
+    :param load_history: `True` to load object-level history into the mspasspy object.
+    :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    """
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
@@ -57,8 +87,8 @@ class Database(pymongo.database.Database):
     uses a database handle normally created with a variant of this pair
     of commands:
         client=MongoClient()
-        db=client['databasename']
-    where databasename is variable and the name of the database you
+        db=client['database_name']
+    where database_name is variable and the name of the database you
     wish to access with this handle.
     """
 
@@ -68,12 +98,33 @@ class Database(pymongo.database.Database):
         self.database_schema = DatabaseSchema()
 
     def set_metadata_schema(self, schema):
+        """
+        Set metadata_schema defined in the Database class.
+
+        :param schema: a instance of :class:`mspsspy.db.schema.MetadataSchema`
+        """
         self.metadata_schema = schema
 
     def set_database_schema(self, schema):
+        """
+        Set database_schema defined in the Database class.
+
+        :param schema: a instance of :class:`mspsspy.db.schema.DatabaseSchema`
+        """
         self.database_schema = schema
 
     def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
+        """
+        Reads and returns the mspasspy object stored in the database.
+
+        :param object_id: mongodb "_id" of the mspasspy object.
+        :type object_id: :class:`bson.objectid.ObjectId`
+        :param object_type: either "TimeSeries" or "Seismogram".
+        :type object_type: :class:`str`
+        :param load_history: `True` to load object-level history into the mspasspy object.
+        :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        """
         if object_type not in ['TimeSeries', 'Seismogram']:
             raise KeyError("only TimeSeries and Seismogram are supported")
         # todo support miniseed, hdf5
@@ -138,7 +189,8 @@ class Database(pymongo.database.Database):
 
         # 3.load history
         if load_history:
-            self._load_history(mspass_object, object['history_object_id'])
+            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+            self._load_history(mspass_object, object[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()
@@ -146,7 +198,23 @@ class Database(pymongo.database.Database):
 
     def save_data(self, mspass_object, storage_mode='gridfs', update_all=True, dfile=None, dir=None,
                   exclude=None, collection=None):
+        """
+        Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
+        :param mspass_object: the object you want to save.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
+            the object in a binary file, which requires `dfile` and `dir`.
+        :type storage_mode: :class:`str`
+        :param update_all: `True` to also save the metadata attributes not defined in the schema.
+        :param dfile: file name if using "file" storage mode.
+        :type dfile: :class:`str`
+        :param dir: file directory if using "file" storage mode.
+        :type dir: :class:`str`
+        :param exclude: the metadata attributes you want to exclude from being stored.
+        :type exclude: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -192,7 +260,17 @@ class Database(pymongo.database.Database):
         col.update_one(filter, {'$set': update_dict})
 
     def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
+        """
+        Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
+        and metadata attributes.
 
+        :param mspass_object: the object you want to update.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude: a list of metadata attributes you want to exclude from being updated.
+        :type exclude: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -269,6 +347,18 @@ class Database(pymongo.database.Database):
                 elog_col.update_one(filter, {'$set': {wf_id_name: mspass_object['_id']}})
 
     def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
+        """
+        Reads and returns the mspasspy ensemble object stored in the database.
+
+        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`, where each belongs to a mspasspy object.
+        :param ensemble_type: either "TimeSeriesEnsemble" or "SeismogramEnsemble". This implies all of mspasspy objects
+            required should either all be :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :type ensemble_type: :class:`str`
+        :param load_history: `True` to also update the metadata attributes not defined in the schema.
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        """
         if ensemble_type not in ['TimeSeriesEnsemble', 'SeismogramEnsemble']:
             raise KeyError("only TimeSeriesEnsemble and SeismogramEnsemble are supported")
 
@@ -284,11 +374,31 @@ class Database(pymongo.database.Database):
 
         return ensemble
 
-    def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', collection=None, dfile_list=None, dir_list=None,
-                           update_all=True, exclude_keys=None, exclude_objects=None):
+    def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', dfile_list=None, dir_list=None,
+                           update_all=False, exclude_keys=None, exclude_objects=None, collection=None):
+        """
+        Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
+        database.
+
+        :param ensemble_object: the ensemble you want to save.
+        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
+            the object in a binary file, which requires `dfile` and `dir`.
+        :type storage_mode: :class:`str`
+        :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is `str` type.
+        :param dir_list: A :class:`list` of file directories if using "file" storage mode. File directory is `str` type.
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being stored.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
+        :type exclude_objects: :class:`list`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
         # This pushes ensemble's metadata to each member.  We pass the exclude
         # keys as the effort required to pass ones not meant for ensemble is tiny
         self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
+
         if not exclude_objects:
             exclude_objects = []
 
@@ -311,29 +421,88 @@ class Database(pymongo.database.Database):
 
     def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
                                  collection=None):
+        """
+        Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
+        and metadata attributes.
+
+        :param ensemble_object: the ensemble you want to update.
+        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to
+        exclude from being saved. The index starts at 0.
+        :type exclude_objects: :class:`list`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the
+        schema.
+        """
         if not exclude_objects:
             exclude_objects = []
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection)
 
-    def detele_wf(self, object_id, collection=None):
+    def detele_wf(self, object_id, object_type, collection=None):
+        """
+        Delete a mspasspy object.
+
+        :param object_id: object id of the object.
+        :type object_id: :class:`bson.objectid.ObjectId`
+        :param object_type: either "TimeSeries" or "Seismogram".
+        :type object_type: :class:`str`
+        :param collection: the name of the collection that the object is stored. If not specified, use the defined name
+                in the schema.
+        """
+        if object_type not in ["TimeSeries", "Seismogram"]:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
         if not collection:
-            collection = self.database_schema.default_name('wf')
+            schema = self.metadata_schema
+            if object_type == "TimeSeries":
+                detele_schema = schema.TimeSeries
+            else:
+                detele_schema = schema.Seismogram
+
+            collection = detele_schema.collection('_id') if not collection else collection
+
         self[collection].delete_one({'_id': object_id})
 
     def delete_gridfs(self, gridfs_id):
+        """
+        Delete a grid document.
+
+        :param gridfs_id: id of the document.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`
+        """
         gfsh = gridfs.GridFS(self)
         if gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
 
     def _sync_metadata_before_update(self, d):
+        """
+        Synchronize a few broken attributes before saving.
+
+        :param d: a mspasspy object.
+        :type d: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        """
         if d.tref == TimeReferenceType.Relative:
             d.put_string('time_standard', 'relative')
         else:
             d.put_string('time_standard', 'UTC')
 
     def _save_history(self, mspass_object, history_object_id=None, collection=None):
+        """
+        Save the processing history of a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param history_object_id: the previous history object id (if it has).
+        :type history_object_id: :class:`bson.objectid.ObjectId`
+        :param collection: the collection that you want to store the history object. If not specified, use the defined
+        collection in the schema.
+        :return: updated history_object_id.
+        """
         if not collection:
             collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
@@ -348,6 +517,15 @@ class Database(pymongo.database.Database):
             return history_col.insert_one({'nodesdata': history_binary}).inserted_id
 
     def _load_history(self, mspass_object, history_object_id, collection=None):
+        """
+        Load (in place) the processing history into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param history_object_id: :class:`bson.objectid.ObjectId`
+        :param collection: the collection that you want to load the processing history. If not specified, use the defined
+        collection in the schema.
+        """
         if not collection:
             collection = self.database_schema.default_name('history_object')
         res = self[collection].find_one({'_id': history_object_id})
@@ -355,21 +533,16 @@ class Database(pymongo.database.Database):
 
     def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
-        Save error log for a data object.
+        Save error log for a data object. Data objects in MsPASS contain an error log object used to post any
+        errors handled by processing functions.
 
-        Data objects in MsPASS contain an error log object used to post any
-        errors handled by processing functions.   These have different levels of
-        severity.   This method posts each log entry into the elog document with
-        the Objectid of the parent posted as a tag.  We only post the object id
-        as a simple string and make no assumptions it is valid.   To convert it
-        to a valid ObjectID in Mongo would require calls to the ObjectID constuctor.
-        We view that as postprocessing problem to handle.
-
-        Args:
-        oidstr is the ObjectID represented as a string.  It is normally pulled from
-            Metadata with the key oid_string.
-        elog is the error log object to be saved.
-        Return:  List of ObjectID of inserted
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param elog_id: a list of elog object ids.
+        :type elog_id: `list`
+        :param collection: the collection that you want to save the elogs. If not specified, use the defined
+        collection in the schema.
+        :return: updated elog_id.
         """
         if not collection:
             collection = self.database_schema.default_name('elog')
@@ -403,146 +576,120 @@ class Database(pymongo.database.Database):
         return elog_id
 
     @staticmethod
-    def _read_data_from_dfile(data, dir, dfile, foff):
+    def _read_data_from_dfile(mspass_object, dir, dfile, foff):
+        """
+        Read the stored data from a file and loads it into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :param foff: offset that marks the starting of the data in the file.
+        """
         fname = os.path.join(dir, dfile)
         with open(fname, mode='rb') as fh:
             fh.seek(foff)
             float_array = array('d')
-            if isinstance(data, TimeSeries):
-                if not data.is_defined('npts'):
+            if isinstance(mspass_object, TimeSeries):
+                if not mspass_object.is_defined('npts'):
                     raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(data.get('npts') * 8))
-                data.data = DoubleVector(float_array)
-            elif isinstance(data, Seismogram):
-                if not data.is_defined('npts'):
+                float_array.frombytes(fh.read(mspass_object.get('npts') * 8))
+                mspass_object.data = DoubleVector(float_array)
+            elif isinstance(mspass_object, Seismogram):
+                if not mspass_object.is_defined('npts'):
                     raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(data.get('npts') * 8 * 3))
+                float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
                 print(len(float_array))
-                data.data = dmatrix(3, data.get('npts'))
+                mspass_object.data = dmatrix(3, mspass_object.get('npts'))
                 for i in range(3):
-                    for j in range(data.get('npts')):
-                        data.data[i, j] = float_array[i * data.get('npts') + j]
+                    for j in range(mspass_object.get('npts')):
+                        mspass_object.data[i, j] = float_array[i * mspass_object.get('npts') + j]
             else:
                 raise TypeError("only TimeSeries and Seismogram are supported")
 
     @staticmethod
-    def _save_data_to_dfile(data, dir, dfile):
+    def _save_data_to_dfile(mspass_object, dir, dfile):
         """
-        Saves sample data as a binary dump of the sample data.
+        Saves sample data as a binary dump of the sample data. Save a mspasspy object as a pure binary dump of
+        the sample data in native (Fortran) order. Opens the file and ALWAYS appends data to the end of the file.
 
-        Save a Seismogram object as a pure binary dump of the sample data
-        in native (Fortran) order.   The file name to write is derived from
-        dir and dfile in the usual way, but frozen to unix / separator.
-        Opens the file and ALWAYS appends data to the end of the file.
+        This method is subject to several issues to beware of before using them:
+        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without
+        stranding (potentially large quantities) of data in the middle of files or
+        corrupting a file with a careless insert, and (3) when the number of files
+        gets large managing them becomes difficult.
 
-        :param: d is a Seismogram object whose data is to be saved
-
-        :returns:  -1 if failure.  Position of first data sample (foff) for success
-        :raise:  None. Any io failures will be trapped and posted to the elog area of
-        the object d.   Caller should test for negative return and post the error
-        to the database to help debug data problems.
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :return: Position of first data sample (foff).
         """
         fname = os.path.join(dir, dfile)
         os.makedirs(os.path.dirname(fname), exist_ok=True)
         with open(fname, mode='a+b') as fh:
             foff = fh.seek(0, 2)
-            if isinstance(data, TimeSeries):
-                ub = bytes(np.array(data.data))  # fixme DoubleVector
-            elif isinstance(data, Seismogram):
-                ub = bytes(data.data)
+            if isinstance(mspass_object, TimeSeries):
+                ub = bytes(np.array(mspass_object.data))  # fixme DoubleVector
+            elif isinstance(mspass_object, Seismogram):
+                ub = bytes(mspass_object.data)
             else:
                 raise TypeError("only TimeSeries and Seismogram are supported")
             fh.write(ub)
         return foff
 
-    def _save_data_to_gridfs(self, data, gridfs_id=None):
+    def _save_data_to_gridfs(self, mspass_object, gridfs_id=None):
         """
-        Save a Seismogram object sample data to MongoDB gridfs_wf collection.
+        Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
+        for saving a mspasspy object inside MongoDB.
 
-        Use this method for saving a Seismogram inside MongoDB.   This is
-        the recommended mode for anything but data to be exported or data that
-        is expected to remain static.   External files are subject to several
-        issues to beware of before using them:  (1) they are subject to damage
-        by other processes/program, (2) updates are nearly impossible without
-        stranding (potentially large quantities) of data in the middle of files or
-        corrupting a file with a careless insert, and (3) when the number of files
-        gets large managing them becomes difficult.
-
-        :param data: is the Seismogram to be saved
-        :param fscol: is the gridfs collection name to save the data in
-            (default is 'gridfs_wf')
-        :return: object_id of the document used to store the data in gridfs
-            -1 if something failed.  In that condition a generic error message
-            is posted to elog.    Caller should dump elog only after
-            trying to do this write to preserve the log
-        :raise: Should never throw an exception, but caller should test and save
-        error log if it is not empty.
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param gridfs_id: if the data is already stored and you want to update it, you should provide the object id
+        of the previous data, which will be deleted. A new document will be inserted instead.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`.
+        :return inserted gridfs object id.
         """
         gfsh = gridfs.GridFS(self)
         if gridfs_id and gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
-        if isinstance(data, Seismogram):
-            ub = bytes(data.data)
+        if isinstance(mspass_object, Seismogram):
+            ub = bytes(mspass_object.data)
         else:
-            ub = bytes(np.array(data.data))
+            ub = bytes(np.array(mspass_object.data))
         return gfsh.put(pickle.dumps(ub))
 
-    def _read_data_from_gridfs(self, data, gridfs_id):
+    def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
-        Load a Seismogram object stored as a gridfs file.
+        Read data stored in gridfs and load it into a mspasspy object.
 
-        Constructs a Seismogram object from Metadata and sample data
-        pulled from a MongoDB gridfs document.   The Metadata must contain
-        a string representation of the ObjectId of the document with the
-        key gridfs_wf_id.  That string is used to generate a unique ObjectId
-        which is then used to find the unique document containing the sample
-        data in the collection called gridfs_wf (optionally can be changed with
-        argument fscol)
-
-        This function was designed to never throw an exception but always
-        return some form of Seismogram object. Caller should test the boolean
-        'live" attribute of the return. If it is false, it means this function
-        failed completely.  The error log may also contain various levels of
-        warning errors posted to it's internal ErrorLogger (elog) object.
-
-        :param md: is the Metadata object used to drive the construction.  This
-            would normally be constructed from a parent document in the wf
-            collection using dict2Metadata.  A critical key is the entry gridfs_wf_id
-            as described above.   Several other key:value pairs are required or
-            the function will abort with the result returned as invalid (live=false).
-            These are:  npts, starttime, and delta.   time_reference is a special
-            switch for handling UTC versus relative time.   Default is UTC
-            but relative time can be handled with the attribure t0_shift.
-            See User Manual for more about this feature.
-        :param elogtmp: is an (optional) ErrorLogger object added to the Seismogram
-            object during construction. It's primary use is to preserve any
-            warning errors encountered during the construction of md passed
-            to the function.
-        :param fscol: is the collection name the function should use to find the
-            gridfs data document
-        :return: the Seismogram object requested
-        :rtype: Seismogram
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param gridfs_id: the object id of the data stored in gridfs.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`
         """
-        # First make sure we have a valid id string.  No reason to procede if
-        # not the case
         gfsh = gridfs.GridFS(self)
         fh = gfsh.get(file_id=gridfs_id)
         ub = pickle.load(fh)
         fmt = "@%dd" % int(len(ub) / 8)
         x = struct.unpack(fmt, ub)
-        if isinstance(data, TimeSeries):
-            data.data = DoubleVector(x)
-        elif isinstance(data, Seismogram):
-            if not data.is_defined('npts'):
+        if isinstance(mspass_object, TimeSeries):
+            mspass_object.data = DoubleVector(x)
+        elif isinstance(mspass_object, Seismogram):
+            if not mspass_object.is_defined('npts'):
                 raise KeyError("npts is not defined")
-            if len(x) != (3 * data['npts']):
+            if len(x) != (3 * mspass_object['npts']):
                 emess = "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d" \
-                        % (len(x), (3 * data['npts']))
+                        % (len(x), (3 * mspass_object['npts']))
                 raise ValueError(emess)
-            data.data = dmatrix(3, data['npts'])
+            mspass_object.data = dmatrix(3, mspass_object['npts'])
             for i in range(3):
-                for j in range(data['npts']):
-                    data.data[i, j] = x[i * data['npts'] + j]
+                for j in range(mspass_object['npts']):
+                    mspass_object.data[i, j] = x[i * mspass_object['npts'] + j]
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
