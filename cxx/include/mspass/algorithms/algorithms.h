@@ -221,7 +221,7 @@ and kills of an output components.
 */
 
 std::vector<mspass::seismic::Seismogram> BundleGroup
-    (const std::vector<mspass::seismic::TimeSeries>& d,
+    (std::vector<mspass::seismic::TimeSeries>& d,
                 const size_t i0, const size_t iend);
 /*! \brief Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble.
 
