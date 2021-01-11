@@ -191,7 +191,7 @@ class Database(pymongo.database.Database):
         # 3.load history
         if load_history:
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-            self._load_history(mspass_object, object[history_obj_id_name])
+            self._load_history(mspass_object, object_doc[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()
