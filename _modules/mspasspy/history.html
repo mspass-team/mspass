@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspasspy.history &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mspasspy.history</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mspasspy.history</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pymongo</span>
+
+
+<div class="viewcode-block" id="get_jobid"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.get_jobid">[docs]</a><span class="k">def</span> <span class="nf">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    Ask MongoDB for the a valid jobid. </span>
+<span class="sd">    </span>
+<span class="sd">    All processing jobs should have a call to this function at the beginning </span>
+<span class="sd">    of the job script.  It simply queries MongoDB for the largest current </span>
+<span class="sd">    value of the key &quot;jobid&quot; in the history collection.   If the history </span>
+<span class="sd">    collection is empty it returns 1 under a bias that a jobid of 0 is</span>
+<span class="sd">    illogical.   </span>
+<span class="sd">    </span>
+<span class="sd">    :param db: database handle  </span>
+<span class="sd">    :type db:  top level database handle returned by a call to MongoClient.database</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hiscol</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">history</span>
+    <span class="n">hist_size</span><span class="o">=</span><span class="n">hiscol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">hist_size</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">maxcur</span><span class="o">=</span><span class="n">hiscol</span><span class="o">.</span><span class="n">find</span><span class="p">()</span><span class="o">.</span><span class="n">sort</span><span class="p">([(</span><span class="s1">&#39;jobid&#39;</span><span class="p">,</span><span class="n">pymongo</span><span class="o">.</span><span class="n">DESCENDING</span><span class="p">)])</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">maxcur</span><span class="o">.</span><span class="n">rewind</span><span class="p">()</span>   <span class="c1"># may not be necessary but near zero cost</span>
+        <span class="n">maxdoc</span><span class="o">=</span><span class="n">maxcur</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">maxdoc</span><span class="p">[</span><span class="s1">&#39;jobid&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="pfbranch_to_dict"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.pfbranch_to_dict">[docs]</a><span class="k">def</span> <span class="nf">pfbranch_to_dict</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span><span class="n">key</span><span class="p">):</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursive function to convert a single branch in an AntelopePf to a python dict.</span>
+<span class="sd">    </span>
+<span class="sd">    This function utilizes recursion to follow a chain of arbitrary length of </span>
+<span class="sd">    branches defined in an AntelopePf object.   Result is a dict with a chain of </span>
+<span class="sd">    dicts of the same length.  i.e. if AntelopePf has 3 levels of branches</span>
+<span class="sd">    the dict will have a 3 levels of associative arrays keyed by the same</span>
+<span class="sd">    branch names as the Arr items in the original Pf file.  Note this should</span>
+<span class="sd">    be called from the top level one branch at a time.  i.e. for the parent</span>
+<span class="sd">    AntelopePf this function should be called once for each returned key by </span>
+<span class="sd">    pf.arr_keys().</span>
+<span class="sd">    </span>
+<span class="sd">    Note that at each level Tbl&amp; sections of the original pf are parsed to </span>
+<span class="sd">    be converted to lists of strings with each line of the Tbl section being</span>
+<span class="sd">    one string in the list.  </span>
+<span class="sd">    </span>
+<span class="sd">    :param pf: is an AntelopePf.  Recursive calls use get_branch outputs </span>
+<span class="sd">       that return one of these.</span>
+<span class="sd">    :param key: key used to access the branch requested</span>
+<span class="sd">    :type key: string</span>
+<span class="sd">    :return:  python dict translation of AntelopePf branch structure</span>
+<span class="sd">    :raise:  RunTime errors are possible from the ccore methods that are called.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">brkeys</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">arr_keys</span><span class="p">()</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">brkeys</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># This loads simple parameters at this level</span>
+        <span class="n">allbrdata</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">todict</span><span class="p">()</span>
+        <span class="c1"># This loads any Tbl&amp; data at this level of the hierarchy</span>
+        <span class="n">tblkeys</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">tbl_keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tblkeys</span><span class="p">:</span>
+            <span class="n">tvals</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">allbrdata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">tvals</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">brkeys</span><span class="p">:</span>
+            <span class="n">pfbranch</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">bk</span><span class="o">=</span><span class="n">pfbranch_to_dict</span><span class="p">(</span><span class="n">pfbranch</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">allbrdata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">bk</span>
+        <span class="k">return</span> <span class="n">allbrdata</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">brdata</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">todict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">brdata</span></div>
+            
+             
+<div class="viewcode-block" id="basic_history_data"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.basic_history_data">[docs]</a><span class="k">class</span> <span class="nc">basic_history_data</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is a pure data object that if it were written in C could be </span>
+<span class="sd">    defined as a struct.   It holds the data used to define the </span>
+<span class="sd">    parameters for a given algorithm. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">job</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="o">=</span><span class="n">job</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;UNDEFINED&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">=</span><span class="p">{}</span>   <span class="c1"># dict with unspecified content dumped to collection</span>
+<div class="viewcode-block" id="basic_history_data.load_algorithm_args"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.basic_history_data.load_algorithm_args">[docs]</a>    <span class="k">def</span> <span class="nf">load_algorithm_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">alg</span><span class="p">,</span><span class="n">argdict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads parameters defined to a set of function arguments.   </span>
+<span class="sd">        </span>
+<span class="sd">        Simple algorithms without a lot of parameters often simply need a </span>
+<span class="sd">        set of argument values.   Here we require this to be defined by </span>
+<span class="sd">        a set of key:value pairs that map to dict.  We also consider this</span>
+<span class="sd">        the lowest common denominator for a parameter definition so make</span>
+<span class="sd">        it a part of the base class.</span>
+<span class="sd">        </span>
+<span class="sd">        :param alg: This should be a string defining the algorithm being registered.</span>
+<span class="sd">        :param argdict:  This should be a dict of key:value pairs defining input </span>
+<span class="sd">           parameters.  For algorithms defined at the top level by a python</span>
+<span class="sd">           function this should match the names of parameters in the arg list.</span>
+<span class="sd">           For C++ functions wrapped with pybind11 it should match the arg </span>
+<span class="sd">           keys defined in the wrappers.   The key string will be used for</span>
+<span class="sd">           key:value pair in BSON written to MongoDB.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">=</span><span class="n">alg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="o">=</span><span class="s1">&#39;dict&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">=</span><span class="n">argdict</span></div></div>
+<div class="viewcode-block" id="pf_history_data"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.pf_history_data">[docs]</a><span class="k">class</span> <span class="nc">pf_history_data</span><span class="p">(</span><span class="n">basic_history_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loads history data container with data from an AntelopePf object.</span>
+<span class="sd">    </span>
+<span class="sd">    mspasspy.ccore.utility defines the AntelopePf object that is an option for parameter </span>
+<span class="sd">    inputs.  The file structure is identical to the</span>
+<span class="sd">    Antelope Pf file syntax.   The API to an AntelopePF is not, however, </span>
+<span class="sd">    the same as the python bindings in Antelope as it handles Tbl </span>
+<span class="sd">    and Arr sections completely differently more in line with alternatives</span>
+<span class="sd">    like YAML.   This method converts the data in an AntelopePf to a python </span>
+<span class="sd">    dict that can be dumped directly to MongoDB with pymongo&#39;s insert </span>
+<span class="sd">    methods. Converting the MongoDB document back to a pf structure requires</span>
+<span class="sd">    the inverse operator that does not exist, but should eventually be </span>
+<span class="sd">    created if this approach sees extensive use. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">job</span><span class="p">,</span><span class="n">alg</span><span class="p">,</span><span class="n">pf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Basic constructor for this subclass.</span>
+<span class="sd">        </span>
+<span class="sd">        This constructor applies the construction is initialization model</span>
+<span class="sd">        of oop.  The AntelopePf pointed to by pf is parsed in this constuctor</span>
+<span class="sd">        to file and set the params dict and other attributes.</span>
+<span class="sd">        </span>
+<span class="sd">        :param job: jobid (integer) normally should be preceded by call to get_jobid function.</span>
+<span class="sd">        :param alg:  string defining a name assigned to the algorithm field</span>
+<span class="sd">        :param pf:  AntelopePf object to be parsed and posted. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="o">=</span><span class="n">job</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">=</span><span class="n">alg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="o">=</span><span class="s1">&#39;AntelopePf&#39;</span>
+        <span class="c1"># This works because Metadata2dict calls pf.keys() which only returns</span>
+        <span class="c1"># simple name:value pair parameters.  We use branch and tbl calls later</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">todict</span><span class="p">()</span>
+        <span class="c1"># tbl&#39;s next - simpler than a Arr which requires recursion</span>
+        <span class="n">tblkeys</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">tbl_keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tblkeys</span><span class="p">:</span>
+            <span class="n">tvals</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">get_tbl</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># testing suggests tvals is a regular python list so this </span>
+            <span class="c1"># should work cleanly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">tvals</span>
+        <span class="c1">#Arr&#39;s are harder if we want to allow them to be arbitrarily deep.</span>
+        <span class="c1"># Hence we use this recursive function defined above.</span>
+        <span class="n">arrkeys</span><span class="o">=</span><span class="n">pf</span><span class="o">.</span><span class="n">arr_keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">arrkeys</span><span class="p">:</span>
+            <span class="n">branchval</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">branchval</span><span class="o">=</span><span class="n">pfbranch_to_dict</span><span class="p">(</span><span class="n">pf</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">branchval</span></div>
+        
+<div class="viewcode-block" id="HistoryLogger"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger">[docs]</a><span class="k">class</span> <span class="nc">HistoryLogger</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for generic, global history/provenance preservation in MsPASS.</span>
+<span class="sd">    The main concept of this object that a pymongo script to run a processing</span>
+<span class="sd">    job would create this object or one of it&#39;s children to preserve the </span>
+<span class="sd">    global run parameters for the a processing sequence.   We limit that to </span>
+<span class="sd">    mean a sequence of processing algorithms that have a set of predefined</span>
+<span class="sd">    parameters that control their behaviour.  The global parameters are </span>
+<span class="sd">    preserved in a special collection in MongoDB we give the (fixed) name</span>
+<span class="sd">    of &quot;history&quot;.  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">job</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Basic constructor.   </span>
+<span class="sd">        </span>
+<span class="sd">        This is currently the only constructor for this object.  It creates</span>
+<span class="sd">        a handle to MongoDB and sets a unique integer key called jobid.</span>
+<span class="sd">        Calling this constructor will guaranetee the jobid will be unique.</span>
+<span class="sd">        </span>
+<span class="sd">        :param db:   is a top level handle to a MongoDB server created by </span>
+<span class="sd">           calling the database method of a MongoClient instance.  </span>
+<span class="sd">        :param job: job can be used to manually set the jobid.  We use</span>
+<span class="sd">           a simple high water mark comparable to lastid in the</span>
+<span class="sd">           Antelope/Datascope database where the next valid id is lastid+1. </span>
+<span class="sd">           Hence if the input value of job is less than the current high </span>
+<span class="sd">           water mark in the history collection for jobid, the jobid is </span>
+<span class="sd">           silently set to the +1 of the largest jobid found in history. </span>
+<span class="sd">           (default is 0 which automatically uses the high water mark method)</span>
+<span class="sd">           Users can get the actual value set from the jobid variable after </span>
+<span class="sd">           successful creation of this object. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">history</span>
+        <span class="c1"># Check the input job id for validity and use get_jobid if needed</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">job</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="o">=</span><span class="n">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">jobtmp</span><span class="o">=</span><span class="n">get_jobid</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">job</span><span class="o">&gt;</span><span class="n">jobtmp</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="o">=</span><span class="n">job</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="o">=</span><span class="n">jobtmp</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HistoryLogger(Warning):  input jobid=&quot;</span><span class="p">,</span><span class="n">job</span><span class="p">,</span><span class="s2">&quot; was invalid.  Set jobid=&quot;</span><span class="p">,</span><span class="n">jobtmp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span><span class="o">=</span><span class="p">[]</span>  <span class="c1"># create empty container for history record</span>
+<div class="viewcode-block" id="HistoryLogger.register"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">alg</span><span class="p">,</span><span class="n">partype</span><span class="p">,</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register an algorithm&#39;s signature to preserve processing history.</span>
+<span class="sd">        Each algorithm in a processing chains should be registered by this</span>
+<span class="sd">        mechanism before starting a mspass processing chain.  The </span>
+<span class="sd">        register method should be called in the order in which the algorithms are </span>
+<span class="sd">        applied.  </span>
+<span class="sd">        </span>
+<span class="sd">        :param alg: is the name of the algorithm that will be run.  Assumed to be</span>
+<span class="sd">               a string.</span>
+<span class="sd">        :param partype: defines the format of the data defining input parameters</span>
+<span class="sd">               to this algorithm (Must be either &#39;dict&#39; or &#39;AntelopePf&#39;)</span>
+<span class="sd">        :param params: is the actual input data. Actual type of this data </span>
+<span class="sd">               this arg references will depend up partype.  partype defines </span>
+<span class="sd">               the type of the object expect (dict in this case means a python</span>
+<span class="sd">               dict object)</span>
+<span class="sd">        :raise:  Throws a RuntimeError with a message if partype is not on the </span>
+<span class="sd">               list of supported parameter types</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">partype</span><span class="o">==</span><span class="s1">&#39;dict&#39;</span><span class="p">):</span>
+            <span class="n">bhd</span><span class="o">=</span><span class="n">basic_history_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="p">)</span>
+            <span class="n">bhd</span><span class="o">.</span><span class="n">load_algorithm_args</span><span class="p">(</span><span class="n">alg</span><span class="p">,</span><span class="n">params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bhd</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">partype</span><span class="o">==</span><span class="s1">&#39;AntelopePf&#39;</span><span class="p">):</span>
+            <span class="n">pfhis</span><span class="o">=</span><span class="n">pf_history_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">jobid</span><span class="p">,</span><span class="n">alg</span><span class="p">,</span><span class="n">params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pfhis</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;HistoryLogger (Warning):  Unsupported parameter type=&quot;</span><span class="o">+</span><span class="n">partype</span><span class="p">)</span></div>
+<div class="viewcode-block" id="HistoryLogger.save"><a class="viewcode-back" href="../../python_api/mspasspy.history.html#mspasspy.history.HistoryLogger.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the contents to the history collection.</span>
+<span class="sd">        </span>
+<span class="sd">        The doc created in a save is more or less an image of the </span>
+<span class="sd">        structure of this object translated to a python dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">doc</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;jobid&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobid</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_chain</span><span class="p">:</span>
+            <span class="n">subdoc</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">subdoc</span><span class="p">[</span><span class="s1">&#39;algorithm&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">algorithm</span>
+            <span class="n">subdoc</span><span class="p">[</span><span class="s1">&#39;param_type&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">param_type</span>
+            <span class="n">subdoc</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">params</span>
+            <span class="n">doc</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">algorithm</span><span class="p">]</span><span class="o">=</span><span class="n">subdoc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></div></div>
+        
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

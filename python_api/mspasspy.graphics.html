@@ -1,0 +1,589 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspasspy.graphics &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspasspy.history" href="mspasspy.history.html" />
+    <link rel="prev" title="mspasspy.db" href="mspasspy.db.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference_manual.html">Reference Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../reference_manual.html#python-api">Python API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mspasspy.graphics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspasspy.util.html">mspasspy.util</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#c-api">C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#mspass-schema">MsPASS Schema</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../reference_manual.html">Reference Manual</a> &raquo;</li>
+        
+      <li>mspasspy.graphics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/python_api/mspasspy.graphics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-mspasspy.graphics">
+<span id="mspasspy-graphics"></span><h1>mspasspy.graphics<a class="headerlink" href="#module-mspasspy.graphics" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="mspasspy.graphics.SectionPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">SectionPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class was designed to plot data in a seismic reflection style
+display.  That means time is the y axis but runs in a reverse direction
+and traces are equally spaced along the x axis. The data can be plotted
+as simple wiggle traces, wiggle trace variable area, an image format,
+and a wiggletrace variable area plot overlaying an image plot.</p>
+<p>The object itself only defines the style of plot to be produced along
+with other assorted plot parameters.   The plot method can be called on
+any mspass data object to produce a graphic display.   TimeSeries
+data produce a frame with one seismogram plotted.  Seismogram data
+will produce a one frame display with the 3 components arranged in
+component order from left to right.  TimeSeriesEnsembles produce
+conventional reflection style sections with the data displayed from
+left to right in whatever order the ensemble is sorted to.
+SeismogramEnsembles are the only type that create multiple windows.
+That is, each component is displayed in a different window.   The
+display can be understood as a conversion of a SeismogramEnsemble to
+a set of 3 TimeSeriesEnsembles that are displayed in 3 windows.
+The component can be deduced only from the title string with
+has :0, :1, and :2 appended to it to denote components 0, 1, and 2
+respectively.</p>
+<p>The plots produced by this object are simple ones for display only.
+The concept is that fancier tools for gui interaction like a trace
+editor be created as children of this base class.</p>
+<dl class="py method">
+<dt id="mspasspy.graphics.SectionPlotter.change_style">
+<code class="sig-name descname">change_style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newstyle</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">color_map</span><span class="o">=</span><span class="default_value">'seismic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.change_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.change_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this method to change the plot style.   Options are described
+below.   Some parameter combinations are illegal and will result in
+a RuntimeError if used.  The illegal combos are listed below for
+each style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newstyle</strong> – <p>This is the primary switch for this method and
+is used to define the style of plot that will be produced. The
+allowed values for this string are listed below along with
+restrictions (when they exist) on related parameters.</p>
+<dl class="simple">
+<dt>wtva - wiggle trace variable area.  That means a wiggle traced with</dt><dd><p>the positive quadrants colored by the color defined by the fill_color
+parameter.   If fill_color is passed as None a RuntimeError will
+be thrown.</p>
+</dd>
+<dt>img - data are displayed as an image with the color_map parameter</dt><dd><p>defining the matplotlib color map used to map amplitudes into
+a given color.   Note as with wtva the data are presumed to be
+scaled to be of order 1.  color_map must not be None, which it
+can be if the plot was changed from a previous style like wtva,
+or a RuntimeError exception will be thrown.</p>
+</dd>
+<dt>wtvaimg is like wtva but the wtva plot is drawn on top of an</dt><dd><p>image plot.  Since this is the union of wtva and img a RuntimeError
+exception will be throw if either color_map or fill_color are null.</p>
+</dd>
+<dt>wt will produce a standard line graph of each input as a</dt><dd><p>black line (that feature is currently frozen).   color_map and
+fill_color are ignored for this style so no exceptions should
+occur when the method is called with this value of newstyle.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.graphics.SectionPlotter.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SectionPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SectionPlotter.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this method to plot any data using the current style setup and any
+details defined by public attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – is the data to be plotted.   It can be any of the following:
+TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
+If d is any other type the method will throw a RuntimeError exception.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of one or 3 (only for SeismogramEnsemble dat)
+matplotlib.pylot.gcf() plot handle(s).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The plot handle is what matplotlib.pyplot calls a gcf.  It
+is the return of pyplot.gcf() and can be used to alter some properties
+of the figure.  See matplotlib documentation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.graphics.SeismicPlotter">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">SeismicPlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>SeismicPlotter is used to plot mspass data objects in the 
+seismology convention with time as the x axis.  Use SectionPlotter 
+to plot data in the seismic reflection convention with time on the 
+y axis and oriented backward (increasing downward).</p>
+<p>Four times of plots are supported:  wiggle trace, wiggle trace variable 
+area (i.e. filled on positive peaks), image plots, and colored wiggle 
+trace variable area (wtva overlays an image display).  
+Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in 
+three windows that will appear as Figure 0, Figure 1, and Figure 2.  
+All other object are displayed in a single window.   Default display 
+order for ensembles is fill in ensemble order from the bottom up.
+Use the topdown() method to switch to reverse order.</p>
+<p>This is a simple plotter that just generates a basic graphic.   
+The design idea is to use this as a base class for more advanced 
+graphics uses like a trace editor or generic picker.  The 
+plot object must be created before any plots can be generated.  
+Any optional changes to the plot behavior, most commonly calls 
+to the change_style method, should be done before calling plot.</p>
+<dl class="py method">
+<dt id="mspasspy.graphics.SeismicPlotter.bottomup">
+<code class="sig-name descname">bottomup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.bottomup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.bottomup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore (or force) default ensemble plot order of bottup upward.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.graphics.SeismicPlotter.change_style">
+<code class="sig-name descname">change_style</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newstyle</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">color_map</span><span class="o">=</span><span class="default_value">'seismic'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.change_style"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.change_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this method to change the plot style.   Options are described
+below.   Some parameter combinations are illegal and will result in
+a RuntimeError if used.  The illegal combos are listed below for
+each style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newstyle</strong> – <p>This is the primary switch for this method and
+is used to define the style of plot that will be produced. The
+allowed values for this string are listed below along with
+restrictions (when they exist) on related parameters.</p>
+<dl class="simple">
+<dt>wtva - wiggle trace variable area.  That means a wiggle traced with</dt><dd><p>the positive quadrants colored by the color defined by the fill_color
+parameter.   If fill_color is passed as None a RuntimeError will
+be thrown.</p>
+</dd>
+<dt>img - data are displayed as an image with the color_map parameter</dt><dd><p>defining the matplotlib color map used to map amplitudes into
+a given color.   Note as with wtva the data are presumed to be
+scaled to be of order 1.  color_map must not be None, which it
+can be if the plot was changed from a previous style like wtva,
+or a RuntimeError exception will be thrown.</p>
+</dd>
+<dt>wtvaimg is like wtva but the wtva plot is drawn on top of an</dt><dd><p>image plot.  Since this is the union of wtva and img a RuntimeError
+exception will be throw if either color_map or fill_color are null.</p>
+</dd>
+<dt>wt will produce a standard line graph of each input as a</dt><dd><p>black line (that feature is currently frozen).   color_map and
+fill_color are ignored for this style so no exceptions should
+occur when the method is called with this value of newstyle.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.graphics.SeismicPlotter.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.graphics.SeismicPlotter.set_topdown">
+<code class="sig-name descname">set_topdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.set_topdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.set_topdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this method to have datat plotted from top down.  Default plots
+ensemble member 0 at the bottom of the plot with successive members
+plotted in units of 1.0 above the last.  When this is called the
+order is reversed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.graphics.SeismicPlotter.topdown">
+<code class="sig-name descname">topdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#SeismicPlotter.topdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.SeismicPlotter.topdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to mode of plotting ensembles from the top downward
+from default of bottum upward.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.image_raw">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">image_raw</code><span class="sig-paren">(</span><em class="sig-param">section</em>, <em class="sig-param">t0</em>, <em class="sig-param">dt</em>, <em class="sig-param">ranges=None</em>, <em class="sig-param">cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em>, <em class="sig-param">aspect=None</em>, <em class="sig-param">vmin=None</em>, <em class="sig-param">vmax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#image_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.image_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a numpy 2D array (matrix) in an image format.  This type of
+plot has two uses: (1) large numbers of spatially coherent signals
+(as in a conventional seismic reflection) are more clearly displayed
+this way than as wiggles, and (2) this function can be called
+immediately following a call to wtva_raw to produce an section
+with variable area wiggle trace data shown on top of the an image
+representation of the data data (note for dense data it is usually
+necessary to decimate the data on the column axis to make a
+clean plot - functions to make such plots need a decimate parameter).
+This is the low level function to make such plots.  It is
+directly comparable to wtva_raw.</p>
+<p>This function was taken directly from the fatiando a terra
+0.5 package.   The current web site is <a class="reference external" href="https://www.fatiando.org/">https://www.fatiando.org/</a>
+and apparently the code we use here has been depricated by that
+group.   This function is unaltered from the original found on
+github for the 0.5 version.  Only the documentation was changed
+to clarify this ancestory.  We also changed the name from
+seismic_image to image_raw to mesh more cleanly with mspass as
+the name better reflects the functions use.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>section<span class="classifier">2D array</span></dt><dd><p>matrix of traces (first dimension time, second dimension traces)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>t0<span class="classifier">float</span></dt><dd><p>time of first sample (added for mspass - needed for passive data)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dt<span class="classifier">float</span></dt><dd><p>sample rate in seconds</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ranges<span class="classifier">(x1, x2)</span></dt><dd><p>min and max horizontal coordinate values (default trace number)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cmap<span class="classifier">colormap</span></dt><dd><p>color map to be used. (see pyplot.cm module)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>aspect<span class="classifier">float</span></dt><dd><p>matplotlib imshow aspect parameter, ratio between axes</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>vmin, vmax<span class="classifier">float</span></dt><dd><p>min and max values for imshow</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.imageplot">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">imageplot</code><span class="sig-paren">(</span><em class="sig-param">d</em>, <em class="sig-param">ranges=None</em>, <em class="sig-param">cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em>, <em class="sig-param">aspect=None</em>, <em class="sig-param">vmin=None</em>, <em class="sig-param">vmax=None</em>, <em class="sig-param">title=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#imageplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.imageplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Image plotter for mspass ensemble objects.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.seis2nparray">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">seis2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#seis2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.seis2nparray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.ts2nparray">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">ts2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#ts2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.ts2nparray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.tse2nparray">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">tse2nparray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ens</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#tse2nparray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.tse2nparray" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.wtva_raw">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">wtva_raw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">section</span></em>, <em class="sig-param"><span class="n">t0</span></em>, <em class="sig-param"><span class="n">dt</span></em>, <em class="sig-param"><span class="n">ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtva_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.wtva_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a numpy 2D array (matrix) in a wiggle trace, variable area
+format as used in paper seismic section displays.   This is the low
+level function that displays a ensemble of scalar data cast into
+a matrix with the rows as time and the columns as just trace number.
+This function is called by the ensemble plotters.  For scalar data
+it is called one but for 3C data 3 windows are created with this
+function called 3 times.</p>
+<p>This function was taken directly from the fatiando a terra
+0.5 package.   The current web site is <a class="reference external" href="https://www.fatiando.org/">https://www.fatiando.org/</a>
+and apparently the code we use here has been depricated by that
+group.   This function is unaltered from the original found on
+github for the 0.5 version.  Only the documentation was changed
+to clarify this ancestory.  We also changed the name from
+seismic_wiggle to wtva_raw to mesh more cleanly with mspass as
+the name better reflects the functions use.</p>
+<dl class="simple">
+<dt>Additional changes:</dt><dd><p>Pavlis Aug 27, 2020</p>
+</dd>
+</dl>
+<p>Added a test that if color was a None only the wiggles will be drawn
+(i.e. no shading)</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>section<span class="classifier">2D array</span></dt><dd><p>matrix of traces (first dimension time, second dimension traces)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>t0<span class="classifier">float</span></dt><dd><p>time of first sample (added for mspass - needed for passive data)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dt<span class="classifier">float</span></dt><dd><p>sample rate in seconds</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ranges<span class="classifier">(x1, x2)</span></dt><dd><p>min and max horizontal values (default trace number)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>scale<span class="classifier">float</span></dt><dd><p>scale factor multiplied by the section values before plotting</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>color<span class="classifier">tuple of strings</span></dt><dd><p>Color for filling the wiggle, positive  and negative lobes.  If None
+draw only wiggle traces</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>normalize :</dt><dd><p>True to normalizes all trace in the section using global max/min
+data will be in the range (-0.5, 0.5) zero centered</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Slow for more than 200 traces, in this case decimate your
+data or use <code class="docutils literal notranslate"><span class="pre">image_raw</span></code>.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.graphics.wtvaplot">
+<code class="sig-prename descclassname">mspasspy.graphics.</code><code class="sig-name descname">wtvaplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">ranges</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">fill_color</span><span class="o">=</span><span class="default_value">'k'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/graphics.html#wtvaplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.graphics.wtvaplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wiggle trace variable area plotter for mspass ensemble objects.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="mspasspy.history.html" class="btn btn-neutral float-right" title="mspasspy.history" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mspasspy.db.html" class="btn btn-neutral float-left" title="mspasspy.db" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

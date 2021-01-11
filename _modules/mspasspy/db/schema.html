@@ -1,0 +1,690 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspasspy.db.schema &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mspasspy.db.schema</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mspasspy.db.schema</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tools to define the schema of Metadata.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">schema</span>
+<span class="kn">import</span> <span class="nn">bson.objectid</span>
+
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+
+<div class="viewcode-block" id="SchemaBase"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaBase">[docs]</a><span class="k">class</span> <span class="nc">SchemaBase</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">schema_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;MSPASS_HOME&#39;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+            <span class="n">schema_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;MSPASS_HOME&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39;/data/yaml/mspass.yaml&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">schema_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/../data/yaml/mspass.yaml&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">schema_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+                    <span class="n">schema_dic</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;Cannot parse schema definition file: &#39;</span> <span class="o">+</span> <span class="n">schema_file</span><span class="p">,</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">except</span> <span class="ne">EnvironmentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;Cannot open schema definition file: &#39;</span> <span class="o">+</span> <span class="n">schema_file</span><span class="p">,</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_check_format</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">schema</span><span class="o">.</span><span class="n">SchemaError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;The schema definition is not valid&#39;</span><span class="p">,</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span> <span class="o">=</span> <span class="n">schema_dic</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ae</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;The schema of &#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ae</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ae</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;The schema of &#39;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ae</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase">[docs]</a><span class="k">class</span> <span class="nc">SchemaDefinitionBase</span><span class="p">:</span>
+    <span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
+<div class="viewcode-block" id="SchemaDefinitionBase.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
+<span class="sd">        container is `dict` if attribute for name is already present it</span>
+<span class="sd">        will be silently replaced.</span>
+
+<span class="sd">        :param name: The name of the attribute to be added</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param attr: A dictionary that defines the property of the added attribute.</span>
+<span class="sd">            Note that the type must be defined.</span>
+<span class="sd">        :type attr: dict</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;type is not defined for the new attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
+        <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">als</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;aliases&#39;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">als</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.add_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">aliasname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an alias for key</span>
+
+<span class="sd">        :param key: key to be added</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :param aliasname: aliasname to be added</span>
+<span class="sd">        :type aliasname: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;aliases&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">aliasname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">aliasname</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.aliases"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.aliases">[docs]</a>    <span class="k">def</span> <span class="nf">aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of aliases for a given key.</span>
+
+<span class="sd">        :param key: The unique key that has aliases defined.</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: A list of aliases associated to the key.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;aliases&#39;</span><span class="p">]</span></div>
+
+    <span class="c1"># TODO def apply_aliases</span>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.clear_aliases"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.clear_aliases">[docs]</a>    <span class="k">def</span> <span class="nf">clear_aliases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restore any aliases to unique names.</span>
+
+<span class="sd">        Aliases are needed to support legacy packages, but can cause downstream problem</span>
+<span class="sd">        if left intact. This method clears any aliases and sets them to the unique_name</span>
+<span class="sd">        defined by this object. Note that if the unique_name is already defined, it will</span>
+<span class="sd">        silently remove the alias only.</span>
+
+<span class="sd">        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.</span>
+<span class="sd">        :type md: class:`mspasspy.ccore.utility.Metadata`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_alias</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span><span class="p">:</span>
+                    <span class="n">md</span><span class="o">.</span><span class="n">change_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unique_name</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">md</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>  </div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.concept"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.concept">[docs]</a>    <span class="k">def</span> <span class="nf">concept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a description of the concept this attribute defines.</span>
+
+<span class="sd">        :param key: The name that defines the attribute of interest</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: A string with a terse description of the concept this attribute defines</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if concept is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;concept&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;concept is not defined for &#39;</span> <span class="o">+</span> <span class="n">key</span><span class="p">,</span> <span class="s1">&#39;Complaint&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;concept&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.has_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.has_alias">[docs]</a>    <span class="k">def</span> <span class="nf">has_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if a key has registered aliases</span>
+
+<span class="sd">        Sometimes it is helpful to have alias keys to define a common concept.</span>
+<span class="sd">        For instance, if an attribute is loaded from a relational db one might</span>
+<span class="sd">        want to use alias names of the form table.attribute as an alias to</span>
+<span class="sd">        attribute. has_alias should be called first to establish if a name has</span>
+<span class="sd">        an alias. To get a list of aliases call the aliases method.</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key has aliases, else or if key is not defined return `False`</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="ow">and</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_alias">[docs]</a>    <span class="k">def</span> <span class="nf">is_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if a key is a registered alias</span>
+
+<span class="sd">        This asks the inverse question to has_alias. That is, it yields true of the key is</span>
+<span class="sd">        registered as a valid alias. It returns false if the key is not defined at all. Note</span>
+<span class="sd">        it will yield false if the key is a registered unique name and not an alias.</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key is a alias, else return `False`</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_defined"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_defined">[docs]</a>    <span class="k">def</span> <span class="nf">is_defined</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if a key is defined either as a unique key or an alias</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key is defined</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_optional"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_optional">[docs]</a>    <span class="k">def</span> <span class="nf">is_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if a key is optional to the schema</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key is optional</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="s1">&#39;optional&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;optional&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of all the unique keys defined.</span>
+
+<span class="sd">        :return: list of all the unique keys defined</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.type"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.type">[docs]</a>    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the type of an attribute. If not recognized, it returns None.</span>
+
+<span class="sd">        :param key: The name that defines the attribute of interest</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: type of the attribute associated with ``key``</span>
+<span class="sd">        :rtype: class:`type`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">int</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;double&#39;</span><span class="p">,</span> <span class="s1">&#39;float&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">float</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">str</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bool&#39;</span><span class="p">,</span> <span class="s1">&#39;boolean&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">bool</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dict&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">dict</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;list&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">list</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;objectid&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">bson</span><span class="o">.</span><span class="n">objectid</span><span class="o">.</span><span class="n">ObjectId</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;bytes&#39;</span><span class="p">,</span> <span class="s1">&#39;byte&#39;</span><span class="p">,</span> <span class="s1">&#39;object&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">bytes</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.unique_name"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.unique_name">[docs]</a>    <span class="k">def</span> <span class="nf">unique_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aliasname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get definitive name for an alias.</span>
+
+<span class="sd">        This method is used to ask the opposite question as aliases. The aliases method</span>
+<span class="sd">        returns all acceptable alternatives to a definitive name defined as the key to</span>
+<span class="sd">        get said list. This method asks what definitive key should be used to fetch an</span>
+<span class="sd">        attribute. Note that if the input is already the unique name, it will return itself.</span>
+
+<span class="sd">        :param aliasname: the name of the alias for which we want the definitive key</span>
+<span class="sd">        :type aliasname: str</span>
+<span class="sd">        :return: the name of the definitive key</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if aliasname is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">aliasname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">aliasname</span>
+        <span class="k">if</span> <span class="n">aliasname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">aliasname</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">aliasname</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="DatabaseSchema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema">[docs]</a><span class="k">class</span> <span class="nc">DatabaseSchema</span><span class="p">(</span><span class="n">SchemaBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">DBSchemaDefinition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">],</span> <span class="n">collection</span><span class="p">))</span>
+            <span class="k">if</span> <span class="s1">&#39;default&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">][</span><span class="n">collection</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">]</span>
+                <span class="p">[</span><span class="n">collection</span><span class="p">][</span><span class="s1">&#39;default&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collection</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">DBSchemaDefinition</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;value is not a DBSchemaDefinition&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DatabaseSchema.default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the schema definition of a default collection.</span>
+
+<span class="sd">        This method is used when multiple collections of the same concept is defined.</span>
+<span class="sd">        For example, the wf_TimeSeries and wf_Seismogram are both collections that</span>
+<span class="sd">        are used for data objects (characterized by their common wf prefix). The</span>
+<span class="sd">        Database API needs a default wf collection to operate on when no collection</span>
+<span class="sd">        name is explicitly given. In this case, this default_name method can be used.</span>
+<span class="sd">        Note that if requested name has no default collection defined and it is a</span>
+<span class="sd">        defined collection, it will treat that collection itself as the default.</span>
+
+<span class="sd">        :param name: The requested default collection</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: the schema definition of the default collection</span>
+<span class="sd">        :rtype: class:`mspasspy.db.schema.DBSchemaDefinition`</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; has no default defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DatabaseSchema.default_name"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.default_name">[docs]</a>    <span class="k">def</span> <span class="nf">default_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the name of a default collection.</span>
+
+<span class="sd">        This method is behaves similar to the default method, but it only returns the</span>
+<span class="sd">        name as a string instead.</span>
+
+<span class="sd">        :param name: The requested default collection</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: the name of the default collection</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">name</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; has no default defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DatabaseSchema.set_default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.set_default">[docs]</a>    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a collection as the default.</span>
+
+<span class="sd">        This method is used to change the default collections (e.g., switching between</span>
+<span class="sd">        wf_TimeSeries and wf_Seismogram). If ``default`` is not given, it will try to</span>
+<span class="sd">        infer one from ``collection`` at the first occurrence of &quot;_&quot;</span>
+<span class="sd">        (e.g., wf_TimeSeries will become wf).</span>
+
+<span class="sd">        :param collection: The name of the targetting collection</span>
+<span class="sd">        :type collection: str</span>
+<span class="sd">        :param default: the default name to be set to</span>
+<span class="sd">        :type default: str, optional</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">collection</span> <span class="o">+</span> <span class="s1">&#39; is not a defined collection&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">collection</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">[</span><span class="n">default</span><span class="p">]</span> <span class="o">=</span> <span class="n">collection</span></div>
+
+<div class="viewcode-block" id="DatabaseSchema.unset_default"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema.unset_default">[docs]</a>    <span class="k">def</span> <span class="nf">unset_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unset a default.</span>
+
+<span class="sd">        This method does nothing if ``default`` is not defined.</span>
+
+<span class="sd">        :param default: the default name to be unset</span>
+<span class="sd">        :type default: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">default</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="DBSchemaDefinition"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition">[docs]</a><span class="k">class</span> <span class="nc">DBSchemaDefinition</span><span class="p">(</span><span class="n">SchemaDefinitionBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_dic</span><span class="p">,</span> <span class="n">collection_str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_collection_str</span> <span class="o">=</span> <span class="n">collection_str</span>
+        <span class="k">if</span> <span class="s1">&#39;base&#39;</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">]:</span>
+            <span class="n">base_def</span> <span class="o">=</span> <span class="n">DBSchemaDefinition</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">,</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;base&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="n">base_def</span><span class="o">.</span><span class="n">_main_dic</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="n">base_def</span><span class="o">.</span><span class="n">_alias_dic</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;schema&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="n">refer_dic</span> <span class="o">=</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">attr</span><span class="p">[</span><span class="s1">&#39;reference&#39;</span><span class="p">]]</span>
+                <span class="k">while</span> <span class="s1">&#39;base&#39;</span> <span class="ow">in</span> <span class="n">refer_dic</span><span class="p">:</span>
+                    <span class="n">refer_dic</span> <span class="o">=</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">refer_dic</span><span class="p">[</span><span class="s1">&#39;base&#39;</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">refer_dic</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">]:</span>
+                        <span class="k">break</span>
+                <span class="n">foreign_attr</span> <span class="o">=</span> <span class="n">refer_dic</span><span class="p">[</span><span class="s1">&#39;schema&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+                <span class="c1"># The order of below operation matters. The behavior is that we only</span>
+                <span class="c1"># extend attr with items from foreign_attr that are not defined in attr.</span>
+                <span class="c1"># This garantees that the foreign_attr won&#39;t overwrite attr&#39;s exisiting keys.</span>
+                <span class="n">compiled_attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">foreign_attr</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiled_attr</span>
+
+            <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="p">:</span><span class="n">key</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;aliases&#39;</span><span class="p">]})</span>
+
+<div class="viewcode-block" id="DBSchemaDefinition.reference"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.reference">[docs]</a>    <span class="k">def</span> <span class="nf">reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the collection name that a key is referenced from</span>
+
+<span class="sd">        :param key: the name of the key</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: the name of the collection</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collection_str</span> <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;reference&#39;</span><span class="p">]</span></div></div>
+
+<div class="viewcode-block" id="MetadataSchema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MetadataSchema">[docs]</a><span class="k">class</span> <span class="nc">MetadataSchema</span><span class="p">(</span><span class="n">SchemaBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">schema_file</span><span class="p">)</span>
+        <span class="n">dbschema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">schema_file</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Metadata&#39;</span><span class="p">]:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">MDSchemaDefinition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[</span><span class="s1">&#39;Metadata&#39;</span><span class="p">],</span> <span class="n">collection</span><span class="p">,</span> <span class="n">dbschema</span><span class="p">))</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MDSchemaDefinition</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;value is not a MDSchemaDefinition&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MDSchemaDefinition"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition">[docs]</a><span class="k">class</span> <span class="nc">MDSchemaDefinition</span><span class="p">(</span><span class="n">SchemaDefinitionBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_dic</span><span class="p">,</span> <span class="n">collection_str</span><span class="p">,</span> <span class="n">dbschema</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;base&#39;</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">]:</span>
+            <span class="n">base_def</span> <span class="o">=</span> <span class="n">MDSchemaDefinition</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">,</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;base&#39;</span><span class="p">],</span> <span class="n">dbschema</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="n">base_def</span><span class="o">.</span><span class="n">_main_dic</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="n">base_def</span><span class="o">.</span><span class="n">_alias_dic</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;schema&#39;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;collection&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="n">s_key</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">col_name</span> <span class="o">=</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;collection&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">col_name</span><span class="p">):</span>
+                    <span class="n">s_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">col_name</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">foreign_attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dbschema</span><span class="p">,</span><span class="n">col_name</span><span class="p">)</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">s_key</span><span class="p">]</span>
+                <span class="c1"># The order of below operation matters. The behavior is that we only</span>
+                <span class="c1"># extend attr with items from foreign_attr that are not defined in attr.</span>
+                <span class="c1"># This garantees that the foreign_attr won&#39;t overwrite attr&#39;s exisiting keys.</span>
+                <span class="n">compiled_attr</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">foreign_attr</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiled_attr</span>
+
+            <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="p">:</span><span class="n">key</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;aliases&#39;</span><span class="p">]})</span>
+
+<div class="viewcode-block" id="MDSchemaDefinition.collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.collection">[docs]</a>    <span class="k">def</span> <span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the collection name that a key belongs to</span>
+
+<span class="sd">        :param key: the name of the key</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: the name of the collection</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;collection&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;collection&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MDSchemaDefinition.readonly"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.readonly">[docs]</a>    <span class="k">def</span> <span class="nf">readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an attribute is marked readonly.</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key is readonly or its readonly attribute is not defined, else return `False`</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="s1">&#39;readonly&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;readonly&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MDSchemaDefinition.writeable"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.writeable">[docs]</a>    <span class="k">def</span> <span class="nf">writeable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an attribute is writeable. Inverted logic from the readonly method.</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the key is not readonly, else or its readonly attribute is not defined return `False`</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MDSchemaDefinition.set_readonly"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_readonly">[docs]</a>    <span class="k">def</span> <span class="nf">set_readonly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lock an attribute to assure it will not be saved.</span>
+
+<span class="sd">        Parameters can be defined readonly. That is a standard feature of this class,</span>
+<span class="sd">        but is normally expected to be set on construction of the object.</span>
+<span class="sd">        There are sometimes reason to lock out a parameter to keep it from being</span>
+<span class="sd">        saved in output. This method allows this. On the other hand, use this feature</span>
+<span class="sd">        only if you fully understand the downstream implications or you may experience</span>
+<span class="sd">        unintended consequences.</span>
+
+<span class="sd">        :param key: the key for the attribute with properties to be redefined</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;readonly&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MDSchemaDefinition.set_writeable"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.set_writeable">[docs]</a>    <span class="k">def</span> <span class="nf">set_writeable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Force an attribute to be writeable.</span>
+
+<span class="sd">        Normally some parameters are marked readonly on construction to avoid</span>
+<span class="sd">        corrupting the database with inconsistent data defined with a common</span>
+<span class="sd">        key. (e.g. sta) This method overrides such definitions for any key so</span>
+<span class="sd">        marked. This method should be used with caution as it could have</span>
+<span class="sd">        unintended side effects.</span>
+
+<span class="sd">        :param key: the key for the attribute with properties to be redefined</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;readonly&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span></div></div>
+
+<span class="k">def</span> <span class="nf">_check_format</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

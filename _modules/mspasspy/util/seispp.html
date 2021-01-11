@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspasspy.util.seispp &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../../../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>mspasspy.util.seispp</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mspasspy.util.seispp</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MetadataDefinitions</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MDtype</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span>
+
+<div class="viewcode-block" id="index_data"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.seispp.index_data">[docs]</a><span class="k">def</span> <span class="nf">index_data</span><span class="p">(</span><span class="n">filebase</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;d3C&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Import function for data from antelope export_to_mspass.</span>
+
+<span class="sd">    This function is an import function for Seismogram objects created </span>
+<span class="sd">    by the antelope program export_to_mspass.  That program writes </span>
+<span class="sd">    header data as a yaml file and the sample data as a raw binary </span>
+<span class="sd">    fwrite of the data matrix (stored in fortran order but written </span>
+<span class="sd">    as a contiguous block of 3*npts (number of samples) double values. </span>
+<span class="sd">    This function parses the yaml file and adds three critical metadata</span>
+<span class="sd">    entries:  dfile, dir, and foff. To get foff values the function </span>
+<span class="sd">    reads the binary data file and gets foff values by calls to tell.  </span>
+<span class="sd">    It then writes these entries into MongoDB in the wf collection</span>
+<span class="sd">    of a database.   Readers that want to read this raw data will </span>
+<span class="sd">    need to use dir, dfile, and foff to find the right file and read point.</span>
+
+<span class="sd">    :param filebase: is the base name of the dataset to be read and indexed.</span>
+<span class="sd">        The function will look for filebase.yaml for the header data and</span>
+<span class="sd">        filebase.ext (Arg 3 defaulting to d3C).  </span>
+<span class="sd">    :param db: is the MongoDB database handler</span>
+<span class="sd">    :param ext: is the file extension for the sample data (default is &#39;d3C&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This loads default mspass schema </span>
+    <span class="n">mdef</span><span class="o">=</span><span class="n">MetadataDefinitions</span><span class="p">()</span>
+    <span class="n">yamlfile</span><span class="o">=</span><span class="n">filebase</span><span class="o">+</span><span class="s1">&#39;.yaml&#39;</span>
+    <span class="n">fh</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">)</span>
+    <span class="n">d</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span><span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">FullLoader</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Read data for &#39;</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">),</span><span class="s1">&#39; objects&#39;</span><span class="p">)</span>
+    <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c1"># Set up to add to wf collection</span>
+    <span class="c1"># This is not general, but works of this test with mongo running under docker</span>
+    <span class="n">collection</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">wf</span>
+    <span class="n">dfile</span><span class="o">=</span><span class="n">filebase</span><span class="o">+</span><span class="s1">&#39;.&#39;</span><span class="o">+</span><span class="n">ext</span>
+    <span class="n">fh</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">dfile</span><span class="p">)</span>
+    <span class="c1"># This is needed by the numpy reader </span>
+    <span class="n">dtyp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">)</span>
+    <span class="nb">dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dfile</span><span class="p">))</span>
+    <span class="n">dfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">dfile</span><span class="p">))</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Setting dir =&#39;</span><span class="p">,</span><span class="nb">dir</span><span class="p">,</span><span class="s1">&#39; and dfile=&#39;</span><span class="p">,</span><span class="n">dfile</span><span class="p">,</span><span class="s1">&#39; for all input&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Make sure this file exists before trying to read these data&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This program only builds the wf collection in the database&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Readers of the raw data will access the sample data from the dir+dfile path&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)):</span>
+        <span class="n">pyd</span><span class="o">=</span><span class="p">{}</span>   <span class="c1"># this is essentially a required python declaration </span>
+        <span class="c1"># Since the source is assumed an antelope css3.0 database we</span>
+        <span class="c1"># assume these will be defined.   Relating them back to the original</span>
+        <span class="c1"># source would be impossible without these in css3.0 so shouldn&#39;t be </span>
+        <span class="c1"># an issue</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Working on sta=&#39;</span><span class="p">,</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="s1">&#39; and evid=&#39;</span><span class="p">,</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;evid&#39;</span><span class="p">])</span>
+        <span class="n">keys</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+          <span class="k">try</span><span class="p">:</span>
+            <span class="n">typ</span><span class="o">=</span><span class="n">mdef</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Double</span> <span class="ow">or</span> <span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Real64</span> <span class="ow">or</span> <span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Real32</span><span class="p">):</span>
+              <span class="n">pyd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Int64</span> <span class="ow">or</span> <span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Int32</span><span class="p">):</span>
+              <span class="n">pyd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">typ</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">String</span><span class="p">):</span>
+              <span class="n">pyd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">elif</span><span class="p">(</span><span class="nb">type</span><span class="o">==</span><span class="n">MDtype</span><span class="o">.</span><span class="n">Boolean</span><span class="p">):</span>
+              <span class="n">pyd</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+              <span class="c1"># These are not optional - always print these if </span>
+              <span class="c1"># this happens to warn user</span>
+              <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning(index_data):  undefined type for key=&quot;</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+              <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;attribute will not be copied to database&quot;</span><span class="p">)</span>
+          <span class="k">except</span> <span class="n">MsPASSError</span><span class="p">:</span> 
+              <span class="c1"># as above always print this as a warning</span>
+              <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning(index_data): key =&quot;</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="s2">&quot; is undefined - skipped&quot;</span><span class="p">)</span>
+
+        <span class="n">pyd</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span><span class="o">=</span><span class="nb">dir</span>
+        <span class="n">pyd</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">dfile</span>
+        <span class="n">ns</span><span class="o">=</span><span class="n">pyd</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span>
+        <span class="n">ns3c</span><span class="o">=</span><span class="mi">3</span><span class="o">*</span><span class="n">ns</span>
+        <span class="n">foff</span><span class="o">=</span><span class="n">fh</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">pyd</span><span class="p">[</span><span class="s1">&#39;foff&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">foff</span>
+        <span class="n">wfid</span><span class="o">=</span><span class="n">collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">pyd</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+        <span class="n">junk</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">fromfile</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtyp</span><span class="p">,</span><span class="n">count</span><span class="o">=</span><span class="n">ns3c</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">verbose</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished with file=&quot;</span><span class="p">,</span><span class="n">dfile</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of wf collection is now &quot;</span><span class="p">,</span><span class="n">collection</span><span class="o">.</span><span class="n">count_documents</span><span class="p">({}),</span><span class="s2">&quot; documents&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

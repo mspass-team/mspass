@@ -1,0 +1,1175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspasspy.graphics &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mspasspy.graphics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mspasspy.graphics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span><span class="p">,</span><span class="n">EnsembleComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">scale</span> <span class="k">as</span> <span class="n">alg_scale</span>
+
+<div class="viewcode-block" id="wtva_raw"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.wtva_raw">[docs]</a><span class="k">def</span> <span class="nf">wtva_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+                   <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a numpy 2D array (matrix) in a wiggle trace, variable area</span>
+<span class="sd">    format as used in paper seismic section displays.   This is the low</span>
+<span class="sd">    level function that displays a ensemble of scalar data cast into</span>
+<span class="sd">    a matrix with the rows as time and the columns as just trace number.</span>
+<span class="sd">    This function is called by the ensemble plotters.  For scalar data</span>
+<span class="sd">    it is called one but for 3C data 3 windows are created with this</span>
+<span class="sd">    function called 3 times.</span>
+
+<span class="sd">    This function was taken directly from the fatiando a terra</span>
+<span class="sd">    0.5 package.   The current web site is https://www.fatiando.org/</span>
+<span class="sd">    and apparently the code we use here has been depricated by that</span>
+<span class="sd">    group.   This function is unaltered from the original found on</span>
+<span class="sd">    github for the 0.5 version.  Only the documentation was changed</span>
+<span class="sd">    to clarify this ancestory.  We also changed the name from</span>
+<span class="sd">    seismic_wiggle to wtva_raw to mesh more cleanly with mspass as</span>
+<span class="sd">    the name better reflects the functions use.</span>
+
+<span class="sd">    Additional changes:</span>
+<span class="sd">        Pavlis Aug 27, 2020</span>
+<span class="sd">    Added a test that if color was a None only the wiggles will be drawn</span>
+<span class="sd">    (i.e. no shading)</span>
+
+<span class="sd">    Parameters:</span>
+
+<span class="sd">    * section :  2D array</span>
+<span class="sd">        matrix of traces (first dimension time, second dimension traces)</span>
+<span class="sd">    * t0 : float</span>
+<span class="sd">        time of first sample (added for mspass - needed for passive data)</span>
+<span class="sd">    * dt : float</span>
+<span class="sd">        sample rate in seconds</span>
+<span class="sd">    * ranges : (x1, x2)</span>
+<span class="sd">        min and max horizontal values (default trace number)</span>
+<span class="sd">    * scale : float</span>
+<span class="sd">        scale factor multiplied by the section values before plotting</span>
+<span class="sd">    * color : tuple of strings</span>
+<span class="sd">        Color for filling the wiggle, positive  and negative lobes.  If None</span>
+<span class="sd">        draw only wiggle traces</span>
+<span class="sd">    * normalize :</span>
+<span class="sd">        True to normalizes all trace in the section using global max/min</span>
+<span class="sd">        data will be in the range (-0.5, 0.5) zero centered</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        Slow for more than 200 traces, in this case decimate your</span>
+<span class="sd">        data or use ``image_raw``.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">npts</span><span class="p">,</span> <span class="n">ntraces</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># time/traces</span>
+    <span class="k">if</span> <span class="n">ntraces</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Nothing to plot&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">npts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Nothing to plot&quot;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t0</span><span class="o">+</span><span class="n">dt</span><span class="o">*</span><span class="n">npts</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
+    <span class="n">amp</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># normalization factor</span>
+    <span class="n">gmin</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># global minimum</span>
+    <span class="n">toffset</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># offset in time to make 0 centered</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">gmax</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">gmin</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">amp</span> <span class="o">=</span> <span class="p">(</span><span class="n">gmax</span> <span class="o">-</span> <span class="n">gmin</span><span class="p">)</span>
+        <span class="n">toffset</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntraces</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">ranges</span>
+    <span class="c1"># horizontal increment</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="n">ntraces</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">x0</span><span class="o">-</span><span class="n">dx</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">x1</span><span class="o">+</span><span class="n">dx</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">trace</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">transpose</span><span class="p">()):</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="p">(((</span><span class="n">trace</span> <span class="o">-</span> <span class="n">gmin</span><span class="p">)</span><span class="o">/</span><span class="n">amp</span><span class="p">)</span> <span class="o">-</span> <span class="n">toffset</span><span class="p">)</span><span class="o">*</span><span class="n">scale</span><span class="o">*</span><span class="n">dx</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">dx</span>  <span class="c1"># x position for this trace</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">tr</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">color</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">fill_betweenx</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">tr</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">tr</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="image_raw"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.image_raw">[docs]</a><span class="k">def</span> <span class="nf">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span>
+                  <span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a numpy 2D array (matrix) in an image format.  This type of</span>
+<span class="sd">    plot has two uses: (1) large numbers of spatially coherent signals</span>
+<span class="sd">    (as in a conventional seismic reflection) are more clearly displayed</span>
+<span class="sd">    this way than as wiggles, and (2) this function can be called</span>
+<span class="sd">    immediately following a call to wtva_raw to produce an section</span>
+<span class="sd">    with variable area wiggle trace data shown on top of the an image</span>
+<span class="sd">    representation of the data data (note for dense data it is usually</span>
+<span class="sd">    necessary to decimate the data on the column axis to make a</span>
+<span class="sd">    clean plot - functions to make such plots need a decimate parameter).</span>
+<span class="sd">    This is the low level function to make such plots.  It is</span>
+<span class="sd">    directly comparable to wtva_raw.</span>
+
+<span class="sd">    This function was taken directly from the fatiando a terra</span>
+<span class="sd">    0.5 package.   The current web site is https://www.fatiando.org/</span>
+<span class="sd">    and apparently the code we use here has been depricated by that</span>
+<span class="sd">    group.   This function is unaltered from the original found on</span>
+<span class="sd">    github for the 0.5 version.  Only the documentation was changed</span>
+<span class="sd">    to clarify this ancestory.  We also changed the name from</span>
+<span class="sd">    seismic_image to image_raw to mesh more cleanly with mspass as</span>
+<span class="sd">    the name better reflects the functions use.</span>
+
+<span class="sd">    Parameters:</span>
+
+<span class="sd">    * section :  2D array</span>
+<span class="sd">        matrix of traces (first dimension time, second dimension traces)</span>
+<span class="sd">    * t0 : float</span>
+<span class="sd">        time of first sample (added for mspass - needed for passive data)</span>
+<span class="sd">    * dt : float</span>
+<span class="sd">        sample rate in seconds</span>
+<span class="sd">    * ranges : (x1, x2)</span>
+<span class="sd">        min and max horizontal coordinate values (default trace number)</span>
+<span class="sd">    * cmap : colormap</span>
+<span class="sd">        color map to be used. (see pyplot.cm module)</span>
+<span class="sd">    * aspect : float</span>
+<span class="sd">        matplotlib imshow aspect parameter, ratio between axes</span>
+<span class="sd">    * vmin, vmax : float</span>
+<span class="sd">        min and max values for imshow</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">npts</span><span class="p">,</span> <span class="n">maxtraces</span> <span class="o">=</span> <span class="n">section</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># time/traces</span>
+    <span class="k">if</span> <span class="n">maxtraces</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Nothing to plot&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">npts</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Nothing to plot&quot;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t0</span><span class="o">+</span><span class="n">dt</span><span class="o">*</span><span class="n">npts</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">section</span>
+    <span class="k">if</span> <span class="n">ranges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ranges</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">maxtraces</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">ranges</span>
+    <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:],</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">aspect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># guarantee a rectangular picture</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span><span class="o">/</span><span class="n">numpy</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">aspect</span><span class="o">&lt;=</span><span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="mf">1.0</span>
+        <span class="n">aspect</span> <span class="o">-=</span> <span class="n">aspect</span><span class="o">*</span><span class="mf">0.2</span>
+    <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">([</span><span class="n">section</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">section</span><span class="o">.</span><span class="n">min</span><span class="p">()])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="n">scale</span>
+    <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span><span class="p">,</span>
+                  <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="tse2nparray"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.tse2nparray">[docs]</a><span class="k">def</span> <span class="nf">tse2nparray</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
+    <span class="n">nseis</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="n">dt</span><span class="o">=</span><span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nseis</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+            <span class="n">tmin</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+            <span class="n">tmax</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tmin</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+            <span class="n">tmax</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">tmax</span><span class="p">,</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
+            <span class="c1"># check for irregular sample rates.  Test uses a fractional</span>
+            <span class="c1"># tolerance that is a frozen constant here</span>
+            <span class="n">delta_dt</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="n">dt</span><span class="o">-</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">delta_dt</span><span class="o">/</span><span class="n">dt</span> <span class="o">&gt;</span> <span class="mf">0.01</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;tse2dmatrix:  Irregular sample rates - cannot convert&quot;</span><span class="p">)</span>
+    <span class="c1">#A naive user might pass an ensemble of data with absolute times</span>
+    <span class="c1">#spanning years.  The calculation here uses a threshold on size</span>
+    <span class="c1"># as a sanity check to avoid absurd malloc requests</span>
+    <span class="n">n</span><span class="o">=</span><span class="n">nseis</span>
+    <span class="n">m</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">tmax</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Mmax</span><span class="o">=</span><span class="mi">10000000</span>   <span class="c1"># size limit hard wired</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">m</span><span class="o">&gt;</span><span class="n">Mmax</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;tse2dmatix:  irrational computed time range - you are probably incorrectly using data with large range of absolute times&quot;</span><span class="p">)</span>
+    <span class="n">work</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">])</span>
+    <span class="c1"># The algorithm used here is horribly inefficient if there are large</span>
+    <span class="c1"># differences in start and end times but this approach is safer</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">tjstart</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+        <span class="n">tjend</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">t</span><span class="o">=</span><span class="n">tmin</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">dt</span>
+            <span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">t</span> <span class="o">&gt;=</span> <span class="n">tjstart</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;=</span> <span class="n">tjend</span><span class="p">)</span> <span class="p">):</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="n">work</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tmin</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">work</span><span class="p">]</span></div>
+<div class="viewcode-block" id="seis2nparray"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.seis2nparray">[docs]</a><span class="k">def</span> <span class="nf">seis2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">m</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span>
+    <span class="n">n</span><span class="o">=</span><span class="mi">3</span>
+    <span class="n">work</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="n">n</span><span class="p">])</span>
+    <span class="c1"># this is a very slow way to do a matrix transpose of u dmatrix</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+            <span class="n">work</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tmin</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">work</span><span class="p">]</span></div>
+<div class="viewcode-block" id="ts2nparray"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.ts2nparray">[docs]</a><span class="k">def</span> <span class="nf">ts2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="n">tmin</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">dt</span>
+    <span class="n">m</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span>
+    <span class="c1"># There is likely a faster way to do this, but for now we want to</span>
+    <span class="c1"># be sure this looks like a 2d array as input to the plot function</span>
+    <span class="n">work</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="n">work</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">tmin</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">work</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="wtvaplot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.wtvaplot">[docs]</a><span class="k">def</span> <span class="nf">wtvaplot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">fill_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">cmap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wiggle trace variable area plotter for mspass ensemble objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We have to handle 3C ensembles specially to make 3 separate</span>
+    <span class="c1"># windows.   this logic is potentially confusing.  the else</span>
+    <span class="c1"># block handles all but 3C ensembles - common read structure</span>
+    <span class="c1"># makes a single plot call work for all 3 cases</span>
+    <span class="n">figure_handles</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="c1"># We always plot 3C data as 3 windows.  We extract each</span>
+        <span class="c1"># component and then call this function with a trivial</span>
+        <span class="c1"># recursion - only call itself once and only once</span>
+        <span class="n">title3c</span><span class="o">=</span><span class="n">title</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">title3c</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">section</span><span class="p">]</span><span class="o">=</span><span class="n">tse2nparray</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+                <span class="n">wtva_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">scale</span><span class="p">,</span><span class="n">fill_color</span><span class="p">,</span><span class="n">normalize</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">cmap</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">cmap</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">title3c</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title3c</span><span class="p">)</span>
+                <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># need to force these into the scope of this block</span>
+            <span class="n">plotdata</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">tse2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">seis2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">ts2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;wtvaplot - data received is not one supported by mspass&quot;</span><span class="p">)</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">section</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">wtva_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">scale</span><span class="p">,</span><span class="n">fill_color</span><span class="p">,</span><span class="n">normalize</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">cmap</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">cmap</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">figure_handles</span></div>
+<div class="viewcode-block" id="imageplot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.imageplot">[docs]</a><span class="k">def</span> <span class="nf">imageplot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">ranges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">pyplot</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">gray</span><span class="p">,</span><span class="n">aspect</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Image plotter for mspass ensemble objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We have to handle 3C ensembles specially to make 3 separate</span>
+    <span class="c1"># windows.   this logic is potentially confusing.  the else</span>
+    <span class="c1"># block handles all but 3C ensembles - common read structure</span>
+    <span class="c1"># makes a single plot call work for all 3 cases</span>
+    <span class="n">figure_handles</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+        <span class="c1"># We always plot 3C data as 3 windows.  We extract each</span>
+        <span class="c1"># component and then call this function with a trivial</span>
+        <span class="c1"># recursion - only call itself once and only once</span>
+        <span class="n">title3c</span><span class="o">=</span><span class="n">title</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">title3c</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">title</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="p">[</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">section</span><span class="p">]</span><span class="o">=</span><span class="n">tse2nparray</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+                <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">cmap</span><span class="p">,</span><span class="n">aspect</span><span class="p">,</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">title3c</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title3c</span><span class="p">)</span>
+                <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># need to force these into the scope of this block</span>
+            <span class="n">plotdata</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">tse2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">seis2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+                <span class="n">plotdata</span><span class="o">=</span><span class="n">ts2nparray</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;wtvaplot - data received is not one supported by mspass&quot;</span><span class="p">)</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">section</span><span class="o">=</span><span class="n">plotdata</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">image_raw</span><span class="p">(</span><span class="n">section</span><span class="p">,</span><span class="n">t0</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">ranges</span><span class="p">,</span><span class="n">cmap</span><span class="p">,</span><span class="n">aspect</span><span class="p">,</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">figure_handles</span></div>
+
+<div class="viewcode-block" id="SectionPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter">[docs]</a><span class="k">class</span> <span class="nc">SectionPlotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class was designed to plot data in a seismic reflection style</span>
+<span class="sd">    display.  That means time is the y axis but runs in a reverse direction</span>
+<span class="sd">    and traces are equally spaced along the x axis. The data can be plotted</span>
+<span class="sd">    as simple wiggle traces, wiggle trace variable area, an image format,</span>
+<span class="sd">    and a wiggletrace variable area plot overlaying an image plot.</span>
+
+<span class="sd">    The object itself only defines the style of plot to be produced along</span>
+<span class="sd">    with other assorted plot parameters.   The plot method can be called on</span>
+<span class="sd">    any mspass data object to produce a graphic display.   TimeSeries</span>
+<span class="sd">    data produce a frame with one seismogram plotted.  Seismogram data</span>
+<span class="sd">    will produce a one frame display with the 3 components arranged in</span>
+<span class="sd">    component order from left to right.  TimeSeriesEnsembles produce</span>
+<span class="sd">    conventional reflection style sections with the data displayed from</span>
+<span class="sd">    left to right in whatever order the ensemble is sorted to.</span>
+<span class="sd">    SeismogramEnsembles are the only type that create multiple windows.</span>
+<span class="sd">    That is, each component is displayed in a different window.   The</span>
+<span class="sd">    display can be understood as a conversion of a SeismogramEnsemble to</span>
+<span class="sd">    a set of 3 TimeSeriesEnsembles that are displayed in 3 windows.</span>
+<span class="sd">    The component can be deduced only from the title string with</span>
+<span class="sd">    has :0, :1, and :2 appended to it to denote components 0, 1, and 2</span>
+<span class="sd">    respectively.</span>
+
+<span class="sd">    The plots produced by this object are simple ones for display only.</span>
+<span class="sd">    The concept is that fancier tools for gui interaction like a trace</span>
+<span class="sd">    editor be created as children of this base class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor initializes all the internal variables that define</span>
+<span class="sd">        the possible behaviors of the plotting engine.  The constructor</span>
+<span class="sd">        currently does no sanity check on the compatibility of the parameters.</span>
+<span class="sd">        The intent is overall behavior should be altered from the default</span>
+<span class="sd">        only through the change_style method.   The public attributes</span>
+<span class="sd">        (scale,normalize, and title) can be changed without hard.  Those</span>
+<span class="sd">        defined as private should be altered only indirectly through the</span>
+<span class="sd">        change_style method.</span>
+
+<span class="sd">        :param scale:  Set the amount by which the data should be scaled</span>
+<span class="sd">          before plotting.   Note the assumption is the data amplitude is</span>
+<span class="sd">          of order 1.  Use normalize if that assumption is bad.</span>
+<span class="sd">        :param normalize:   boolean used to determine if data need to be</span>
+<span class="sd">          autoscaled. If true a section scaling is produced from the minimum</span>
+<span class="sd">          and maximum of the input data.  Relative amplitudes between</span>
+<span class="sd">          each scalar signal will be preserved.  To change scaling use</span>
+<span class="sd">          a mspass amplitude scaling function before calling the plotter.</span>
+<span class="sd">        :param title: is a string written verbatim at the top of each</span>
+<span class="sd">          plot.  For 3C ensembles the string :0, :1, and :2 is added to</span>
+<span class="sd">          title for each of the 3 windows drawn for each of the 3 components</span>
+<span class="sd">          of the parent ensemble.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># these are public because they can set independently</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">=</span><span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+        <span class="c1"># these have some interdependencies and are best altered only</span>
+        <span class="c1"># through the change_style method.  This may be unnecessary</span>
+        <span class="c1"># as it may duplicate the call to change_style at the end, BUT</span>
+        <span class="c1"># if the default changes these initial values do not need to be</span>
+        <span class="c1"># changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtvaimg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_variable_area</span><span class="o">=</span><span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span>  <span class="c1">#black in matplotlib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="o">=</span><span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span>
+        <span class="c1"># these are options to raw codes adapted from  fatiando a terra</span>
+        <span class="c1"># that are currently ignored.   Convert to args for __init__ if</span>
+        <span class="c1"># it proves useful to have them in the api</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ranges</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span><span class="o">=</span><span class="kc">None</span>
+        <span class="c1"># use change_style to simply default style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="SectionPlotter.change_style"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.change_style">[docs]</a>    <span class="k">def</span> <span class="nf">change_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">newstyle</span><span class="p">,</span><span class="n">fill_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">color_map</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this method to change the plot style.   Options are described</span>
+<span class="sd">        below.   Some parameter combinations are illegal and will result in</span>
+<span class="sd">        a RuntimeError if used.  The illegal combos are listed below for</span>
+<span class="sd">        each style.</span>
+
+<span class="sd">        :param newstyle:  This is the primary switch for this method and</span>
+<span class="sd">          is used to define the style of plot that will be produced. The</span>
+<span class="sd">          allowed values for this string are listed below along with</span>
+<span class="sd">          restrictions (when they exist) on related parameters.</span>
+
+<span class="sd">          wtva - wiggle trace variable area.  That means a wiggle traced with</span>
+<span class="sd">            the positive quadrants colored by the color defined by the fill_color</span>
+<span class="sd">            parameter.   If fill_color is passed as None a RuntimeError will</span>
+<span class="sd">            be thrown.</span>
+<span class="sd">          img - data are displayed as an image with the color_map parameter</span>
+<span class="sd">            defining the matplotlib color map used to map amplitudes into</span>
+<span class="sd">            a given color.   Note as with wtva the data are presumed to be</span>
+<span class="sd">            scaled to be of order 1.  color_map must not be None, which it</span>
+<span class="sd">            can be if the plot was changed from a previous style like wtva,</span>
+<span class="sd">            or a RuntimeError exception will be thrown.</span>
+<span class="sd">          wtvaimg is like wtva but the wtva plot is drawn on top of an</span>
+<span class="sd">            image plot.  Since this is the union of wtva and img a RuntimeError</span>
+<span class="sd">            exception will be throw if either color_map or fill_color are null.</span>
+<span class="sd">          wt will produce a standard line graph of each input as a</span>
+<span class="sd">            black line (that feature is currently frozen).   color_map and</span>
+<span class="sd">            fill_color are ignored for this style so no exceptions should</span>
+<span class="sd">            occur when the method is called with this value of newstyle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wtva&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">fill_color</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtva style requires fill_color to be a valid color code - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtva&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="o">=</span><span class="kc">False</span>
+            <span class="c1"># force this when set this way</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="n">fill_color</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_variable_area</span><span class="o">=</span><span class="kc">True</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">color_map</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtvaimg style requires a color_map definition - received a None&quot;</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">fill_color</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtvaimg&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="n">fill_color</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="n">color_map</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_variable_area</span><span class="o">=</span><span class="kc">True</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">color_map</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: img style requires a color_map definition - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;img&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_variable_area</span><span class="o">=</span><span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="n">color_map</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wt&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wt&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="o">=</span><span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_variable_area</span><span class="o">=</span><span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SectionPlotter.change_style:  unknown style type=&#39;</span><span class="o">+</span><span class="n">newstyle</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SectionPlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SectionPlotter.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this method to plot any data using the current style setup and any</span>
+<span class="sd">        details defined by public attributes.</span>
+
+<span class="sd">        :param d:  is the data to be plotted.   It can be any of the following:</span>
+<span class="sd">            TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.</span>
+<span class="sd">            If d is any other type the method will throw a RuntimeError exception.</span>
+
+<span class="sd">        :Returns: an array of one or 3 (only for SeismogramEnsemble dat)</span>
+<span class="sd">          matplotlib.pylot.gcf() plot handle(s).</span>
+<span class="sd">        :rtype: The plot handle is what matplotlib.pyplot calls a gcf.  It</span>
+<span class="sd">          is the return of pyplot.gcf() and can be used to alter some properties</span>
+<span class="sd">          of the figure.  See matplotlib documentation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># these are all handled by the same function with argument combinations defined by</span>
+        <span class="c1"># change_style determining the behavior.</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wtva&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wtvaimg&#39;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wt&#39;</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">=</span><span class="n">wtvaplot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_ranges</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">handle</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+            <span class="n">handle</span><span class="o">=</span><span class="n">imageplot</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_ranges</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">handle</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SectionPlotter.plot:  internal style definition=&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">+</span><span class="s1">&#39; which is illegal.  Run change_style method&#39;</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="SeismicPlotter"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter">[docs]</a><span class="k">class</span> <span class="nc">SeismicPlotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SeismicPlotter is used to plot mspass data objects in the </span>
+<span class="sd">    seismology convention with time as the x axis.  Use SectionPlotter </span>
+<span class="sd">    to plot data in the seismic reflection convention with time on the </span>
+<span class="sd">    y axis and oriented backward (increasing downward).  </span>
+<span class="sd">    </span>
+<span class="sd">    Four times of plots are supported:  wiggle trace, wiggle trace variable </span>
+<span class="sd">    area (i.e. filled on positive peaks), image plots, and colored wiggle </span>
+<span class="sd">    trace variable area (wtva overlays an image display).  </span>
+<span class="sd">    Ensembles of Seismogram objects (SeismogramEnsemble object) are plotted in </span>
+<span class="sd">    three windows that will appear as Figure 0, Figure 1, and Figure 2.  </span>
+<span class="sd">    All other object are displayed in a single window.   Default display </span>
+<span class="sd">    order for ensembles is fill in ensemble order from the bottom up.</span>
+<span class="sd">    Use the topdown() method to switch to reverse order.  </span>
+<span class="sd">    </span>
+<span class="sd">    This is a simple plotter that just generates a basic graphic.   </span>
+<span class="sd">    The design idea is to use this as a base class for more advanced </span>
+<span class="sd">    graphics uses like a trace editor or generic picker.  The </span>
+<span class="sd">    plot object must be created before any plots can be generated.  </span>
+<span class="sd">    Any optional changes to the plot behavior, most commonly calls </span>
+<span class="sd">    to the change_style method, should be done before calling plot.   </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for this object.   It mostly sets defaults but </span>
+<span class="sd">        has a few common optional parameters to set at construction </span>
+<span class="sd">        time.  Note style is intentionally not a constructor </span>
+<span class="sd">        parameter because of parameter interdependence.  The default</span>
+<span class="sd">        plot style is wtvaimg.  Use change_style to use a different </span>
+<span class="sd">        plotting style.</span>
+<span class="sd">        </span>
+<span class="sd">        :param scale:  optoinal scale factor to apply to data before plotting</span>
+<span class="sd">          (default assumes data have been scaled to amplitude of order 1)</span>
+<span class="sd">        :param  normalize:  Default assumes the data have been scaled with </span>
+<span class="sd">        one of the mspass amplitude scaling functions to be of order one </span>
+<span class="sd">        (or the scale parameter).  Set True if the data are to be </span>
+<span class="sd">        normalized internally by the plotter.</span>
+<span class="sd">        :param title:   optional title to put on graphics.  Note for </span>
+<span class="sd">        SeismogramEnsembles each of the three windows will be tagged </span>
+<span class="sd">        with a variant of this title string adding &quot;:n&quot; where n is </span>
+<span class="sd">        the component number (0,1,2).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># these are public because they can set independently</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">=</span><span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="o">=</span><span class="n">normalize</span>
+        <span class="c1"># these have some interdependencies and are best altered only</span>
+        <span class="c1"># through the change_style method.  This may be unnecessary</span>
+        <span class="c1"># as it may duplicate the call to change_style at the end, BUT</span>
+        <span class="c1"># if the default changes these initial values do not need to be</span>
+        <span class="c1"># changed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtvaimg&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span>  <span class="c1">#black in matplotlib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span>
+        <span class="c1"># these are options to raw codes adapted from  fatiando a terra</span>
+        <span class="c1"># that are currently ignored.   Convert to args for __init__ if</span>
+        <span class="c1"># it proves useful to have them in the api</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ranges</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span><span class="o">=</span><span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span><span class="o">=</span><span class="kc">None</span>
+        <span class="c1"># These are added for SeismicPlotter and not in SectionPlotter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="o">=</span><span class="kc">False</span>
+        <span class="c1"># Internal constants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_RANGE_RATIO_TEST</span><span class="o">=</span><span class="mf">0.0001</span> <span class="c1"># Should be smaller than 1/screem horizontal pixel maximum size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_single_ts_aspect</span><span class="o">=</span><span class="mf">0.25</span>
+        <span class="c1"># use change_style to simply default style</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_style</span><span class="p">(</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="SeismicPlotter.change_style"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.change_style">[docs]</a>    <span class="k">def</span> <span class="nf">change_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">newstyle</span><span class="p">,</span><span class="n">fill_color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">color_map</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this method to change the plot style.   Options are described</span>
+<span class="sd">        below.   Some parameter combinations are illegal and will result in</span>
+<span class="sd">        a RuntimeError if used.  The illegal combos are listed below for</span>
+<span class="sd">        each style.</span>
+
+<span class="sd">        :param newstyle:  This is the primary switch for this method and</span>
+<span class="sd">          is used to define the style of plot that will be produced. The</span>
+<span class="sd">          allowed values for this string are listed below along with</span>
+<span class="sd">          restrictions (when they exist) on related parameters.</span>
+
+<span class="sd">          wtva - wiggle trace variable area.  That means a wiggle traced with</span>
+<span class="sd">            the positive quadrants colored by the color defined by the fill_color</span>
+<span class="sd">            parameter.   If fill_color is passed as None a RuntimeError will</span>
+<span class="sd">            be thrown.</span>
+<span class="sd">          img - data are displayed as an image with the color_map parameter</span>
+<span class="sd">            defining the matplotlib color map used to map amplitudes into</span>
+<span class="sd">            a given color.   Note as with wtva the data are presumed to be</span>
+<span class="sd">            scaled to be of order 1.  color_map must not be None, which it</span>
+<span class="sd">            can be if the plot was changed from a previous style like wtva,</span>
+<span class="sd">            or a RuntimeError exception will be thrown.</span>
+<span class="sd">          wtvaimg is like wtva but the wtva plot is drawn on top of an</span>
+<span class="sd">            image plot.  Since this is the union of wtva and img a RuntimeError</span>
+<span class="sd">            exception will be throw if either color_map or fill_color are null.</span>
+<span class="sd">          wt will produce a standard line graph of each input as a</span>
+<span class="sd">            black line (that feature is currently frozen).   color_map and</span>
+<span class="sd">            fill_color are ignored for this style so no exceptions should</span>
+<span class="sd">            occur when the method is called with this value of newstyle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wtva&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">fill_color</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtva style requires fill_color to be a valid color code - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtva&#39;</span>
+            <span class="c1"># force this when set this way</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="n">fill_color</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">color_map</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtvaimg style requires a color_map definition - received a None&quot;</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">fill_color</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: wtvaimg style requires a fill_color definition - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wtvaimg&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="n">fill_color</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="n">color_map</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">color_map</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SectionPlotter.change_style: img style requires a color_map definition - received a None&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;img&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="n">color_map</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">newstyle</span><span class="o">==</span><span class="s1">&#39;wt&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">=</span><span class="s1">&#39;wt&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="o">=</span><span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="o">=</span><span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SectionPlotter.change_style:  unknown style type=&#39;</span><span class="o">+</span><span class="n">newstyle</span><span class="p">)</span></div>
+    <span class="c1"># These two method should perhaps be implemented as decorators</span>
+<div class="viewcode-block" id="SeismicPlotter.topdown"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.topdown">[docs]</a>    <span class="k">def</span> <span class="nf">topdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch to mode of plotting ensembles from the top downward</span>
+<span class="sd">        from default of bottum upward.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="o">=</span><span class="kc">True</span></div>
+<div class="viewcode-block" id="SeismicPlotter.bottomup"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.bottomup">[docs]</a>    <span class="k">def</span> <span class="nf">bottomup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restore (or force) default ensemble plot order of bottup upward.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="o">=</span><span class="kc">False</span></div>
+<div class="viewcode-block" id="SeismicPlotter.plot"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="c1"># make copy always to prevent unintentional scaling of input data</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normalize</span><span class="p">):</span>
+            <span class="n">d2plot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="n">d2plot</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d2plot</span><span class="o">=</span><span class="n">d</span>   <span class="c1"># always a shallow copy in python</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wtva&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva</span><span class="p">(</span><span class="n">d2plot</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wt&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva</span><span class="p">(</span><span class="n">d2plot</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;wtvaimg&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva</span><span class="p">(</span><span class="n">d2plot</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot</span><span class="p">(</span><span class="n">d2plot</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">==</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot</span><span class="p">(</span><span class="n">d2plot</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SeismicPlotter.plot:  internal style definition=&#39;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">+</span><span class="s1">&#39; is invalid</span><span class="se">\n</span><span class="s1">This should not happen&#39;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private helper method for immediately above.   Necessary because </span>
+<span class="sd">        copy.deepcopy doesn&#39;t work with our pybind11 wrappers. There may be a</span>
+<span class="sd">        fix, but for now we have to use copy constructors specific to each </span>
+<span class="sd">        object type.   </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SeismicPlotter._deepcopy:  received and unsupported data type=&quot;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+        
+<div class="viewcode-block" id="SeismicPlotter.set_topdown"><a class="viewcode-back" href="../../python_api/mspasspy.graphics.html#mspasspy.graphics.SeismicPlotter.set_topdown">[docs]</a>    <span class="k">def</span> <span class="nf">set_topdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Call this method to have datat plotted from top down.  Default plots</span>
+<span class="sd">        ensemble member 0 at the bottom of the plot with successive members</span>
+<span class="sd">        plotted in units of 1.0 above the last.  When this is called the</span>
+<span class="sd">        order is reversed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="o">=</span><span class="kc">True</span></div>
+    <span class="c1"># These are private methods used internally</span>
+    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalizes data (d) using scale function.  for ensembles that </span>
+<span class="sd">        is peak normalization to level self.scale by section. For </span>
+<span class="sd">        Seismograms each component will be normalized independently. </span>
+<span class="sd">        For TimeSeries the peak is adjusted to self.scale.  </span>
+
+<span class="sd">        :param d:  input data to be scanned (must be one of mspass supported</span>
+<span class="sd">        data objects or will throw an exception)</span>
+<span class="sd">        :param perf:  clip level as used in seismic unix displays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># These are place holders for now.  Requires some new code in ccore</span>
+        <span class="c1"># to sort absolute values and return perf level - should use faster</span>
+        <span class="c1"># max value when perf is 100%</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="n">alg_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">scale_by_section</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+            <span class="n">alg_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">scale_by_section</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="n">alg_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="n">alg_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;SeismicPlotter._normalize:  Received unsupported data type=&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">_add_3C_titles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method to add titles with pyplot.title to 3C ensemble data.</span>
+<span class="sd">        This algorithm is a bit fragile as it depends upon use of </span>
+<span class="sd">        figure tagged with integer component number.   </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">title3c</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title3c</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_wtva</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method for making all forms of wiggle trace plots.  The</span>
+<span class="sd">        fill boolean determines if shading is applied.  When used the shading</span>
+<span class="sd">        is assumed properly defined by self._fill_color.   In this implementation</span>
+<span class="sd">        this function does little more than determine the type of the input</span>
+<span class="sd">        data d and call the appropriate private method for that data type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_error</span><span class="o">=</span><span class="s1">&#39;SeismicPlotter._imageplot (Error):  &#39;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;ensemble container is empty&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva_SeismogramEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_3C_titles</span><span class="p">()</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;ensemble container is empty&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva_TimeSeriesEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;data vector is empty.  Nothing to plot&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva_TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;data vector is empty.  Nothing to plot&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_wtva_Seismogram</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;Received unsupported data type=&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_imageplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private method for making all forms of image plots.  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_error</span><span class="o">=</span><span class="s1">&#39;SeismicPlotter._imageplot (Error):  &#39;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;ensemble container is empty&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_SeismogramEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_3C_titles</span><span class="p">()</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;ensemble container is empty&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_TimeSeriesEnsemble</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;data vector is empty.  Nothing to plot&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_TimeSeries</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;data vector is empty.  Nothing to plot&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_Seismogram</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">base_error</span><span class="o">+</span><span class="s1">&#39;Received unsupported data type=&#39;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_wtva_TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">):</span>
+        
+        <span class="c1"># this plot reduces to a simple call to plot defining a time axis from</span>
+        <span class="c1"># a single trace - pretty much like the obspy plot but with optional</span>
+        <span class="c1"># shading.  It assumes d is a TimeSeries.</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="o">+</span><span class="n">d</span><span class="o">.</span><span class="n">dt</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+        <span class="c1"># We don&#39;t need a gain factor here - will be needed for an image overlay through</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">fill</span><span class="p">):</span>
+            <span class="c1"># Necessary because fill_between doesn&#39;t support the pybind11</span>
+            <span class="c1"># wrapped vector directly - need to convert to numpy array</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">where</span><span class="o">=</span><span class="n">y</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">_wtva_Seismogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">):</span>
+        <span class="c1"># this could be implemented by converting d to an ensemble</span>
+        <span class="n">ens</span><span class="o">=</span><span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wtva_TimeSeriesEnsemble</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">fill</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_get_ensemble_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+         <span class="c1"># Unlike SectionPlotter we allow irregular start times and don&#39;t</span>
+        <span class="c1"># need to do the baggage of zero padding - will be needed for image</span>
+        <span class="c1"># plots though.  So, step one is to scan for the time range.  We</span>
+        <span class="c1"># also search for longest time interval and throw and exception if</span>
+        <span class="c1"># the ratio of that time interval to data time interval span is too</span>
+        <span class="c1"># small.</span>
+        <span class="n">moderror</span><span class="o">=</span><span class="s1">&#39;SeismicPlotter._get_ensemble_size (Error):  &#39;</span>
+        <span class="n">ndata</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">ndata</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Trying to plot an empty ensemble&#39;</span><span class="p">)</span>
+        <span class="n">t0</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">endtimes</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">nlive</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">):</span>
+                <span class="n">t0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
+                <span class="n">endtimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">())</span>
+                <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">nlive</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">moderror</span><span class="o">+</span><span class="s1">&#39;All members of ensemble are marked dead - nothing to plot&#39;</span><span class="p">)</span>
+        <span class="n">tmin</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+        <span class="n">tmax</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">endtimes</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">((</span><span class="n">tmax</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">moderror</span><span class="o">+</span><span class="s1">&#39;time span of data is zero&#39;</span><span class="p">)</span>
+        <span class="n">maxdt</span><span class="o">=</span><span class="mf">0.0</span>
+        <span class="c1"># this is no doubt a faster vector way to do this calculation, but</span>
+        <span class="c1"># this loop is guaranteed by screen limits to never be huge</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">endtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">t0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">maxdt</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">maxdt</span><span class="p">,</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">maxdt</span><span class="o">/</span><span class="p">(</span><span class="n">tmax</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_RANGE_RATIO_TEST</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">moderror</span><span class="o">+</span><span class="s1">&#39;data appear to be mix of data with absolute times.  Computed time range is absurd - convert data to relative time&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">ndata</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_wtva_TimeSeriesEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">ndata</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">)</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">)</span>
+        <span class="c1"># This plotting engine always equally spaces traces horizontally so</span>
+        <span class="c1"># unlike SectionPlotter we just compute the range as the number of</span>
+        <span class="c1"># intervals + 1 for padding</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+            <span class="c1"># skip data marked dead - this will leave a hole in plot.  We could </span>
+            <span class="c1"># plot a line but this is proably better unless proven otherwise</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">()):</span>
+                <span class="k">continue</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># Make a copy - fast method with numpy</span>
+            <span class="c1"># Fast and easy way to add offset with overloaded operator -= and +=</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="p">):</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">ndata</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+                <span class="n">y</span> <span class="o">+=</span> <span class="n">offset</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">y</span><span class="o">+=</span><span class="n">i</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">i</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+            <span class="n">endtime</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="n">npts</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span>
+            <span class="n">t</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">fill</span><span class="p">):</span>
+                <span class="n">pyplot</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">y</span><span class="o">&gt;</span><span class="n">offset</span><span class="p">,</span> 
+                                    <span class="n">interpolate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fill_color</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_wtva_SeismogramEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">fill</span><span class="p">):</span>
+        <span class="c1"># implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times</span>
+        <span class="c1"># should return a list of 3 gcf handles</span>
+        <span class="n">figure_handles</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1">#figure_title=&#39;Component %d&#39; % k</span>
+            <span class="c1">#pyplot.figure(figure_title)</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">handle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wtva</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+            <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">handle</span><span class="p">)</span>
+        <span class="c1">#pyplot.show()</span>
+        <span class="k">return</span> <span class="n">figure_handles</span>
+    <span class="k">def</span> <span class="nf">_imageplot_TimeSeriesEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">ndata</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">)</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_ensemble_size</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="c1"># left off here - below is copy from SectionPlotter</span>
+        <span class="c1"># need a different algorithm to support mixed sample </span>
+        <span class="c1"># rates.  Probably should search for shortest dt and </span>
+        <span class="c1"># define the matrix from that</span>
+        
+        <span class="c1"># to handle mixed sample rate data use the shortest dt and </span>
+        <span class="c1"># use a crude boxcar resampling for data with larger dt </span>
+        <span class="c1"># Boxcar resampling is implict in use of time method which gets the</span>
+        <span class="c1"># nearest sample</span>
+        <span class="n">dt</span><span class="o">=</span><span class="mf">10000000.0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+            <span class="n">dt</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="c1"># compute the number of points for the time axis</span>
+        <span class="n">nt</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">tmax</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+        <span class="c1"># WARNING - this assumes size of nt is limited by error checking </span>
+        <span class="c1"># in get_ensemble_size called above.  Prone to malloc error if nt </span>
+        <span class="c1"># is huge - easy to do with absolute time data segments</span>
+        <span class="n">work</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">ndata</span><span class="p">,</span><span class="n">nt</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ndata</span><span class="p">):</span>
+            <span class="c1"># skip data marked dead</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dead</span><span class="p">()):</span>
+                <span class="k">continue</span>
+            <span class="n">t0</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">t0</span>
+            <span class="n">endtime</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">endtime</span><span class="p">()</span>
+            <span class="n">npts</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">npts</span>
+            <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="p">):</span>
+                <span class="n">iwork</span><span class="o">=</span><span class="n">ndata</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">iwork</span><span class="o">=</span><span class="n">i</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">t0</span><span class="o">==</span><span class="n">tmin</span><span class="p">):</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">tmin</span>
+                <span class="n">j</span><span class="o">=</span><span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># above logic guarantees &lt; not possible so this is &gt; block</span>
+                <span class="n">t</span><span class="o">=</span><span class="n">t0</span>
+                <span class="n">j</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">t0</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span><span class="o">/</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># often one less than needed but minimal inefficiency</span>
+            <span class="k">while</span><span class="p">(</span><span class="n">t</span><span class="o">&lt;=</span><span class="n">endtime</span> <span class="ow">and</span> <span class="n">t</span><span class="o">&lt;=</span><span class="n">tmax</span><span class="p">):</span>  <span class="c1"># tmax test shouldn&#39;t be necessary but small cost for safety</span>
+                <span class="n">k</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">sample_number</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">k</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span><span class="o">&lt;</span><span class="n">npts</span><span class="p">):</span>
+                    <span class="n">work</span><span class="p">[</span><span class="n">iwork</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="n">dt</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># guarantee a rectangular picture</span>
+            <span class="n">aspect</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmax</span><span class="o">-</span><span class="n">tmin</span><span class="p">)</span><span class="o">/</span><span class="n">ndata</span>
+            <span class="c1"># avoid long, skinny plots that would be the norm from </span>
+            <span class="c1"># above calculation</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">aspect</span><span class="o">&gt;</span><span class="mf">10.0</span><span class="p">):</span>
+                <span class="n">aspect</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">([</span><span class="n">work</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">work</span><span class="o">.</span><span class="n">min</span><span class="p">()])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="c1"># imshow handles topdown or updown order with this parameter</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plot_topdown</span><span class="p">):</span>
+            <span class="n">origin_position</span><span class="o">=</span><span class="s1">&#39;upper&#39;</span>
+            <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">ndata</span><span class="p">)</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">origin_position</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin_position</span><span class="p">,</span>
+                  <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_imageplot_SeismogramEnsemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="c1"># implement by call to EnsembleComponent and calling TimeSeriesEnsemble method 3 times</span>
+        <span class="c1"># should return a list of 3 gcf handles</span>
+        <span class="n">figure_handles</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">EnsembleComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">pyplot</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">figure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_imageplot</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+            <span class="n">figure_handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">figure</span><span class="p">)</span>
+        <span class="c1">#pyplot.show()</span>
+        <span class="k">return</span> <span class="n">figure_handles</span>
+    <span class="k">def</span> <span class="nf">_imageplot_Seismogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        <span class="c1"># this could be implemented by converting d to an ensemble</span>
+        <span class="n">ens</span><span class="o">=</span><span class="n">TimeSeriesEnsemble</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">dcomp</span><span class="o">=</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dcomp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imageplot_TimeSeriesEnsemble</span><span class="p">(</span><span class="n">ens</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_imageplot_TimeSeries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
+        
+        <span class="c1"># this plot reduces to a simple call to plot defining a time axis from</span>
+        <span class="c1"># a single trace - pretty much like the obspy plot but with optional</span>
+        <span class="c1"># shading.  It assumes d is a TimeSeries.</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">(),</span> <span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
+        <span class="c1"># somewhat inefficient, but TimeSeries size in this context </span>
+        <span class="c1"># would always be small enough to be irrelevant</span>
+        <span class="n">work</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="p">])</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="p">,</span><span class="n">d</span><span class="o">.</span><span class="n">endtime</span><span class="p">(),</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">npts</span><span class="p">):</span>
+            <span class="n">work</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_aspect</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+            <span class="n">aspect</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_single_ts_aspect</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmin</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">([</span><span class="n">work</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">work</span><span class="o">.</span><span class="n">min</span><span class="p">()])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="o">-</span><span class="n">scale</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_map</span><span class="p">,</span> 
+                  <span class="n">extent</span><span class="o">=</span><span class="n">extent</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pyplot</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
