@@ -280,6 +280,13 @@ class TestDatabase():
         assert res['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
 
+        with pytest.raises(ValueError, match='dir or dfile is not specified in data object'):
+            self.db.save_data(seis2, storage_mode='file', update_all=True)
+        seis2['dir'] = '/'
+        seis2['dfile'] = 'test_db_output'
+        with pytest.raises(PermissionError, match='No write permission to the save directory'):
+            self.db.save_data(seis2, storage_mode='file', update_all=True)
+
     def test_detele_wf(self):
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
         res = self.db['wf'].find_one({'_id': id})
