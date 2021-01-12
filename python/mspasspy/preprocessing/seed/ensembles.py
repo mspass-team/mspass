@@ -615,7 +615,7 @@ def load_channel_data(db,ens):
                         'chan' : {'$eq' : chan},
                         'loc' : {'$eq' : loc},
                         'starttime' : {'$lt' : t0},
-                        'endtime' : {'gt' : t0}
+                        'endtime' : {'$gt' : t0}
                 }
                 n=dbchannel.count_documents(query)
                 if n==0:
@@ -623,6 +623,7 @@ def load_channel_data(db,ens):
                     d.elog.log_error('load_channel_data',
                         'no match found in channel collection for net='+net+' sta='+sta+" chan="+chan+" loc="+loc+' for this event',
                             ErrorSeverity.Invalid)
+                    continue
                 if n==1:
                     chanrec=dbchannel.find_one(query)
                 else:
@@ -631,14 +632,14 @@ def load_channel_data(db,ens):
                 # the eror message cleaer
                     chanrec=dbchannel.find_one(query)
                     message = ('Muliple (%d) matches found for net=%s sta=% chan=%s loc=%s with reference time %s'
-                   % [n,net,sta,chan,loc,t0])
-                d.elog.log_error('load_site_data',message,ErrorSeverity.Complain)
-                d['site.lat']=chanrec['latitude']
-                d['site.lon']=chanrec['longitude']
-                d['site.depth']=chanrec['depth']
+                               % [n,net,sta,chan,loc,t0])
+                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complain)
+                d['site_lat']=chanrec['latitude']
+                d['site_lon']=chanrec['longitude']
+                d['site_elev']=chanrec['elevation']
                 d['vang']=chanrec['vang']
                 d['hang']=chanrec['hang']
-                d['site_id']=chanrec['site_id']
+                d['site_id']=chanrec['_id']
 
         return ens
     except:
