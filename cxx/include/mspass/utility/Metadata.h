@@ -424,8 +424,8 @@ other attributes.
   copied to a entry accessible by the new key.   The entry for old is
   then deleted.  This avoids downstream inconsistencies a the cost of
   possible failures from the translation.  This method always returns
-  and will silently do nothing if old is not defined.  Note it also
-  ignores readonly and will rename entries marked such.
+  and will silently do nothing if old is not defined. If the new key is
+  already defined, its content will be replaced by the old's.
 
   \param oldkey is the key to search for to be changed
   \param newkey is the new key to use for the replacement.

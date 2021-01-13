@@ -78,7 +78,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
       applied to all members of an ensemble.  When false each member is 
       gained individually as if this function were applied in a loop to 
       each member.
-    :use_mean:  boolean used only for ensembles and when scale_by_section is 
+    :param use_mean:  boolean used only for ensembles and when scale_by_section is 
       True.   The algorithm used in that case has an option to use the mean 
       log amplitude for scaling the section instead of the default median
       amplitude.

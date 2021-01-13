@@ -8,17 +8,16 @@ using namespace mspass::utility;
 
 void BasicTimeSeries::ator(double tshift)
 {
+    /* dead traces should to totally ignored */
+    if(!(this->mlive)) return;
     if(tref==TimeReferenceType::Relative) return;
     t0shift=tshift;
     mt0 -= tshift;
+    tref=TimeReferenceType::Relative;
+    t0shift_is_valid=true;
 }
 // inverse of ator -- note minus becomes plus
 // everything else is nearly identical
-void BasicTimeSeries::rtoa(double tshift)
-{
-    if(tref==TimeReferenceType::UTC) return;
-    mt0 += tshift;
-}
 void BasicTimeSeries::rtoa()
 {
     /* dead traces should to totally ignored */
@@ -34,6 +33,7 @@ void BasicTimeSeries::rtoa()
         mt0 += t0shift;
         tref=TimeReferenceType::UTC;
         t0shift_is_valid=false;
+	t0shift=0.0;
     }
     else
         throw MsPASSError(base_error + "time shift to return to UTC time is not defined",ErrorSeverity::Invalid);

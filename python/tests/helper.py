@@ -1,6 +1,7 @@
 import numpy as np
 import obspy
 import bson.objectid
+import time
 from datetime import datetime
 
 from mspasspy.ccore.utility import (AtomicType,
@@ -21,13 +22,12 @@ def get_live_seismogram():
     seis.set_as_origin('test', '0', '0',
                        AtomicType.SEISMOGRAM)
     seis.dt = 1 / sampling_rate
-    seis.t0 = 0
     seis.npts = ts_size
     # seis.put('net', 'IU')
     seis.put('npts', ts_size)
     seis.put('sampling_rate', sampling_rate)
     seis.tref = TimeReferenceType.UTC
-    seis.t0 = datetime.utcnow().timestamp()
+    seis.t0 = 0
     seis['delta'] = 0.1
     seis['calib'] = 0.1
     seis['site_id'] = bson.objectid.ObjectId()

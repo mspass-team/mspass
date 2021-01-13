@@ -1,39 +1,83 @@
-
 """
 Tools for connecting to MongoDB.
 """
-import math
 import os
 import copy
+import pathlib
 import pickle
 import struct
-import sys
-import traceback
+from array import array
 
-import bson.errors
-import bson.objectid
+import dask.bag as daskbag
 import gridfs
 import pymongo
+from bson.objectid import ObjectId
 import numpy as np
-from array import array
+from obspy import Inventory
+from obspy import UTCDateTime
 
 from mspasspy.ccore.seismic import (TimeSeries,
                                     Seismogram,
                                     _CoreSeismogram,
                                     TimeReferenceType,
-                                    TimeSeries,
-                                    DoubleVector)
-from mspasspy.ccore.utility import (MetadataDefinitions,
-                                    Metadata,
+                                    DoubleVector,
+                                    TimeSeriesEnsemble,
+                                    SeismogramEnsemble)
+from mspasspy.ccore.utility import (Metadata,
+                                    MsPASSError,
                                     dmatrix,
-                                    ErrorLogger,
-                                    ErrorSeverity, ProcessingHistory)
-from mspasspy.db.schema import MetadataSchema
+                                    ProcessingHistory)
+from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
-from obspy import Inventory
-from obspy import UTCDateTime
-from obspy import Catalog
+def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
+                          format='spark', spark_context=None):
+    """
+     This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
+     manner, and return all of the mspasspy objects using the format required by the distributed computing framework
+     (spark RDD or dask bag).
+
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
+    :param object_type: either "TimeSeries" or "Seismogram"
+    :type object_type: :class:`str`
+    :param load_history: `True` to load object-level history into mspasspy objects.
+    :param format: "spark" or "dask".
+    :type format: :class:`str`
+    :param spark_context: user specified spark context.
+    :type spark_context: :class:`pyspark.SparkContext`
+    :return: a spark `RDD` or dask `bag` format of mspasspy objects.
+    """
+    if format == 'spark':
+        list_ = spark_context.parallelize(cursors)
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+    elif format == 'dask':
+        list_ = daskbag.from_sequence(cursors)
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+    else:
+        raise TypeError("Only spark and dask are supported")
+
+
+def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True):
+    """
+     A helper method used in the distributed map operation. It creates a mongodb connection with provided
+     configurations, reads data from the database, constructs a mspasspy object and returns it.
+
+    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
+    :param db_name: the database name in mongodb.
+    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb
+    :type id: :class:'bson.objectid.ObjectId'.
+    :param object_type: either "TimeSeries" or "Seismogram".
+    :type object_type: :class:`str`
+    :param load_history: `True` to load object-level history into the mspasspy object.
+    :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    """
+    from mspasspy.db.client import Client
+    client = Client(client_arg)
+    db = Database(client, db_name)
+    return db.read_data(id, object_type, load_history)
+
 
 class Database(pymongo.database.Database):
     """
@@ -44,94 +88,101 @@ class Database(pymongo.database.Database):
     uses a database handle normally created with a variant of this pair
     of commands:
         client=MongoClient()
-        db=client['databasename']
-    where databasename is variable and the name of the database you
+        db=client['database_name']
+    where database_name is variable and the name of the database you
     wish to access with this handle.
     """
+
     def __init__(self, *args, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
         self.metadata_schema = MetadataSchema()
+        self.database_schema = DatabaseSchema()
 
-    def set_metadata_definition(self, schema):
+    def set_metadata_schema(self, schema):
+        """
+        Set metadata_schema defined in the Database class.
+
+        :param schema: a instance of :class:`mspsspy.db.schema.MetadataSchema`
+        """
         self.metadata_schema = schema
 
-    def read_data(self, object_id, collection, load_history=True, metadata_schema=None):
+    def set_database_schema(self, schema):
         """
+        Set database_schema defined in the Database class.
 
-        :param metadata_def:
-        :param load_history:
-        :param object_id:
-        :type object_id: ~bson.objectid.ObjectId
-        :param collection:
-        :return:
+        :param schema: a instance of :class:`mspsspy.db.schema.DatabaseSchema`
         """
-        if collection not in ['wf_TimeSeries', 'wf_Seismogram']:
-            raise KeyError("only wf_TimeSeries and wf_Seismogram are supported")
-        col = self[collection]
-        object = col.find_one({'_id': object_id})
-        if not object:
+        self.database_schema = schema
+
+    def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
+        """
+        Reads and returns the mspasspy object stored in the database.
+
+        :param object_id: mongodb "_id" of the mspasspy object.
+        :type object_id: :class:`bson.objectid.ObjectId`
+        :param object_type: either "TimeSeries" or "Seismogram".
+        :type object_type: :class:`str`
+        :param load_history: `True` to load object-level history into the mspasspy object.
+        :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        """
+        if object_type not in ['TimeSeries', 'Seismogram']:
+            raise KeyError("only TimeSeries and Seismogram are supported")
+        # todo support miniseed, hdf5
+
+        schema = self.metadata_schema
+        if object_type == 'TimeSeries':
+            read_metadata_schema = schema.TimeSeries
+        else:
+            read_metadata_schema = schema.Seismogram
+
+        # use _id to get the collection this object belongs to
+        wf_collection = read_metadata_schema.collection('_id') if not collection else collection
+
+        col = self[wf_collection]
+        object_doc = col.find_one({'_id': object_id})
+        if not object_doc:
             return None
 
         # 1. build metadata as dict
         md = Metadata()
-        for k in object:
-            md[k] = object[k]
+        for k in object_doc:
+            if read_metadata_schema.is_defined(k):
+                md[k] = object_doc[k]
 
-        # fixme assert not none?
-        site = self['site'].find_one({'_id': object['site_id']})
-        md['site_lat'] = site['lat']
-        md['site_lon'] = site['lon']
-        md['site_elev'] = site['elev']
-        md['site_starttime'] = site['starttime']
-        md['site_endtime'] = site['endtime']
-        md['net'] = site['net']
-        md['sta'] = site['sta']
-        md['loc'] = site['loc']
+        col_set = set()
+        for k in read_metadata_schema.keys():
+            col = read_metadata_schema.collection(k)
+            if col:
+                col_set.add(col)
+        col_set.discard(wf_collection)
 
-        source = self['source'].find_one({'_id': object['source_id']})
-        md['source_lat'] = source['lat']
-        md['source_lon'] = source['lon']
-        md['source_depth'] = source['depth']
-        md['source_time'] = source['time']
-        md['source_magnitude'] = source['magnitude']
+        col_dict = {}
+        for col in col_set:
+            col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
 
-        if object['dtype'] == 'TimeSeries':
-            channel = self['channel'].find_one({'_id': object['channel_id']})
-            md['chan'] = channel['chan']
-            md['channel_hang'] = channel['hang']
-            md['channel_vang'] = channel['vang']
-            md['channel_lat'] = channel['lat']
-            md['channel_lon'] = channel['lon']
-            md['channel_elev'] = channel['elev']
-            md['channel_edepth'] = channel['edepth']
-            md['channel_starttime'] = channel['starttime']
-            md['channel_endtime'] = channel['endtime']
-
-        schema = self.metadata_schema if not metadata_schema else metadata_schema
-        if object['dtype'] == 'TimeSeries':
-            read_metadata_def = schema.TimeSeries
-        else:
-            read_metadata_def = schema.Seismogram
+        for k in read_metadata_schema.keys():
+            col = read_metadata_schema.collection(k)
+            if col != wf_collection:
+                md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
 
         for k in md:
-            if read_metadata_def.is_defined(k):
-                if type(md[k]) != read_metadata_def.type(k):
+            if read_metadata_schema.is_defined(k):
+                if not isinstance(md[k], read_metadata_schema.type(k)):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
-        if object['dtype'] == 'TimeSeries':
-            mspass_object = TimeSeries({k:md[k] for k in md}, np.ndarray([0], dtype=np.float64))
+        if object_type == 'TimeSeries':
+            mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
             mspass_object.npts = md['npts']  # fixme
-        elif object['dtype'] == 'Seismogram':
-            mspass_object = Seismogram(_CoreSeismogram(md, False))
         else:
-            return None
+            mspass_object = Seismogram(_CoreSeismogram(md, False))
 
         # 2.load data from different modes
-        mode = mspass_object['storage_mode']
+        mode = object_doc['storage_mode']
         if mode == "file":
-            self._read_data_from_dfile(mspass_object)
+            self._read_data_from_dfile(mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'])
         elif mode == "gridfs":
-            self._read_data_from_gridfs(mspass_object)
+            self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
         elif mode == "url":
             pass  # todo for future
         else:
@@ -139,342 +190,537 @@ class Database(pymongo.database.Database):
 
         # 3.load history
         if load_history:
-            self._load_history(mspass_object=mspass_object)
+            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+            self._load_history(mspass_object, object_doc[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode, update_all=False, dfile=None, dir=None,
-                  exclude=None, collection=None, metadata_schema=None):
+    def save_data(self, mspass_object, storage_mode='gridfs', update_all=True, dfile=None, dir=None,
+                  exclude=None, collection=None):
+        """
+        Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
-        # 1. save data
-        if storage_mode == "file":
-            if dfile: # new file
-                mspass_object['dfile'] = dfile
-                mspass_object['dir'] = dir
-            self._save_data_to_dfile(mspass_object)
-        elif storage_mode == "gridfs":
-            self._save_data_to_gridfs(mspass_object)
-        elif storage_mode == "url":
-            pass
-        else:
+        :param mspass_object: the object you want to save.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
+            the object in a binary file, which requires `dfile` and `dir`.
+        :type storage_mode: :class:`str`
+        :param update_all: `True` to also save the metadata attributes not defined in the schema.
+        :param dfile: file name if using "file" storage mode.
+        :type dfile: :class:`str`
+        :param dir: file directory if using "file" storage mode.
+        :type dir: :class:`str`
+        :param exclude: the metadata attributes you want to exclude from being stored.
+        :type exclude: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        if storage_mode not in ['file', 'gridfs']:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
-        mspass_object['storage_mode'] = storage_mode
+        # below we try to capture permission issue before writing anything to the database.
+        # However, in the case that a storage is almost full, exceptions can still be
+        # thrown, which could mess up the database record.
+        if storage_mode == 'file':
+            if not dfile and not dir:
+                # Note the following uses the dir and dfile defined in the data object.
+                # It will ignore these two keys already in the collection in an update
+                # transaction, and the dir and dfile in the collection will be replaced.
+                if ('dir' not in mspass_object) or ('dfile' not in mspass_object):
+                    raise ValueError(
+                        'dir or dfile is not specified in data object')
+                dir = os.path.abspath(mspass_object['dir'])
+                dfile = mspass_object['dfile']
+            else:
+                dir = os.path.abspath(dir)
+            fname = os.path.join(dir, dfile)
+            if os.path.exists(fname):
+                if not os.access(fname, os.W_OK):
+                    raise PermissionError(
+                        'No write permission to the save file: {}'.format(fname))
+            else:
+                # the following loop finds the top level of existing parents to fname
+                # and check for write permission to that directory.
+                for path_item in pathlib.PurePath(fname).parents:
+                    if os.path.exists(path_item):
+                        if not os.access(path_item, os.W_OK | os.X_OK):
+                            raise PermissionError(
+                                'No write permission to the save directory: {}'.format(dir))
+                        break
 
-        # 2. save metadata
-        self.update_metadata(mspass_object, update_all, exclude, collection, metadata_schema)
+        schema = self.metadata_schema
+        if isinstance(mspass_object, TimeSeries):
+            save_schema = schema.TimeSeries
+        else:
+            save_schema = schema.Seismogram
+        # This function is needed to make sure the metadata define the time
+        # standard consistently
+        self._sync_time_metadata(mspass_object)
+        # 1. save metadata
+        self.update_metadata(mspass_object, update_all, exclude, collection)
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None, metadata_schema=None):
+        # 2. save data
+        wf_collection = save_schema.collection('_id') if not collection else collection
+        col = self[wf_collection]
+        object_doc = col.find_one({'_id': mspass_object['_id']})
+        filter_ = {'_id': mspass_object['_id']}
+        update_dict = {'storage_mode': storage_mode}
+
+        if storage_mode == "file":
+            foff = self._save_data_to_dfile(mspass_object, dir, dfile)
+            update_dict['dir'] = dir
+            update_dict['dfile'] = dfile
+            update_dict['foff'] = foff
+        elif storage_mode == "gridfs":
+            old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
+            gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
+            update_dict['gridfs_id'] = gridfs_id
+        #TODO will support url mode later
+        #elif storage_mode == "url":
+        #    pass
+
+        col.update_one(filter_, {'$set': update_dict})
+
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
+        """
+        Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
+        and metadata attributes.
+
+        :param mspass_object: the object you want to update.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude: a list of metadata attributes you want to exclude from being updated.
+        :type exclude: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-        # 1. save history
-        self._save_history(mspass_object)
-
-        # 2. save error logs
-        new_insertion = False
-        if '_id' not in mspass_object:
-            new_insertion = True
-        self._save_elog(mspass_object)  # elog ids will be updated in the wf col when saving metadata
-
-        # 3. save metadata in wf
-        if exclude is None:
-            exclude = []
-        insert_dict = {}
-
-        if collection:
-            col = self[collection]
-        else:
-            if isinstance(mspass_object, TimeSeries):
-                col = self['wf_TimeSeries']
-            else:
-                col = self['wf_Seismogram']
-
-        self._sync_metadata_before_update(mspass_object)
-        copied_metadata = Metadata(mspass_object)
-
-        schema = self.metadata_schema if not metadata_schema else metadata_schema
+        schema = self.metadata_schema
         if isinstance(mspass_object, TimeSeries):
             update_metadata_def = schema.TimeSeries
         else:
             update_metadata_def = schema.Seismogram
+
+        wf_collection = update_metadata_def.collection('_id') if not collection else collection
+        col = self[wf_collection]
+        object_doc = None
+
+        new_insertion = False
+        if '_id' not in mspass_object:
+            new_insertion = True
+
+        if not new_insertion:
+            object_doc = col.find_one({'_id': mspass_object['_id']})
+
+        # 1. create the dict of metadata to be saved in wf
+        insert_dict = {}
+        if exclude is None:
+            exclude = []
+
+        self._sync_metadata_before_update(mspass_object)
+        copied_metadata = Metadata(mspass_object)
+
         update_metadata_def.clear_aliases(copied_metadata)
 
         for k in copied_metadata:
             if not str(copied_metadata[k]).strip():
                 copied_metadata.erase(k)
 
-        # skip _id and attributes in other collections
-        skip_list = ['_id', 'site_lat', 'site_lon', 'site_elev', 'site_starttime', 'site_endtime', 'source_lat',
-                     'source_lon', 'source_depth', 'source_time', 'chan', 'hang', 'vang', 'chan_id', 'channel_hang',
-                     'channel_vang', 'channel_lat', 'channel_lon', 'channel_elev', 'channel_edepth',
-                     'channel_starttime', 'channel_endtime', 'net', 'sta', 'loc']
         for k in copied_metadata:
-            if k in exclude or k in skip_list:
+            if k in exclude:
                 continue
             if update_metadata_def.is_defined(k):
-                if type(copied_metadata[k]) != update_metadata_def.type(k):
-                    raise TypeError('{} has type {}, forbidden by definition'.format(k, type(copied_metadata[k])))
-                if not update_metadata_def.readonly(k):
+                if update_metadata_def.readonly(k):
+                    continue
+                if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
+                    try:
+                        # The following convert the actual value in a dict to a required type.
+                        # This is because the return of type() is the class reference.
+                        insert_dict[k] = update_metadata_def.type(
+                            k)(copied_metadata[k])
+                    except Exception as err:
+                        raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
+                            k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
+                else:
                     insert_dict[k] = copied_metadata[k]
             elif update_all:
                 insert_dict[k] = copied_metadata[k]
 
+        # 2. save history
+        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+        old_history_object_id = None if new_insertion else object_doc[history_obj_id_name]
+        history_object_id = self._save_history(mspass_object, old_history_object_id)
+
+        # 3. save error logs
+        elog_id_name = self.database_schema.default_name('elog') + '_id'
+        old_elog_id = None if new_insertion else object_doc[elog_id_name]
+        elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+
+        insert_dict.update({history_obj_id_name: history_object_id, elog_id_name: elog_id})
+
         if '_id' not in copied_metadata:
             mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
         else:
-            filter = {'_id': copied_metadata['_id']}
-            col.update_one(filter, {'$set': insert_dict})
+            filter_ = {'_id': copied_metadata['_id']}
+            col.update_one(filter_, {'$set': insert_dict})
 
         # 4. need to save the wf_id if the mspass_object is saved at the first time
         if new_insertion:
-            col = self['error_logs']
-            for id in mspass_object['elog_ids']:
-                filter = {'_id': id}
-                col.update_one(filter, {'$set': {'wf_id': mspass_object['_id']}})
+            elog_col = self[self.database_schema.default_name('elog')]
+            wf_id_name = wf_collection + '_id'
+            for id_ in insert_dict[elog_id_name]:
+                filter_ = {'_id': id_}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
 
-    def detele_wf(self, object_id, collection):
+    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
+        """
+        Reads and returns the mspasspy ensemble object stored in the database.
+
+        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`, where each belongs to a mspasspy object.
+        :param ensemble_type: either "TimeSeriesEnsemble" or "SeismogramEnsemble". This implies all of mspasspy objects
+            required should either all be :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :type ensemble_type: :class:`str`
+        :param load_history: `True` to also update the metadata attributes not defined in the schema.
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        """
+        if ensemble_type not in ['TimeSeriesEnsemble', 'SeismogramEnsemble']:
+            raise KeyError("only TimeSeriesEnsemble and SeismogramEnsemble are supported")
+
+        object_type = 'TimeSeries'
+        if ensemble_type == 'TimeSeriesEnsemble':
+            ensemble = TimeSeriesEnsemble(len(objectid_list))
+        else:
+            object_type = 'Seismogram'
+            ensemble = SeismogramEnsemble(len(objectid_list))
+
+        for i in range(len(objectid_list)):
+            ensemble.member.append(self.read_data(objectid_list[i], object_type, load_history))
+
+        return ensemble
+
+    def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', dfile_list=None, dir_list=None,
+                           update_all=False, exclude_keys=None, exclude_objects=None, collection=None):
+        """
+        Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
+        database.
+
+        :param ensemble_object: the ensemble you want to save.
+        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
+            the object in a binary file, which requires `dfile` and `dir`.
+        :type storage_mode: :class:`str`
+        :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is `str` type.
+        :param dir_list: A :class:`list` of file directories if using "file" storage mode. File directory is `str` type.
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being stored.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
+        :type exclude_objects: :class:`list`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        """
+        # This pushes ensemble's metadata to each member.  We pass the exclude
+        # keys as the effort required to pass ones not meant for ensemble is tiny
+        self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
+
+        if not exclude_objects:
+            exclude_objects = []
+
+        if not dfile_list:
+            dfile_list = [None for _ in range(len(ensemble_object.member))]
+        if not dir_list:
+            dir_list = [None for _ in range(len(ensemble_object.member))]
+
+        if storage_mode in ["file", "gridfs"]:
+            j = 0
+            for i in range(len(ensemble_object.member)):
+                if i not in exclude_objects:
+                    self.save_data(ensemble_object.member[i], storage_mode, update_all, dfile_list[j],
+                                   dir_list[j], exclude_keys, collection)
+                    j += 1
+        elif storage_mode == "url":
+            pass
+        else:
+            raise TypeError("Unknown storage mode: {}".format(storage_mode))
+
+    def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
+                                 collection=None):
+        """
+        Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
+        and metadata attributes.
+
+        :param ensemble_object: the ensemble you want to update.
+        :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
+            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
+        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to
+        exclude from being saved. The index starts at 0.
+        :type exclude_objects: :class:`list`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the
+        schema.
+        """
+        if not exclude_objects:
+            exclude_objects = []
+        for i in range(len(ensemble_object.member)):
+            if i not in exclude_objects:
+                self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection)
+
+    def detele_wf(self, object_id, object_type, collection=None):
+        """
+        Delete a mspasspy object.
+
+        :param object_id: object id of the object.
+        :type object_id: :class:`bson.objectid.ObjectId`
+        :param object_type: either "TimeSeries" or "Seismogram".
+        :type object_type: :class:`str`
+        :param collection: the name of the collection that the object is stored. If not specified, use the defined name
+                in the schema.
+        """
+        if object_type not in ["TimeSeries", "Seismogram"]:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+        if not collection:
+            schema = self.metadata_schema
+            if object_type == "TimeSeries":
+                detele_schema = schema.TimeSeries
+            else:
+                detele_schema = schema.Seismogram
+
+            collection = detele_schema.collection('_id') if not collection else collection
+
         self[collection].delete_one({'_id': object_id})
 
     def delete_gridfs(self, gridfs_id):
+        """
+        Delete a grid document.
+
+        :param gridfs_id: id of the document.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`
+        """
         gfsh = gridfs.GridFS(self)
         if gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
 
     def _sync_metadata_before_update(self, d):
+        """
+        Synchronize a few broken attributes before saving.
+
+        :param d: a mspasspy object.
+        :type d: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        """
         if d.tref == TimeReferenceType.Relative:
             d.put_string('time_standard', 'relative')
         else:
             d.put_string('time_standard', 'UTC')
-        if 'dtype' not in d:
-            if isinstance(d, TimeSeries):
-                d['dtype'] = 'TimeSeries'
-            elif isinstance(d, Seismogram):
-                d['dtype'] = 'Seismogram'
-            else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
 
-    def _save_history(self, mspass_object, collection='history_object'):
+    def _save_history(self, mspass_object, history_object_id=None, collection=None):
+        """
+        Save the processing history of a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param history_object_id: the previous history object id (if it has).
+        :type history_object_id: :class:`bson.objectid.ObjectId`
+        :param collection: the collection that you want to store the history object. If not specified, use the defined
+        collection in the schema.
+        :return: updated history_object_id.
+        """
+        if not collection:
+            collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
         history_binary = pickle.dumps(ProcessingHistory(mspass_object))
         # todo jobname jobid
-        if 'history_id' in mspass_object:
+        if history_object_id:
             # overwrite history
-            filter = {'_id': mspass_object['history_id']}
-            history_col.find_one_and_replace(filter, {'nodesdata': history_binary})
+            filter_ = {'_id': history_object_id}
+            history_col.find_one_and_replace(filter_, {'nodesdata': history_binary})
+            return history_object_id
         else:
-            id = history_col.insert_one({'nodesdata': history_binary}).inserted_id
-            mspass_object['history_id'] = id
+            return history_col.insert_one({'nodesdata': history_binary}).inserted_id
 
-    def _load_history(self, mspass_object, collection='history_object'):
-        if 'history_id' not in mspass_object:
-            raise KeyError("history_id not found")
-        res = self[collection].find_one({'_id': mspass_object['history_id']})
+    def _load_history(self, mspass_object, history_object_id, collection=None):
+        """
+        Load (in place) the processing history into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param history_object_id: :class:`bson.objectid.ObjectId`
+        :param collection: the collection that you want to load the processing history. If not specified, use the defined
+        collection in the schema.
+        """
+        if not collection:
+            collection = self.database_schema.default_name('history_object')
+        res = self[collection].find_one({'_id': history_object_id})
         mspass_object.load_history(pickle.loads(res['nodesdata']))
 
-    def _save_elog(self, data, collection='error_logs'):
+    def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
-        Save error log for a data object.
+        Save error log for a data object. Data objects in MsPASS contain an error log object used to post any
+        errors handled by processing functions.
 
-        Data objects in MsPASS contain an error log object used to post any
-        errors handled by processing functions.   These have different levels of
-        severity.   This method posts each log entry into the elog document with
-        the Objectid of the parent posted as a tag.  We only post the object id
-        as a simple string and make no assumptions it is valid.   To convert it
-        to a valid ObjectID in Mongo would require calls to the ObjectID constuctor.
-        We view that as postprocessing problem to handle.
-
-        Args:
-        oidstr is the ObjectID represented as a string.  It is normally pulled from
-            Metadata with the key oid_string.
-        elog is the error log object to be saved.
-        Return:  List of ObjectID of inserted
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param elog_id: a list of elog object ids.
+        :type elog_id: `list`
+        :param collection: the collection that you want to save the elogs. If not specified, use the defined
+        collection in the schema.
+        :return: updated elog_id.
         """
-        if 'elog_ids' not in data:
-            data['elog_ids'] = []
+        if not collection:
+            collection = self.database_schema.default_name('elog')
+
+        if not elog_id:
+            elog_id = []
+
         oid = None
-        if '_id' in data:
-            oid = data['_id']
-        elog = data.elog
+        if '_id' in mspass_object:
+            oid = mspass_object['_id']
+
+        if isinstance(mspass_object, Seismogram):
+            wf_id_name = 'wf_Seismogram_id'
+        elif isinstance(mspass_object, TimeSeries):
+            wf_id_name = 'wf_TimeSeries_id'
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+        elog = mspass_object.elog
         n = elog.size()
-        if n == 0:
-            return
-        errs = elog.get_error_log()
-        jobid = elog.get_job_id()
-        oidlst = []
-        for i in range(n):
-            x = errs[i]
-            docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
-                        'error_message': x.message, 'process_id': x.p_id}
-            if oid:
-                docentry['wf_id'] = oid
-            oidlst.append(self[collection].insert_one(docentry).inserted_id)
-        data['elog_ids'].extend(oidlst)
+        if n != 0:
+            errs = elog.get_error_log()
+            jobid = elog.get_job_id()
+            for i in range(n):
+                x = errs[i]
+                docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
+                            'error_message': x.message, 'process_id': x.p_id}
+                if oid:
+                    docentry[wf_id_name] = oid
+                elog_id.append(self[collection].insert_one(docentry).inserted_id)
+        return elog_id
 
     @staticmethod
-    def _read_data_from_dfile(d):
-        if ('dir' not in d) or ('dfile' not in d) or ('foff' not in d):
-            raise KeyError("one of the keys: dir, dfile, foff is missing")
-        di = d.get_string('dir')
-        dfile = d.get_string('dfile')
-        foff = d.get('foff')
-        fname = os.path.join(di, dfile)
+    def _read_data_from_dfile(mspass_object, dir, dfile, foff):
+        """
+        Read the stored data from a file and loads it into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :param foff: offset that marks the starting of the data in the file.
+        """
+        fname = os.path.join(dir, dfile)
         with open(fname, mode='rb') as fh:
             fh.seek(foff)
             float_array = array('d')
-            if isinstance(d, TimeSeries):
-                if not d.is_defined('npts'):
+            if isinstance(mspass_object, TimeSeries):
+                if not mspass_object.is_defined('npts'):
                     raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(d.get('npts') * 8))
-                d.data = DoubleVector(float_array)
-            elif isinstance(d, Seismogram):
-                if not d.is_defined('npts'):
+                float_array.frombytes(fh.read(mspass_object.get('npts') * 8))
+                mspass_object.data = DoubleVector(float_array)
+            elif isinstance(mspass_object, Seismogram):
+                if not mspass_object.is_defined('npts'):
                     raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(d.get('npts') * 8 * 3))
+                float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
                 print(len(float_array))
-                d.data = dmatrix(3, d.get('npts'))
+                mspass_object.data = dmatrix(3, mspass_object.get('npts'))
                 for i in range(3):
-                    for j in range(d.get('npts')):
-                        d.data[i, j] = float_array[i * d.get('npts') + j]
+                    for j in range(mspass_object.get('npts')):
+                        mspass_object.data[i, j] = float_array[i * mspass_object.get('npts') + j]
             else:
                 raise TypeError("only TimeSeries and Seismogram are supported")
 
     @staticmethod
-    def _save_data_to_dfile(d):
+    def _save_data_to_dfile(mspass_object, dir, dfile):
         """
-        Saves sample data as a binary dump of the sample data.
+        Saves sample data as a binary dump of the sample data. Save a mspasspy object as a pure binary dump of
+        the sample data in native (Fortran) order. Opens the file and ALWAYS appends data to the end of the file.
 
-        Save a Seismogram object as a pure binary dump of the sample data
-        in native (Fortran) order.   The file name to write is derived from
-        dir and dfile in the usual way, but frozen to unix / separator.
-        Opens the file and ALWAYS appends data to the end of the file.
-
-        :param: d is a Seismogram object whose data is to be saved
-
-        :returns:  -1 if failure.  Position of first data sample (foff) for success
-        :raise:  None. Any io failures will be trapped and posted to the elog area of
-        the object d.   Caller should test for negative return and post the error
-        to the database to help debug data problems.
-        """
-        if ('dir' not in d) or ('dfile' not in d):
-            raise KeyError("one of dir, dfile is missing")
-        di = d.get_string('dir')
-        dfile = d.get_string('dfile')
-        fname = os.path.join(di, dfile)
-        os.makedirs(os.path.dirname(fname), exist_ok=True)
-        with open(fname, mode='a+b') as fh:
-            foff = fh.seek(0, 2)
-            if isinstance(d, TimeSeries):
-                ub = bytes(np.array(d.data))  # fixme DoubleVector
-            elif isinstance(d, Seismogram):
-                ub = bytes(d.data)
-            else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
-            fh.write(ub)
-        di = os.path.dirname(os.path.realpath(fname))
-        dfile = os.path.basename(os.path.realpath(fname))
-        d.put('dir', di)
-        d.put('dfile', dfile)
-        d.put('foff', foff)
-
-    def _save_data_to_gridfs(self, d):
-        """
-        Save a Seismogram object sample data to MongoDB gridfs_wf collection.
-
-        Use this method for saving a Seismogram inside MongoDB.   This is
-        the recommended mode for anything but data to be exported or data that
-        is expected to remain static.   External files are subject to several
-        issues to beware of before using them:  (1) they are subject to damage
-        by other processes/program, (2) updates are nearly impossible without
+        This method is subject to several issues to beware of before using them:
+        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without
         stranding (potentially large quantities) of data in the middle of files or
         corrupting a file with a careless insert, and (3) when the number of files
         gets large managing them becomes difficult.
 
-        :param d: is the Seismogram to be saved
-        :param fscol: is the gridfs collection name to save the data in
-            (default is 'gridfs_wf')
-        :return: object_id of the document used to store the data in gridfs
-            -1 if something failed.  In that condition a generic error message
-            is posted to elog.    Caller should dump elog only after
-            trying to do this write to preserve the log
-        :raise: Should never throw an exception, but caller should test and save
-        error log if it is not empty.
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :return: Position of first data sample (foff).
+        """
+        fname = os.path.join(dir, dfile)
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        with open(fname, mode='a+b') as fh:
+            foff = fh.seek(0, 2)
+            if isinstance(mspass_object, TimeSeries):
+                ub = bytes(np.array(mspass_object.data))  # fixme DoubleVector
+            elif isinstance(mspass_object, Seismogram):
+                ub = bytes(mspass_object.data)
+            else:
+                raise TypeError("only TimeSeries and Seismogram are supported")
+            fh.write(ub)
+        return foff
+
+    def _save_data_to_gridfs(self, mspass_object, gridfs_id=None):
+        """
+        Save a mspasspy object sample data to MongoDB grid file system. We recommend to use this method
+        for saving a mspasspy object inside MongoDB.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param gridfs_id: if the data is already stored and you want to update it, you should provide the object id
+        of the previous data, which will be deleted. A new document will be inserted instead.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`.
+        :return inserted gridfs object id.
         """
         gfsh = gridfs.GridFS(self)
-        if d.is_defined('gridfs_id'):
-            oid = d['gridfs_id']
-            if gfsh.exists(oid):
-                gfsh.delete(oid)
-        if isinstance(d, Seismogram):
-            ub = bytes(d.data)
+        if gridfs_id and gfsh.exists(gridfs_id):
+            gfsh.delete(gridfs_id)
+        if isinstance(mspass_object, Seismogram):
+            ub = bytes(mspass_object.data)
         else:
-            ub = bytes(np.array(d.data))
-        d['gridfs_id'] = gfsh.put(pickle.dumps(ub))
+            ub = bytes(np.array(mspass_object.data))
+        return gfsh.put(pickle.dumps(ub))
 
-    def _read_data_from_gridfs(self, d):
+    def _read_data_from_gridfs(self, mspass_object, gridfs_id):
         """
-        Load a Seismogram object stored as a gridfs file.
+        Read data stored in gridfs and load it into a mspasspy object.
 
-        Constructs a Seismogram object from Metadata and sample data
-        pulled from a MongoDB gridfs document.   The Metadata must contain
-        a string representation of the ObjectId of the document with the
-        key gridfs_wf_id.  That string is used to generate a unique ObjectId
-        which is then used to find the unique document containing the sample
-        data in the collection called gridfs_wf (optionally can be changed with
-        argument fscol)
-
-        This function was designed to never throw an exception but always
-        return some form of Seismogram object. Caller should test the boolean
-        'live" attribute of the return. If it is false, it means this function
-        failed completely.  The error log may also contain various levels of
-        warning errors posted to it's internal ErrorLogger (elog) object.
-
-        :param md: is the Metadata object used to drive the construction.  This
-            would normally be constructed from a parent document in the wf
-            collection using dict2Metadata.  A critical key is the entry gridfs_wf_id
-            as described above.   Several other key:value pairs are required or
-            the function will abort with the result returned as invalid (live=false).
-            These are:  npts, starttime, and delta.   time_reference is a special
-            switch for handling UTC versus relative time.   Default is UTC
-            but relative time can be handled with the attribure t0_shift.
-            See User Manual for more about this feature.
-        :param elogtmp: is an (optional) ErrorLogger object added to the Seismogram
-            object during construction. It's primary use is to preserve any
-            warning errors encountered during the construction of md passed
-            to the function.
-        :param fscol: is the collection name the function should use to find the
-            gridfs data document
-        :return: the Seismogram object requested
-        :rtype: Seismogram
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param gridfs_id: the object id of the data stored in gridfs.
+        :type gridfs_id: :class:`bson.objectid.ObjectId`
         """
-        # First make sure we have a valid id string.  No reason to procede if
-        # not the case
-        if not d.is_defined('gridfs_id'):
-            raise KeyError("gridfs_id is not defined")
-        dataid = d['gridfs_id']
         gfsh = gridfs.GridFS(self)
-        fh = gfsh.get(file_id=dataid)
+        fh = gfsh.get(file_id=gridfs_id)
         ub = pickle.load(fh)
-        fmt = "@%dd" % int(len(ub)/8)
+        fmt = "@%dd" % int(len(ub) / 8)
         x = struct.unpack(fmt, ub)
-        if isinstance(d, TimeSeries):
-            d.data = DoubleVector(x)
-        elif isinstance(d, Seismogram):
-            if not d.is_defined('npts'):
+        if isinstance(mspass_object, TimeSeries):
+            mspass_object.data = DoubleVector(x)
+        elif isinstance(mspass_object, Seismogram):
+            if not mspass_object.is_defined('npts'):
                 raise KeyError("npts is not defined")
-            if len(x) != (3 * d['npts']):
+            if len(x) != (3 * mspass_object['npts']):
                 emess = "Size mismatch in sample data. Number of points in gridfs file = %d but expected %d" \
-                        % (len(x), (3 * d['npts']))
+                        % (len(x), (3 * mspass_object['npts']))
                 raise ValueError(emess)
-            d.data = dmatrix(3, d['npts'])
+            mspass_object.data = dmatrix(3, mspass_object['npts'])
             for i in range(3):
-                for j in range(d['npts']):
-                    d.data[i, j] = x[i * d['npts'] + j]
+                for j in range(mspass_object['npts']):
+                    mspass_object.data[i, j] = x[i * mspass_object['npts'] + j]
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
-
-
 
     @staticmethod
     def _extract_locdata(chanlist):
@@ -486,15 +732,15 @@ class Database(pymongo.database.Database):
         many duplicates, but the assumption here is the list
         will always be small
         """
-        alllocs={}
+        alllocs = {}
         for chan in chanlist:
-            alllocs[chan.location_code]=[
-                   chan.start_date,
-                   chan.end_date,
-                   chan.latitude,
-                   chan.longitude,
-                   chan.elevation,
-                   chan.depth]
+            alllocs[chan.location_code] = [
+                chan.start_date,
+                chan.end_date,
+                chan.latitude,
+                chan.longitude,
+                chan.elevation,
+                chan.depth]
         return alllocs
 
     def _site_is_not_in_db(self, record_to_test):
@@ -516,32 +762,33 @@ class Database(pymongo.database.Database):
         using a confusing and ugly query construct.
         """
         dbsite = self.site
-        queryrecord={}
-        queryrecord['net']=record_to_test['net']
-        queryrecord['sta']=record_to_test['sta']
-        queryrecord['loc']=record_to_test['loc']
-        matches=dbsite.find(queryrecord)
+        queryrecord = {}
+        queryrecord['net'] = record_to_test['net']
+        queryrecord['sta'] = record_to_test['sta']
+        queryrecord['loc'] = record_to_test['loc']
+        matches = dbsite.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec=matches.count()
-        if(nrec<=0):
+        nrec = matches.count()
+        if (nrec <= 0):
             return True
         else:
             # Now do the linear search on time for a match
-            st0=record_to_test['starttime']
-            et0=record_to_test['endtime']
-            time_fudge_factor=10.0
-            stp=st0+time_fudge_factor
-            stm=st0-time_fudge_factor
-            etp=et0+time_fudge_factor
-            etm=et0-time_fudge_factor
+            st0 = record_to_test['starttime']
+            et0 = record_to_test['endtime']
+            time_fudge_factor = 10.0
+            stp = st0 + time_fudge_factor
+            stm = st0 - time_fudge_factor
+            etp = et0 + time_fudge_factor
+            etm = et0 - time_fudge_factor
             for x in matches:
-                sttest=x['starttime']
-                ettest=x['endtime']
-                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                sttest = x['starttime']
+                ettest = x['endtime']
+                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
                     return False
             return True
+
     def _channel_is_not_in_db(self, record_to_test):
         """
         Small helper functoin for save_inventory.
@@ -554,46 +801,49 @@ class Database(pymongo.database.Database):
         day as in css3.0.
         """
         dbchannel = self.channel
-        queryrecord={}
-        queryrecord['net']=record_to_test['net']
-        queryrecord['sta']=record_to_test['sta']
-        queryrecord['loc']=record_to_test['loc']
-        queryrecord['chan']=record_to_test['chan']
-        matches=dbchannel.find(queryrecord)
+        queryrecord = {}
+        queryrecord['net'] = record_to_test['net']
+        queryrecord['sta'] = record_to_test['sta']
+        queryrecord['loc'] = record_to_test['loc']
+        queryrecord['chan'] = record_to_test['chan']
+        matches = dbchannel.find(queryrecord)
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec=matches.count()
-        if(nrec<=0):
+        nrec = matches.count()
+        if (nrec <= 0):
             return True
         else:
             # Now do the linear search on time for a match
-            st0=record_to_test['starttime']
-            et0=record_to_test['endtime']
-            time_fudge_factor=10.0
-            stp=st0+time_fudge_factor
-            stm=st0-time_fudge_factor
-            etp=et0+time_fudge_factor
-            etm=et0-time_fudge_factor
+            st0 = record_to_test['starttime']
+            et0 = record_to_test['endtime']
+            time_fudge_factor = 10.0
+            stp = st0 + time_fudge_factor
+            stm = st0 - time_fudge_factor
+            etp = et0 + time_fudge_factor
+            etm = et0 - time_fudge_factor
             for x in matches:
-                sttest=x['starttime']
-                ettest=x['endtime']
-                if( sttest>stm and sttest<stp and ettest>etm and ettest<etp):
+                sttest = x['starttime']
+                ettest = x['endtime']
+                if (sttest > stm and sttest < stp and ettest > etm and ettest < etp):
                     return False
             return True
-    def _handle_null_starttime(self,t):
-        if t==None:
+
+    def _handle_null_starttime(self, t):
+        if t == None:
             return UTCDateTime(0.0)
         else:
             return t
-    def _handle_null_endtime(self,t):
+
+    def _handle_null_endtime(self, t):
         # This constant is used below to set endtime to a time
         # in the far future if it is null
-        DISTANTFUTURE=UTCDateTime(2051,1,1,0,0)
-        if t==None:
+        DISTANTFUTURE = UTCDateTime(2051, 1, 1, 0, 0)
+        if t == None:
             return DISTANTFUTURE
         else:
             return t
+
     def save_inventory(self, inv,
                        networks_to_exclude=['SY'],
                        verbose=False):
@@ -656,15 +906,15 @@ class Database(pymongo.database.Database):
 
         dbcol = self.site
         dbchannel = self.channel
-        n_site_saved=0
-        n_chan_saved=0
-        n_site_processed=0
-        n_chan_processed=0
+        n_site_saved = 0
+        n_chan_saved = 0
+        n_site_processed = 0
+        n_chan_processed = 0
         for x in inv:
             # Inventory object I got from webservice download
             # makes the sta variable here a net:sta combination
             # We can get the net code like this
-            net=x.code
+            net = x.code
             # This adds feature to skip data for any net code
             # listed in networks_to_exclude
             if networks_to_exclude != None:
@@ -673,69 +923,69 @@ class Database(pymongo.database.Database):
             # Each x now has a station field, BUT tests I ran
             # say for my example that field has one entry per
             # x.  Hence, we can get sta name like this
-            y=x.stations
-            sta=y[0].code
-            starttime=y[0].start_date
-            endtime=y[0].end_date
-            starttime=self._handle_null_starttime(starttime)
-            endtime=self._handle_null_endtime(endtime)
-            latitude=y[0].latitude
-            longitude=y[0].longitude
+            y = x.stations
+            sta = y[0].code
+            starttime = y[0].start_date
+            endtime = y[0].end_date
+            starttime = self._handle_null_starttime(starttime)
+            endtime = self._handle_null_endtime(endtime)
+            latitude = y[0].latitude
+            longitude = y[0].longitude
             # stationxml files seen to put elevation in m. We
             # always use km so need to convert
-            elevation=y[0].elevation/1000.0
+            elevation = y[0].elevation / 1000.0
             # an obnoxious property of station xml files obspy is giving me
             # is that the start_dates and end_dates on the net:sta section
             # are not always consistent with the channel data.  In particular
             # loc codes are a problem. So we pull the required metadata from
             # the chans data and will override locations and time ranges
             # in station section with channel data
-            chans=y[0].channels
+            chans = y[0].channels
             locdata = self._extract_locdata(chans)
             # Assume loc code of 0 is same as rest
-            #loc=_extract_loc_code(chanlist[0])
-            picklestr=pickle.dumps(x)
-            all_locs=locdata.keys()
+            # loc=_extract_loc_code(chanlist[0])
+            picklestr = pickle.dumps(x)
+            all_locs = locdata.keys()
             for loc in all_locs:
-		# If multiple loc codes are present on the second pass
-		# rec will contain the objectid of the document inserted
-		# in the previous pass - an obnoxious property of insert_one
-		# This initialization guarantees an empty container
-                rec=dict()
-                rec['loc']=loc
-                rec['net']=net
-                rec['sta']=sta
-                lkey=loc
-                loc_tuple=locdata[lkey]
+                # If multiple loc codes are present on the second pass
+                # rec will contain the objectid of the document inserted
+                # in the previous pass - an obnoxious property of insert_one
+                # This initialization guarantees an empty container
+                rec = dict()
+                rec['loc'] = loc
+                rec['net'] = net
+                rec['sta'] = sta
+                lkey = loc
+                loc_tuple = locdata[lkey]
                 # We use these attributes linked to loc code rather than
                 # the station data - experience shows they are not
                 # consistent and we should use this set.
-                loc_lat=loc_tuple[2]
-                loc_lon=loc_tuple[3]
-                loc_elev=loc_tuple[4]
+                loc_lat = loc_tuple[2]
+                loc_lon = loc_tuple[3]
+                loc_elev = loc_tuple[4]
                 # for consistency convert this to km too
-                loc_elev = loc_elev/1000.0
-                loc_edepth=loc_tuple[5]
-                loc_stime=loc_tuple[0]
-                loc_stime=self._handle_null_starttime(loc_stime)
-                loc_etime=loc_tuple[1]
-                loc_etime=self._handle_null_endtime(loc_etime)
-                rec['latitude']=loc_lat
-                rec['longitude']=loc_lon
+                loc_elev = loc_elev / 1000.0
+                loc_edepth = loc_tuple[5]
+                loc_stime = loc_tuple[0]
+                loc_stime = self._handle_null_starttime(loc_stime)
+                loc_etime = loc_tuple[1]
+                loc_etime = self._handle_null_endtime(loc_etime)
+                rec['latitude'] = loc_lat
+                rec['longitude'] = loc_lon
                 # This is MongoDBs way to set a geographic
                 # point - allows spatial queries.  Note longitude
                 # must be first of the pair
-                rec['coords']=[loc_lat,loc_lon]
-                rec['elevation']=loc_elev
-                rec['edepth']=loc_edepth
-                rec['starttime']=starttime.timestamp
-                rec['endtime']=endtime.timestamp
-                if latitude!=loc_lat or longitude!=loc_lon or elevation!=loc_elev:
-                    print(net,":",sta,":",loc,
-                            " (Warning):  station section position is not consistent with loc code position" )
+                rec['coords'] = [loc_lat, loc_lon]
+                rec['elevation'] = loc_elev
+                rec['edepth'] = loc_edepth
+                rec['starttime'] = starttime.timestamp
+                rec['endtime'] = endtime.timestamp
+                if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
+                    print(net, ":", sta, ":", loc,
+                          " (Warning):  station section position is not consistent with loc code position")
                     print("Data in loc code section overrides station section")
-                    print("Station section coordinates:  ",latitude,longitude,elevation)
-                    print("loc code section coordinates:  ",loc_lat,loc_lon,loc_elev)
+                    print("Station section coordinates:  ", latitude, longitude, elevation)
+                    print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
                 if self._site_is_not_in_db(rec):
                     result=dbcol.insert_one(rec)
                     # Note this sets site_id to an ObjectID for the insertion
@@ -744,39 +994,39 @@ class Database(pymongo.database.Database):
                     self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
                     n_site_saved+=1
                     if verbose:
-                        print("net:sta:loc=",net,":",sta,":",loc,
-                            "for time span ",starttime," to ",endtime,
-                            " added to site collection")
+                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " added to site collection")
                 else:
                     if verbose:
-                        print("net:sta:loc=",net,":",sta,":",loc,
-                            "for time span ",starttime," to ",endtime,
-                            " is already in site collection - ignored")
+                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " is already in site collection - ignored")
                 n_site_processed += 1
                 # done with site now handle channel
                 # Because many features are shared we can copy rec
                 # note this has to be a deep copy
-                chanrec=copy.deepcopy(rec)
+                chanrec = copy.deepcopy(rec)
                 # We don't want this baggage in the channel documents
                 # keep them only in the site collection
-                #del chanrec['serialized_inventory']
+                # del chanrec['serialized_inventory']
                 for chan in chans:
-                    chanrec['chan']=chan.code
-                    chanrec['vang']=chan.dip
-                    chanrec['hang']=chan.azimuth
-                    chanrec['edepth']=chan.depth
-                    st=chan.start_date
-                    et=chan.end_date
+                    chanrec['chan'] = chan.code
+                    chanrec['vang'] = chan.dip
+                    chanrec['hang'] = chan.azimuth
+                    chanrec['edepth'] = chan.depth
+                    st = chan.start_date
+                    et = chan.end_date
                     # as above be careful of null values for either end of the time range
-                    st=self._handle_null_starttime(st)
-                    et=self._handle_null_endtime(et)
-                    chanrec['starttime']=st.timestamp
-                    chanrec['endtime']=et.timestamp
+                    st = self._handle_null_starttime(st)
+                    et = self._handle_null_endtime(et)
+                    chanrec['starttime'] = st.timestamp
+                    chanrec['endtime'] = et.timestamp
                     n_chan_processed += 1
-                    if(self._channel_is_not_in_db(chanrec)):
-                        picklestr=pickle.dumps(chan)
-                        chanrec['serialized_channel_data']=picklestr
-                        result=dbchannel.insert_one(chanrec)
+                    if (self._channel_is_not_in_db(chanrec)):
+                        picklestr = pickle.dumps(chan)
+                        chanrec['serialized_channel_data'] = picklestr
+                        result = dbchannel.insert_one(chanrec)
                         # insert_one has an obnoxious behavior in that it
                         # inserts the ObjectId in chanrec.  In this loop
                         # we reuse chanrec so we have to delete the id field
@@ -792,32 +1042,32 @@ class Database(pymongo.database.Database):
                         n_chan_saved += 1
                         if verbose:
                             print("net:sta:loc:chan=",
-                              net,":",sta,":",loc,":",chan.code,
-                              "for time span ",st," to ",et,
-                              " added to channel collection")
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " added to channel collection")
                     else:
                         if verbose:
                             print('net:sta:loc:chan=',
-                              net,":",sta,":",loc,":",chan.code,
-                              "for time span ",st," to ",et,
-                              " already in channel collection - ignored")
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " already in channel collection - ignored")
 
         # Tried this to create a geospatial index.   Failing
         # in later debugging for unknown reason.   Decided it
         # should be a done externally anyway as we don't use
         # that feature now - thought of doing so but realized
         # was unnecessary baggage
-        #dbcol.create_index(["coords",GEOSPHERE])
+        # dbcol.create_index(["coords",GEOSPHERE])
         #
         # For now we will always print this summary information
         # For expected use it would be essential information
         #
         print("Database.save_inventory processing summary:")
-        print("Number of site records processed=",n_site_processed)
-        print("number of site records saved=",n_site_saved)
-        print("number of channel records processed=",n_chan_processed)
-        print("number of channel records saved=",n_chan_saved)
-        return tuple([n_site_saved,n_chan_saved,n_site_processed,n_chan_processed])
+        print("Number of site records processed=", n_site_processed)
+        print("number of site records saved=", n_site_saved)
+        print("number of channel records processed=", n_chan_processed)
+        print("number of channel records saved=", n_chan_saved)
+        return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
     def load_seed_station(self, net, sta, loc='NONE', time=-1.0):
         """
@@ -843,24 +1093,25 @@ class Database(pymongo.database.Database):
         :return: handle to query result
         :rtype:  MondoDB Cursor object of query result.
         """
-        dbsite=self.site
-        query={}
-        query['net']=net
-        query['sta']=sta
-        if(loc!='NONE'):
-            query['loc']=loc
-        if(time>0.0):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbsite.count_documents(query)
-        if(matchsize==0):
+        dbsite = self.site
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        if (loc != 'NONE'):
+            query['loc'] = loc
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbsite.count_documents(query)
+        if (matchsize == 0):
             return None
         else:
-            stations=dbsite.find(query)
-            if(matchsize>1):
-                print("load_seed_site (WARNING):  query=",query)
-                print("Returned ",matchsize," documents - should be exactly one")
+            stations = dbsite.find(query)
+            if (matchsize > 1):
+                print("load_seed_site (WARNING):  query=", query)
+                print("Returned ", matchsize, " documents - should be exactly one")
             return stations
+
     def load_seed_channel(self, net, sta, chan, loc='NONE', time=-1.0):
         """
         The channel collection is assumed to have a one to one
@@ -883,28 +1134,27 @@ class Database(pymongo.database.Database):
         :return: handle to query return
         :rtype:  MondoDB Cursor object of query result.
         """
-        dbchannel=self.channel
-        query={}
-        query['net']=net
-        query['sta']=sta
-        if(loc=='NONE'):
-            query['loc']=""
+        dbchannel = self.channel
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        if (loc == 'NONE'):
+            query['loc'] = ""
         else:
-            query['loc']=loc
-        query['chan']=chan
-        if(time>0.0):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbchannel.count_documents(query)
-        if(matchsize==0):
+            query['loc'] = loc
+        query['chan'] = chan
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbchannel.count_documents(query)
+        if (matchsize == 0):
             return None
         else:
-            channel=dbchannel.find(query)
-            if(matchsize>1):
-                print("load_seed_channel (WARNING):  query=",query)
-                print("Returned ",matchsize," documents - should be exactly one")
+            channel = dbchannel.find(query)
+            if (matchsize > 1):
+                print("load_seed_channel (WARNING):  query=", query)
+                print("Returned ", matchsize, " documents - should be exactly one")
             return channel
-
 
     def load_inventory(self, net=None, sta=None, loc=None, time=None):
         """
@@ -929,26 +1179,26 @@ class Database(pymongo.database.Database):
         query parameters
         :rtype:  obspy Inventory
         """
-        dbsite=self.site
-        query={}
-        if(net!=None):
-            query['net']=net
-        if(sta!=None):
-            query['sta']=sta
-        if(loc!=None):
-            query['loc']=loc
-        if(time!=None):
-            query['starttime']={"$lt" : time}
-            query['endtime']={"$gt" : time}
-        matchsize=dbsite.count_documents(query)
-        result=Inventory()
-        if(matchsize==0):
+        dbsite = self.site
+        query = {}
+        if (net != None):
+            query['net'] = net
+        if (sta != None):
+            query['sta'] = sta
+        if (loc != None):
+            query['loc'] = loc
+        if (time != None):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbsite.count_documents(query)
+        result = Inventory()
+        if (matchsize == 0):
             return None
         else:
-            stations=dbsite.find(query)
+            stations = dbsite.find(query)
             for s in stations:
-                serialized=s['serialized_inventory']
-                netw=pickle.loads(serialized)
+                serialized = s['serialized_inventory']
+                netw = pickle.loads(serialized)
                 # It might be more efficient to build a list of
                 # Network objects but here we add them one
                 # station at a time.  Note the extend method
@@ -976,27 +1226,27 @@ class Database(pymongo.database.Database):
         # to do: need to change source_id to be a copy of the _id string.
 
         dbcol = self.source
-        nevents=0
+        nevents = 0
         for event in cat:
             # event variable in loop is an Event object from cat
-            o=event.preferred_origin()
-            m=event.preferred_magnitude()
-            picklestr=pickle.dumps(event)
-            rec={}
-            #rec['source_id']=source_id
-            rec['latitude']=o.latitude
-            rec['longitude']=o.longitude
+            o = event.preferred_origin()
+            m = event.preferred_magnitude()
+            picklestr = pickle.dumps(event)
+            rec = {}
+            # rec['source_id']=source_id
+            rec['latitude'] = o.latitude
+            rec['longitude'] = o.longitude
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
             # a None so we have to test for that condition to avoid
             # aborts
             if o.depth == None:
-                depth=0.0
+                depth = 0.0
             else:
-                depth=o.depth/1000.0
-            rec['depth']=depth
-            otime=o.time
+                depth = o.depth / 1000.0
+            rec['depth'] = depth
+            otime = o.time
             # This attribute of UTCDateTime is the epoch time
             # In mspass we only story time as epoch times
             rec['time']=otime.timestamp
@@ -1025,5 +1275,67 @@ class Database(pymongo.database.Database):
         had a different purpose.
         """
         dbsource = self.source
-        x=dbsource.find_one({'source_id' : source_id})
+        x = dbsource.find_one({'source_id': source_id})
         return x
+
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the
+    #       npts or t0 in TimeSeries.
+    @staticmethod
+    def _sync_time_metadata(mspass_object):
+        """
+        MsPASS data objects are designed to cleanly handle what we call relative
+        and UTC time.  This small helper function assures the Metadata of
+        mspass_object are consistent with the internal contents.  That
+        involves posting some special attributes seen below to handle this issue.
+        Since Metadata is volatile we need to be sure these are consistent or
+        timing can be destroyed on data.
+        """
+        # this adds a small overhead but it guarantees Metadata and internal t0
+        # values are consistent.  Shouldn't happen unless the user messes with them
+        # incorrectly, but this safety is prudent to reduce the odds of mysterious
+        # timing errors in data
+        t0 = mspass_object.t0
+        mspass_object.set_t0(t0)
+        # This will need to be modified if we ever expand time types beyond two
+        if mspass_object.time_is_relative():
+            if mspass_object.shifted():
+                mspass_object['startime_shift'] = mspass_object.time_reference()
+                mspass_object['utc_convertible'] = True
+            else:
+                mspass_object['utc_convertible'] = False
+            mspass_object['time_standard'] = 'Relative'
+        else:
+            mspass_object['utc_convertible'] = True
+            mspass_object['time_standard'] = 'UTC'
+
+    @staticmethod
+    def _sync_ensemble_metadata(ensemble, do_not_copy=None):
+        """
+        An ensemble has a Metadata object attached.  The assumption always is
+        that every member of the ensemble is appropriate to associate with the
+        ensemble Metadata attributes.  This function merges the ensembles
+        Metadata to each member using the Metadata += operator.  An optional
+        do_not_copy list of keys can  be supplied.  Keys listed found in the
+        ensemble Metadata will not be pushed to the members.
+
+        :param ensemble: ensemble object (requirement is only that it has
+        Metadata as a parent and contains a members vector of data with
+        their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
+        with members to receive the ensemble attributes.
+        :param do_not_copy: is a list of keys that should not be copied to
+        members.  The default is none.  Keys listed but not in the ensemble
+        Metadata will be silently ignored.
+        """
+        md_to_copy = Metadata(ensemble)
+        if do_not_copy != None:
+            for k in do_not_copy:
+                if md_to_copy.is_defined(k):
+                    md_to_copy.erase(k)
+        for d in ensemble.member:
+            # This needs to be replaced by a new method for
+            # copying metadata.  Using operator += is problematic
+            # for multiple reasons discussed in github issues.
+            for k in md_to_copy.keys():
+                val = md_to_copy[k]
+                d.put(k, val)

@@ -54,10 +54,9 @@ def test_reduce_stack():
     seis2 = get_live_seismogram()
     seis_cp = np.array(seis1.data)
     stack(seis1, seis2)
-    res = np.array(seis_cp) + np.array(seis2.data)
+    res = np.add(np.array(seis_cp), np.array(seis2.data))
     for i in range(3):
-        # assert np.isclose(seis1.data[i], res[i]).all() # fixme
-        pass
+        assert np.isclose(seis1.data[i], res[i]).all() # fixme
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
@@ -70,18 +69,16 @@ def test_reduce_stack():
     tse1_cp = TimeSeriesEnsemble(tse1)
     stack(tse1, tse2)
     for i in range(2):
-        assert np.isclose(tse1.member[i].data, (np.array(tse1_cp.member[i].data) + np.array(tse2.member[i].data))).all()
+        assert np.isclose(tse1.member[i].data, np.add(np.array(tse1_cp.member[i].data), np.array(tse2.member[i].data))).all()
 
     seis_e1 = get_live_seismogram_ensemble(2)
     seis_e2 = get_live_seismogram_ensemble(2)
     seis_e1_cp = SeismogramEnsemble(seis_e1)
     stack(seis_e1, seis_e2)
     for i in range(2):
-        res = np.array(seis_e1_cp.member[i].data) + np.array(seis_e2.member[i].data)
+        res = np.add(np.array(seis_e1_cp.member[i].data), np.array(seis_e2.member[i].data))
         for j in range(3):
-            # assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
-            pass
-
+            assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
 
 def test_reduce_stack_exception():
     tse1 = get_live_timeseries_ensemble(2)
@@ -128,10 +125,12 @@ def test_reduce_dask_spark(spark_context):
 
 
 if __name__ == "__main__":
-    test_reduce_dask_spark()
-    # a1 = get_live_seismogram()
-    # a2 = get_live_seismogram()
-    # print(a1.data[0, 0])
-    # print(a2.data[0, 0])
-    # a1 += a2
-    # print(a1.data[0, 0])
+    #test_reduce_stack()
+    a1 = get_live_seismogram()
+    a2 = get_live_seismogram()
+    print(a1.data[0, 0])
+    print(a2.data[0, 0])
+    print(a1.t0, a1.endtime())
+    print(a2.t0, a2.endtime())
+    a1 += a2
+    print(a1.data[0, 0])

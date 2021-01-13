@@ -46,7 +46,7 @@ class TestSchema():
         self.dbschema.unset_default('test')
         with pytest.raises(MsPASSError, match = 'no default defined'):
             dummy = self.dbschema.default_name('test')
-        
+
     def test_add(self):
         self.dbschema.wf_TimeSeries.add('test', {'type': 'boolean', 'aliases':['test1']})
         assert self.dbschema.wf_TimeSeries.type('test') == bool
@@ -67,14 +67,14 @@ class TestSchema():
         self.mdschema.Seismogram.clear_aliases(ss)
         assert not ss.is_defined('t0')
         assert ss.is_defined('starttime')
-        
+
     def test_concept(self):
         assert self.dbschema.wf_TimeSeries.concept('_id') == 'ObjectId used to define a data object'
-        
+
     def test_has_alias(self):
         assert not self.dbschema.wf_TimeSeries.has_alias('_id')
         assert self.dbschema.wf_TimeSeries.has_alias('test')
-        
+
     def test_is_alias(self):
         assert not self.dbschema.wf_TimeSeries.is_alias('_id')
         assert self.dbschema.wf_TimeSeries.is_alias('test1')
@@ -86,7 +86,7 @@ class TestSchema():
     def test_keys(self):
         for k in self.dbschema.wf_TimeSeries.keys():
             if k != 'test':
-                assert k in self.dbschema.wf_Seismogram.keys() 
+                assert k in self.dbschema.wf_Seismogram.keys()
 
     def test_type(self):
         assert self.mdschema.TimeSeries.type('_id') == ObjectId
@@ -100,7 +100,9 @@ class TestSchema():
     def test_unique_name(self):
         assert self.dbschema.channel.unique_name('CMPAZ') == 'hang'
         assert self.mdschema.TimeSeries.unique_name('CMPINC') == 'channel_vang'
-        with pytest.raises(MsPASSError, match = 'not an alias'):
+        assert self.dbschema.channel.unique_name('hang') == 'hang'
+        assert self.mdschema.TimeSeries.unique_name('channel_vang') == 'channel_vang'
+        with pytest.raises(MsPASSError, match='not defined'):
             self.dbschema.channel.unique_name('test100')
 
     def test_DBSchemaDefinition_reference(self):
@@ -125,9 +127,8 @@ class TestSchema():
         assert self.mdschema.TimeSeries.writeable('net')
         assert not self.mdschema.TimeSeries.writeable('delta')
         assert self.mdschema.TimeSeries.readonly('delta')
-        
+
         with pytest.raises(MsPASSError, match = 'not defined'):
             self.mdschema.TimeSeries.set_readonly('test100')
         with pytest.raises(MsPASSError, match = 'not defined'):
             self.mdschema.TimeSeries.set_writeable('test100')
-

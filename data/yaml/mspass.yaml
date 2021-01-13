@@ -29,7 +29,7 @@
 
 Database:
   wf_TimeSeries:
-    default: True
+    default: wf
     schema:
       _id:
         type: ObjectID
@@ -50,6 +50,13 @@ Database:
         type: double
         concept: Time of first sample of data (epoch time or relative to some other time mark)
         aliases: [t0, time]
+      starttime_shift:
+        type: double
+        concept:  Time shift applied to define relative time of 0.0
+        aliases:  t0shift
+      utc_convertible:
+        type:  bool
+        concept:  When true starttime_shift can be used to convert relative time to UTC.
       time_standard:
         type: string
         concept: Defines time standard for meaning of t0 (default should be UTC)
@@ -109,7 +116,6 @@ Database:
         optional: true
 
   site:
-    default: True
     schema:
       _id:
         type: ObjectID
@@ -117,7 +123,7 @@ Database:
       net:
         type: string
         concept: network code (net component of SEED net:sta:chan)
-        aliases: [network, site.net, channel.net, wfdisc.net]
+        aliases: [network, site.net, channel.net, wfdisc.net, site_net]
       sta:
         type: string
         concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
@@ -128,23 +134,23 @@ Database:
       lat:
         type: double
         concept: latitude of a seismic station/instrument in degrees
-        aliases: [STLA, site.lat]
+        aliases: [STLA, site.lat, site_lat]
       lon:
         type: double
         concept: longitude of a seismic station/instrument in degrees
-        aliases: [STLO, stlo, site.lon]
+        aliases: [STLO, stlo, site.lon, site_lon]
       elev:
         type: double
         concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
-        aliases: [STEL, stel, site.elev]
+        aliases: [STEL, stel, site.elev, site_elev]
       starttime:
         type: double
         concept: Time of seismic station/instrument starts recording
-        aliases: [site.starttime]
+        aliases: [site.starttime, site_starttime]
       endtime:
         type: double
         concept: Time of seismic station/instrument ends recording
-        aliases: [site.endtime]
+        aliases: [site.endtime, site_endtime]
 
   channel:
     schema:
@@ -183,11 +189,11 @@ Database:
       hang:
         type: double
         concept:  Azimuth (in degree) of a seismometer component - horizontal angle
-        aliases: [CMPAZ]
+        aliases: [CMPAZ, channel_hang]
       vang:
         type: double
         concept: Inclination from +up (in degree) of a seismometer component - vertical angle
-        aliases: [CMPINC]
+        aliases: [CMPINC, channel_vang]
       starttime:
         type: double
         concept: Time of channel starts recording
@@ -205,23 +211,23 @@ Database:
       lat:
         type: double
         concept: Latitude (in degrees) of the hypocenter of seismic source
-        aliases: [source.lat, EVLA, origin.lat]
+        aliases: [source.lat, EVLA, origin.lat, source_lat]
       lon:
         type: double
         concept: Longitude (in degrees) of the hypocenter of seismic source
-        aliases: [source.lon, EVLO, origin.lon]
+        aliases: [source.lon, EVLO, origin.lon, source_lon]
       depth:
         type: double
         concept: Depth (in km) of the hypocenter of seismic source
-        aliases: [source.depth, EVDP, origin.depth]
+        aliases: [source.depth, EVDP, origin.depth, source_depth]
       time:
         type: double
         concept: Origin time of the hypocenter of seismic source (epoch time)
-        aliases: [source.time, origin.time]
+        aliases: [source.time, origin.time, source_time]
       magnitude:
         type: double
         concept: Generic magnitude attribute
-        aliases: [MAG]
+        aliases: [MAG, source_magnitude]
 
   # According to https://docs.mongodb.com/manual/core/document/#the-id-field
   # UUID should be saved as BSON's BinData type. We should do the conversion 
@@ -244,6 +250,14 @@ Database:
       logdata:
         type: bytes
         concept: serialized content of ErrorLogger.
+      wf_Seismogram_id:
+        reference: wf_Seismogram
+        optional: true
+      wf_TimeSeries_id:
+        reference: wf_TimeSeries
+        optional: true
+
+
 
 
 Metadata:
@@ -251,7 +265,7 @@ Metadata:
     schema:
       _id:
         collection: wf_TimeSeries
-        readonly: false
+        readonly: true
       npts:
         collection: wf_TimeSeries
         readonly: false
@@ -350,7 +364,7 @@ Metadata:
     schema:
       _id:
         collection: wf_Seismogram
-        readonly: false
+        readonly: true
       npts:
         collection: wf_Seismogram
         readonly: false
@@ -379,9 +393,6 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       tmatrix:
-        collection: wf_Seismogram
-        readonly: false
-      channel_id:
         collection: wf_Seismogram
         readonly: false
       net:

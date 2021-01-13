@@ -52,15 +52,7 @@ public:
       ator,
       tshift);
   }
-  void rtoa(const double tshift)
-  {
-    PYBIND11_OVERLOAD(
-      void,
-      BasicTimeSeries,
-      ator,
-      tshift);
-  }
-  void rota()
+  void rtoa()
   {
     PYBIND11_OVERLOAD(
       void,
@@ -169,8 +161,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("sample_number",&BasicTimeSeries::sample_number,"Return the sample index number for a specified time")
     .def("endtime",&BasicTimeSeries::endtime,"Return the (computed) end time of a time series")
     .def("shifted",&BasicTimeSeries::shifted,"Return True if the data have been time shifted to relative time")
-    .def("rtoa",py::overload_cast<const double>(&BasicTimeSeries::rtoa))
-    .def("rtoa",py::overload_cast<>(&BasicTimeSeries::rtoa))
+    .def("rtoa",&BasicTimeSeries::rtoa,"Restore relative time to absolute if possible")
     .def("ator",&BasicTimeSeries::ator,"Switch time standard from absolute (UTC) to a relative time scale")
     .def("shift",&BasicTimeSeries::shift,"Shift time reference by a specified number of seconds")
     .def("time_reference",&BasicTimeSeries::time_reference,"Return time standard")
