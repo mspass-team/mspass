@@ -6,6 +6,7 @@
 #include "mspass/algorithms/algorithms.h"
 namespace mspass::algorithms
 {
+using mspass::seismic::BasicTimeSeries;
 using mspass::seismic::CoreTimeSeries;
 using mspass::seismic::CoreSeismogram;
 using mspass::seismic::TimeSeries;
@@ -107,7 +108,32 @@ struct greater_seedorder
     };
   };
 };
-
+/* This small helper with a rather colorful name describes its function.
+When bundling fails we need a way to id the body.   We do that here by
+merging all the Metadata with the Metadata += operator.   That will leave
+some relics of the order, but should allow the user to id the body */
+Seismogram dogtag(vector<CoreTimeSeries>& bundle)
+{
+  Metadata md;
+  size_t i(0);
+  for(auto d=bundle.begin();d!=bundle.end();++d,++i)
+  {
+    if(i==0)
+    {
+      md=dynamic_cast<Metadata&>(*d);
+    }
+    else
+    {
+      md += dynamic_cast<Metadata&>(*d);
+    }
+  }
+  Seismogram result(0);
+  /* this very obscure syntax calls operator = for Metadata which copies
+  only md to the result. */
+  result.Metadata::operator=(md);
+  result.kill();
+  return result;
+}
 
 /* This function is useful standalone as a way o bundle data assembled
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
@@ -166,9 +192,11 @@ vector<Seismogram> BundleGroup(std::vector<TimeSeries>& d,
           igend=ig;
         vector<CoreTimeSeries> bundle;
         vector<ProcessingHistory*> hvec;
-        if(chans_this_group.size()==3)
+        if(chans_this_group.size()<=3)
         {
-          bundle.reserve(3);
+          /* We can handle deficient groups here by this algorithm.
+          After conditionals we kill groups when size is less than 3.*/
+          bundle.reserve(chans_this_group.size());
           for(auto k=i0g0;k<igend;++k)
           {
             bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[k]));
@@ -224,15 +252,36 @@ vector<Seismogram> BundleGroup(std::vector<TimeSeries>& d,
           }
         }
         Seismogram d3c;
-        try{
-          d3c=Seismogram(CoreSeismogram(bundle),algname);
-          if(hvec.size()==3) d3c.add_many_inputs(hvec);
-        }
-        catch(MsPASSError& err)
+        if(bundle.size()!=3)
         {
+          /* The message posted here assumes number will always be less than
+          three.  That is correct with the above algorithm so we use != to handle
+          all for safety*/
+          d3c=dogtag(bundle);
+          if(hvec.size()>0) d3c.add_many_inputs(hvec);
           d3c.kill();
-          d3c.elog.log_error(err);
-        };
+          stringstream ss;
+          ss<<"Insufficient data to generate Seismogram object."<<endl
+            <<"Number of channels received  for bundling="<<bundle.size()<<endl
+            <<"Should be three but can sometimes recover with greater than 3"<<endl;
+          d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
+        }
+        else
+        {
+          try{
+            d3c=Seismogram(CoreSeismogram(bundle),algname);
+            if(hvec.size()==3) d3c.add_many_inputs(hvec);
+          }
+          catch(MsPASSError& err)
+          {
+            d3c=dogtag(bundle);
+            if(hvec.size()>0) d3c.add_many_inputs(hvec);
+            d3c.kill();
+            d3c.elog.log_error(err);
+          };
+        }
+        /* Notice we save both the living and the dead.  They meet
+        judgement day on return*/
         result.push_back(d3c);
       }
     }
@@ -319,7 +368,6 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
             iend=i;
           else
             iend=i-1;
-          /*Silently drop incomplete groups */
           if((iend-i0)>=2)  //Use iend to handle end condition instead of i
           {
             if((iend-i0) == 2)
@@ -341,8 +389,10 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
                 if(hvec.size()==3) d3c.add_many_inputs(hvec);
               }catch(MsPASSError& err)
               {
-                d3c.elog.log_error(err);
+                d3c=dogtag(work);
+                if(hvec.size()>0) d3c.add_many_inputs(hvec);
                 d3c.kill();
+                d3c.elog.log_error(err);
               }
               ens3c.member.push_back(d3c);
             }
@@ -359,6 +409,33 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
               for(auto k=0;k<dgrp.size();++k) ens3c.member.push_back(dgrp[k]);
             }
           }
+          else
+          {
+            /* we land here for deficient groups.   We create a body bag
+            with the dogtag function and handle the components from this
+            case exactly like that when the Seismogram constructor
+            above throws an exception */
+            vector<CoreTimeSeries> work;
+            vector<ProcessingHistory*> hvec;
+            for(size_t k=i0;k<=iend;++k)
+            {
+              work.push_back(dynamic_cast<CoreTimeSeries&>(d.member[k]));
+              if( ! (d.member[k].is_empty()) )
+              {
+                hvec.push_back(dynamic_cast<ProcessingHistory*>(&d.member[k]));
+              }
+            }
+            Seismogram d3c;
+            d3c=dogtag(work);
+            if(hvec.size()>0) d3c.add_many_inputs(hvec);
+            d3c.kill();
+            stringstream ss;
+            ss<<"Insufficient data to generate Seismogram object."<<endl
+              <<"Number of channels received  for bundling="<<work.size()<<endl
+              <<"Should be three but can sometimes recover with greater than 3"<<endl;
+            d3c.elog.log_error("bundle_seed_data",ss.str(),ErrorSeverity::Invalid);
+            ens3c.member.push_back(d3c);
+          }
           laststa=sta;
           lastnet=net;
           lastloc=loc;
@@ -368,6 +445,14 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
       }
     }
     return ens3c;
+  }catch(...){throw;};
+}
+/* This one liner is a useful as a processing function and is thus
+exposed to python.  */
+void seed_ensemble_sort(Ensemble<TimeSeries>& d)
+{
+  try{
+    std::sort(d.member.begin(),d.member.end(),greater_seedorder());
   }catch(...){throw;};
 }
 }  // End namespace
