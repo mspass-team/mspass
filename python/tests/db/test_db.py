@@ -170,7 +170,7 @@ class TestDatabase():
         nodes = ts.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
-        with pytest.raises(MsPASSError, match="Failed to save the history object as a new insertion"):
+        with pytest.raises(MsPASSError, match="The history object to be saved has a duplicate uuid"):
             self.db._save_history(ts)
 
     def test_update_metadata(self):
