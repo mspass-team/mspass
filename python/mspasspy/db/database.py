@@ -539,16 +539,16 @@ class Database(pymongo.database.Database):
         current_uuid = proc_history.id() # uuid in the current node
         history_binary = pickle.dumps(proc_history)
         # todo save jobname jobid when global history module is done
-        if prev_history_object_id:
-            # overwrite history
-            history_col.delete_one({'_id': prev_history_object_id})
-            history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
-        else:
-            # new insertion
-            try:
+        try:
+            if prev_history_object_id:
+                # overwrite history
+                history_col.delete_one({'_id': prev_history_object_id})
                 history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
-            except Exception as e:
-                raise MsPASSError("Failed to save the history object as a new insertion", e)
+            else:
+                # new insertion
+                history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
+        except pymongo.errors.DuplicateKeyError as e:
+            raise MsPASSError("The history object to be saved has a duplicate uuid", "Fatal") from e
 
         return current_uuid
 
