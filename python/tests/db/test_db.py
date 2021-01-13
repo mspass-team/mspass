@@ -170,6 +170,9 @@ class TestDatabase():
         nodes = ts.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
+        with pytest.raises(MsPASSError, match="Failed to save the history object as a new insertion"):
+            self.db._save_history(ts)
+
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')

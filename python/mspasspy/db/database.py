@@ -545,7 +545,11 @@ class Database(pymongo.database.Database):
             history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
         else:
             # new insertion
-            history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
+            try:
+                history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
+            except Exception as e:
+                raise MsPASSError("Failed to save the history object as a new insertion", e)
+
         return current_uuid
 
     def _load_history(self, mspass_object, history_object_id, collection=None):
