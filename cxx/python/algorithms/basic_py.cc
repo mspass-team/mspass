@@ -1,8 +1,14 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 
 #include <mspass/algorithms/algorithms.h>
 #include <mspass/algorithms/Butterworth.h>
 #include <mspass/utility/Metadata.h>
+
+PYBIND11_MAKE_OPAQUE(std::vector<double>);
+PYBIND11_MAKE_OPAQUE(std::vector<mspass::seismic::TimeSeries>);
+PYBIND11_MAKE_OPAQUE(std::vector<mspass::seismic::Seismogram>);
 
 namespace mspass {
 namespace mspasspy {
@@ -15,6 +21,10 @@ using namespace mspass::algorithms;
 PYBIND11_MODULE(basic, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.basic";
   m.doc() = "A submodule for algorithms namespace of ccore with common algorithms";
+
+  py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector");
+  py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
 
   py::class_<mspass::algorithms::Butterworth>
               (m,"Butterworth","Butterworth filter operator processing object")
@@ -121,6 +131,10 @@ PYBIND11_MODULE(basic, m) {
     py::arg("d"),
     py::arg("i0"),
     py::arg("iend") )
+  ;
+  m.def("seed_ensemble_sort",&seed_ensemble_sort,
+    "Sort a TimeSeriesEnsemble using seed net codes: net,sta,loc,chan",
+    py::arg("d") )
   ;
 }
 
