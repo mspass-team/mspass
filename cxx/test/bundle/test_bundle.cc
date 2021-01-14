@@ -131,9 +131,16 @@ void print_output(const Ensemble<Seismogram>& e)
     {
       cout << "Undefined"<<" ";
     }
-    for(auto k=0;k<3;++k)
+    if(d->live())
     {
-      cout << d->u(k,0) << " ";
+      for(auto k=0;k<3;++k)
+      {
+        cout << d->u(k,0) << " ";
+      }
+    }
+    else
+    {
+      cout << "NULL - killed"<<endl;
     }
     cout <<endl;
   }
@@ -218,36 +225,26 @@ int main(int argc, char **argv)
       }
     }
   }
-  vector<string> pattern1,pattern2;  // First set of tests should have sat in this order
-  pattern1.push_back("DEF");
-  pattern1.push_back("DEF");
-  pattern1.push_back("BBLONG");
-  pattern1.push_back("BBLONG");
-  pattern1.push_back("ABC");
-  pattern1.push_back("ABC");
-  pattern1.push_back("DEF");
-  pattern1.push_back("DEF");
-  pattern1.push_back("BBLONG");
-  pattern1.push_back("BBLONG");
-  pattern1.push_back("ABC");
-  pattern1.push_back("ABC");
-  pattern2.push_back("DEF");
-  pattern2.push_back("DEF");
-  pattern2.push_back("BBLONG");
-  pattern2.push_back("ABC");
-  pattern2.push_back("ABC");
-  pattern2.push_back("DEF");
-  pattern2.push_back("DEF");
-  pattern2.push_back("BBLONG");
-  pattern2.push_back("BBLONG");
-  pattern2.push_back("ABC");
+  vector<string> pattern;  // First set of tests should have sat in this order
+  pattern.push_back("DEF");
+  pattern.push_back("DEF");
+  pattern.push_back("BBLONG");
+  pattern.push_back("BBLONG");
+  pattern.push_back("ABC");
+  pattern.push_back("ABC");
+  pattern.push_back("DEF");
+  pattern.push_back("DEF");
+  pattern.push_back("BBLONG");
+  pattern.push_back("BBLONG");
+  pattern.push_back("ABC");
+  pattern.push_back("ABC");
   cout << "Input ensemble summary"<<endl;
   print_input_pattern(ens0);
   cout << "Running best case test for bundle_seed_data"<<endl;
   ens1=ens0;
   ens3c=bundle_seed_data(ens1);
   print_output(ens3c);
-  assert(compare_stas(ens3c,pattern1));
+  assert(compare_stas(ens3c,pattern));
   ens2=ens0;
   cout << "Trying an ensemble with some net values undefined"<<endl;
   for(auto d=ens2.member.begin();d!=ens2.member.end();++d)
@@ -258,7 +255,7 @@ int main(int argc, char **argv)
   }
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
-  assert(compare_stas(ens3c,pattern1));
+  assert(compare_stas(ens3c,pattern));
   ens3=ens0;
   cout << "Trying similar test with some loc values undefined"<<endl;
   for(auto d=ens3.member.begin();d!=ens3.member.end();++d)
@@ -269,21 +266,21 @@ int main(int argc, char **argv)
   }
   ens3c=bundle_seed_data(ens3);
   print_output(ens3c);
-  assert(compare_stas(ens3c,pattern1));
+  assert(compare_stas(ens3c,pattern));
   cout << "Test handling of pure duplicates"<<endl;
   ens2=ens0;
   ens2.member.push_back(ens0.member[4]);
   ens2.member.push_back(ens0.member[8]);
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
-  assert(compare_stas(ens3c,pattern1));
+  assert(compare_stas(ens3c,pattern));
   cout << "Test handling of incomplete bundles"<<endl;
   ens2=ens0;
   ens2.member.erase(ens2.member.begin());
   ens2.member.erase(ens2.member.end());
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
-  assert(compare_stas(ens3c,pattern2));
+  assert(compare_stas(ens3c,pattern));
   cout << "Testing handling of irregular start and end time"<<endl
     << "Note this is really a test of the CoreTimeSeries constructor used by bundle_seed_data"
     <<endl;
@@ -293,7 +290,7 @@ int main(int argc, char **argv)
   // Assume all members have commons start time - true unless something is changed in test
   ens4.member[5].set_t0(oldt0-0.3);
   ens3c=bundle_seed_data(ens4);
-  assert(compare_stas(ens3c,pattern1));
+  assert(compare_stas(ens3c,pattern));
   cout << "Output member start and end times relative to base time shift"<<endl;
   for(auto d=ens3c.member.begin();d!=ens3c.member.end();++d)
   {
