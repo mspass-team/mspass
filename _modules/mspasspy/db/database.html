@@ -685,30 +685,37 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">d</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s1">&#39;time_standard&#39;</span><span class="p">,</span> <span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_save_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">history_object_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_save_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">prev_history_object_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the processing history of a mspasspy object.</span>
 
 <span class="sd">        :param mspass_object: the target object.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">        :param history_object_id: the previous history object id (if it has).</span>
-<span class="sd">        :type history_object_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">        :param prev_history_object_id: the previous history object id (if it has).</span>
+<span class="sd">        :type prev_history_object_id: :class:`bson.objectid.ObjectId`</span>
 <span class="sd">        :param collection: the collection that you want to store the history object. If not specified, use the defined</span>
 <span class="sd">        collection in the schema.</span>
-<span class="sd">        :return: updated history_object_id.</span>
+<span class="sd">        :return: current history_object_id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span><span class="p">:</span>
             <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span>
         <span class="n">history_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
-        <span class="n">history_binary</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">))</span>
-        <span class="c1"># todo jobname jobid</span>
-        <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
-            <span class="c1"># overwrite history</span>
-            <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
-            <span class="n">history_col</span><span class="o">.</span><span class="n">find_one_and_replace</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;nodesdata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span>
-            <span class="k">return</span> <span class="n">history_object_id</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;nodesdata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span><span class="o">.</span><span class="n">inserted_id</span>
+        <span class="n">proc_history</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+        <span class="n">current_uuid</span> <span class="o">=</span> <span class="n">proc_history</span><span class="o">.</span><span class="n">id</span><span class="p">()</span> <span class="c1"># uuid in the current node</span>
+        <span class="n">history_binary</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">proc_history</span><span class="p">)</span>
+        <span class="c1"># todo save jobname jobid when global history module is done</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prev_history_object_id</span><span class="p">:</span>
+                <span class="c1"># overwrite history</span>
+                <span class="n">history_col</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">prev_history_object_id</span><span class="p">})</span>
+                <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">current_uuid</span><span class="p">,</span> <span class="s1">&#39;nodesdata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># new insertion</span>
+                <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">current_uuid</span><span class="p">,</span> <span class="s1">&#39;nodesdata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">DuplicateKeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;The history object to be saved has a duplicate uuid&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">current_uuid</span>
 
     <span class="k">def</span> <span class="nf">_load_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">history_object_id</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
