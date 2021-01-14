@@ -396,8 +396,8 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
                         print('Linking to document with source_id=',source_id)
                 dbwf.update_one(ens_match_arg,update_record)
     except Exception as err:
-        print('something threw an unexpected exception - this needs to be cleaned up')
-        print(err)
+        raise MsPASSError('Something threw an unexpected exception',
+            ErrorSeverity.Invalid) from err
 
 def load_hypocenter_data_by_id(db,ens):
     """
@@ -586,9 +586,9 @@ def load_site_data(db,ens):
                                % [n,net,sta,t0])
                     d.elog.log_error('load_site_data',message,ErrorSeverity.Complain)
         return ens
-    except:
-        # this nees to have exlicit handlers for a stable release version
-        print('something threw an unexpected exception')
+    except Exception as err:
+        raise MsPASSError('Something threw an unexpected exception',
+            ErrorSeverity.Invalid) from err
 def load_channel_data(db,ens):
     """
     Loads channel data into ens.  Similar to load_source_data but uses a diffrent
@@ -646,9 +646,9 @@ def load_channel_data(db,ens):
                 d['site_id']=chanrec['_id']
 
         return ens
-    except:
-        # this nees to have exlicit handlers for a stable release version
-        print('something threw an unexpected exception')
+    except Exception as err:
+        raise MsPASSError('Something threw an unexpected exception',
+            ErrorSeverity.Invalid) from err
 
 def load_arrivals_by_id(db,tsens,
         phase='P',
