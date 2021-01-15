@@ -403,7 +403,6 @@ class Database(pymongo.database.Database):
 
         return ensemble
 
-
     def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', dfile_list=None, dir_list=None,
                            update_all=False, exclude_keys=None, exclude_objects=None, collection=None):
         """
