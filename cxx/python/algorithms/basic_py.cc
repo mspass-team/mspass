@@ -109,6 +109,11 @@ PYBIND11_MODULE(basic, m) {
     py::arg("twin") )
   ;
 
+  /* The following line is necessary for the Vectors to be recognized. Reference:
+     https://pybind11.readthedocs.io/en/stable/advanced/misc.html#partitioning-code-over-multiple-extension-modules
+  */
+  py::module_::import("mspasspy.ccore.seismic");
+
   m.def("_bundle_seed_data",&bundle_seed_data,
     "Create SeismogramEnsemble from sorted TimeSeriesEnsemble",
     py::return_value_policy::copy,
