@@ -157,8 +157,25 @@ class TestDatabase():
         loaded_nodes = ts_2.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
+        logging_helper.info(ts, 'dummy_func_3', '3')
+        new_history_object_id = self.db._save_history(ts, history_object_id)
+        res = self.db['history_object'].find_one({'_id': history_object_id})
+        assert not res
+        res = self.db['history_object'].find_one({'_id': new_history_object_id})
+        assert res
+
+        ts_2 = TimeSeries()
+        self.db._load_history(ts_2, new_history_object_id)
+        loaded_nodes = ts_2.get_nodes()
+        nodes = ts.get_nodes()
+        assert str(nodes) == str(loaded_nodes)
+
+        with pytest.raises(MsPASSError, match="The history object to be saved has a duplicate uuid"):
+            self.db._save_history(ts)
+
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
         exclude = ['extra2']
         self.db.update_metadata(ts, update_all=True, exclude=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
@@ -198,6 +215,8 @@ class TestDatabase():
         assert not seis2
 
         seis = copy.deepcopy(self.test_seis)
+        logging_helper.info(seis, 'deepcopy', '1')
+
         self.db.save_data(seis, storage_mode='gridfs', update_all=True, exclude=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
 
@@ -229,6 +248,7 @@ class TestDatabase():
         assert seis2['source_magnitude'] == res['magnitude']
 
         ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
         self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
         ts2 = self.db.read_data(ts['_id'], 'TimeSeries')
         for key in wf_keys:
@@ -280,16 +300,33 @@ class TestDatabase():
         assert res['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
 
+        with pytest.raises(ValueError, match='dir or dfile is not specified in data object'):
+            self.db.save_data(seis2, storage_mode='file', update_all=True)
+        seis2['dir'] = '/'
+        seis2['dfile'] = 'test_db_output'
+        with pytest.raises(PermissionError, match='No write permission to the save directory'):
+            self.db.save_data(seis2, storage_mode='file', update_all=True)
+
     def test_detele_wf(self):
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
         res = self.db['wf'].find_one({'_id': id})
         assert res
-        self.db.detele_wf(id, 'wf')
+        self.db.detele_wf(id, "TimeSeries", 'wf')
         res = self.db['wf'].find_one({'_id': id})
+        assert not res
+
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        self.db.detele_wf(ts['_id'], "TimeSeries")
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert not res
 
     def test_delete_gridfs(self):
         ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
         self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         gfsh = gridfs.GridFS(self.db)
@@ -301,6 +338,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts1, 'deepcopy', '1')
+        logging_helper.info(ts2, 'deepcopy', '1')
+        logging_helper.info(ts3, 'deepcopy', '1')
         self.db.save_data(ts1, 'gridfs')
         self.db.save_data(ts2, 'gridfs')
         self.db.save_data(ts3, 'gridfs')
@@ -335,6 +375,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
+        logging_helper.info(seis1, 'deepcopy', '1')
+        logging_helper.info(seis2, 'deepcopy', '1')
+        logging_helper.info(seis3, 'deepcopy', '1')
         self.db.save_data(seis1, 'gridfs')
         self.db.save_data(seis2, 'gridfs')
         self.db.save_data(seis3, 'gridfs')
@@ -368,6 +411,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts1, 'deepcopy', '1')
+        logging_helper.info(ts2, 'deepcopy', '1')
+        logging_helper.info(ts3, 'deepcopy', '1')
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -392,6 +438,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
+        logging_helper.info(seis1, 'deepcopy', '1')
+        logging_helper.info(seis2, 'deepcopy', '1')
+        logging_helper.info(seis3, 'deepcopy', '1')
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
@@ -417,6 +466,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts1, 'deepcopy', '1')
+        logging_helper.info(ts2, 'deepcopy', '1')
+        logging_helper.info(ts3, 'deepcopy', '1')
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -432,6 +484,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
+        logging_helper.info(seis1, 'deepcopy', '1')
+        logging_helper.info(seis2, 'deepcopy', '1')
+        logging_helper.info(seis3, 'deepcopy', '1')
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
@@ -477,6 +532,9 @@ def test_read_distributed_data(spark_context):
     ts1 = copy.deepcopy(test_ts)
     ts2 = copy.deepcopy(test_ts)
     ts3 = copy.deepcopy(test_ts)
+    logging_helper.info(ts1, 'deepcopy', '1')
+    logging_helper.info(ts2, 'deepcopy', '1')
+    logging_helper.info(ts3, 'deepcopy', '1')
 
     db.save_data(ts1, 'gridfs')
     db.save_data(ts2, 'gridfs')
@@ -522,6 +580,9 @@ def test_read_distributed_data_dask():
     ts1 = copy.deepcopy(test_ts)
     ts2 = copy.deepcopy(test_ts)
     ts3 = copy.deepcopy(test_ts)
+    logging_helper.info(ts1, 'deepcopy', '1')
+    logging_helper.info(ts2, 'deepcopy', '1')
+    logging_helper.info(ts3, 'deepcopy', '1')
 
     db.save_data(ts1, 'gridfs')
     db.save_data(ts2, 'gridfs')
