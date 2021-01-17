@@ -316,4 +316,19 @@ int main(int argc, char **argv)
   cout << "This should show two different errors and define last two members as marked dead"<<endl;
   print_ensemble_errors(ens3c);
   assert(nlive==10);
+  cout << "Testing sort function isolation"<<endl;
+  ens2=ens1;
+  /* Could not figure out a good assert to validate that the following work.
+  The steps after will create errors if it didn't do what it should though.*/
+  seed_ensemble_sort(ens2);
+  cout << "Testing BundleGroup"<<endl<<"First a test that should work"<<endl;
+  Seismogram s;
+  s=BundleGroup(ens2.member,0,2);
+  assert(s.live());
+  cout << "Success - trying an improper bundle.  This one should be killed"<<endl;
+  s=BundleGroup(ens2.member,0,5);
+  assert(s.dead());
+  cout << "Error message posted"<<endl;
+  list<LogData> errors=s.elog.get_error_log();
+  for(auto e=errors.begin();e!=errors.end();++e) cout << *e<<endl;
 }

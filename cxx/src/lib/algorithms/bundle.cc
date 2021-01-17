@@ -142,23 +142,98 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
   const size_t i0, const size_t iend)
 {
   const string algname("BundleGroup");
-  Seismogram result;
   try{
-    string chan;
+    vector<CoreTimeSeries> bundle;
+    vector<ProcessingHistory*> hvec;
+    Seismogram d3c;  // this holds the result even if marked dead
+    string net,sta,chan,loc;
+    /*this holds the first 2 characters in the chan code that seed
+    from data centers is always constant for a 3c set.*/
+    string sta2;
     /* We load both a vector and set container with the chan keys.
     Depends on set inserts overwrite so the set container will only have
     unique keys while the vector has the chan for each vector component */
     vector<string> chans_this_group;
-    set<string> keys;
+    set<string> keys,stations,networks,loccodes,sta2set;
     for(size_t i=i0;i<=iend;++i)
     {
+      net=d[i].get_string("net");
+      sta=d[i].get_string("sta");
       chan=d[i].get_string("chan");
+      sta2.assign(chan,0,2);
+      loc=d[i].get_string("loc");
       chans_this_group.push_back(chan);
+      networks.insert(net);
+      stations.insert(sta);
+      loccodes.insert(loc);
+      sta2set.insert(sta2);
       keys.insert(chan);
     }
+    /* We have to abort this algorithm immediately if there are duplicate
+    net or sta values as it automatically means the assumptions of the
+    algorithm are violated.  The "immediately" is not so obvious
+    because we have to do a lot of housecleaning - there is a return
+    at the end of this code block for the true condition*/
+    if( (stations.size()!=1) || (networks.size()!=1)
+         || (loccodes.size()!=1) || (sta2set.size()!=1) )
+    {
+      /* Note this code segment is repeated too many times in this function.
+      I may be wise at some point to make it a file scope function like dogtag.*/
+      bundle.reserve(chans_this_group.size());
+      for(size_t i=i0;i<=iend;++i)
+      {
+        bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+        if( ! (d[i].is_empty()) )
+        {
+          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
+        }
+      }
+      d3c=dogtag(bundle);
+      if(hvec.size()>0) d3c.add_many_inputs(hvec);
+      d3c.kill();
+      stringstream ss;
+      ss << "Irregular grouping:  inconsistent seed name codes in group"<<endl;
+      if(stations.size()>1)
+      {
+        ss << "List of inconsistent station names:  ";
+        for(auto sptr=stations.begin();sptr!=stations.end();++sptr)
+           ss << *sptr << " ";
+        ss << endl;
+      }
+      if(networks.size()>1)
+      {
+        ss << "List of inconsistent network names:  ";
+        for(auto sptr=networks.begin();sptr!=networks.end();++sptr)
+           ss << *sptr << " ";
+        ss << endl;
+      }
+      if(loccodes.size()>1)
+      {
+        ss << "List of inconsistent location names:  ";
+        for(auto sptr=loccodes.begin();sptr!=loccodes.end();++sptr)
+        {
+          /* have to handle the common case of a loc code defined by an
+          empty string - not null empty */
+          if(sptr->length()==0)
+            //ss << "BLANK_LOC_CODE"<<" ";
+            ss << "\"  \" ";
+          else
+            ss << *sptr <<" ";
+        }
+        ss << endl;
+      }
+      if(sta2set.size()>1)
+      {
+        ss << "List of inconsistent channel codes (first 2 characters should be unique and they are not):  ";
+        for(auto sptr=sta2set.begin();sptr!=sta2set.end();++sptr)
+           ss << *sptr << " ";
+        ss << endl;
+      }
+      d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
+      return d3c;
+    }
     size_t nkeys=keys.size();
-    vector<CoreTimeSeries> bundle;
-    vector<ProcessingHistory*> hvec;
+
     if(chans_this_group.size()<=3)
     {
       /* We can handle deficient groups here by this algorithm.
@@ -262,7 +337,6 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
         }
       }
     }
-    Seismogram d3c;
     if(nkeys==3)
     {
       try{
