@@ -134,158 +134,174 @@ Seismogram dogtag(vector<CoreTimeSeries>& bundle)
   result.kill();
   return result;
 }
-
 /* This function is useful standalone as a way o bundle data assembled
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
-groupings that are irregular.   The algorithm has three fundamental assumption s
-that is guaranteed when called from bundle_seed_data below, but could
-be problem if used in isolation.   python bindings should contain
-validation to guaranteed input those function called directly from python
-satisfies these two assumpions:
-1.  chan is set for all data and is a valid seed channel code.
-2.  The input has been sorted by chan
-3.  All members of hte bundle received have approximately the same start time.
-
-The algorithm used to handle irregular bundles is not elegant and will fail
-if th reason the in put is irregular (i.e. not a mulitple of 3) is a
-data gap that cause something upstream to fragment the data into pieces.
-Basically the algorithm used works only to handle duplicates.  It will
-silenetly drop the duplicates if tha common start time assumption is true.
-It is subject to throwing exceptions by th CoreSeismogram constructor
-that assembles thes three componnts. That mainly means the sample rates
-must match and obvious metadata like hang and vang are required. */
-
-vector<Seismogram> BundleGroup(std::vector<TimeSeries>& d,
+groupings that are irregular but it has broader use provided the data
+are from miniseed and have chan defined.    */
+Seismogram BundleGroup(std::vector<TimeSeries>& d,
   const size_t i0, const size_t iend)
 {
   const string algname("BundleGroup");
-  vector<Seismogram> result;
+  Seismogram result;
   try{
-    /* We use the first two characters in chan names to define groupings.
-    These two strings hold an anchor for testing and current substring in
-    the scan loop.  The algorithm will only work if the ensemble was
-    previously sorted alphabetically by channel code and the codes obey
-    seed rules. We also don't test that chan exists because in this file
-    usage the sort above will fail if chan is not defined.   Do not
-    transport this code without accounting for that assumption*/
-    string ss0,ss;
-    size_t ig,i0g0;
     string chan;
+    /* We load both a vector and set container with the chan keys.
+    Depends on set inserts overwrite so the set container will only have
+    unique keys while the vector has the chan for each vector component */
     vector<string> chans_this_group;
-    chan=d[i0].get_string("chan");
-    ss0.assign(chan,0,2);
-    for(ig=i0,i0g0=i0;ig<=iend;++ig)
+    set<string> keys;
+    for(size_t i=i0;i<=iend;++i)
     {
-      chan=d[ig].get_string("chan");
-      ss.assign(chan,0,2);
-      if(ss==ss0 && ig!=iend)
+      chan=d[i].get_string("chan");
+      chans_this_group.push_back(chan);
+      keys.insert(chan);
+    }
+    size_t nkeys=keys.size();
+    vector<CoreTimeSeries> bundle;
+    vector<ProcessingHistory*> hvec;
+    if(chans_this_group.size()<=3)
+    {
+      /* We can handle deficient groups here by this algorithm.
+      After conditionals we kill output when size is less than 3.*/
+      bundle.reserve(chans_this_group.size());
+      for(size_t i=i0;i<=iend;++i)
       {
-        chans_this_group.push_back(chan);
+        bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+        if( ! (d[i].is_empty()) )
+        {
+          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
+        }
+      }
+    }
+    else
+    {
+      /* We use this multimap to sort out duplicates */
+      multimap<string,size_t> xref;
+      /* We use this for handling find returns from xref */
+      multimap<string,size_t>::iterator xptr;
+      size_t i,ii;
+      for(i=i0,ii=0;i<=iend;++i,++ii)
+      {
+        chan=chans_this_group[ii];
+        keys.insert(chan);
+        xref.insert(pair<string,size_t>(chan,i));
+      }
+      /* Only when number of keys is 3 can we hope to form a valid bundle.
+      This first block does that resolving duplicates by the channel with
+      the closest match to the start time defined by minimum time of the group*/
+
+      if(nkeys==3)
+      {
+        for(auto kptr=keys.begin();kptr!=keys.end();++kptr)
+        {
+          /* Note we don't have to test for no match because it isn't possible*/
+          if(xref.count(*kptr)==1)
+          {
+            xptr=xref.find(*kptr);
+            bundle.push_back(dynamic_cast<CoreTimeSeries&>
+                    (d[xptr->second]));
+            if( ! (d[xptr->second].is_empty()) )
+            {
+              hvec.push_back(dynamic_cast<ProcessingHistory*>
+                      (&(d[xptr->second])));
+            }
+          }
+          else
+          {
+            /* We use the algorithm described in the include file doxygen
+            docs.   Briefly find the minimum time of this entire group and
+            use that as an anchor.  component with t0 closest to that time
+            is selected.  So first get min t0*/
+            double t0min=d[i0].t0();
+            for(i=i0+1;i<=iend;++i)
+            {
+              if(d[i].t0()<t0min) t0min=d[i].t0();
+            }
+            pair<multimap<string,size_t>::iterator,multimap<string,size_t>::iterator> ret;
+            ret=xref.equal_range(*kptr);
+            size_t j(0),jjmin(0),jj;
+            double dt,dtmin;
+            for(xptr=ret.first;xptr!=ret.second;++xptr,++j)
+            {
+              jj=xptr->second;
+              if(j==0)
+              {
+                jjmin=jj;
+                dtmin=fabs(d[jj].t0()-t0min);
+              }
+              else
+              {
+                dt=fabs(d[jj].t0()-t0min);
+                if(dt<dtmin)
+                {
+                  jjmin=jj;
+                  dtmin=dt;
+                }
+              }
+            }
+            bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[jjmin]));
+            if( ! (d[jjmin].is_empty()) )
+            {
+              hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[jjmin]));
+            }
+          }
+        }
       }
       else
       {
-        /* This is and end condition to handle break at end of range */
-        size_t igend;
-        if(ig==iend)
-          igend=iend+1;
-        else
-          igend=ig;
-        vector<CoreTimeSeries> bundle;
-        vector<ProcessingHistory*> hvec;
-        if(chans_this_group.size()<=3)
+        /* We handle deficient and excess keys identically in terms of
+        the loop below.  We split them up for different error messages
+        when we try to create a seismogram below */
+        for(size_t i=i0;i<=iend;++i)
         {
-          /* We can handle deficient groups here by this algorithm.
-          After conditionals we kill groups when size is less than 3.*/
-          bundle.reserve(chans_this_group.size());
-          for(auto k=i0g0;k<igend;++k)
+          bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+          if( ! (d[i].is_empty()) )
           {
-            bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[k]));
-            if( ! (d[k].is_empty()) )
-            {
-              hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[k]));
-            }
+            hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
           }
         }
-        else
-        {
-          //Handle irregular data here.  Create a simple vector with only 3
-          /* We use this multimap to sort out duplicates */
-          multimap<string,size_t> xref;
-          /* We use this for handling find returns from xref */
-          multimap<string,size_t>::iterator xptr;
-          /* We need this because a multimap doesn't have a unique keys method */
-          set<string> keys;
-
-          for(size_t k=i0g0;k<iend;++k)
-          {
-            chan=d[k].get_string("chan");
-            keys.insert(chan);
-            xref.insert(pair<string,size_t>(chan,k));
-          }
-          /*Discard this group if the number of unique keys is exactly 3*/
-          if(keys.size()!=3) continue;
-          for(auto kptr=keys.begin();kptr!=keys.end();++kptr)
-          {
-            if(xref.count(*kptr)==1)
-            {
-              xptr=xref.find(*kptr);
-              bundle.push_back(dynamic_cast<CoreTimeSeries&>
-                      (d[xptr->second]));
-              if( ! (d[xptr->second].is_empty()) )
-              {
-                hvec.push_back(dynamic_cast<ProcessingHistory*>
-                        (&(d[xptr->second])));
-              }
-            }
-            else
-            {
-              /* Could do something more sophisticated here but for now just
-              grab the first entry assuming this is only a duplication problem.*/
-              xptr=xref.find(*kptr);
-              size_t inow=xptr->second;
-              bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[inow]));
-              if( ! (d[inow].is_empty()) )
-              {
-                hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[inow]));
-              }
-            }
-          }
-        }
-        Seismogram d3c;
-        if(bundle.size()!=3)
-        {
-          /* The message posted here assumes number will always be less than
-          three.  That is correct with the above algorithm so we use != to handle
-          all for safety*/
-          d3c=dogtag(bundle);
-          if(hvec.size()>0) d3c.add_many_inputs(hvec);
-          d3c.kill();
-          stringstream ss;
-          ss<<"Insufficient data to generate Seismogram object."<<endl
-            <<"Number of channels received  for bundling="<<bundle.size()<<endl
-            <<"Should be three but can sometimes recover with greater than 3"<<endl;
-          d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
-        }
-        else
-        {
-          try{
-            d3c=Seismogram(CoreSeismogram(bundle),algname);
-            if(hvec.size()==3) d3c.add_many_inputs(hvec);
-          }
-          catch(MsPASSError& err)
-          {
-            d3c=dogtag(bundle);
-            if(hvec.size()>0) d3c.add_many_inputs(hvec);
-            d3c.kill();
-            d3c.elog.log_error(err);
-          };
-        }
-        /* Notice we save both the living and the dead.  They meet
-        judgement day on return*/
-        result.push_back(d3c);
       }
     }
-    return result;
+    Seismogram d3c;
+    if(nkeys==3)
+    {
+      try{
+        d3c=Seismogram(CoreSeismogram(bundle),algname);
+        if(hvec.size()==3) d3c.add_many_inputs(hvec);
+      }
+      catch(MsPASSError& err)
+      {
+        d3c=dogtag(bundle);
+        if(hvec.size()>0) d3c.add_many_inputs(hvec);
+        d3c.kill();
+        d3c.elog.log_error(err);
+      };
+    }
+    else
+    {
+      d3c=dogtag(bundle);
+      if(hvec.size()>0) d3c.add_many_inputs(hvec);
+      d3c.kill();
+      stringstream ss;
+      if(nkeys<3)
+      {
+        ss<<"Insufficient data to generate Seismogram object."<<endl
+          <<"Number of channels received  for bundling="<<bundle.size()<<endl
+          <<"Number of unique names in group="<<nkeys<<endl
+          <<"Number of unique names must be exactly 3"<<endl;
+      }
+      else
+      {
+        ss<<"Excess channel keys in group received"<<endl
+          <<"Number of unique channel names="<<nkeys<<" which should be 3"<<endl
+          << "Channel names received: ";
+        for(auto chanptr=chans_this_group.begin();
+                chanptr!=chans_this_group.end();++chanptr) ss<<(*chanptr)<<" ";
+        ss<<endl;
+      }
+      d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
+    }
+    return d3c;
   }catch(...){throw;};
 }
 /* Warning this function will alter the order of the ensemble.  A const
@@ -404,9 +420,8 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
               function returns a vector of CoreSeismograms using a grouping
               that depends upon seed naming conventions for channels.
               */
-              vector<Seismogram> dgrp;
-              dgrp=BundleGroup(d.member,i0,iend);
-              for(auto k=0;k<dgrp.size();++k) ens3c.member.push_back(dgrp[k]);
+              Seismogram dgrp(BundleGroup(d.member,i0,iend));
+              ens3c.member.push_back(dgrp);
             }
           }
           else

@@ -177,50 +177,43 @@ group motion.   That requires three TimeSeries objects that have
 define directions that are linearly independent.   This function does not
 directly test for linear independence but depends upon channel codes
 to assemble one or more bundles needed to build a Seismogram.  The
-algorithm used here is simple an ONLY works if the inputs have been
-sorted so the channels groupings of 3 or more channels that belong
-together.  e.g. if the input defined the following sequence of
-channel codes:
-  HHE, HHN, HHZ, BHE, BHN, BHZ
-the output would be two Seismogram objects:(1) H bundle and (2) B bundle.
+algorithm used here is simple and ONLY works if the inputs have been
+sorted so the channels define a group of three unique channel codes.
+For example,
+  HHE, HHN, HHZ
+would form a typical seed channel grouping.
 
-The algorithm also has a limited ability to handle irregular bundles.
-That is, if the bundle defines less than 3 channels it will be silently
-dropped.  If the bundle is larger than 3 it will silently attempt to use
-only the first entry in a group.   Consider this example chan sequence:
-  HHE, HHZ, BHE, BHE, BHN, BHZ
-The H bundle would silentely be dropped.   The B bundle would be assembled
-from the first BHE in the input vector with BHN and BHZ.
+The function will attempt to handle duplicates.  By that I mean
+if the group has two of the same channel code like these sequences:
+  HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ
+If the duplicates are pure duplicates the is no complication and
+the result will be clean.   If the time spans of the duplicate
+channels are different the decision of which to use keys on a simple
+idea that is most appropriate for data assembled by event with
+mistakes in associations.  That is, it attempts to scans the group for
+the earliest start time.  When duplicates are found it uses the one
+with a start time closest to the minimum as the one merged to make the
+output Seismogram.
 
-All bundling uses the CoreTimeSeries constructor for 3 input time series.
-That constructor has two important requirements to prevent it from throwing
-an exceptions:
-1.  Each input must have the hang and vang metadata attributes defined.
-2.  The start and end times of all 3 TimeSeries grouped define an overlapping
-time.   Note if the start and end times are irregular the returns will
-be defined ONLY for times common to all three inputs to a group.
-
-Note this function will not throw exceptions unless there is a system
-error handled by a generic catch. Problems constructing Seismograms for
-output will result in empty Seismogram objects marked dead BUT with
-error messages posted to elog.
-
-ProcessingHistory is handled internally by this function.  If all the
-components in a group have a nonempty ProcessingHistory the data to link
-the outputs to the inputs will be posted to ProcessingHistory.
+The output will be marked as dead data with no valid data in one of
+two conditions:  (1)  less than 3 unique channel names or (2) more than
+three unique channel names.  In both case the Metadata from all TimeSeries
+received will be merged and posted to the returned (dead) Seismogram.
+The elog of the returned Seismogram will contain an informative message. .
 
 \param d is the vector of TimeSeries containing data to be bundled.
 (This could be a members of a sorted Ensemble of a python array in the python
 api).
 \param i0 is the first component of the vector to view as part of the group.
 \param iend is the last component of the vector to view as part of the group.
+(inclusive not as in a vector size numbger)
 
 \exception This routine should only throw system generated exceptions.
 Errors from attempting to construct a Seismogram generate elog messages
 and kills of an output components.
 */
 
-std::vector<mspass::seismic::Seismogram> BundleGroup
+mspass::seismic::Seismogram BundleGroup
     (std::vector<mspass::seismic::TimeSeries>& d,
                 const size_t i0, const size_t iend);
 /*! \brief Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble.
