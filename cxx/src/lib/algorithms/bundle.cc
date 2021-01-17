@@ -138,13 +138,18 @@ Seismogram dogtag(vector<CoreTimeSeries>& bundle)
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
 groupings that are irregular but it has broader use provided the data
 are from miniseed and have chan defined.    */
-Seismogram BundleGroup(std::vector<TimeSeries>& d,
+Seismogram BundleGroup(const std::vector<TimeSeries>& d,
   const size_t i0, const size_t iend)
 {
   const string algname("BundleGroup");
   try{
     vector<CoreTimeSeries> bundle;
     vector<ProcessingHistory*> hvec;
+    /* I had to force this alias for the input d from a const cast to
+    allow the dynamic casting below to work for ProcessingHistory.  Unclear
+    why but I think it is a limitation of std::vector.  This is a workaround*/
+    std::vector<TimeSeries> d_const;
+    d_const=const_cast<std::vector<TimeSeries>&>(d);
     Seismogram d3c;  // this holds the result even if marked dead
     string net,sta,chan,loc;
     /*this holds the first 2 characters in the chan code that seed
@@ -182,10 +187,10 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
       bundle.reserve(chans_this_group.size());
       for(size_t i=i0;i<=iend;++i)
       {
-        bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+        bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
         if( ! (d[i].is_empty()) )
         {
-          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
+          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d_const[i]));
         }
       }
       d3c=dogtag(bundle);
@@ -241,10 +246,10 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
       bundle.reserve(chans_this_group.size());
       for(size_t i=i0;i<=iend;++i)
       {
-        bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+        bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
         if( ! (d[i].is_empty()) )
         {
-          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
+          hvec.push_back(dynamic_cast<ProcessingHistory*>(&d_const[i]));
         }
       }
     }
@@ -273,12 +278,12 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
           if(xref.count(*kptr)==1)
           {
             xptr=xref.find(*kptr);
-            bundle.push_back(dynamic_cast<CoreTimeSeries&>
+            bundle.push_back(dynamic_cast<const CoreTimeSeries&>
                     (d[xptr->second]));
             if( ! (d[xptr->second].is_empty()) )
             {
               hvec.push_back(dynamic_cast<ProcessingHistory*>
-                      (&(d[xptr->second])));
+                      (&(d_const[xptr->second])));
             }
           }
           else
@@ -314,10 +319,10 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
                 }
               }
             }
-            bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[jjmin]));
+            bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[jjmin]));
             if( ! (d[jjmin].is_empty()) )
             {
-              hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[jjmin]));
+              hvec.push_back(dynamic_cast<ProcessingHistory*>(&d_const[jjmin]));
             }
           }
         }
@@ -329,10 +334,10 @@ Seismogram BundleGroup(std::vector<TimeSeries>& d,
         when we try to create a seismogram below */
         for(size_t i=i0;i<=iend;++i)
         {
-          bundle.push_back(dynamic_cast<CoreTimeSeries&>(d[i]));
+          bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
           if( ! (d[i].is_empty()) )
           {
-            hvec.push_back(dynamic_cast<ProcessingHistory*>(&d[i]));
+            hvec.push_back(dynamic_cast<ProcessingHistory*>(&d_const[i]));
           }
         }
       }

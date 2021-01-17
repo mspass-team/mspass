@@ -186,7 +186,7 @@ would form a typical seed channel grouping.
 The function will attempt to handle duplicates.  By that I mean
 if the group has two of the same channel code like these sequences:
   HHE, HHE, HHN, HHZ  or HHE, HHN, HHN, HHZ, HHZ
-If the duplicates are pure duplicates the is no complication and
+If the duplicates are pure duplicates there is no complication and
 the result will be clean.   If the time spans of the duplicate
 channels are different the decision of which to use keys on a simple
 idea that is most appropriate for data assembled by event with
@@ -197,9 +197,27 @@ output Seismogram.
 
 The output will be marked as dead data with no valid data in one of
 two conditions:  (1)  less than 3 unique channel names or (2) more than
-three unique channel names.  In both case the Metadata from all TimeSeries
-received will be merged and posted to the returned (dead) Seismogram.
-The elog of the returned Seismogram will contain an informative message. .
+three inputs with an inconsistent set of SEED names.   That "inconsistent"
+test is obscure and yet another example that SEED is a four letter word.
+Commentary aside, the rules are:
+1.  The net code must be defined and the same in all TimeSeries passed
+2.  The station (sta) code must alos be the same for all inputs
+3.  Similarly the loc code must also be the same in all inputs.
+4.  Finally, there is a more obscure test on channel names.  They must
+all have the same first two characters.   That is, BHE, BHN, BHN, BHZ
+will tried but BHE, BHN, BHZ, HHE will cause an immediate exit with no
+attempt to resolve the ambiguity - that is viewed a usage error.
+
+I all cases where the bundling is not possible the function does not
+throw an exception but does four things:
+1.  Merges the Metadata of all inputs (uses the += operator so only the
+last values of duplicate keys will be preserved in the return)
+2.  If ProcessingHistory is defined in the input they history records  are
+posted to the returned Seismogram using as if the data were live but the
+number of input will always be a number different from 3.
+3.  The return is marked dead.
+4.  The function posts a (hopefully) informative message to elog of the
+returned Seismogram.
 
 \param d is the vector of TimeSeries containing data to be bundled.
 (This could be a members of a sorted Ensemble of a python array in the python
@@ -214,7 +232,7 @@ and kills of an output components.
 */
 
 mspass::seismic::Seismogram BundleGroup
-    (std::vector<mspass::seismic::TimeSeries>& d,
+    (const std::vector<mspass::seismic::TimeSeries>& d,
                 const size_t i0, const size_t iend);
 /*! \brief Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble.
 
