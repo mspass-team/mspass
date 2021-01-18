@@ -120,7 +120,7 @@ PYBIND11_MODULE(basic, m) {
     py::arg("d") )
   ;
 
-  m.def("_BundleGroup",&BundleGroup,
+  m.def("_BundleSEEDGroup",&BundleSEEDGroup,
     "Bundle a seed grouping of TimeSeries into one or more Seismogram objects",
     py::return_value_policy::copy,
     py::arg("d"),
@@ -129,7 +129,7 @@ PYBIND11_MODULE(basic, m) {
   ;
   m.def("seed_ensemble_sort",&seed_ensemble_sort,R"mspass_doc(
       Sort a TimeSeriesEnsemble with a natural order with seed name codes.
-      
+
       The seed standard tags every single miniseed record with four string keys
       that seed uses to uniquely define a single data channel.  In MsPASS the keys
       used for these name keys are:  net, sta, chan, and loc.  This function
@@ -137,7 +137,7 @@ PYBIND11_MODULE(basic, m) {
       allow clean grouping into channels that can be assembled into
       three component (Seismogram) bundles.  That means we sort the ensemble
       data with the four keys in this order:  net, sta, loc, chan.
-      
+
       We provide this function because the process of doing such a sort is far
       from trivial to do in a robust way.   A python programmer has easier tools
       for sorting BUT those standard tools cannot handle a common data problem
@@ -147,9 +147,9 @@ PYBIND11_MODULE(basic, m) {
       may not have net or loc set.   The sorting algorith here handle null net or
       loc codes cleanly by treating the null case as a particular value.   Without
       those safeties the code would throw an error if net or loc were null.
-      
+
       Note this algorithm alters the ensemble it receives in place.
-      
+
       :param d: is the ensemble to be sorted.
     )mspass_doc",
     py::arg("d") )

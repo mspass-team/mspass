@@ -321,12 +321,12 @@ int main(int argc, char **argv)
   /* Could not figure out a good assert to validate that the following work.
   The steps after will create errors if it didn't do what it should though.*/
   seed_ensemble_sort(ens2);
-  cout << "Testing BundleGroup"<<endl<<"First a test that should work"<<endl;
+  cout << "Testing BundleSEEDGroup"<<endl<<"First a test that should work"<<endl;
   Seismogram s;
-  s=BundleGroup(ens2.member,0,2);
+  s=BundleSEEDGroup(ens2.member,0,2);
   assert(s.live());
   cout << "Success - trying an improper bundle.  This one should be killed"<<endl;
-  s=BundleGroup(ens2.member,0,5);
+  s=BundleSEEDGroup(ens2.member,0,5);
   assert(s.dead());
   cout << "Error message posted"<<endl;
   list<LogData> errors=s.elog.get_error_log();

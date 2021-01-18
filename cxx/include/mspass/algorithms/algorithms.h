@@ -231,7 +231,7 @@ Errors from attempting to construct a Seismogram generate elog messages
 and kills of an output components.
 */
 
-mspass::seismic::Seismogram BundleGroup
+mspass::seismic::Seismogram BundleSEEDGroup
     (const std::vector<mspass::seismic::TimeSeries>& d,
                 const size_t i0, const size_t iend);
 /*! \brief Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble.

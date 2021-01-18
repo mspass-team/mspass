@@ -138,10 +138,10 @@ Seismogram dogtag(vector<CoreTimeSeries>& bundle)
 from reading TimeSeries from MongoDB.  We use it below to handle ensemble
 groupings that are irregular but it has broader use provided the data
 are from miniseed and have chan defined.    */
-Seismogram BundleGroup(const std::vector<TimeSeries>& d,
+Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
   const size_t i0, const size_t iend)
 {
-  const string algname("BundleGroup");
+  const string algname("BundleSEEDGroup");
   try{
     vector<CoreTimeSeries> bundle;
     vector<ProcessingHistory*> hvec;
@@ -234,7 +234,7 @@ Seismogram BundleGroup(const std::vector<TimeSeries>& d,
            ss << *sptr << " ";
         ss << endl;
       }
-      d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
+      d3c.elog.log_error("BundleSEEDGroup",ss.str(),ErrorSeverity::Invalid);
       return d3c;
     }
     size_t nkeys=keys.size();
@@ -378,7 +378,7 @@ Seismogram BundleGroup(const std::vector<TimeSeries>& d,
                 chanptr!=chans_this_group.end();++chanptr) ss<<(*chanptr)<<" ";
         ss<<endl;
       }
-      d3c.elog.log_error("BundleGroup",ss.str(),ErrorSeverity::Invalid);
+      d3c.elog.log_error("BundleSEEDGroup",ss.str(),ErrorSeverity::Invalid);
     }
     return d3c;
   }catch(...){throw;};
@@ -499,7 +499,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
               function returns a vector of CoreSeismograms using a grouping
               that depends upon seed naming conventions for channels.
               */
-              Seismogram dgrp(BundleGroup(d.member,i0,iend));
+              Seismogram dgrp(BundleSEEDGroup(d.member,i0,iend));
               ens3c.member.push_back(dgrp);
             }
           }
