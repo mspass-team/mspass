@@ -201,14 +201,14 @@ three inputs with an inconsistent set of SEED names.   That "inconsistent"
 test is obscure and yet another example that SEED is a four letter word.
 Commentary aside, the rules are:
 1.  The net code must be defined and the same in all TimeSeries passed
-2.  The station (sta) code must alos be the same for all inputs
-3.  Similarly the loc code must also be the same in all inputs.
+2.  The station (sta) code must also be the same for all inputs
+3.  Similarly the loc code must be the same in all inputs.
 4.  Finally, there is a more obscure test on channel names.  They must
 all have the same first two characters.   That is, BHE, BHN, BHN, BHZ
-will tried but BHE, BHN, BHZ, HHE will cause an immediate exit with no
+is ok but BHE, BHN, BHZ, HHE will cause an immediate exit with no
 attempt to resolve the ambiguity - that is viewed a usage error.
 
-I all cases where the bundling is not possible the function does not
+In all cases where the bundling is not possible the function does not
 throw an exception but does four things:
 1.  Merges the Metadata of all inputs (uses the += operator so only the
 last values of duplicate keys will be preserved in the return)
