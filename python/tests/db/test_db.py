@@ -1,6 +1,7 @@
 import copy
 import os
 
+import dask.bag
 import gridfs
 import numpy as np
 import pytest
@@ -536,9 +537,9 @@ def test_read_distributed_data(spark_context):
     logging_helper.info(ts2, 'deepcopy', '1')
     logging_helper.info(ts3, 'deepcopy', '1')
 
-    db.save_data(ts1, 'gridfs')
-    db.save_data(ts2, 'gridfs')
-    db.save_data(ts3, 'gridfs')
+    ts_list = [ts1, ts2, ts3]
+    ts_list_rdd = spark_context.parallelize(ts_list)
+    ts_list_rdd.foreach(lambda d, database=db: database.save_data(d, 'gridfs'))
     cursors = db['wf_TimeSeries'].find({})
 
     spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'TimeSeries', spark_context=spark_context)
@@ -584,9 +585,9 @@ def test_read_distributed_data_dask():
     logging_helper.info(ts2, 'deepcopy', '1')
     logging_helper.info(ts3, 'deepcopy', '1')
 
-    db.save_data(ts1, 'gridfs')
-    db.save_data(ts2, 'gridfs')
-    db.save_data(ts3, 'gridfs')
+    ts_list = [ts1, ts2, ts3]
+    ts_list_dbg = dask.bag.from_sequence(ts_list)
+    ts_list_dbg.map(db.save_data, 'gridfs').compute()
     cursors = db['wf_TimeSeries'].find({})
 
     dask_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'TimeSeries', format='dask')

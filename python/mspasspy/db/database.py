@@ -98,6 +98,16 @@ class Database(pymongo.database.Database):
         self.metadata_schema = MetadataSchema()
         self.database_schema = DatabaseSchema()
 
+    def __getstate__(self):
+        ret = self.__dict__.copy()
+        ret['_Database__client'] = self.client.__repr__()
+        return ret
+
+    def __setstate__(self, data):
+        from pymongo import MongoClient
+        data['_Database__client'] = eval(data['_Database__client'])
+        self.__dict__.update(data)
+
     def set_metadata_schema(self, schema):
         """
         Set metadata_schema defined in the Database class.
