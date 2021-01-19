@@ -1921,6 +1921,34 @@ object will be returned if d was marked dead</p>
 <dd><p>Automatic gain control a Seismogram</p>
 </dd></dl>
 
+<dl class="py function">
+<dt id="mspasspy.ccore.algorithms.basic.seed_ensemble_sort">
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">seed_ensemble_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort a TimeSeriesEnsemble with a natural order with seed name codes.</p>
+<p>The seed standard tags every single miniseed record with four string keys
+that seed uses to uniquely define a single data channel.  In MsPASS the keys
+used for these name keys are:  net, sta, chan, and loc.  This function
+applies the same sort algorithm used in the bundle_seed_data algorithm to
+allow clean grouping into channels that can be assembled into
+three component (Seismogram) bundles.  That means we sort the ensemble
+data with the four keys in this order:  net, sta, loc, chan.</p>
+<p>We provide this function because the process of doing such a sort is far
+from trivial to do in a robust way.   A python programmer has easier tools
+for sorting BUT those standard tools cannot handle a common data problem
+that can be encountered with real data.  That is, there is a high
+probability not all the seed keys are defined.   In particular, data
+coming from a system based on the css3.0 relational data base (e.g. Antelope)
+may not have net or loc set.   The sorting algorith here handle null net or
+loc codes cleanly by treating the null case as a particular value.   Without
+those safeties the code would throw an error if net or loc were null.</p>
+<p>Note this algorithm alters the ensemble it receives in place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – is the ensemble to be sorted.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <span class="target" id="module-mspasspy.ccore.algorithms.amplitudes"></span><p>A submodule for amplitudes namespace of ccore.algorithms</p>
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.amplitudes.MADAmplitude">

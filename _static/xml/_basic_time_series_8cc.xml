@@ -6,50 +6,50 @@
     <includes refid="_basic_time_series_8h" local="yes">mspass/seismic/BasicTimeSeries.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1173">
+      <node id="1220">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1174" relation="include">
+        <childnode refid="1221" relation="include">
         </childnode>
-        <childnode refid="1175" relation="include">
+        <childnode refid="1222" relation="include">
         </childnode>
-        <childnode refid="1176" relation="include">
+        <childnode refid="1223" relation="include">
         </childnode>
       </node>
-      <node id="1175">
+      <node id="1222">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1171">
+      <node id="1218">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
         <link refid="_basic_time_series_8cc"/>
-        <childnode refid="1172" relation="include">
+        <childnode refid="1219" relation="include">
         </childnode>
-        <childnode refid="1173" relation="include">
+        <childnode refid="1220" relation="include">
         </childnode>
-        <childnode refid="1177" relation="include">
+        <childnode refid="1224" relation="include">
         </childnode>
       </node>
-      <node id="1177">
+      <node id="1224">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1178" relation="include">
+        <childnode refid="1225" relation="include">
         </childnode>
-        <childnode refid="1179" relation="include">
+        <childnode refid="1226" relation="include">
         </childnode>
       </node>
-      <node id="1179">
+      <node id="1226">
         <label>exception</label>
       </node>
-      <node id="1172">
+      <node id="1219">
         <label>ostream</label>
       </node>
-      <node id="1176">
+      <node id="1223">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="1174">
+      <node id="1221">
         <label>math.h</label>
       </node>
-      <node id="1178">
+      <node id="1225">
         <label>iostream</label>
       </node>
     </incdepgraph>

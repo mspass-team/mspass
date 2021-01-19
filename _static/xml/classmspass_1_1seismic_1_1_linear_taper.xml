@@ -143,18 +143,6 @@
     <detaileddescription>
 <para>Linear tapers are defined here as a time spanning a ramp running from 0 to 1. Data will be zeroed on each end of a 0 mark and a linear weight applied between 0 points and 1 points. Postive ramp slope on left and negative slope ramp on right. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="111">
-        <label>mspass::seismic::BasicTaper</label>
-        <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
-      </node>
-      <node id="110">
-        <label>mspass::seismic::LinearTaper</label>
-        <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
-        <childnode refid="111" relation="public-inheritance">
-        </childnode>
-      </node>
-    </inheritancegraph>
-    <collaborationgraph>
       <node id="113">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
@@ -163,6 +151,18 @@
         <label>mspass::seismic::LinearTaper</label>
         <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
         <childnode refid="113" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="115">
+        <label>mspass::seismic::BasicTaper</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
+      </node>
+      <node id="114">
+        <label>mspass::seismic::LinearTaper</label>
+        <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
+        <childnode refid="115" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

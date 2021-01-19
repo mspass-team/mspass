@@ -3,6 +3,7 @@
   <compounddef id="namespacemspass_1_1algorithms" kind="namespace" language="C++">
     <compoundname>mspass::algorithms</compoundname>
     <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
       <sectiondef kind="func">
       <memberdef kind="function" id="algorithms_8h_1ae367c50f064c9ecfb2f81c8727cf9871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -351,6 +352,190 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="169" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
+        <definition>mspass::seismic::Seismogram mspass::algorithms::BundleSEEDGroup</definition>
+        <argsstring>(const std::vector&lt; mspass::seismic::TimeSeries &gt; &amp;d, const size_t i0, const size_t iend)</argsstring>
+        <name>BundleSEEDGroup</name>
+        <param>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>iend</declname>
+        </param>
+        <briefdescription>
+<para>Combine a grouped set of TimeSeries into one Seismogram. </para>        </briefdescription>
+        <detaileddescription>
+<para>A Seismogram object is a bundle of TimeSeries objects that define a nonsingular tranformation matrix that can be used to reconstruct vector group motion. That requires three TimeSeries objects that have define directions that are linearly independent. This function does not directly test for linear independence but depends upon channel codes to assemble one or more bundles needed to build a Seismogram. The algorithm used here is simple and ONLY works if the inputs have been sorted so the channels define a group of three unique channel codes. For example, HHE, HHN, HHZ would form a typical seed channel grouping.</para><para>The function will attempt to handle duplicates. By that I mean if the group has two of the same channel code like these sequences: HHE, HHE, HHN, HHZ or HHE, HHN, HHN, HHZ, HHZ If the duplicates are pure duplicates there is no complication and the result will be clean. If the time spans of the duplicate channels are different the decision of which to use keys on a simple idea that is most appropriate for data assembled by event with mistakes in associations. That is, it attempts to scans the group for the earliest start time. When duplicates are found it uses the one with a start time closest to the minimum as the one merged to make the output Seismogram.</para><para>The output will be marked as dead data with no valid data in one of two conditions: (1) less than 3 unique channel names or (2) more than three inputs with an inconsistent set of SEED names. That &quot;inconsistent&quot; test is obscure and yet another example that SEED is a four letter word. Commentary aside, the rules are:<orderedlist>
+<listitem><para>The net code must be defined and the same in all TimeSeries passed</para></listitem><listitem><para>The station (sta) code must also be the same for all inputs</para></listitem><listitem><para>Similarly the loc code must be the same in all inputs.</para></listitem><listitem><para>Finally, there is a more obscure test on channel names. They must all have the same first two characters. That is, BHE, BHN, BHN, BHZ is ok but BHE, BHN, BHZ, HHE will cause an immediate exit with no attempt to resolve the ambiguity - that is viewed a usage error.</para></listitem></orderedlist>
+</para><para>In all cases where the bundling is not possible the function does not throw an exception but does four things:<orderedlist>
+<listitem><para>Merges the Metadata of all inputs (uses the += operator so only the last values of duplicate keys will be preserved in the return)</para></listitem><listitem><para>If ProcessingHistory is defined in the input they history records are posted to the returned Seismogram using as if the data were live but the number of input will always be a number different from 3.</para></listitem><listitem><para>The return is marked dead.</para></listitem><listitem><para>The function posts a (hopefully) informative message to elog of the returned Seismogram.</para></listitem></orderedlist>
+</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the vector of TimeSeries containing data to be bundled. (This could be a members of a sorted Ensemble of a python array in the python api). </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the first component of the vector to view as part of the group. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>iend</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the last component of the vector to view as part of the group. (inclusive not as in a vector size numbger)</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>routine should only throw system generated exceptions. Errors from attempting to construct a Seismogram generate elog messages and kills of an output components. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="234" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1aaf4c3abc82571d4db7955c34f18201e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
+        <definition>Ensemble&lt; Seismogram &gt; mspass::algorithms::bundle_seed_data</definition>
+        <argsstring>(mspass::seismic::Ensemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
+        <name>bundle_seed_data</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Assemble a SeismogramEnsemble from a sorted TimeSeriesEnsemble. </para>        </briefdescription>
+        <detaileddescription>
+<para>This function can be used to take an (unordered) input ensemble of TimeSeries objects generated from miniseed data and produce an output ensemble of Seismograms produced by bundles linked to the seed name codes net, sta, chan, and loc. An implicit assumption of the algorithm used here is that the data are a variant of a shot gather and the input ensemble defines one net:sta:chan:loc:time_interval for each record that is to be bundled. It can only properly handle pure duplicates for a given net:sta:chan:loc combination. (i.e. if the input has the same TimeSeries defined by net:sta:chan:loc AND a common start and end time). Data with gaps broken into multiple net:sta:chan:loc TimeSeries with different start and end times will produce incomplete results. That is, Seismograms in the output associated with such inputs will either be killed with an associated error log entry or in the best case truncated to the overlap range of one of the segments with the gap(s) between.</para><para>Irregular start times of any set of TimeSeries forming a single bundle are subject to the same truncation or discard rules described in the related function Bundle3C.</para><para>Finally, it is VERY IMPORTANT to realize that the input ensemble will almost certainly be altered by this algorithm as the very first thing it does is a sequential sort on the seed keys: net, sta, loc, chan (in that order). Not for convenience in working with MongoDB the null net or loc codes are handled cleanly and treated more or less as if they were an empty string. The sort order, however, may not be the same the as empty and null are not actually treated identically.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the input ensemble of TimeSeries to be processed.</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>This</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>function will throw a MsPASSError if any member of d does not have sta or chan defined (as noted above null net or loc are handled.) </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="274" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="388" bodyend="543"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1aaf01620b65615245bf4d06581f6badc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::seed_ensemble_sort</definition>
+        <argsstring>(mspass::seismic::Ensemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
+        <name>seed_ensemble_sort</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Sort a TimeSeriesEnsemble with a natural order with seed name codes. </para>        </briefdescription>
+        <detaileddescription>
+<para>The seed standard tags every single miniseed record with four string keys that seed uses to uniquely define a single data channel. In MsPASS the keys used for these name keys are: net, sta, chan, and loc. This function applies the same sort algorithm used in the bundle_seed_data algorithm to allow clean grouping into channels that can be assembled into three component (Seismogram) bundles. That means we sort the ensemble data with the four keys in this order: net, sta, loc, chan.</para><para>We provide this function because the process of doing such a sort is far from trivial to do in a robust way. A python programmer has easier tools for sorting BUT those standard tools cannot handle a common data problem that can be encountered with real data. That is, there is a high probability not all the seed keys are defined. In particular, data coming from a system based on the css3.0 relational data base (e.g. Antelope) may not have net or loc set. The sorting algorith here handle null net or loc codes cleanly by treating the null case as a particular value. Without those safeties the code would throw an error if net or loc were null.</para><para>Note this algorithm alters the ensemble it receives in place.</para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the ensemble to be sorted. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="300" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="546" bodyend="551"/>
+      </memberdef>
+      <memberdef kind="function" id="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::cautious_compare</definition>
+        <argsstring>(const TimeSeries &amp;x, const TimeSeries &amp;y, const string key)</argsstring>
+        <name>cautious_compare</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &amp;</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>const string</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="29" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="29" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="bundle_8cc_1a3b1619dbb3915f557aca6ed169fe008b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref></type>
+        <definition>Seismogram mspass::algorithms::dogtag</definition>
+        <argsstring>(vector&lt; CoreTimeSeries &gt; &amp;bundle)</argsstring>
+        <name>dogtag</name>
+        <param>
+          <type>vector&lt; <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &gt; &amp;</type>
+          <declname>bundle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="115" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="115" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="bundle_8cc_1a1fbb4b5c74c1f7e015c64ac807d5e254" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref></type>
+        <definition>Seismogram mspass::algorithms::BundleSEEDGroup</definition>
+        <argsstring>(const std::vector&lt; TimeSeries &gt; &amp;d, const size_t i0, const size_t iend)</argsstring>
+        <name>BundleSEEDGroup</name>
+        <param>
+          <type>const std::vector&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>i0</declname>
+        </param>
+        <param>
+          <type>const size_t</type>
+          <declname>iend</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="141" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="141" bodyend="385"/>
       </memberdef>
       <memberdef kind="function" id="_butterworth_8cc_1a65fd8522810064ed52a8b0eecbfec871" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const double</type>

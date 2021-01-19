@@ -85,124 +85,124 @@
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="191">
+      <node id="193">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="192" relation="public-inheritance">
+        <childnode refid="194" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="193">
+      <node id="195">
         <label>mspass::seismic::DataGap</label>
         <link refid="classmspass_1_1seismic_1_1_data_gap"/>
       </node>
-      <node id="188">
+      <node id="190">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="187">
+      <node id="189">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="188" relation="public-inheritance">
-        </childnode>
-        <childnode refid="189" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="189">
-        <label>mspass::utility::Metadata</label>
-        <link refid="classmspass_1_1utility_1_1_metadata"/>
         <childnode refid="190" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="185">
-        <label>mspass::seismic::SeismogramWGaps</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="186" relation="public-inheritance">
-        </childnode>
-        <childnode refid="193" relation="public-inheritance">
-        </childnode>
-      </node>
-      <node id="190">
-        <label>mspass::utility::BasicMetadata</label>
-        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
-      </node>
-      <node id="192">
-        <label>mspass::utility::BasicProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
-      </node>
-      <node id="186">
-        <label>mspass::seismic::Seismogram</label>
-        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="187" relation="public-inheritance">
         </childnode>
         <childnode refid="191" relation="public-inheritance">
         </childnode>
       </node>
-    </inheritancegraph>
-    <collaborationgraph>
-      <node id="201">
-        <label>mspass::utility::ProcessingHistory</label>
-        <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="202" relation="public-inheritance">
-        </childnode>
-        <childnode refid="203" relation="usage">
-          <edgelabel>elog</edgelabel>
-        </childnode>
-      </node>
-      <node id="204">
-        <label>mspass::seismic::DataGap</label>
-        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
-      </node>
-      <node id="200">
-        <label>mspass::utility::dmatrix</label>
-        <link refid="classmspass_1_1utility_1_1dmatrix"/>
-      </node>
-      <node id="197">
-        <label>mspass::seismic::BasicTimeSeries</label>
-        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
-      </node>
-      <node id="196">
-        <label>mspass::seismic::CoreSeismogram</label>
-        <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="197" relation="public-inheritance">
-        </childnode>
-        <childnode refid="198" relation="public-inheritance">
-        </childnode>
-        <childnode refid="200" relation="usage">
-          <edgelabel>u</edgelabel>
-        </childnode>
-      </node>
-      <node id="198">
+      <node id="191">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="199" relation="public-inheritance">
+        <childnode refid="192" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="194">
+      <node id="187">
         <label>mspass::seismic::SeismogramWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="188" relation="public-inheritance">
+        </childnode>
         <childnode refid="195" relation="public-inheritance">
         </childnode>
-        <childnode refid="204" relation="public-inheritance">
-        </childnode>
       </node>
-      <node id="203">
-        <label>mspass::utility::ErrorLogger</label>
-        <link refid="classmspass_1_1utility_1_1_error_logger"/>
-      </node>
-      <node id="199">
+      <node id="192">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="202">
+      <node id="194">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="195">
+      <node id="188">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="196" relation="public-inheritance">
+        <childnode refid="189" relation="public-inheritance">
         </childnode>
+        <childnode refid="193" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="203">
+        <label>mspass::utility::ProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_processing_history"/>
+        <childnode refid="204" relation="public-inheritance">
+        </childnode>
+        <childnode refid="205" relation="usage">
+          <edgelabel>elog</edgelabel>
+        </childnode>
+      </node>
+      <node id="206">
+        <label>mspass::seismic::DataGap</label>
+        <link refid="classmspass_1_1seismic_1_1_data_gap"/>
+      </node>
+      <node id="202">
+        <label>mspass::utility::dmatrix</label>
+        <link refid="classmspass_1_1utility_1_1dmatrix"/>
+      </node>
+      <node id="199">
+        <label>mspass::seismic::BasicTimeSeries</label>
+        <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
+      </node>
+      <node id="198">
+        <label>mspass::seismic::CoreSeismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
+        <childnode refid="199" relation="public-inheritance">
+        </childnode>
+        <childnode refid="200" relation="public-inheritance">
+        </childnode>
+        <childnode refid="202" relation="usage">
+          <edgelabel>u</edgelabel>
+        </childnode>
+      </node>
+      <node id="200">
+        <label>mspass::utility::Metadata</label>
+        <link refid="classmspass_1_1utility_1_1_metadata"/>
         <childnode refid="201" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="196">
+        <label>mspass::seismic::SeismogramWGaps</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
+        <childnode refid="197" relation="public-inheritance">
+        </childnode>
+        <childnode refid="206" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="205">
+        <label>mspass::utility::ErrorLogger</label>
+        <link refid="classmspass_1_1utility_1_1_error_logger"/>
+      </node>
+      <node id="201">
+        <label>mspass::utility::BasicMetadata</label>
+        <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
+      </node>
+      <node id="204">
+        <label>mspass::utility::BasicProcessingHistory</label>
+        <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
+      </node>
+      <node id="197">
+        <label>mspass::seismic::Seismogram</label>
+        <link refid="classmspass_1_1seismic_1_1_seismogram"/>
+        <childnode refid="198" relation="public-inheritance">
+        </childnode>
+        <childnode refid="203" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
@@ -224,8 +224,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>change_key</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>changed_or_set</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>clean_accumulate_uuids</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" prot="public" virt="non-virtual" ambiguityscope="mspass::"><scope>mspass::seismic::SeismogramWGaps</scope><name>clear</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" virt="non-virtual" ambiguityscope="mspass::utility::ProcessingHistory::"><scope>mspass::seismic::SeismogramWGaps</scope><name>clear</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>clear</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>clear_gaps</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>clear_modified</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>components_are_cardinal</name></member>
@@ -242,6 +241,7 @@
       <member refid="classmspass_1_1utility_1_1_processing_history_1a6e1075575bf136ef4639c6b45f9c5402" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>elog</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>end</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>endtime</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>erase</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>force_t0_shift</name></member>
       <member refid="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" prot="public" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>free_surface_transformation</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" prot="protected" virt="non-virtual"><scope>mspass::seismic::SeismogramWGaps</scope><name>gaps</name></member>

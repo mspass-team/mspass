@@ -11,5 +11,6 @@ var searchData=
   ['get_5fnodes',['get_nodes',['../classmspass_1_1utility_1_1_processing_history.html#a52b0394b444f6db307945284ac6e5f8a',1,'mspass::utility::ProcessingHistory']]],
   ['get_5fstring',['get_string',['../classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a',1,'mspass::utility::Metadata']]],
   ['get_5ftbl',['get_tbl',['../classmspass_1_1utility_1_1_antelope_pf.html#a64065097fb1ebc22192ce455cbeca3fb',1,'mspass::utility::AntelopePf']]],
-  ['get_5ftransformation_5fmatrix',['get_transformation_matrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#aae2950b408052bda849ba07c4ea9b018',1,'mspass::seismic::CoreSeismogram']]]
+  ['get_5ftransformation_5fmatrix',['get_transformation_matrix',['../classmspass_1_1seismic_1_1_core_seismogram.html#aae2950b408052bda849ba07c4ea9b018',1,'mspass::seismic::CoreSeismogram']]],
+  ['greater_5fseedorder',['greater_seedorder',['../structmspass_1_1algorithms_1_1greater__seedorder.html',1,'mspass::algorithms']]]
 ];

@@ -352,6 +352,9 @@
     <member refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" kind="function"><name>worst_errors</name></member>
     <member refid="classmspass_1_1utility_1_1_error_logger_1a014d32cf9f8f5ae560fe30a6af610420" kind="function"><name>serialize</name></member>
   </compound>
+  <compound refid="structmspass_1_1algorithms_1_1greater__seedorder" kind="struct"><name>mspass::algorithms::greater_seedorder</name>
+    <member refid="structmspass_1_1algorithms_1_1greater__seedorder_1a3be26b413cd06229c775bc212ac10b40" kind="function"><name>operator()</name></member>
+  </compound>
   <compound refid="classmspass_1_1seismic_1_1_linear_taper" kind="class"><name>mspass::seismic::LinearTaper</name>
     <member refid="classmspass_1_1seismic_1_1_linear_taper_1a682b20d742a34cf53f96e6c0c5789130" kind="variable"><name>t0head</name></member>
     <member refid="classmspass_1_1seismic_1_1_linear_taper_1a7672ecee3eff5594beca7b0f90a46fae" kind="variable"><name>t1head</name></member>
@@ -410,7 +413,7 @@
     <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" kind="function"><name>clear_modified</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" kind="function"><name>keys</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kind="function"><name>is_defined</name></member>
-    <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" kind="function"><name>clear</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" kind="function"><name>erase</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kind="function"><name>size</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" kind="function"><name>begin</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kind="function"><name>end</name></member>
@@ -681,6 +684,12 @@
     <member refid="algorithms_8h_1a9ac94cc21d2059d2e7853e31f697de0c" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" kind="function"><name>ExtractComponent</name></member>
     <member refid="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" kind="function"><name>sparse_convolve</name></member>
+    <member refid="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" kind="function"><name>BundleSEEDGroup</name></member>
+    <member refid="algorithms_8h_1aaf4c3abc82571d4db7955c34f18201e8" kind="function"><name>bundle_seed_data</name></member>
+    <member refid="algorithms_8h_1aaf01620b65615245bf4d06581f6badc3" kind="function"><name>seed_ensemble_sort</name></member>
+    <member refid="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" kind="function"><name>cautious_compare</name></member>
+    <member refid="bundle_8cc_1a3b1619dbb3915f557aca6ed169fe008b" kind="function"><name>dogtag</name></member>
+    <member refid="bundle_8cc_1a1fbb4b5c74c1f7e015c64ac807d5e254" kind="function"><name>BundleSEEDGroup</name></member>
     <member refid="_butterworth_8cc_1a65fd8522810064ed52a8b0eecbfec871" kind="function"><name>FHighFloor</name></member>
     <member refid="_butterworth_8cc_1a5257b05b0bf4212ec056bd7004a041ed" kind="function"><name>reverse_vector</name></member>
     <member refid="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" kind="function"><name>ArrivalTimeReference</name></member>
@@ -825,7 +834,7 @@
   <compound refid="include_2mspass_2utility_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
-    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1ab4254aac1c60b6399c0da5a7e6d629d0" kind="function"><name>FILE</name></member>
+    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a32db37f7fd8b82e4e31ed8df60a950a9" kind="function"><name>FILE</name></member>
   </compound>
   <compound refid="src_2lib_2seismic_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2seismic_2_c_make_lists_8txt_1a7b97ed8d1d4f019ee3ee6c8c1c813f00" kind="function"><name>include_directories</name></member>
@@ -892,6 +901,8 @@
   <compound refid="agc_8cc" kind="file"><name>agc.cc</name>
   </compound>
   <compound refid="amplitudes_8cc" kind="file"><name>amplitudes.cc</name>
+  </compound>
+  <compound refid="bundle_8cc" kind="file"><name>bundle.cc</name>
   </compound>
   <compound refid="_butterworth_8cc" kind="file"><name>Butterworth.cc</name>
   </compound>

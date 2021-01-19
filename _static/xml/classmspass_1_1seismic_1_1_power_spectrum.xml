@@ -290,44 +290,44 @@
     <detaileddescription>
 <para>Class defining the concept of a power psectrum. </para>    </detaileddescription>
     <inheritancegraph>
-      <node id="151">
+      <node id="153">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="152" relation="public-inheritance">
+        <childnode refid="154" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="152">
+      <node id="154">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="150">
+      <node id="152">
         <label>mspass::seismic::PowerSpectrum</label>
         <link refid="classmspass_1_1seismic_1_1_power_spectrum"/>
-        <childnode refid="151" relation="public-inheritance">
+        <childnode refid="153" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="154">
+      <node id="156">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="155" relation="public-inheritance">
+        <childnode refid="157" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="156">
+      <node id="158">
         <label>mspass::utility::ErrorLogger</label>
         <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-      <node id="155">
+      <node id="157">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="153">
+      <node id="155">
         <label>mspass::seismic::PowerSpectrum</label>
         <link refid="classmspass_1_1seismic_1_1_power_spectrum"/>
-        <childnode refid="154" relation="public-inheritance">
+        <childnode refid="156" relation="public-inheritance">
         </childnode>
-        <childnode refid="156" relation="usage">
+        <childnode refid="158" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
       </node>
@@ -340,11 +340,11 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>begin</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>change_key</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1abaa3b11bec830a2ab4f93e79623af591" prot="protected" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>changed_or_set</name></member>
-      <member refid="classmspass_1_1utility_1_1_metadata_1ae22a5ea6e0c16796f2a12feaaea38f21" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>clear</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a610962d5ca59e48d1b2833e613bbad1d" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>clear_modified</name></member>
       <member refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>df</name></member>
       <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>elog</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>end</name></member>
+      <member refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>erase</name></member>
       <member refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>f0</name></member>
       <member refid="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>frequency</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" prot="public" virt="non-virtual"><scope>mspass::seismic::PowerSpectrum</scope><name>get</name></member>

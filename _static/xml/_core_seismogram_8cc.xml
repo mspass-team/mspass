@@ -13,210 +13,210 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_spherical_coordinate_8h" local="yes">mspass/utility/SphericalCoordinate.h</includes>
     <incdepgraph>
-      <node id="1196">
+      <node id="1243">
         <label>list</label>
       </node>
-      <node id="1207">
+      <node id="1254">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1183" relation="include">
+        <childnode refid="1230" relation="include">
         </childnode>
-        <childnode refid="1208" relation="include">
+        <childnode refid="1255" relation="include">
         </childnode>
-        <childnode refid="1209" relation="include">
+        <childnode refid="1256" relation="include">
         </childnode>
       </node>
-      <node id="1204">
+      <node id="1251">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1182">
+      <node id="1229">
         <label>float.h</label>
       </node>
-      <node id="1208">
+      <node id="1255">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1206">
+      <node id="1253">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1199">
+      <node id="1246">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1197" relation="include">
+        <childnode refid="1244" relation="include">
         </childnode>
-        <childnode refid="1200" relation="include">
+        <childnode refid="1247" relation="include">
         </childnode>
       </node>
-      <node id="1203">
+      <node id="1250">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1202" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
-        <childnode refid="1197" relation="include">
+        <childnode refid="1244" relation="include">
         </childnode>
-        <childnode refid="1184" relation="include">
+        <childnode refid="1231" relation="include">
         </childnode>
-        <childnode refid="1191" relation="include">
+        <childnode refid="1238" relation="include">
         </childnode>
-        <childnode refid="1204" relation="include">
+        <childnode refid="1251" relation="include">
         </childnode>
-        <childnode refid="1205" relation="include">
+        <childnode refid="1252" relation="include">
         </childnode>
-        <childnode refid="1206" relation="include">
+        <childnode refid="1253" relation="include">
         </childnode>
-        <childnode refid="1199" relation="include">
+        <childnode refid="1246" relation="include">
         </childnode>
       </node>
-      <node id="1202">
+      <node id="1249">
         <label>string</label>
       </node>
-      <node id="1210">
+      <node id="1257">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
-        <childnode refid="1191" relation="include">
+        <childnode refid="1238" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="1254" relation="include">
         </childnode>
-        <childnode refid="1192" relation="include">
+        <childnode refid="1239" relation="include">
         </childnode>
       </node>
-      <node id="1194">
+      <node id="1241">
         <label>map</label>
       </node>
-      <node id="1200">
+      <node id="1247">
         <label>exception</label>
       </node>
-      <node id="1198">
+      <node id="1245">
         <label>fstream</label>
       </node>
-      <node id="1187">
+      <node id="1234">
         <label>pybind11/numpy.h</label>
       </node>
-      <node id="1212">
+      <node id="1259">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="1202" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
       </node>
-      <node id="1205">
+      <node id="1252">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="1185">
+      <node id="1232">
         <label>boost/any.hpp</label>
       </node>
-      <node id="1209">
+      <node id="1256">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="1213">
+      <node id="1260">
         <label>mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="1211">
+      <node id="1258">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="1201">
+      <node id="1248">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1202" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
       </node>
-      <node id="1181">
+      <node id="1228">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc</label>
         <link refid="_core_seismogram_8cc"/>
-        <childnode refid="1182" relation="include">
+        <childnode refid="1229" relation="include">
         </childnode>
-        <childnode refid="1183" relation="include">
+        <childnode refid="1230" relation="include">
         </childnode>
-        <childnode refid="1184" relation="include">
+        <childnode refid="1231" relation="include">
         </childnode>
-        <childnode refid="1185" relation="include">
+        <childnode refid="1232" relation="include">
         </childnode>
-        <childnode refid="1186" relation="include">
+        <childnode refid="1233" relation="include">
         </childnode>
-        <childnode refid="1187" relation="include">
+        <childnode refid="1234" relation="include">
         </childnode>
-        <childnode refid="1188" relation="include">
+        <childnode refid="1235" relation="include">
         </childnode>
-        <childnode refid="1189" relation="include">
+        <childnode refid="1236" relation="include">
         </childnode>
-        <childnode refid="1199" relation="include">
+        <childnode refid="1246" relation="include">
         </childnode>
-        <childnode refid="1211" relation="include">
+        <childnode refid="1258" relation="include">
         </childnode>
       </node>
-      <node id="1193">
+      <node id="1240">
         <label>typeinfo</label>
       </node>
-      <node id="1191">
+      <node id="1238">
         <label>vector</label>
       </node>
-      <node id="1184">
+      <node id="1231">
         <label>sstream</label>
       </node>
-      <node id="1186">
+      <node id="1233">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="1189">
+      <node id="1236">
         <label>mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="1190" relation="include">
+        <childnode refid="1237" relation="include">
         </childnode>
-        <childnode refid="1191" relation="include">
+        <childnode refid="1238" relation="include">
         </childnode>
-        <childnode refid="1192" relation="include">
+        <childnode refid="1239" relation="include">
         </childnode>
-        <childnode refid="1203" relation="include">
+        <childnode refid="1250" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="1254" relation="include">
         </childnode>
-        <childnode refid="1210" relation="include">
+        <childnode refid="1257" relation="include">
         </childnode>
-        <childnode refid="1211" relation="include">
+        <childnode refid="1258" relation="include">
         </childnode>
-        <childnode refid="1212" relation="include">
+        <childnode refid="1259" relation="include">
         </childnode>
-        <childnode refid="1213" relation="include">
+        <childnode refid="1260" relation="include">
         </childnode>
       </node>
-      <node id="1183">
+      <node id="1230">
         <label>math.h</label>
       </node>
-      <node id="1197">
+      <node id="1244">
         <label>iostream</label>
       </node>
-      <node id="1195">
+      <node id="1242">
         <label>set</label>
       </node>
-      <node id="1188">
+      <node id="1235">
         <label>misc/blas.h</label>
       </node>
-      <node id="1190">
+      <node id="1237">
         <label>memory</label>
       </node>
-      <node id="1192">
+      <node id="1239">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1193" relation="include">
+        <childnode refid="1240" relation="include">
         </childnode>
-        <childnode refid="1194" relation="include">
+        <childnode refid="1241" relation="include">
         </childnode>
-        <childnode refid="1195" relation="include">
+        <childnode refid="1242" relation="include">
         </childnode>
-        <childnode refid="1196" relation="include">
+        <childnode refid="1243" relation="include">
         </childnode>
-        <childnode refid="1197" relation="include">
+        <childnode refid="1244" relation="include">
         </childnode>
-        <childnode refid="1198" relation="include">
+        <childnode refid="1245" relation="include">
         </childnode>
-        <childnode refid="1184" relation="include">
+        <childnode refid="1231" relation="include">
         </childnode>
-        <childnode refid="1185" relation="include">
+        <childnode refid="1232" relation="include">
         </childnode>
-        <childnode refid="1186" relation="include">
+        <childnode refid="1233" relation="include">
         </childnode>
-        <childnode refid="1199" relation="include">
+        <childnode refid="1246" relation="include">
         </childnode>
-        <childnode refid="1201" relation="include">
+        <childnode refid="1248" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -267,7 +267,7 @@
 <codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tmatrix[i][j]=0.0;</highlight></codeline>
 <codeline lineno="41"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="42"><highlight class="normal">CoreSeismogram::CoreSeismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsamples)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram::CoreSeismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nsamples)</highlight></codeline>
 <codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>BasicTimeSeries(),<ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>()</highlight></codeline>
 <codeline lineno="44"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>IMPORTANT:<sp/><sp/>this<sp/>constructor<sp/>assumes<sp/>BasicTimeSeries<sp/>initializes<sp/>the</highlight></codeline>
@@ -288,7 +288,7 @@
 <codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tmatrix[i][j]=0.0;</highlight></codeline>
 <codeline lineno="61"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"></highlight></codeline>
-<codeline lineno="63"><highlight class="normal">CoreSeismogram::CoreSeismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>t3c)<sp/>:</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram::CoreSeismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>t3c)<sp/>:</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>BasicTimeSeries(dynamic_cast&lt;const<sp/>BasicTimeSeries&amp;&gt;(t3c)),</highlight></codeline>
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>(dynamic_cast&lt;const<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;&gt;(t3c)),</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>u(t3c.u)</highlight></codeline>
@@ -310,7 +310,7 @@
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(j=0;j&lt;3;++j)</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ival=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tmatrix[i][j]*scale);</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ival=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" kindref="member">tmatrix</ref>[i][j]*scale);</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(i==j)</highlight></codeline>
 <codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(ival!=itest)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
@@ -323,7 +323,7 @@
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="97"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="98"><highlight class="normal">CoreSeismogram::CoreSeismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram::CoreSeismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md,</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>load_data)<sp/>:<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>(md)</highlight></codeline>
 <codeline lineno="100"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>dfile,<sp/>dir;</highlight></codeline>
@@ -393,7 +393,7 @@
 <codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="166"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"></highlight></codeline>
-<codeline lineno="168"><highlight class="normal">CoreSeismogram::CoreSeismogram(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;CoreTimeSeries&gt;&amp;<sp/>ts,</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a9be7b3811cfcd0b0396b32214d7eab51" kindref="member">CoreSeismogram::CoreSeismogram</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>vector&lt;CoreTimeSeries&gt;&amp;<sp/>ts,</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>component_to_clone)</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/>:<sp/>BasicTimeSeries(dynamic_cast&lt;const<sp/>BasicTimeSeries&amp;&gt;(ts[component_to_clone])),</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>(dynamic_cast&lt;const<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;&gt;(ts[component_to_clone])),</highlight></codeline>
@@ -402,10 +402,10 @@
 <codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;CoreSeismogram<sp/>constructor<sp/>from<sp/>3<sp/>Time<sp/>Series:<sp/><sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,j;</highlight></codeline>
 <codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>needed<sp/>in<sp/>case<sp/>nsamp<sp/>does<sp/>not<sp/>match<sp/>s.size(0)<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nstest<sp/>=<sp/>ts[component_to_clone].s.size();</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nstest<sp/>=<sp/>ts[component_to_clone].s.size();</highlight></codeline>
 <codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nsamp!=nstest)<sp/>this-&gt;nsamp=nstest;</highlight></codeline>
 <codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>method<sp/>allocates<sp/>u<sp/>and<sp/>sets<sp/>the<sp/>proper<sp/>metadata<sp/>for<sp/>npts*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;CoreSeismogram::set_npts(this-&gt;nsamp);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" kindref="member">CoreSeismogram::set_npts</ref>(this-&gt;nsamp);</highlight></codeline>
 <codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>beware<sp/>irregular<sp/>sample<sp/>rates,<sp/>but<sp/>don&apos;<sp/>be<sp/>too<sp/>machevelian.</highlight></codeline>
 <codeline lineno="182"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Abort<sp/>only<sp/>if<sp/>the<sp/>mismatch<sp/>is<sp/>large<sp/>defined<sp/>as<sp/>accumulated<sp/>time</highlight></codeline>
 <codeline lineno="183"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>over<sp/>data<sp/>range<sp/>of<sp/>this<sp/>constructor<sp/>is<sp/>less<sp/>than<sp/>half<sp/>a<sp/>sample<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -460,8 +460,8 @@
 <codeline lineno="232"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>we<sp/>don&apos;t<sp/>test<sp/>for<sp/>that<sp/>condition.<sp/><sp/>We<sp/>do<sp/>need<sp/>to<sp/>clear<sp/>hang<sp/>and<sp/>vang</highlight></codeline>
 <codeline lineno="233"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>from<sp/>result<sp/>here,<sp/>however,<sp/>as<sp/>both<sp/>attributes<sp/>are<sp/>meaningless</highlight></codeline>
 <codeline lineno="234"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>for<sp/>a<sp/>3C<sp/>seismogram<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;clear(</highlight><highlight class="stringliteral">&quot;hang&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;clear(</highlight><highlight class="stringliteral">&quot;vang&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;erase(</highlight><highlight class="stringliteral">&quot;hang&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;erase(</highlight><highlight class="stringliteral">&quot;vang&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>These<sp/>are<sp/>loaded<sp/>just<sp/>for<sp/>convenience</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/>t0_component[0]=ts[0].t0();</highlight></codeline>
 <codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/>t0_component[1]=ts[1].t0();</highlight></codeline>
@@ -503,13 +503,13 @@
 <codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tsmax=max(tsmax,t0_component[2]);</highlight></codeline>
 <codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>temin=min(ts[0].endtime(),ts[1].endtime());</highlight></codeline>
 <codeline lineno="277"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>temin=min(temin,ts[2].endtime());</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nstest=round((temin-tsmax)/mdt);</highlight></codeline>
-<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nsamp&lt;=0)</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nstest=(int)round((temin-tsmax)/mdt);</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nstest&lt;=0)</highlight></codeline>
 <codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error</highlight></codeline>
 <codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+</highlight><highlight class="stringliteral">&quot;Irregular<sp/>time<sp/>windows<sp/>of<sp/>components<sp/>have<sp/>no<sp/>overlap&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;CoreSeismogram::set_npts(nstest);</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" kindref="member">CoreSeismogram::set_npts</ref>(nstest);</highlight></codeline>
 <codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Now<sp/>load<sp/>the<sp/>data.<sp/><sp/>Use<sp/>the<sp/>time<sp/>and<sp/>sample<sp/>number<sp/>methods</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>to<sp/>simplify<sp/>process</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t;</highlight></codeline>
@@ -562,7 +562,7 @@
 <codeline lineno="334"><highlight class="normal"></highlight><highlight class="comment">//<sp/>all<sp/>key<sp/>on<sp/>the<sp/>BLAS<sp/>for<sp/>speed.<sp/><sp/>That<sp/>is,<sp/>a<sp/>transformation<sp/>matrix<sp/>could<sp/>be<sp/>done</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="335"><highlight class="normal"></highlight><highlight class="comment">//<sp/>by<sp/>using<sp/>the<sp/>*<sp/>operator<sp/>between<sp/>matrix<sp/>objects.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="336"><highlight class="normal"></highlight></codeline>
-<codeline lineno="337"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::rotate_to_standard()</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" kindref="member">CoreSeismogram::rotate_to_standard</ref>()</highlight></codeline>
 <codeline lineno="338"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>this-&gt;dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*work[3];</highlight></codeline>
@@ -706,7 +706,7 @@
 <codeline lineno="478"><highlight class="comment">Modified:<sp/><sp/>Feb<sp/>2003</highlight></codeline>
 <codeline lineno="479"><highlight class="comment">Original<sp/>was<sp/>plain<sp/>C.<sp/><sp/>Adapted<sp/>to<sp/>C++<sp/>for<sp/>seismic<sp/>processing</highlight></codeline>
 <codeline lineno="480"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="481"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::rotate(<ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref>&amp;<sp/>xsc)</highlight></codeline>
+<codeline lineno="481"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" kindref="member">CoreSeismogram::rotate</ref>(<ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref>&amp;<sp/>xsc)</highlight></codeline>
 <codeline lineno="482"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="484"><highlight class="normal"></highlight></codeline>
@@ -777,7 +777,7 @@
 <codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/>components_are_cardinal=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;<sp/>i&lt;3;<sp/>++i)<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>[]<sp/>work[i];</highlight></codeline>
 <codeline lineno="551"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="552"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::rotate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu[3])</highlight></codeline>
+<codeline lineno="552"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" kindref="member">CoreSeismogram::rotate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>nu[3])</highlight></codeline>
 <codeline lineno="553"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>this-&gt;dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="structmspass_1_1utility_1_1_spherical_coordinate" kindref="compound">SphericalCoordinate</ref><sp/>xsc=UnitVectorToSpherical(nu);</highlight></codeline>
@@ -787,7 +787,7 @@
 <codeline lineno="559"><highlight class="comment"><sp/>Similar<sp/>to<sp/>above<sp/>but<sp/>using<sp/>only<sp/>azimuth<sp/>angle<sp/>AND<sp/>doing<sp/>a<sp/>simple</highlight></codeline>
 <codeline lineno="560"><highlight class="comment"><sp/>rotation<sp/>in<sp/>the<sp/>horizontal<sp/>plane.<sp/><sp/>Efficient<sp/>algorithm<sp/>only</highlight></codeline>
 <codeline lineno="561"><highlight class="comment"><sp/>alters<sp/>0<sp/>and<sp/>1<sp/>components.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="562"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::rotate(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>phi)</highlight></codeline>
+<codeline lineno="562"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" kindref="member">CoreSeismogram::rotate</ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>phi)</highlight></codeline>
 <codeline lineno="563"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="564"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="565"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,j,k;</highlight></codeline>
@@ -831,7 +831,7 @@
 <codeline lineno="603"><highlight class="normal"><sp/><sp/><sp/><sp/>components_are_cardinal=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;<sp/>i&lt;2;<sp/>++i)<sp/></highlight><highlight class="keyword">delete</highlight><highlight class="normal"><sp/>[]<sp/>work[i];</highlight></codeline>
 <codeline lineno="605"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="606"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::transform(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a[3][3])</highlight></codeline>
+<codeline lineno="606"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" kindref="member">CoreSeismogram::transform</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a[3][3])</highlight></codeline>
 <codeline lineno="607"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Older<sp/>version<sp/>had<sp/>this<sp/>-<sp/>we<sp/>need<sp/>to<sp/>trust<sp/>ns<sp/>is<sp/>already<sp/>u.columns().<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -881,7 +881,7 @@
 <codeline lineno="653"><highlight class="comment"></highlight></codeline>
 <codeline lineno="654"><highlight class="comment">Author:<sp/><sp/>Gary<sp/>Pavlis</highlight></codeline>
 <codeline lineno="655"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="656"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::free_surface_transformation(SlownessVector<sp/>uvec,</highlight></codeline>
+<codeline lineno="656"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" kindref="member">CoreSeismogram::free_surface_transformation</ref>(SlownessVector<sp/>uvec,</highlight></codeline>
 <codeline lineno="657"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a0,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>b0)</highlight></codeline>
 <codeline lineno="658"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="659"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(<sp/>(u.size()[1]&lt;=0)<sp/>||<sp/>dead())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;<sp/></highlight><highlight class="comment">//<sp/>do<sp/>nothing<sp/>in<sp/>these<sp/>situations</highlight><highlight class="normal"></highlight></codeline>
@@ -945,7 +945,7 @@
 <codeline lineno="717"><highlight class="normal"><sp/><sp/><sp/><sp/>components_are_cardinal=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="718"><highlight class="normal"><sp/><sp/><sp/><sp/>components_are_orthogonal=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="719"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="720"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>CoreSeismogram::set_transformation_matrix(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)</highlight></codeline>
+<codeline lineno="720"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" kindref="member">CoreSeismogram::set_transformation_matrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)</highlight></codeline>
 <codeline lineno="721"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="722"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;3;++i)</highlight></codeline>
 <codeline lineno="723"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j=0;j&lt;3;++j)<sp/>tmatrix[i][j]=A(i,j);</highlight></codeline>
@@ -968,7 +968,7 @@
 <codeline lineno="740"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="741"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>components_are_cardinal;</highlight></codeline>
 <codeline lineno="742"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="743"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>CoreSeismogram::set_transformation_matrix(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a[3][3])</highlight></codeline>
+<codeline lineno="743"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" kindref="member">CoreSeismogram::set_transformation_matrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>a[3][3])</highlight></codeline>
 <codeline lineno="744"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="745"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i=0;i&lt;3;++i)</highlight></codeline>
 <codeline lineno="746"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>j=0;j&lt;3;++j)<sp/>tmatrix[i][j]=a[i][j];</highlight></codeline>
@@ -991,7 +991,7 @@
 <codeline lineno="763"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="764"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>components_are_cardinal;</highlight></codeline>
 <codeline lineno="765"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="766"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>CoreSeismogram::set_transformation_matrix(py::object<sp/>tmatrix_py)</highlight></codeline>
+<codeline lineno="766"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" kindref="member">CoreSeismogram::set_transformation_matrix</ref>(py::object<sp/>tmatrix_py)</highlight></codeline>
 <codeline lineno="767"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="768"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(py::isinstance&lt;py::array&gt;(tmatrix_py))<sp/>{</highlight></codeline>
 <codeline lineno="769"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>tmatrix_ary<sp/>=<sp/>tmatrix_py.cast&lt;py::array_t&lt;double,<sp/>py::array::c_style<sp/>|<sp/>py::array::forcecast&gt;&gt;();</highlight></codeline>
@@ -1054,11 +1054,11 @@
 <codeline lineno="826"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid));</highlight></codeline>
 <codeline lineno="827"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="828"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="829"><highlight class="normal">CoreSeismogram&amp;<sp/>CoreSeismogram::operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>seisin)</highlight></codeline>
+<codeline lineno="829"><highlight class="normal">CoreSeismogram&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" kindref="member">CoreSeismogram::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>seisin)</highlight></codeline>
 <codeline lineno="830"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="831"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;seisin)</highlight></codeline>
 <codeline lineno="832"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="833"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;BasicTimeSeries::operator=(seisin);</highlight></codeline>
+<codeline lineno="833"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" kindref="member">BasicTimeSeries::operator=</ref>(seisin);</highlight></codeline>
 <codeline lineno="834"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(seisin);</highlight></codeline>
 <codeline lineno="835"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>components_are_orthogonal=seisin.components_are_orthogonal;</highlight></codeline>
 <codeline lineno="836"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>components_are_cardinal=seisin.components_are_cardinal;</highlight></codeline>
@@ -1073,7 +1073,7 @@
 <codeline lineno="845"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="846"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="847"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="848"><highlight class="normal">CoreSeismogram&amp;<sp/>CoreSeismogram::operator*=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>scale)</highlight></codeline>
+<codeline lineno="848"><highlight class="normal">CoreSeismogram&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" kindref="member">CoreSeismogram::operator*=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>scale)</highlight></codeline>
 <codeline lineno="849"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="850"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>do<sp/>nothing<sp/>to<sp/>empty<sp/>data<sp/>or<sp/>data<sp/>marked<sp/>dead*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="851"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((this-&gt;npts()==0)<sp/>||<sp/>(this-&gt;dead()))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
@@ -1084,7 +1084,7 @@
 <codeline lineno="856"><highlight class="normal"><sp/><sp/>dscal(3*this-&gt;npts(),scale,ptr,1);</highlight></codeline>
 <codeline lineno="857"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="858"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="859"><highlight class="normal">CoreSeismogram&amp;<sp/>CoreSeismogram::operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>data)</highlight></codeline>
+<codeline lineno="859"><highlight class="normal">CoreSeismogram&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" kindref="member">CoreSeismogram::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>data)</highlight></codeline>
 <codeline lineno="860"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="861"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,iend,jend;</highlight></codeline>
 <codeline lineno="862"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j,i0,j0;</highlight></codeline>
@@ -1132,7 +1132,7 @@
 <codeline lineno="904"><highlight class="comment">except<sp/>the<sp/>+=<sp/>in<sp/>the<sp/>last<sp/>loop<sp/>becomes<sp/>-=.<sp/><sp/>Any<sp/>changes<sp/>in<sp/>operator+=</highlight></codeline>
 <codeline lineno="905"><highlight class="comment">must<sp/>have<sp/>exactly<sp/>the<sp/>same<sp/>change<sp/>here<sp/>(other<sp/>than<sp/>a<sp/>message<sp/>with<sp/>a</highlight></codeline>
 <codeline lineno="906"><highlight class="comment">tag<sp/>to<sp/>the<sp/>function)*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="907"><highlight class="normal">CoreSeismogram&amp;<sp/>CoreSeismogram::operator-=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>data)</highlight></codeline>
+<codeline lineno="907"><highlight class="normal">CoreSeismogram&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" kindref="member">CoreSeismogram::operator-=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>data)</highlight></codeline>
 <codeline lineno="908"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="909"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,iend,jend;</highlight></codeline>
 <codeline lineno="910"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>j,i0,j0;</highlight></codeline>
@@ -1176,21 +1176,21 @@
 <codeline lineno="948"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="949"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="950"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="951"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram<sp/>CoreSeismogram::operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="951"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" kindref="member">CoreSeismogram::operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="952"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="953"><highlight class="normal"><sp/><sp/>CoreSeismogram<sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="954"><highlight class="normal"><sp/><sp/>result<sp/>+=<sp/>other;</highlight></codeline>
 <codeline lineno="955"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="956"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="957"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram<sp/>CoreSeismogram::operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="957"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" kindref="member">CoreSeismogram::operator-</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>CoreSeismogram&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="958"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="959"><highlight class="normal"><sp/><sp/>CoreSeismogram<sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="960"><highlight class="normal"><sp/><sp/>result<sp/>-=<sp/>other;</highlight></codeline>
 <codeline lineno="961"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="962"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="963"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_dt(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval)</highlight></codeline>
+<codeline lineno="963"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a5e51c2c6d3a1aa02281ba242a1d15bf2" kindref="member">CoreSeismogram::set_dt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>sample_interval)</highlight></codeline>
 <codeline lineno="964"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="965"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_dt(sample_interval);</highlight></codeline>
+<codeline lineno="965"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8" kindref="member">BasicTimeSeries::set_dt</ref>(sample_interval);</highlight></codeline>
 <codeline lineno="966"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="967"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;delta&quot;</highlight><highlight class="normal">,sample_interval);</highlight></codeline>
 <codeline lineno="968"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -1205,9 +1205,9 @@
 <codeline lineno="977"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="978"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="979"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="980"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_t0(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0in)</highlight></codeline>
+<codeline lineno="980"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" kindref="member">CoreSeismogram::set_t0</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0in)</highlight></codeline>
 <codeline lineno="981"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="982"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_t0(t0in);</highlight></codeline>
+<codeline lineno="982"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1abe29da17a295b2b439951d3ab6378caf" kindref="member">BasicTimeSeries::set_t0</ref>(t0in);</highlight></codeline>
 <codeline lineno="983"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="984"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;starttime&quot;</highlight><highlight class="normal">,t0in);</highlight></codeline>
 <codeline lineno="985"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>are<sp/>hard<sp/>coded<sp/>aliases<sp/>for<sp/>sample_interval<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -1223,9 +1223,9 @@
 <codeline lineno="995"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="996"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="997"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="998"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::set_npts(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>npts)</highlight></codeline>
+<codeline lineno="998"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" kindref="member">CoreSeismogram::set_npts</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>npts)</highlight></codeline>
 <codeline lineno="999"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="1000"><highlight class="normal"><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(npts);</highlight></codeline>
+<codeline lineno="1000"><highlight class="normal"><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c" kindref="member">BasicTimeSeries::set_npts</ref>(npts);</highlight></codeline>
 <codeline lineno="1001"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
 <codeline lineno="1002"><highlight class="comment"><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1003"><highlight class="normal"><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)npts);</highlight></codeline>
@@ -1246,10 +1246,10 @@
 <codeline lineno="1018"><highlight class="normal"><sp/><sp/>this-&gt;u=<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(3,npts);</highlight></codeline>
 <codeline lineno="1019"><highlight class="normal"><sp/><sp/>this-&gt;u.zero();</highlight></codeline>
 <codeline lineno="1020"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="1021"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>CoreSeismogram::sync_npts()</highlight></codeline>
+<codeline lineno="1021"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" kindref="member">CoreSeismogram::sync_npts</ref>()</highlight></codeline>
 <codeline lineno="1022"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="1023"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nsamp<sp/>!=<sp/>this-&gt;u.columns())<sp/>{</highlight></codeline>
-<codeline lineno="1024"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;BasicTimeSeries::set_npts(this-&gt;u.columns());</highlight></codeline>
+<codeline lineno="1024"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c" kindref="member">BasicTimeSeries::set_npts</ref>(this-&gt;u.columns());</highlight></codeline>
 <codeline lineno="1025"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>is<sp/>the<sp/>unique<sp/>name<sp/>-<sp/>we<sp/>always<sp/>set<sp/>it.<sp/><sp/>The<sp/>weird</highlight></codeline>
 <codeline lineno="1026"><highlight class="comment"><sp/><sp/><sp/><sp/>cast<sp/>is<sp/>necessary<sp/>to<sp/>avoid<sp/>type<sp/>mismatch<sp/>with<sp/>unsigned*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="1027"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;put(</highlight><highlight class="stringliteral">&quot;npts&quot;</highlight><highlight class="normal">,(</highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)nsamp);</highlight></codeline>
@@ -1268,7 +1268,7 @@
 <codeline lineno="1040"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="1041"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="1042"><highlight class="normal"></highlight></codeline>
-<codeline lineno="1043"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword">const</highlight></codeline>
+<codeline lineno="1043"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" kindref="member">CoreSeismogram::operator[] </ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i)</highlight><highlight class="keyword">const</highlight></codeline>
 <codeline lineno="1044"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="1045"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="1046"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>
@@ -1278,7 +1278,7 @@
 <codeline lineno="1050"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="1051"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
 <codeline lineno="1052"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="1053"><highlight class="normal">vector&lt;double&gt;<sp/>CoreSeismogram::operator[]<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="1053"><highlight class="normal">vector&lt;double&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" kindref="member">CoreSeismogram::operator[] </ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="1054"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="1055"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="1056"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>vector&lt;double&gt;<sp/>result;</highlight></codeline>

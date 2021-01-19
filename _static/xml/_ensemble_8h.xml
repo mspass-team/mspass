@@ -8,6 +8,7 @@
     <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="algorithms_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</includedby>
     <includedby refid="amplitudes_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</includedby>
+    <includedby refid="bundle_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc</includedby>
     <includedby refid="seismogram__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <incdepgraph>
@@ -350,61 +351,62 @@
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(parent);</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>member=parent.<ref refid="classmspass_1_1seismic_1_1_ensemble_1a50f9947d9209dda797f1b7fe2b4ba81f" kindref="member">member</ref>;</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Indexing<sp/>operator.</highlight></codeline>
-<codeline lineno="49"><highlight class="comment"></highlight></codeline>
-<codeline lineno="50"><highlight class="comment"><sp/><sp/>This<sp/>is<sp/>the<sp/>indexing<sp/>operator<sp/>used<sp/>to<sp/>extract<sp/>an<sp/>ensemble<sp/>member</highlight></codeline>
-<codeline lineno="51"><highlight class="comment"><sp/><sp/>with<sp/>a<sp/>(simpler)<sp/>construct<sp/>like<sp/>x=e[i]<sp/>as<sp/>opposed<sp/>to<sp/>x=e.member[i].</highlight></codeline>
-<codeline lineno="52"><highlight class="comment"><sp/><sp/>The<sp/>later<sp/>is<sp/>possible<sp/>because<sp/>we<sp/>(intionally)<sp/>make<sp/>the<sp/>member<sp/>Container</highlight></codeline>
-<codeline lineno="53"><highlight class="comment"><sp/><sp/>public,<sp/>but<sp/>this<sp/>operator<sp/>can<sp/>be<sp/>used<sp/>to<sp/>write<sp/>code<sp/>that<sp/>follows<sp/>common</highlight></codeline>
-<codeline lineno="54"><highlight class="comment"><sp/><sp/>guidelines<sp/>to<sp/>not<sp/>make<sp/>data<sp/>public.<sp/><sp/><sp/>It<sp/>will<sp/>be<sp/>used<sp/>for<sp/>the<sp/>python</highlight></codeline>
-<codeline lineno="55"><highlight class="comment"><sp/><sp/>interface.</highlight></codeline>
-<codeline lineno="56"><highlight class="comment"></highlight></codeline>
-<codeline lineno="57"><highlight class="comment"><sp/><sp/>\param<sp/>n<sp/><sp/>is<sp/>the<sp/>member<sp/>to<sp/>be<sp/>extracted<sp/>and<sp/>returned.</highlight></codeline>
-<codeline lineno="58"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="59"><highlight class="normal"><sp/><sp/>Tdata&amp;<sp/>operator[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="60"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(this-&gt;member[n]);</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="74" refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" kindref="member">update_metadata</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;<sp/>newmd)</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>*md;</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/>md=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>(*md)<sp/>+=<sp/>newmd;</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="88" refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" kindref="member">sync_metadata</ref>()</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;i&lt;this-&gt;member.size();++i)</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>*mdmember=&amp;(this-&gt;member[i]);</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*mdmember)+=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
-<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="97"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="99"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>;</highlight></codeline>
-<codeline lineno="101"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">ThreeComponentEnsemble</ref>;</highlight></codeline>
-<codeline lineno="122"><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
-<codeline lineno="123"><highlight class="comment">template<sp/>&lt;typename<sp/>Tdata&gt;</highlight></codeline>
-<codeline lineno="124"><highlight class="comment"><sp/><sp/>size_t<sp/>set_inputs(ProcessingHistoryRecord&amp;<sp/>rec,<sp/>const<sp/>mspass::seismic::Ensemble&lt;Tdata&gt;&amp;<sp/>d)</highlight></codeline>
-<codeline lineno="125"><highlight class="comment">{</highlight></codeline>
-<codeline lineno="126"><highlight class="comment"><sp/><sp/>try{</highlight></codeline>
-<codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>for(size_t<sp/>i=0;i&lt;d.member.size();++i)</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Ignore<sp/>any<sp/>data<sp/>not<sp/>defined<sp/>as<sp/>live</highlight></codeline>
-<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>if(d.member[i].live())</highlight></codeline>
-<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;ProcessingHistoryRecord&gt;<sp/>h(d.member[i].history());</highlight></codeline>
-<codeline lineno="133"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>do<sp/>nothing<sp/>if<sp/>the<sp/>container<sp/>is<sp/>empty</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if(h.size()&gt;0)rec.inputs.push_back(h);</highlight></codeline>
-<codeline lineno="135"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>rec.inputs.size();</highlight></codeline>
-<codeline lineno="138"><highlight class="comment"><sp/><sp/>}catch(...){throw;};</highlight></codeline>
-<codeline lineno="139"><highlight class="comment">};</highlight></codeline>
-<codeline lineno="140"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="141"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/><sp/>End<sp/>guard</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Indexing<sp/>operator.</highlight></codeline>
+<codeline lineno="50"><highlight class="comment"></highlight></codeline>
+<codeline lineno="51"><highlight class="comment"><sp/><sp/>This<sp/>is<sp/>the<sp/>indexing<sp/>operator<sp/>used<sp/>to<sp/>extract<sp/>an<sp/>ensemble<sp/>member</highlight></codeline>
+<codeline lineno="52"><highlight class="comment"><sp/><sp/>with<sp/>a<sp/>(simpler)<sp/>construct<sp/>like<sp/>x=e[i]<sp/>as<sp/>opposed<sp/>to<sp/>x=e.member[i].</highlight></codeline>
+<codeline lineno="53"><highlight class="comment"><sp/><sp/>The<sp/>later<sp/>is<sp/>possible<sp/>because<sp/>we<sp/>(intionally)<sp/>make<sp/>the<sp/>member<sp/>Container</highlight></codeline>
+<codeline lineno="54"><highlight class="comment"><sp/><sp/>public,<sp/>but<sp/>this<sp/>operator<sp/>can<sp/>be<sp/>used<sp/>to<sp/>write<sp/>code<sp/>that<sp/>follows<sp/>common</highlight></codeline>
+<codeline lineno="55"><highlight class="comment"><sp/><sp/>guidelines<sp/>to<sp/>not<sp/>make<sp/>data<sp/>public.<sp/><sp/><sp/>It<sp/>will<sp/>be<sp/>used<sp/>for<sp/>the<sp/>python</highlight></codeline>
+<codeline lineno="56"><highlight class="comment"><sp/><sp/>interface.</highlight></codeline>
+<codeline lineno="57"><highlight class="comment"></highlight></codeline>
+<codeline lineno="58"><highlight class="comment"><sp/><sp/>\param<sp/>n<sp/><sp/>is<sp/>the<sp/>member<sp/>to<sp/>be<sp/>extracted<sp/>and<sp/>returned.</highlight></codeline>
+<codeline lineno="59"><highlight class="comment"><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>Tdata&amp;<sp/>operator[](</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>n)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(this-&gt;member[n]);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="75" refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" kindref="member">update_metadata</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;<sp/>newmd)</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>*md;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/>md=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>*</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/>(*md)<sp/>+=<sp/>newmd;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="89" refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" kindref="member">sync_metadata</ref>()</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;i&lt;this-&gt;member.size();++i)</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>*mdmember=&amp;(this-&gt;member[i]);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*mdmember)+=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="98"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="100"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>;</highlight></codeline>
+<codeline lineno="102"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">ThreeComponentEnsemble</ref>;</highlight></codeline>
+<codeline lineno="123"><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
+<codeline lineno="124"><highlight class="comment">template<sp/>&lt;typename<sp/>Tdata&gt;</highlight></codeline>
+<codeline lineno="125"><highlight class="comment"><sp/><sp/>size_t<sp/>set_inputs(ProcessingHistoryRecord&amp;<sp/>rec,<sp/>const<sp/>mspass::seismic::Ensemble&lt;Tdata&gt;&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="126"><highlight class="comment">{</highlight></codeline>
+<codeline lineno="127"><highlight class="comment"><sp/><sp/>try{</highlight></codeline>
+<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>for(size_t<sp/>i=0;i&lt;d.member.size();++i)</highlight></codeline>
+<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Ignore<sp/>any<sp/>data<sp/>not<sp/>defined<sp/>as<sp/>live</highlight></codeline>
+<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>if(d.member[i].live())</highlight></codeline>
+<codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="133"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;ProcessingHistoryRecord&gt;<sp/>h(d.member[i].history());</highlight></codeline>
+<codeline lineno="134"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>do<sp/>nothing<sp/>if<sp/>the<sp/>container<sp/>is<sp/>empty</highlight></codeline>
+<codeline lineno="135"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if(h.size()&gt;0)rec.inputs.push_back(h);</highlight></codeline>
+<codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>rec.inputs.size();</highlight></codeline>
+<codeline lineno="139"><highlight class="comment"><sp/><sp/>}catch(...){throw;};</highlight></codeline>
+<codeline lineno="140"><highlight class="comment">};</highlight></codeline>
+<codeline lineno="141"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/><sp/>End<sp/>guard</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h"/>
   </compounddef>

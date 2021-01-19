@@ -6,6 +6,7 @@
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_ensemble_8h" local="yes">mspass/seismic/Ensemble.h</includes>
     <includedby refid="agc_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc</includedby>
+    <includedby refid="bundle_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc</includedby>
     <incdepgraph>
       <node id="9">
         <label>list</label>
@@ -340,9 +341,9 @@
 <codeline lineno="32"><highlight class="comment">ErrorLogger<sp/>object<sp/>that<sp/>is<sp/>a<sp/>member<sp/>of<sp/>Seismogram.</highlight></codeline>
 <codeline lineno="33"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>agc(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>twin);</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>WindowData3C(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>parent,<sp/></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>WindowData3C(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>parent,</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref>&amp;<sp/>tw);</highlight></codeline>
-<codeline lineno="67"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>parent,<sp/></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref><sp/>WindowData(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>parent,</highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref>&amp;<sp/>tw);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>set<sp/>of<sp/>procedures<sp/>are<sp/>ancessors<sp/>of<sp/>seismogram_helpers.<sp/><sp/><sp/>They</highlight></codeline>
 <codeline lineno="70"><highlight class="comment"><sp/>*<sp/>were<sp/>moved<sp/>to<sp/>algorithms<sp/>June<sp/>2020<sp/>for<sp/>mspass<sp/>*/</highlight></codeline>
@@ -359,8 +360,14 @@
 <codeline lineno="169"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref><sp/>sparse_convolve(</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref>&amp;<sp/>wavelet,</highlight></codeline>
 <codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="172"><highlight class="normal">}</highlight><highlight class="comment">//End<sp/>mspass::algorithms<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="173"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref><sp/>BundleSEEDGroup</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;mspass::seismic::TimeSeries&gt;&amp;<sp/>d,</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>iend);</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble&lt;mspass::seismic::Seismogram&gt;</ref><sp/>bundle_seed_data</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/>(<ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble&lt;mspass::seismic::TimeSeries&gt;</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="300"><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>seed_ensemble_sort(<ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble&lt;mspass::seismic::TimeSeries&gt;</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="301"><highlight class="normal">}</highlight><highlight class="comment">//End<sp/>mspass::algorithms<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="302"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h"/>
   </compounddef>

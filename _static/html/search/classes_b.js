@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['vectorstatistics',['VectorStatistics',['../classmspass_1_1utility_1_1_vector_statistics.html',1,'mspass::utility']]],
-  ['vectortaper',['VectorTaper',['../classmspass_1_1seismic_1_1_vector_taper.html',1,'mspass::seismic']]]
+  ['timeseries',['TimeSeries',['../classmspass_1_1seismic_1_1_time_series.html',1,'mspass::seismic']]],
+  ['timeserieswgaps',['TimeSeriesWGaps',['../classmspass_1_1seismic_1_1_time_series_w_gaps.html',1,'mspass::seismic']]],
+  ['timewindow',['TimeWindow',['../classmspass_1_1seismic_1_1_time_window.html',1,'mspass::seismic']]],
+  ['timewindowcmp',['TimeWindowCmp',['../classmspass_1_1seismic_1_1_time_window_cmp.html',1,'mspass::seismic']]]
 ];

@@ -181,8 +181,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>put_long</b> (const s
 <tr class="separator:a52e2040555616a39b900aa0831c3bd10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e96e8682297fe8b21acf09b4d399cc6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a> (const std::string key) const noexcept</td></tr>
 <tr class="separator:a1e96e8682297fe8b21acf09b4d399cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae22a5ea6e0c16796f2a12feaaea38f21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#ae22a5ea6e0c16796f2a12feaaea38f21">clear</a> (const std::string key)</td></tr>
-<tr class="separator:ae22a5ea6e0c16796f2a12feaaea38f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a096d3ea32cc03c3f9ae9c69cd9ee28ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a096d3ea32cc03c3f9ae9c69cd9ee28ba">erase</a> (const std::string key)</td></tr>
+<tr class="separator:a096d3ea32cc03c3f9ae9c69cd9ee28ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a153ca69299a4d70aa0c6e69e8c70a767"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#a153ca69299a4d70aa0c6e69e8c70a767">size</a> () const noexcept</td></tr>
 <tr class="separator:a153ca69299a4d70aa0c6e69e8c70a767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9aea7916d2b11f9f1e94b7d84b8db23"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, boost::any &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_metadata.html#af9aea7916d2b11f9f1e94b7d84b8db23">begin</a> () const noexcept</td></tr>
@@ -445,26 +445,6 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 
 </div>
 </div>
-<a id="ae22a5ea6e0c16796f2a12feaaea38f21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae22a5ea6e0c16796f2a12feaaea38f21">&#9670;&nbsp;</a></span>clear()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mspass::utility::Metadata::clear </td>
-          <td>(</td>
-          <td class="paramtype">const std::string&#160;</td>
-          <td class="paramname"><em>key</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Overload for C string</p>
-<p>Clear data associated with a particular key. </p>
-
-</div>
-</div>
 <a id="a610962d5ca59e48d1b2833e613bbad1d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a610962d5ca59e48d1b2833e613bbad1d">&#9670;&nbsp;</a></span>clear_modified()</h2>
 
@@ -516,6 +496,26 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </table>
 </div><div class="memdoc">
 <p>Return iterator to end of internal map container. </p>
+
+</div>
+</div>
+<a id="a096d3ea32cc03c3f9ae9c69cd9ee28ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a096d3ea32cc03c3f9ae9c69cd9ee28ba">&#9670;&nbsp;</a></span>erase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mspass::utility::Metadata::erase </td>
+          <td>(</td>
+          <td class="paramtype">const std::string&#160;</td>
+          <td class="paramname"><em>key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Overload for C string</p>
+<p>Clear data associated with a particular key. </p>
 
 </div>
 </div>

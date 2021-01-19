@@ -479,11 +479,11 @@
 <codeline lineno="401"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>this-&gt;is_defined(string(key));</highlight></codeline>
 <codeline lineno="402"><highlight class="comment"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="403"><highlight class="comment"><sp/><sp/>*/</highlight></codeline>
-<codeline lineno="405"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>clear(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key);</highlight></codeline>
+<codeline lineno="405"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>erase(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key);</highlight></codeline>
 <codeline lineno="407"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*</highlight></codeline>
-<codeline lineno="408"><highlight class="comment"><sp/><sp/>void<sp/>clear(const<sp/>char*<sp/>key)</highlight></codeline>
+<codeline lineno="408"><highlight class="comment"><sp/><sp/>void<sp/>erase(const<sp/>char*<sp/>key)</highlight></codeline>
 <codeline lineno="409"><highlight class="comment"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="410"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>this-&gt;clear(string(key));</highlight></codeline>
+<codeline lineno="410"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>this-&gt;erase(string(key));</highlight></codeline>
 <codeline lineno="411"><highlight class="comment"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="412"><highlight class="comment"><sp/><sp/>*/</highlight></codeline>
 <codeline lineno="414"><highlight class="normal"><sp/><sp/>std::size_t<sp/>size()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept;</highlight></codeline>
