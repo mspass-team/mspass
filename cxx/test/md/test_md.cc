@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 		cout << "This should be a True(1)->"
 			<<mdplain.is_defined("double_val")<<endl;
 		/* Clear double_val*/
-		mdplain.clear("double_val");
+		mdplain.erase("double_val");
 		if(mdplain.is_defined("double_val"))
 			cout << "Test of clear method failed"<<endl;
 		else

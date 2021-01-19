@@ -121,9 +121,12 @@ PYBIND11_MODULE(seismic, m) {
 
   /* We need one of these for each std::vector container to make them function correctly*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
-  py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector");
-  py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector");
-
+  /* We define the following as global such that it can be used in the algorithms.basic module.
+     The usage is documented here:
+     https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
+  */
+  py::bind_vector<std::vector<TimeSeries>>(m, "TimeSeriesVector", pybind11::module_local(false));
+  py::bind_vector<std::vector<Seismogram>>(m, "SeismogramVector", pybind11::module_local(false));
 
   py::class_<SlownessVector>(m,"SlownessVector","Encapsulate concept of slowness vector describing wave propagation")
     .def(py::init<>())

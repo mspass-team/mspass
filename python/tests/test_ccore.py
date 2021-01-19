@@ -960,6 +960,16 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph = ProcessingHistoryBase()
     ph.set_jobname("testjob")
     ph.set_jobid("999")
+    assert ph.elog.log_error('1', '2', ErrorSeverity(3)) == 1
+    assert ph.elog[0].badness == ErrorSeverity.Complaint
+
+    ph2 = ProcessingHistoryBase(ph)
+    assert ph.jobname() == ph2.jobname()
+    assert ph.jobid() == ph2.jobid()
+    assert ph.elog[0].badness == ph2.elog[0].badness
+    assert ph.elog[0].algorithm == ph2.elog[0].algorithm
+    assert ph.elog[0].message == ph2.elog[0].message
+
     ph2 = ProcessingHistoryBase(ph)
     assert ph.jobname() == ph2.jobname()
     assert ph.jobid() == ph2.jobid()

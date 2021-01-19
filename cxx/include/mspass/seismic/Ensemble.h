@@ -44,6 +44,7 @@ public:
       this->Metadata::operator=(parent);
       member=parent.member;
     }
+    return *this;
   };
   /* \brief Indexing operator.
 
