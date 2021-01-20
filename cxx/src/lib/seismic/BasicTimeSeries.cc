@@ -78,7 +78,7 @@ void BasicTimeSeries::shift(double dt)
     try {
         double oldt0shift=t0shift;
         this->rtoa();
-        this->ator(oldt0shift+mdt);
+        this->ator(oldt0shift+dt);
     } catch(...) {
         throw;
     };
