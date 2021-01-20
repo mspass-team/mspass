@@ -399,16 +399,6 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
   string algname("bundle_seed_data");
   try{
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());
-    //Debug
-/*
-    for(auto dtmp=d.member.begin();dtmp!=d.member.end();++dtmp)
-    {
-      cout << dtmp->get<string>("net")<<" "
-        << dtmp->get<string>("sta")<<" "
-        << dtmp->get<string>("loc")<<" "
-        << dtmp->get<string>("chan")<<endl;
-    }
-*/
     /* this constructor clones the ensemble metadata */
     Ensemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
     vector<TimeSeries>::iterator dptr;
@@ -419,9 +409,6 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
     size_t i;
     for(i=0,dptr=d.member.begin();dptr!=d.member.end();++i,++dptr)
     {
-//DEBUG
-if(dptr->dead()) cout << "Member number "<<i<<" was marked dead - special handling"
- <<endl;
       if(dptr->dead())
       {
         /* If net, sta, and loc are defined we try to blunder on so we can
@@ -483,9 +470,6 @@ if(dptr->dead()) cout << "Member number "<<i<<" was marked dead - special handli
         }
         sta=dptr->get<string>("sta");
         chan=dptr->get<string>("chan");
-//DEBUG
-cout << net<<" "<<sta<<" "<<loc<<" "<<chan<<endl;
-if(dptr->dead()) cout << "This channel was marked dead"<<endl;
         if( (lastnet!=net || laststa!=sta || lastloc!=loc) ||
                (dptr==(d.member.end() - 1)) )
         {
@@ -511,8 +495,6 @@ if(dptr->dead()) cout << "This channel was marked dead"<<endl;
           {
             nlive=iend-i0+1;
           }
-//DEBUG
-cout << "In bundle block:  i0="<<i0<<" iend="<<iend<<endl;
           //if((iend-i0)>=2)  //Use iend to handle end condition instead of i
           if(nlive>=3)
           {
@@ -520,8 +502,6 @@ cout << "In bundle block:  i0="<<i0<<" iend="<<iend<<endl;
             no channels marked dead */
             if((iend-i0) == 2)
             {
-//DEBUG
-cout << "In direct constructor block"<<endl;
               vector<CoreTimeSeries> work;
               vector<ProcessingHistory*> hvec;
               work.reserve(3);
@@ -548,8 +528,6 @@ cout << "In direct constructor block"<<endl;
             }
             else
             {
-//DEBUG
-cout << "In block calling BundleSEEDGroup"<<endl;
               /* We put this in a function because there is a fair amount of
               complexity in sorting out channel groups better kept together.
               This main function is already complicated enough.  The
@@ -559,15 +537,11 @@ cout << "In block calling BundleSEEDGroup"<<endl;
               Among other things it has to handle channels marked dead
               */
               Seismogram dgrp(BundleSEEDGroup(d.member,i0,iend));
-//DEBUG
-if(dgrp.dead()) cout << "BundleSEEDGroup killed this output"<<endl;
               ens3c.member.push_back(dgrp);
             }
           }
           else
           {
-//DEBUG
-cout << "In block for deficient group"<<endl;
             /* we land here for deficient groups.   We create a body bag
             with the dogtag function and handle the components from this
             case exactly like that when the Seismogram constructor
@@ -600,8 +574,6 @@ cout << "In block for deficient group"<<endl;
           lastchan=chan;
           i0=i;
           has_dead_channel=false;
-//DEBUG
-cout << "New anchors:  i0="<<i0<<"net,sta,loc="<<lastnet<<","<<laststa<<",->"<<lastloc<<"<-"<<endl;
         }
       }
     }
