@@ -78,15 +78,10 @@ Initializes data and sets aside memory for
  times of the individual components.  If the start and end times are
  all the same it uses a simple copy operation.  Otherwise it runs a
  more complicated  (read much slower) algorithm that handles the ragged
- start and stop times by adding a marked gap.  That is, the object is
- allocated with space for the earliest start and last end time.  Areas
- at front and back with one or two channels missing are marked as a
- gap.
+ start and stop times by adding a marked gap.
 
- This constructor handles gaps in the three components correctly as the
- union of the gaps found in all three.  The current algorithm for doing
- this is slow but running a sample by sample test on each component and
- marking gaps with the BasicTimeSeries add_gap methods.
+ If start or end times are not constant the algorithm shortens the output
+ to the latest start time and earliest end time respectively.
 
  Note this constructor requires variables hang and vang, which are
  orientation angles defined in the CSS3.0 schema (NOT spherical
@@ -257,7 +252,7 @@ Initializes data and sets aside memory for
 		This operator is implemented in a standard way utilizing operator-=.
 		For data with irregular start and end times that has an important
 		consequence;  the operator is not communative. i.e given x an y
-		z=x-y will not yield the same result as z=-(y-x).   
+		z=x-y will not yield the same result as z=-(y-x).
 		*/
 		const CoreSeismogram operator-(const CoreSeismogram& other) const;
 /*!

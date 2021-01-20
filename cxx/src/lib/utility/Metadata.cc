@@ -147,7 +147,7 @@ set<string> Metadata::keys() const noexcept
   }
   return result;
 }
-void Metadata::clear(const std::string key)
+void Metadata::erase(const std::string key)
 {
   map<string,boost::any>::iterator iptr;
   iptr=md.find(key);

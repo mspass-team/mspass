@@ -335,8 +335,8 @@ PYBIND11_MODULE(utility, m) {
     .def("is_defined",&Metadata::is_defined,"Test if a key has a defined value")
     .def("__contains__",&Metadata::is_defined,"Test if a key has a defined value")
     .def("append_chain",&Metadata::append_chain,"Create or append to a string attribute that defines a chain")
-    .def("erase",&Metadata::clear,"Delete contents associated with a single key")
-    .def("__delitem__",&Metadata::clear,"Clears contents associated with a key")
+    .def("erase",&Metadata::erase,"Delete contents associated with a single key")
+    .def("__delitem__",&Metadata::erase,"Clears contents associated with a key")
     .def("__len__",&Metadata::size,"Return len(self)")
     .def("__iter__", [](py::object s) { return PyMetadataIterator(s.cast<const Metadata &>(), s); })
     .def("__reversed__", [](const Metadata &s) -> Metadata {

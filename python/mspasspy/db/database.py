@@ -98,6 +98,16 @@ class Database(pymongo.database.Database):
         self.metadata_schema = MetadataSchema()
         self.database_schema = DatabaseSchema()
 
+    def __getstate__(self):
+        ret = self.__dict__.copy()
+        ret['_Database__client'] = self.client.__repr__()
+        return ret
+
+    def __setstate__(self, data):
+        from pymongo import MongoClient
+        data['_Database__client'] = eval(data['_Database__client'])
+        self.__dict__.update(data)
+
     def set_metadata_schema(self, schema):
         """
         Set metadata_schema defined in the Database class.
@@ -520,30 +530,37 @@ class Database(pymongo.database.Database):
         else:
             d.put_string('time_standard', 'UTC')
 
-    def _save_history(self, mspass_object, history_object_id=None, collection=None):
+    def _save_history(self, mspass_object, prev_history_object_id=None, collection=None):
         """
         Save the processing history of a mspasspy object.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param history_object_id: the previous history object id (if it has).
-        :type history_object_id: :class:`bson.objectid.ObjectId`
+        :param prev_history_object_id: the previous history object id (if it has).
+        :type prev_history_object_id: :class:`bson.objectid.ObjectId`
         :param collection: the collection that you want to store the history object. If not specified, use the defined
         collection in the schema.
-        :return: updated history_object_id.
+        :return: current history_object_id.
         """
         if not collection:
             collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
-        history_binary = pickle.dumps(ProcessingHistory(mspass_object))
-        # todo jobname jobid
-        if history_object_id:
-            # overwrite history
-            filter_ = {'_id': history_object_id}
-            history_col.find_one_and_replace(filter_, {'nodesdata': history_binary})
-            return history_object_id
-        else:
-            return history_col.insert_one({'nodesdata': history_binary}).inserted_id
+        proc_history = ProcessingHistory(mspass_object)
+        current_uuid = proc_history.id() # uuid in the current node
+        history_binary = pickle.dumps(proc_history)
+        # todo save jobname jobid when global history module is done
+        try:
+            if prev_history_object_id:
+                # overwrite history
+                history_col.delete_one({'_id': prev_history_object_id})
+                history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
+            else:
+                # new insertion
+                history_col.insert_one({'_id': current_uuid, 'nodesdata': history_binary})
+        except pymongo.errors.DuplicateKeyError as e:
+            raise MsPASSError("The history object to be saved has a duplicate uuid", "Fatal") from e
+
+        return current_uuid
 
     def _load_history(self, mspass_object, history_object_id, collection=None):
         """

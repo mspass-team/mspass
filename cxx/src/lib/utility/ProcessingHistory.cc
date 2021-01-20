@@ -479,7 +479,7 @@ void ProcessingHistory::merge(const ProcessingHistory& data_to_add)
     for(nptr=newhistory.begin();nptr!=newhistory.end();++nptr)
     {
       string key(nptr->first);
-      /* if the data_to_add's key matches its current id, 
+      /* if the data_to_add's key matches its current id,
       we merge all the nodes under the current id of *this. */
       if(key == data_to_add.current_id)
       {
@@ -750,6 +750,7 @@ ProcessingHistory& ProcessingHistory::operator=(const ProcessingHistory& parent)
     mytype=parent.mytype;
     algorithm=parent.algorithm;
     algid=parent.algid;
+    elog=parent.elog;
   }
   return *this;
 }
