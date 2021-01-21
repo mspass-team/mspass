@@ -160,8 +160,15 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
     unique keys while the vector has the chan for each vector component */
     vector<string> chans_this_group;
     set<string> keys,stations,networks,loccodes,sta2set;
+    size_t nlive(0);
     for(size_t i=i0;i<=iend;++i)
     {
+      /* Skip any members marked dead but put a special entry in chans_this_group*/
+      if(d[i].dead())
+      {
+        chans_this_group.push_back("DEADCHANNEL");
+        continue;
+      }
       net=d[i].get_string("net");
       sta=d[i].get_string("sta");
       chan=d[i].get_string("chan");
@@ -173,6 +180,7 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
       loccodes.insert(loc);
       sta2set.insert(sta2);
       keys.insert(chan);
+      ++nlive;
     }
     /* We have to abort this algorithm immediately if there are duplicate
     net or sta values as it automatically means the assumptions of the
@@ -184,7 +192,6 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
     {
       /* Note this code segment is repeated too many times in this function.
       I may be wise at some point to make it a file scope function like dogtag.*/
-      bundle.reserve(chans_this_group.size());
       for(size_t i=i0;i<=iend;++i)
       {
         bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
@@ -239,11 +246,10 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
     }
     size_t nkeys=keys.size();
 
-    if(chans_this_group.size()<=3)
+    if(nlive<=3)
     {
       /* We can handle deficient groups here by this algorithm.
       After conditionals we kill output when size is less than 3.*/
-      bundle.reserve(chans_this_group.size());
       for(size_t i=i0;i<=iend;++i)
       {
         bundle.push_back(dynamic_cast<const CoreTimeSeries&>(d[i]));
@@ -262,9 +268,12 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
       size_t i,ii;
       for(i=i0,ii=0;i<=iend;++i,++ii)
       {
-        chan=chans_this_group[ii];
-        keys.insert(chan);
-        xref.insert(pair<string,size_t>(chan,i));
+        if(d[i].live())
+        {
+          chan=chans_this_group[ii];
+          keys.insert(chan);
+          xref.insert(pair<string,size_t>(chan,i));
+        }
       }
       /* Only when number of keys is 3 can we hope to form a valid bundle.
       This first block does that resolving duplicates by the channel with
@@ -342,7 +351,7 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
         }
       }
     }
-    if(nkeys==3)
+    if( (nkeys==3) && (nlive>=3) )
     {
       try{
         d3c=Seismogram(CoreSeismogram(bundle),algname);
@@ -390,26 +399,34 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
   string algname("bundle_seed_data");
   try{
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());
-    //Debug
-    /*
-    for(auto dtmp=d.member.begin();dtmp!=d.member.end();++dtmp)
-    {
-      cout << dtmp->get<string>("net")<<" "
-        << dtmp->get<string>("sta")<<" "
-        << dtmp->get<string>("loc")<<" "
-        << dtmp->get<string>("chan")<<endl;
-    }
-    */
     /* this constructor clones the ensemble metadata */
     Ensemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
     vector<TimeSeries>::iterator dptr;
     string laststa,lastloc,lastchan,lastnet;
     string net(""),sta,chan,loc("");
+    bool has_dead_channel(false);
     size_t i0,iend;
     size_t i;
     for(i=0,dptr=d.member.begin();dptr!=d.member.end();++i,++dptr)
     {
-      if(dptr->dead()) continue;
+      if(dptr->dead())
+      {
+        /* If net, sta, and loc are defined we try to blunder on so we can
+        retain elog entries in data received as dead.  Necessary or the
+        user won't be able to track the reason something was dropped easily*/
+        if( dptr->is_defined("net") && dptr->is_defined("sta")
+           && dptr->is_defined("loc") )
+        {
+          has_dead_channel=true;
+        }
+        else
+        {
+          /* In this situation we have to  just drop the bad datum and
+          blunder on.  We assume the elog has no data that way and some
+          other process handled this wrong .*/
+          continue;
+        }
+      }
       if(i==0)
       {
         /* These things need to all be initialized by the first member*/
@@ -463,8 +480,26 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
             iend=i;
           else
             iend=i-1;
-          if((iend-i0)>=2)  //Use iend to handle end condition instead of i
+
+          /* count the number of live channels when the has_dead_channel is set
+          true.  We use that as a logic test to know if we should try to
+          recover something */
+          size_t nlive;
+          if(has_dead_channel)
           {
+            nlive=0;
+            for(auto ii=i0;ii<=iend;++ii)
+              if(d.member[ii].live())++nlive;
+          }
+          else
+          {
+            nlive=iend-i0+1;
+          }
+          //if((iend-i0)>=2)  //Use iend to handle end condition instead of i
+          if(nlive>=3)
+          {
+            /* We can only have 3 live channels and iend-i0 be 2 if there are
+            no channels marked dead */
             if((iend-i0) == 2)
             {
               vector<CoreTimeSeries> work;
@@ -498,6 +533,8 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
               This main function is already complicated enough.  The
               function returns a vector of CoreSeismograms using a grouping
               that depends upon seed naming conventions for channels.
+
+              Among other things it has to handle channels marked dead
               */
               Seismogram dgrp(BundleSEEDGroup(d.member,i0,iend));
               ens3c.member.push_back(dgrp);
@@ -526,7 +563,8 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
             stringstream ss;
             ss<<"Insufficient data to generate Seismogram object."<<endl
               <<"Number of channels received  for bundling="<<work.size()<<endl
-              <<"Should be three but can sometimes recover with greater than 3"<<endl;
+              <<"Number marked live="<<nlive<<endl
+              <<"Number live must be at least 3"<<endl;
             d3c.elog.log_error("bundle_seed_data",ss.str(),ErrorSeverity::Invalid);
             ens3c.member.push_back(d3c);
           }
@@ -535,6 +573,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
           lastloc=loc;
           lastchan=chan;
           i0=i;
+          has_dead_channel=false;
         }
       }
     }
