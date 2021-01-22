@@ -124,7 +124,7 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
+    def read_data(self, object_id, object_type='TimeSeries', load_history=True, exclude=[], collection=None):
         """
         Reads and returns the mspasspy object stored in the database.
 
@@ -133,6 +133,8 @@ class Database(pymongo.database.Database):
         :param object_type: either "TimeSeries" or "Seismogram".
         :type object_type: :class:`str`
         :param load_history: `True` to load object-level history into the mspasspy object.
+        :param exclude: the metadata attributes you want to exclude from being read.
+        :type exclude: a :class:`list` of :class:`str`
         :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         """
@@ -157,9 +159,10 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object_doc:
-            if read_metadata_schema.is_defined(k):
+            if k not in exclude and read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
                 md[k] = object_doc[k]
 
+        # build a set of collection to read in normalized attributes
         col_set = set()
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
@@ -173,7 +176,7 @@ class Database(pymongo.database.Database):
 
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
-            if col != wf_collection:
+            if col != wf_collection and k not in exclude:
                 md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
 
         for k in md:
@@ -182,8 +185,9 @@ class Database(pymongo.database.Database):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
         if object_type == 'TimeSeries':
+            # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
-            mspass_object.npts = md['npts']  # fixme
+            mspass_object.npts = object_doc['npts']
         else:
             mspass_object = Seismogram(_CoreSeismogram(md, False))
 
@@ -208,7 +212,7 @@ class Database(pymongo.database.Database):
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode='gridfs', update_all=True, dfile=None, dir=None,
-                  exclude=None, collection=None):
+                  exclude=[], collection=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
@@ -293,7 +297,7 @@ class Database(pymongo.database.Database):
 
         col.update_one(filter_, {'$set': update_dict})
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
+    def update_metadata(self, mspass_object, update_all=False, exclude=[], collection=None):
         """
         Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
         and metadata attributes.
@@ -327,8 +331,6 @@ class Database(pymongo.database.Database):
 
         # 1. create the dict of metadata to be saved in wf
         insert_dict = {}
-        if exclude is None:
-            exclude = []
 
         self._sync_metadata_before_update(mspass_object)
         copied_metadata = Metadata(mspass_object)

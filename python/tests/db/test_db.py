@@ -220,6 +220,16 @@ class TestDatabase():
 
         self.db.save_data(seis, storage_mode='gridfs', update_all=True, exclude=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
+        seis3 = self.db.read_data(seis['_id'], 'Seismogram', exclude=[
+                                  '_id', 'channel_id', 'source_depth'])
+        
+        # test for read exclude
+        assert '_id' in seis2
+        assert 'channel_id' in seis2
+        assert 'source_depth' in seis2
+        assert '_id' not in seis3
+        assert 'channel_id' not in seis3
+        assert 'source_depth' not in seis3
 
         wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
                    'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id',
