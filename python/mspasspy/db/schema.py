@@ -407,7 +407,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 self._main_dic[key] = compiled_attr
 
             if 'aliases' in self._main_dic[key]:
-                self._alias_dic.update({item:key for item in self._main_dic[key]['aliases']})
+                self._alias_dic.update({item:key for item in self._main_dic[key]['aliases'] if item != key})
 
     def collection(self, key):
         """

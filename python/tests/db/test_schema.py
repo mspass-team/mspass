@@ -78,6 +78,8 @@ class TestSchema():
     def test_is_alias(self):
         assert not self.dbschema.wf_TimeSeries.is_alias('_id')
         assert self.dbschema.wf_TimeSeries.is_alias('test1')
+        assert self.dbschema.site.is_alias('site_lat')
+        assert not self.mdschema.TimeSeries.is_alias('site_lat')
 
     def test_is_defined(self):
         assert self.dbschema.wf_TimeSeries.is_defined('delta') is True
