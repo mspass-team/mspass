@@ -30,7 +30,7 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
-def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
+def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True, exclude_keys=[],
                           format='spark', spark_context=None):
     """
      This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
@@ -43,6 +43,8 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     :param object_type: either "TimeSeries" or "Seismogram"
     :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into mspasspy objects.
+    :param exclude_keys: the metadata attributes you want to exclude from being read.
+    :type exclude_keys: a :class:`list` of :class:`str`
     :param format: "spark" or "dask".
     :type format: :class:`str`
     :param spark_context: user specified spark context.
@@ -51,15 +53,15 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     """
     if format == 'spark':
         list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
     elif format == 'dask':
         list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
     else:
         raise TypeError("Only spark and dask are supported")
 
 
-def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True):
+def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True, exclude_keys=[]):
     """
      A helper method used in the distributed map operation. It creates a mongodb connection with provided
      configurations, reads data from the database, constructs a mspasspy object and returns it.
@@ -71,12 +73,14 @@ def _read_distributed_data(client_arg, db_name, id, object_type, load_history=Tr
     :param object_type: either "TimeSeries" or "Seismogram".
     :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into the mspasspy object.
+    :param exclude_keys: the metadata attributes you want to exclude from being read.
+    :type exclude_keys: a :class:`list` of :class:`str`
     :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
     """
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
-    return db.read_data(id, object_type, load_history)
+    return db.read_data(id, object_type, load_history, exclude_keys)
 
 
 class Database(pymongo.database.Database):
@@ -387,7 +391,7 @@ class Database(pymongo.database.Database):
                 filter_ = {'_id': id_}
                 elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
 
-    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
+    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True, exclude_keys=[]):
         """
         Reads and returns the mspasspy ensemble object stored in the database.
 
@@ -397,6 +401,8 @@ class Database(pymongo.database.Database):
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :type ensemble_type: :class:`str`
         :param load_history: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         """
@@ -411,12 +417,13 @@ class Database(pymongo.database.Database):
             ensemble = SeismogramEnsemble(len(objectid_list))
 
         for i in range(len(objectid_list)):
-            ensemble.member.append(self.read_data(objectid_list[i], object_type, load_history))
+            ensemble.member.append(self.read_data(
+                objectid_list[i], object_type, load_history, exclude_keys))
 
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', dfile_list=None, dir_list=None,
-                           update_all=False, exclude_keys=None, exclude_objects=None, collection=None):
+                           update_all=False, exclude_keys=[], exclude_objects=None, collection=None):
         """
         Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
         database.
@@ -460,7 +467,7 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
-    def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
+    def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=[], exclude_objects=None,
                                  collection=None):
         """
         Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
