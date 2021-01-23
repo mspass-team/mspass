@@ -204,6 +204,10 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match='Failure attempting to convert'):
             ts.put_string('npts', 'xyz')
             self.db.update_metadata(ts)
+        
+        # make sure the elog entry do not have duplicates from the two updates
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert len(self.db['elog'].find_one({'_id': res['elog_id']})['logdata']) == 2
 
     def test_save_read_data(self):
         # new object
@@ -380,6 +384,14 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
         assert res['tst'] == time
         assert res['starttime'] == time_new
+
+        # make sure the elog entry do not have duplicates from the two updates
+        res1 = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
+        res2 = self.db['wf_TimeSeries'].find_one({'_id': ts2['_id']})
+        res3 = self.db['wf_TimeSeries'].find_one({'_id': ts3['_id']})
+        assert len(self.db['elog'].find_one({'_id': res1['elog_id']})['logdata']) == 2
+        assert len(self.db['elog'].find_one({'_id': res2['elog_id']})['logdata']) == 2
+        assert len(self.db['elog'].find_one({'_id': res3['elog_id']})['logdata']) == 2
 
         # using seismogram
         seis1 = copy.deepcopy(self.test_seis)

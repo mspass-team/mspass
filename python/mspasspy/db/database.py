@@ -636,8 +636,18 @@ class Database(pymongo.database.Database):
                 docentry['gravestone'] = dict(mspass_object)
 
             if elog_id:
-                # overwrite elog
-                self[collection].delete_one({'_id': elog_id})
+                # append elog
+                elog_doc = self[collection].find_one({'_id': elog_id})
+                # only append when previous elog exists
+                if elog_doc:
+                    # if the same object was updated twice, the elog entry will be duplicated
+                    # the following list comprehension line removes the duplicates and preserves
+                    # the order. May need some practice to see if such a behavior makes sense.
+                    [elog_doc['logdata'].append(x) for x in logdata if x not in elog_doc['logdata']]
+                    docentry['logdata'] = elog_doc['logdata']
+                    self[collection].delete_one({'_id': elog_id})
+                # note that is should be impossible for the old elog to have gravestone entry
+                # so we ignore the handling of that attribute here.
                 ret_elog_id = self[collection].insert_one(docentry).inserted_id
             else:
                 # new insertion
