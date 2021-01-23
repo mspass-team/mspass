@@ -77,9 +77,9 @@ class TestDatabase():
         tmp_ts.elog.log_error("alg2", str("message2"), ErrorSeverity.Informational)  # multi elogs fix me
         errs = tmp_ts.elog.get_error_log()
         elog_id = self.db._save_elog(tmp_ts)
-        assert len(elog_id) != 0
-        for err, id in zip(errs, elog_id):
-            res = self.db['elog'].find_one({'_id': id})
+        assert isinstance(elog_id, ObjectId)
+        elog_doc = self.db['elog'].find_one({'_id': elog_id})
+        for err, res in zip(errs, elog_doc['logdata']):
             assert res['algorithm'] == err.algorithm
             assert res['error_message'] == err.message
             assert "wf_TImeSeries_id" not in res
@@ -88,7 +88,7 @@ class TestDatabase():
         tmp_ts = get_live_timeseries()
         errs = tmp_ts.elog.get_error_log()
         elog_id = self.db._save_elog(tmp_ts)
-        assert len(elog_id) == 0
+        assert elog_id is None
 
     def test_save_and_read_data(self):
         tmp_seis = get_live_seismogram()
@@ -178,7 +178,7 @@ class TestDatabase():
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
         exclude = ['extra2']
-        self.db.update_metadata(ts, update_all=True, exclude=exclude)
+        self.db.update_metadata(ts, include_undefined=True, exclude=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['starttime'] == ts['t0']
@@ -193,12 +193,11 @@ class TestDatabase():
         assert history_res
 
         assert res['elog_id']
-        for id in res['elog_id']:
-            elog_res = self.db['elog'].find_one({'_id': id})
-            assert elog_res['wf_TimeSeries_id'] == ts['_id']
+        elog_res = self.db['elog'].find_one({'_id': res['elog_id']})
+        assert elog_res['wf_TimeSeries_id'] == ts['_id']
 
         ts['extra1'] = 'extra1+'
-        self.db.update_metadata(ts, update_all=True, exclude=exclude)
+        self.db.update_metadata(ts, include_undefined=True, exclude=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
@@ -218,7 +217,7 @@ class TestDatabase():
         seis = copy.deepcopy(self.test_seis)
         logging_helper.info(seis, 'deepcopy', '1')
 
-        self.db.save_data(seis, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        self.db.save_data(seis, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
         seis3 = self.db.read_data(seis['_id'], 'Seismogram', exclude=[
                                   '_id', 'channel_id', 'source_depth'])
@@ -260,7 +259,7 @@ class TestDatabase():
 
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
         ts2 = self.db.read_data(ts['_id'], 'TimeSeries')
         for key in wf_keys:
             if key in ts:
@@ -305,18 +304,18 @@ class TestDatabase():
 
         # file
         self.db.save_data(seis, storage_mode='file', dir='./python/tests/data/', dfile='test_db_output',
-                          update_all=True, exclude=['extra2'])
+                          include_undefined=True, exclude=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
         res = self.db['wf_Seismogram'].find_one({'_id': seis['_id']})
         assert res['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
 
         with pytest.raises(ValueError, match='dir or dfile is not specified in data object'):
-            self.db.save_data(seis2, storage_mode='file', update_all=True)
+            self.db.save_data(seis2, storage_mode='file', include_undefined=True)
         seis2['dir'] = '/'
         seis2['dfile'] = 'test_db_output'
         with pytest.raises(PermissionError, match='No write permission to the save directory'):
-            self.db.save_data(seis2, storage_mode='file', update_all=True)
+            self.db.save_data(seis2, storage_mode='file', include_undefined=True)
 
     def test_detele_wf(self):
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
@@ -328,7 +327,7 @@ class TestDatabase():
 
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         self.db.detele_wf(ts['_id'], "TimeSeries")
@@ -338,7 +337,7 @@ class TestDatabase():
     def test_delete_gridfs(self):
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', update_all=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(res['gridfs_id'])
@@ -366,7 +365,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
 
-        self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_objects=[2])
+        self.db.update_ensemble_metadata(ts_ensemble, include_undefined=True, exclude_objects=[2])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
         assert res['starttime'] == time
         res = self.db['wf_TimeSeries'].find_one({'_id': ts2['_id']})
@@ -377,7 +376,7 @@ class TestDatabase():
         time_new = datetime.utcnow().timestamp()
         ts_ensemble.member[0]['tst'] = time + 1
         ts_ensemble.member[0].t0 = time_new
-        self.db.update_ensemble_metadata(ts_ensemble, update_all=True, exclude_keys=['tst'])
+        self.db.update_ensemble_metadata(ts_ensemble, include_undefined=True, exclude_keys=['tst'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts1['_id']})
         assert res['tst'] == time
         assert res['starttime'] == time_new
@@ -402,7 +401,7 @@ class TestDatabase():
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
 
-        self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_objects=[2])
+        self.db.update_ensemble_metadata(seis_ensemble, include_undefined=True, exclude_objects=[2])
         res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
         assert res['starttime'] == time
         res = self.db['wf_Seismogram'].find_one({'_id': seis2['_id']})
@@ -413,7 +412,7 @@ class TestDatabase():
         time_new = datetime.utcnow().timestamp()
         seis_ensemble.member[0]['tst'] = time + 1
         seis_ensemble.member[0].t0 = time_new
-        self.db.update_ensemble_metadata(seis_ensemble, update_all=True, exclude_keys=['tst'])
+        self.db.update_ensemble_metadata(seis_ensemble, include_undefined=True, exclude_keys=['tst'])
         res = self.db['wf_Seismogram'].find_one({'_id': seis1['_id']})
         assert res['tst'] == time
         assert res['starttime'] == time_new
