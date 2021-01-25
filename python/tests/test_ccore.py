@@ -637,6 +637,43 @@ def test_Seismogram():
     assert (seis.transformation_matrix == a).all()
 
 
+@pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])
+def Ensemble(request):
+    return request.param
+
+
+def test_Ensemble(Ensemble):
+    md = Metadata()
+    md['double'] = 3.14
+    md['bool'] = True
+    md['long'] = 7
+    es = Ensemble(md, 3)
+    if isinstance(es, TimeSeriesEnsemble):
+        d = TimeSeries(10)
+        d = make_constant_data_ts(d)
+        es.member.append(d)
+        es.member.append(d)
+        es.member.append(d)
+    else:
+        d = Seismogram(10)
+        d = make_constant_data_seis(d)
+        es.member.append(d)
+        es.member.append(d)
+        es.member.append(d)
+    es.sync_metadata(['double', 'long'])
+    assert es.member[0].is_defined('bool')
+    assert es.member[0]['bool'] == True
+    assert not es.member[0].is_defined('double')
+    assert not es.member[0].is_defined('long')
+    es.sync_metadata()
+    assert es.member[1].is_defined('double')
+    assert es.member[1].is_defined('long')
+    assert es.member[1]['double'] == 3.14
+    assert es.member[1]['long'] == 7
+    es.update_metadata(Metadata({'k': 'v'}))
+    assert es['k'] == 'v'
+
+
 def test_operators():
     d = _CoreTimeSeries(10)
     d1 = make_constant_data_ts(d, nsamp=10)

@@ -95,6 +95,23 @@ public:
           (*mdmember)+=dynamic_cast<mspass::utility::Metadata&>(*this);
       }
   };
+  /*! \brief copy ensemble metadata to all members except for the ones excluded.
+    */
+  void sync_metadata(std::vector<std::string> exclude)
+  {
+    mspass::utility::Metadata sync_md(*this);
+    for (size_t i = 0; i < exclude.size(); i++)
+    {
+      if(sync_md.is_defined(exclude[i])) {
+          sync_md.erase(exclude[i]);
+      }
+    }
+    for (size_t i = 0; i < this->member.size(); ++i)
+    {
+      mspass::utility::Metadata *mdmember = &(this->member[i]);
+      (*mdmember) += sync_md;
+    }
+  };
 };
 /*! Useful alias for Ensemble<TimeSeries> */
 typedef Ensemble<TimeSeries> TimeSeriesEnsemble;

@@ -485,7 +485,8 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def("update_metadata",&Ensemble<TimeSeries>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",&Ensemble<TimeSeries>::sync_metadata,"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<>(&Ensemble<TimeSeries>::sync_metadata),"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<TimeSeries>::sync_metadata),"Copy ensemble metadata to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
     .def_readwrite("member",&Ensemble<TimeSeries>::member,
@@ -535,7 +536,8 @@ PYBIND11_MODULE(seismic, m) {
     .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<Seismogram>&>())
     .def("update_metadata",&Ensemble<Seismogram>::update_metadata,"Update the ensemble header (metadata)")
-    .def("sync_metadata",&Ensemble<Seismogram>::sync_metadata,"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<>(&Ensemble<Seismogram>::sync_metadata),"Copy ensemble metadata to all members")
+    .def("sync_metadata",py::overload_cast<std::vector<std::string>>(&Ensemble<Seismogram>::sync_metadata),"Copy ensemble metadata to all members")
     // Note member is an std::container - requires py::bind_vector lines at the start of this module defintions
     //    to function properlty
     .def_readwrite("member",&Ensemble<Seismogram>::member,
