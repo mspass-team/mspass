@@ -222,6 +222,8 @@ class TestDatabase():
         # Nothing should be saved here, otherwise it will cause error converting 'npts':'xyz'
         self.db.update_metadata(ts)
         assert ts.elog.get_error_log()[-1].message == "Skipped updating the metadata of a dead object"
+        elog_doc = self.db['elog'].find_one({'wf_TimeSeries_id': ts['_id'], 'gravestone': {'$exists': True}})
+        assert elog_doc['gravestone'] == dict(ts)
 
     def test_save_read_data(self):
         # new object
