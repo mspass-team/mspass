@@ -90,6 +90,14 @@ class TestDatabase():
         elog_id = self.db._save_elog(tmp_ts)
         assert elog_id is None
 
+        # save with a dead object
+        tmp_ts = get_live_timeseries()
+        tmp_ts.elog.log_error("alg", str("message"), ErrorSeverity.Informational)
+        tmp_ts.live = False
+        elog_id = self.db._save_elog(tmp_ts)
+        elog_doc = self.db['elog'].find_one({'_id': elog_id})
+        assert elog_doc['gravestone'] == dict(tmp_ts)
+
     def test_save_and_read_data(self):
         tmp_seis = get_live_seismogram()
         dir = 'python/tests/data/'
@@ -209,6 +217,12 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert len(self.db['elog'].find_one({'_id': res['elog_id']})['logdata']) == 2
 
+        # save with a dead object
+        ts.live = False
+        # Nothing should be saved here, otherwise it will cause error converting 'npts':'xyz'
+        self.db.update_metadata(ts)
+        assert ts.elog.get_error_log()[-1].message == "Skipped updating the metadata of a dead object"
+
     def test_save_read_data(self):
         # new object
         # read data
@@ -320,6 +334,13 @@ class TestDatabase():
         seis2['dfile'] = 'test_db_output'
         with pytest.raises(PermissionError, match='No write permission to the save directory'):
             self.db.save_data(seis2, storage_mode='file', include_undefined=True)
+        
+        # save with a dead object
+        seis.live = False
+        self.db.save_data(seis)
+        assert seis.elog.get_error_log()[-1].message == "Skipped saving dead object"
+        elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': seis['_id'], 'gravestone': {'$exists': True}})
+        assert elog_doc['gravestone'] == dict(seis)
 
     def test_detele_wf(self):
         id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
@@ -522,7 +543,10 @@ class TestDatabase():
 
 
     def teardown_class(self):
-        os.remove('python/tests/data/test_db_output')
+        try:
+            os.remove('python/tests/data/test_db_output')
+        except OSError:
+            pass
         client = Client('localhost')
         client.drop_database('dbtest')
 
