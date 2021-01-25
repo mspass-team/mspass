@@ -9,34 +9,34 @@ Global versus object level history
 The mechanism we use to preserve processing history in MsPASS makes an
 assumption that the workflow can be broken down into a series of
 black boxes (algorithms) that input one or more atomic data objects and emit
-one more (potentially different) *atomic data objects*. MsPASS currently defines
-two object types as atomic:  Seismogram and TimeSeries.  By *atomic* we mean
+one or more (potentially different) *atomic data objects*. MsPASS currently defines
+two object types as atomic:  *Seismogram* and *TimeSeries*.  By *atomic* we mean
 they are indivisible.  This is in contrast to *Ensemble* objects that are
 collections of atomic objects grouped by an unspecified method.
 
 With this conceptual model (the concept behind this design),
 preserving processing history has two components.
 
-#. *Global history* is the list of *unique definitions* of algorithms used
+1. *Global history* is the list of *unique definitions* of algorithms used
    in a workflow.   The *unique* qualifier is necessary because most
    algorithms have one to thousands of numbers/strings that define a unique
-   behavior.   To keep he discuss concise in this document we define a
+   behavior.   To keep the discuss concise in this document we define a
    *parameter* as data used by an algorithm that is NOT one of the the atomic
    data to MsPASS.   A parameter can thus be something as simple as a
    single integer or real number, or as elaborate as any python object (e.g.
    a dict or list container).  We assume the behavior of a particular algorithm
-   can be uniquely defined by unique name assigned to the algorithm and
+   can be uniquely defined by a unique name assigned to the algorithm and
    a particular set of parameters used to control it's behavior.   The
    simplest example is a function call with the algorithm set to the name
    of the function and the parameters as a set of simple real and integer
    inputs.   More complicated examples may require some more elaborate recipe
    with hierarchies and/or auxiliary data inputs.   The conceptual model
-   here puts not restriction on what the parameters are but treat that as
+   here puts no restriction on what the parameters are but treat that as
    an implementation detail.  Any algorithm that aims to preserve processing
    history must define a mechanism to load and store the parameters that
    define a unique instance of that algorithm.
 
-#. *Object level history*.  To fully recreate the processing history of a
+2. *Object level history*.  To fully recreate the processing history of a
    processed data set one needs to retain the chain of processes that operated
    on what data to produce the final output.  In every seismic reflection processing
    system we are aware of the problem is reduced to what we are calling global
@@ -64,4 +64,4 @@ preserving processing history has two components.
    algorithms supported in MsPASS have an option to enable object level
    history.   NEED A FEW MORE SENTENCES HERE WITH A LINK TO PAGE WITH THE TOPIC
    OF WRITING YOUR OWN PROCESSING MODULE EXTENSION.  THAT DOCUMENT CAN AND
-   SHOULD CONTAIN A SECTION ON HOW TO SET UP THE HISTORY MECHANISM.   
+   SHOULD CONTAIN A SECTION ON HOW TO SET UP THE HISTORY MECHANISM.
