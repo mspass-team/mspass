@@ -276,9 +276,6 @@ class Database(pymongo.database.Database):
             save_schema = schema.Seismogram
 
         if mspass_object.live:
-            # This function is needed to make sure the metadata define the time
-            # standard consistently
-            self._sync_time_metadata(mspass_object)
             # 1. save metadata
             self.update_metadata(mspass_object, include_undefined, exclude_keys, collection)
 
@@ -406,6 +403,7 @@ class Database(pymongo.database.Database):
             # to make it more powerful for Python logging.
             mspass_object.elog.log_verbose(
                 sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
+            self._save_elog(mspass_object)
 
 
     def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True, exclude_keys=[]):
@@ -539,18 +537,38 @@ class Database(pymongo.database.Database):
         if gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
 
-    def _sync_metadata_before_update(self, d):
-        """
-        Synchronize a few broken attributes before saving.
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the
+    #       npts or t0 in TimeSeries.
 
-        :param d: a mspasspy object.
-        :type d: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    @staticmethod
+    def _sync_metadata_before_update(mspass_object):
         """
-        if d.tref == TimeReferenceType.Relative:
-            d.put_string('time_standard', 'relative')
+        MsPASS data objects are designed to cleanly handle what we call relative
+        and UTC time.  This small helper function assures the Metadata of
+        mspass_object are consistent with the internal contents.  That
+        involves posting some special attributes seen below to handle this issue.
+        Since Metadata is volatile we need to be sure these are consistent or
+        timing can be destroyed on data.
+        """
+        # this adds a small overhead but it guarantees Metadata and internal t0
+        # values are consistent.  Shouldn't happen unless the user messes with them
+        # incorrectly, but this safety is prudent to reduce the odds of mysterious
+        # timing errors in data
+        t0 = mspass_object.t0
+        mspass_object.set_t0(t0)
+        # This will need to be modified if we ever expand time types beyond two
+        if mspass_object.time_is_relative():
+            if mspass_object.shifted():
+                mspass_object['startime_shift'] = mspass_object.time_reference()
+                mspass_object['utc_convertible'] = True
+            else:
+                mspass_object['utc_convertible'] = False
+            mspass_object['time_standard'] = 'Relative'
         else:
-            d.put_string('time_standard', 'UTC')
-
+            mspass_object['utc_convertible'] = True
+            mspass_object['time_standard'] = 'UTC'
+            
     def _save_history(self, mspass_object, prev_history_object_id=None, collection=None):
         """
         Save the processing history of a mspasspy object.
@@ -622,6 +640,8 @@ class Database(pymongo.database.Database):
         if not collection:
             collection = self.database_schema.default_name('elog')
         
+        #TODO: Need to discuss whether the _id should be linked in a dead elog entry. It 
+        # might be confusing to link the dead elog to an alive wf record.
         oid = None
         if '_id' in mspass_object:
             oid = mspass_object['_id']
@@ -1335,37 +1355,6 @@ class Database(pymongo.database.Database):
         dbsource = self.source
         x = dbsource.find_one({'source_id': source_id})
         return x
-
-    # TODO: the following is not used when data is read from the database. We need
-    #       link these metadata keys with the actual member variables just like the 
-    #       npts or t0 in TimeSeries.
-    @staticmethod
-    def _sync_time_metadata(mspass_object):
-        """
-        MsPASS data objects are designed to cleanly handle what we call relative
-        and UTC time.  This small helper function assures the Metadata of
-        mspass_object are consistent with the internal contents.  That
-        involves posting some special attributes seen below to handle this issue.
-        Since Metadata is volatile we need to be sure these are consistent or
-        timing can be destroyed on data.
-        """
-        # this adds a small overhead but it guarantees Metadata and internal t0
-        # values are consistent.  Shouldn't happen unless the user messes with them
-        # incorrectly, but this safety is prudent to reduce the odds of mysterious
-        # timing errors in data
-        t0 = mspass_object.t0
-        mspass_object.set_t0(t0)
-        # This will need to be modified if we ever expand time types beyond two
-        if mspass_object.time_is_relative():
-            if mspass_object.shifted():
-                mspass_object['startime_shift'] = mspass_object.time_reference()
-                mspass_object['utc_convertible'] = True
-            else:
-                mspass_object['utc_convertible'] = False
-            mspass_object['time_standard'] = 'Relative'
-        else:
-            mspass_object['utc_convertible'] = True
-            mspass_object['time_standard'] = 'UTC'
 
     @staticmethod
     def _sync_ensemble_metadata(ensemble, do_not_copy=None):
