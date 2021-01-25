@@ -325,81 +325,88 @@ class Database(pymongo.database.Database):
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-        schema = self.metadata_schema
-        if isinstance(mspass_object, TimeSeries):
-            update_metadata_def = schema.TimeSeries
-        else:
-            update_metadata_def = schema.Seismogram
+        if mspass_object.live:
+            schema = self.metadata_schema
+            if isinstance(mspass_object, TimeSeries):
+                update_metadata_def = schema.TimeSeries
+            else:
+                update_metadata_def = schema.Seismogram
 
-        wf_collection = update_metadata_def.collection('_id') if not collection else collection
-        col = self[wf_collection]
-        object_doc = None
+            wf_collection = update_metadata_def.collection('_id') if not collection else collection
+            col = self[wf_collection]
+            object_doc = None
 
-        new_insertion = False
-        if '_id' not in mspass_object:
-            new_insertion = True
+            new_insertion = False
+            if '_id' not in mspass_object:
+                new_insertion = True
 
-        if not new_insertion:
-            object_doc = col.find_one({'_id': mspass_object['_id']})
+            if not new_insertion:
+                object_doc = col.find_one({'_id': mspass_object['_id']})
 
-        # 1. create the dict of metadata to be saved in wf
-        insert_dict = {}
+            # 1. create the dict of metadata to be saved in wf
+            insert_dict = {}
 
-        self._sync_metadata_before_update(mspass_object)
-        copied_metadata = Metadata(mspass_object)
+            self._sync_metadata_before_update(mspass_object)
+            copied_metadata = Metadata(mspass_object)
 
-        update_metadata_def.clear_aliases(copied_metadata)
+            update_metadata_def.clear_aliases(copied_metadata)
 
-        for k in copied_metadata:
-            if not str(copied_metadata[k]).strip():
-                copied_metadata.erase(k)
+            for k in copied_metadata:
+                if not str(copied_metadata[k]).strip():
+                    copied_metadata.erase(k)
 
-        for k in copied_metadata:
-            if k in exclude:
-                continue
-            if update_metadata_def.is_defined(k):
-                if update_metadata_def.readonly(k):
+            for k in copied_metadata:
+                if k in exclude:
                     continue
-                if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
-                    try:
-                        # The following convert the actual value in a dict to a required type.
-                        # This is because the return of type() is the class reference.
-                        insert_dict[k] = update_metadata_def.type(
-                            k)(copied_metadata[k])
-                    except Exception as err:
-                        raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
-                            k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
-                else:
+                if update_metadata_def.is_defined(k):
+                    if update_metadata_def.readonly(k):
+                        continue
+                    if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
+                        try:
+                            # The following convert the actual value in a dict to a required type.
+                            # This is because the return of type() is the class reference.
+                            insert_dict[k] = update_metadata_def.type(
+                                k)(copied_metadata[k])
+                        except Exception as err:
+                            raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
+                                k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
+                    else:
+                        insert_dict[k] = copied_metadata[k]
+                elif include_undefined:
                     insert_dict[k] = copied_metadata[k]
-            elif include_undefined:
-                insert_dict[k] = copied_metadata[k]
 
-        # 2. save history
-        if not mspass_object.is_empty():
-            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-            old_history_object_id = None if new_insertion or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
-            history_object_id = self._save_history(mspass_object, old_history_object_id)
-            insert_dict.update({history_obj_id_name: history_object_id})
+            # 2. save history
+            if not mspass_object.is_empty():
+                history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+                old_history_object_id = None if new_insertion or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
+                history_object_id = self._save_history(mspass_object, old_history_object_id)
+                insert_dict.update({history_obj_id_name: history_object_id})
 
-        # 3. save error logs
-        if mspass_object.elog.size() != 0:
-            elog_id_name = self.database_schema.default_name('elog') + '_id'
-            old_elog_id = None if new_insertion or elog_id_name not in object_doc else object_doc[elog_id_name]
-            elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
-            insert_dict.update({elog_id_name: elog_id})
+            # 3. save error logs
+            if mspass_object.elog.size() != 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                old_elog_id = None if new_insertion or elog_id_name not in object_doc else object_doc[elog_id_name]
+                elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+                insert_dict.update({elog_id_name: elog_id})
 
-        if '_id' not in copied_metadata:  # new_insertion
-            mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
+            if '_id' not in copied_metadata:  # new_insertion
+                mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
+            else:
+                filter_ = {'_id': copied_metadata['_id']}
+                col.update_one(filter_, {'$set': insert_dict})
+
+            # 4. need to save the wf_id back to elog entry if this is an insert
+            if new_insertion and mspass_object.elog.size() != 0:
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection + '_id'
+                filter_ = {'_id': elog_id}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
         else:
-            filter_ = {'_id': copied_metadata['_id']}
-            col.update_one(filter_, {'$set': insert_dict})
+            # FIXME: we could have recorded the full stack here, but need to revise the logger object
+            # to make it more powerful for Python logging.
+            mspass_object.elog.log_verbose(
+                sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
 
-        # 4. need to save the wf_id back to elog entry if this is an insert
-        if new_insertion and mspass_object.elog.size() != 0:
-            elog_col = self[self.database_schema.default_name('elog')]
-            wf_id_name = wf_collection + '_id'
-            filter_ = {'_id': elog_id}
-            elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
 
     def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True, exclude_keys=[]):
         """
