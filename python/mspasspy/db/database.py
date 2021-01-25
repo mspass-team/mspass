@@ -458,10 +458,6 @@ class Database(pymongo.database.Database):
         :type exclude_objects: :class:`list`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
-        # This pushes ensemble's metadata to each member.  We pass the exclude
-        # keys as the effort required to pass ones not meant for ensemble is tiny
-        self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
-
         if not dfile_list:
             dfile_list = [None for _ in range(len(ensemble_object.member))]
         if not dir_list:
@@ -1355,34 +1351,3 @@ class Database(pymongo.database.Database):
         dbsource = self.source
         x = dbsource.find_one({'source_id': source_id})
         return x
-
-    @staticmethod
-    def _sync_ensemble_metadata(ensemble, do_not_copy=None):
-        """
-        An ensemble has a Metadata object attached.  The assumption always is
-        that every member of the ensemble is appropriate to associate with the
-        ensemble Metadata attributes.  This function merges the ensembles
-        Metadata to each member using the Metadata += operator.  An optional
-        do_not_copy list of keys can  be supplied.  Keys listed found in the
-        ensemble Metadata will not be pushed to the members.
-
-        :param ensemble: ensemble object (requirement is only that it has
-        Metadata as a parent and contains a members vector of data with
-        their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
-        with members to receive the ensemble attributes.
-        :param do_not_copy: is a list of keys that should not be copied to
-        members.  The default is none.  Keys listed but not in the ensemble
-        Metadata will be silently ignored.
-        """
-        md_to_copy = Metadata(ensemble)
-        if do_not_copy != None:
-            for k in do_not_copy:
-                if md_to_copy.is_defined(k):
-                    md_to_copy.erase(k)
-        for d in ensemble.member:
-            # This needs to be replaced by a new method for
-            # copying metadata.  Using operator += is problematic
-            # for multiple reasons discussed in github issues.
-            for k in md_to_copy.keys():
-                val = md_to_copy[k]
-                d.put(k, val)
