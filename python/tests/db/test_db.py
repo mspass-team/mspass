@@ -178,7 +178,7 @@ class TestDatabase():
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
         exclude = ['extra2']
-        self.db.update_metadata(ts, include_undefined=True, exclude=exclude)
+        self.db.update_metadata(ts, include_undefined=True, exclude_keys=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['starttime'] == ts['t0']
@@ -197,7 +197,7 @@ class TestDatabase():
         assert elog_res['wf_TimeSeries_id'] == ts['_id']
 
         ts['extra1'] = 'extra1+'
-        self.db.update_metadata(ts, include_undefined=True, exclude=exclude)
+        self.db.update_metadata(ts, include_undefined=True, exclude_keys=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
@@ -221,9 +221,9 @@ class TestDatabase():
         seis = copy.deepcopy(self.test_seis)
         logging_helper.info(seis, 'deepcopy', '1')
 
-        self.db.save_data(seis, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
+        self.db.save_data(seis, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
-        seis3 = self.db.read_data(seis['_id'], 'Seismogram', exclude=[
+        seis3 = self.db.read_data(seis['_id'], 'Seismogram', exclude_keys=[
                                   '_id', 'channel_id', 'source_depth'])
         
         # test for read exclude
@@ -263,7 +263,7 @@ class TestDatabase():
 
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
         ts2 = self.db.read_data(ts['_id'], 'TimeSeries')
         for key in wf_keys:
             if key in ts:
@@ -308,7 +308,7 @@ class TestDatabase():
 
         # file
         self.db.save_data(seis, storage_mode='file', dir='./python/tests/data/', dfile='test_db_output',
-                          include_undefined=True, exclude=['extra2'])
+                          include_undefined=True, exclude_keys=['extra2'])
         seis2 = self.db.read_data(seis['_id'], 'Seismogram')
         res = self.db['wf_Seismogram'].find_one({'_id': seis['_id']})
         assert res['storage_mode'] == 'file'
@@ -331,7 +331,7 @@ class TestDatabase():
 
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         self.db.detele_wf(ts['_id'], "TimeSeries")
@@ -341,7 +341,7 @@ class TestDatabase():
     def test_delete_gridfs(self):
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude=['extra2'])
+        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         gfsh = gridfs.GridFS(self.db)
         assert gfsh.exists(res['gridfs_id'])
