@@ -129,7 +129,7 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, object_type='TimeSeries', load_history=True, exclude=[], collection=None):
+    def read_data(self, object_id, object_type='TimeSeries', load_history=True, exclude_keys=[], collection=None):
         """
         Reads and returns the mspasspy object stored in the database.
 
@@ -138,8 +138,8 @@ class Database(pymongo.database.Database):
         :param object_type: either "TimeSeries" or "Seismogram".
         :type object_type: :class:`str`
         :param load_history: `True` to load object-level history into the mspasspy object.
-        :param exclude: the metadata attributes you want to exclude from being read.
-        :type exclude: a :class:`list` of :class:`str`
+        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         """
@@ -164,7 +164,7 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object_doc:
-            if k not in exclude and read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
+            if k not in exclude_keys and read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
                 md[k] = object_doc[k]
 
         # build a set of collection to read in normalized attributes
@@ -181,7 +181,7 @@ class Database(pymongo.database.Database):
 
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
-            if col != wf_collection and k not in exclude:
+            if col != wf_collection and k not in exclude_keys:
                 md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
 
         for k in md:
@@ -217,7 +217,7 @@ class Database(pymongo.database.Database):
         return mspass_object
 
     def save_data(self, mspass_object, storage_mode='gridfs', include_undefined=False, dfile=None, dir=None,
-                  exclude=[], collection=None):
+                  exclude_keys=[], collection=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
@@ -231,8 +231,8 @@ class Database(pymongo.database.Database):
         :type dfile: :class:`str`
         :param dir: file directory if using "file" storage mode.
         :type dir: :class:`str`
-        :param exclude: the metadata attributes you want to exclude from being stored.
-        :type exclude: a :class:`list` of :class:`str`
+        :param exclude_keys: the metadata attributes you want to exclude from being stored.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -280,7 +280,7 @@ class Database(pymongo.database.Database):
             # standard consistently
             self._sync_time_metadata(mspass_object)
             # 1. save metadata
-            self.update_metadata(mspass_object, include_undefined, exclude, collection)
+            self.update_metadata(mspass_object, include_undefined, exclude_keys, collection)
 
             # 2. save data
             wf_collection = save_schema.collection('_id') if not collection else collection
@@ -310,7 +310,7 @@ class Database(pymongo.database.Database):
                 sys._getframe().f_code.co_name, "Skipped saving dead object")
             self._save_elog(mspass_object)
 
-    def update_metadata(self, mspass_object, include_undefined=False, exclude=[], collection=None):
+    def update_metadata(self, mspass_object, include_undefined=False, exclude_keys=[], collection=None):
         """
         Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
         and metadata attributes.
@@ -318,8 +318,8 @@ class Database(pymongo.database.Database):
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
-        :param exclude: a list of metadata attributes you want to exclude from being updated.
-        :type exclude: a :class:`list` of :class:`str`
+        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -356,7 +356,7 @@ class Database(pymongo.database.Database):
                     copied_metadata.erase(k)
 
             for k in copied_metadata:
-                if k in exclude:
+                if k in exclude_keys:
                     continue
                 if update_metadata_def.is_defined(k):
                     if update_metadata_def.readonly(k):
