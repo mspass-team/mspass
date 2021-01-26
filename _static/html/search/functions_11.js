@@ -22,6 +22,6 @@ var searchData=
   ['ssq',['ssq',['../classmspass_1_1utility_1_1_vector_statistics.html#a4f4fe42ae9c9cee2463fedbb21241a56',1,'mspass::utility::VectorStatistics']]],
   ['stage',['stage',['../classmspass_1_1utility_1_1_processing_history.html#afe65cff0547c9b75ea3ce9a7aa6b20f7',1,'mspass::utility::ProcessingHistory']]],
   ['status',['status',['../classmspass_1_1utility_1_1_processing_history.html#a1ef35389afcd6d4305442a3720398a34',1,'mspass::utility::ProcessingHistory']]],
-  ['sync_5fmetadata',['sync_metadata',['../classmspass_1_1seismic_1_1_ensemble.html#a788a64b6210d1fa08885c7cdc13a0cb7',1,'mspass::seismic::Ensemble']]],
+  ['sync_5fmetadata',['sync_metadata',['../classmspass_1_1seismic_1_1_ensemble.html#a788a64b6210d1fa08885c7cdc13a0cb7',1,'mspass::seismic::Ensemble::sync_metadata()'],['../classmspass_1_1seismic_1_1_ensemble.html#a3613a03fdb3789149b811ef0240a5516',1,'mspass::seismic::Ensemble::sync_metadata(std::vector&lt; std::string &gt; exclude)']]],
   ['sync_5fnpts',['sync_npts',['../classmspass_1_1seismic_1_1_core_seismogram.html#a629ae308ad656912abd32d086730f35d',1,'mspass::seismic::CoreSeismogram::sync_npts()'],['../classmspass_1_1seismic_1_1_core_time_series.html#ac2755952b5e490ba8ea7469d5d0273c7',1,'mspass::seismic::CoreTimeSeries::sync_npts()']]]
 ];

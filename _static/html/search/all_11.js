@@ -26,6 +26,6 @@ var searchData=
   ['stage',['stage',['../classmspass_1_1utility_1_1_node_data.html#a972bd00dc85cae2e490833225f53e282',1,'mspass::utility::NodeData::stage()'],['../classmspass_1_1utility_1_1_processing_history.html#afe65cff0547c9b75ea3ce9a7aa6b20f7',1,'mspass::utility::ProcessingHistory::stage()']]],
   ['start',['start',['../classmspass_1_1seismic_1_1_time_window.html#a12245ae77c3684bc96975e51e81f3bb1',1,'mspass::seismic::TimeWindow']]],
   ['status',['status',['../classmspass_1_1utility_1_1_node_data.html#a3dab2773c306f1d9977dccb455beec59',1,'mspass::utility::NodeData::status()'],['../classmspass_1_1utility_1_1_processing_history.html#a1ef35389afcd6d4305442a3720398a34',1,'mspass::utility::ProcessingHistory::status()']]],
-  ['sync_5fmetadata',['sync_metadata',['../classmspass_1_1seismic_1_1_ensemble.html#a788a64b6210d1fa08885c7cdc13a0cb7',1,'mspass::seismic::Ensemble']]],
+  ['sync_5fmetadata',['sync_metadata',['../classmspass_1_1seismic_1_1_ensemble.html#a788a64b6210d1fa08885c7cdc13a0cb7',1,'mspass::seismic::Ensemble::sync_metadata()'],['../classmspass_1_1seismic_1_1_ensemble.html#a3613a03fdb3789149b811ef0240a5516',1,'mspass::seismic::Ensemble::sync_metadata(std::vector&lt; std::string &gt; exclude)']]],
   ['sync_5fnpts',['sync_npts',['../classmspass_1_1seismic_1_1_core_seismogram.html#a629ae308ad656912abd32d086730f35d',1,'mspass::seismic::CoreSeismogram::sync_npts()'],['../classmspass_1_1seismic_1_1_core_time_series.html#ac2755952b5e490ba8ea7469d5d0273c7',1,'mspass::seismic::CoreTimeSeries::sync_npts()']]]
 ];

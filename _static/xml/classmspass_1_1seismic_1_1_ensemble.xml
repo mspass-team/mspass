@@ -206,6 +206,23 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="89" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="89" bodyend="97"/>
       </memberdef>
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::seismic::Ensemble&lt; Tdata &gt;::sync_metadata</definition>
+        <argsstring>(std::vector&lt; std::string &gt; exclude)</argsstring>
+        <name>sync_metadata</name>
+        <param>
+          <type>std::vector&lt; std::string &gt;</type>
+          <declname>exclude</declname>
+        </param>
+        <briefdescription>
+<para>copy ensemble metadata to all members except for the ones excluded. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="100" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="100" bodyend="114"/>
+      </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -247,7 +264,7 @@
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
     </collaborationgraph>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="8" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="7" bodyend="98"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="8" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="7" bodyend="115"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>begin</name></member>
@@ -297,6 +314,7 @@
       <member refid="classmspass_1_1utility_1_1_metadata_1a5efd5678db951e3517c5667fefe93ddf" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>put_string</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>size</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1a788a64b6210d1fa08885c7cdc13a0cb7" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>sync_metadata</name></member>
+      <member refid="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>sync_metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1ad5cd3bfc81c7fccd83bbb30ef1c2774c" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>type</name></member>
       <member refid="classmspass_1_1seismic_1_1_ensemble_1a5eabbab400143c3e3182fb82fe000312" prot="public" virt="non-virtual"><scope>mspass::seismic::Ensemble</scope><name>update_metadata</name></member>
       <member refid="classmspass_1_1utility_1_1_basic_metadata_1a1d7a9ab1e25e01694cc733ad2b98c6b7" prot="public" virt="virtual"><scope>mspass::seismic::Ensemble</scope><name>~BasicMetadata</name></member>

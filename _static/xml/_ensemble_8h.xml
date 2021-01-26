@@ -383,30 +383,45 @@
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(*mdmember)+=</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(*this);</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="97"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="98"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="100"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>;</highlight></codeline>
-<codeline lineno="102"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">ThreeComponentEnsemble</ref>;</highlight></codeline>
-<codeline lineno="123"><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
-<codeline lineno="124"><highlight class="comment">template<sp/>&lt;typename<sp/>Tdata&gt;</highlight></codeline>
-<codeline lineno="125"><highlight class="comment"><sp/><sp/>size_t<sp/>set_inputs(ProcessingHistoryRecord&amp;<sp/>rec,<sp/>const<sp/>mspass::seismic::Ensemble&lt;Tdata&gt;&amp;<sp/>d)</highlight></codeline>
-<codeline lineno="126"><highlight class="comment">{</highlight></codeline>
-<codeline lineno="127"><highlight class="comment"><sp/><sp/>try{</highlight></codeline>
-<codeline lineno="128"><highlight class="comment"><sp/><sp/><sp/><sp/>for(size_t<sp/>i=0;i&lt;d.member.size();++i)</highlight></codeline>
-<codeline lineno="129"><highlight class="comment"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="130"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Ignore<sp/>any<sp/>data<sp/>not<sp/>defined<sp/>as<sp/>live</highlight></codeline>
-<codeline lineno="131"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>if(d.member[i].live())</highlight></codeline>
-<codeline lineno="132"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="133"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;ProcessingHistoryRecord&gt;<sp/>h(d.member[i].history());</highlight></codeline>
-<codeline lineno="134"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>do<sp/>nothing<sp/>if<sp/>the<sp/>container<sp/>is<sp/>empty</highlight></codeline>
-<codeline lineno="135"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if(h.size()&gt;0)rec.inputs.push_back(h);</highlight></codeline>
-<codeline lineno="136"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="137"><highlight class="comment"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="138"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>rec.inputs.size();</highlight></codeline>
-<codeline lineno="139"><highlight class="comment"><sp/><sp/>}catch(...){throw;};</highlight></codeline>
-<codeline lineno="140"><highlight class="comment">};</highlight></codeline>
-<codeline lineno="141"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="142"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/><sp/>End<sp/>guard</highlight></codeline>
+<codeline lineno="100" refid="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble_1a3613a03fdb3789149b811ef0240a5516" kindref="member">sync_metadata</ref>(std::vector&lt;std::string&gt;<sp/>exclude)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>sync_md(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>exclude.size();<sp/>i++)</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(sync_md.<ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">is_defined</ref>(exclude[i]))<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sync_md.<ref refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" kindref="member">erase</ref>(exclude[i]);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>this-&gt;member.size();<sp/>++i)</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>*mdmember<sp/>=<sp/>&amp;(this-&gt;member[i]);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>(*mdmember)<sp/>+=<sp/>sync_md;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="117"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;TimeSeries&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>;</highlight></codeline>
+<codeline lineno="119"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble&lt;Seismogram&gt;</ref><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">ThreeComponentEnsemble</ref>;</highlight></codeline>
+<codeline lineno="140"><highlight class="comment">/*<sp/>Disable<sp/>temporarily<sp/>-<sp/>needs<sp/>a<sp/>revision<sp/>to<sp/>match<sp/>new<sp/>history<sp/>approach</highlight></codeline>
+<codeline lineno="141"><highlight class="comment">template<sp/>&lt;typename<sp/>Tdata&gt;</highlight></codeline>
+<codeline lineno="142"><highlight class="comment"><sp/><sp/>size_t<sp/>set_inputs(ProcessingHistoryRecord&amp;<sp/>rec,<sp/>const<sp/>mspass::seismic::Ensemble&lt;Tdata&gt;&amp;<sp/>d)</highlight></codeline>
+<codeline lineno="143"><highlight class="comment">{</highlight></codeline>
+<codeline lineno="144"><highlight class="comment"><sp/><sp/>try{</highlight></codeline>
+<codeline lineno="145"><highlight class="comment"><sp/><sp/><sp/><sp/>for(size_t<sp/>i=0;i&lt;d.member.size();++i)</highlight></codeline>
+<codeline lineno="146"><highlight class="comment"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="147"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>Ignore<sp/>any<sp/>data<sp/>not<sp/>defined<sp/>as<sp/>live</highlight></codeline>
+<codeline lineno="148"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>if(d.member[i].live())</highlight></codeline>
+<codeline lineno="149"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;ProcessingHistoryRecord&gt;<sp/>h(d.member[i].history());</highlight></codeline>
+<codeline lineno="151"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>//<sp/>do<sp/>nothing<sp/>if<sp/>the<sp/>container<sp/>is<sp/>empty</highlight></codeline>
+<codeline lineno="152"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>if(h.size()&gt;0)rec.inputs.push_back(h);</highlight></codeline>
+<codeline lineno="153"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/><sp/>return<sp/>rec.inputs.size();</highlight></codeline>
+<codeline lineno="156"><highlight class="comment"><sp/><sp/>}catch(...){throw;};</highlight></codeline>
+<codeline lineno="157"><highlight class="comment">};</highlight></codeline>
+<codeline lineno="158"><highlight class="comment">*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>End<sp/>mspass::seismic<sp/>namespace<sp/>encapsulation</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/>//<sp/><sp/>End<sp/>guard</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h"/>
   </compounddef>
