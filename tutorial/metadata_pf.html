@@ -456,7 +456,7 @@ div.rendered_html tbody tr:hover {
 because the implementation is cleaner at the C++ level. It is also, in principle, faster since the same methods visible through python wrapper are accesible in C++ code. The purpose of this tutorial is to give users familiarity of this core class used for a wide variety of purposes.</p>
 <p>This tutorial first teaches how to utilize the Metadata object in python. When that is understood, we move to the AntelopePf, which is a child of Metadata with expanded capabilities.</p>
 <p>We have to tell python what a Metadata object is. We use the following common python incantation:</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -464,6 +464,19 @@ because the implementation is cleaner at the C++ level. It is also, in principle
 <span></span>from mspasspy.ccore import Metadata
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-1-cb5e075e47cd&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span><span class="ansi-blue-fg">()</span>
+<span class="ansi-green-fg">----&gt; 1</span><span class="ansi-red-fg"> </span><span class="ansi-green-fg">from</span> mspasspy<span class="ansi-blue-fg">.</span>ccore <span class="ansi-green-fg">import</span> Metadata
+
+<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named &#39;mspasspy.ccore&#39;; &#39;mspasspy&#39; is not a package
+</pre></div></div>
 </div>
 <p>We can then create an empty Metadata container in the standard python way.</p>
 <div class="nbinput nblast docutils container">
