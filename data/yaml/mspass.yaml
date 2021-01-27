@@ -248,16 +248,18 @@ Database:
         type: ObjectID
         concept: ObjectID used to define an unique entry in elog collection.
       logdata:
-        type: bytes
-        concept: serialized content of ErrorLogger.
+        type: list
+        concept: a list of LogData.
       wf_Seismogram_id:
         reference: wf_Seismogram
         optional: true
       wf_TimeSeries_id:
         reference: wf_TimeSeries
         optional: true
-
-
+      gravestone:
+        type: dict
+        concept: a copy of the Metadata of a dead object.
+        optional: true
 
 
 Metadata:

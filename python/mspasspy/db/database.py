@@ -6,6 +6,7 @@ import copy
 import pathlib
 import pickle
 import struct
+import sys
 from array import array
 
 import dask.bag as daskbag
@@ -30,7 +31,7 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
-def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True,
+def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True, exclude_keys=[],
                           format='spark', spark_context=None):
     """
      This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
@@ -43,6 +44,8 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     :param object_type: either "TimeSeries" or "Seismogram"
     :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into mspasspy objects.
+    :param exclude_keys: the metadata attributes you want to exclude from being read.
+    :type exclude_keys: a :class:`list` of :class:`str`
     :param format: "spark" or "dask".
     :type format: :class:`str`
     :param spark_context: user specified spark context.
@@ -51,15 +54,15 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     """
     if format == 'spark':
         list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
     elif format == 'dask':
         list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
     else:
         raise TypeError("Only spark and dask are supported")
 
 
-def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True):
+def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True, exclude_keys=[]):
     """
      A helper method used in the distributed map operation. It creates a mongodb connection with provided
      configurations, reads data from the database, constructs a mspasspy object and returns it.
@@ -71,12 +74,14 @@ def _read_distributed_data(client_arg, db_name, id, object_type, load_history=Tr
     :param object_type: either "TimeSeries" or "Seismogram".
     :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into the mspasspy object.
+    :param exclude_keys: the metadata attributes you want to exclude from being read.
+    :type exclude_keys: a :class:`list` of :class:`str`
     :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
     """
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
-    return db.read_data(id, object_type, load_history)
+    return db.read_data(id, object_type, load_history, exclude_keys)
 
 
 class Database(pymongo.database.Database):
@@ -124,7 +129,7 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, object_type='TimeSeries', load_history=True, collection=None):
+    def read_data(self, object_id, object_type='TimeSeries', load_history=True, exclude_keys=[], collection=None):
         """
         Reads and returns the mspasspy object stored in the database.
 
@@ -133,6 +138,8 @@ class Database(pymongo.database.Database):
         :param object_type: either "TimeSeries" or "Seismogram".
         :type object_type: :class:`str`
         :param load_history: `True` to load object-level history into the mspasspy object.
+        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         """
@@ -157,9 +164,10 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object_doc:
-            if read_metadata_schema.is_defined(k):
+            if k not in exclude_keys and read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
                 md[k] = object_doc[k]
 
+        # build a set of collection to read in normalized attributes
         col_set = set()
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
@@ -173,7 +181,7 @@ class Database(pymongo.database.Database):
 
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
-            if col != wf_collection:
+            if col != wf_collection and k not in exclude_keys:
                 md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
 
         for k in md:
@@ -182,8 +190,9 @@ class Database(pymongo.database.Database):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
         if object_type == 'TimeSeries':
+            # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
-            mspass_object.npts = md['npts']  # fixme
+            mspass_object.npts = object_doc['npts']
         else:
             mspass_object = Seismogram(_CoreSeismogram(md, False))
 
@@ -207,8 +216,8 @@ class Database(pymongo.database.Database):
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode='gridfs', update_all=True, dfile=None, dir=None,
-                  exclude=None, collection=None):
+    def save_data(self, mspass_object, storage_mode='gridfs', include_undefined=False, dfile=None, dir=None,
+                  exclude_keys=[], collection=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
@@ -217,13 +226,13 @@ class Database(pymongo.database.Database):
         :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
             the object in a binary file, which requires `dfile` and `dir`.
         :type storage_mode: :class:`str`
-        :param update_all: `True` to also save the metadata attributes not defined in the schema.
+        :param include_undefined: `True` to also save the metadata attributes not defined in the schema.
         :param dfile: file name if using "file" storage mode.
         :type dfile: :class:`str`
         :param dir: file directory if using "file" storage mode.
         :type dir: :class:`str`
-        :param exclude: the metadata attributes you want to exclude from being stored.
-        :type exclude: a :class:`list` of :class:`str`
+        :param exclude_keys: the metadata attributes you want to exclude from being stored.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -265,127 +274,139 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
-        # This function is needed to make sure the metadata define the time
-        # standard consistently
-        self._sync_time_metadata(mspass_object)
-        # 1. save metadata
-        self.update_metadata(mspass_object, update_all, exclude, collection)
 
-        # 2. save data
-        wf_collection = save_schema.collection('_id') if not collection else collection
-        col = self[wf_collection]
-        object_doc = col.find_one({'_id': mspass_object['_id']})
-        filter_ = {'_id': mspass_object['_id']}
-        update_dict = {'storage_mode': storage_mode}
+        if mspass_object.live:
+            # 1. save metadata
+            self.update_metadata(mspass_object, include_undefined, exclude_keys, collection)
 
-        if storage_mode == "file":
-            foff = self._save_data_to_dfile(mspass_object, dir, dfile)
-            update_dict['dir'] = dir
-            update_dict['dfile'] = dfile
-            update_dict['foff'] = foff
-        elif storage_mode == "gridfs":
-            old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
-            gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
-            update_dict['gridfs_id'] = gridfs_id
-        #TODO will support url mode later 
-        #elif storage_mode == "url":
-        #    pass
+            # 2. save data
+            wf_collection = save_schema.collection('_id') if not collection else collection
+            col = self[wf_collection]
+            object_doc = col.find_one({'_id': mspass_object['_id']})
+            filter_ = {'_id': mspass_object['_id']}
+            update_dict = {'storage_mode': storage_mode}
 
-        col.update_one(filter_, {'$set': update_dict})
+            if storage_mode == "file":
+                foff = self._save_data_to_dfile(mspass_object, dir, dfile)
+                update_dict['dir'] = dir
+                update_dict['dfile'] = dfile
+                update_dict['foff'] = foff
+            elif storage_mode == "gridfs":
+                old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
+                gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
+                update_dict['gridfs_id'] = gridfs_id
+            #TODO will support url mode later 
+            #elif storage_mode == "url":
+            #    pass
 
-    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
+            col.update_one(filter_, {'$set': update_dict})
+        else:
+            # FIXME: we could have recorded the full stack here, but need to revise the logger object
+            # to make it more powerful for Python logging.
+            mspass_object.elog.log_verbose(
+                sys._getframe().f_code.co_name, "Skipped saving dead object")
+            self._save_elog(mspass_object)
+
+    def update_metadata(self, mspass_object, include_undefined=False, exclude_keys=[], collection=None):
         """
         Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
         and metadata attributes.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param update_all: `True` to also update the metadata attributes not defined in the schema.
-        :param exclude: a list of metadata attributes you want to exclude from being updated.
-        :type exclude: a :class:`list` of :class:`str`
+        :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
 
-        schema = self.metadata_schema
-        if isinstance(mspass_object, TimeSeries):
-            update_metadata_def = schema.TimeSeries
-        else:
-            update_metadata_def = schema.Seismogram
+        if mspass_object.live:
+            schema = self.metadata_schema
+            if isinstance(mspass_object, TimeSeries):
+                update_metadata_def = schema.TimeSeries
+            else:
+                update_metadata_def = schema.Seismogram
 
-        wf_collection = update_metadata_def.collection('_id') if not collection else collection
-        col = self[wf_collection]
-        object_doc = None
+            wf_collection = update_metadata_def.collection('_id') if not collection else collection
+            col = self[wf_collection]
+            object_doc = None
 
-        new_insertion = False
-        if '_id' not in mspass_object:
-            new_insertion = True
+            new_insertion = False
+            if '_id' not in mspass_object:
+                new_insertion = True
 
-        if not new_insertion:
-            object_doc = col.find_one({'_id': mspass_object['_id']})
+            if not new_insertion:
+                object_doc = col.find_one({'_id': mspass_object['_id']})
 
-        # 1. create the dict of metadata to be saved in wf
-        insert_dict = {}
-        if exclude is None:
-            exclude = []
+            # 1. create the dict of metadata to be saved in wf
+            insert_dict = {}
 
-        self._sync_metadata_before_update(mspass_object)
-        copied_metadata = Metadata(mspass_object)
+            self._sync_metadata_before_update(mspass_object)
+            copied_metadata = Metadata(mspass_object)
 
-        update_metadata_def.clear_aliases(copied_metadata)
+            update_metadata_def.clear_aliases(copied_metadata)
 
-        for k in copied_metadata:
-            if not str(copied_metadata[k]).strip():
-                copied_metadata.erase(k)
+            for k in copied_metadata:
+                if not str(copied_metadata[k]).strip():
+                    copied_metadata.erase(k)
 
-        for k in copied_metadata:
-            if k in exclude:
-                continue
-            if update_metadata_def.is_defined(k):
-                if update_metadata_def.readonly(k):
+            for k in copied_metadata:
+                if k in exclude_keys:
                     continue
-                if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
-                    try:
-                        # The following convert the actual value in a dict to a required type.
-                        # This is because the return of type() is the class reference.
-                        insert_dict[k] = update_metadata_def.type(
-                            k)(copied_metadata[k])
-                    except Exception as err:
-                        raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
-                            k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
-                else:
+                if update_metadata_def.is_defined(k):
+                    if update_metadata_def.readonly(k):
+                        continue
+                    if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
+                        try:
+                            # The following convert the actual value in a dict to a required type.
+                            # This is because the return of type() is the class reference.
+                            insert_dict[k] = update_metadata_def.type(
+                                k)(copied_metadata[k])
+                        except Exception as err:
+                            raise MsPASSError('Failure attempting to convert key {} from {} to {}'.format(
+                                k, copied_metadata[k], update_metadata_def.type(k)), 'Fatal') from err
+                    else:
+                        insert_dict[k] = copied_metadata[k]
+                elif include_undefined:
                     insert_dict[k] = copied_metadata[k]
-            elif update_all:
-                insert_dict[k] = copied_metadata[k]
 
-        # 2. save history
-        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-        old_history_object_id = None if new_insertion else object_doc[history_obj_id_name]
-        history_object_id = self._save_history(mspass_object, old_history_object_id)
+            # 2. save history
+            if not mspass_object.is_empty():
+                history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+                old_history_object_id = None if new_insertion or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
+                history_object_id = self._save_history(mspass_object, old_history_object_id)
+                insert_dict.update({history_obj_id_name: history_object_id})
 
-        # 3. save error logs
-        elog_id_name = self.database_schema.default_name('elog') + '_id'
-        old_elog_id = None if new_insertion else object_doc[elog_id_name]
-        elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+            # 3. save error logs
+            if mspass_object.elog.size() != 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                old_elog_id = None if new_insertion or elog_id_name not in object_doc else object_doc[elog_id_name]
+                elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+                insert_dict.update({elog_id_name: elog_id})
 
-        insert_dict.update({history_obj_id_name: history_object_id, elog_id_name: elog_id})
+            if '_id' not in copied_metadata:  # new_insertion
+                mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
+            else:
+                filter_ = {'_id': copied_metadata['_id']}
+                col.update_one(filter_, {'$set': insert_dict})
 
-        if '_id' not in copied_metadata:
-            mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
-        else:
-            filter_ = {'_id': copied_metadata['_id']}
-            col.update_one(filter_, {'$set': insert_dict})
-
-        # 4. need to save the wf_id if the mspass_object is saved at the first time
-        if new_insertion:
-            elog_col = self[self.database_schema.default_name('elog')]
-            wf_id_name = wf_collection + '_id'
-            for id_ in insert_dict[elog_id_name]:
-                filter_ = {'_id': id_}
+            # 4. need to save the wf_id back to elog entry if this is an insert
+            if new_insertion and mspass_object.elog.size() != 0:
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection + '_id'
+                filter_ = {'_id': elog_id}
                 elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+        else:
+            # FIXME: we could have recorded the full stack here, but need to revise the logger object
+            # to make it more powerful for Python logging.
+            mspass_object.elog.log_verbose(
+                sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
+            self._save_elog(mspass_object)
 
-    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True):
+
+    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True, exclude_keys=[]):
         """
         Reads and returns the mspasspy ensemble object stored in the database.
 
@@ -395,6 +416,8 @@ class Database(pymongo.database.Database):
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :type ensemble_type: :class:`str`
         :param load_history: `True` to also update the metadata attributes not defined in the schema.
+        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :type exclude_keys: a :class:`list` of :class:`str`
         :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         """
@@ -409,12 +432,13 @@ class Database(pymongo.database.Database):
             ensemble = SeismogramEnsemble(len(objectid_list))
 
         for i in range(len(objectid_list)):
-            ensemble.member.append(self.read_data(objectid_list[i], object_type, load_history))
+            ensemble.member.append(self.read_data(
+                objectid_list[i], object_type, load_history, exclude_keys))
 
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, storage_mode='gridfs', dfile_list=None, dir_list=None,
-                           update_all=False, exclude_keys=None, exclude_objects=None, collection=None):
+                           include_undefined=False, exclude_keys=[], exclude_objects=[], collection=None):
         """
         Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
         database.
@@ -427,20 +451,13 @@ class Database(pymongo.database.Database):
         :type storage_mode: :class:`str`
         :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is `str` type.
         :param dir_list: A :class:`list` of file directories if using "file" storage mode. File directory is `str` type.
-        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
         :type exclude_objects: :class:`list`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
         """
-        # This pushes ensemble's metadata to each member.  We pass the exclude
-        # keys as the effort required to pass ones not meant for ensemble is tiny
-        self._sync_ensemble_metadata(ensemble_object,do_not_copy=exclude_keys)
-
-        if not exclude_objects:
-            exclude_objects = []
-
         if not dfile_list:
             dfile_list = [None for _ in range(len(ensemble_object.member))]
         if not dir_list:
@@ -450,7 +467,7 @@ class Database(pymongo.database.Database):
             j = 0
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
-                    self.save_data(ensemble_object.member[i], storage_mode, update_all, dfile_list[j],
+                    self.save_data(ensemble_object.member[i], storage_mode, include_undefined, dfile_list[j],
                                    dir_list[j], exclude_keys, collection)
                     j += 1
         elif storage_mode == "url":
@@ -458,7 +475,7 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
-    def update_ensemble_metadata(self, ensemble_object, update_all=False, exclude_keys=None, exclude_objects=None,
+    def update_ensemble_metadata(self, ensemble_object, include_undefined=False, exclude_keys=[], exclude_objects=[],
                                  collection=None):
         """
         Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
@@ -467,7 +484,7 @@ class Database(pymongo.database.Database):
         :param ensemble_object: the ensemble you want to update.
         :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
-        :param update_all: `True` to also update the metadata attributes not defined in the schema.
+        :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to
@@ -476,11 +493,9 @@ class Database(pymongo.database.Database):
         :param collection: the collection name you want to use. If not specified, use the defined collection in the
         schema.
         """
-        if not exclude_objects:
-            exclude_objects = []
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
-                self.update_metadata(ensemble_object.member[i], update_all, exclude_keys, collection)
+                self.update_metadata(ensemble_object.member[i], include_undefined, exclude_keys, collection)
 
     def detele_wf(self, object_id, object_type, collection=None):
         """
@@ -518,18 +533,38 @@ class Database(pymongo.database.Database):
         if gfsh.exists(gridfs_id):
             gfsh.delete(gridfs_id)
 
-    def _sync_metadata_before_update(self, d):
-        """
-        Synchronize a few broken attributes before saving.
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the
+    #       npts or t0 in TimeSeries.
 
-        :param d: a mspasspy object.
-        :type d: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+    @staticmethod
+    def _sync_metadata_before_update(mspass_object):
         """
-        if d.tref == TimeReferenceType.Relative:
-            d.put_string('time_standard', 'relative')
+        MsPASS data objects are designed to cleanly handle what we call relative
+        and UTC time.  This small helper function assures the Metadata of
+        mspass_object are consistent with the internal contents.  That
+        involves posting some special attributes seen below to handle this issue.
+        Since Metadata is volatile we need to be sure these are consistent or
+        timing can be destroyed on data.
+        """
+        # this adds a small overhead but it guarantees Metadata and internal t0
+        # values are consistent.  Shouldn't happen unless the user messes with them
+        # incorrectly, but this safety is prudent to reduce the odds of mysterious
+        # timing errors in data
+        t0 = mspass_object.t0
+        mspass_object.set_t0(t0)
+        # This will need to be modified if we ever expand time types beyond two
+        if mspass_object.time_is_relative():
+            if mspass_object.shifted():
+                mspass_object['startime_shift'] = mspass_object.time_reference()
+                mspass_object['utc_convertible'] = True
+            else:
+                mspass_object['utc_convertible'] = False
+            mspass_object['time_standard'] = 'Relative'
         else:
-            d.put_string('time_standard', 'UTC')
-
+            mspass_object['utc_convertible'] = True
+            mspass_object['time_standard'] = 'UTC'
+            
     def _save_history(self, mspass_object, prev_history_object_id=None, collection=None):
         """
         Save the processing history of a mspasspy object.
@@ -580,46 +615,68 @@ class Database(pymongo.database.Database):
     def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
         Save error log for a data object. Data objects in MsPASS contain an error log object used to post any
-        errors handled by processing functions.
+        errors handled by processing functions. This function will delete the old elog entry if `elog_id` is given.
 
         :param mspass_object: the target object.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param elog_id: a list of elog object ids.
-        :type elog_id: `list`
+        :param elog_id: the previous elog object id to be appended with.
+        :type elog_id: :class:`bson.objectid.ObjectId`
         :param collection: the collection that you want to save the elogs. If not specified, use the defined
         collection in the schema.
         :return: updated elog_id.
         """
+        if isinstance(mspass_object, TimeSeries):
+            update_metadata_def = self.metadata_schema.TimeSeries
+        elif isinstance(mspass_object, Seismogram):
+            update_metadata_def = self.metadata_schema.Seismogram
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        wf_id_name = update_metadata_def.collection('_id') + '_id'
+
         if not collection:
             collection = self.database_schema.default_name('elog')
-
-        if not elog_id:
-            elog_id = []
-
+        
+        #TODO: Need to discuss whether the _id should be linked in a dead elog entry. It 
+        # might be confusing to link the dead elog to an alive wf record.
         oid = None
         if '_id' in mspass_object:
             oid = mspass_object['_id']
 
-        if isinstance(mspass_object, Seismogram):
-            wf_id_name = 'wf_Seismogram_id'
-        elif isinstance(mspass_object, TimeSeries):
-            wf_id_name = 'wf_TimeSeries_id'
-        else:
-            raise TypeError("only TimeSeries and Seismogram are supported")
-
         elog = mspass_object.elog
         n = elog.size()
         if n != 0:
+            logdata = []
+            docentry = {'logdata': logdata}
             errs = elog.get_error_log()
             jobid = elog.get_job_id()
-            for i in range(n):
-                x = errs[i]
-                docentry = {'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
-                            'error_message': x.message, 'process_id': x.p_id}
-                if oid:
-                    docentry[wf_id_name] = oid
-                elog_id.append(self[collection].insert_one(docentry).inserted_id)
-        return elog_id
+            for x in errs:
+                logdata.append({'job_id': jobid, 'algorithm': x.algorithm, 'badness': str(x.badness),
+                            'error_message': x.message, 'process_id': x.p_id})
+            if oid:
+                docentry[wf_id_name] = oid
+
+            if not mspass_object.live:
+                docentry['gravestone'] = dict(mspass_object)
+
+            if elog_id:
+                # append elog
+                elog_doc = self[collection].find_one({'_id': elog_id})
+                # only append when previous elog exists
+                if elog_doc:
+                    # if the same object was updated twice, the elog entry will be duplicated
+                    # the following list comprehension line removes the duplicates and preserves
+                    # the order. May need some practice to see if such a behavior makes sense.
+                    [elog_doc['logdata'].append(x) for x in logdata if x not in elog_doc['logdata']]
+                    docentry['logdata'] = elog_doc['logdata']
+                    self[collection].delete_one({'_id': elog_id})
+                # note that is should be impossible for the old elog to have gravestone entry
+                # so we ignore the handling of that attribute here.
+                ret_elog_id = self[collection].insert_one(docentry).inserted_id
+            else:
+                # new insertion
+                ret_elog_id = self[collection].insert_one(docentry).inserted_id
+            return ret_elog_id
+
 
     @staticmethod
     def _read_data_from_dfile(mspass_object, dir, dfile, foff):
@@ -1294,65 +1351,3 @@ class Database(pymongo.database.Database):
         dbsource = self.source
         x = dbsource.find_one({'source_id': source_id})
         return x
-
-    # TODO: the following is not used when data is read from the database. We need
-    #       link these metadata keys with the actual member variables just like the 
-    #       npts or t0 in TimeSeries.
-    @staticmethod
-    def _sync_time_metadata(mspass_object):
-        """
-        MsPASS data objects are designed to cleanly handle what we call relative
-        and UTC time.  This small helper function assures the Metadata of
-        mspass_object are consistent with the internal contents.  That
-        involves posting some special attributes seen below to handle this issue.
-        Since Metadata is volatile we need to be sure these are consistent or
-        timing can be destroyed on data.
-        """
-        # this adds a small overhead but it guarantees Metadata and internal t0
-        # values are consistent.  Shouldn't happen unless the user messes with them
-        # incorrectly, but this safety is prudent to reduce the odds of mysterious
-        # timing errors in data
-        t0 = mspass_object.t0
-        mspass_object.set_t0(t0)
-        # This will need to be modified if we ever expand time types beyond two
-        if mspass_object.time_is_relative():
-            if mspass_object.shifted():
-                mspass_object['startime_shift'] = mspass_object.time_reference()
-                mspass_object['utc_convertible'] = True
-            else:
-                mspass_object['utc_convertible'] = False
-            mspass_object['time_standard'] = 'Relative'
-        else:
-            mspass_object['utc_convertible'] = True
-            mspass_object['time_standard'] = 'UTC'
-
-    @staticmethod
-    def _sync_ensemble_metadata(ensemble, do_not_copy=None):
-        """
-        An ensemble has a Metadata object attached.  The assumption always is
-        that every member of the ensemble is appropriate to associate with the
-        ensemble Metadata attributes.  This function merges the ensembles
-        Metadata to each member using the Metadata += operator.  An optional
-        do_not_copy list of keys can  be supplied.  Keys listed found in the
-        ensemble Metadata will not be pushed to the members.
-
-        :param ensemble: ensemble object (requirement is only that it has
-        Metadata as a parent and contains a members vector of data with
-        their own Metadata container - TimeSeriesEnsemble or SeismogramEnsemble)
-        with members to receive the ensemble attributes.
-        :param do_not_copy: is a list of keys that should not be copied to
-        members.  The default is none.  Keys listed but not in the ensemble
-        Metadata will be silently ignored.
-        """
-        md_to_copy = Metadata(ensemble)
-        if do_not_copy != None:
-            for k in do_not_copy:
-                if md_to_copy.is_defined(k):
-                    md_to_copy.erase(k)
-        for d in ensemble.member:
-            # This needs to be replaced by a new method for
-            # copying metadata.  Using operator += is problematic
-            # for multiple reasons discussed in github issues.
-            for k in md_to_copy.keys():
-                val = md_to_copy[k]
-                d.put(k, val)
