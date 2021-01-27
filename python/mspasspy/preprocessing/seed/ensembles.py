@@ -582,9 +582,8 @@ def load_site_data(db,ens):
                 d['site_elev']=siterec['elevation']
                 d['site_id']=siterec['site_id']
                 if n>1:
-                    message = ('Muliple (%d) matches found for net %s sta %s with reference time %f'
-                               % [n,net,sta,t0])
-                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complain)
+                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
+                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complaint)
         return ens
     except Exception as err:
         raise MsPASSError('Something threw an unexpected exception',
@@ -635,9 +634,8 @@ def load_channel_data(db,ens):
                 # that is what find_one returns.  We use the count to make
                 # the eror message cleaer
                     chanrec=dbchannel.find_one(query)
-                    message = ('Muliple (%d) matches found for net=%s sta=% chan=%s loc=%s with reference time %s'
-                               % [n,net,sta,chan,loc,t0])
-                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complain)
+                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
+                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complaint)
                 d['site_lat']=chanrec['latitude']
                 d['site_lon']=chanrec['longitude']
                 d['site_elev']=chanrec['elevation']
