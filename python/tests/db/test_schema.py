@@ -2,7 +2,7 @@ import pytest
 from bson.objectid import ObjectId
 
 from mspasspy.ccore.utility import MsPASSError
-from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.seismic import TimeSeries, Seismogram
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema, DBSchemaDefinition, MDSchemaDefinition
 
@@ -113,9 +113,36 @@ class TestSchema():
         with pytest.raises(MsPASSError, match = 'not defined'):
             self.dbschema.wf_TimeSeries.reference('test100')
 
+    def test_DBSchemaDefinition_data_type(self):
+        assert self.dbschema.wf_TimeSeries.data_type() == TimeSeries
+        assert self.dbschema.wf_Seismogram.data_type() == Seismogram
+        assert self.dbschema.site.data_type() is None
+        assert self.dbschema.source.data_type() is None
+
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection('sta') == 'site'
         assert self.mdschema.TimeSeries.collection('starttime') == 'wf_TimeSeries'
+
+    def test_MDSchemaDefinition_set_collection(self):
+        self.mdschema.TimeSeries.set_collection('channel_id', 'dummy')
+        assert self.mdschema.TimeSeries.collection('channel_id') == 'dummy'
+
+        assert self.mdschema.TimeSeries.type('channel_id') == ObjectId
+        self.mdschema.TimeSeries.set_collection('channel_id', 'wf_Seismogram', self.dbschema)
+        assert self.mdschema.TimeSeries.collection('channel_id') == 'wf_Seismogram'
+        assert self.mdschema.TimeSeries.type('channel_id') == list
+        
+        with pytest.raises(MsPASSError, match='not defined'):
+            self.mdschema.TimeSeries.set_collection('test100','wf_Seismogram')
+
+    def test_MDSchemaDefinition_swap_collection(self):
+        self.mdschema.TimeSeries.swap_collection('wf_TimeSeries', 'dummy')
+        assert self.mdschema.TimeSeries.collection('_id') == 'dummy'
+        assert self.mdschema.TimeSeries.collection('calib') == 'dummy'
+
+        self.mdschema.TimeSeries.swap_collection('dummy', 'wf_TimeSeries')
+        assert self.mdschema.TimeSeries.collection('_id') == 'wf_TimeSeries'
+        assert self.mdschema.TimeSeries.collection('calib') == 'wf_TimeSeries'
 
     def test_MDSchemaDefinition_readonly(self):
         assert self.mdschema.TimeSeries.readonly('net')
