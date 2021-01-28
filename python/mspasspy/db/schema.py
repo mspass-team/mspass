@@ -7,6 +7,7 @@ import yaml
 import schema
 import bson.objectid
 
+import mspasspy.ccore.seismic
 from mspasspy.ccore.utility import MsPASSError
 
 class SchemaBase:
@@ -333,9 +334,11 @@ class DBSchemaDefinition(SchemaDefinitionBase):
             base_def = DBSchemaDefinition(schema_dic, schema_dic[collection_str]['base'])
             self._main_dic = base_def._main_dic
             self._alias_dic = base_def._alias_dic
+            self._data_type = base_def._data_type
         else:
             self._main_dic = {}
             self._alias_dic = {}
+            self._data_type = None
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'reference' in attr:
@@ -355,11 +358,13 @@ class DBSchemaDefinition(SchemaDefinitionBase):
                 self._main_dic[key] = compiled_attr
 
             if 'aliases' in attr:
-                self._alias_dic.update({item:key for item in attr['aliases']})
+                self._alias_dic.update({item: key for item in attr['aliases'] if item != key})
+        if 'data_type' in schema_dic[collection_str]:
+            self._data_type = schema_dic[collection_str]['data_type']
 
     def reference(self, key):
         """
-        Return the collection name that a key is referenced from
+        Return the collection name that a key is referenced from.
 
         :param key: the name of the key
         :type key: str
@@ -370,6 +375,20 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         if key not in self._main_dic:
             raise MsPASSError(key + ' is not defined', 'Invalid')
         return self._collection_str if 'reference' not in self._main_dic[key] else self._main_dic[key]['reference']
+
+    def data_type(self):
+        """
+        Return the data type that the collection is used to reference. 
+        If not recognized, it returns None.
+
+        :return: type of data associated with the collection
+        :rtype: class:`type`
+        """
+        if self._data_type in ['TimeSeries', 'timeseries']:
+            return mspasspy.ccore.seismic.TimeSeries
+        if self._data_type in ['Seismogram', 'seismogram']:
+            return mspasspy.ccore.seismic.Seismogram
+        return None
 
 class MetadataSchema(SchemaBase):
     def __init__(self, schema_file=None):
@@ -399,13 +418,15 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 col_name = attr['collection']
                 if key.startswith(col_name):
                     s_key = key.replace(col_name + '_', '')
+                # get the default name in case one is used in the dbschema
+                col_name = dbschema.default_name(col_name)
                 foreign_attr = getattr(dbschema,col_name)._main_dic[s_key]
                 # The order of below operation matters. The behavior is that we only
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
                 compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
                 self._main_dic[key] = compiled_attr
-
+            # have to use "self._main_dic[key]" instead of attr here because the dict is updated above
             if 'aliases' in self._main_dic[key]:
                 self._alias_dic.update({item:key for item in self._main_dic[key]['aliases'] if item != key})
 
@@ -419,6 +440,61 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :rtype: str
         """
         return None if 'collection' not in self._main_dic[key] else self._main_dic[key]['collection']
+
+    def set_collection(self, key, collection, dbschema=None):
+        """
+        Set the collection name that a key belongs to. It optionally takes 
+        a dbschema argument and will set the attribute of that key with the
+        corresponding one defined in the dbschema.
+
+        :param key: the name of the key
+        :type key: str
+        :param collection: the name of the collection
+        :type collection: str
+        :param dbschema: the database schema used to set the attributes of the key.
+        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`
+        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
+        """
+        if key not in self._main_dic:
+            raise MsPASSError(key + ' is not defined', 'Invalid')
+        if dbschema:
+            readonly = self.readonly(key)
+            aliases = self.aliases(key)
+
+            s_key = key
+            col_name = collection
+            if key.startswith(col_name):
+                s_key = key.replace(col_name + '_', '')
+            col_name = dbschema.default_name(col_name)
+            foreign_attr = getattr(dbschema,col_name)._main_dic[s_key]
+            self._main_dic[key] = foreign_attr
+            if not readonly:
+                self.set_writeable(key)
+            if aliases:
+                if 'aliases' not in self._main_dic[key]:
+                    self._main_dic[key]['aliases'] = aliases
+                else:
+                    [self._main_dic[key]['aliases'].append(x) for x in aliases if x not in self._main_dic[key]['aliases']]
+                    self._alias_dic.update({item: key for item in self._main_dic[key]['aliases'] if item != key})
+        self._main_dic[key]['collection'] = collection
+
+    def swap_collection(self, original_collection, new_collection, dbschema=None):
+        """
+        Swap the collection name of all the keys of a matching colletions. 
+        It optionally takes a dbschema argument and will set the attribute 
+        of that key with the corresponding one defined in the dbschema. It
+        will silently do nothing if no matching collection is defined.
+
+        :param original_collection: the name of the collection to be swapped
+        :type original_collection: str
+        :param new_collection: the name of the collection to be changed into
+        :type new_collection: str
+        :param dbschema: the database schema used to set the attributes of the key.
+        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`
+        """
+        for key, attr in self._main_dic.items():
+            if 'collection' in attr and attr['collection'] == original_collection:
+                self.set_collection(key, new_collection, dbschema)
 
     def readonly(self, key):
         """
