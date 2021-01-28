@@ -77,6 +77,18 @@ class SchemaDefinitionBase:
         self._main_dic[key]['aliases'].append(aliasname)
         self._alias_dic[aliasname] = key
 
+    def remove_alias(self, alias):
+        """
+        Remove an alias. Will silently ignore if alias is not found
+
+        :param alias: alias to be removed
+        :type alias: str
+        """
+        if alias in self._alias_dic:
+            key = self._alias_dic[alias]
+            self._main_dic[key]['aliases'].remove(alias)
+            del(self._alias_dic[alias])
+
     def aliases(self, key):
         """
         Get a list of aliases for a given key.
