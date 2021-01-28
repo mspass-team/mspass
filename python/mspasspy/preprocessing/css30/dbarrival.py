@@ -674,6 +674,56 @@ def find_duplicate_sta(db,collection='site'):
         if len(s)>1:
             trouble_sta[x]=s
     return trouble_sta
+def find_unique_sta(db,collection='site'):
+    """
+    This function is the complement to find_duplicate_sta.  It returns 
+    a list of stations with one and only one matching net code.  
+    Stations in that list can normally be forced in arrival assuming
+    the arrival data are not disjoint with the station data. 
+
+    :param db: mspass Database handle or just a plain MongoDB database
+      handle.  (mspass Database is a child of MongoDBs top level database
+      handle)
+    :param collection:  string defining the collection name to scan
+      (default is site)
+    :return: dict with sta as keys an net as unique net code
+    """
+    dbcol=db[collection]
+    allsta={}
+    curs=dbcol.find()   # we do a brute force scan through the collection
+    for rec in curs:
+        if "net" in rec:
+            net=rec["net"]
+            sta=rec["sta"]
+            if sta in allsta:
+                val=allsta[sta]
+                # note this works only because the set container behaves
+                # like std::set and adds of duplicates do nothing
+                val.add(net)
+                allsta[sta]=val
+            else:
+                stmp=set()
+                stmp.add(net)
+                allsta[sta]=stmp
+        else:
+            sta=rec["sta"]
+            print("find_duplicate_sta (WARNING):  ",collection,
+                  " collection has an undefined net code for station",
+                  sta)
+            print("This is the full document from this collection")
+            print(rec)
+    # Now we have allsta with all unique station names.  We just look
+    # for ones where the size of the set is exactly 1
+    unique_sta={}
+    for x in allsta:
+        s=allsta[x]
+        if len(s)==1:
+            # this is a crazy construct but the only way I could 
+            # figure out how to extact the value from the one element set
+            for y in s:
+                y=y
+            unique_sta[x]=y
+    return unique_sta
 def check_for_ambiguous_sta(db,stalist,
                             collection='arrival',
                             verbose=False,
@@ -724,3 +774,107 @@ def check_for_ambiguous_sta(db,stalist,
             if(nsta>0):
                 need_checking.append(tuple([sta,nsta]))
     return need_checking
+
+def set_arrival_by_time_interval(db,sta=None,allowed_overlap=86401.0,verbose=False):
+  """
+  Sets the net code in an arrival collection for occurrences of a specified
+  station code using the net code for a given time interval defined in the
+  site collection.   This function only works reliably if the time intervals
+  of the duplicate station names do overlap in time.  The type example this
+  function is useful is station adoption by other networks of TA net code
+  station.  Those stations typically change nothing except the network
+  code at some specific time, although often the channel configuration also
+  changes (e.g. many N4 sites turned on 100 sps data as H channels).
+
+  This function is a bit like a related function called set_netcode_time_interval
+  but here the site time intervals for a specified sta field are used.
+  set_netcode_time_interval is brutal and will blindly set all matching
+  sta in an optional time range to a specified value.   This function is
+  preferable when the site collection has an unambiguous net defined by
+  time invervals that do not overlap.  
+
+  The function will throw an exception and do nothing if the time intervals
+  returned by the match to sta overlap.
+
+  :param db:  mspasspy.db.Database handle (requires arrival and site collections)
+  :param sta: station code in arrival to be updated.
+  :param allowed_overlap:   There are lots of errors in stationxml files
+    that cause bogus one day overlap.  This defaults to 1 day but 
+    it can be set larger or smaller.
+  :param verbose:  if true prints a bunch a few messages. Silent (default) otherwise
+  :return: count of number of documents updated.
+  """
+  if sta==None:
+      raise MsPASSError('Missing required parameter sta=station code to repair','Fatal')
+  dbarr=db.arrival
+  dbsite=db.site
+  query={'sta':sta}
+  curs=dbsite.find(query).sort('starttime',1)
+  # First make sure we don't have any overlapping time periods
+  n=0
+  for doc in curs:
+      if n==0:
+          lastend=doc['endtime']
+          lastnet=doc['net']
+      else:
+          stime=doc['starttime']
+          if stime+allowed_overlap < lastend:
+              net=doc['net']
+              message='Overlapping time intervals found in site. \n '
+              message += 'Record 1 has net={lnet} and endtime {etime}\n'
+              message += 'Record 2 has net={net} and starttime {stime}'
+              message=message.format(lnet=lastnet,net=net,
+                    etime=str(UTCDateTime(lastend)),
+                    stime=str(UTCDateTime(stime)))
+              raise MsPASSError(message,'Fatal')
+          lastend=doc['endtime']
+          lastnet=doc['net']
+      n+=1     
+  curs.rewind()
+  for doc in curs:
+    net=doc['net']
+    arquerry=dict()
+    arquerry['sta']=sta
+    arquerry['time']={'$gte': doc['starttime'], '$lte' : doc['endtime']  } 
+    if verbose:
+            print('Setting net=',net,' for time interval=',
+               UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))
+            nset=dbarr.count_documents(arquerry)
+            print('Setting net code to ',net,' in ',nset,' documents')
+    arcursor=dbarr.find(query)
+    for ardoc in arcursor:
+      #print(ardoc['sta'],UTCDateTime(ardoc['time']))
+      id=ardoc['_id']
+      dbarr.update_one(
+             {'_id':id},
+             {'$set' : {'net':net}}
+           )
+def force_net(db,sta=None,net=None):
+    """
+    Forces all entries in arrival collection matching input station code 
+    sta to input value of parameter net.  This is the most brute force
+    solution to set a net code, but is often the right tool.  Kind of 
+    like every toolbox needs a hammer.
+    
+    :param db:  Database handle (function hits only arrival collection)
+    :param sta:  station to set
+    :param net:  network code to set sta entries to
+    
+    :return:  number or documents set.
+
+    """
+    if sta==None or net==None:
+        raise MsPASSError("force_net (usage error):  missing required sta and net argument",
+                          "Fatal")
+    dbarr=db.arrival
+    query={'sta':sta}
+    curs=dbarr.find(query)
+    n=0
+    for doc in curs:
+        oid=doc['_id']
+        dbarr.update_one(
+            {'_id' : oid},
+            {'$set' : {'net' : net}}
+        )
+        n+=1
+    return n
