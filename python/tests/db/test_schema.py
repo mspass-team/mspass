@@ -52,9 +52,11 @@ class TestSchema():
         assert self.dbschema.wf_TimeSeries.type('test') == bool
         assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1']
 
-    def test_add_alias(self):
+    def test_add_remove_alias(self):
         self.dbschema.wf_TimeSeries.add_alias('test', 'test2')
         assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1', 'test2']
+        self.dbschema.wf_TimeSeries.remove_alias('test2')
+        assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1']
 
     def test_aliaes(self):
         assert self.dbschema.wf_TimeSeries.aliases('_id') is None
@@ -140,9 +142,13 @@ class TestSchema():
         assert self.mdschema.TimeSeries.collection('_id') == 'dummy'
         assert self.mdschema.TimeSeries.collection('calib') == 'dummy'
 
-        self.mdschema.TimeSeries.swap_collection('dummy', 'wf_TimeSeries')
+        alias = self.mdschema.TimeSeries.aliases('npts').copy()
+        for k in alias:
+            self.mdschema.TimeSeries.remove_alias(k)
+        self.mdschema.TimeSeries.swap_collection('dummy', 'wf_TimeSeries', self.dbschema)
         assert self.mdschema.TimeSeries.collection('_id') == 'wf_TimeSeries'
         assert self.mdschema.TimeSeries.collection('calib') == 'wf_TimeSeries'
+        assert self.mdschema.TimeSeries.aliases('npts') == alias
 
     def test_MDSchemaDefinition_readonly(self):
         assert self.mdschema.TimeSeries.readonly('net')
