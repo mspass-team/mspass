@@ -31,7 +31,7 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
-def read_distributed_data(client_arg, db_name, cursors, object_type, load_history=True, exclude_keys=[],
+def read_distributed_data(client_arg, db_name, cursors, load_history=True, include_undefined=False, exclude_keys=[], collection='wf',
                           format='spark', spark_context=None):
     """
      This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
@@ -43,9 +43,11 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
     :param object_type: either "TimeSeries" or "Seismogram"
     :type object_type: :class:`str`
-    :param load_history: `True` to load object-level history into mspasspy objects.
+    :param load_history: `True` to load object-level history into the mspasspy object.
+    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
     :param exclude_keys: the metadata attributes you want to exclude from being read.
     :type exclude_keys: a :class:`list` of :class:`str`
+    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
     :param format: "spark" or "dask".
     :type format: :class:`str`
     :param spark_context: user specified spark context.
@@ -54,15 +56,15 @@ def read_distributed_data(client_arg, db_name, cursors, object_type, load_histor
     """
     if format == 'spark':
         list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], load_history, include_undefined, exclude_keys, collection))
     elif format == 'dask':
         list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], object_type, load_history, exclude_keys))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], load_history, include_undefined, exclude_keys, collection))
     else:
         raise TypeError("Only spark and dask are supported")
 
 
-def _read_distributed_data(client_arg, db_name, id, object_type, load_history=True, exclude_keys=[]):
+def _read_distributed_data(client_arg, db_name, id, load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
     """
      A helper method used in the distributed map operation. It creates a mongodb connection with provided
      configurations, reads data from the database, constructs a mspasspy object and returns it.
@@ -71,17 +73,17 @@ def _read_distributed_data(client_arg, db_name, id, object_type, load_history=Tr
     :param db_name: the database name in mongodb.
     :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb
     :type id: :class:'bson.objectid.ObjectId'.
-    :param object_type: either "TimeSeries" or "Seismogram".
-    :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into the mspasspy object.
+    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
     :param exclude_keys: the metadata attributes you want to exclude from being read.
     :type exclude_keys: a :class:`list` of :class:`str`
+    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
     :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
     """
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
-    return db.read_data(id, object_type, load_history, exclude_keys)
+    return db.read_data(id, load_history, include_undefined, exclude_keys, collection)
 
 
 class Database(pymongo.database.Database):
@@ -129,32 +131,38 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, object_type='TimeSeries', load_history=True, exclude_keys=[], collection=None):
+    def read_data(self, object_id, load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
         """
         Reads and returns the mspasspy object stored in the database.
 
         :param object_id: mongodb "_id" of the mspasspy object.
         :type object_id: :class:`bson.objectid.ObjectId`
-        :param object_type: either "TimeSeries" or "Seismogram".
-        :type object_type: :class:`str`
         :param load_history: `True` to load object-level history into the mspasspy object.
+        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being read.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.
+        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         """
-        if object_type not in ['TimeSeries', 'Seismogram']:
-            raise KeyError("only TimeSeries and Seismogram are supported")
-        # todo support miniseed, hdf5
+        wf_collection = self.database_schema.default_name(collection)
+        object_type = self.database_schema[wf_collection].data_type()
 
-        schema = self.metadata_schema
-        if object_type == 'TimeSeries':
-            read_metadata_schema = schema.TimeSeries
-        else:
-            read_metadata_schema = schema.Seismogram
+        if object_type not in [TimeSeries, Seismogram]:
+            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
+                object_type, wf_collection), 'Fatal')
 
-        # use _id to get the collection this object belongs to
-        wf_collection = read_metadata_schema.collection('_id') if not collection else collection
+        # This assumes the name of a metadata schema matches the data type it defines. 
+        read_metadata_schema = self.metadata_schema[object_type.__name__]
+
+        # We temporarily swap the main collection defined by the metadata schema by 
+        # the wf_collection. This ensures the method works consistently for any
+        # user-specified collection argument.
+        metadata_schema_collection = read_metadata_schema.collection('_id')
+        if metadata_schema_collection != wf_collection:
+            temp_metadata_schema = copy.deepcopy(self.metadata_schema)
+            temp_metadata_schema[object_type.__name__].swap_collection(
+                metadata_schema_collection, wf_collection, self.database_schema)
+            read_metadata_schema = temp_metadata_schema[object_type.__name__]
 
         col = self[wf_collection]
         object_doc = col.find_one({'_id': object_id})
@@ -164,7 +172,13 @@ class Database(pymongo.database.Database):
         # 1. build metadata as dict
         md = Metadata()
         for k in object_doc:
-            if k not in exclude_keys and read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
+            if k in exclude_keys:
+                continue
+            # FIXME: note that we do not check whether the attributes' type in the database matches the schema's definition.
+            # This may or may not be correct. Should test in practice and get user feedbacks.
+            if read_metadata_schema.is_defined(k) and not read_metadata_schema.is_alias(k):
+                md[k] = object_doc[k]
+            elif include_undefined:
                 md[k] = object_doc[k]
 
         # build a set of collection to read in normalized attributes
@@ -189,9 +203,11 @@ class Database(pymongo.database.Database):
                 if not isinstance(md[k], read_metadata_schema.type(k)):
                     raise TypeError('{} has type {}, forbidden by definition'.format(k, type(md[k])))
 
-        if object_type == 'TimeSeries':
+        if object_type is TimeSeries:
             # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
+            # FIXME: if npts is in the exclude list or not in the schema, the following won't work.
+            # May need to consider adding a "required" key to the metadata schema to avoid invalid combination.
             mspass_object.npts = object_doc['npts']
         else:
             mspass_object = Seismogram(_CoreSeismogram(md, False))
@@ -216,7 +232,7 @@ class Database(pymongo.database.Database):
         mspass_object.clear_modified()
         return mspass_object
 
-    def save_data(self, mspass_object, storage_mode='gridfs', include_undefined=False, dfile=None, dir=None,
+    def save_data(self, mspass_object, storage_mode='gridfs', dfile=None, dir=None, include_undefined=False,
                   exclude_keys=[], collection=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
@@ -226,11 +242,11 @@ class Database(pymongo.database.Database):
         :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
             the object in a binary file, which requires `dfile` and `dir`.
         :type storage_mode: :class:`str`
-        :param include_undefined: `True` to also save the metadata attributes not defined in the schema.
         :param dfile: file name if using "file" storage mode.
         :type dfile: :class:`str`
         :param dir: file directory if using "file" storage mode.
         :type dir: :class:`str`
+        :param include_undefined: `True` to also save the metadata attributes not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
@@ -405,35 +421,34 @@ class Database(pymongo.database.Database):
                 sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
             self._save_elog(mspass_object)
 
-
-    def read_ensemble_data(self, objectid_list, ensemble_type='TimeSeriesEnsemble', load_history=True, exclude_keys=[]):
+    def read_ensemble_data(self, objectid_list, load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
         """
         Reads and returns the mspasspy ensemble object stored in the database.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`, where each belongs to a mspasspy object.
-        :param ensemble_type: either "TimeSeriesEnsemble" or "SeismogramEnsemble". This implies all of mspasspy objects
-            required should either all be :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
-            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
-        :type ensemble_type: :class:`str`
-        :param load_history: `True` to also update the metadata attributes not defined in the schema.
+        :param load_history: `True` to load object-level history into the mspasspy object.
+        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being read.
         :type exclude_keys: a :class:`list` of :class:`str`
+        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         """
-        if ensemble_type not in ['TimeSeriesEnsemble', 'SeismogramEnsemble']:
-            raise KeyError("only TimeSeriesEnsemble and SeismogramEnsemble are supported")
+        wf_collection = self.database_schema.default_name(collection)
+        object_type = self.database_schema[wf_collection].data_type()
 
-        object_type = 'TimeSeries'
-        if ensemble_type == 'TimeSeriesEnsemble':
+        if object_type not in [TimeSeries, Seismogram]:
+            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
+                object_type, wf_collection), 'Fatal')
+
+        if object_type is TimeSeries:
             ensemble = TimeSeriesEnsemble(len(objectid_list))
         else:
-            object_type = 'Seismogram'
             ensemble = SeismogramEnsemble(len(objectid_list))
 
-        for i in range(len(objectid_list)):
+        for i in objectid_list:
             ensemble.member.append(self.read_data(
-                objectid_list[i], object_type, load_history, exclude_keys))
+                i, load_history, include_undefined, exclude_keys, wf_collection))
 
         return ensemble
 
@@ -467,8 +482,8 @@ class Database(pymongo.database.Database):
             j = 0
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
-                    self.save_data(ensemble_object.member[i], storage_mode, include_undefined, dfile_list[j],
-                                   dir_list[j], exclude_keys, collection)
+                    self.save_data(ensemble_object.member[i], storage_mode, dfile_list[j],
+                                   dir_list[j], include_undefined, exclude_keys, collection)
                     j += 1
         elif storage_mode == "url":
             pass
