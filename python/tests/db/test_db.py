@@ -228,18 +228,17 @@ class TestDatabase():
     def test_save_read_data(self):
         # new object
         # read data
-        with pytest.raises(KeyError, match='only TimeSeries and Seismogram are supported'):
-            seis2 = self.db.read_data(ObjectId(), 'wrong')
 
-        seis2 = self.db.read_data(ObjectId(), 'Seismogram')
+        seis2 = self.db.read_data(ObjectId())
         assert not seis2
 
         seis = copy.deepcopy(self.test_seis)
         logging_helper.info(seis, 'deepcopy', '1')
 
         self.db.save_data(seis, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
-        seis2 = self.db.read_data(seis['_id'], 'Seismogram')
-        seis3 = self.db.read_data(seis['_id'], 'Seismogram', exclude_keys=[
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
+        seis2 = self.db.read_data(seis['_id'])
+        seis3 = self.db.read_data(seis['_id'], exclude_keys=[
                                   '_id', 'channel_id', 'source_depth'])
         
         # test for read exclude
@@ -280,7 +279,8 @@ class TestDatabase():
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
         self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
-        ts2 = self.db.read_data(ts['_id'], 'TimeSeries')
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
+        ts2 = self.db.read_data(ts['_id'])
         for key in wf_keys:
             if key in ts:
                 assert ts[key] == ts2[key]
@@ -325,7 +325,8 @@ class TestDatabase():
         # file
         self.db.save_data(seis, storage_mode='file', dir='./python/tests/data/', dfile='test_db_output',
                           include_undefined=True, exclude_keys=['extra2'])
-        seis2 = self.db.read_data(seis['_id'], 'Seismogram')
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
+        seis2 = self.db.read_data(seis['_id'])
         res = self.db['wf_Seismogram'].find_one({'_id': seis['_id']})
         assert res['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
@@ -466,17 +467,18 @@ class TestDatabase():
         dfile_list = ['test_db_output', 'test_db_output']
         dir_list = ['python/tests/data/', 'python/tests/data/']
         self.db.save_ensemble_data(ts_ensemble, 'file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
-        res = self.db.read_data(ts_ensemble.member[0]['_id'], 'TimeSeries')
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
+        res = self.db.read_data(ts_ensemble.member[0]['_id'])
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(ts_ensemble.member[2]['_id'], 'TimeSeries')
+        res = self.db.read_data(ts_ensemble.member[2]['_id'])
         assert np.isclose(ts_ensemble.member[2].data, res.data).all()
         assert '_id' not in ts_ensemble.member[1]
 
         self.db.save_ensemble_data(ts_ensemble, 'gridfs', exclude_objects=[1])
-        res = self.db.read_data(ts_ensemble.member[0]['_id'], 'TimeSeries')
+        res = self.db.read_data(ts_ensemble.member[0]['_id'])
         assert np.isclose(ts_ensemble.member[0].data, res.data).all()
         assert '_id' not in ts_ensemble.member[1]
-        res = self.db.read_data(ts_ensemble.member[2]['_id'], 'TimeSeries')
+        res = self.db.read_data(ts_ensemble.member[2]['_id'])
         assert np.isclose(ts_ensemble.member[2].data, res.data).all()
 
         # using seismogram
@@ -491,23 +493,21 @@ class TestDatabase():
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
         self.db.save_ensemble_data(seis_ensemble, 'file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
-        res = self.db.read_data(seis_ensemble.member[0]['_id'], 'Seismogram')
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
+        res = self.db.read_data(seis_ensemble.member[0]['_id'])
         assert np.isclose(seis_ensemble.member[0].data, res.data).all()
-        res = self.db.read_data(seis_ensemble.member[2]['_id'], 'Seismogram')
+        res = self.db.read_data(seis_ensemble.member[2]['_id'])
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
         assert '_id' not in seis_ensemble.member[1]
 
         self.db.save_ensemble_data(seis_ensemble, 'gridfs', exclude_objects=[1])
-        res = self.db.read_data(seis_ensemble.member[0]['_id'], 'Seismogram')
+        res = self.db.read_data(seis_ensemble.member[0]['_id'])
         assert np.isclose(seis_ensemble.member[0].data, res.data).all()
         assert '_id' not in seis_ensemble.member[1]
-        res = self.db.read_data(seis_ensemble.member[2]['_id'], 'Seismogram')
+        res = self.db.read_data(seis_ensemble.member[2]['_id'])
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
 
     def test_read_ensemble_data(self):
-        with pytest.raises(KeyError, match='only TimeSeriesEnsemble and SeismogramEnsemble are supported'):
-            self.db.read_ensemble_data([], 'other_collection', )
-
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
@@ -518,9 +518,10 @@ class TestDatabase():
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         self.db.save_ensemble_data(ts_ensemble, 'gridfs')
         res = self.db.read_ensemble_data([ts_ensemble.member[0]['_id'], ts_ensemble.member[1]['_id'],
-                                          ts_ensemble.member[2]['_id']], 'TimeSeriesEnsemble')
+                                          ts_ensemble.member[2]['_id']])
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
@@ -536,9 +537,10 @@ class TestDatabase():
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
         self.db.save_ensemble_data(seis_ensemble, 'gridfs')
         res = self.db.read_ensemble_data([seis_ensemble.member[0]['_id'], seis_ensemble.member[1]['_id'],
-                                          seis_ensemble.member[2]['_id']], 'SeismogramEnsemble')
+                                          seis_ensemble.member[2]['_id']])
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
@@ -589,7 +591,7 @@ def test_read_distributed_data(spark_context):
     ts_list_rdd.foreach(lambda d, database=db: database.save_data(d, 'gridfs'))
     cursors = db['wf_TimeSeries'].find({})
 
-    spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'TimeSeries', spark_context=spark_context)
+    spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, collection='wf_TimeSeries', spark_context=spark_context)
     list = spark_list.collect()
     assert len(list) == 3
     for l in list:
@@ -637,7 +639,7 @@ def test_read_distributed_data_dask():
     ts_list_dbg.map(db.save_data, 'gridfs').compute()
     cursors = db['wf_TimeSeries'].find({})
 
-    dask_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, 'TimeSeries', format='dask')
+    dask_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, collection='wf_TimeSeries', format='dask')
     list = dask_list.compute()
     assert len(list) == 3
     for l in list:
