@@ -122,7 +122,9 @@ def load_css30_sources(db,srcdict,collection='source',
                 { '$set' : {'source_id' : str(srcoid)}})
         count += 1
     return count
-def set_source_id_from_evid(db,collection='arrival',use_immortal_cursor=False):
+def set_source_id_from_evid(db,collection='arrival',
+                            use_immortal_cursor=False,
+                            update_all=False):
     """
     Sets source_id in arrivals by matching evid attributes in the
     source collection.   The concept here is that source_id is the
@@ -141,6 +143,11 @@ def set_source_id_from_evid(db,collection='arrival',use_immortal_cursor=False):
     :param use_immortal_cursor:  If true the cursor in the update is made
       "immortal" meaning it won't time out.  This may be necessary if the
       arrival collection is large.
+    :param update_all:  if true the function will force cross referencing and 
+      setting every document in arrival.  The default (False) updates only 
+      documents where the source_id is not yet set.  The default behavior, 
+      for example, would be the norm when new arrival data is added to a 
+      database and need that indexing. 
     :return: tuple of results with mixed content.  0 and 1 are integers
       defining number of documents processed and the number altered
       respectively.   2 is a dict keyed by evid with a value equal to the
@@ -152,10 +159,14 @@ def set_source_id_from_evid(db,collection='arrival',use_immortal_cursor=False):
     """
     dbarr=db[collection]
     dbsrc=db['source']
-    if use_immortal_cursor:
-        alldocs=dbarr.find({},no_cursor_timeout = True)
+    if update_all:
+        query={}
     else:
-        alldocs=dbarr.find({})
+        query={'source_id' : None}
+    if use_immortal_cursor:
+        alldocs=dbarr.find(query,no_cursor_timeout = True)
+    else:
+        alldocs=dbarr.find(query)
     number_arrivals=0
     number_set=0
     evid_set=dict()
@@ -616,10 +627,10 @@ def set_netcode_time_interval(db,sta=None,net=None,collection='arrival',
         print(query)
     else:
         count=0
-	if use_immortal_cursor:
-          curs=dbarr.find(query,no_cursor_timeout = True)
-	else:
-          curs=dbarr.find(query)
+    if use_immortal_cursor:
+        curs=dbarr.find(query,no_cursor_timeout = True)
+    else:
+        curs=dbarr.find(query)
         for doc in curs:
             if 'net' in doc:
                 print(basemessage+'WARNING found document with net code set to ',doc['net'])
