@@ -144,7 +144,10 @@ class Database(pymongo.database.Database):
         :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         """
-        wf_collection = self.database_schema.default_name(collection)
+        try:
+            wf_collection = self.database_schema.default_name(collection)
+        except MsPASSError as err:
+            raise MsPASSError('collection {} is not defined in database schema'.format(collection), 'Invalid') from err
         object_type = self.database_schema[wf_collection].data_type()
 
         if object_type not in [TimeSeries, Seismogram]:
@@ -249,7 +252,7 @@ class Database(pymongo.database.Database):
         :param include_undefined: `True` to also save the metadata attributes not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -333,7 +336,7 @@ class Database(pymongo.database.Database):
         :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -471,7 +474,7 @@ class Database(pymongo.database.Database):
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
         :type exclude_objects: :class:`list`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
         """
         if not dfile_list:
             dfile_list = [None for _ in range(len(ensemble_object.member))]
@@ -505,48 +508,50 @@ class Database(pymongo.database.Database):
         :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to
         exclude from being saved. The index starts at 0.
         :type exclude_objects: :class:`list`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata
         schema.
         """
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], include_undefined, exclude_keys, collection)
 
-    def detele_wf(self, object_id, object_type, collection=None):
-        """
-        Delete a mspasspy object.
+    # TODO: delete_wf needs to be reimplemented. Probably it should delete the corresponding history, elog and gridfs entries
+    #       of wf record. But, such a thorough delete seems to be dangerous...
+    # def delete_wf(self, object_id, object_type, collection=None):
+    #     """
+    #     Delete a mspasspy object.
 
-        :param object_id: object id of the object.
-        :type object_id: :class:`bson.objectid.ObjectId`
-        :param object_type: either "TimeSeries" or "Seismogram".
-        :type object_type: :class:`str`
-        :param collection: the name of the collection that the object is stored. If not specified, use the defined name
-                in the schema.
-        """
-        if object_type not in ["TimeSeries", "Seismogram"]:
-            raise TypeError("only TimeSeries and Seismogram are supported")
+    #     :param object_id: object id of the object.
+    #     :type object_id: :class:`bson.objectid.ObjectId`
+    #     :param object_type: either "TimeSeries" or "Seismogram".
+    #     :type object_type: :class:`str`
+    #     :param collection: the name of the collection that the object is stored. If not specified, use the defined name
+    #             in the schema.
+    #     """
+    #     if object_type not in ["TimeSeries", "Seismogram"]:
+    #         raise TypeError("only TimeSeries and Seismogram are supported")
 
-        if not collection:
-            schema = self.metadata_schema
-            if object_type == "TimeSeries":
-                detele_schema = schema.TimeSeries
-            else:
-                detele_schema = schema.Seismogram
+    #     if not collection:
+    #         schema = self.metadata_schema
+    #         if object_type == "TimeSeries":
+    #             detele_schema = schema.TimeSeries
+    #         else:
+    #             detele_schema = schema.Seismogram
 
-            collection = detele_schema.collection('_id') if not collection else collection
+    #         collection = detele_schema.collection('_id') if not collection else collection
 
-        self[collection].delete_one({'_id': object_id})
+    #     self[collection].delete_one({'_id': object_id})
 
-    def delete_gridfs(self, gridfs_id):
-        """
-        Delete a grid document.
+    # def delete_gridfs(self, gridfs_id):
+    #     """
+    #     Delete a grid document.
 
-        :param gridfs_id: id of the document.
-        :type gridfs_id: :class:`bson.objectid.ObjectId`
-        """
-        gfsh = gridfs.GridFS(self)
-        if gfsh.exists(gridfs_id):
-            gfsh.delete(gridfs_id)
+    #     :param gridfs_id: id of the document.
+    #     :type gridfs_id: :class:`bson.objectid.ObjectId`
+    #     """
+    #     gfsh = gridfs.GridFS(self)
+    #     if gfsh.exists(gridfs_id):
+    #         gfsh.delete(gridfs_id)
 
     # TODO: the following is not used when data is read from the database. We need
     #       link these metadata keys with the actual member variables just like the

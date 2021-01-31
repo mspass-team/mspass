@@ -31,6 +31,7 @@ class TestDatabase():
     def setup_class(self):
         client = Client('localhost')
         self.db = Database(client, 'dbtest')
+        self.db2 = Database(client, 'dbtest')
         self.metadata_def = MetadataSchema()
 
         self.test_ts = get_live_timeseries()
@@ -345,32 +346,48 @@ class TestDatabase():
         elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': seis['_id'], 'gravestone': {'$exists': True}})
         assert elog_doc['gravestone'] == dict(seis)
 
-    def test_detele_wf(self):
-        id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
-        res = self.db['wf'].find_one({'_id': id})
-        assert res
-        self.db.detele_wf(id, "TimeSeries", 'wf')
-        res = self.db['wf'].find_one({'_id': id})
-        assert not res
+        # save to a different collection
+        seis = copy.deepcopy(self.test_seis)
+        logging_helper.info(seis, 'deepcopy', '1')
+        db_schema = copy.deepcopy(self.db2.database_schema)
+        md_schema = copy.deepcopy(self.db2.metadata_schema)
+        wf_test = copy.deepcopy(self.db2.database_schema.wf_Seismogram)
+        db_schema['wf_test'] = wf_test
+        md_schema.Seismogram.swap_collection('wf_Seismogram', 'wf_test')
+        self.db2.set_database_schema(db_schema)
+        self.db2.set_metadata_schema(md_schema)
+        self.db2.save_data(seis, storage_mode='gridfs', collection='wf_test')
+        seis2 = self.db2.read_data(seis['_id'], collection='wf_test')
+        assert all(a.any() == b.any() for a, b in zip(seis.data, seis2.data))
+        with pytest.raises(MsPASSError, match='is not defined'):
+            self.db2.read_data(seis['_id'], collection='wf_test2')
 
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
-        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
-        assert res
-        self.db.detele_wf(ts['_id'], "TimeSeries")
-        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
-        assert not res
+    # def test_delete_wf(self):
+    #     id = self.db['wf'].insert_one({'test': 'test'}).inserted_id
+    #     res = self.db['wf'].find_one({'_id': id})
+    #     assert res
+    #     self.db.delete_wf(id)
+    #     res = self.db['wf'].find_one({'_id': id})
+    #     assert not res
 
-    def test_delete_gridfs(self):
-        ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
-        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
-        gfsh = gridfs.GridFS(self.db)
-        assert gfsh.exists(res['gridfs_id'])
-        self.db.delete_gridfs(res['gridfs_id'])
-        assert not gfsh.exists(res['gridfs_id'])
+    #     ts = copy.deepcopy(self.test_ts)
+    #     logging_helper.info(ts, 'deepcopy', '1')
+    #     self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
+    #     res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+    #     assert res
+    #     self.db.delete_wf(ts['_id'])
+    #     res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+    #     assert not res
+
+    # def test_delete_gridfs(self):
+    #     ts = copy.deepcopy(self.test_ts)
+    #     logging_helper.info(ts, 'deepcopy', '1')
+    #     self.db.save_data(ts, storage_mode='gridfs', include_undefined=True, exclude_keys=['extra2'])
+    #     res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+    #     gfsh = gridfs.GridFS(self.db)
+    #     assert gfsh.exists(res['gridfs_id'])
+    #     self.db.delete_gridfs(res['gridfs_id'])
+    #     assert not gfsh.exists(res['gridfs_id'])
 
     def test_update_ensemble_metadata(self):
         ts1 = copy.deepcopy(self.test_ts)
