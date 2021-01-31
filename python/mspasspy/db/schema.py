@@ -262,6 +262,7 @@ class DatabaseSchema(SchemaBase):
         if not isinstance(value, DBSchemaDefinition):
             raise MsPASSError('value is not a DBSchemaDefinition', 'Invalid')
         setattr(self, key, value)
+        self._default_dic[key] = key
 
     def default(self, name):
         """
