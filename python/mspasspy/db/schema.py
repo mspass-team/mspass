@@ -100,8 +100,44 @@ class SchemaDefinitionBase:
         """
         return None if 'aliases' not in self._main_dic[key] else self._main_dic[key]['aliases']
 
-    # TODO def apply_aliases
+    def apply_aliases(self, md, alias):
+        """
+        Apply a set of aliases to a data object.
 
+        This method will change the unique keys of a data object into aliases. 
+        The alias argument can either be a path to a valid yaml file of 
+        key:alias pairs or a dict. If the "key" is an alias itself, it will
+        be converted to its corresponding unique name before being used to 
+        change to the alias. It will also add the applied alias to the schema's
+        internal alias container such that the same schema object can be used
+        to convert the alias back.
+
+        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`
+            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.
+        :type md: class:`mspasspy.ccore.utility.Metadata`
+        :param alias: a yaml file or a dict that have pairs of key:alias
+        :type alias: dict/str
+
+        """
+        alias_dic = alias
+        if isinstance(alias, str) and os.path.isfile(alias):
+            try:
+                with open(alias, 'r') as stream:
+                    alias_dic = yaml.safe_load(stream)
+            except yaml.YAMLError as e:
+                raise MsPASSError(
+                    'Cannot parse alias definition file: ' + alias, 'Fatal') from e
+            except EnvironmentError as e:
+                raise MsPASSError(
+                    'Cannot open alias definition file: ' + alias, 'Fatal') from e
+        if isinstance(alias_dic, dict):
+            for k, a in alias.items():
+                unique_k = self.unique_name(k)
+                self.add_alias(unique_k, a)
+                md.change_key(unique_k, a)
+        else:
+            raise MsPASSError('The alias argument of type {} is not recognized, it should be either a {} or a {}'.format(type(alias), str, dict), 'Fatal')
+                
     def clear_aliases(self, md):
         """
         Restore any aliases to unique names.
