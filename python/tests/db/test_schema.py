@@ -61,6 +61,19 @@ class TestSchema():
     def test_aliaes(self):
         assert self.dbschema.wf_TimeSeries.aliases('_id') is None
 
+    def test_apply_aliases(self):
+        ss = Seismogram()
+        alias_dic = {'delta': 'd', 'npts': 'n', 'starttime': 's'}
+        self.mdschema.Seismogram.apply_aliases(ss, alias_dic)
+        assert not ss.is_defined('delta')
+        assert not ss.is_defined('npts')
+        assert not ss.is_defined('starttime')
+        assert ss.is_defined('d')
+        assert ss.is_defined('n')
+        assert ss.is_defined('s')
+        with pytest.raises(MsPASSError, match='is not recognized'):
+            self.mdschema.Seismogram.apply_aliases(ss, 123)
+
     def test_clear_aliases(self):
         ss = Seismogram()
         ss.erase('starttime')
