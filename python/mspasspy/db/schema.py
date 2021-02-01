@@ -379,15 +379,9 @@ class DatabaseSchema(SchemaBase):
 class DBSchemaDefinition(SchemaDefinitionBase):
     def __init__(self, schema_dic, collection_str):
         self._collection_str = collection_str
-        if 'base' in schema_dic[collection_str]:
-            base_def = DBSchemaDefinition(schema_dic, schema_dic[collection_str]['base'])
-            self._main_dic = base_def._main_dic
-            self._alias_dic = base_def._alias_dic
-            self._data_type = base_def._data_type
-        else:
-            self._main_dic = {}
-            self._alias_dic = {}
-            self._data_type = None
+        self._main_dic = {}
+        self._alias_dic = {}
+        self._data_type = None
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'reference' in attr:
@@ -453,13 +447,8 @@ class MetadataSchema(SchemaBase):
 
 class MDSchemaDefinition(SchemaDefinitionBase):
     def __init__(self, schema_dic, collection_str, dbschema):
-        if 'base' in schema_dic[collection_str]:
-            base_def = MDSchemaDefinition(schema_dic, schema_dic[collection_str]['base'], dbschema)
-            self._main_dic = base_def._main_dic
-            self._alias_dic = base_def._alias_dic
-        else:
-            self._main_dic = {}
-            self._alias_dic = {}
+        self._main_dic = {}
+        self._alias_dic = {}
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'collection' in attr:
