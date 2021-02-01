@@ -115,21 +115,23 @@ def load_css30_sources(db,srcdict,collection='source',
     for evid in srcdict:
         rec=srcdict[evid]
         srcoid=dbh.insert_one(rec).inserted_id
-        #get object id from retval and update this record to set source_id to 
+        #get object id from retval and update this record to set source_id to
         # the object_id of this record
         dbh.update_one(
                 {'_id' : srcoid},
                 { '$set' : {'source_id' : str(srcoid)}})
         count += 1
     return count
-def set_source_id_from_evid(db,collection='arrival'):
+def set_source_id_from_evid(db,collection='arrival',
+                            use_immortal_cursor=False,
+                            update_all=False):
     """
     Sets source_id in arrivals by matching evid attributes in the
     source collection.   The concept here is that source_id is the
     unique key in MsPASS but evid is a foreign key defined when
-    importing data from a CSS3.0 database.   The evid key can thus\
-    not be trusted so we override it with a source_id we can
-    guarantee is unique.  This function will only work if the evid
+    importing data from a CSS3.0 database.   The evid key can thus
+    not be trusted so if we override it with a source_id we can
+    guarantee it is unique.  This function will only work if the evid
     attribute is set in documents in the source collection.  Currently
     this can be done with a function called load_css30_sources.
 
@@ -138,6 +140,14 @@ def set_source_id_from_evid(db,collection='arrival'):
       collection that has evid defined could be scanned.  The algorithm
       simply tries to match evid and updates documents it finds with
       the object id of the source record it matches.
+    :param use_immortal_cursor:  If true the cursor in the update is made
+      "immortal" meaning it won't time out.  This may be necessary if the
+      arrival collection is large.
+    :param update_all:  if true the function will force cross referencing and 
+      setting every document in arrival.  The default (False) updates only 
+      documents where the source_id is not yet set.  The default behavior, 
+      for example, would be the norm when new arrival data is added to a 
+      database and need that indexing. 
     :return: tuple of results with mixed content.  0 and 1 are integers
       defining number of documents processed and the number altered
       respectively.   2 is a dict keyed by evid with a value equal to the
@@ -149,7 +159,14 @@ def set_source_id_from_evid(db,collection='arrival'):
     """
     dbarr=db[collection]
     dbsrc=db['source']
-    alldocs=dbarr.find({})
+    if update_all:
+        query={}
+    else:
+        query={'source_id' : None}
+    if use_immortal_cursor:
+        alldocs=dbarr.find(query,no_cursor_timeout = True)
+    else:
+        alldocs=dbarr.find(query)
     number_arrivals=0
     number_set=0
     evid_set=dict()
@@ -277,7 +294,8 @@ def make_css30_composite_sta(sta,net):
         # better to preserve the pieces this way until proven otherwise.
         s=sta+net
     return s
-def set_netcode_snetsta(db,staindex,collection='arrival'):
+def set_netcode_snetsta(db,staindex,collection='arrival',
+                                 use_immortal_cursor=False):
     """
     Takes the dict staindex that defines how snetsta defines seed codes for
     antelope tables and updates a specified collection to add net code and,
@@ -349,6 +367,9 @@ def set_netcode_snetsta(db,staindex,collection='arrival'):
       expects to find in an arrivals document.  the dict value is a dict with two keys: fsta and net.
       net is the seed network code and fsta is the expected seed station code.  Updates replace the sta
       field in arrivals with the fsta values and put the original sta value in arrival_sta.
+    :param use_immortal_cursor:  If true the cursor in the update is made
+      "immortal" meaning it won't time out.  This may be necessary if the
+      arrival collection is large.
     :param collection:  MongoDB collection to scan to apply snetsta correction.
       (default is arrival)
 
@@ -368,7 +389,10 @@ def set_netcode_snetsta(db,staindex,collection='arrival'):
     sta_not_found=set()
     # not quite sure how mongo handles this with a large collection.  We may need to define
     # chunks to be processed.
-    dbcursor=col.find({})
+    if use_immortal_cursor:
+      dbcursor=col.find({},no_cursor_timeout = True)
+    else:
+      dbcursor=col.find({})
     for doc in dbcursor:
         doc_needs_update=True
         nprocessed += 1
@@ -418,7 +442,8 @@ def set_netcode_snetsta(db,staindex,collection='arrival'):
                 )
             nset += 1
     return tuple([nprocessed,nset,sta_not_found])
-def set_netcode_from_site(db,collection='arrival',time_key=None,stations_to_ignore=None):
+def set_netcode_from_site(db,collection='arrival',time_key=None,
+  use_immortal_cursor=False,stations_to_ignore=None):
     """
     This function scans a MongoDB collection that is assumed to contain
     a "sta" for station code to be cross referenced with metadata stored in
@@ -453,6 +478,9 @@ def set_netcode_from_site(db,collection='arrival',time_key=None,stations_to_igno
       used to match any site's operational starttime to endtime time window.
       Default is None which turns off that selection.  Ambiguous keys may
       be reduce in large datasets by using a time key.
+    :param use_immortal_cursor:  If true the cursor in the update is made
+      "immortal" meaning it won't time out.  This may be necessary if the
+      arrival collection is large.
     :param stations_to_ignore: is expected to be a set container listing
       any station codes to be ignored in processing.   This can be used to
       reduce processing overhead or handle sites where net is null and
@@ -480,7 +508,10 @@ def set_netcode_from_site(db,collection='arrival',time_key=None,stations_to_igno
     updaterec={}
     nprocessed=0
     nupdates=0
-    dbcursor=dbh.find({})
+    if use_immortal_cursor:
+      dbcursor=dbh.find({},no_cursor_timeout = True)
+    else:
+      dbcursor=dbh.find({})
     for doc in dbcursor:
         nprocessed += 1
         id=doc['_id']
@@ -532,7 +563,8 @@ def set_netcode_from_site(db,collection='arrival',time_key=None,stations_to_igno
             not_found_set.add(sta)
     return [nprocessed,nupdates,ambiguous_sta,not_found_set]
 def set_netcode_time_interval(db,sta=None,net=None,collection='arrival',
-                    starttime=None,endtime=None,time_filter_key='time'):
+                    starttime=None,endtime=None,
+		    time_filter_key='time',use_immortal_cursor=False):
     """
     Forces setting net code for data with a given station code within a
     specified time interval.
@@ -562,6 +594,12 @@ def set_netcode_time_interval(db,sta=None,net=None,collection='arrival',
     :param endtime:  end of time period for (optional) time selection.
       (default is off) Note a MsPASSError will be thrown if endtime is not
       defined by starttime is or vice versa.  Must be a UTCDateTime object
+    :param time_filter_key:  key used to access document entry to use 
+      for time range test (startime<=time<=endtime).
+    :param use_immortal_cursor:  If true the cursor in the update is made
+      "immortal" meaning it won't time out.  This may be necessary if the
+      arrival collection is large.
+
     :return: number of documents updated.
     """
 
@@ -589,6 +627,9 @@ def set_netcode_time_interval(db,sta=None,net=None,collection='arrival',
         print(query)
     else:
         count=0
+    if use_immortal_cursor:
+        curs=dbarr.find(query,no_cursor_timeout = True)
+    else:
         curs=dbarr.find(query)
         for doc in curs:
             if 'net' in doc:
@@ -674,6 +715,56 @@ def find_duplicate_sta(db,collection='site'):
         if len(s)>1:
             trouble_sta[x]=s
     return trouble_sta
+def find_unique_sta(db,collection='site'):
+    """
+    This function is the complement to find_duplicate_sta.  It returns
+    a list of stations with one and only one matching net code.
+    Stations in that list can normally be forced in arrival assuming
+    the arrival data are not disjoint with the station data.
+
+    :param db: mspass Database handle or just a plain MongoDB database
+      handle.  (mspass Database is a child of MongoDBs top level database
+      handle)
+    :param collection:  string defining the collection name to scan
+      (default is site)
+    :return: dict with sta as keys an net as unique net code
+    """
+    dbcol=db[collection]
+    allsta={}
+    curs=dbcol.find()   # we do a brute force scan through the collection
+    for rec in curs:
+        if "net" in rec:
+            net=rec["net"]
+            sta=rec["sta"]
+            if sta in allsta:
+                val=allsta[sta]
+                # note this works only because the set container behaves
+                # like std::set and adds of duplicates do nothing
+                val.add(net)
+                allsta[sta]=val
+            else:
+                stmp=set()
+                stmp.add(net)
+                allsta[sta]=stmp
+        else:
+            sta=rec["sta"]
+            print("find_duplicate_sta (WARNING):  ",collection,
+                  " collection has an undefined net code for station",
+                  sta)
+            print("This is the full document from this collection")
+            print(rec)
+    # Now we have allsta with all unique station names.  We just look
+    # for ones where the size of the set is exactly 1
+    unique_sta={}
+    for x in allsta:
+        s=allsta[x]
+        if len(s)==1:
+            # this is a crazy construct but the only way I could
+            # figure out how to extact the value from the one element set
+            for y in s:
+                y=y
+            unique_sta[x]=y
+    return unique_sta
 def check_for_ambiguous_sta(db,stalist,
                             collection='arrival',
                             verbose=False,
@@ -724,3 +815,114 @@ def check_for_ambiguous_sta(db,stalist,
             if(nsta>0):
                 need_checking.append(tuple([sta,nsta]))
     return need_checking
+
+def set_arrival_by_time_interval(db,sta=None,allowed_overlap=86401.0,
+    use_immortal_cursor=False,verbose=False):
+  """
+  Sets the net code in an arrival collection for occurrences of a specified
+  station code using the net code for a given time interval defined in the
+  site collection.   This function only works reliably if the time intervals
+  of the duplicate station names do overlap in time.  The type example this
+  function is useful is station adoption by other networks of TA net code
+  station.  Those stations typically change nothing except the network
+  code at some specific time, although often the channel configuration also
+  changes (e.g. many N4 sites turned on 100 sps data as H channels).
+
+  This function is a bit like a related function called set_netcode_time_interval
+  but here the site time intervals for a specified sta field are used.
+  set_netcode_time_interval is brutal and will blindly set all matching
+  sta in an optional time range to a specified value.   This function is
+  preferable when the site collection has an unambiguous net defined by
+  time invervals that do not overlap.
+
+  The function will throw an exception and do nothing if the time intervals
+  returned by the match to sta overlap.
+
+  :param db:  mspasspy.db.Database handle (requires arrival and site collections)
+  :param sta: station code in arrival to be updated.
+  :param allowed_overlap:   There are lots of errors in stationxml files
+    that cause bogus one day overlap.  This defaults to 1 day but
+    it can be set larger or smaller.
+  :param use_immortal_cursor:  If true the cursor in the update is made
+    "immortal" meaning it won't time out.  This may be necessary if the
+    arrival collection is large.
+  :param verbose:  if true prints a bunch a few messages. Silent (default) otherwise
+  :return: count of number of documents updated.
+  """
+  if sta==None:
+      raise MsPASSError('Missing required parameter sta=station code to repair','Fatal')
+  dbarr=db.arrival
+  dbsite=db.site
+  query={'sta':sta}
+  if use_immortal_cursor:
+    curs=dbsite.find(query,no_cursor_timeout = True).sort('starttime',1)
+  else:
+    curs=dbsite.find(query).sort('starttime',1)
+  # First make sure we don't have any overlapping time periods
+  n=0
+  for doc in curs:
+      if n==0:
+          lastend=doc['endtime']
+          lastnet=doc['net']
+      else:
+          stime=doc['starttime']
+          if stime+allowed_overlap < lastend:
+              net=doc['net']
+              message='Overlapping time intervals found in site. \n '
+              message += 'Record 1 has net={lnet} and endtime {etime}\n'
+              message += 'Record 2 has net={net} and starttime {stime}'
+              message=message.format(lnet=lastnet,net=net,
+                    etime=str(UTCDateTime(lastend)),
+                    stime=str(UTCDateTime(stime)))
+              raise MsPASSError(message,'Fatal')
+          lastend=doc['endtime']
+          lastnet=doc['net']
+      n+=1
+  curs.rewind()
+  for doc in curs:
+    net=doc['net']
+    arquerry=dict()
+    arquerry['sta']=sta
+    arquerry['time']={'$gte': doc['starttime'], '$lte' : doc['endtime']  }
+    if verbose:
+            print('Setting net=',net,' for time interval=',
+               UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))
+            nset=dbarr.count_documents(arquerry)
+            print('Setting net code to ',net,' in ',nset,' documents')
+    arcursor=dbarr.find(query)
+    for ardoc in arcursor:
+      #print(ardoc['sta'],UTCDateTime(ardoc['time']))
+      id=ardoc['_id']
+      dbarr.update_one(
+             {'_id':id},
+             {'$set' : {'net':net}}
+           )
+def force_net(db,sta=None,net=None):
+    """
+    Forces all entries in arrival collection matching input station code
+    sta to input value of parameter net.  This is the most brute force
+    solution to set a net code, but is often the right tool.  Kind of
+    like every toolbox needs a hammer.
+
+    :param db:  Database handle (function hits only arrival collection)
+    :param sta:  station to set
+    :param net:  network code to set sta entries to
+
+    :return:  number or documents set.
+
+    """
+    if sta==None or net==None:
+        raise MsPASSError("force_net (usage error):  missing required sta and net argument",
+                          "Fatal")
+    dbarr=db.arrival
+    query={'sta':sta}
+    curs=dbarr.find(query)
+    n=0
+    for doc in curs:
+        oid=doc['_id']
+        dbarr.update_one(
+            {'_id' : oid},
+            {'$set' : {'net' : net}}
+        )
+        n+=1
+    return n
