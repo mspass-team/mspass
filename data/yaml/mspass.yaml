@@ -30,6 +30,7 @@
 Database:
   wf_TimeSeries:
     default: wf
+    data_type: TimeSeries
     schema:
       _id:
         type: ObjectID
@@ -106,6 +107,7 @@ Database:
 
   wf_Seismogram:
     base: wf_TimeSeries
+    data_type: Seismogram
     schema:
       tmatrix:
         type: list
