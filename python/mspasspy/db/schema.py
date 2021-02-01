@@ -131,12 +131,12 @@ class SchemaDefinitionBase:
                 raise MsPASSError(
                     'Cannot open alias definition file: ' + alias, 'Fatal') from e
         if isinstance(alias_dic, dict):
-            for k, a in alias.items():
+            for k, a in alias_dic.items():
                 unique_k = self.unique_name(k)
                 self.add_alias(unique_k, a)
                 md.change_key(unique_k, a)
         else:
-            raise MsPASSError('The alias argument of type {} is not recognized, it should be either a {} or a {}'.format(type(alias), str, dict), 'Fatal')
+            raise MsPASSError('The alias argument of type {} is not recognized, it should be either a {} path or a {}'.format(type(alias), str, dict), 'Fatal')
                 
     def clear_aliases(self, md):
         """

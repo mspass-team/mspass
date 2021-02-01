@@ -71,6 +71,20 @@ class TestSchema():
         assert ss.is_defined('d')
         assert ss.is_defined('n')
         assert ss.is_defined('s')
+        assert self.mdschema.Seismogram.unique_name('d') == 'delta'
+        assert self.mdschema.Seismogram.unique_name('n') == 'npts'
+        assert self.mdschema.Seismogram.unique_name('s') == 'starttime'
+        self.mdschema.Seismogram.clear_aliases(ss)
+        assert ss.is_defined('delta')
+        assert ss.is_defined('npts')
+        assert ss.is_defined('starttime')
+        self.mdschema.Seismogram.apply_aliases(ss, 'python/tests/data/alias.yaml')
+        assert not ss.is_defined('delta')
+        assert not ss.is_defined('npts')
+        assert not ss.is_defined('starttime')
+        assert ss.is_defined('dd')
+        assert ss.is_defined('nn')
+        assert ss.is_defined('ss')
         with pytest.raises(MsPASSError, match='is not recognized'):
             self.mdschema.Seismogram.apply_aliases(ss, 123)
 
