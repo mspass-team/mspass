@@ -341,33 +341,6 @@ db=client[‘database_name’]</p>
 <p>where database_name is variable and the name of the database you
 wish to access with this handle.</p>
 <dl class="py method">
-<dt id="mspasspy.db.database.Database.delete_gridfs">
-<code class="sig-name descname">delete_gridfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gridfs_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.delete_gridfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.delete_gridfs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a grid document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>gridfs_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – id of the document.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.db.database.Database.detele_wf">
-<code class="sig-name descname">detele_wf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object_id</span></em>, <em class="sig-param"><span class="n">object_type</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.detele_wf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.detele_wf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete a mspasspy object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – object id of the object.</p></li>
-<li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – either “TimeSeries” or “Seismogram”.</p></li>
-<li><p><strong>collection</strong> – the name of the collection that the object is stored. If not specified, use the defined name
-in the schema.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="mspasspy.db.database.Database.load_event">
 <code class="sig-name descname">load_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a bson record of source data matching the unique id
@@ -478,16 +451,16 @@ as the primary index.</p>
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.read_data">
-<code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object_id</span></em>, <em class="sig-param"><span class="n">object_type</span><span class="o">=</span><span class="default_value">'TimeSeries'</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">object_id</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads and returns the mspasspy object stored in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – mongodb “_id” of the mspasspy object.</p></li>
-<li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – either “TimeSeries” or “Seismogram”.</p></li>
 <li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
+<li><p><strong>include_undefined</strong> – <cite>True</cite> to also read the attributes in the collection that are not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
-<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.</p></li>
+<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -498,17 +471,16 @@ as the primary index.</p>
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.read_ensemble_data">
-<code class="sig-name descname">read_ensemble_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objectid_list</span></em>, <em class="sig-param"><span class="n">ensemble_type</span><span class="o">=</span><span class="default_value">'TimeSeriesEnsemble'</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_ensemble_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">objectid_list</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_ensemble_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_ensemble_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads and returns the mspasspy ensemble object stored in the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>, where each belongs to a mspasspy object.</p></li>
-<li><p><strong>ensemble_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – either “TimeSeriesEnsemble” or “SeismogramEnsemble”. This implies all of mspasspy objects
-required should either all be <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.</p></li>
-<li><p><strong>load_history</strong> – <cite>True</cite> to also update the metadata attributes not defined in the schema.</p></li>
+<li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
+<li><p><strong>include_undefined</strong> – <cite>True</cite> to also read the attributes in the collection that are not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
+<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -545,7 +517,7 @@ will be preformed if duplicates are a major issue.</p>
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.save_data">
-<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -553,11 +525,11 @@ will be preformed if duplicates are a major issue.</p>
 <li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to save.</p></li>
 <li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “gridfs” stores the object in the mongodb grid file system (recommended). “file” stores
 the object in a binary file, which requires <cite>dfile</cite> and <cite>dir</cite>.</p></li>
-<li><p><strong>include_undefined</strong> – <cite>True</cite> to also save the metadata attributes not defined in the schema.</p></li>
 <li><p><strong>dfile</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name if using “file” storage mode.</p></li>
 <li><p><strong>dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file directory if using “file” storage mode.</p></li>
+<li><p><strong>include_undefined</strong> – <cite>True</cite> to also save the metadata attributes not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being stored.</p></li>
-<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the schema.</p></li>
+<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 </ul>
 </dd>
 </dl>
@@ -580,7 +552,7 @@ the object in a binary file, which requires <cite>dfile</cite> and <cite>dir</ci
 <li><p><strong>include_undefined</strong> – <cite>True</cite> to also update the metadata attributes not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being stored.</p></li>
 <li><p><strong>exclude_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</p></li>
-<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the schema.</p></li>
+<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 </ul>
 </dd>
 </dl>
@@ -696,7 +668,7 @@ and metadata attributes.</p>
 </dl>
 <p>exclude from being saved. The index starts at 0.
 :type exclude_objects: <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>
-:param collection: the collection name you want to use. If not specified, use the defined collection in the
+:param collection: the collection name you want to use. If not specified, use the defined collection in the metadata
 schema.</p>
 </dd></dl>
 
@@ -711,7 +683,7 @@ and metadata attributes.</p>
 <li><p><strong>mspass_object</strong> (either <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>) – the object you want to update.</p></li>
 <li><p><strong>include_undefined</strong> – <cite>True</cite> to also update the metadata attributes not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a list of metadata attributes you want to exclude from being updated.</p></li>
-<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the schema.</p></li>
+<li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 </ul>
 </dd>
 </dl>
@@ -721,7 +693,7 @@ and metadata attributes.</p>
 
 <dl class="py function">
 <dt id="mspasspy.db.database.read_distributed_data">
-<code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">read_distributed_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client_arg</span></em>, <em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">cursors</span></em>, <em class="sig-param"><span class="n">object_type</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'spark'</span></em>, <em class="sig-param"><span class="n">spark_context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#read_distributed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.read_distributed_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">read_distributed_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client_arg</span></em>, <em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">cursors</span></em>, <em class="sig-param"><span class="n">load_history</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf'</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'spark'</span></em>, <em class="sig-param"><span class="n">spark_context</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#read_distributed_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.read_distributed_data" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
 manner, and return all of the mspasspy objects using the format required by the distributed computing framework
@@ -734,8 +706,10 @@ manner, and return all of the mspasspy objects using the format required by the 
 <li><p><strong>db_name</strong> – the database name in mongodb.</p></li>
 <li><p><strong>cursors</strong> – mongodb cursors where each corresponds to a stored mspasspy object.</p></li>
 <li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – either “TimeSeries” or “Seismogram”</p></li>
-<li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into mspasspy objects.</p></li>
+<li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
+<li><p><strong>include_undefined</strong> – <cite>True</cite> to also read the attributes in the collection that are not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
+<li><p><strong>collection</strong> – the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</p></li>
 <li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “spark” or “dask”.</p></li>
 <li><p><strong>spark_context</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pyspark.SparkContext</span></code>) – user specified spark context.</p></li>
 </ul>
@@ -755,9 +729,24 @@ manner, and return all of the mspasspy objects using the format required by the 
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.db.schema.</code><code class="sig-name descname">DBSchemaDefinition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">schema_dic</span></em>, <em class="sig-param"><span class="n">collection_str</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#DBSchemaDefinition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.DBSchemaDefinition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mspasspy.db.schema.SchemaDefinitionBase" title="mspasspy.db.schema.SchemaDefinitionBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.schema.SchemaDefinitionBase</span></code></a></p>
 <dl class="py method">
+<dt id="mspasspy.db.schema.DBSchemaDefinition.data_type">
+<code class="sig-name descname">data_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#DBSchemaDefinition.data_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.DBSchemaDefinition.data_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data type that the collection is used to reference. 
+If not recognized, it returns None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>type of data associated with the collection</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>class:<cite>type</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.schema.DBSchemaDefinition.reference">
 <code class="sig-name descname">reference</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#DBSchemaDefinition.reference"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.DBSchemaDefinition.reference" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the collection name that a key is referenced from</p>
+<dd><p>Return the collection name that a key is referenced from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – the name of the key</p>
@@ -903,6 +892,26 @@ infer one from <code class="docutils literal notranslate"><span class="pre">coll
 </dd></dl>
 
 <dl class="py method">
+<dt id="mspasspy.db.schema.MDSchemaDefinition.set_collection">
+<code class="sig-name descname">set_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">collection</span></em>, <em class="sig-param"><span class="n">dbschema</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#MDSchemaDefinition.set_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.MDSchemaDefinition.set_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the collection name that a key belongs to. It optionally takes 
+a dbschema argument and will set the attribute of that key with the
+corresponding one defined in the dbschema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – the name of the key</p></li>
+<li><p><strong>collection</strong> (<em>str</em>) – the name of the collection</p></li>
+<li><p><strong>dbschema</strong> (class:<cite>mspasspy.db.schema.DatabaseSchema</cite>) – the database schema used to set the attributes of the key.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.MsPASSError" title="mspasspy.ccore.utility.MsPASSError"><strong>mspasspy.ccore.utility.MsPASSError</strong></a> – if the key is not defined</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.schema.MDSchemaDefinition.set_readonly">
 <code class="sig-name descname">set_readonly</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#MDSchemaDefinition.set_readonly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.MDSchemaDefinition.set_readonly" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lock an attribute to assure it will not be saved.</p>
@@ -937,6 +946,24 @@ unintended side effects.</p>
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><p><a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.utility.MsPASSError" title="mspasspy.ccore.utility.MsPASSError"><strong>mspasspy.ccore.utility.MsPASSError</strong></a> – if the key is not defined</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.schema.MDSchemaDefinition.swap_collection">
+<code class="sig-name descname">swap_collection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">original_collection</span></em>, <em class="sig-param"><span class="n">new_collection</span></em>, <em class="sig-param"><span class="n">dbschema</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#MDSchemaDefinition.swap_collection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.MDSchemaDefinition.swap_collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swap the collection name of all the keys of a matching colletions. 
+It optionally takes a dbschema argument and will set the attribute 
+of that key with the corresponding one defined in the dbschema. It
+will silently do nothing if no matching collection is defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_collection</strong> (<em>str</em>) – the name of the collection to be swapped</p></li>
+<li><p><strong>new_collection</strong> (<em>str</em>) – the name of the collection to be changed into</p></li>
+<li><p><strong>dbschema</strong> (class:<cite>mspasspy.db.schema.DatabaseSchema</cite>) – the database schema used to set the attributes of the key.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1026,6 +1053,28 @@ Note that the type must be defined.</p></li>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.schema.SchemaDefinitionBase.apply_aliases">
+<code class="sig-name descname">apply_aliases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">md</span></em>, <em class="sig-param"><span class="n">alias</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#SchemaDefinitionBase.apply_aliases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.SchemaDefinitionBase.apply_aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a set of aliases to a data object.</p>
+<p>This method will change the unique keys of a data object into aliases. 
+The alias argument can either be a path to a valid yaml file of 
+key:alias pairs or a dict. If the “key” is an alias itself, it will
+be converted to its corresponding unique name before being used to 
+change to the alias. It will also add the applied alias to the schema’s
+internal alias container such that the same schema object can be used
+to convert the alias back.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> (class:<cite>mspasspy.ccore.utility.Metadata</cite>) – Data object to be altered. Normally a class:<cite>mspasspy.ccore.seismic.Seismogram</cite>
+or class:<cite>mspasspy.ccore.seismic.TimeSeries</cite> but can be a raw class:<cite>mspasspy.ccore.utility.Metadata</cite>.</p></li>
+<li><p><strong>alias</strong> (<em>dict/str</em>) – a yaml file or a dict that have pairs of key:alias</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1152,6 +1201,17 @@ it will yield false if the key is a registered unique name and not an alias.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.schema.SchemaDefinitionBase.remove_alias">
+<code class="sig-name descname">remove_alias</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alias</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/schema.html#SchemaDefinitionBase.remove_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.schema.SchemaDefinitionBase.remove_alias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an alias. Will silently ignore if alias is not found</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alias</strong> (<em>str</em>) – alias to be removed</p>
 </dd>
 </dl>
 </dd></dl>

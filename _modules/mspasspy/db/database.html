@@ -196,7 +196,7 @@
 <span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 
 
-<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.read_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cursors</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span>
+<div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.read_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cursors</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">,</span>
                           <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;spark&#39;</span><span class="p">,</span> <span class="n">spark_context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed</span>
@@ -208,9 +208,11 @@
 <span class="sd">    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.</span>
 <span class="sd">    :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;</span>
 <span class="sd">    :type object_type: :class:`str`</span>
-<span class="sd">    :param load_history: `True` to load object-level history into mspasspy objects.</span>
+<span class="sd">    :param load_history: `True` to load object-level history into the mspasspy object.</span>
+<span class="sd">    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">    :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
 <span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</span>
 <span class="sd">    :param format: &quot;spark&quot; or &quot;dask&quot;.</span>
 <span class="sd">    :type format: :class:`str`</span>
 <span class="sd">    :param spark_context: user specified spark context.</span>
@@ -219,15 +221,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;spark&#39;</span><span class="p">:</span>
         <span class="n">list_</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">cursors</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;dask&#39;</span><span class="p">:</span>
         <span class="n">list_</span> <span class="o">=</span> <span class="n">daskbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">cursors</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only spark and dask are supported&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[]):</span>
+<span class="k">def</span> <span class="nf">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">     A helper method used in the distributed map operation. It creates a mongodb connection with provided</span>
 <span class="sd">     configurations, reads data from the database, constructs a mspasspy object and returns it.</span>
@@ -236,17 +238,17 @@
 <span class="sd">    :param db_name: the database name in mongodb.</span>
 <span class="sd">    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb</span>
 <span class="sd">    :type id: :class:&#39;bson.objectid.ObjectId&#39;.</span>
-<span class="sd">    :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;.</span>
-<span class="sd">    :type object_type: :class:`str`</span>
 <span class="sd">    :param load_history: `True` to load object-level history into the mspasspy object.</span>
+<span class="sd">    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">    :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
 <span class="sd">    :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</span>
 <span class="sd">    :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">client_arg</span><span class="p">)</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Database"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database">[docs]</a><span class="k">class</span> <span class="nc">Database</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">Database</span><span class="p">):</span>
@@ -294,32 +296,41 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">schema</span></div>
 
-<div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="o">=</span><span class="s1">&#39;TimeSeries&#39;</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads and returns the mspasspy object stored in the database.</span>
 
 <span class="sd">        :param object_id: mongodb &quot;_id&quot; of the mspasspy object.</span>
 <span class="sd">        :type object_id: :class:`bson.objectid.ObjectId`</span>
-<span class="sd">        :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;.</span>
-<span class="sd">        :type object_type: :class:`str`</span>
 <span class="sd">        :param load_history: `True` to load object-level history into the mspasspy object.</span>
+<span class="sd">        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
-<span class="sd">        :param collection: the collection name in the database that the object is stored. If not specified, use the defined collection in the schema.</span>
+<span class="sd">        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</span>
 <span class="sd">        :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;TimeSeries&#39;</span><span class="p">,</span> <span class="s1">&#39;Seismogram&#39;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
-        <span class="c1"># todo support miniseed, hdf5</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;collection </span><span class="si">{}</span><span class="s1"> is not defined in database schema&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">collection</span><span class="p">),</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+        <span class="n">object_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span><span class="o">.</span><span class="n">data_type</span><span class="p">()</span>
 
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
-        <span class="k">if</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s1">&#39;TimeSeries&#39;</span><span class="p">:</span>
-            <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;only TimeSeries and Seismogram are supported, but </span><span class="si">{}</span><span class="s1"> is requested. Please check the data_type of </span><span class="si">{}</span><span class="s1"> collection.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">object_type</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
 
-        <span class="c1"># use _id to get the collection this object belongs to</span>
-        <span class="n">wf_collection</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span> <span class="k">else</span> <span class="n">collection</span>
+        <span class="c1"># This assumes the name of a metadata schema matches the data type it defines. </span>
+        <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+
+        <span class="c1"># We temporarily swap the main collection defined by the metadata schema by </span>
+        <span class="c1"># the wf_collection. This ensures the method works consistently for any</span>
+        <span class="c1"># user-specified collection argument.</span>
+        <span class="n">metadata_schema_collection</span> <span class="o">=</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">metadata_schema_collection</span> <span class="o">!=</span> <span class="n">wf_collection</span><span class="p">:</span>
+            <span class="n">temp_metadata_schema</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="p">)</span>
+            <span class="n">temp_metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span><span class="o">.</span><span class="n">swap_collection</span><span class="p">(</span>
+                <span class="n">metadata_schema_collection</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">)</span>
+            <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="n">temp_metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
 
         <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
         <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">})</span>
@@ -329,7 +340,13 @@
         <span class="c1"># 1. build metadata as dict</span>
         <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_keys</span> <span class="ow">and</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_alias</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="c1"># FIXME: note that we do not check whether the attributes&#39; type in the database matches the schema&#39;s definition.</span>
+            <span class="c1"># This may or may not be correct. Should test in practice and get user feedbacks.</span>
+            <span class="k">if</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">is_alias</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">include_undefined</span><span class="p">:</span>
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
         <span class="c1"># build a set of collection to read in normalized attributes</span>
@@ -354,9 +371,11 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">read_metadata_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> has type </span><span class="si">{}</span><span class="s1">, forbidden by definition&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">])))</span>
 
-        <span class="k">if</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s1">&#39;TimeSeries&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
             <span class="c1"># FIXME: This is awkward. Need to revisit when we have proper constructors.</span>
             <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">},</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
+            <span class="c1"># FIXME: if npts is in the exclude list or not in the schema, the following won&#39;t work.</span>
+            <span class="c1"># May need to consider adding a &quot;required&quot; key to the metadata schema to avoid invalid combination.</span>
             <span class="n">mspass_object</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">object_doc</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">Seismogram</span><span class="p">(</span><span class="n">_CoreSeismogram</span><span class="p">(</span><span class="n">md</span><span class="p">,</span> <span class="kc">False</span><span class="p">))</span>
@@ -381,7 +400,7 @@
         <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_modified</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Database.save_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="Database.save_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span><span class="p">,</span> <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                   <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.</span>
@@ -391,14 +410,14 @@
 <span class="sd">        :param storage_mode: &quot;gridfs&quot; stores the object in the mongodb grid file system (recommended). &quot;file&quot; stores</span>
 <span class="sd">            the object in a binary file, which requires `dfile` and `dir`.</span>
 <span class="sd">        :type storage_mode: :class:`str`</span>
-<span class="sd">        :param include_undefined: `True` to also save the metadata attributes not defined in the schema.</span>
 <span class="sd">        :param dfile: file name if using &quot;file&quot; storage mode.</span>
 <span class="sd">        :type dfile: :class:`str`</span>
 <span class="sd">        :param dir: file directory if using &quot;file&quot; storage mode.</span>
 <span class="sd">        :type dir: :class:`str`</span>
+<span class="sd">        :param include_undefined: `True` to also save the metadata attributes not defined in the schema.</span>
 <span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being stored.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
-<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
@@ -482,7 +501,7 @@
 <span class="sd">        :param include_undefined: `True` to also update the metadata attributes not defined in the schema.</span>
 <span class="sd">        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
-<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
@@ -570,35 +589,34 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="s2">&quot;Skipped updating the metadata of a dead object&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="Database.read_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_ensemble_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objectid_list</span><span class="p">,</span> <span class="n">ensemble_type</span><span class="o">=</span><span class="s1">&#39;TimeSeriesEnsemble&#39;</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="Database.read_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_ensemble_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objectid_list</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads and returns the mspasspy ensemble object stored in the database.</span>
 
 <span class="sd">        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`, where each belongs to a mspasspy object.</span>
-<span class="sd">        :param ensemble_type: either &quot;TimeSeriesEnsemble&quot; or &quot;SeismogramEnsemble&quot;. This implies all of mspasspy objects</span>
-<span class="sd">            required should either all be :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or</span>
-<span class="sd">            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.</span>
-<span class="sd">        :type ensemble_type: :class:`str`</span>
-<span class="sd">        :param load_history: `True` to also update the metadata attributes not defined in the schema.</span>
+<span class="sd">        :param load_history: `True` to load object-level history into the mspasspy object.</span>
+<span class="sd">        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.</span>
 <span class="sd">        :return: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or</span>
 <span class="sd">            :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ensemble_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;TimeSeriesEnsemble&#39;</span><span class="p">,</span> <span class="s1">&#39;SeismogramEnsemble&#39;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;only TimeSeriesEnsemble and SeismogramEnsemble are supported&quot;</span><span class="p">)</span>
+        <span class="n">wf_collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="n">collection</span><span class="p">)</span>
+        <span class="n">object_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span><span class="o">.</span><span class="n">data_type</span><span class="p">()</span>
 
-        <span class="n">object_type</span> <span class="o">=</span> <span class="s1">&#39;TimeSeries&#39;</span>
-        <span class="k">if</span> <span class="n">ensemble_type</span> <span class="o">==</span> <span class="s1">&#39;TimeSeriesEnsemble&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;only TimeSeries and Seismogram are supported, but </span><span class="si">{}</span><span class="s1"> is requested. Please check the data_type of </span><span class="si">{}</span><span class="s1"> collection.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">object_type</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
             <span class="n">ensemble</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">object_type</span> <span class="o">=</span> <span class="s1">&#39;Seismogram&#39;</span>
             <span class="n">ensemble</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">objectid_list</span><span class="p">:</span>
             <span class="n">ensemble</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span>
-                <span class="n">objectid_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">))</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">ensemble</span></div>
 
@@ -621,7 +639,7 @@
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
 <span class="sd">        :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</span>
 <span class="sd">        :type exclude_objects: :class:`list`</span>
-<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the schema.</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dfile_list</span><span class="p">:</span>
             <span class="n">dfile_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">))]</span>
@@ -632,8 +650,8 @@
             <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_objects</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">storage_mode</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">dfile_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
-                                   <span class="n">dir_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">storage_mode</span><span class="p">,</span> <span class="n">dfile_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
+                                   <span class="n">dir_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
                     <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;url&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -655,48 +673,50 @@
 <span class="sd">        :param exclude_objects: a list of indexes, where each specifies a object in the ensemble you want to</span>
 <span class="sd">        exclude from being saved. The index starts at 0.</span>
 <span class="sd">        :type exclude_objects: :class:`list`</span>
-<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata</span>
 <span class="sd">        schema.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_objects</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Database.detele_wf"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.detele_wf">[docs]</a>    <span class="k">def</span> <span class="nf">detele_wf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete a mspasspy object.</span>
+    <span class="c1"># TODO: delete_wf needs to be reimplemented. Probably it should delete the corresponding history, elog and gridfs entries</span>
+    <span class="c1">#       of wf record. But, such a thorough delete seems to be dangerous...</span>
+    <span class="c1"># def delete_wf(self, object_id, object_type, collection=None):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Delete a mspasspy object.</span>
 
-<span class="sd">        :param object_id: object id of the object.</span>
-<span class="sd">        :type object_id: :class:`bson.objectid.ObjectId`</span>
-<span class="sd">        :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;.</span>
-<span class="sd">        :type object_type: :class:`str`</span>
-<span class="sd">        :param collection: the name of the collection that the object is stored. If not specified, use the defined name</span>
-<span class="sd">                in the schema.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">,</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
+    <span class="c1">#     :param object_id: object id of the object.</span>
+    <span class="c1">#     :type object_id: :class:`bson.objectid.ObjectId`</span>
+    <span class="c1">#     :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;.</span>
+    <span class="c1">#     :type object_type: :class:`str`</span>
+    <span class="c1">#     :param collection: the name of the collection that the object is stored. If not specified, use the defined name</span>
+    <span class="c1">#             in the schema.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if object_type not in [&quot;TimeSeries&quot;, &quot;Seismogram&quot;]:</span>
+    <span class="c1">#         raise TypeError(&quot;only TimeSeries and Seismogram are supported&quot;)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span><span class="p">:</span>
-            <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
-            <span class="k">if</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
-                <span class="n">detele_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">detele_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+    <span class="c1">#     if not collection:</span>
+    <span class="c1">#         schema = self.metadata_schema</span>
+    <span class="c1">#         if object_type == &quot;TimeSeries&quot;:</span>
+    <span class="c1">#             detele_schema = schema.TimeSeries</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             detele_schema = schema.Seismogram</span>
 
-            <span class="n">collection</span> <span class="o">=</span> <span class="n">detele_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span> <span class="k">else</span> <span class="n">collection</span>
+    <span class="c1">#         collection = detele_schema.collection(&#39;_id&#39;) if not collection else collection</span>
 
-        <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">})</span></div>
+    <span class="c1">#     self[collection].delete_one({&#39;_id&#39;: object_id})</span>
 
-<div class="viewcode-block" id="Database.delete_gridfs"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_gridfs">[docs]</a>    <span class="k">def</span> <span class="nf">delete_gridfs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridfs_id</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete a grid document.</span>
+    <span class="c1"># def delete_gridfs(self, gridfs_id):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Delete a grid document.</span>
 
-<span class="sd">        :param gridfs_id: id of the document.</span>
-<span class="sd">        :type gridfs_id: :class:`bson.objectid.ObjectId`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gfsh</span> <span class="o">=</span> <span class="n">gridfs</span><span class="o">.</span><span class="n">GridFS</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">gfsh</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">):</span>
-            <span class="n">gfsh</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">gridfs_id</span><span class="p">)</span></div>
+    <span class="c1">#     :param gridfs_id: id of the document.</span>
+    <span class="c1">#     :type gridfs_id: :class:`bson.objectid.ObjectId`</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     gfsh = gridfs.GridFS(self)</span>
+    <span class="c1">#     if gfsh.exists(gridfs_id):</span>
+    <span class="c1">#         gfsh.delete(gridfs_id)</span>
 
     <span class="c1"># TODO: the following is not used when data is read from the database. We need</span>
     <span class="c1">#       link these metadata keys with the actual member variables just like the</span>
