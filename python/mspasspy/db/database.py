@@ -140,7 +140,7 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
+    def read_data(self, object_id, load_history=False, include_undefined=False, exclude_keys=[], collection='wf'):
         """
         Reads and returns the mspasspy object stored in the database.
 
@@ -242,7 +242,8 @@ class Database(pymongo.database.Database):
         # 3.load history
         if load_history:
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-            self._load_history(mspass_object, object_doc[history_obj_id_name])
+            if history_obj_id_name in object_doc:
+                self._load_history(mspass_object, object_doc[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()
