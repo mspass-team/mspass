@@ -4,7 +4,7 @@ Tools to define the schema of Metadata.
 import os
 
 import yaml
-from schema import Schema, Or, Optional, SchemaError
+from schema import Schema, And, Or, Optional, SchemaError
 import bson.objectid
 
 import mspasspy.ccore.seismic
@@ -601,525 +601,79 @@ class MDSchemaDefinition(SchemaDefinitionBase):
 '''
 check if a mspass.yaml file is valid or not
 '''
+def is_basic_type(s):
+    if s in ["ObjectID","int","float","double","complex","bool","string","list","dict","bytes"]:
+        return True
+    return False
+
+def get_all_db_name(schema_dic):
+    db_name_list = []
+    for db in schema_dic:
+        db_name_list.append(db)
+    return db_name_list
+
+def get_all_collection_name_by_db(schema_dic, db):
+    collection_name_list = []
+    if db not in schema_dic:
+        return collection_name_list
+    for c in schema_dic[db]:
+        collection_name_list.append(c)
+    return collection_name_list
+
 def _check_format(schema_dic):
-    schema = {
-        "Database":{
-            "wf_TimeSeries":{
-                Optional("default", default="wf"):str,
-                "schema":{
-                    "_id":{
-                        "type":"ObjectID",
-                        Optional("concept", default="ObjectId used to define a data object"):str
-                    },
-                    "npts":{
-                        "type":"int",
-                        Optional("concept", default="Number of data samples"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "delta":{
-                        "type":"double",
-                        Optional("concept", default="Data sample interval in seconds"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    Optional("sampling_rate"):{
-                        "type":"double",
-                        Optional("concept", default="Data sampling frequency in Hz=1/s"):str
-                    },
-                    "starttime":{
-                        "type":"double",
-                        Optional("concept", default="Time of first sample of data (epoch time or relative to some other time mark)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "starttime_shift":{
-                        "type":"double",
-                        Optional("concept", default="Time shift applied to define relative time of 0.0"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "utc_convertible":{
-                        "type":"bool",
-                        Optional("concept", default="When true starttime_shift can be used to convert relative time to UTC."):str
-                    },
-                    "time_standard":{
-                        "type":"string",
-                        Optional("concept", default="Defines time standard for meaning of t0 (default should be UTC)"):str
-                    },
-                    Optional("calib"):{
-                        "type":"double",
-                        Optional("concept", default="Nominal conversion factor for changing sample data to ground motion units."):str
-                    },
-                    "storage_mode":{
-                        "type":"string",
-                        Optional("concept", default="The storage mode of the saved data ('file', 'url' or 'gridfs')"):str
-                    },
-                    Optional("dir"):{
-                        "type":"string",
-                        Optional("concept", default="Directory path to an external file (always used with dfile)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    Optional("dfile"):{
-                        "type":"string",
-                        Optional("concept", default="External data file name."):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    Optional("foff"):{
-                        "type":"int",
-                        Optional("concept", default="Offset in bytes from beginning of a file to first data sample."):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    Optional("url"):{
-                        "type":"string",
-                        Optional("concept", default="Url to external data file."):str
-                    },
-                    Optional("gridfs_id"):{
-                        "type":"ObjectID",
-                        Optional("concept", default="The _id of data file in the fs.files collection."):str
-                    },
-                    "site_id":{
-                        "reference":"site"
-                    },
-                    "channel_id":{
-                        "reference":"channel"
-                    },
-                    Optional("source_id"):{
-                        "reference":"source"
-                    },
-                    Optional("history_object_id"):{
-                        "reference":"history_object"
-                    },
-                    Optional("elog_id"):{
-                        "type":"list",
-                        "reference":"elog"
-                    }
-                }
-            },
-            "wf_Seismogram":{
-                "base":"wf_TimeSeries",
-                "schema":{
-                    "tmatrix":{
-                        "type":"list",
-                        Optional("concept", default="Three-component data's transformation matrix"):str
-                    },
-                    Optional("channel_id"):{
-                        "type":"list",
-                        "reference":"channel"
-                    }
-                }
-            },
-            "site":{
-                "schema":{
-                    "_id":{
-                        "type":"ObjectID",
-                        Optional("concept", default="ObjectId used to define a particular instrument/seismic station"):str
-                    },
-                    "net":{
-                        "type":"string",
-                        Optional("concept", default="network code (net component of SEED net:sta:chan)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "sta":{
-                        "type":"string",
-                        Optional("concept", default="station code assigned to a spot on Earth (sta component of SEED net:sta:chan)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    Optional("loc"):{
-                        "reference":"channel"
-                    },
-                    "lat":{
-                        "type":"double",
-                        Optional("concept", default="latitude of a seismic station/instrument in degrees"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "lon":{
-                        "type":"double",
-                        Optional("concept", default="longitude of a seismic station/instrument in degrees"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "elev":{
-                        "type":"double",
-                        Optional("concept", default="elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "starttime":{
-                        "type":"double",
-                        Optional("concept", default="Time of seismic station/instrument starts recording"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "endtime":{
-                        "type":"double",
-                        Optional("concept", default="Time of seismic station/instrument ends recording"):str,
-                        Optional("aliases"):Or(str, list)
-                    }
-                }
-            },
-            "channel":{
-                "schema":{
-                    "_id":{
-                        "type":"ObjectID",
-                        Optional("concept", default="ObjectId used to define a particular component of data"):str,
-                    },
-                    "net":{
-                        "reference":"site"
-                    },
-                    "sta":{
-                        "reference":"site"
-                    },
-                    Optional("loc"):{
-                        "type":"string",
-                        Optional("concept", default="location code assigned to an instrument (loc component of SEED net:sta:chan)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "chan":{
-                        "type":"string",
-                        Optional("concept", default="channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "lat":{
-                        "type":"double",
-                        Optional("concept", default="latitude of a seismic station/instrument in degrees"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "lon":{
-                        "type":"double",
-                        Optional("concept", default="longitude of a seismic station/instrument in degrees"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "elev":{
-                        "type":"double",
-                        Optional("concept", default="elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "edepth":{
-                        "type":"double",
-                        Optional("concept", default="depth of a seismic station/instrument in km"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "hang":{
-                        "type":"double",
-                        Optional("concept", default="Azimuth (in degree) of a seismometer component - horizontal angle"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "vang":{
-                        "type":"double",
-                        Optional("concept", default="Inclination from +up (in degree) of a seismometer component - vertical angle"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "starttime":{
-                        "type":"double",
-                        Optional("concept", default="Time of seismic channel starts recording"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "endtime":{
-                        "type":"double",
-                        Optional("concept", default="Time of seismic channel ends recording"):str,
-                        Optional("aliases"):Or(str, list)
-                    }
-                }
-            },
-            "source":{
-                "schema":{
-                    "_id":{
-                        "type":"ObjectID",
-                        Optional("concept", default="ObjectId used to define a particular seismic source"):str,
-                    },
-                    "lat":{
-                        "type":"double",
-                        Optional("concept", default="Latitude (in degrees) of the hypocenter of seismic source"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "lon":{
-                        "type":"double",
-                        Optional("concept", default="Longitude (in degrees) of the hypocenter of seismic source"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "depth":{
-                        "type":"double",
-                        Optional("concept", default="Depth (in km) of the hypocenter of seismic source"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "time":{
-                        "type":"double",
-                        Optional("concept", default="Origin time of the hypocenter of seismic source (epoch time)"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                    "magnitude":{
-                        "type":"double",
-                        Optional("concept", default="Generic magnitude attribute"):str,
-                        Optional("aliases"):Or(str, list)
-                    },
-                }
-            },
-            "history_object":{
-                "schema":{
-                    "_id":{
-                        "type":"string",
-                        Optional("concept", default="UUID used to define an unique entry in history collection."):str
-                    },
-                    "nodedata":{
-                        "type":"bytes",
-                        Optional("concept", default="serialized content of ProcessingHistory"):str
-                    }
-                }
-            },
-            Optional("elog"):{
-                "schema":{
-                    "_id":{
-                        "type":"ObjectID",
-                        Optional("concept", default="ObjectID used to define an unique entry in elog collection."):str
-                    },
-                    "logdata":{
-                        "type":"list",
-                        Optional("concept", default="a list of LogData."):str
-                    },
-                    Optional("wf_Seismogram_id"):{
-                        "reference":"wf_Seismogram"
-                    },
-                    Optional("wf_TimeSeries_id"):{
-                        "reference":"wf_TimeSeries"
-                    },
-                    Optional("gravestone"):{
-                        "type":"dict",
-                        Optional("concept", default="a copy of the Metadata of a dead object."):str
-                    }
-                }
-            }
-        },
-        "Metadata":{
-            "TimeSeries":{
-                "schema":{
-                    "_id":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "npts":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "delta":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "sampling_rate":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "starttime":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "time_standard":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    Optional("calib"):{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "site_id":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "channel_id":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "source_id":{
-                        "collection":"wf_TimeSeries",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "net":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "sta":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_lat":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_lon":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_elev":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_starttime":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_endtime":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "loc":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "chan":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_hang":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_vang":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_lat":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_lon":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_elev":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_edepth":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_starttime":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "channel_endtime":{
-                        "collection":"channel",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_lat":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_lon":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_depth":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_time":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_magnitude":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                }
-            },
-            "Seismogram":{
-                "schema":{
-                    "_id":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "npts":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "delta":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "sampling_rate":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "starttime":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "time_standard":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    Optional("calib"):{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "site_id":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "channel_id":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "source_id":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "tmatrix":{
-                        "collection":"wf_Seismogram",
-                        Optional("readonly", default="false"):bool
-                    },
-                    "net":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "sta":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "loc":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_lat":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_lon":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_elev":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_starttime":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "site_endtime":{
-                        "collection":"site",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_lat":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_lon":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_depth":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_time":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                    "source_magnitude":{
-                        "collection":"source",
-                        Optional("readonly", default="true"):bool
-                    },
-                }
-            }
-        },
-        Optional("Other"):{
-            "schema":dict
-        }
-    }
+    db_name_list = get_all_db_name(schema_dic)
+    collection_name_list = []
+    for db_name in db_name_list:
+        collection_name_list += get_all_collection_name_by_db(schema_dic, db_name)
     
-    Schema(schema, ignore_extra_keys=True).validate(schema_dic)
+    type_attribute_schema = Schema({
+        'type':And(str, lambda s: is_basic_type(s)),
+        Optional('reference'):And(str, lambda s: s in collection_name_list),
+        Optional('concept'):str,
+        Optional('aliases'):Or(list, str),
+        Optional('optional'):bool,
+        Optional('readonly'):bool
+    }, ignore_extra_keys=True)
+    
+    reference_attribute_schema = Schema({
+        'reference':And(str, lambda s: s in collection_name_list),
+        Optional('optional'):bool
+    }, ignore_extra_keys=True)
+    
+    metadata_attribute_schema = Schema({
+        'collection':And(str, lambda s: s in collection_name_list),
+        Optional('readonly'):bool
+    }, ignore_extra_keys=True)
+    
+    database_collection_schema = Schema({
+        Optional('base'):And(str, lambda s: s in collection_name_list),
+        'schema':And(dict, And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
+                                        if 'type' in dic[attr] else reference_attribute_schema.validate(attr) 
+                                        for attr in dic)))
+    }, ignore_extra_keys=True)
+    
+    metadata_collection_schema = Schema({
+        'schema':And(dict, lambda dic: (metadata_attribute_schema.validate(attribute) for attribute in dic))
+    }, ignore_extra_keys=True)
+    
+    database_schema = Schema({
+        'wf_TimeSeries':And(dict, lambda dic: database_collection_schema.validate(dic)),
+        'wf_Seismogram':And(dict, lambda dic: database_collection_schema.validate(dic)),
+        Optional('site'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+        Optional('channel'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+        Optional('source'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+        Optional('history_object'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+        Optional('elog'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+    }, ignore_extra_keys=True)
+    
+    metadata_schema = Schema({
+        'TimeSeries':And(dict, lambda dic: metadata_collection_schema.validate(dic)),
+        'Seismogram':And(dict, lambda dic: metadata_collection_schema.validate(dic)),
+    }, ignore_extra_keys=True)
+    
+    yaml_schema = Schema({
+        'Database':And(dict, lambda dic: database_schema.validate(dic)),
+        'Metadata':And(dict, lambda dic: metadata_schema.validate(dic)),
+    }, ignore_extra_keys=True)
+    
+    yaml_schema.validate(schema_dic)
