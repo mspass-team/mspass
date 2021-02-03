@@ -26,7 +26,7 @@ class SchemaBase:
 
         try:
             _check_format(schema_dic)
-        except SchemaError as e:
+        except schema.SchemaError as e:
             raise MsPASSError('The schema definition is not valid', 'Fatal') from e
         self._raw = schema_dic
 
