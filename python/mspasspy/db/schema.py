@@ -647,7 +647,7 @@ def _check_format(schema_dic):
     
     database_collection_schema = schema.Schema({
         schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
-        'schema':And(dict, schema.And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
+        'schema':schema.And(dict, schema.And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
                                         if 'type' in dic[attr] else reference_attribute_schema.validate(attr) 
                                         for attr in dic)))
     }, ignore_extra_keys=True)
