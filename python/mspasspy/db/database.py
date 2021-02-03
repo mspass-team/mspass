@@ -100,10 +100,21 @@ class Database(pymongo.database.Database):
     wish to access with this handle.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, db_schema=None, md_schema=None, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
-        self.metadata_schema = MetadataSchema()
-        self.database_schema = DatabaseSchema()
+        if isinstance(db_schema, DatabaseSchema):
+            self.database_schema = db_schema
+        elif isinstance(db_schema, str):
+            self.database_schema = DatabaseSchema(db_schema)
+        else:
+            self.database_schema = DatabaseSchema()
+
+        if isinstance(md_schema, MetadataSchema):
+            self.metadata_schema = md_schema
+        elif isinstance(md_schema, str):
+            self.metadata_schema = MetadataSchema(md_schema)
+        else:
+            self.metadata_schema = MetadataSchema()
 
     def __getstate__(self):
         ret = self.__dict__.copy()
