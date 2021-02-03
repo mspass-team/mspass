@@ -4,7 +4,7 @@ Tools to define the schema of Metadata.
 import os
 
 import yaml
-from schema import Schema, And, Or, Optional, SchemaError
+import schema
 import bson.objectid
 
 import mspasspy.ccore.seismic
@@ -626,54 +626,54 @@ def _check_format(schema_dic):
     for db_name in db_name_list:
         collection_name_list += get_all_collection_name_by_db(schema_dic, db_name)
     
-    type_attribute_schema = Schema({
-        'type':And(str, lambda s: is_basic_type(s)),
-        Optional('reference'):And(str, lambda s: s in collection_name_list),
-        Optional('concept'):str,
-        Optional('aliases'):Or(list, str),
-        Optional('optional'):bool,
-        Optional('readonly'):bool
+    type_attribute_schema = schema.Schema({
+        'type':schema.And(str, lambda s: is_basic_type(s)),
+        schema.Optional('reference'):schema.And(str, lambda s: s in collection_name_list),
+        schema.Optional('concept'):str,
+        schema.Optional('aliases'):schema.Or(list, str),
+        schema.Optional('optional'):bool,
+        schema.Optional('readonly'):bool
     }, ignore_extra_keys=True)
     
-    reference_attribute_schema = Schema({
-        'reference':And(str, lambda s: s in collection_name_list),
-        Optional('optional'):bool
+    reference_attribute_schema = schema.Schema({
+        'reference':schema.And(str, lambda s: s in collection_name_list),
+        schema.Optional('optional'):bool
     }, ignore_extra_keys=True)
     
-    metadata_attribute_schema = Schema({
-        'collection':And(str, lambda s: s in collection_name_list),
-        Optional('readonly'):bool
+    metadata_attribute_schema = schema.Schema({
+        'collection':schema.And(str, lambda s: s in collection_name_list),
+        schema.Optional('readonly'):bool
     }, ignore_extra_keys=True)
     
-    database_collection_schema = Schema({
-        Optional('base'):And(str, lambda s: s in collection_name_list),
-        'schema':And(dict, And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
+    database_collection_schema = schema.Schema({
+        schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
+        'schema':And(dict, schema.And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
                                         if 'type' in dic[attr] else reference_attribute_schema.validate(attr) 
                                         for attr in dic)))
     }, ignore_extra_keys=True)
     
-    metadata_collection_schema = Schema({
-        'schema':And(dict, lambda dic: (metadata_attribute_schema.validate(attribute) for attribute in dic))
+    metadata_collection_schema = schema.Schema({
+        'schema':schema.And(dict, lambda dic: (metadata_attribute_schema.validate(attribute) for attribute in dic))
     }, ignore_extra_keys=True)
     
-    database_schema = Schema({
-        'wf_TimeSeries':And(dict, lambda dic: database_collection_schema.validate(dic)),
-        'wf_Seismogram':And(dict, lambda dic: database_collection_schema.validate(dic)),
-        Optional('site'):And(dict, lambda dic: database_collection_schema.validate(dic)),
-        Optional('channel'):And(dict, lambda dic: database_collection_schema.validate(dic)),
-        Optional('source'):And(dict, lambda dic: database_collection_schema.validate(dic)),
-        Optional('history_object'):And(dict, lambda dic: database_collection_schema.validate(dic)),
-        Optional('elog'):And(dict, lambda dic: database_collection_schema.validate(dic)),
+    database_schema = schema.Schema({
+        'wf_TimeSeries':schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        'wf_Seismogram':schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        schema.Optional('site'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        schema.Optional('channel'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        schema.Optional('source'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        schema.Optional('history_object'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        schema.Optional('elog'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
     }, ignore_extra_keys=True)
     
-    metadata_schema = Schema({
-        'TimeSeries':And(dict, lambda dic: metadata_collection_schema.validate(dic)),
-        'Seismogram':And(dict, lambda dic: metadata_collection_schema.validate(dic)),
+    metadata_schema = schema.Schema({
+        'TimeSeries':schema.And(dict, lambda dic: metadata_collection_schema.validate(dic)),
+        'Seismogram':schema.And(dict, lambda dic: metadata_collection_schema.validate(dic)),
     }, ignore_extra_keys=True)
     
-    yaml_schema = Schema({
-        'Database':And(dict, lambda dic: database_schema.validate(dic)),
-        'Metadata':And(dict, lambda dic: metadata_schema.validate(dic)),
+    yaml_schema = schema.Schema({
+        'Database':schema.And(dict, lambda dic: database_schema.validate(dic)),
+        'Metadata':schema.And(dict, lambda dic: metadata_schema.validate(dic)),
     }, ignore_extra_keys=True)
     
     yaml_schema.validate(schema_dic)
