@@ -206,8 +206,6 @@
 <span class="sd">    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.</span>
 <span class="sd">    :param db_name: the database name in mongodb.</span>
 <span class="sd">    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.</span>
-<span class="sd">    :param object_type: either &quot;TimeSeries&quot; or &quot;Seismogram&quot;</span>
-<span class="sd">    :type object_type: :class:`str`</span>
 <span class="sd">    :param load_history: `True` to load object-level history into the mspasspy object.</span>
 <span class="sd">    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">    :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
@@ -221,10 +219,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;spark&#39;</span><span class="p">:</span>
         <span class="n">list_</span> <span class="o">=</span> <span class="n">spark_context</span><span class="o">.</span><span class="n">parallelize</span><span class="p">(</span><span class="n">cursors</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;dask&#39;</span><span class="p">:</span>
         <span class="n">list_</span> <span class="o">=</span> <span class="n">daskbag</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span><span class="n">cursors</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">list_</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">cur</span><span class="p">:</span> <span class="n">_read_distributed_data</span><span class="p">(</span><span class="n">client_arg</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">cur</span><span class="p">,</span> <span class="n">load_history</span><span class="p">,</span> <span class="n">include_undefined</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Only spark and dask are supported&quot;</span><span class="p">)</span></div>
 
@@ -236,8 +234,8 @@
 
 <span class="sd">    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.</span>
 <span class="sd">    :param db_name: the database name in mongodb.</span>
-<span class="sd">    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb</span>
-<span class="sd">    :type id: :class:&#39;bson.objectid.ObjectId&#39;.</span>
+<span class="sd">    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb or a dict that contains such an &quot;_id&quot;.</span>
+<span class="sd">    :type id: :class:&#39;bson.objectid.ObjectId&#39;/dict.</span>
 <span class="sd">    :param load_history: `True` to load object-level history into the mspasspy object.</span>
 <span class="sd">    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">    :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
@@ -265,10 +263,21 @@
 <span class="sd">    wish to access with this handle.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">db_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">md_schema</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Database</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="n">DatabaseSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">db_schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">db_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">(</span><span class="n">db_schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">DatabaseSchema</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="n">MetadataSchema</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">md_schema</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">md_schema</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">(</span><span class="n">md_schema</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span> <span class="o">=</span> <span class="n">MetadataSchema</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -300,8 +309,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads and returns the mspasspy object stored in the database.</span>
 
-<span class="sd">        :param object_id: mongodb &quot;_id&quot; of the mspasspy object.</span>
-<span class="sd">        :type object_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">        :param object_id: &quot;_id&quot; of the mspasspy object or a dict that contains the &quot;_id&quot;.</span>
+<span class="sd">        :type object_id: :class:`bson.objectid.ObjectId`/dict</span>
 <span class="sd">        :param load_history: `True` to load object-level history into the mspasspy object.</span>
 <span class="sd">        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.</span>
 <span class="sd">        :param exclude_keys: the metadata attributes you want to exclude from being read.</span>
@@ -333,7 +342,11 @@
             <span class="n">read_metadata_schema</span> <span class="o">=</span> <span class="n">temp_metadata_schema</span><span class="p">[</span><span class="n">object_type</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
 
         <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
-        <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">object_id</span><span class="p">})</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">object_id</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">object_id</span>
+        <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">oid</span><span class="p">})</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">object_doc</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 

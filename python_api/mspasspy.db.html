@@ -327,7 +327,7 @@ parameters.</p>
 <p>Tools for connecting to MongoDB.</p>
 <dl class="py class">
 <dt id="mspasspy.db.database.Database">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">Database</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">Database</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">db_schema</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">md_schema</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.database.Database</span></code></p>
 <p>A MongoDB database handler.</p>
 <p>This is a wrapper around the <code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code> with
@@ -456,7 +456,7 @@ as the primary index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – mongodb “_id” of the mspasspy object.</p></li>
+<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>/dict) – “_id” of the mspasspy object or a dict that contains the “_id”.</p></li>
 <li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
 <li><p><strong>include_undefined</strong> – <cite>True</cite> to also read the attributes in the collection that are not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
@@ -705,7 +705,6 @@ manner, and return all of the mspasspy objects using the format required by the 
 <li><p><strong>client_arg</strong> – the argument to initialize a <code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.Client</span></code>.</p></li>
 <li><p><strong>db_name</strong> – the database name in mongodb.</p></li>
 <li><p><strong>cursors</strong> – mongodb cursors where each corresponds to a stored mspasspy object.</p></li>
-<li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – either “TimeSeries” or “Seismogram”</p></li>
 <li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
 <li><p><strong>include_undefined</strong> – <cite>True</cite> to also read the attributes in the collection that are not defined in the schema.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being read.</p></li>
