@@ -2,7 +2,7 @@ import pytest
 from bson.objectid import ObjectId
 
 from mspasspy.ccore.utility import MsPASSError
-from mspasspy.ccore.seismic import Seismogram
+from mspasspy.ccore.seismic import TimeSeries, Seismogram
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema, DBSchemaDefinition, MDSchemaDefinition
 
@@ -52,12 +52,41 @@ class TestSchema():
         assert self.dbschema.wf_TimeSeries.type('test') == bool
         assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1']
 
-    def test_add_alias(self):
+    def test_add_remove_alias(self):
         self.dbschema.wf_TimeSeries.add_alias('test', 'test2')
         assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1', 'test2']
+        self.dbschema.wf_TimeSeries.remove_alias('test2')
+        assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1']
 
     def test_aliaes(self):
         assert self.dbschema.wf_TimeSeries.aliases('_id') is None
+
+    def test_apply_aliases(self):
+        ss = Seismogram()
+        alias_dic = {'delta': 'd', 'npts': 'n', 'starttime': 's'}
+        self.mdschema.Seismogram.apply_aliases(ss, alias_dic)
+        assert not ss.is_defined('delta')
+        assert not ss.is_defined('npts')
+        assert not ss.is_defined('starttime')
+        assert ss.is_defined('d')
+        assert ss.is_defined('n')
+        assert ss.is_defined('s')
+        assert self.mdschema.Seismogram.unique_name('d') == 'delta'
+        assert self.mdschema.Seismogram.unique_name('n') == 'npts'
+        assert self.mdschema.Seismogram.unique_name('s') == 'starttime'
+        self.mdschema.Seismogram.clear_aliases(ss)
+        assert ss.is_defined('delta')
+        assert ss.is_defined('npts')
+        assert ss.is_defined('starttime')
+        self.mdschema.Seismogram.apply_aliases(ss, 'python/tests/data/alias.yaml')
+        assert not ss.is_defined('delta')
+        assert not ss.is_defined('npts')
+        assert not ss.is_defined('starttime')
+        assert ss.is_defined('dd')
+        assert ss.is_defined('nn')
+        assert ss.is_defined('ss')
+        with pytest.raises(MsPASSError, match='is not recognized'):
+            self.mdschema.Seismogram.apply_aliases(ss, 123)
 
     def test_clear_aliases(self):
         ss = Seismogram()
@@ -113,9 +142,40 @@ class TestSchema():
         with pytest.raises(MsPASSError, match = 'not defined'):
             self.dbschema.wf_TimeSeries.reference('test100')
 
+    def test_DBSchemaDefinition_data_type(self):
+        assert self.dbschema.wf_TimeSeries.data_type() == TimeSeries
+        assert self.dbschema.wf_Seismogram.data_type() == Seismogram
+        assert self.dbschema.site.data_type() is None
+        assert self.dbschema.source.data_type() is None
+
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection('sta') == 'site'
         assert self.mdschema.TimeSeries.collection('starttime') == 'wf_TimeSeries'
+
+    def test_MDSchemaDefinition_set_collection(self):
+        self.mdschema.TimeSeries.set_collection('channel_id', 'dummy')
+        assert self.mdschema.TimeSeries.collection('channel_id') == 'dummy'
+
+        assert self.mdschema.TimeSeries.type('channel_id') == ObjectId
+        self.mdschema.TimeSeries.set_collection('channel_id', 'wf_Seismogram', self.dbschema)
+        assert self.mdschema.TimeSeries.collection('channel_id') == 'wf_Seismogram'
+        assert self.mdschema.TimeSeries.type('channel_id') == list
+        
+        with pytest.raises(MsPASSError, match='not defined'):
+            self.mdschema.TimeSeries.set_collection('test100','wf_Seismogram')
+
+    def test_MDSchemaDefinition_swap_collection(self):
+        self.mdschema.TimeSeries.swap_collection('wf_TimeSeries', 'dummy')
+        assert self.mdschema.TimeSeries.collection('_id') == 'dummy'
+        assert self.mdschema.TimeSeries.collection('calib') == 'dummy'
+
+        alias = self.mdschema.TimeSeries.aliases('npts').copy()
+        for k in alias:
+            self.mdschema.TimeSeries.remove_alias(k)
+        self.mdschema.TimeSeries.swap_collection('dummy', 'wf_TimeSeries', self.dbschema)
+        assert self.mdschema.TimeSeries.collection('_id') == 'wf_TimeSeries'
+        assert self.mdschema.TimeSeries.collection('calib') == 'wf_TimeSeries'
+        assert self.mdschema.TimeSeries.aliases('npts') == alias
 
     def test_MDSchemaDefinition_readonly(self):
         assert self.mdschema.TimeSeries.readonly('net')
