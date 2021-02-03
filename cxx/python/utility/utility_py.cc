@@ -319,7 +319,7 @@ PYBIND11_MODULE(utility, m) {
       std::string typ = md.type(key);
       if(typ == "pybind11::object")
         return py::str(boost::any_cast<pybind11::object>(md.get_any(key)).get_type());
-      else if (typ.substr(0,26) == "std::__cxx11::basic_string")
+      else if (typ.substr(0, 26) == "std::__cxx11::basic_string" || typ.substr(0, 22) == "std::__1::basic_string")
         return std::string("string");
       else
         return typ;
