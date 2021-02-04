@@ -952,6 +952,243 @@ class Database(pymongo.database.Database):
         else:
             return t
 
+    def save_inventory(self, inv,
+                       networks_to_exclude=['SY'],
+                       verbose=False):
+        """
+        Saves contents of all components of an obspy inventory
+        object to documents in the site and channel collections.
+        The site collection is sufficient of Seismogram objects but
+        TimeSeries data will often want to be connected to the
+        channel collection.   The algorithm used will not add
+        duplicates based on the following keys:
+
+        For site:
+            net
+            sta
+            chan
+            loc
+            starttime::endtime - this check is done cautiously with
+              a 10 s fudge factor to avoid the issue of floating point
+              equal tests.   Probably overly paranoid since these
+              fields are normally rounded to a time at the beginning
+              of a utc day, but small cost to pay for stabilty because
+              this function is not expected to be run millions of times
+              on a huge collection.
+
+        for channels:
+            net
+            sta
+            chan
+            loc
+            starttime::endtime - same approach as for site with same
+               issues - note especially 10 s fudge factor.   This is
+               necessary because channel metadata can change more
+               frequently than site metadata (e.g. with a sensor
+               orientation or sensor swap)
+
+        Finally note the site collection contains full response data
+        that can be obtained by extracting the data with the key
+        "serialized_inventory" and running pickle loads on the returned
+        string.
+
+        A final point of note is that not all Inventory objects are created
+        equally.   Inventory objects appear to us to be designed as an image
+        of stationxml data.  The problem is that stationxml, like SEED, has to
+        support a lot of complexity faced by data centers that end users
+        like those using this package do not need or want to know.   The
+        point is this method flattens the complexity and aims to reduce the
+        result to a set of documents in the site and channel collection
+        that can be cross referenced to link the right metadata with all
+        waveforms in a dataset.
+
+        :param inv: is the obspy Inventory object of station data to save.
+        :networks_to_exclude: should contain a list (or tuple) of
+            SEED 2 byte network codes that are to be ignored in
+            processing.   Default is SY which is used for synthetics.
+            Set to None if if all are to be loaded.
+        :verbose:  print informational lines if true.  If false
+        works silently)
+
+        :return:  tuple with
+          0 - integer number of site documents saved
+          1 -integer number of channel documents saved
+          2 - number of distinct site (net,sta,loc) items processed
+          3 - number of distinct channel items processed
+        :rtype: tuple
+        """
+
+        # site is a frozen name for the collection here.  Perhaps
+        # should be a variable with a default
+        # to do: need to change source_id to be a copy of the _id string.
+
+        dbcol = self.site
+        dbchannel = self.channel
+        n_site_saved = 0
+        n_chan_saved = 0
+        n_site_processed = 0
+        n_chan_processed = 0
+        for x in inv:
+            # Inventory object I got from webservice download
+            # makes the sta variable here a net:sta combination
+            # We can get the net code like this
+            net = x.code
+            # This adds feature to skip data for any net code
+            # listed in networks_to_exclude
+            if networks_to_exclude != None:
+                if net in networks_to_exclude:
+                    continue
+            # Each x now has a station field, BUT tests I ran
+            # say for my example that field has one entry per
+            # x.  Hence, we can get sta name like this
+            stalist = x.stations
+            for station in stalist:
+                sta = station.code
+                starttime = station.start_date
+                endtime = station.end_date
+                starttime = self._handle_null_starttime(starttime)
+                endtime = self._handle_null_endtime(endtime)
+                latitude = station.latitude
+                longitude = station.longitude
+                # stationxml files seen to put elevation in m. We
+                # always use km so need to convert
+                elevation = station.elevation / 1000.0
+                # an obnoxious property of station xml files obspy is giving me
+                # is that the start_dates and end_dates on the net:sta section
+                # are not always consistent with the channel data.  In particular
+                # loc codes are a problem. So we pull the required metadata from
+                # the chans data and will override locations and time ranges
+                # in station section with channel data
+                chans = station.channels
+                locdata = self._extract_locdata(chans)
+                # Assume loc code of 0 is same as rest
+                # loc=_extract_loc_code(chanlist[0])
+                # TODO Delete when sure we don't need to keep the full thing
+                #picklestr = pickle.dumps(x)
+                all_locs = locdata.keys()
+                for loc in all_locs:
+                    # If multiple loc codes are present on the second pass
+                    # rec will contain the objectid of the document inserted
+                    # in the previous pass - an obnoxious property of insert_one
+                    # This initialization guarantees an empty container
+                    rec = dict()
+                    rec['loc'] = loc
+                    rec['net'] = net
+                    rec['sta'] = sta
+                    lkey = loc
+                    loc_tuple = locdata[lkey]
+                    # We use these attributes linked to loc code rather than
+                    # the station data - experience shows they are not
+                    # consistent and we should use this set.
+                    loc_lat = loc_tuple[2]
+                    loc_lon = loc_tuple[3]
+                    loc_elev = loc_tuple[4]
+                    # for consistency convert this to km too
+                    loc_elev = loc_elev / 1000.0
+                    loc_edepth = loc_tuple[5]
+                    loc_stime = loc_tuple[0]
+                    loc_stime = self._handle_null_starttime(loc_stime)
+                    loc_etime = loc_tuple[1]
+                    loc_etime = self._handle_null_endtime(loc_etime)
+                    rec['latitude'] = loc_lat
+                    rec['longitude'] = loc_lon
+                    # This is MongoDBs way to set a geographic
+                    # point - allows spatial queries.  Note longitude
+                    # must be first of the pair
+                    rec['coords'] = [loc_lat, loc_lon]
+                    rec['elevation'] = loc_elev
+                    rec['edepth'] = loc_edepth
+                    rec['starttime'] = starttime.timestamp
+                    rec['endtime'] = endtime.timestamp
+                    if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
+                        print(net, ":", sta, ":", loc,
+                          " (Warning):  station section position is not consistent with loc code position")
+                        print("Data in loc code section overrides station section")
+                        print("Station section coordinates:  ", latitude, longitude, elevation)
+                        print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
+                    if self._site_is_not_in_db(rec):
+                        result=dbcol.insert_one(rec)
+                        # Note this sets site_id to an ObjectID for the insertion
+                        # We use that to define a duplicate we tag as site_id
+                        site_id=result.inserted_id
+                        self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
+                        n_site_saved+=1
+                        if verbose:
+                            print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " added to site collection")
+                    else:
+                        if verbose:
+                            print("net:sta:loc=", net, ":", sta, ":", loc,
+                              "for time span ", starttime, " to ", endtime,
+                              " is already in site collection - ignored")
+                    n_site_processed += 1
+                    # done with site now handle channel
+                    # Because many features are shared we can copy rec
+                    # note this has to be a deep copy
+                    chanrec = copy.deepcopy(rec)
+                    # We don't want this baggage in the channel documents
+                    # keep them only in the site collection
+                    # del chanrec['serialized_inventory']
+                    for chan in chans:
+                        chanrec['chan'] = chan.code
+                        chanrec['vang'] = chan.dip
+                        chanrec['hang'] = chan.azimuth
+                        chanrec['edepth'] = chan.depth
+                        st = chan.start_date
+                        et = chan.end_date
+                        # as above be careful of null values for either end of the time range
+                        st = self._handle_null_starttime(st)
+                        et = self._handle_null_endtime(et)
+                        chanrec['starttime'] = st.timestamp
+                        chanrec['endtime'] = et.timestamp
+                        n_chan_processed += 1
+                        if (self._channel_is_not_in_db(chanrec)):
+                            picklestr = pickle.dumps(chan)
+                            chanrec['serialized_channel_data'] = picklestr
+                            result = dbchannel.insert_one(chanrec)
+                            # insert_one has an obnoxious behavior in that it
+                            # inserts the ObjectId in chanrec.  In this loop
+                            # we reuse chanrec so we have to delete the id field
+                            # howeveer, we first want to update the record to
+                            # have chan_id provide an  alternate key to that id
+                            # object_id - that makes this consistent with site
+                            # we actually use the return instead of pulling from
+                            # chanrec
+                            idobj=result.inserted_id
+                            dbchannel.update_one({'_id':idobj},
+                                             {'$set':{'chan_id' : idobj}})
+                            del chanrec['_id']
+                            n_chan_saved += 1
+                            if verbose:
+                                print("net:sta:loc:chan=",
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " added to channel collection")
+                        else:
+                            if verbose:
+                                print('net:sta:loc:chan=',
+                                  net, ":", sta, ":", loc, ":", chan.code,
+                                  "for time span ", st, " to ", et,
+                                  " already in channel collection - ignored")
+
+        # Tried this to create a geospatial index.   Failing
+        # in later debugging for unknown reason.   Decided it
+        # should be a done externally anyway as we don't use
+        # that feature now - thought of doing so but realized
+        # was unnecessary baggage
+        # dbcol.create_index(["coords",GEOSPHERE])
+        #
+        # For now we will always print this summary information
+        # For expected use it would be essential information
+        #
+        print("Database.save_inventory processing summary:")
+        print("Number of site records processed=", n_site_processed)
+        print("number of site records saved=", n_site_saved)
+        print("number of channel records processed=", n_chan_processed)
+        print("number of channel records saved=", n_chan_saved)
+        return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
+
     def load_inventory(self, net=None, sta=None, loc=None, time=None):
         """
         Loads an obspy inventory object limited by one or more
@@ -1087,56 +1324,6 @@ class Database(pymongo.database.Database):
                 print("load_seed_channel (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
             return channel
-
-    def load_inventory(self, net=None, sta=None, loc=None, time=None):
-        """
-        Loads an obspy inventory object limited by one or more
-        keys.   Default is to load the entire contents of the
-        site collection.   Note the load creates an obspy
-        inventory object that is returned.  Use load_stations
-        to return the raw data used to construct an Inventory.
-
-        :param net:  network name query string.  Can be a single
-        unique net code or use MongoDB's expression query
-        mechanism (e.g. "{'$gt' : 42}).  Default is all
-        :param sta: statoin name query string.  Can be a single
-        station name or a MongoDB query expression.
-        :param loc:  loc code to select.  Can be a single unique
-        location (e.g. '01') or a MongoDB expression query.
-        :param time:   limit return to stations with
-        startime<time<endtime.  Input is assumed an
-        epoch time NOT an obspy UTCDateTime. Use a conversion
-        to epoch time if necessary.
-        :return:  obspy Inventory of all stations matching the
-        query parameters
-        :rtype:  obspy Inventory
-        """
-        dbsite = self.site
-        query = {}
-        if (net != None):
-            query['net'] = net
-        if (sta != None):
-            query['sta'] = sta
-        if (loc != None):
-            query['loc'] = loc
-        if (time != None):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
-        matchsize = dbsite.count_documents(query)
-        result = Inventory()
-        if (matchsize == 0):
-            return None
-        else:
-            stations = dbsite.find(query)
-            for s in stations:
-                serialized = s['serialized_inventory']
-                netw = pickle.loads(serialized)
-                # It might be more efficient to build a list of
-                # Network objects but here we add them one
-                # station at a time.  Note the extend method
-                # if poorly documented in obspy
-                result.extend([netw])
-        return result
 
     def save_catalog(self, cat, verbose=False):
         """
