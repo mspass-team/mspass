@@ -652,14 +652,6 @@ def _get_all_collection_name_by_db(schema_dic, db):
     return collection_name_list
 
 def _check_min_default_key(db_dict):
-    """
-    Helper function used to check if a database dict have at least "wf", "elog" and "history_object" default keys
-
-    :param db_dict: database schema dictionary
-    :type db_dict: dict
-    :return: True if all 3 default keys exsit, else raise SchemaError
-    :rtype: bool
-    """
     default_key_set = set()
     for collection in db_dict:
         default_key_set.add(collection)
@@ -673,7 +665,6 @@ def _check_min_default_key(db_dict):
 def _is_valid_database_schema(dic, database_collection_schema):
     """
     Helper function used to validate all collections in a database schema dictionary
-
     :param dic: a database schema dictionary
     :type dic: dict
     :param database_collection_schema: the defined schema used to validate a database collection
@@ -682,14 +673,27 @@ def _is_valid_database_schema(dic, database_collection_schema):
     :rtype: bool
     """
     for collection in dic:
-        database_collection_schema.validate(dic[collection])
+        dic[collection] = database_collection_schema.validate(dic[collection])
+    return True
+
+def _is_valid_metadata_schema(dic, metadata_collection_schema):
+    """
+    Helper function used to validate all collections in a metadata schema dictionary
+    :param dic: a metadata schema dictionary
+    :type dic: dict
+    :param database_collection_schema: the defined schema used to validate a metadata collection
+    :type db: schema.Schema
+    :return: True if all collections pass the validation
+    :rtype: bool
+    """
+    for collection in dic:
+        dic[collection] = metadata_collection_schema.validate(dic[collection])
     return True
 
 def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema):
     """
-    Helper function used to validate all attribtes in a database schema dictionary
-
-    :param dic: a collection schema dictionary
+    Helper function used to validate all attribtes in a database collection schema dictionary
+    :param dic: a database collection schema dictionary
     :type dic: dict
     :param type_attribute_schema: the defined schema used to validate a type attribute
     :type type_attribute_schema: schema.Schema
@@ -700,24 +704,23 @@ def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_a
     """
     for attr in dic:
         if 'type' in dic[attr]:
-            type_attribute_schema.validate(dic[attr])
+            dic[attr] = type_attribute_schema.validate(dic[attr])
         else:
-            reference_attribute_schema.validate(dic[attr])
+            dic[attr] = reference_attribute_schema.validate(dic[attr])
     return True
 
 def _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema):
     """
-    Helper function used to validate all collections in a metadata schema dictionary
-
-    :param dic: a metadata schema dictionary
+    Helper function used to validate all attribtes in a metadata collection schema dictionary
+    :param dic: a metadata collection schema dictionary
     :type dic: dict
-    :param database_collection_schema: the defined schema used to validate a metatdata collection
+    :param database_collection_schema: the defined schema used to validate metadata collection attributes
     :type db: schema.Schema
     :return: True if all collections pass the validation
     :rtype: bool
     """
     for attr in dic:
-        metadata_attribute_schema.validate(dic[attr])
+        dic[attr] = metadata_attribute_schema.validate(dic[attr])
     return True
 
 def _check_format(schema_dic):
@@ -738,7 +741,6 @@ def _check_format(schema_dic):
         'type':schema.And(str, lambda s: _is_basic_type(s)),
         schema.Optional('reference'):schema.And(str, lambda s: s in collection_name_list),
         schema.Optional('concept'):str,
-        # FIXME Use can't convert the original value to the desired one
         schema.Optional('aliases'):schema.Use(lambda s: [s] if type(s) is str else s),
         schema.Optional('optional'):bool,
         schema.Optional('readonly'):bool
@@ -764,15 +766,10 @@ def _check_format(schema_dic):
         'schema':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema))
     }, ignore_extra_keys=True)
     
-    metadata_schema = schema.Schema({
-        'TimeSeries':schema.And(dict, lambda dic: metadata_collection_schema.validate(dic)),
-        'Seismogram':schema.And(dict, lambda dic: metadata_collection_schema.validate(dic)),
-    }, ignore_extra_keys=True)
-    
     yaml_schema = schema.Schema({
         'Database':schema.And(dict, schema.And(lambda dic: _is_valid_database_schema(dic, database_collection_schema),
                                                lambda dic: _check_min_default_key(dic))),
-        'Metadata':schema.And(dict, lambda dic: metadata_schema.validate(dic)),
+        'Metadata':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, metadata_collection_schema)),
     }, ignore_extra_keys=True)
     
     yaml_schema.validate(schema_dic)
