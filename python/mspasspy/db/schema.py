@@ -12,10 +12,16 @@ from mspasspy.ccore.utility import MsPASSError
 
 class SchemaBase:
     def __init__(self, schema_file=None):
-        if schema_file is None and 'MSPASS_HOME' in os.environ:
-            schema_file = os.path.abspath(os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
-        else:
-            schema_file = os.path.abspath(os.path.dirname(__file__) + '/../data/yaml/mspass.yaml')
+        if schema_file is None:
+            if 'MSPASS_HOME' in os.environ:
+                schema_file = os.path.abspath(os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
+            else:
+                schema_file = os.path.abspath(os.path.dirname(__file__) + '/../data/yaml/mspass.yaml')
+        elif not os.path.isfile(schema_file):
+            if 'MSPASS_HOME' in os.environ:
+                schema_file = os.path.join(os.path.abspath(os.environ['MSPASS_HOME']), 'data/yaml', schema_file)
+            else:
+                schema_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/yaml', schema_file))
         try:
             with open(schema_file, 'r') as stream:
                     schema_dic = yaml.safe_load(stream)

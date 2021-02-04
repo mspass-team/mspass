@@ -41,8 +41,6 @@ def read_distributed_data(client_arg, db_name, cursors, load_history=True, inclu
     :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
     :param db_name: the database name in mongodb.
     :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
-    :param object_type: either "TimeSeries" or "Seismogram"
-    :type object_type: :class:`str`
     :param load_history: `True` to load object-level history into the mspasspy object.
     :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
     :param exclude_keys: the metadata attributes you want to exclude from being read.
@@ -56,10 +54,10 @@ def read_distributed_data(client_arg, db_name, cursors, load_history=True, inclu
     """
     if format == 'spark':
         list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], load_history, include_undefined, exclude_keys, collection))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, load_history, include_undefined, exclude_keys, collection))
     elif format == 'dask':
         list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur['_id'], load_history, include_undefined, exclude_keys, collection))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, load_history, include_undefined, exclude_keys, collection))
     else:
         raise TypeError("Only spark and dask are supported")
 
@@ -71,8 +69,8 @@ def _read_distributed_data(client_arg, db_name, id, load_history=True, include_u
 
     :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
     :param db_name: the database name in mongodb.
-    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb
-    :type id: :class:'bson.objectid.ObjectId'.
+    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb or a dict that contains such an "_id".
+    :type id: :class:'bson.objectid.ObjectId'/dict.
     :param load_history: `True` to load object-level history into the mspasspy object.
     :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
     :param exclude_keys: the metadata attributes you want to exclude from being read.
@@ -100,10 +98,21 @@ class Database(pymongo.database.Database):
     wish to access with this handle.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, db_schema=None, md_schema=None, **kwargs):
         super(Database, self).__init__(*args, **kwargs)
-        self.metadata_schema = MetadataSchema()
-        self.database_schema = DatabaseSchema()
+        if isinstance(db_schema, DatabaseSchema):
+            self.database_schema = db_schema
+        elif isinstance(db_schema, str):
+            self.database_schema = DatabaseSchema(db_schema)
+        else:
+            self.database_schema = DatabaseSchema()
+
+        if isinstance(md_schema, MetadataSchema):
+            self.metadata_schema = md_schema
+        elif isinstance(md_schema, str):
+            self.metadata_schema = MetadataSchema(md_schema)
+        else:
+            self.metadata_schema = MetadataSchema()
 
     def __getstate__(self):
         ret = self.__dict__.copy()
@@ -131,12 +140,12 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
+    def read_data(self, object_id, load_history=False, include_undefined=False, exclude_keys=[], collection='wf'):
         """
         Reads and returns the mspasspy object stored in the database.
 
-        :param object_id: mongodb "_id" of the mspasspy object.
-        :type object_id: :class:`bson.objectid.ObjectId`
+        :param object_id: "_id" of the mspasspy object or a dict that contains the "_id".
+        :type object_id: :class:`bson.objectid.ObjectId`/dict
         :param load_history: `True` to load object-level history into the mspasspy object.
         :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being read.
@@ -168,7 +177,11 @@ class Database(pymongo.database.Database):
             read_metadata_schema = temp_metadata_schema[object_type.__name__]
 
         col = self[wf_collection]
-        object_doc = col.find_one({'_id': object_id})
+        try:
+            oid = object_id['_id']
+        except:
+            oid = object_id
+        object_doc = col.find_one({'_id': oid})
         if not object_doc:
             return None
 
@@ -229,7 +242,8 @@ class Database(pymongo.database.Database):
         # 3.load history
         if load_history:
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-            self._load_history(mspass_object, object_doc[history_obj_id_name])
+            if history_obj_id_name in object_doc:
+                self._load_history(mspass_object, object_doc[history_obj_id_name])
 
         mspass_object.live = True
         mspass_object.clear_modified()

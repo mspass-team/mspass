@@ -13,6 +13,15 @@ class TestSchema():
         self.dbschema = DatabaseSchema()
         self.dbschema.wf_TimeSeries.add('test', {'type': 'bool', 'aliases':['test1']})
 
+    def test_init(self):
+        dbschema = DatabaseSchema("mspass_lite.yaml")
+        with pytest.raises(AttributeError, match='no attribute'):
+            dummy = dbschema.site
+        with pytest.raises(MsPASSError, match='not defined'):
+            dummy = dbschema['source']
+        with pytest.raises(MsPASSError, match='Cannot open schema definition file'):
+            dbschema = DatabaseSchema("dummy")
+
     def test_item(self):
         def_site = self.dbschema.site
         def_channel = self.dbschema.channel

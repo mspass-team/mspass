@@ -10,7 +10,7 @@ import sys
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError
 
-from mspasspy.db.schema import MetadataSchema
+from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
 from bson.objectid import ObjectId
 from datetime import datetime
@@ -71,6 +71,21 @@ class TestDatabase():
         self.test_ts['site_id'] = site_id
         self.test_ts['source_id'] = source_id
         self.test_ts['channel_id'] = channel_id
+
+    def test_init(self):
+        db_schema = DatabaseSchema("mspass_lite.yaml")
+        md_schema = MetadataSchema("mspass_lite.yaml")
+        client = Client('localhost')
+        db = Database(client, 'dbtest', db_schema=db_schema, md_schema=md_schema)
+        with pytest.raises(AttributeError, match='no attribute'):
+            dummy = db.database_schema.site
+        with pytest.raises(MsPASSError, match='not defined'):
+            dummy = db.database_schema['source']
+        db2 = Database(client, 'dbtest', db_schema="mspass_lite.yaml", md_schema="mspass_lite.yaml")
+        with pytest.raises(AttributeError, match='no attribute'):
+            dummy = db.database_schema.site
+        with pytest.raises(MsPASSError, match='not defined'):
+            dummy = db.database_schema['source']
 
     def test_save_elogs(self):
         tmp_ts = get_live_timeseries()
