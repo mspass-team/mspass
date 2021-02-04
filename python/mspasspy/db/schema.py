@@ -604,21 +604,46 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         self._main_dic[key]['readonly'] = False
 
 
-'''
-check if a mspass.yaml file is valid or not
-'''
-def is_basic_type(s):
-    if s in ["ObjectID","int","float","double","complex","bool","string","list","dict","bytes"]:
+'''below is all about _check_format utility function '''
+def _is_basic_type(s):
+    """
+    Helper function used to check if the value of the type attribute is valid
+
+    :param key: the str value in the type attribute
+    :type key: str
+    :return: `True` if the str value is valid, else return `False`
+    :rtype: bool
+    """
+    s = s.strip().casefold()
+    if s in ["objectid","int","integer","float","double","bool","boolean","str","string","list","dict","bytes","byte","object"]:
         return True
     return False
 
-def get_all_db_name(schema_dic):
+def _get_all_db_name(schema_dic):
+    """
+    Helper function used to get all the database names in the yaml file
+
+    :param schema_dic: the dictionary that a yaml file is dumped
+    :type schema_dic: dict
+    :return: a list of all database names
+    :rtype: list
+    """
     db_name_list = []
     for db in schema_dic:
         db_name_list.append(db)
     return db_name_list
 
-def get_all_collection_name_by_db(schema_dic, db):
+def _get_all_collection_name_by_db(schema_dic, db):
+    """
+    Helper function used to get all the collection names under a certain database
+
+    :param schema_dic: the dictionary that a yaml file is dumped
+    :type schema_dic: dict
+    :param db: a certain database name
+    :type db: str
+    :return: a list of all collection names
+    :rtype: list
+    """
     collection_name_list = []
     if db not in schema_dic:
         return collection_name_list
@@ -626,17 +651,95 @@ def get_all_collection_name_by_db(schema_dic, db):
         collection_name_list.append(c)
     return collection_name_list
 
+def _check_min_default_key(db_dict):
+    """
+    Helper function used to check if a database dict have at least "wf", "elog" and "history_object" default keys
+
+    :param db_dict: database schema dictionary
+    :type db_dict: dict
+    :return: True if all 3 default keys exsit, else raise SchemaError
+    :rtype: bool
+    """
+    default_key_set = set()
+    for collection in db_dict:
+        default_key_set.add(collection)
+        if 'default' in db_dict[collection]:
+            default_key_set.add(db_dict[collection]['default'])
+    
+    if 'wf' not in default_key_set or 'elog' not in default_key_set or 'history_object' not in default_key_set:
+        raise schema.SchemaError("wf, elog and history_object must be all defined as default key in a collection or as a collection name itself")
+    return True
+
+def _is_valid_database_schema(dic, database_collection_schema):
+    """
+    Helper function used to validate all collections in a database schema dictionary
+
+    :param dic: a database schema dictionary
+    :type dic: dict
+    :param database_collection_schema: the defined schema used to validate a database collection
+    :type db: schema.Schema
+    :return: True if all collections pass the validation
+    :rtype: bool
+    """
+    for collection in dic:
+        database_collection_schema.validate(dic[collection])
+    return True
+
+def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema):
+    """
+    Helper function used to validate all attribtes in a database schema dictionary
+
+    :param dic: a collection schema dictionary
+    :type dic: dict
+    :param type_attribute_schema: the defined schema used to validate a type attribute
+    :type type_attribute_schema: schema.Schema
+    :param reference_attribute_schema: the defined schema used to validate a reference attribute
+    :type reference_attribute_schema: schema.Schema
+    :return: True if all attributes pass the validation
+    :rtype: bool
+    """
+    for attr in dic:
+        if 'type' in dic[attr]:
+            type_attribute_schema.validate(dic[attr])
+        else:
+            reference_attribute_schema.validate(dic[attr])
+    return True
+
+def _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema):
+    """
+    Helper function used to validate all collections in a metadata schema dictionary
+
+    :param dic: a metadata schema dictionary
+    :type dic: dict
+    :param database_collection_schema: the defined schema used to validate a metatdata collection
+    :type db: schema.Schema
+    :return: True if all collections pass the validation
+    :rtype: bool
+    """
+    for attr in dic:
+        metadata_attribute_schema.validate(dic[attr])
+    return True
+
 def _check_format(schema_dic):
-    db_name_list = get_all_db_name(schema_dic)
+    """
+    check if a mspass.yaml file user provides is valid or not
+
+    :param schema_dic: the dictionary that a yaml file is dumped
+    :type schema_dic: dict
+    :return: `True` if the schema is valid, else return `False`
+    :rtype: bool
+    """
+    db_name_list = _get_all_db_name(schema_dic)
     collection_name_list = []
     for db_name in db_name_list:
-        collection_name_list += get_all_collection_name_by_db(schema_dic, db_name)
-    
+        collection_name_list += _get_all_collection_name_by_db(schema_dic, db_name)
+
     type_attribute_schema = schema.Schema({
-        'type':schema.And(str, lambda s: is_basic_type(s)),
+        'type':schema.And(str, lambda s: _is_basic_type(s)),
         schema.Optional('reference'):schema.And(str, lambda s: s in collection_name_list),
         schema.Optional('concept'):str,
-        schema.Optional('aliases'):schema.Or(list, str),
+        # FIXME Use can't convert the original value to the desired one
+        schema.Optional('aliases'):schema.Use(lambda s: [s] if type(s) is str else s),
         schema.Optional('optional'):bool,
         schema.Optional('readonly'):bool
     }, ignore_extra_keys=True)
@@ -652,24 +755,13 @@ def _check_format(schema_dic):
     }, ignore_extra_keys=True)
     
     database_collection_schema = schema.Schema({
+        schema.Optional('default'):str,
         schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
-        'schema':schema.And(dict, schema.And(dict, lambda dic: ('_id' in dic and type_attribute_schema.validate(attr) 
-                                        if 'type' in dic[attr] else reference_attribute_schema.validate(attr) 
-                                        for attr in dic)))
+        'schema':schema.And(dict, lambda dic: _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema))
     }, ignore_extra_keys=True)
     
     metadata_collection_schema = schema.Schema({
-        'schema':schema.And(dict, lambda dic: (metadata_attribute_schema.validate(attribute) for attribute in dic))
-    }, ignore_extra_keys=True)
-    
-    database_schema = schema.Schema({
-        'wf_TimeSeries':schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        'wf_Seismogram':schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        schema.Optional('site'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        schema.Optional('channel'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        schema.Optional('source'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        schema.Optional('history_object'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
-        schema.Optional('elog'):schema.And(dict, lambda dic: database_collection_schema.validate(dic)),
+        'schema':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema))
     }, ignore_extra_keys=True)
     
     metadata_schema = schema.Schema({
@@ -678,7 +770,8 @@ def _check_format(schema_dic):
     }, ignore_extra_keys=True)
     
     yaml_schema = schema.Schema({
-        'Database':schema.And(dict, lambda dic: database_schema.validate(dic)),
+        'Database':schema.And(dict, schema.And(lambda dic: _is_valid_database_schema(dic, database_collection_schema),
+                                               lambda dic: _check_min_default_key(dic))),
         'Metadata':schema.And(dict, lambda dic: metadata_schema.validate(dic)),
     }, ignore_extra_keys=True)
     
