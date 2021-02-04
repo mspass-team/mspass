@@ -609,8 +609,9 @@ def _is_basic_type(s):
     """
     Helper function used to check if the value of the type attribute is valid
 
-    :param key: the str value in the type attribute
-    :type key: str
+    :param s: the str value in the type attribute
+    :type s: str
+
     :return: `True` if the str value is valid, else return `False`
     :rtype: bool
     """
@@ -625,6 +626,7 @@ def _get_all_db_name(schema_dic):
 
     :param schema_dic: the dictionary that a yaml file is dumped
     :type schema_dic: dict
+
     :return: a list of all database names
     :rtype: list
     """
@@ -639,8 +641,10 @@ def _get_all_collection_name_by_db(schema_dic, db):
 
     :param schema_dic: the dictionary that a yaml file is dumped
     :type schema_dic: dict
+
     :param db: a certain database name
     :type db: str
+
     :return: a list of all collection names
     :rtype: list
     """
@@ -652,6 +656,15 @@ def _get_all_collection_name_by_db(schema_dic, db):
     return collection_name_list
 
 def _check_min_default_key(db_dict):
+    """
+    Helper function used to check if there are at least 3 defined default keys, which are 'wf', 'elog' and 'history_object'
+
+    :param db_dict: the database schema dictionary
+    :type db_dict: dict
+
+    :return: True if contains, else raise a schema.SchemaError
+    :rtype: bool
+    """
     default_key_set = set()
     for collection in db_dict:
         default_key_set.add(collection)
@@ -667,8 +680,10 @@ def _is_valid_database_schema(dic, database_collection_schema):
     Helper function used to validate all collections in a database schema dictionary
     :param dic: a database schema dictionary
     :type dic: dict
+    
     :param database_collection_schema: the defined schema used to validate a database collection
-    :type db: schema.Schema
+    :type database_collection_schema: schema.Schema
+    
     :return: True if all collections pass the validation
     :rtype: bool
     """
@@ -681,8 +696,10 @@ def _is_valid_metadata_schema(dic, metadata_collection_schema):
     Helper function used to validate all collections in a metadata schema dictionary
     :param dic: a metadata schema dictionary
     :type dic: dict
-    :param database_collection_schema: the defined schema used to validate a metadata collection
-    :type db: schema.Schema
+
+    :param metadata_collection_schema: the defined schema used to validate a metadata collection
+    :type metadata_collection_schema: schema.Schema
+
     :return: True if all collections pass the validation
     :rtype: bool
     """
@@ -695,10 +712,13 @@ def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_a
     Helper function used to validate all attribtes in a database collection schema dictionary
     :param dic: a database collection schema dictionary
     :type dic: dict
+
     :param type_attribute_schema: the defined schema used to validate a type attribute
     :type type_attribute_schema: schema.Schema
+
     :param reference_attribute_schema: the defined schema used to validate a reference attribute
     :type reference_attribute_schema: schema.Schema
+
     :return: True if all attributes pass the validation
     :rtype: bool
     """
@@ -709,18 +729,26 @@ def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_a
             dic[attr] = reference_attribute_schema.validate(dic[attr])
     return True
 
-def _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema):
+def _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_attribute_schema):
     """
     Helper function used to validate all attribtes in a metadata collection schema dictionary
     :param dic: a metadata collection schema dictionary
     :type dic: dict
-    :param database_collection_schema: the defined schema used to validate metadata collection attributes
-    :type db: schema.Schema
+
+    :param type_attribute_schema: the defined schema used to validate a type attribute
+    :type type_attribute_schema: schema.Schema
+
+    :param metadata_attribute_schema: the defined schema used to validate a attribute that has collection
+    :type metadata_attribute_schema: schema.Schema
+    
     :return: True if all collections pass the validation
     :rtype: bool
     """
     for attr in dic:
-        dic[attr] = metadata_attribute_schema.validate(dic[attr])
+        if 'type' in dic[attr]:
+            dic[attr] = type_attribute_schema.validate(dic[attr])
+        else:
+            dic[attr] = metadata_attribute_schema.validate(dic[attr])
     return True
 
 def _check_format(schema_dic):
@@ -763,13 +791,13 @@ def _check_format(schema_dic):
     }, ignore_extra_keys=True)
     
     metadata_collection_schema = schema.Schema({
-        'schema':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, metadata_attribute_schema))
+        'schema':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_attribute_schema))
     }, ignore_extra_keys=True)
     
     yaml_schema = schema.Schema({
         'Database':schema.And(dict, schema.And(lambda dic: _is_valid_database_schema(dic, database_collection_schema),
                                                lambda dic: _check_min_default_key(dic))),
-        'Metadata':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, metadata_collection_schema)),
+        'Metadata':schema.And(dict, lambda dic: _is_valid_metadata_schema(dic, metadata_collection_schema)),
     }, ignore_extra_keys=True)
     
     yaml_schema.validate(schema_dic)
