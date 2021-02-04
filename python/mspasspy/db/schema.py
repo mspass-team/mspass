@@ -688,7 +688,7 @@ def _is_valid_database_schema(dic, database_collection_schema):
     :rtype: bool
     """
     for collection in dic:
-        dic[collection] = database_collection_schema.validate(dic[collection])
+        database_collection_schema.validate(dic[collection])
     return True
 
 def _is_valid_metadata_schema(dic, metadata_collection_schema):
@@ -704,7 +704,7 @@ def _is_valid_metadata_schema(dic, metadata_collection_schema):
     :rtype: bool
     """
     for collection in dic:
-        dic[collection] = metadata_collection_schema.validate(dic[collection])
+        metadata_collection_schema.validate(dic[collection])
     return True
 
 def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema):
@@ -726,7 +726,7 @@ def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_a
         if 'type' in dic[attr]:
             dic[attr] = type_attribute_schema.validate(dic[attr])
         else:
-            dic[attr] = reference_attribute_schema.validate(dic[attr])
+            reference_attribute_schema.validate(dic[attr])
     return True
 
 def _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_attribute_schema):
@@ -748,7 +748,7 @@ def _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_att
         if 'type' in dic[attr]:
             dic[attr] = type_attribute_schema.validate(dic[attr])
         else:
-            dic[attr] = metadata_attribute_schema.validate(dic[attr])
+            metadata_attribute_schema.validate(dic[attr])
     return True
 
 def _check_format(schema_dic):
@@ -786,6 +786,7 @@ def _check_format(schema_dic):
     
     database_collection_schema = schema.Schema({
         schema.Optional('default'):str,
+        schema.Optional('data_type'):str,
         schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
         'schema':schema.And(dict, lambda dic: _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema))
     }, ignore_extra_keys=True)
