@@ -305,7 +305,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span> <span class="o">=</span> <span class="n">schema</span></div>
 
-<div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.read_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_undefined</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads and returns the mspasspy object stored in the database.</span>
 
@@ -407,7 +407,8 @@
         <span class="c1"># 3.load history</span>
         <span class="k">if</span> <span class="n">load_history</span><span class="p">:</span>
             <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_load_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">history_obj_id_name</span> <span class="ow">in</span> <span class="n">object_doc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_load_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">])</span>
 
         <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">mspass_object</span><span class="o">.</span><span class="n">clear_modified</span><span class="p">()</span>
