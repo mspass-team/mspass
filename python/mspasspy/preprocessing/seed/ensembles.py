@@ -200,8 +200,9 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
         for d in dseis:
             mddict={}
             mddict['net']=d.stats['network']
-            mddict['sta']=d.stats['channel']
-            mddict['chan']=d.stats['location']
+            mddict['sta']=d.stats['station']
+            mddict['chan']=d.stats['channel']
+            mddict['loc']=d.stats['location']
             st=d.stats['starttime']
             et=d.stats['endtime']
             mddict['starttime']=st.timestamp
