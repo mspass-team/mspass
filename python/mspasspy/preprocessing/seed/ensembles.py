@@ -23,7 +23,7 @@ def obspy_mseed_file_indexer(file):
     since they have no foff concept in their reader).  Hence, what this reader
     does is make a table entry for each net:sta:chan:loc trace object their
     reader returns.   It does this with panda dataframes to build the
-    table.
+    table.  One required argument is the file name containing the miniseed data.
     """
     try:
         pr=Path(file)
@@ -92,20 +92,26 @@ def obspy_mseed_file_indexer(file):
     except FileNotFoundError as err:
         print('mseed_file_indexer:  invalid file named received')
         print(err)
-def dbsave_raw_index(db,pdframe):
+def dbsave_raw_index(db,pdframe,collection='import_miniseed_ensemble'):
     """
-    Prototype database save to db for a panda data frame pdframe.
-    This crude version collection name is frozen as wf_miniseed.  db is
-    assumed to be the client root for mongodb
+    Database save to db for a panda data frame pdframe.
+    This crude version collection name is frozen as import_miniseed_ensemble.  db is
+    assumed to be the client root for mongodb or the mspasspy Client
+    that is a child of MongoClient.
+
+    :param db:  MongoClient or mspass Client to save data desired
+    :param pdframe:  panda data frame to be saved
+    :param collection:  collection to which the data in pdframe is to be
+      saved.  Default is 'import_miniseed_ensemble'
     """
-    col=db['wf_miniseed']
+    col=db[collection]
     # records is a keyword that makes rows of the dataframe docs for mongo
     dtmp=pdframe.to_dict('records')
     col.insert_many(dtmp)
 def dbsave_seed_ensemble_file(db,file,gather_type="event",
                 keys=None):
     """
-    Prototype indexer for SEED files that are already assembled in a
+    Indexer for SEED files that are already assembled in a
     "gather" meaning the data have some relation through one or more
     keys.   The association may be predefined by input though a
     keys array or left null for later association.   There is a large
@@ -117,11 +123,11 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     scan the seed blockettes to assemble the metadata, but
     that would be a future development.
 
-    A KEY POINT about this function is that it ONLY builds and index
+    A KEY POINT about this function is that it ONLY builds an index
     for the data file it is given.  That index is loosely equivalent to
     the css3.0 wfdisc table, but organized completely differently.
 
-    This function writes records into a wf_miniseed collection.
+    This function writes records into a import_miniseed_ensemble collection.
     The records written are a hierarchy expressed in json (bson) of
     how a Ensemble object is define: i.e. ensemble Metadata
     combined with a container of TimeSeries of Seismogram objects.
@@ -144,12 +150,10 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     concept more clearly with figures.
 
     A design constraint we impose for now is that one file generates
-    one document in the wf_miniseed collection.   This means if
-    the data for an ensemble is spread through several files it would
-    have to be constructed in pieces.  That will require implementing
-    a function that merges ensemble data.  That model should make this
-    more generic as an end member is an ensembled created by merging
-    files with one TimeSeries per file.
+    one document in the import_miniseed_ensemble collection.   This means if
+    the data for an ensemble is spread through several files the
+    best approach is to convert all the data to TimeSeries objects and
+    assemble them with a different algorithm
 
     A final point about this function is that it dogmatically always produces a
     unique uuid string using the ProcessingHistory newid method.   Be warned
@@ -169,11 +173,13 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
       only currently supported format.  (others keyword will cause an
       error to be thrown)  Anticipated alternatives are:  "common_receiver"
       or "station", "image_point", and "time_window".
+     :return:  ObjectId of the document inserted that is the index for
+      the file processed.
     """
 
     try:
         his=ProcessingHistory()  # used only to create uuids
-        dbh=db['wf_miniseed']
+        dbh=db['import_miniseed_ensemble']
         pr=Path(file)
         fullpath=pr.absolute()
         [dirself,dfileself]=os.path.split(fullpath)
@@ -218,7 +224,7 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
         return result.inserted_id
     except:
         print('something threw an exception - this needs detailed handlers')
-def load_md(rec,keys):
+def _load_md(rec,keys):
     """
     Helper for load ensemble.   Extracts metadata defined by keys list and
     posts to a Metadata container that is returned.
@@ -238,21 +244,24 @@ def load_one_ensemble(doc,
 		  apply_calib=False,
                   verbose=False):
     """
-    This is a prototype.  Ultimately this should probably be a method
-    in the Database handle.  For now will do this as a function to
-    see how it works.
+    This function can be used to load a full ensemble indexed in the
+    collection import_miniseed_ensemble.  It uses a large memory model
+    that eat up the entire file using obspy's miniseed reader.   It contains
+    some relics of early ideas of potentially having the function
+    utilize the history mechanism.  Those may not work, but were retained.
 
-    This example illustrates an issue in history we need to improve.
-    At this point jobname and jobid are best set for a reader like
-    this function, but what happens if jobname and jobid change
-    within a workflow is not clear - it could break the history chain.
-    Just putting this here now as a reminder to consider that later.
-
-    prototype uses a idkey and value for a unique set of data or a
-    query dict passed directly to mongo.
-
-    This help string MUST discuss the problem of assuming ensemble md
-    are consistent if reading multiple files.
+    :param doc: is one record in the import_miniseed_ensemble collection
+    :param create_history:  if true each member of the ensemble will be
+      defined in the history chain as an origin and jobname and jobid will be
+      be used to construct the ProcessingHistory object.
+    :param jobname: as used in ProcessingHistory (default "Default job")
+    :param jobid: as used in processingHistory
+    :param algid: as used in processingHistory
+    :param ensemble_mdkeys:  list of keys to copy from first member to ensemble
+       Metadata (no type checking is done)
+    :param apply_calib:  if True tells obspy's reader to apply the calibration
+      factor to convert the data to ground motion units.  Default is false.
+    :param verbose:  write informational messages while processing
     """
     try:
         ensemblemd=Metadata()
@@ -271,7 +280,7 @@ def load_one_ensemble(doc,
         # supported by obspy's read function - should generalize it for release
         dseis=read(fname,format='mseed',apply_calib=apply_calib)
         if len(ensemble_mdkeys)>0:
-            ensemblemd=load_md(doc,ensemble_mdkeys)
+            ensemblemd=_load_md(doc,ensemble_mdkeys)
         else:
             # default is to load everything != members
             members_key='members'
@@ -306,15 +315,15 @@ def load_one_ensemble(doc,
 def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
     """
     This prototype function uses a not at all generic method to link data
-    indexed in a wf_miniseed collection to source data assumed stored
+    indexed in a import_miniseed_ensemble collection to source data assumed stored
     in the source collection.   The algorithm is appropriate ONLY if the
     data are downloaded by obspy with a time window defined by a start time
     equal to the origin time of the event.   We use a generic test to check
-    if the median ensemble start time (pulled from wf_miniseed record)
+    if the median ensemble start time (pulled from import_miniseed_ensemble record)
     is within +-dt of any origin time in source.   If found we extract the
     source_id of the maching event document and then update the record in
-    wf_miniseed being handled.  Tha process is repeated for each
-    document in the wf_miniseed collection.
+    import_miniseed_ensemble being handled.  Tha process is repeated for each
+    document in the import_miniseed_ensemble collection.
 
     To handle css3.0 set the prefer_evid boolean True (default is False).
     When used the program will use a document with an evid set as a match
@@ -330,7 +339,7 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
       evid set when there are multiple matches.
     :param verbose:  when true output will be more verbose.
     """
-    dbwf=db['wf_miniseed']
+    dbwf=db['import_miniseed_ensemble']
     dbsource=db['source']
     try:
         ensrec=dbwf.find({})
@@ -399,21 +408,29 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
         raise MsPASSError('Something threw an unexpected exception',
             ErrorSeverity.Invalid) from err
 
-def load_hypocenter_data_by_id(db,ens):
+def load_source_data_by_id(db,mspass_object):
     """
-    Prototype function to load source data from the source collection.
-    We assume source_id is set in the ensemble's metadata.
-    We use that id to query the source collection.   If a match is found
-    source coordinates are loaded in all members of ens.   If a match is not
-    found print an error message and do nothing.
+    Prototype function to load source data to any MsPASS data object
+    based on the normalization key.  That keys is frozen in this version
+    as "source_id" but may be changed to force constraints by the mspasspy
+    schema classes.
+
+    Handling of Ensembles and atomic objects are different conceptually but
+    in fact do exactly the same thing.   That is, in all cases the
+    algorithm queries the input object for the key "source_id".  If that
+    fails it returns an error.  Otherwise, it finds the associated document
+    in the source collection.   It then posts a frozen set of metadata to
+    mspass_object.   If that is an ensemble it is posted to the ensemble
+    metadata area.  If it is an atomic object it gets posted to the atomic object's
+    metadata area.
     """
     dbsource=db.source
     try:
-        if not 'source_id' in ens:
-            raise MsPASSError('load_hypocenter_data_by_id',
+        if not 'source_id' in mspass_object:
+            raise MsPASSError('load_source_data_by_id',
                               'required attribute source_id not in ensemble metadata',
                               ErrorSeverity.Invalid)
-        source_id=ens['source_id']
+        source_id=mspass_object['source_id']
         # The way we currently do this source_id eithe rmaches one documentn in
         # source or none.  Hence, we can jus use a find_one query
         srcrec=dbsource.find_one({'source_id' : source_id})
@@ -426,14 +443,14 @@ def load_hypocenter_data_by_id(db,ens):
                 "no match found in source collection for source_id="+source_id,
                 ErrorSeverity.Invalid)
         else:
-            ens['source_lat']=srcrec['latitude']
-            ens['source_lon']=srcrec['longitude']
-            ens['source_depth']=srcrec['depth']
-            ens['source_time']=srcrec['time']
-            ens['source_id']=source_id
-        return ens
+            mspass_object['source_lat']=srcrec['latitude']
+            mspass_object['source_lon']=srcrec['longitude']
+            mspass_object['source_depth']=srcrec['depth']
+            mspass_object['source_time']=srcrec['time']
+            mspass_object['source_id']=source_id
+        return mspass_object
     except:
-        print("something threw an unexpected excepion")
+        print("something threw an unexpected exception")
 def load_hypocenter_data_by_time(db=None,
                                 ens=None,
                                 dbtime_key='time',
@@ -555,12 +572,11 @@ def load_site_data(db,ens):
     """
     dbsite=db.site
     try:
-        # We assume this got set on initialization - only works for sure
-        # for seed ensemble reader linked to this prototype code
-        t0=ens['starttime']
+
         for d in ens.member:
             if d.dead():
                 continue
+            t0=d['starttime']
             net=d['net']
             sta=d['sta']
             query={
@@ -596,13 +612,10 @@ def load_channel_data(db,ens):
     """
     dbchannel=db.channel
     try:
-        # We assume this got set on initialization - only works for sure
-        # for seed ensemble reader linked to this prototype code
-        t0=ens['starttime']
         for d in ens.member:
             if d.dead():
                 continue
-
+            t0=d['starttime']
             # this is a sanity check to avoid throwing exceptions
             if( d.is_defined('net')
               and d.is_defined('sta')
