@@ -1189,7 +1189,7 @@ class Database(pymongo.database.Database):
         print("number of channel records saved=", n_chan_saved)
         return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
-    def load_inventory(self, net=None, sta=None, loc=None, time=None):
+    def read_inventory(self, net=None, sta=None, loc=None, time=None):
         """
         Loads an obspy inventory object limited by one or more
         keys.   Default is to load the entire contents of the
@@ -1238,7 +1238,7 @@ class Database(pymongo.database.Database):
                 # if poorly documented in obspy
                 result.extend([netw])
         return result
-    def load_seed_station(self, net, sta, loc='NONE', time=-1.0):
+    def get_seed_station(self, net, sta, loc='NONE', time=-1.0):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -1277,21 +1277,39 @@ class Database(pymongo.database.Database):
         else:
             stations = dbsite.find(query)
             if (matchsize > 1):
-                print("load_seed_site (WARNING):  query=", query)
+                print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
             return stations
 
-    def load_seed_channel(self, net, sta, chan, loc='NONE', time=-1.0):
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
         """
         The channel collection is assumed to have a one to one
         mapping of net:sta:loc:chan:starttime - endtime.
         This method uses a restricted query to match the
         keys given and returns a dict of the document contents
-        associated with that key.
+        associated with that key.  Note net, sta, and chan are required
+        but loc is optional.
+
+        The optional loc code is handled specially.  The reason is 
+        that it is common to have the loc code empty.  In seed data that
+        puts two ascii blank characters in the 2 byte packet header 
+        position for each miniseed blockette.  With pymongo that 
+        can be handled one of three ways that we need to handle gracefully.
+        That is, one can either set a literal two blank character 
+        string, an empty string (""), or a MongoDB NULL.   To handle 
+        that confusion this algorithm first queries for all matches
+        without loc defined.  If only one match is found that is 
+        returned immediately.  If there are multiple matches we
+        search though the list of docs returned for a match to 
+        loc being conscious of the null string oddity.  
+
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.  If not used
         the first occurence will be returned (usually ill adivsed)
-        Returns None if there is no match.
+        Returns None if there is no match.  Although the time argument 
+        is technically option it usually a bad idea to not include
+        a time stamp because most stations saved as seed data have 
+        time variable channel metadata.
 
         :param net:  network name to match
         :param sta:  station name to match
@@ -1307,23 +1325,64 @@ class Database(pymongo.database.Database):
         query = {}
         query['net'] = net
         query['sta'] = sta
-        if (loc == 'NONE'):
-            query['loc'] = ""
-        else:
-            query['loc'] = loc
         query['chan'] = chan
+        if loc != None:
+            query['loc'] = loc
+        
         if (time > 0.0):
             query['starttime'] = {"$lt": time}
             query['endtime'] = {"$gt": time}
         matchsize = dbchannel.count_documents(query)
         if (matchsize == 0):
             return None
+        if matchsize==1:
+            return dbchannel.find_one(query)
         else:
-            channel = dbchannel.find(query)
-            if (matchsize > 1):
-                print("load_seed_channel (WARNING):  query=", query)
-                print("Returned ", matchsize, " documents - should be exactly one")
-            return channel
+            # Note we only land here when the above yields multiple matches
+            if loc == None:
+                # We could get here one of two ways.  There could
+                # be multiple loc codes and the user didn't specify 
+                # a choice or they wanted the empty string (2 cases).
+                # We also have to worry about the case where the 
+                # time was not specified but needed. 
+                # The complexity below tries to unravel all those possibities
+                testquery=query
+                testquery['loc']=None
+                matchsize=dbchannel.count_documents(testquery)
+                if matchsize == 1:
+                    return dbchannel.find_one(testquery)
+                elif matchsize > 1:
+                    if time>0.0:
+                        print("get_seed_channel:  multiple matches found for net=",
+                          net," sta=",sta," and channel=",chan, " with null loc code\n"
+                             "Assuming database problem with duplicate documents in channel collection\n",
+                            "Returning first one found")
+                        return dbchannel.find_one(testquery)
+                    else:
+                        raise MsPASSError("get_seed_channel:  "
+                            + "query with "+net+":"+sta+":"+chan+" and null loc is ambiguous\n"
+                            + "Specify at least time but a loc code if is not truly null",
+                            "Fatal")
+                else:
+                    # we land here if a null match didn't work.  
+                    #Try one more recovery with setting loc to an emtpy 
+                    # string
+                    testquery['loc']=""  
+                    matchsize=dbchannel.count_documents(testquery)
+                    if matchsize == 1:
+                        return dbchannel.find_one(testquery)
+                    elif matchsize > 1:
+                        if time>0.0:
+                            print("get_seed_channel:  multiple matches found for net=",
+                               net," sta=",sta," and channel=",chan, " with null loc code tested with empty string\n"
+                               "Assuming database problem with duplicate documents in channel collection\n",
+                               "Returning first one found")
+                            return dbchannel.find_one(testquery)
+                        else:
+                            raise MsPASSError("get_seed_channel:  "
+                              + "recovery query attempt with "+net+":"+sta+":"+chan+" and null loc converted to empty string is ambiguous\n"
+                              + "Specify at least time but a loc code if is not truly null",
+                              "Fatal")
 
     def save_catalog(self, cat, verbose=False):
         """
