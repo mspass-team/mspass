@@ -26,6 +26,7 @@ from mspasspy.ccore.seismic import (TimeSeries,
                                     SeismogramEnsemble)
 from mspasspy.ccore.utility import (Metadata,
                                     MsPASSError,
+                                    ErrorSeverity,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
@@ -570,6 +571,150 @@ class Database(pymongo.database.Database):
     # TODO: the following is not used when data is read from the database. We need
     #       link these metadata keys with the actual member variables just like the
     #       npts or t0 in TimeSeries.
+    def _load_collection_metadata(self,mspass_object, exclude_keys, include_undefined=False, collection=None):
+        """
+        Master Private Method
+
+        Reads metadata from a requested collection and loads standard attributes from collection to the data passed as mspass_object.
+        The method will only work if mspass_object has the collection_id attribute set to link it to a unique document in source.  
+
+        :param mspass_object:   data where the metadata is to be loaded
+        :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
+        
+        :param exclude_keys: list of attributes that should not normally be loaded.
+        Default attributes not normally need that are loaded from stationxml.  Ignored if include_undefined is set True.
+        
+        :param include_undefined:  when true all data in the matching document are loaded.
+
+        :param collection: requested collection metadata should be loaded
+        :type collection: str 
+
+        :exception:  any detected errors will cause a MsPASSError to be thrown
+        (colleagues:  this may be wrong sphynx syntax for defining an exception)
+        """
+        if collection not in ["source", "site", "channel"]:
+            raise MsPASSError("collection param should be one of source, site or channel", ErrorSeverity.Invalid)
+
+        if not mspass_object.live:
+            raise MsPASSError("only live mspass object can load metadata", ErrorSeverity.Invalid)
+
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise MsPASSError("only TimeSeries and Seismogram are supported", ErrorSeverity.Invalid)
+
+        if collection == 'channel' and isinstance(mspass_object, (Seismogram, SeismogramEnsemble)):
+            raise MsPASSError("channel data can not be loaded into Seismogram", ErrorSeverity.Invalid)
+        
+        # 1. get the metadata schema based on the mspass object type
+        wf_collection = 'wf_TimeSeries' if isinstance(mspass_object, TimeSeries) else 'wf_Seismogram'
+        object_type = self.database_schema[wf_collection].data_type()
+        if object_type not in [TimeSeries, Seismogram]:
+            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
+                object_type, wf_collection), 'Fatal')
+        wf_collection_metadata_schema = self.metadata_schema[object_type.__name__]
+
+        collection_id = collection + '_id'
+        # 2. get the source_id from the current mspass_object
+        if not mspass_object.is_defined(collection_id):
+            raise MsPASSError("no {} in the mspass object".format(collection_id), ErrorSeverity.Invalid)
+        object_doc_id = mspass_object[collection_id]
+
+        # 3. find the unique document associated with this source id in the source collection
+        object_doc = self[collection].find_one({'_id': object_doc_id})
+        if object_doc == None:
+            raise MsPASSError("no match found in {} collection for source_id = {}".format(collection, object_doc_id), ErrorSeverity.Invalid)
+        
+        # 4. use this document to update the mspass object
+        for k in wf_collection_metadata_schema.keys():
+            col = wf_collection_metadata_schema.collection(k)
+            if col == collection:
+                if include_undefined:
+                    mspass_object.put(k, object_doc[self.database_schema[col].unique_name(k)])
+                    continue
+                if k not in exclude_keys:
+                    mspass_object.put(k, object_doc[self.database_schema[col].unique_name(k)])
+
+
+    def load_source_metadata(self,mspass_object, exclude_keys=['serialized_event','magnitude_type'], include_undefined=False):
+        """
+        Reads metadata from source collection and loads standard attributes in source collection to the data passed as mspass_object.
+        The method will only work if mspass_object has the source_id attribute set to link it to a unique document in source.  
+
+        Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class
+        or an ensemble (TimeSeriesEnsemble or SeismogramEnsemble).
+        Ensembles will have the source data posted to the ensemble Metadata and not the members.
+        This should be the stock way to assemble the generalization of a shot gather. 
+
+        :param mspass_object:   data where the source metadata is to be loaded
+        :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
+        
+        :param exclude_keys: list of attributes that should not normally be loaded.
+        Default attributes not normally need that are loaded from stationxml.  Ignored if include_undefined is set True.
+        
+        :param include_undefined:  when true all data in the matching source document are loaded. 
+
+        :exception:  any detected errors will cause a MsPASSError to be thrown
+        (colleagues:  this may be wrong sphynx syntax for defining an exception)
+        """
+        if isinstance(mspass_object, (TimeSeries, Seismogram)):
+            self._load_collection_metadata(mspass_object, exclude_keys, include_undefined, 'source')
+        if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            for member_object in mspass_object.member:
+                self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'source')
+        
+
+    def load_site_metadata(self,mspass_object, exclude_keys=[], include_undefined=False):
+        """
+        Reads metadata from site collection and loads standard attributes insite collection to the data passed as mspass_object.
+        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.  
+
+        Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
+        or SeismogramEnsemble).
+        Ensembles will have the site data posted to the ensemble Metadata and not the members.
+        This should be the stock way to assemble the generalization of a common-receiver gather. 
+
+        :param mspass_object:   data where the site metadata is to be loaded
+        :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
+        
+        :param exclude_keys: list of attributes that should not normally be loaded.  Default is none.   Ignored if include_undefined is set True.
+        
+        :param include_undefined:  when true all data in the matching source document are loaded 
+        
+        :exception:  any detected errors will cause a MsPASSError to be thrown
+        (colleagues:  this may be wrong sphynx syntax for defining an exception)
+        """
+        if isinstance(mspass_object, (TimeSeries, Seismogram)):
+            self._load_collection_metadata(mspass_object, exclude_keys, include_undefined, 'site')
+        if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            for member_object in mspass_object.member:
+                self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'site')
+
+    def load_channel_metadata(self,mspass_object, exclude_keys=['serialized_channel_data'], include_undefined=False):
+        """
+        Reads metadata from channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
+        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.  
+
+        Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
+        or SeismogramEnsemble).
+        Ensembles will have the site data posted to the ensemble Metadata and not the members.
+        This should be the stock way to assemble the generalization of a common-receiver gather of TimeSeries data for a common sensor component.
+
+        :param mspass_object:   data where the channel metadata is to be loaded
+        :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
+        
+        :param exclude_keys: list of attributes that should not normally be loaded.
+        Default excludes the serialized obspy class that is used to store response data.   Ignored if include_undefined is set True.
+        
+        :param include_undefined:  when true all data in the matching source document are loaded 
+        
+        :exception:  any detected errors will cause a MsPASSError to be thrown
+        (colleagues:  this may be wrong sphynx syntax for defining an exception)
+        """
+        if isinstance(mspass_object, (TimeSeries, Seismogram)):
+            self._load_collection_metadata(mspass_object, exclude_keys, include_undefined, 'channel')
+        if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
+            for member_object in mspass_object.member:
+                self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'channel')
+
 
     @staticmethod
     def _sync_metadata_before_update(mspass_object):

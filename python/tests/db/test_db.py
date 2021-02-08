@@ -586,6 +586,54 @@ class TestDatabase():
         client = Client('localhost')
         client.drop_database('dbtest')
 
+    
+    def test_load_source_site_channel_metadata(self):
+        ts = copy.deepcopy(self.test_ts)
+
+        # insert arbitrary site/channel/source data in db
+        site_id = ObjectId()
+        channel_id = ObjectId()
+        source_id = ObjectId()
+        ts['site_id'] = site_id
+        ts['channel_id'] = channel_id
+        ts['source_id'] = source_id
+        self.db['site'].insert_one({'_id': site_id, 'net': 'net10', 'sta': 'sta10', 'loc': 'loc10', 'lat': 5.0, 'lon': 5.0,
+                            'elev': 5.0, 'starttime': 1.0, 'endtime': 1.0})
+        self.db['channel'].insert_one({'_id': channel_id, 'net': 'net10', 'sta': 'sta10', 'loc': 'loc10', 'chan': 'chan10',
+                                'lat': 5.0, 'lon': 5.0, 'elev': 5.0, 'starttime': 1.0, 'endtime': 1.0, 'edepth': 5.0,
+                                'vang': 5.0, 'hang': 5.0})
+        self.db['source'].insert_one({'_id': source_id, 'lat': 5.0, 'lon': 5.0, 'time': 1.0, 'depth': 5.0, 'magnitude': 5.0})
+
+        # load site/channel/source data into the mspass object
+        self.db.load_site_metadata(ts, exclude_keys=['site_elev'], include_undefined=False)
+        assert ts['net'] == 'net10'
+        assert ts['sta'] == 'sta10'
+        assert ts['site_lat'] == 5.0
+        assert ts['site_lon'] == 5.0
+        assert 'site_elev' not in ts
+        assert ts['site_starttime'] == 1.0
+        assert ts['site_endtime'] == 1.0
+
+        self.db.load_source_metadata(ts, exclude_keys=['source_magnitude'], include_undefined=False)
+        assert ts['source_lat'] == 5.0
+        assert ts['source_lon'] == 5.0
+        assert ts['source_depth'] == 5.0
+        assert ts['source_time'] == 1.0
+        assert 'source_magnitude' not in ts
+
+        self.db.load_channel_metadata(ts, exclude_keys=['channel_edepth'], include_undefined=False)
+        assert ts['chan'] == 'chan10'
+        assert ts['loc'] == 'loc10'
+        assert ts['channel_hang'] == 5.0
+        assert ts['channel_vang'] == 5.0
+        assert ts['channel_lat'] == 5.0
+        assert ts['channel_lon'] == 5.0
+        assert ts['channel_elev'] == 5.0
+        assert 'channel_edepth' not in ts
+        assert ts['channel_starttime'] == 1.0
+        assert ts['channel_endtime'] == 1.0
+    
+
 def test_read_distributed_data(spark_context):
     client = Client('localhost')
     client.drop_database('mspasspy_test_db')
@@ -680,7 +728,6 @@ def test_read_distributed_data_dask():
 
     client = Client('localhost')
     client.drop_database('mspasspy_test_db')
-
 
 if __name__ == '__main__':
     pass
