@@ -1238,7 +1238,7 @@ class Database(pymongo.database.Database):
                 # if poorly documented in obspy
                 result.extend([netw])
         return result
-    def get_seed_station(self, net, sta, loc='NONE', time=-1.0):
+    def get_seed_site(self, net, sta, loc='NONE', time=-1.0):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -1259,8 +1259,8 @@ class Database(pymongo.database.Database):
         default ignores loc in query.
         :param time: epoch time for requested metadata
 
-        :return: handle to query result
-        :rtype:  MondoDB Cursor object of query result.
+        :return: MongoDB doc (dict) matching query
+        :rtype:  python dict (document) of result.  None if there is no match.
         """
         dbsite = self.site
         query = {}
@@ -1279,7 +1279,9 @@ class Database(pymongo.database.Database):
             if (matchsize > 1):
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
-            return stations
+                print("Returning first entry found")
+            stadoc=dbsite.find_one(query)
+            return stadoc
 
     def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
         """
