@@ -64,7 +64,7 @@ def channel_report(db,net=None,sta=None,chan=None,loc=None,time=None):
               '{:>8}'.format(doc['sta']),
               '{:>6}'.format(doc['chan']),
               '{:=^6}'.format(doc['loc']),
-              doc['latitude'],doc['longitude'],doc['elevation'],
+              doc['lat'],doc['lon'],doc['elev'],
               UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))
 
 def site_report(db,net=None,sta=None,loc=None,time=None):
@@ -132,5 +132,5 @@ def site_report(db,net=None,sta=None,loc=None,time=None):
         print('{:>4}'.format(doc['net']),
               '{:>8}'.format(doc['sta']),
               '{:=^6}'.format(doc['loc']),
-              doc['latitude'],doc['longitude'],doc['elevation'],
+              doc['lat'],doc['lon'],doc['elev'],
               UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))

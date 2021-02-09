@@ -444,8 +444,8 @@ def load_source_data_by_id(db,mspass_object):
                 "no match found in source collection for source_id="+source_id,
                 ErrorSeverity.Invalid)
         else:
-            mspass_object['source_lat']=srcrec['latitude']
-            mspass_object['source_lon']=srcrec['longitude']
+            mspass_object['source_lat']=srcrec['lat']
+            mspass_object['source_lon']=srcrec['lon']
             mspass_object['source_depth']=srcrec['depth']
             mspass_object['source_time']=srcrec['time']
             mspass_object['source_id']=source_id
@@ -594,9 +594,9 @@ def load_site_data(db,ens):
                  ErrorSeverity.Invalid)
             else:
                 siterec=dbsite.find_one(query)
-                d['site_lat']=siterec['latitude']
-                d['site_lon']=siterec['longitude']
-                d['site_elev']=siterec['elevation']
+                d['site_lat']=siterec['lat']
+                d['site_lon']=siterec['lon']
+                d['site_elev']=siterec['elev']
                 d['site_id']=siterec['site_id']
                 if n>1:
                     message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
@@ -650,9 +650,9 @@ def load_channel_data(db,ens):
                     chanrec=dbchannel.find_one(query)
                     message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
                     d.elog.log_error('load_site_data',message,ErrorSeverity.Complaint)
-                d['site_lat']=chanrec['latitude']
-                d['site_lon']=chanrec['longitude']
-                d['site_elev']=chanrec['elevation']
+                d['site_lat']=chanrec['lat']
+                d['site_lon']=chanrec['lon']
+                d['site_elev']=chanrec['elev']
                 d['vang']=chanrec['vang']
                 d['hang']=chanrec['hang']
                 d['site_id']=chanrec['_id']
