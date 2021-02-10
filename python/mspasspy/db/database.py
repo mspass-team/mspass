@@ -992,6 +992,16 @@ class Database(pymongo.database.Database):
         "serialized_inventory" and running pickle loads on the returned
         string.
 
+        A final point of note is that not all Inventory objects are created
+        equally.   Inventory objects appear to us to be designed as an image
+        of stationxml data.  The problem is that stationxml, like SEED, has to
+        support a lot of complexity faced by data centers that end users
+        like those using this package do not need or want to know.   The
+        point is this method flattens the complexity and aims to reduce the
+        result to a set of documents in the site and channel collection
+        that can be cross referenced to link the right metadata with all
+        waveforms in a dataset.
+
         :param inv: is the obspy Inventory object of station data to save.
         :networks_to_exclude: should contain a list (or tuple) of
             SEED 2 byte network codes that are to be ignored in
@@ -1031,131 +1041,133 @@ class Database(pymongo.database.Database):
             # Each x now has a station field, BUT tests I ran
             # say for my example that field has one entry per
             # x.  Hence, we can get sta name like this
-            y = x.stations
-            sta = y[0].code
-            starttime = y[0].start_date
-            endtime = y[0].end_date
-            starttime = self._handle_null_starttime(starttime)
-            endtime = self._handle_null_endtime(endtime)
-            latitude = y[0].latitude
-            longitude = y[0].longitude
-            # stationxml files seen to put elevation in m. We
-            # always use km so need to convert
-            elevation = y[0].elevation / 1000.0
-            # an obnoxious property of station xml files obspy is giving me
-            # is that the start_dates and end_dates on the net:sta section
-            # are not always consistent with the channel data.  In particular
-            # loc codes are a problem. So we pull the required metadata from
-            # the chans data and will override locations and time ranges
-            # in station section with channel data
-            chans = y[0].channels
-            locdata = self._extract_locdata(chans)
-            # Assume loc code of 0 is same as rest
-            # loc=_extract_loc_code(chanlist[0])
-            picklestr = pickle.dumps(x)
-            all_locs = locdata.keys()
-            for loc in all_locs:
-                # If multiple loc codes are present on the second pass
-                # rec will contain the objectid of the document inserted
-                # in the previous pass - an obnoxious property of insert_one
-                # This initialization guarantees an empty container
-                rec = dict()
-                rec['loc'] = loc
-                rec['net'] = net
-                rec['sta'] = sta
-                lkey = loc
-                loc_tuple = locdata[lkey]
-                # We use these attributes linked to loc code rather than
-                # the station data - experience shows they are not
-                # consistent and we should use this set.
-                loc_lat = loc_tuple[2]
-                loc_lon = loc_tuple[3]
-                loc_elev = loc_tuple[4]
-                # for consistency convert this to km too
-                loc_elev = loc_elev / 1000.0
-                loc_edepth = loc_tuple[5]
-                loc_stime = loc_tuple[0]
-                loc_stime = self._handle_null_starttime(loc_stime)
-                loc_etime = loc_tuple[1]
-                loc_etime = self._handle_null_endtime(loc_etime)
-                rec['latitude'] = loc_lat
-                rec['longitude'] = loc_lon
-                # This is MongoDBs way to set a geographic
-                # point - allows spatial queries.  Note longitude
-                # must be first of the pair
-                rec['coords'] = [loc_lat, loc_lon]
-                rec['elevation'] = loc_elev
-                rec['edepth'] = loc_edepth
-                rec['starttime'] = starttime.timestamp
-                rec['endtime'] = endtime.timestamp
-                if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
-                    print(net, ":", sta, ":", loc,
+            stalist = x.stations
+            for station in stalist:
+                sta = station.code
+                starttime = station.start_date
+                endtime = station.end_date
+                starttime = self._handle_null_starttime(starttime)
+                endtime = self._handle_null_endtime(endtime)
+                latitude = station.latitude
+                longitude = station.longitude
+                # stationxml files seen to put elevation in m. We
+                # always use km so need to convert
+                elevation = station.elevation / 1000.0
+                # an obnoxious property of station xml files obspy is giving me
+                # is that the start_dates and end_dates on the net:sta section
+                # are not always consistent with the channel data.  In particular
+                # loc codes are a problem. So we pull the required metadata from
+                # the chans data and will override locations and time ranges
+                # in station section with channel data
+                chans = station.channels
+                locdata = self._extract_locdata(chans)
+                # Assume loc code of 0 is same as rest
+                # loc=_extract_loc_code(chanlist[0])
+                # TODO Delete when sure we don't need to keep the full thing
+                #picklestr = pickle.dumps(x)
+                all_locs = locdata.keys()
+                for loc in all_locs:
+                    # If multiple loc codes are present on the second pass
+                    # rec will contain the objectid of the document inserted
+                    # in the previous pass - an obnoxious property of insert_one
+                    # This initialization guarantees an empty container
+                    rec = dict()
+                    rec['loc'] = loc
+                    rec['net'] = net
+                    rec['sta'] = sta
+                    lkey = loc
+                    loc_tuple = locdata[lkey]
+                    # We use these attributes linked to loc code rather than
+                    # the station data - experience shows they are not
+                    # consistent and we should use this set.
+                    loc_lat = loc_tuple[2]
+                    loc_lon = loc_tuple[3]
+                    loc_elev = loc_tuple[4]
+                    # for consistency convert this to km too
+                    loc_elev = loc_elev / 1000.0
+                    loc_edepth = loc_tuple[5]
+                    loc_stime = loc_tuple[0]
+                    loc_stime = self._handle_null_starttime(loc_stime)
+                    loc_etime = loc_tuple[1]
+                    loc_etime = self._handle_null_endtime(loc_etime)
+                    rec['latitude'] = loc_lat
+                    rec['longitude'] = loc_lon
+                    # This is MongoDBs way to set a geographic
+                    # point - allows spatial queries.  Note longitude
+                    # must be first of the pair
+                    rec['coords'] = [loc_lat, loc_lon]
+                    rec['elevation'] = loc_elev
+                    rec['edepth'] = loc_edepth
+                    rec['starttime'] = starttime.timestamp
+                    rec['endtime'] = endtime.timestamp
+                    if latitude != loc_lat or longitude != loc_lon or elevation != loc_elev:
+                        print(net, ":", sta, ":", loc,
                           " (Warning):  station section position is not consistent with loc code position")
-                    print("Data in loc code section overrides station section")
-                    print("Station section coordinates:  ", latitude, longitude, elevation)
-                    print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
-                if self._site_is_not_in_db(rec):
-                    result=dbcol.insert_one(rec)
-                    # Note this sets site_id to an ObjectID for the insertion
-                    # We use that to define a duplicate we tag as site_id
-                    site_id=result.inserted_id
-                    self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
-                    n_site_saved+=1
-                    if verbose:
-                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                        print("Data in loc code section overrides station section")
+                        print("Station section coordinates:  ", latitude, longitude, elevation)
+                        print("loc code section coordinates:  ", loc_lat, loc_lon, loc_elev)
+                    if self._site_is_not_in_db(rec):
+                        result=dbcol.insert_one(rec)
+                        # Note this sets site_id to an ObjectID for the insertion
+                        # We use that to define a duplicate we tag as site_id
+                        site_id=result.inserted_id
+                        self.site.update_one({'_id':site_id},{'$set':{'site_id' : site_id}})
+                        n_site_saved+=1
+                        if verbose:
+                            print("net:sta:loc=", net, ":", sta, ":", loc,
                               "for time span ", starttime, " to ", endtime,
                               " added to site collection")
-                else:
-                    if verbose:
-                        print("net:sta:loc=", net, ":", sta, ":", loc,
+                    else:
+                        if verbose:
+                            print("net:sta:loc=", net, ":", sta, ":", loc,
                               "for time span ", starttime, " to ", endtime,
                               " is already in site collection - ignored")
-                n_site_processed += 1
-                # done with site now handle channel
-                # Because many features are shared we can copy rec
-                # note this has to be a deep copy
-                chanrec = copy.deepcopy(rec)
-                # We don't want this baggage in the channel documents
-                # keep them only in the site collection
-                # del chanrec['serialized_inventory']
-                for chan in chans:
-                    chanrec['chan'] = chan.code
-                    chanrec['vang'] = chan.dip
-                    chanrec['hang'] = chan.azimuth
-                    chanrec['edepth'] = chan.depth
-                    st = chan.start_date
-                    et = chan.end_date
-                    # as above be careful of null values for either end of the time range
-                    st = self._handle_null_starttime(st)
-                    et = self._handle_null_endtime(et)
-                    chanrec['starttime'] = st.timestamp
-                    chanrec['endtime'] = et.timestamp
-                    n_chan_processed += 1
-                    if (self._channel_is_not_in_db(chanrec)):
-                        picklestr = pickle.dumps(chan)
-                        chanrec['serialized_channel_data'] = picklestr
-                        result = dbchannel.insert_one(chanrec)
-                        # insert_one has an obnoxious behavior in that it
-                        # inserts the ObjectId in chanrec.  In this loop
-                        # we reuse chanrec so we have to delete the id field
-                        # howeveer, we first want to update the record to
-                        # have chan_id provide an  alternate key to that id
-                        # object_id - that makes this consistent with site
-                        # we actually use the return instead of pulling from
-                        # chanrec
-                        idobj=result.inserted_id
-                        dbchannel.update_one({'_id':idobj},
+                    n_site_processed += 1
+                    # done with site now handle channel
+                    # Because many features are shared we can copy rec
+                    # note this has to be a deep copy
+                    chanrec = copy.deepcopy(rec)
+                    # We don't want this baggage in the channel documents
+                    # keep them only in the site collection
+                    # del chanrec['serialized_inventory']
+                    for chan in chans:
+                        chanrec['chan'] = chan.code
+                        chanrec['vang'] = chan.dip
+                        chanrec['hang'] = chan.azimuth
+                        chanrec['edepth'] = chan.depth
+                        st = chan.start_date
+                        et = chan.end_date
+                        # as above be careful of null values for either end of the time range
+                        st = self._handle_null_starttime(st)
+                        et = self._handle_null_endtime(et)
+                        chanrec['starttime'] = st.timestamp
+                        chanrec['endtime'] = et.timestamp
+                        n_chan_processed += 1
+                        if (self._channel_is_not_in_db(chanrec)):
+                            picklestr = pickle.dumps(chan)
+                            chanrec['serialized_channel_data'] = picklestr
+                            result = dbchannel.insert_one(chanrec)
+                            # insert_one has an obnoxious behavior in that it
+                            # inserts the ObjectId in chanrec.  In this loop
+                            # we reuse chanrec so we have to delete the id field
+                            # howeveer, we first want to update the record to
+                            # have chan_id provide an  alternate key to that id
+                            # object_id - that makes this consistent with site
+                            # we actually use the return instead of pulling from
+                            # chanrec
+                            idobj=result.inserted_id
+                            dbchannel.update_one({'_id':idobj},
                                              {'$set':{'chan_id' : idobj}})
-                        del chanrec['_id']
-                        n_chan_saved += 1
-                        if verbose:
-                            print("net:sta:loc:chan=",
+                            del chanrec['_id']
+                            n_chan_saved += 1
+                            if verbose:
+                                print("net:sta:loc:chan=",
                                   net, ":", sta, ":", loc, ":", chan.code,
                                   "for time span ", st, " to ", et,
                                   " added to channel collection")
-                    else:
-                        if verbose:
-                            print('net:sta:loc:chan=',
+                        else:
+                            if verbose:
+                                print('net:sta:loc:chan=',
                                   net, ":", sta, ":", loc, ":", chan.code,
                                   "for time span ", st, " to ", et,
                                   " already in channel collection - ignored")
@@ -1177,94 +1189,7 @@ class Database(pymongo.database.Database):
         print("number of channel records saved=", n_chan_saved)
         return tuple([n_site_saved, n_chan_saved, n_site_processed, n_chan_processed])
 
-    def load_seed_station(self, net, sta, loc='NONE', time=-1.0):
-        """
-        The site collection is assumed to have a one to one
-        mapping of net:sta:loc:starttime - endtime.
-        This method uses a restricted query to match the
-        keys given and returns a dict of coordinate data;
-        lat, lon, elev, edepth.
-        The (optional) time arg is used for a range match to find
-        period between the site startime and endtime.
-        Returns None if there is no match.
-
-        The seed modifier in the name is to emphasize this method is
-        for data originating as the SEED format that use net:sta:loc:chan
-        as the primary index.
-
-        :param net:  network name to match
-        :param sta:  station name to match
-        :param loc:   optional loc code to made (empty string ok and common)
-        default ignores loc in query.
-        :param time: epoch time for requested metadata
-
-        :return: handle to query result
-        :rtype:  MondoDB Cursor object of query result.
-        """
-        dbsite = self.site
-        query = {}
-        query['net'] = net
-        query['sta'] = sta
-        if (loc != 'NONE'):
-            query['loc'] = loc
-        if (time > 0.0):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
-        matchsize = dbsite.count_documents(query)
-        if (matchsize == 0):
-            return None
-        else:
-            stations = dbsite.find(query)
-            if (matchsize > 1):
-                print("load_seed_site (WARNING):  query=", query)
-                print("Returned ", matchsize, " documents - should be exactly one")
-            return stations
-
-    def load_seed_channel(self, net, sta, chan, loc='NONE', time=-1.0):
-        """
-        The channel collection is assumed to have a one to one
-        mapping of net:sta:loc:chan:starttime - endtime.
-        This method uses a restricted query to match the
-        keys given and returns a dict of the document contents
-        associated with that key.
-        The (optional) time arg is used for a range match to find
-        period between the site startime and endtime.  If not used
-        the first occurence will be returned (usually ill adivsed)
-        Returns None if there is no match.
-
-        :param net:  network name to match
-        :param sta:  station name to match
-        :param chan:  seed channel code to match
-        :param loc:   optional loc code to made (empty string ok and common)
-        default ignores loc in query.
-        :param time: epoch time for requested metadata
-
-        :return: handle to query return
-        :rtype:  MondoDB Cursor object of query result.
-        """
-        dbchannel = self.channel
-        query = {}
-        query['net'] = net
-        query['sta'] = sta
-        if (loc == 'NONE'):
-            query['loc'] = ""
-        else:
-            query['loc'] = loc
-        query['chan'] = chan
-        if (time > 0.0):
-            query['starttime'] = {"$lt": time}
-            query['endtime'] = {"$gt": time}
-        matchsize = dbchannel.count_documents(query)
-        if (matchsize == 0):
-            return None
-        else:
-            channel = dbchannel.find(query)
-            if (matchsize > 1):
-                print("load_seed_channel (WARNING):  query=", query)
-                print("Returned ", matchsize, " documents - should be exactly one")
-            return channel
-
-    def load_inventory(self, net=None, sta=None, loc=None, time=None):
+    def read_inventory(self, net=None, sta=None, loc=None, time=None):
         """
         Loads an obspy inventory object limited by one or more
         keys.   Default is to load the entire contents of the
@@ -1313,6 +1238,151 @@ class Database(pymongo.database.Database):
                 # if poorly documented in obspy
                 result.extend([netw])
         return result
+    def get_seed_station(self, net, sta, loc='NONE', time=-1.0):
+        """
+        The site collection is assumed to have a one to one
+        mapping of net:sta:loc:starttime - endtime.
+        This method uses a restricted query to match the
+        keys given and returns a dict of coordinate data;
+        lat, lon, elev, edepth.
+        The (optional) time arg is used for a range match to find
+        period between the site startime and endtime.
+        Returns None if there is no match.
+
+        The seed modifier in the name is to emphasize this method is
+        for data originating as the SEED format that use net:sta:loc:chan
+        as the primary index.
+
+        :param net:  network name to match
+        :param sta:  station name to match
+        :param loc:   optional loc code to made (empty string ok and common)
+        default ignores loc in query.
+        :param time: epoch time for requested metadata
+
+        :return: handle to query result
+        :rtype:  MondoDB Cursor object of query result.
+        """
+        dbsite = self.site
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        if (loc != 'NONE'):
+            query['loc'] = loc
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbsite.count_documents(query)
+        if (matchsize == 0):
+            return None
+        else:
+            stations = dbsite.find(query)
+            if (matchsize > 1):
+                print("get_seed_site (WARNING):  query=", query)
+                print("Returned ", matchsize, " documents - should be exactly one")
+            return stations
+
+    def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
+        """
+        The channel collection is assumed to have a one to one
+        mapping of net:sta:loc:chan:starttime - endtime.
+        This method uses a restricted query to match the
+        keys given and returns a dict of the document contents
+        associated with that key.  Note net, sta, and chan are required
+        but loc is optional.
+
+        The optional loc code is handled specially.  The reason is 
+        that it is common to have the loc code empty.  In seed data that
+        puts two ascii blank characters in the 2 byte packet header 
+        position for each miniseed blockette.  With pymongo that 
+        can be handled one of three ways that we need to handle gracefully.
+        That is, one can either set a literal two blank character 
+        string, an empty string (""), or a MongoDB NULL.   To handle 
+        that confusion this algorithm first queries for all matches
+        without loc defined.  If only one match is found that is 
+        returned immediately.  If there are multiple matches we
+        search though the list of docs returned for a match to 
+        loc being conscious of the null string oddity.  
+
+        The (optional) time arg is used for a range match to find
+        period between the site startime and endtime.  If not used
+        the first occurence will be returned (usually ill adivsed)
+        Returns None if there is no match.  Although the time argument 
+        is technically option it usually a bad idea to not include
+        a time stamp because most stations saved as seed data have 
+        time variable channel metadata.
+
+        :param net:  network name to match
+        :param sta:  station name to match
+        :param chan:  seed channel code to match
+        :param loc:   optional loc code to made (empty string ok and common)
+        default ignores loc in query.
+        :param time: epoch time for requested metadata
+
+        :return: handle to query return
+        :rtype:  MondoDB Cursor object of query result.
+        """
+        dbchannel = self.channel
+        query = {}
+        query['net'] = net
+        query['sta'] = sta
+        query['chan'] = chan
+        if loc != None:
+            query['loc'] = loc
+        
+        if (time > 0.0):
+            query['starttime'] = {"$lt": time}
+            query['endtime'] = {"$gt": time}
+        matchsize = dbchannel.count_documents(query)
+        if (matchsize == 0):
+            return None
+        if matchsize==1:
+            return dbchannel.find_one(query)
+        else:
+            # Note we only land here when the above yields multiple matches
+            if loc == None:
+                # We could get here one of two ways.  There could
+                # be multiple loc codes and the user didn't specify 
+                # a choice or they wanted the empty string (2 cases).
+                # We also have to worry about the case where the 
+                # time was not specified but needed. 
+                # The complexity below tries to unravel all those possibities
+                testquery=query
+                testquery['loc']=None
+                matchsize=dbchannel.count_documents(testquery)
+                if matchsize == 1:
+                    return dbchannel.find_one(testquery)
+                elif matchsize > 1:
+                    if time>0.0:
+                        print("get_seed_channel:  multiple matches found for net=",
+                          net," sta=",sta," and channel=",chan, " with null loc code\n"
+                             "Assuming database problem with duplicate documents in channel collection\n",
+                            "Returning first one found")
+                        return dbchannel.find_one(testquery)
+                    else:
+                        raise MsPASSError("get_seed_channel:  "
+                            + "query with "+net+":"+sta+":"+chan+" and null loc is ambiguous\n"
+                            + "Specify at least time but a loc code if is not truly null",
+                            "Fatal")
+                else:
+                    # we land here if a null match didn't work.  
+                    #Try one more recovery with setting loc to an emtpy 
+                    # string
+                    testquery['loc']=""  
+                    matchsize=dbchannel.count_documents(testquery)
+                    if matchsize == 1:
+                        return dbchannel.find_one(testquery)
+                    elif matchsize > 1:
+                        if time>0.0:
+                            print("get_seed_channel:  multiple matches found for net=",
+                               net," sta=",sta," and channel=",chan, " with null loc code tested with empty string\n"
+                               "Assuming database problem with duplicate documents in channel collection\n",
+                               "Returning first one found")
+                            return dbchannel.find_one(testquery)
+                        else:
+                            raise MsPASSError("get_seed_channel:  "
+                              + "recovery query attempt with "+net+":"+sta+":"+chan+" and null loc converted to empty string is ambiguous\n"
+                              + "Specify at least time but a loc code if is not truly null",
+                              "Fatal")
 
     def save_catalog(self, cat, verbose=False):
         """
