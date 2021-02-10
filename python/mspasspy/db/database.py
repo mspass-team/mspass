@@ -592,9 +592,6 @@ class Database(pymongo.database.Database):
         :exception:  any detected errors will cause a MsPASSError to be thrown
         (colleagues:  this may be wrong sphynx syntax for defining an exception)
         """
-        if collection not in ["source", "site", "channel"]:
-            raise MsPASSError("collection param should be one of source, site or channel", ErrorSeverity.Invalid)
-
         if not mspass_object.live:
             raise MsPASSError("only live mspass object can load metadata", ErrorSeverity.Invalid)
 
@@ -605,15 +602,10 @@ class Database(pymongo.database.Database):
             raise MsPASSError("channel data can not be loaded into Seismogram", ErrorSeverity.Invalid)
         
         # 1. get the metadata schema based on the mspass object type
-        wf_collection = 'wf_TimeSeries' if isinstance(mspass_object, TimeSeries) else 'wf_Seismogram'
-        object_type = self.database_schema[wf_collection].data_type()
-        if object_type not in [TimeSeries, Seismogram]:
-            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
-                object_type, wf_collection), 'Fatal')
-        wf_collection_metadata_schema = self.metadata_schema[object_type.__name__]
+        wf_collection_metadata_schema = self.metadata_schema[type(mspass_object).__name__]
 
         collection_id = collection + '_id'
-        # 2. get the source_id from the current mspass_object
+        # 2. get the collection_id from the current mspass_object
         if not mspass_object.is_defined(collection_id):
             raise MsPASSError("no {} in the mspass object".format(collection_id), ErrorSeverity.Invalid)
         object_doc_id = mspass_object[collection_id]
@@ -624,14 +616,19 @@ class Database(pymongo.database.Database):
             raise MsPASSError("no match found in {} collection for source_id = {}".format(collection, object_doc_id), ErrorSeverity.Invalid)
         
         # 4. use this document to update the mspass object
+        key_dict = set()
         for k in wf_collection_metadata_schema.keys():
             col = wf_collection_metadata_schema.collection(k)
             if col == collection:
-                if include_undefined:
+                if k not in exclude_keys and not include_undefined:
+                    key_dict.add(self.database_schema[col].unique_name(k))
                     mspass_object.put(k, object_doc[self.database_schema[col].unique_name(k)])
-                    continue
-                if k not in exclude_keys:
-                    mspass_object.put(k, object_doc[self.database_schema[col].unique_name(k)])
+
+        # 5. add extra keys if include_undefined is true
+        if include_undefined:
+            for k in object_doc:
+                if k not in key_dict:
+                    mspass_object.put(k, object_doc[k])
 
 
     def load_source_metadata(self,mspass_object, exclude_keys=['serialized_event','magnitude_type'], include_undefined=False):
