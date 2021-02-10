@@ -341,57 +341,33 @@ db=client[‘database_name’]</p>
 <p>where database_name is variable and the name of the database you
 wish to access with this handle.</p>
 <dl class="py method">
-<dt id="mspasspy.db.database.Database.load_event">
-<code class="sig-name descname">load_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a bson record of source data matching the unique id
-defined by source_id.   The idea is that magic string would
-be extraced from another document (e.g. in an arrival collection)
-and used to look up the event with which it is associated in
-the source collection.</p>
-<p>This function is a relic and may be depricated.  I originally
-had a different purpose.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.db.database.Database.load_inventory">
-<code class="sig-name descname">load_inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sta</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_inventory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads an obspy inventory object limited by one or more
-keys.   Default is to load the entire contents of the
-site collection.   Note the load creates an obspy
-inventory object that is returned.  Use load_stations
-to return the raw data used to construct an Inventory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>net</strong> – network name query string.  Can be a single</p>
-</dd>
-</dl>
-<p>unique net code or use MongoDB’s expression query
-mechanism (e.g. “{‘$gt’ : 42}).  Default is all
-:param sta: statoin name query string.  Can be a single
-station name or a MongoDB query expression.
-:param loc:  loc code to select.  Can be a single unique
-location (e.g. ‘01’) or a MongoDB expression query.
-:param time:   limit return to stations with
-startime&lt;time&lt;endtime.  Input is assumed an
-epoch time NOT an obspy UTCDateTime. Use a conversion
-to epoch time if necessary.
-:return:  obspy Inventory of all stations matching the
-query parameters
-:rtype:  obspy Inventory</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.db.database.Database.load_seed_channel">
-<code class="sig-name descname">load_seed_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">chan</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">'NONE'</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_seed_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_seed_channel" title="Permalink to this definition">¶</a></dt>
+<dt id="mspasspy.db.database.Database.get_seed_channel">
+<code class="sig-name descname">get_seed_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">chan</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The channel collection is assumed to have a one to one
 mapping of net:sta:loc:chan:starttime - endtime.
 This method uses a restricted query to match the
 keys given and returns a dict of the document contents
-associated with that key.
-The (optional) time arg is used for a range match to find
+associated with that key.  Note net, sta, and chan are required
+but loc is optional.</p>
+<p>The optional loc code is handled specially.  The reason is 
+that it is common to have the loc code empty.  In seed data that
+puts two ascii blank characters in the 2 byte packet header 
+position for each miniseed blockette.  With pymongo that 
+can be handled one of three ways that we need to handle gracefully.
+That is, one can either set a literal two blank character 
+string, an empty string (“”), or a MongoDB NULL.   To handle 
+that confusion this algorithm first queries for all matches
+without loc defined.  If only one match is found that is 
+returned immediately.  If there are multiple matches we
+search though the list of docs returned for a match to 
+loc being conscious of the null string oddity.</p>
+<p>The (optional) time arg is used for a range match to find
 period between the site startime and endtime.  If not used
 the first occurence will be returned (usually ill adivsed)
-Returns None if there is no match.</p>
+Returns None if there is no match.  Although the time argument 
+is technically option it usually a bad idea to not include
+a time stamp because most stations saved as seed data have 
+time variable channel metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -415,8 +391,8 @@ Returns None if there is no match.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.db.database.Database.load_seed_station">
-<code class="sig-name descname">load_seed_station</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">'NONE'</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_seed_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_seed_station" title="Permalink to this definition">¶</a></dt>
+<dt id="mspasspy.db.database.Database.get_seed_station">
+<code class="sig-name descname">get_seed_station</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">'NONE'</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_station" title="Permalink to this definition">¶</a></dt>
 <dd><p>The site collection is assumed to have a one to one
 mapping of net:sta:loc:starttime - endtime.
 This method uses a restricted query to match the
@@ -447,6 +423,18 @@ as the primary index.</p>
 <dd class="field-even"><p>MondoDB Cursor object of query result.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.database.Database.load_event">
+<code class="sig-name descname">load_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a bson record of source data matching the unique id
+defined by source_id.   The idea is that magic string would
+be extraced from another document (e.g. in an arrival collection)
+and used to look up the event with which it is associated in
+the source collection.</p>
+<p>This function is a relic and may be depricated.  I originally
+had a different purpose.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -488,6 +476,34 @@ as the primary index.</p>
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.db.database.Database.read_inventory">
+<code class="sig-name descname">read_inventory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sta</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.read_inventory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.read_inventory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads an obspy inventory object limited by one or more
+keys.   Default is to load the entire contents of the
+site collection.   Note the load creates an obspy
+inventory object that is returned.  Use load_stations
+to return the raw data used to construct an Inventory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>net</strong> – network name query string.  Can be a single</p>
+</dd>
+</dl>
+<p>unique net code or use MongoDB’s expression query
+mechanism (e.g. “{‘$gt’ : 42}).  Default is all
+:param sta: statoin name query string.  Can be a single
+station name or a MongoDB query expression.
+:param loc:  loc code to select.  Can be a single unique
+location (e.g. ‘01’) or a MongoDB expression query.
+:param time:   limit return to stations with
+startime&lt;time&lt;endtime.  Input is assumed an
+epoch time NOT an obspy UTCDateTime. Use a conversion
+to epoch time if necessary.
+:return:  obspy Inventory of all stations matching the
+query parameters
+:rtype:  obspy Inventory</p>
 </dd></dl>
 
 <dl class="py method">
@@ -599,6 +615,15 @@ orientation or sensor swap)</p>
 that can be obtained by extracting the data with the key
 “serialized_inventory” and running pickle loads on the returned
 string.</p>
+<p>A final point of note is that not all Inventory objects are created
+equally.   Inventory objects appear to us to be designed as an image
+of stationxml data.  The problem is that stationxml, like SEED, has to
+support a lot of complexity faced by data centers that end users
+like those using this package do not need or want to know.   The
+point is this method flattens the complexity and aims to reduce the
+result to a set of documents in the site and channel collection
+that can be cross referenced to link the right metadata with all
+waveforms in a dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>inv</strong> – is the obspy Inventory object of station data to save.</p>

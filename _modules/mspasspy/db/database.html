@@ -1157,6 +1157,16 @@
 <span class="sd">        &quot;serialized_inventory&quot; and running pickle loads on the returned</span>
 <span class="sd">        string.</span>
 
+<span class="sd">        A final point of note is that not all Inventory objects are created</span>
+<span class="sd">        equally.   Inventory objects appear to us to be designed as an image</span>
+<span class="sd">        of stationxml data.  The problem is that stationxml, like SEED, has to</span>
+<span class="sd">        support a lot of complexity faced by data centers that end users</span>
+<span class="sd">        like those using this package do not need or want to know.   The</span>
+<span class="sd">        point is this method flattens the complexity and aims to reduce the</span>
+<span class="sd">        result to a set of documents in the site and channel collection</span>
+<span class="sd">        that can be cross referenced to link the right metadata with all</span>
+<span class="sd">        waveforms in a dataset.</span>
+
 <span class="sd">        :param inv: is the obspy Inventory object of station data to save.</span>
 <span class="sd">        :networks_to_exclude: should contain a list (or tuple) of</span>
 <span class="sd">            SEED 2 byte network codes that are to be ignored in</span>
@@ -1196,131 +1206,133 @@
             <span class="c1"># Each x now has a station field, BUT tests I ran</span>
             <span class="c1"># say for my example that field has one entry per</span>
             <span class="c1"># x.  Hence, we can get sta name like this</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stations</span>
-            <span class="n">sta</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">code</span>
-            <span class="n">starttime</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">start_date</span>
-            <span class="n">endtime</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_date</span>
-            <span class="n">starttime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">starttime</span><span class="p">)</span>
-            <span class="n">endtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">endtime</span><span class="p">)</span>
-            <span class="n">latitude</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">latitude</span>
-            <span class="n">longitude</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">longitude</span>
-            <span class="c1"># stationxml files seen to put elevation in m. We</span>
-            <span class="c1"># always use km so need to convert</span>
-            <span class="n">elevation</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">elevation</span> <span class="o">/</span> <span class="mf">1000.0</span>
-            <span class="c1"># an obnoxious property of station xml files obspy is giving me</span>
-            <span class="c1"># is that the start_dates and end_dates on the net:sta section</span>
-            <span class="c1"># are not always consistent with the channel data.  In particular</span>
-            <span class="c1"># loc codes are a problem. So we pull the required metadata from</span>
-            <span class="c1"># the chans data and will override locations and time ranges</span>
-            <span class="c1"># in station section with channel data</span>
-            <span class="n">chans</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">channels</span>
-            <span class="n">locdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_locdata</span><span class="p">(</span><span class="n">chans</span><span class="p">)</span>
-            <span class="c1"># Assume loc code of 0 is same as rest</span>
-            <span class="c1"># loc=_extract_loc_code(chanlist[0])</span>
-            <span class="n">picklestr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">all_locs</span> <span class="o">=</span> <span class="n">locdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">all_locs</span><span class="p">:</span>
-                <span class="c1"># If multiple loc codes are present on the second pass</span>
-                <span class="c1"># rec will contain the objectid of the document inserted</span>
-                <span class="c1"># in the previous pass - an obnoxious property of insert_one</span>
-                <span class="c1"># This initialization guarantees an empty container</span>
-                <span class="n">rec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
-                <span class="n">lkey</span> <span class="o">=</span> <span class="n">loc</span>
-                <span class="n">loc_tuple</span> <span class="o">=</span> <span class="n">locdata</span><span class="p">[</span><span class="n">lkey</span><span class="p">]</span>
-                <span class="c1"># We use these attributes linked to loc code rather than</span>
-                <span class="c1"># the station data - experience shows they are not</span>
-                <span class="c1"># consistent and we should use this set.</span>
-                <span class="n">loc_lat</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-                <span class="n">loc_lon</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-                <span class="n">loc_elev</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
-                <span class="c1"># for consistency convert this to km too</span>
-                <span class="n">loc_elev</span> <span class="o">=</span> <span class="n">loc_elev</span> <span class="o">/</span> <span class="mf">1000.0</span>
-                <span class="n">loc_edepth</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
-                <span class="n">loc_stime</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">loc_stime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">loc_stime</span><span class="p">)</span>
-                <span class="n">loc_etime</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">loc_etime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">loc_etime</span><span class="p">)</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lat</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lon</span>
-                <span class="c1"># This is MongoDBs way to set a geographic</span>
-                <span class="c1"># point - allows spatial queries.  Note longitude</span>
-                <span class="c1"># must be first of the pair</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">]</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;elevation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_elev</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_edepth</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>
-                <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span>
-                <span class="k">if</span> <span class="n">latitude</span> <span class="o">!=</span> <span class="n">loc_lat</span> <span class="ow">or</span> <span class="n">longitude</span> <span class="o">!=</span> <span class="n">loc_lon</span> <span class="ow">or</span> <span class="n">elevation</span> <span class="o">!=</span> <span class="n">loc_elev</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
+            <span class="n">stalist</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">stations</span>
+            <span class="k">for</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">stalist</span><span class="p">:</span>
+                <span class="n">sta</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">code</span>
+                <span class="n">starttime</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">start_date</span>
+                <span class="n">endtime</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">end_date</span>
+                <span class="n">starttime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">starttime</span><span class="p">)</span>
+                <span class="n">endtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">endtime</span><span class="p">)</span>
+                <span class="n">latitude</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">latitude</span>
+                <span class="n">longitude</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">longitude</span>
+                <span class="c1"># stationxml files seen to put elevation in m. We</span>
+                <span class="c1"># always use km so need to convert</span>
+                <span class="n">elevation</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">elevation</span> <span class="o">/</span> <span class="mf">1000.0</span>
+                <span class="c1"># an obnoxious property of station xml files obspy is giving me</span>
+                <span class="c1"># is that the start_dates and end_dates on the net:sta section</span>
+                <span class="c1"># are not always consistent with the channel data.  In particular</span>
+                <span class="c1"># loc codes are a problem. So we pull the required metadata from</span>
+                <span class="c1"># the chans data and will override locations and time ranges</span>
+                <span class="c1"># in station section with channel data</span>
+                <span class="n">chans</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">channels</span>
+                <span class="n">locdata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_locdata</span><span class="p">(</span><span class="n">chans</span><span class="p">)</span>
+                <span class="c1"># Assume loc code of 0 is same as rest</span>
+                <span class="c1"># loc=_extract_loc_code(chanlist[0])</span>
+                <span class="c1"># TODO Delete when sure we don&#39;t need to keep the full thing</span>
+                <span class="c1">#picklestr = pickle.dumps(x)</span>
+                <span class="n">all_locs</span> <span class="o">=</span> <span class="n">locdata</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">loc</span> <span class="ow">in</span> <span class="n">all_locs</span><span class="p">:</span>
+                    <span class="c1"># If multiple loc codes are present on the second pass</span>
+                    <span class="c1"># rec will contain the objectid of the document inserted</span>
+                    <span class="c1"># in the previous pass - an obnoxious property of insert_one</span>
+                    <span class="c1"># This initialization guarantees an empty container</span>
+                    <span class="n">rec</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+                    <span class="n">lkey</span> <span class="o">=</span> <span class="n">loc</span>
+                    <span class="n">loc_tuple</span> <span class="o">=</span> <span class="n">locdata</span><span class="p">[</span><span class="n">lkey</span><span class="p">]</span>
+                    <span class="c1"># We use these attributes linked to loc code rather than</span>
+                    <span class="c1"># the station data - experience shows they are not</span>
+                    <span class="c1"># consistent and we should use this set.</span>
+                    <span class="n">loc_lat</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">loc_lon</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="n">loc_elev</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                    <span class="c1"># for consistency convert this to km too</span>
+                    <span class="n">loc_elev</span> <span class="o">=</span> <span class="n">loc_elev</span> <span class="o">/</span> <span class="mf">1000.0</span>
+                    <span class="n">loc_edepth</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+                    <span class="n">loc_stime</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">loc_stime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">loc_stime</span><span class="p">)</span>
+                    <span class="n">loc_etime</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">loc_etime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">loc_etime</span><span class="p">)</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lat</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lon</span>
+                    <span class="c1"># This is MongoDBs way to set a geographic</span>
+                    <span class="c1"># point - allows spatial queries.  Note longitude</span>
+                    <span class="c1"># must be first of the pair</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">]</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;elevation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_elev</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_edepth</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span>
+                    <span class="k">if</span> <span class="n">latitude</span> <span class="o">!=</span> <span class="n">loc_lat</span> <span class="ow">or</span> <span class="n">longitude</span> <span class="o">!=</span> <span class="n">loc_lon</span> <span class="ow">or</span> <span class="n">elevation</span> <span class="o">!=</span> <span class="n">loc_elev</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
                           <span class="s2">&quot; (Warning):  station section position is not consistent with loc code position&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data in loc code section overrides station section&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Station section coordinates:  &quot;</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">elevation</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loc code section coordinates:  &quot;</span><span class="p">,</span> <span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">,</span> <span class="n">loc_elev</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_site_is_not_in_db</span><span class="p">(</span><span class="n">rec</span><span class="p">):</span>
-                    <span class="n">result</span><span class="o">=</span><span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-                    <span class="c1"># Note this sets site_id to an ObjectID for the insertion</span>
-                    <span class="c1"># We use that to define a duplicate we tag as site_id</span>
-                    <span class="n">site_id</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span><span class="n">site_id</span><span class="p">},{</span><span class="s1">&#39;$set&#39;</span><span class="p">:{</span><span class="s1">&#39;site_id&#39;</span> <span class="p">:</span> <span class="n">site_id</span><span class="p">}})</span>
-                    <span class="n">n_site_saved</span><span class="o">+=</span><span class="mi">1</span>
-                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc=&quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data in loc code section overrides station section&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Station section coordinates:  &quot;</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">elevation</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;loc code section coordinates:  &quot;</span><span class="p">,</span> <span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">,</span> <span class="n">loc_elev</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_site_is_not_in_db</span><span class="p">(</span><span class="n">rec</span><span class="p">):</span>
+                        <span class="n">result</span><span class="o">=</span><span class="n">dbcol</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+                        <span class="c1"># Note this sets site_id to an ObjectID for the insertion</span>
+                        <span class="c1"># We use that to define a duplicate we tag as site_id</span>
+                        <span class="n">site_id</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span><span class="n">site_id</span><span class="p">},{</span><span class="s1">&#39;$set&#39;</span><span class="p">:{</span><span class="s1">&#39;site_id&#39;</span> <span class="p">:</span> <span class="n">site_id</span><span class="p">}})</span>
+                        <span class="n">n_site_saved</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc=&quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
                               <span class="s2">&quot;for time span &quot;</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span>
                               <span class="s2">&quot; added to site collection&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc=&quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc=&quot;</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span>
                               <span class="s2">&quot;for time span &quot;</span><span class="p">,</span> <span class="n">starttime</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">endtime</span><span class="p">,</span>
                               <span class="s2">&quot; is already in site collection - ignored&quot;</span><span class="p">)</span>
-                <span class="n">n_site_processed</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="c1"># done with site now handle channel</span>
-                <span class="c1"># Because many features are shared we can copy rec</span>
-                <span class="c1"># note this has to be a deep copy</span>
-                <span class="n">chanrec</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
-                <span class="c1"># We don&#39;t want this baggage in the channel documents</span>
-                <span class="c1"># keep them only in the site collection</span>
-                <span class="c1"># del chanrec[&#39;serialized_inventory&#39;]</span>
-                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">chans</span><span class="p">:</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">code</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;vang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">dip</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;hang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">azimuth</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">depth</span>
-                    <span class="n">st</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">start_date</span>
-                    <span class="n">et</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">end_date</span>
-                    <span class="c1"># as above be careful of null values for either end of the time range</span>
-                    <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
-                    <span class="n">et</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">timestamp</span>
-                    <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">timestamp</span>
-                    <span class="n">n_chan_processed</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_is_not_in_db</span><span class="p">(</span><span class="n">chanrec</span><span class="p">)):</span>
-                        <span class="n">picklestr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
-                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;serialized_channel_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">picklestr</span>
-                        <span class="n">result</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">chanrec</span><span class="p">)</span>
-                        <span class="c1"># insert_one has an obnoxious behavior in that it</span>
-                        <span class="c1"># inserts the ObjectId in chanrec.  In this loop</span>
-                        <span class="c1"># we reuse chanrec so we have to delete the id field</span>
-                        <span class="c1"># howeveer, we first want to update the record to</span>
-                        <span class="c1"># have chan_id provide an  alternate key to that id</span>
-                        <span class="c1"># object_id - that makes this consistent with site</span>
-                        <span class="c1"># we actually use the return instead of pulling from</span>
-                        <span class="c1"># chanrec</span>
-                        <span class="n">idobj</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
-                        <span class="n">dbchannel</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span><span class="n">idobj</span><span class="p">},</span>
+                    <span class="n">n_site_processed</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># done with site now handle channel</span>
+                    <span class="c1"># Because many features are shared we can copy rec</span>
+                    <span class="c1"># note this has to be a deep copy</span>
+                    <span class="n">chanrec</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
+                    <span class="c1"># We don&#39;t want this baggage in the channel documents</span>
+                    <span class="c1"># keep them only in the site collection</span>
+                    <span class="c1"># del chanrec[&#39;serialized_inventory&#39;]</span>
+                    <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">chans</span><span class="p">:</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">code</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;vang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">dip</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;hang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">azimuth</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">depth</span>
+                        <span class="n">st</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">start_date</span>
+                        <span class="n">et</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">end_date</span>
+                        <span class="c1"># as above be careful of null values for either end of the time range</span>
+                        <span class="n">st</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+                        <span class="n">et</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">timestamp</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">et</span><span class="o">.</span><span class="n">timestamp</span>
+                        <span class="n">n_chan_processed</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_is_not_in_db</span><span class="p">(</span><span class="n">chanrec</span><span class="p">)):</span>
+                            <span class="n">picklestr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+                            <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;serialized_channel_data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">picklestr</span>
+                            <span class="n">result</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">chanrec</span><span class="p">)</span>
+                            <span class="c1"># insert_one has an obnoxious behavior in that it</span>
+                            <span class="c1"># inserts the ObjectId in chanrec.  In this loop</span>
+                            <span class="c1"># we reuse chanrec so we have to delete the id field</span>
+                            <span class="c1"># howeveer, we first want to update the record to</span>
+                            <span class="c1"># have chan_id provide an  alternate key to that id</span>
+                            <span class="c1"># object_id - that makes this consistent with site</span>
+                            <span class="c1"># we actually use the return instead of pulling from</span>
+                            <span class="c1"># chanrec</span>
+                            <span class="n">idobj</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">inserted_id</span>
+                            <span class="n">dbchannel</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span><span class="n">idobj</span><span class="p">},</span>
                                              <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:{</span><span class="s1">&#39;chan_id&#39;</span> <span class="p">:</span> <span class="n">idobj</span><span class="p">}})</span>
-                        <span class="k">del</span> <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-                        <span class="n">n_chan_saved</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc:chan=&quot;</span><span class="p">,</span>
+                            <span class="k">del</span> <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+                            <span class="n">n_chan_saved</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;net:sta:loc:chan=&quot;</span><span class="p">,</span>
                                   <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
                                   <span class="s2">&quot;for time span &quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">et</span><span class="p">,</span>
                                   <span class="s2">&quot; added to channel collection&quot;</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;net:sta:loc:chan=&#39;</span><span class="p">,</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;net:sta:loc:chan=&#39;</span><span class="p">,</span>
                                   <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">code</span><span class="p">,</span>
                                   <span class="s2">&quot;for time span &quot;</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="s2">&quot; to &quot;</span><span class="p">,</span> <span class="n">et</span><span class="p">,</span>
                                   <span class="s2">&quot; already in channel collection - ignored&quot;</span><span class="p">)</span>
@@ -1342,94 +1354,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;number of channel records saved=&quot;</span><span class="p">,</span> <span class="n">n_chan_saved</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">n_site_saved</span><span class="p">,</span> <span class="n">n_chan_saved</span><span class="p">,</span> <span class="n">n_site_processed</span><span class="p">,</span> <span class="n">n_chan_processed</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Database.load_seed_station"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_seed_station">[docs]</a>    <span class="k">def</span> <span class="nf">load_seed_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The site collection is assumed to have a one to one</span>
-<span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
-<span class="sd">        This method uses a restricted query to match the</span>
-<span class="sd">        keys given and returns a dict of coordinate data;</span>
-<span class="sd">        lat, lon, elev, edepth.</span>
-<span class="sd">        The (optional) time arg is used for a range match to find</span>
-<span class="sd">        period between the site startime and endtime.</span>
-<span class="sd">        Returns None if there is no match.</span>
-
-<span class="sd">        The seed modifier in the name is to emphasize this method is</span>
-<span class="sd">        for data originating as the SEED format that use net:sta:loc:chan</span>
-<span class="sd">        as the primary index.</span>
-
-<span class="sd">        :param net:  network name to match</span>
-<span class="sd">        :param sta:  station name to match</span>
-<span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
-<span class="sd">        default ignores loc in query.</span>
-<span class="sd">        :param time: epoch time for requested metadata</span>
-
-<span class="sd">        :return: handle to query result</span>
-<span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dbsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
-        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">!=</span> <span class="s1">&#39;NONE&#39;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
-        <span class="n">matchsize</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">stations</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;load_seed_site (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">stations</span></div>
-
-<div class="viewcode-block" id="Database.load_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_seed_channel">[docs]</a>    <span class="k">def</span> <span class="nf">load_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The channel collection is assumed to have a one to one</span>
-<span class="sd">        mapping of net:sta:loc:chan:starttime - endtime.</span>
-<span class="sd">        This method uses a restricted query to match the</span>
-<span class="sd">        keys given and returns a dict of the document contents</span>
-<span class="sd">        associated with that key.</span>
-<span class="sd">        The (optional) time arg is used for a range match to find</span>
-<span class="sd">        period between the site startime and endtime.  If not used</span>
-<span class="sd">        the first occurence will be returned (usually ill adivsed)</span>
-<span class="sd">        Returns None if there is no match.</span>
-
-<span class="sd">        :param net:  network name to match</span>
-<span class="sd">        :param sta:  station name to match</span>
-<span class="sd">        :param chan:  seed channel code to match</span>
-<span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
-<span class="sd">        default ignores loc in query.</span>
-<span class="sd">        :param time: epoch time for requested metadata</span>
-
-<span class="sd">        :return: handle to query return</span>
-<span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dbchannel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
-        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
-        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">==</span> <span class="s1">&#39;NONE&#39;</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
-        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
-            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
-        <span class="n">matchsize</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">channel</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;load_seed_channel (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">channel</span></div>
-
-<div class="viewcode-block" id="Database.load_inventory"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.load_inventory">[docs]</a>    <span class="k">def</span> <span class="nf">load_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.read_inventory"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_inventory">[docs]</a>    <span class="k">def</span> <span class="nf">read_inventory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads an obspy inventory object limited by one or more</span>
 <span class="sd">        keys.   Default is to load the entire contents of the</span>
@@ -1478,6 +1403,151 @@
                 <span class="c1"># if poorly documented in obspy</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">result</span></div>
+<div class="viewcode-block" id="Database.get_seed_station"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_station">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The site collection is assumed to have a one to one</span>
+<span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
+<span class="sd">        This method uses a restricted query to match the</span>
+<span class="sd">        keys given and returns a dict of coordinate data;</span>
+<span class="sd">        lat, lon, elev, edepth.</span>
+<span class="sd">        The (optional) time arg is used for a range match to find</span>
+<span class="sd">        period between the site startime and endtime.</span>
+<span class="sd">        Returns None if there is no match.</span>
+
+<span class="sd">        The seed modifier in the name is to emphasize this method is</span>
+<span class="sd">        for data originating as the SEED format that use net:sta:loc:chan</span>
+<span class="sd">        as the primary index.</span>
+
+<span class="sd">        :param net:  network name to match</span>
+<span class="sd">        :param sta:  station name to match</span>
+<span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
+<span class="sd">        default ignores loc in query.</span>
+<span class="sd">        :param time: epoch time for requested metadata</span>
+
+<span class="sd">        :return: handle to query result</span>
+<span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">loc</span> <span class="o">!=</span> <span class="s1">&#39;NONE&#39;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+        <span class="n">matchsize</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stations</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_site (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">stations</span></div>
+
+<div class="viewcode-block" id="Database.get_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The channel collection is assumed to have a one to one</span>
+<span class="sd">        mapping of net:sta:loc:chan:starttime - endtime.</span>
+<span class="sd">        This method uses a restricted query to match the</span>
+<span class="sd">        keys given and returns a dict of the document contents</span>
+<span class="sd">        associated with that key.  Note net, sta, and chan are required</span>
+<span class="sd">        but loc is optional.</span>
+
+<span class="sd">        The optional loc code is handled specially.  The reason is </span>
+<span class="sd">        that it is common to have the loc code empty.  In seed data that</span>
+<span class="sd">        puts two ascii blank characters in the 2 byte packet header </span>
+<span class="sd">        position for each miniseed blockette.  With pymongo that </span>
+<span class="sd">        can be handled one of three ways that we need to handle gracefully.</span>
+<span class="sd">        That is, one can either set a literal two blank character </span>
+<span class="sd">        string, an empty string (&quot;&quot;), or a MongoDB NULL.   To handle </span>
+<span class="sd">        that confusion this algorithm first queries for all matches</span>
+<span class="sd">        without loc defined.  If only one match is found that is </span>
+<span class="sd">        returned immediately.  If there are multiple matches we</span>
+<span class="sd">        search though the list of docs returned for a match to </span>
+<span class="sd">        loc being conscious of the null string oddity.  </span>
+
+<span class="sd">        The (optional) time arg is used for a range match to find</span>
+<span class="sd">        period between the site startime and endtime.  If not used</span>
+<span class="sd">        the first occurence will be returned (usually ill adivsed)</span>
+<span class="sd">        Returns None if there is no match.  Although the time argument </span>
+<span class="sd">        is technically option it usually a bad idea to not include</span>
+<span class="sd">        a time stamp because most stations saved as seed data have </span>
+<span class="sd">        time variable channel metadata.</span>
+
+<span class="sd">        :param net:  network name to match</span>
+<span class="sd">        :param sta:  station name to match</span>
+<span class="sd">        :param chan:  seed channel code to match</span>
+<span class="sd">        :param loc:   optional loc code to made (empty string ok and common)</span>
+<span class="sd">        default ignores loc in query.</span>
+<span class="sd">        :param time: epoch time for requested metadata</span>
+
+<span class="sd">        :return: handle to query return</span>
+<span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dbchannel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sta</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
+        <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$lt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;$gt&quot;</span><span class="p">:</span> <span class="n">time</span><span class="p">}</span>
+        <span class="n">matchsize</span> <span class="o">=</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">matchsize</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Note we only land here when the above yields multiple matches</span>
+            <span class="k">if</span> <span class="n">loc</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># We could get here one of two ways.  There could</span>
+                <span class="c1"># be multiple loc codes and the user didn&#39;t specify </span>
+                <span class="c1"># a choice or they wanted the empty string (2 cases).</span>
+                <span class="c1"># We also have to worry about the case where the </span>
+                <span class="c1"># time was not specified but needed. </span>
+                <span class="c1"># The complexity below tries to unravel all those possibities</span>
+                <span class="n">testquery</span><span class="o">=</span><span class="n">query</span>
+                <span class="n">testquery</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+                <span class="n">matchsize</span><span class="o">=</span><span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">time</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
+                          <span class="n">net</span><span class="p">,</span><span class="s2">&quot; sta=&quot;</span><span class="p">,</span><span class="n">sta</span><span class="p">,</span><span class="s2">&quot; and channel=&quot;</span><span class="p">,</span><span class="n">chan</span><span class="p">,</span> <span class="s2">&quot; with null loc code</span><span class="se">\n</span><span class="s2">&quot;</span>
+                             <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Returning first one found&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;get_seed_channel:  &quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;query with &quot;</span><span class="o">+</span><span class="n">net</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">sta</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">chan</span><span class="o">+</span><span class="s2">&quot; and null loc is ambiguous</span><span class="se">\n</span><span class="s2">&quot;</span>
+                            <span class="o">+</span> <span class="s2">&quot;Specify at least time but a loc code if is not truly null&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># we land here if a null match didn&#39;t work.  </span>
+                    <span class="c1">#Try one more recovery with setting loc to an emtpy </span>
+                    <span class="c1"># string</span>
+                    <span class="n">testquery</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;&quot;</span>  
+                    <span class="n">matchsize</span><span class="o">=</span><span class="n">dbchannel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">matchsize</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">time</span><span class="o">&gt;</span><span class="mf">0.0</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_channel:  multiple matches found for net=&quot;</span><span class="p">,</span>
+                               <span class="n">net</span><span class="p">,</span><span class="s2">&quot; sta=&quot;</span><span class="p">,</span><span class="n">sta</span><span class="p">,</span><span class="s2">&quot; and channel=&quot;</span><span class="p">,</span><span class="n">chan</span><span class="p">,</span> <span class="s2">&quot; with null loc code tested with empty string</span><span class="se">\n</span><span class="s2">&quot;</span>
+                               <span class="s2">&quot;Assuming database problem with duplicate documents in channel collection</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;Returning first one found&quot;</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">dbchannel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">testquery</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;get_seed_channel:  &quot;</span>
+                              <span class="o">+</span> <span class="s2">&quot;recovery query attempt with &quot;</span><span class="o">+</span><span class="n">net</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">sta</span><span class="o">+</span><span class="s2">&quot;:&quot;</span><span class="o">+</span><span class="n">chan</span><span class="o">+</span><span class="s2">&quot; and null loc converted to empty string is ambiguous</span><span class="se">\n</span><span class="s2">&quot;</span>
+                              <span class="o">+</span> <span class="s2">&quot;Specify at least time but a loc code if is not truly null&quot;</span><span class="p">,</span>
+                              <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.save_catalog"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog">[docs]</a>    <span class="k">def</span> <span class="nf">save_catalog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
