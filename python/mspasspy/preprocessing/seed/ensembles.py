@@ -434,7 +434,7 @@ def load_source_data_by_id(db,mspass_object):
         source_id=mspass_object['source_id']
         # The way we currently do this source_id eithe rmaches one documentn in
         # source or none.  Hence, we can jus use a find_one query
-        srcrec=dbsource.find_one({'source_id' : source_id})
+        srcrec=dbsource.find_one({'_id' : source_id})
         # note find_one returns a None if there is no match.  Point this out
         # because if we used find we would use test size of return and use
         # next to get the data. Find_one return is easier but depends upon
@@ -448,7 +448,6 @@ def load_source_data_by_id(db,mspass_object):
             mspass_object['source_lon']=srcrec['lon']
             mspass_object['source_depth']=srcrec['depth']
             mspass_object['source_time']=srcrec['time']
-            mspass_object['source_id']=source_id
         return mspass_object
     except:
         print("something threw an unexpected exception")
