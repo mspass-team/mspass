@@ -1,24 +1,17 @@
+#include <string>
 #include <algorithm>
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
 #include "mspass/algorithms/algorithms.h"
 namespace mspass::algorithms
 {
-using mspass::seismic::BasicTimeSeries;
-using mspass::seismic::CoreTimeSeries;
-using mspass::seismic::CoreSeismogram;
-using mspass::seismic::TimeSeries;
-using mspass::seismic::Seismogram;
-using mspass::seismic::Ensemble;
-using mspass::seismic::TimeReferenceType;
-using mspass::utility::Metadata;
-using mspass::utility::ProcessingHistory;
-using mspass::utility::MsPASSError;
-using mspass::utility::ErrorSeverity;
-
 using namespace std;
+using namespace mspass::seismic;
+using namespace mspass::utility;
+
 
 /* Cautious comparison of two string metadata fields defined by key.\
 Return -1 if x<y, 0 if x==y, and +1 if x>y.
@@ -66,7 +59,7 @@ struct greater_seedorder
   bool operator()(TimeSeries x, TimeSeries y)
   {
     int retnet,retsta,retloc,retchan;
-    retnet=cautious_compare(x,y,"net");
+    retnet=cautious_compare(x,y,SEISMICMD_net);
     switch(retnet)
     {
       case -1:
@@ -75,7 +68,7 @@ struct greater_seedorder
         return true;
       case 0:
       default:
-        retsta=cautious_compare(x,y,"sta");
+        retsta=cautious_compare(x,y,SEISMICMD_sta);
         switch(retsta)
         {
           case -1:
@@ -84,7 +77,7 @@ struct greater_seedorder
             return true;
           case 0:
           default:
-            retloc=cautious_compare(x,y,"loc");
+            retloc=cautious_compare(x,y,SEISMICMD_loc);
             switch(retloc)
             {
               case -1:
@@ -93,7 +86,7 @@ struct greater_seedorder
                 return true;
               case 0:
               default:
-                retchan=cautious_compare(x,y,"chan");
+                retchan=cautious_compare(x,y,SEISMICMD_chan);
                 switch(retchan)
                 {
                   case +1:
@@ -169,11 +162,11 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
         chans_this_group.push_back("DEADCHANNEL");
         continue;
       }
-      net=d[i].get_string("net");
-      sta=d[i].get_string("sta");
-      chan=d[i].get_string("chan");
+      net=d[i].get_string(SEISMICMD_net);
+      sta=d[i].get_string(SEISMICMD_sta);
+      chan=d[i].get_string(SEISMICMD_chan);
       sta2.assign(chan,0,2);
-      loc=d[i].get_string("loc");
+      loc=d[i].get_string(SEISMICMD_loc);
       chans_this_group.push_back(chan);
       networks.insert(net);
       stations.insert(sta);
@@ -409,13 +402,24 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
     size_t i;
     for(i=0,dptr=d.member.begin();dptr!=d.member.end();++i,++dptr)
     {
+    //DEBUG
+    cout<<"i="<<i<<" values: "
+      << lastnet <<":"
+      << laststa <<":"
+      << lastchan <<":"
+      << lastloc <<endl
+      << "Current= "
+      << net <<":"
+      << sta <<":"
+      << chan <<":"
+      << loc <<endl;
       if(dptr->dead())
       {
         /* If net, sta, and loc are defined we try to blunder on so we can
         retain elog entries in data received as dead.  Necessary or the
         user won't be able to track the reason something was dropped easily*/
-        if( dptr->is_defined("net") && dptr->is_defined("sta")
-           && dptr->is_defined("loc") )
+        if( dptr->is_defined(SEISMICMD_net) && dptr->is_defined(SEISMICMD_sta)
+           && dptr->is_defined(SEISMICMD_loc) )
         {
           has_dead_channel=true;
         }
@@ -430,46 +434,46 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
       if(i==0)
       {
         /* These things need to all be initialized by the first member*/
-        if(dptr->is_defined("net"))
+        if(dptr->is_defined(SEISMICMD_net))
         {
-          lastnet=dptr->get<string>("net");
+          lastnet=dptr->get<string>(SEISMICMD_net);
         }
         else
         {
           lastnet="Undefined";
         }
-        if(dptr->is_defined("loc"))
+        if(dptr->is_defined(SEISMICMD_loc))
         {
-          lastloc=dptr->get<string>("loc");
+          lastloc=dptr->get<string>(SEISMICMD_loc);
         }
         else
         {
           lastloc="Undefined";
         }
-        laststa=dptr->get<string>("sta");
-        lastchan=dptr->get<string>("chan");
+        laststa=dptr->get<string>(SEISMICMD_sta);
+        lastchan=dptr->get<string>(SEISMICMD_chan);
         i0=0;
       }
       else
       {
-        if(dptr->is_defined("net"))
+        if(dptr->is_defined(SEISMICMD_net))
         {
-          net=dptr->get<string>("net");
+          net=dptr->get<string>(SEISMICMD_net);
         }
         else
         {
           net="Undefined";
         }
-        if(dptr->is_defined("loc"))
+        if(dptr->is_defined(SEISMICMD_loc))
         {
-          loc=dptr->get<string>("loc");
+          loc=dptr->get<string>(SEISMICMD_loc);
         }
         else
         {
           loc="Undefined";
         }
-        sta=dptr->get<string>("sta");
-        chan=dptr->get<string>("chan");
+        sta=dptr->get<string>(SEISMICMD_sta);
+        chan=dptr->get<string>(SEISMICMD_chan);
         if( (lastnet!=net || laststa!=sta || lastloc!=loc) ||
                (dptr==(d.member.end() - 1)) )
         {

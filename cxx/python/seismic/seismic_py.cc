@@ -6,6 +6,7 @@
 
 #include <boost/archive/text_oarchive.hpp>
 
+#include <mspass/seismic/keywords.h>
 #include <mspass/seismic/SlownessVector.h>
 #include <mspass/seismic/TimeWindow.h>
 #include <mspass/seismic/TimeSeries.h>
@@ -397,9 +398,9 @@ PYBIND11_MODULE(seismic, m) {
         Metadata md;
         md=py::cast<Metadata>(py::module_::import("mspasspy.ccore.utility").attr("Metadata")(d));
         BasicTimeSeries bts;
-        double dt=md.get_double("delta");
+        double dt=md.get_double(mspass::seismic::SEISMICMD_dt);
         bts.set_dt(dt);
-        double t0=md.get_double("starttime");
+        double t0=md.get_double(mspass::seismic::SEISMICMD_t0);
         bts.set_t0(t0);
         /* We invoke the BasicTimeSeries method for set_npts which sets the
         internal protected npts attribute of the base class.  We then set
@@ -408,7 +409,7 @@ PYBIND11_MODULE(seismic, m) {
         Otherwise we could do an initalization zeros followed by insertion.
         This algorithm will be slightly faster. */
         bts.set_npts(npts);
-        md.put("npts",npts);  // don't assume npts is set in metadata
+        md.put(mspass::seismic::SEISMICMD_npts,npts);  // don't assume npts is set in metadata
         /* We only support UTC for this constructor assuming it is only used
         to go back and forth from obspy trace objects. */
         bts.set_tref(TimeReferenceType::UTC);
