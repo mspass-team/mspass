@@ -602,7 +602,10 @@ class Database(pymongo.database.Database):
             raise MsPASSError("channel data can not be loaded into Seismogram", ErrorSeverity.Invalid)
         
         # 1. get the metadata schema based on the mspass object type
-        wf_collection_metadata_schema = self.metadata_schema[type(mspass_object).__name__]
+        object_type = type(mspass_object)
+        if object_type not in [TimeSeries, Seismogram]:
+            raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of collection.'.format(object_type), 'Fatal')
+        wf_collection_metadata_schema = self.metadata_schema[object_type.__name__]
 
         collection_id = collection + '_id'
         # 2. get the collection_id from the current mspass_object
