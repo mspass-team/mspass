@@ -816,7 +816,7 @@ Error Logging Concepts
   class *Exception* as a more generic handler.  Finally, both calls to elog
   methods contain additional parameters to tag the messages.  *alg* is an
   algorithm name and d.job_id() retrieves the "job_id".  Both are
-  global attributes handled through the global history management 
+  global attributes handled through the global history management
   system described below.
 | All the above would be useless baggage except the MongoDB database writers
   (Create and Update in CRUD) automatically save any elog entries in a

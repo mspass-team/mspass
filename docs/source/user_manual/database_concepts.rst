@@ -797,8 +797,9 @@ imports data through a two step procedure:
 1.  Run the following function on each seed file that is a bundle of
     multiple channels of data:
 
-.. code-block:: python
-def dbsave_seed_ensemble_file(db,file,gather_type="event",keys=None):
+    .. code-block:: python
+
+       def dbsave_seed_ensemble_file(db,file,gather_type="event",keys=None):
 
     where *file* is assumed to be a miniseed file and *db* is a *Database*
     object, which is our database handle class.  The *dbsave_seed_ensemble_file*
@@ -808,8 +809,9 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",keys=None):
 2.  The same data can be loaded into memory as a MsPASS *TimeSeriesEnsemble*
     object using the related function with this signature:
 
-.. code-block:: python
-def load_one_ensemble(doc,
+    .. code-block:: python
+
+       def load_one_ensemble(doc,
                   create_history=False,
                   jobname='Default job',
                   jobid='99999',
@@ -818,26 +820,27 @@ def load_one_ensemble(doc,
 		              apply_calib=False,
                   verbose=False):
 
-     where *doc* is a document retrieved from the wf_miniseed collection.
-     For example, the following shows how an entire dataset of miniseed files indexed
-     previously with dbsave_seed_ensemble_file can be read sequentially:
+    where *doc* is a document retrieved from the wf_miniseed collection.
+    For example, the following shows how an entire dataset of miniseed files indexed
+    previously with dbsave_seed_ensemble_file can be read sequentially:
 
-.. code-block:: python
-from mspasspy.db.client import Client
-from mspasspy.db.database import Database
-from mspasspy.preprocessing.seed.ensembles import load_one_ensemble
+    .. code-block:: python
+
+       from mspasspy.db.client import Client
+       from mspasspy.db.database import Database
+       from mspasspy.preprocessing.seed.ensembles import load_one_ensemble
 
 
-dbname="mydatabase"   # set to the name of your MongoDB database
-client=Client()
-db=Database(client,dbname)
-dbwf=db.wf_miniseed
-curs=dbwf.find()   # insert a query dict in the find function to limit number
-for doc in curs:
-  ensemble=load_one_ensemble(doc)
-  # Save these as TimeSeries objects
-  for d in ensemble.member:
-    db.save_data(d)
+       dbname="mydatabase"   # set to the name of your MongoDB database
+       client=Client()
+       db=Database(client,dbname)
+       dbwf=db.wf_miniseed
+       curs=dbwf.find()   # insert a query dict in the find function to limit number
+       for doc in curs:
+         ensemble=load_one_ensemble(doc)
+         # Save these as TimeSeries objects
+         for d in ensemble.member:
+           db.save_data(d)
 
 The above would produce a bare bones set of documents in the wf_TimeSeries
 collection.   For some processing like noise correlation studies that may
@@ -880,4 +883,4 @@ Our general recommendation is to replace the functionality of obspy's
 reader with a custom python read function designed to crack that particular
 format.  One could either convert the weird format data to an obspy Stream
 object so it was plug compatible in obspy or convert the data directly to
-TimeSeries or TimeSeriesEnemble objects with the mspass ccore api.  
+TimeSeries or TimeSeriesEnemble objects with the mspass ccore api.
