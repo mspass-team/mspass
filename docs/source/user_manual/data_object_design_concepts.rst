@@ -10,7 +10,7 @@ Overview
   atomic objects in seismology waveform processing:  scalar (i.e. single
   channel) signals, and three-component signals.   The versions of these
   you as a user should normally interact with are two objects defined in
-  MsPASS as *TimeSeries* and *Seismogram* respectively.  
+  MsPASS as :code:`TimeSeries` and :code:`Seismogram` respectively.  
 
 | These data objects were designed to simply interactions with MongoDB. 
   MongoDB is completely flexible in attributes names handled by the
@@ -30,12 +30,12 @@ Overview
 4. An optional object-level processing history mechanism.
 
 | Data objects are grouped in memory with a generic concept called an
-  *Ensemble*.   The implementation in C++ uses a template to define a
+  :code:`Ensemble`.   The implementation in C++ uses a template to define a
   generic ensemble.   A limitation of the current capability to link C++
   binary code with python is that templates do not translate directly.  
   Consequently, the python interface uses two different names to define
-  Ensembles of TimeSeries and Seismogram objects:  *TimeSeriesEnsemble*
-  and *SeismogramEnsemble* respectively.
+  Ensembles of TimeSeries and Seismogram objects:  :code:`TimeSeriesEnsemble`
+  and :code:`SeismogramEnsemble` respectively.
 
 | The C++ objects have wrappers for python that hide implementation details from
   the user.   All MongoDB operations implemented with the pymongo
@@ -102,10 +102,10 @@ History
    simple keys.   We aimed to hide any hierarchic structures (e.g
    relational database table relationships, obspy object hierarchies, 
    or MongoDB normalized data structures) behind the (python)
-   *Schema* object to reduce all Metadata to pure
+   :code:`Schema` object to reduce all Metadata to pure
    name:value pairs. 
 #. obspy does not handle three component data in a native way, but mixes
-   up the concepts we call *Seismogram* and *Ensemble* in to a common
+   up the concepts we call :code:`Seismogram` and :code:`Ensemble` in to a common
    python object they define as a
    `Stream <http://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream>`__.  
    We would argue our model is a more logical encapsulation of the
@@ -113,8 +113,8 @@ History
    component data like a seismic reflection shot gather is a very different
    thing than a set of three component channels that define the output of
    three sensors at a common point in space.   Hence, we carefully
-   separate *TimeSeries* and *Seismogram* (our name for Three-Component
-   data).  We further distinguish *Ensembles* of each atomic type.
+   separate :code:`TimeSeries` and :code:`Seismogram` (our name for Three-Component
+   data).  We further distinguish :code:`Ensembles` of each atomic type.
 
 Core Concepts
 ~~~~~~~~~~~~~
@@ -138,10 +138,10 @@ Overview - Inheritance Relationships
 | |Seismogram Inheritance|
 
 | Notice that both CoreSeismogram and CoreTime series have a common
-  inheritance from three base classes:  *BasicTimeSeries,
-  BasicMetadata,* and *BasicProcessingHistory*.   Python supports multiple
+  inheritance from three base classes:  :code:`BasicTimeSeries`,
+  :code:`BasicMetadata`, and :code:`BasicProcessingHistory`.   Python supports multiple
   inheritance and the wrappers make dynamic casting within the hierarchy
-  (mostly) automatic.  e.g. a *Seismogram* object can be passed directly to a
+  (mostly) automatic.  e.g. a :code:`Seismogram` object can be passed directly to a
   python function that does only Metadata operations and it will be
   handled seamlessly because python does not enforce type signatures on
   functions.  CoreTimeSeries and CoreSeismogram should be thought of a
@@ -157,14 +157,14 @@ Overview - Inheritance Relationships
   completely different framework. 
 
 | We emphasize here that users should normally expect to only interact with
-  the *TimeSeries* and *Seismogram* objects.  The lower levels sometimes
+  the :code:`TimeSeries` and :code:`Seismogram` objects.  The lower levels sometimes
   but not always have python bindings.
 
 | The remainder of this section discusses the individual components in
   the class hierarchy.
 
-:ref:`BasicTimeSeries<mspass.BasicTimeSeries>` - Base class of common data characteristics
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+BasicTimeSeries - Base class of common data characteristics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This base class object can be best viewed as an answer to this
 questions:  What is a time series?   Our design answers this question by
@@ -177,13 +177,15 @@ saying all time series data have the following elements:
    is virtual and does not need to be stored.  Hence, the base object
    has methods to convert sample numbers to time and the inverse (time
    to sample number).
-2. Data processing always requires the time series have a **finite
-   length**.   Hence, our definition of a time series directly supports
-   windowed data of a specific length.   The getter for this attribute
-   is npts() and the setter is set_npts(int).  This definition does not
+
+2. Data processing always requires the time series have a **finite length**.
+   Hence, our definition of a time series directly supports windowed 
+   data of a specific length.   The getter for this attribute
+   is :code:`npts()` and the setter is :code:`set_npts(int)`.  This definition does not
    preclude an extension to modern continuous data sets that are too
    large to fit in memory, but that is an extension we don't currently
    support. 
+
 3. We assume the data has been cleaned and **lacks data gaps**.  Real
    continuous data today nearly always have gaps at a range of scale
    created by a range of possible problems that create gaps:  telemetry
@@ -203,8 +205,8 @@ saying all time series data have the following elements:
   Most are best understood from the class documentation, but one is worth
   highlighting here.  A concept we borrowed from seismic reflection is the idea
   of marking data dead or alive; a boolean concept.   There are methods to
-  ask if the data are alive or dead (live() and dead() respectively) and
-  setters to force live (set_live()) or dead (kill()).   An important
+  ask if the data are alive or dead (:code:`live()` and :code:`dead()` respectively) and
+  setters to force live (:code:`set_live()`) or dead (:code:`kill()`).   An important
   thing to note is that an algorithm should always test if a data object
   is defined as live.  Some algorithms may choose to simply pass data marked
   dead along without changing or removing it from the workflow.
@@ -273,7 +275,7 @@ Metadata and MetadataDefinitions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | All data objects used by the MsPASS C++ library inherit a Metadata
-  object.  A *Metadata* object is best thought of through either of two
+  object.  A :code:`Metadata` object is best thought of through either of two
   concepts well known to most seismologists:  (1) headers (SAC), and (2)
   a dictionary container in python.   Both are ways to handle a general,
   modern concept of
@@ -412,12 +414,12 @@ Managing Metadata type with mspasspy.db.Schema
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | Most type enforcement is imposed by data readers and writers where
-  the *Schema* class is automatically loaded with the *Database* class
+  the :code:`Schema` class is automatically loaded with the :code:`Database` class
   that acts as a handle to interact with MongoDB.  Here we only document
-  methods available in the *Schema* class and discuss how these
+  methods available in the :code:`Schema` class and discuss how these
   can be used in developing a workflow with MsPASS.
 
-  The most important implementation of *Schema* is a subclass with the
+  The most important implementation of :code:`Schema` is a subclass with the
   name MetadataSchema.  You can create an instance easily like this:
 
   .. code-block:: python
@@ -436,15 +438,15 @@ from the class as follows:
 
   There are minor variations in the namespace between these two definitions,
   but the restrictions they impose can be interogated through a common
-  interface.   Both the *mdseis* and *mdts* symbols above are instances of
+  interface.   Both the :code:`mdseis` and :code:`mdts` symbols above are instances of
   a the MDSchemaDefinition class described here_.
 
   .. _here: <https://wangyinz.github.io/mspass/python_api/mspasspy.db.html#module-mspasspy.db.schema>(here)
 
-  The key point for this introduction is that the *mdseis* and *mdts*
+  The key point for this introduction is that the :code:`mdseis` and :code:`mdts`
   objects contain methods that can be used to get a list of restricted symbols
-  (the *keys()* method), the type that the framework expects that symbol
-  to define (the *type()* method), and a set of other utility methods.
+  (the :code:`keys()` method), the type that the framework expects that symbol
+  to define (the :code:`type()` method), and a set of other utility methods.
 
   One subset of the methods of the MDSchemaDefinitions class that deserves
   particular discussion is a set of methods designed to handle aliases.
@@ -457,7 +459,7 @@ from the class as follows:
   database implementation uses the CSS3.0 schema) loaded from relational
   database joins directly into the MsPASS namespace.  The methods used to
   handle aliases are readily apparent from the documentation page linked
-  above as they all contain the keyword *alias*.  We leave the exercise
+  above as they all contain the keyword :code:`alias`.  We leave the exercise
   of understanding how to use this feature to planned tutorials.
 
 Scalar versus 3C data
@@ -470,7 +472,7 @@ Scalar versus 3C data
   since the earliest days of digital seismic data in the oil and gas
   industry.  That is, the sample values are stored in a continuous block
   of memory that can be treated mathematically as a vector.   The index for the
-  vector serves as a proxy for time (the *time* method in BasicTimeSeries
+  vector serves as a proxy for time (the :code:`time` method in BasicTimeSeries
   can be used to convert an index to a time defined as a double).  Note in mspass
   the integer index always uses the C convention starting at 0 and not 1 as in FORTRAN,
   linear algebra, and many signal processing books.
@@ -480,7 +482,7 @@ Scalar versus 3C data
   python API makes the vector container look like a numpy array that can
   be accessed in same way sample data are handled in an obspy Trace
   object in the "data" array.   It is important to note that the C++ s vector is
-  mapped to *data* in the python API.   The direct interface through numpy/scipy
+  mapped to :code:`data` in the python API.   The direct interface through numpy/scipy
   allows one to manipulate sample data with numpy or scipy functions (e.g. `simple bandpass
   filters <https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.iirfilter.html#scipy.signal.iirfilter>`__). 
   That can be useful for testing and prototyping but converting and algorithm
@@ -534,12 +536,12 @@ Scalar versus 3C data
    container.  
 
 | We handle three component data in MsPASS by using a matrix to store the data
-  for a given *Seismogram*.   The data are directly accessible in C++ through a public
+  for a given :code:`Seismogram`.   The data are directly accessible in C++ through a public
   variable called u that is mnemonic for the standard symbol used in the
   old testament of seismology by Aki and Richards.  In python we use the
-  symbol *data* for consistency with TimeSeries.
+  symbol :code:`data` for consistency with TimeSeries.
   There are two choices of the order of indices for this matrix. 
-  The MsPASS implementation makes this choice:  a *Seismogram*
+  The MsPASS implementation makes this choice:  a :code:`Seismogram`
   defines index 0(1) as the channel number and index 1(2) as the time
   index.  The following python code section illustrates this more
   clearly than any words:
@@ -555,7 +557,7 @@ Scalar versus 3C data
   implementation of a matrix as the data object.   That detail is
   largely irrelevant to python programmers as the matrix is made to act like
   a numpy matrix by the wrappers.   Hence, python programmers
-  familiar with numpy can manipulate the *data* matrix with all
+  familiar with numpy can manipulate the :code:`data` matrix with all
   the tools of numpy noting that the data are in what numpy calls FORTRAN order. 
 | The Seismogram object has a minimal set of methods that the authors
   consider core concepts defining a three component seismogram.  We
@@ -565,8 +567,8 @@ Scalar versus 3C data
   (rotate_to_standard), Kennett's free surface transformation, and a
   general transformation matrix.   We use a pair of (public) boolean
   variables that are helpful for efficiency: 
-  *components_are_orthogonal* is true after any sequence of orthogonal
-  transformations and *components_are_cardinal* is true when the
+  :code:`components_are_orthogonal` is true after any sequence of orthogonal
+  transformations and :code:`components_are_cardinal` is true when the
   components are in the standard ENZ directions.  
 
   The process of creating a Seismogram from a set of TimeSeries objects
@@ -578,7 +580,7 @@ Scalar versus 3C data
   gaps that render one or more components of the set incomplete, and
   (e) others we haven't remembered or which will appear with some future
   instrumentation.   To handle this problem we have a module in MsPASS
-  called *bundle* documented here(THIS NEEDS A LINK - wrote this when bundle
+  called :code:`bundle` documented here(THIS NEEDS A LINK - wrote this when bundle
   had not yet been merged).
 
 | Ensembles of TimeSeries and Seismogram data are handled internally with a more
@@ -770,7 +772,7 @@ Error Logging Concepts
   entire workflow if one function on one piece of data threw some kinds
   of "fatal" errors.  
 
-| To handle this problem MsPASS uses a novel *ErrorLogger* object.  Any
+| To handle this problem MsPASS uses a novel :code:`ErrorLogger` object.  Any
   data processing module in MsPASS should NEVER exit on any error
   condition except one from which the operating system cannot recover. 
   (e.g. a disk write error or memory allocation error)
@@ -785,7 +787,7 @@ Error Logging Concepts
   nearly guaranteed unless the log message are rare.  Second, with a
   large dataset it can become a nearly impossible to find out which
   pieces of data created the errors.  Proper application of the
-  *ErrorLogger* object will eliminate both of these problems.
+  :code:`ErrorLogger` object will eliminate both of these problems.
 
 | Multiple methods are available to post errors of severity from fatal
   to logging messages that do not necessarily indicate an error.   A
@@ -801,21 +803,21 @@ Error Logging Concepts
     d.elog.log_error(d.job_id(),alg,err)
     d.kill()  
 
-| To understand the code above assume the symbol d is a *Seismogram*
+| To understand the code above assume the symbol d is a :code:`Seismogram`
   object with a singular transformation matrix created, for example, by
   incorrectly building the object with two redundant east-west
   components.   The rotate_to_standard method tries to compute a matrix
   inverse of the transformation matrix, which will generate an
   exception of type MsPASSError (the primary exception class for MsPASSS).  
   This example catches that exception with the expected type and passes it
-  directly to the ErrorLogger (*d.elog*).  This form is correct because it
+  directly to the ErrorLogger (:code:`d.elog`).  This form is correct because it
   is know that that is the only class exception the function will throw.
   For more ambiguous cases we refer to multiple books and online sources
   for best practices in python programming.  The key point is in more
   ambiguous cases the construct should catch the standard base
-  class *Exception* as a more generic handler.  Finally, both calls to elog
-  methods contain additional parameters to tag the messages.  *alg* is an
-  algorithm name and d.job_id() retrieves the "job_id".  Both are
+  class :code:`Exception` as a more generic handler.  Finally, both calls to elog
+  methods contain additional parameters to tag the messages.  :code:`alg` is an
+  algorithm name and :code:`d.job_id()` retrieves the :code:`job_id`.  Both are
   global attributes handled through the global history management
   system described below.
 | All the above would be useless baggage except the MongoDB database writers
@@ -824,6 +826,6 @@ Error Logging Concepts
   linked back to the data with which they are associated through the
   ObjectID of the data in the wf collection. 
 
-.. |TimeSeries Inheritance| image:: /doxygen/html/classmspass_1_1_time_series.png
+.. |TimeSeries Inheritance| image:: /_static/html/classmspass_1_1seismic_1_1_time_series.png
 
-.. |Seismogram Inheritance| image:: /doxygen/html/classmspass_1_1_seismogram.png
+.. |Seismogram Inheritance| image:: /_static/html/classmspass_1_1seismic_1_1_seismogram.png

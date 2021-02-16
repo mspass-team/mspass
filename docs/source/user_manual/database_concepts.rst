@@ -151,13 +151,13 @@ Some Key Concepts
 ObjectId
 :::::::::
 MongoDB collections always utilize a unique identifier they call an
-*ObjectId* to provide a bombproof, unique identifier for a single document
+:code:`ObjectId` to provide a bombproof, unique identifier for a single document
 in a collection.  MongoDB automatically generates one id with the special
-name *_id* whenever a new document is added to a collection.   An important
+name :code:`_id` whenever a new document is added to a collection.   An important
 thing to realize is two absolutely identical documents, which can readily
 be saved from a python dict or our Metadata container, can be saved to
 a collection and they will be treated as different because they will each
-get a different *_id* assigned.   That is good or bad depending on the
+get a different :code:`_id` assigned.   That is good or bad depending on the
 perspective.  It can be bad in an application where duplicates
 create a problem, but we assert that for most data processing it is
 a good thing.  We contrast this with the experience we have had with relational
@@ -172,7 +172,7 @@ to common data like station and source Metadata.
 ObjectIds are stored in MongoDB as a binary object we normally store in
 its raw form using pymongo.  Users should be aware that a human readable
 for can be obtain in python by using the str attribute of ObjectId class.  (i.e. if
-*myid* is an ObjectId loaded from MongoDB, the readable form is *myid.str*)
+:code:`myid` is an ObjectId loaded from MongoDB, the readable form is :code:`myid.str`)
 For more on ObjectIds the following site is a good introduction_.
 
 .. _introduction: https://www.tutorialspoint.com/mongodb/mongodb_objectid.htm
@@ -186,6 +186,7 @@ As we gained experience on the system, however, we realized all seismology
 Metadata was better suited to make more use of what MongoDB documentation
 calls a *normalized data model*.  The generic concepts these terms
 describe can be found here_.
+
 .. _here: https://www.tutorialspoint.com/mongodb/mongodb_data_modeling.htm
 
 At this time there are three sets of Metadata we handle by normalization.
@@ -193,7 +194,7 @@ They are familiar concepts to anyone familiar with the relational database
 schema CSS3.0 used, for example, in Antelope.  The concepts involved are:
 
 *   *Station (instrument) related Metadata.*   These are described below and actually
-    define two collections with the names *site* and *channel*.  The
+    define two collections with the names :code:`site` and :code:`channel`.  The
     distinctions are a bit subtle and better left to the more detailed
     discussion below.
 *   *Source related Metadata.*   Any event driven processing needs information
@@ -211,15 +212,15 @@ A key feature of normalized data is we need a fast index to link the
 normalized data to our waveform data.  In all cases we use the ObjectId of
 the normalized collection as the index.   As noted above all documents in
 MongoDB automatically are assigned an ObjectId accessible with key
-"_id".  For all normalized Metadata we use a convention wherein we
+:code:`_id`.  For all normalized Metadata we use a convention wherein we
 store the ObjectId of a related document in another collection using
-a composite key name constructed as *collection*_**id**, where *collection*
-is the name of the collection and **_id** is a literal meant to imply
+a composite key name constructed as :code:`collection_id`, where :code:`collection`
+is the name of the collection and :code:`_id` is a literal meant to imply
 an ObjectId normally accessible through the "_id" key.   For example,
-we use *site_id* to refer to documents in the *site* collection.
-That means that when *site_id* appears in another collection it is a
-reference to the ObjectId (referenced directly with alternate key "_id"
-in the site collection) of the related document in the *site* collection.
+we use :code:`site_id` to refer to documents in the :code:`site` collection.
+That means that when :code:`site_id` appears in another collection it is a
+reference to the ObjectId (referenced directly with alternate key :code:`_id`
+in the site collection) of the related document in the :code:`site` collection.
 
 Waveform Processing
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,16 +241,16 @@ currently available in the modules found under `mspasspy.preprocessing`.
 We stress, however, that preparing data for processing gets increasingly
 complicated as the size of a dataset grows as the probability of an
 unanticipated data problem increase with the size of a dataset.  Never underestimate the
-universal concept of <Murphy's Law>(https://www.dictionary.com/browse/murphy-s-law).
+universal concept of `Murphy's Law <https://www.dictionary.com/browse/murphy-s-law>`__.
 Although at this writing the functionality is only planned, an
 essential tool is to run a verification tool to validate data before running
 a large job.
 
 With that background, there are two collections used to manage waveform data.
-They are called *wf_TimeSeries* and *wf_Seismogram*.
+They are called :code:`wf_TimeSeries` and :code:`wf_Seismogram`.
 These two collection are the primary work areas to assemble a working data set.
 We elected to keep data describing each of the two atomic data types in MsPASS,
-*TimeSeries* and *Seismogram*, in two different collections.  The
+:code:`TimeSeries` and :code:`Seismogram`, in two different collections.  The
 main reason we made the decision to create two collections instead of one
 is that there are some minor differences in the Metadata that would
 create inefficiencies if we mixed the two data types in one place.
@@ -311,22 +312,22 @@ write a new attribute to an datum's Metadata if the key is already defined
 in the schema.  Doing so will guarantee downstream problems.
 
 Users must also realize that the sample data in Seismogram or TimeSeries objects
-can be constructed from *wf* documents in one of two ways.  First, the sample data
+can be constructed from :code:`wf` documents in one of two ways.  First, the sample data
 can be stored in the more conventional method of CSS3.0 based systems
 as external files.   In this case, we use the same construct as CSS3.0 where
-the correct information is defined by three attribures:  *dir*, *dfile*, and
-*foff*.   Unlike CSS3.0 MsPASS currently requires external file data to be
+the correct information is defined by three attribures:  :code:`dir`, :code:`dfile`, and
+:code:`foff`.   Unlike CSS3.0 MsPASS currently requires external file data to be
 stored as native 64 bit floating point numbers.   We force that restriction
-for efficiency as the *Seismogram.data* array and the *TimeSeries.data*
+for efficiency as the :code:`Seismogram.data` array and the :code:`TimeSeries.data`
 vector can then be read and written with fread and fwrite respectively from
 the raw buffers.  The alternative (second) method for storing sample data
-in MsPASS is through a mechanism called *gridfs* in MongoDB.  When this
+in MsPASS is through a mechanism called :code:`gridfs` in MongoDB.  When this
 method is used the waveform sample data are managed
 by file system like handles inside MongoDB.  That process is largely hidden
 from the user, but there are two important things to recognize about
 these two models for data storage:
 
-  #.  The *gridfs* method is expected to be superior to file storage for
+  #.  The :code:`gridfs` method is expected to be superior to file storage for
       large clusters because it facilitates parallel io operations.  With
       files two processes can collide trying access a common file, especially
       with a writer.
@@ -340,7 +341,7 @@ gridfs storage
 :::::::::::::::
 When data are saved to gridfs, MongoDB will automatically create two
 collections it uses to maintain the integrity of the data stored there.
-They are called *fs.files* and *fs.chunks*.   Any book on MongoDB and
+They are called :code:`fs.files` and :code:`fs.chunks`.   Any book on MongoDB and
 any complete online source will discuss details of gridfs and these
 two collections.  A useful example is this tutorial_.
 
@@ -359,24 +360,24 @@ The alternative storage model is external files.  We use the same
 concepts to manage data in external files as CSS3.0.  Data in file
 storage is managed by four attributes:
 
-   #. *dir* a directory path identifier in a file system.  We assume all
+   #. :code:`dir` a directory path identifier in a file system.  We assume all
       users are familiar with this concept.
-   #. *dfile* the "file name" that defines the leaf of the directory (path)
+   #. :code:`dfile` the "file name" that defines the leaf of the directory (path)
       tree structure.
-   #. *foff* is a byte offset to the start of the data of interest.
+   #. :code:`foff` is a byte offset to the start of the data of interest.
       Classic earthquake data formats like SAC do not use this concept and
       put only one seismogram in each file.  Multiple objects can be stored
       in a single file using common dir and dfile fields but different foff
       values.
-   #. *nbytes* or *npts* are attributes closely related to *foff*.   They
+   #. :code:`nbytes` or :code:`npts` are attributes closely related to :code:`foff`.   They
       define the size of the block of data that needs to be read from the
-      position of *foff*.
+      position of :code:`foff`.
 
 Both TimeSeries and Seismograms use a data array that is a contiguous
 memory block.  The default storage mode for external files is a raw
 binary memory image saved by writing the memory buffer to the external
-file (defined by *dir* and *dfile*) using the low level C fwrite function
-that is wrapped in the python standard by the *write* method of
+file (defined by :code:`dir` and :code:`dfile`) using the low level C fwrite function
+that is wrapped in the python standard by the :code:`write` method of
 standard file handles described in many tutorials like this one_.
 
    .. _one: https://docs.python.org/3/tutorial/inputoutput.html).
@@ -388,11 +389,11 @@ computers there were major differences in binary representations of
 real numbers.   We make an assumption in MsPASS that the machines in the
 cluster used for processing have the same architecture and a doubles are
 idenitical on all machines.)  Similarly, a Seismogram stores data in a
-contiguous buffer of memory but the memory block is 3(*npts*) doubles.
+contiguous buffer of memory but the memory block is 3 x :code:`npts` doubles.
 The buffer is order in what numpy calls FORTRAN order meaning the matrix is
 stored with the row index fastest (also called column order).  In any case,
 key point is that for efficiency the data for a Seismogram is also
-read and written using low level binary *read* and *write* methods of the
+read and written using low level binary :code:`read` and :code:`write` methods of the
 python file handle class.
 
 Summary
@@ -412,7 +413,7 @@ saved data with a reader.  The write process has some complexities
 a reader does not have to deal with.   That is, writers have more options
 to deal with (notably the storage mode) that control their behavior and
 have to handle potential inconsistencies created by a processing
-workflow.  The *Schema* class (described in more detail below) manages
+workflow.  The :code:`Schema` class (described in more detail below) manages
 automatically mapping Metadata to database attributes where possible.
 To avoid fatal write errors we emphasize the following as a rule:
 
@@ -438,14 +439,14 @@ Objects <data_object_design_concepts>` section.
 
 A special case is data killed during processing.   Any datum from a MsPASS
 processing module that was killed should contain an elog entry that the
-level *Invalid*.   The sample data in killed Seismogram or TimeSeries data
+level :code:`Invalid`.   The sample data in killed Seismogram or TimeSeries data
 is not guaranteed to be valid, and may, in fact, be empty.   Hence, killed
 data have to be handled specially.   All elog entries from such data will
 be preserved in this collection.   In addition, the document for killed
 data will contain a dict container with the key "metadata".   That dict is
 an recasting of the Metadata of the datum that was killed.  It is neeed,
 in general, to sort out what specific datum to which the error was attached.
-The documents in elog for live data contain an *ObjectId* that is a link back
+The documents in elog for live data contain an :code:`ObjectId` that is a link back
 to the wf collection where that waveform was saved.
 
 history
@@ -473,15 +474,15 @@ Normalized collections
 site and channel
 ::::::::::::::::::
 
-The *site* collection is intended as a largely static table
+The :code:`site` collection is intended as a largely static table
 that can be used to
 `normalize <https://docs.mongodb.com/manual/core/data-model-design/>`__
 a wf collection.   The name is (intentionally) identical to the CSS3.0
 site table.   It's role is similar, but not identical to the CSS3.0
-table.  Similarly, *channel* plays the same role as the *sitechan*
-table in CSS3.0.  They are similar in the sense that *site* is
+table.  Similarly, :code:`channel` plays the same role as the :code:`sitechan`
+table in CSS3.0.  They are similar in the sense that :code:`site` is
 used to find the spatial location of a recording instrument.
-In the same way *channel* acts like *sitechan* in that it is used
+In the same way :code:`channel` acts like :code:`sitechan` in that it is used
 to define the orientation of a particular single channel of seismic
 data.   Both collections, however, mix in concepts CSS3.0 stores
 in a collection of static tables used for maintaining station metadata.
@@ -489,9 +490,11 @@ Antelope users will know these as the collection of tables generated
 when `sd2db <https://brtt.com>`__ is run on a SEED file from an FDSN
 data center.  We expand on this below, but the following are useful
 summaries for Antelope and obspy users:
+
 * Antelope user's should think of the channel collection as nearly identical
   to the CSS3.0 sitechan table with response data handled through obspy.
-* Obspy users can think of both *site* and *sitechan* as a way to
+  
+* Obspy users can think of both :code:`site` and :code:`sitechan` as a way to
   manage the same information obspy handles with their
   `Inventory <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html>`__
   object.  In fact, channel documents produced from
@@ -500,39 +503,40 @@ summaries for Antelope and obspy users:
   `Channel <https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject>`__
    object saved with pickle.
 
-We emphasize that *site* and *channel* support SEED indexed metadata, but
-they do not demand it.  We use the *ObjectId* of documents in both
-collections as the primary cross-referencing key.  The *ObjectId* keys are
-referenced in collections outside of *site* and *channel*
-(i.e. wf_TimeSeries and wf_Seismogram) with the keys *site_id* and *chan_id*
+We emphasize that :code:`site` and :code:`channel` support SEED indexed metadata, but
+they do not demand it.  We use the :code:`ObjectId` of documents in both
+collections as the primary cross-referencing key.  The :code:`ObjectId` keys are
+referenced in collections outside of :code:`site` and :code:`channel`
+(i.e. wf_TimeSeries and wf_Seismogram) with the keys :code:`site_id` and :code:`chan_id`
 respectively.
 
-Although those *ObjectId*s can be thought of as primary keys, we provide
+Although those :code:`ObjectId`s can be thought of as primary keys, we provide
 some support for two alternative indexing methods.
 
- .# *SEED net, sta, chan, loc keys*.  Any data obtained from FDSN
-    data centers like IRIS-DMC distribute data in the SEED
-    (Standard for the Exchange of Earthquake Data) or miniSEED
-    format.  MiniSEED data is SEED data with minimal metadata.
-    The primary keys SEED uses to define a specfic channel of data are
-    three string attributes: (1) a network code referred to as *net* in
-    MsPASS, (2) a station code (*sta*), (3) a channel (*chan*), and
-    a "location" code (*loc*).   *site* documents extracted from stationxml
-    files will always contain *net*, *sta*, and *loc* names while
-    *channel* documents add the *chan* attibute.  For documents generated
-    from stationxml keys (3 keys for *site* and 4 for *channel*) can
-    be properly viewed as alternate keys to locate documents related to a
-    particular station (*site*) or channel (*channel*).  With SEED data it
-    is important to realize that those keys are frequently not sufficient
-    to locate a single document.  All SEED-based data (stationxml) also
-    use a pair of time range attributes that we call *starttime* and
-    *endtime*.   Both are unix epoch times that define a time span for which
-    the associated document's data are valid.   These are used for a whole
-    range of practical issues in recording of continuous data, but the
-    key point is any query for a unique document in both the *site* and
-    *channel* collection require a time stamp that needs to be tested
-    against a time range defined by *starttime* and *endtime*.
-.#  We also provide some limited support for a form of spatial query.
+ * *SEED net, sta, chan, loc keys*.  Any data obtained from FDSN
+   data centers like IRIS-DMC distribute data in the SEED
+   (Standard for the Exchange of Earthquake Data) or miniSEED
+   format.  MiniSEED data is SEED data with minimal metadata.
+   The primary keys SEED uses to define a specfic channel of data are
+   three string attributes: (1) a network code referred to as :code:`net` in
+   MsPASS, (2) a station code (:code:`sta`), (3) a channel (:code:`chan`), and
+   a "location" code (:code:`loc`).   :code:`site` documents extracted from stationxml
+   files will always contain :code:`net`, :code:`sta`, and :code:`loc` names while
+   :code:`channel` documents add the :code:`chan` attibute.  For documents generated
+   from stationxml keys (3 keys for :code:`site` and 4 for :code:`channel`) can
+   be properly viewed as alternate keys to locate documents related to a
+   particular station (:code:`site`) or channel (:code:`channel`).  With SEED data it
+   is important to realize that those keys are frequently not sufficient
+   to locate a single document.  All SEED-based data (stationxml) also
+   use a pair of time range attributes that we call :code:`starttime` and
+   :code:`endtime`.   Both are unix epoch times that define a time span for which
+   the associated document's data are valid.   These are used for a whole
+   range of practical issues in recording of continuous data, but the
+   key point is any query for a unique document in both the :code:`site` and
+   :code:`channel` collection require a time stamp that needs to be tested
+   against a time range defined by :code:`starttime` and :code:`endtime`.
+
+ *  We also provide some limited support for a form of spatial query.
     The use of a spatial query was a design decision based
     on the author's experiences using CSS3.0's site table as implemented
     in Antelope.   Antelope uses the station name and a time period as a
@@ -544,14 +548,14 @@ some support for two alternative indexing methods.
     On the other hand, many such processed waveforms have a space concept
     that needs to be preserved.  Hence, the location information in the
     collection may relate to some more abstract point like  piercing point
-    for a CCP stack.   In this mode the *Object_Id* stored as *site_id*
-    or *chan_id* is the only index. The difference is geospatial queries
+    for a CCP stack.   In this mode the :code:`Object_Id` stored as :code:`site_id`
+    or :code:`chan_id` is the only index. The difference is geospatial queries
     in MongoDB can be used as an alternate index.  We note that
-    geospatial queries can also be used on *site* and *channel* collections
+    geospatial queries can also be used on :code:`site` and :code:`channel` collections
     created with stationxml files too provided the user constructs the
     index with (NEEDS A REFERERENCE HERE - We need a database method for this)
 
-A spatial query to link anything to a point in the *site* or *channel* collection has
+A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has
 two complexities:  (1) all spatial queries require a uncertainty
 specification that are data and implementation dependent, and (2)
 sometimes, but not always, a vertical position (site_elev) needs to be
@@ -563,7 +567,7 @@ is always a data dependent choice;  a scientist working with free
 oscillations of the earth require station coordinates with minimal
 precision, while an active source experiment often requires submeter
 location precision.   We treat vertical positions differently.  The
-common key to define vertical position is *site_elev* or *chan_elev*.
+common key to define vertical position is :code:`site_elev` or :code:`chan_elev`.
 How to handle
 vertical position is application dependent.  *e.g.* to look up the
 location of an operational GSN station, it may be necessary to
@@ -577,19 +581,19 @@ defining another rule that user's need to recognize and abide by:
     The site and channel collections should only contain metadata relevant to
     the data set.   Used documents are not a problem but waste space.
     Missing metadata is a problem as it will always lead to dropped data.
-    Assembly of a working data set requires linking documents in *site*
-    and/or *channel* to wf_Seismogram documents and channel to wf_TimeSeries
-    using keys *site_id* and *chan_id* respectively.
+    Assembly of a working data set requires linking documents in :code:`site`
+    and/or :code:`channel` to wf_Seismogram documents and channel to wf_TimeSeries
+    using keys :code:`site_id` and :code:`chan_id` respectively.
 
 MsPASS has some supported functions to add in building the site and channel
 collections and building links to wf collections.   The details are best
-obtained from the docstrings for functions in *mspasspy.db.database* and
-*mspass.preprocessing.seed* and tutorials on raw data handling.
+obtained from the docstrings for functions in :code:`mspasspy.db.database` and
+:code:`mspass.preprocessing.seed` and tutorials on raw data handling.
 
-As noted earlier *site* is a near match in concept to the css3.0 table
-with the same name, but *channel* is is more than its closes analog in
-css3.0 called sitechan.   The key difference between *channel* and sitechan
-is that *channel* contains not just orientation information, but **may**
+As noted earlier :code:`site` is a near match in concept to the css3.0 table
+with the same name, but :code:`channel` is is more than its closes analog in
+css3.0 called sitechan.   The key difference between :code:`channel` and sitechan
+is that :code:`channel` contains not just orientation information, but **may**
 contain all the metadata needed to define the response characteristics of the
 channel to which it is linked.  We stress **may** because for a generic
 processing system response information must be optional.   Traditional reflection
@@ -599,17 +603,17 @@ processing functions have not need for detailed response data.  In contrast,
 some common applications like moment tensor inversions and surface wave dispersion
 measurements demand detailed response metadata.   We address this problem
 by leaning heavily on the existing infrastructure for handling response data
-in obspy.   That is, obspy defines a python class they call *Inventory*.
-The *Inventory* class is a complicated data structure that is best thought of,
+in obspy.   That is, obspy defines a python class they call :code:`Inventory`.
+The :code:`Inventory` class is a complicated data structure that is best thought of,
 in fact, as a image of the data structure defined by an FDSN stationxml file.
 Embedded in that mess is the response data, but obspy has build a clean
-api to obtain the response information from the *Inventory*.   In MsPASS
-we handle this problem by storing a pickle image of the *Inventory* object
+api to obtain the response information from the :code:`Inventory`.   In MsPASS
+we handle this problem by storing a pickle image of the :code:`Inventory` object
 related to that channel.   (TO DO:   our current implementation may not
 be correct on this point.  see discussion)
 
 Finally, we emphasize that if your final processing workflow requires
-metadata in *site* and/or *channel* you must complete preprocessing to
+metadata in :code:`site` and/or :code:`channel` you must complete preprocessing to
 define linking ids in wf_Seismogram and/or wf_TimeSeries.  Any incomplete
 entries will be dropped in final processing.  Conversely, if your workflow
 does not require any receiver related Metadata (rare), these collections
@@ -618,7 +622,7 @@ do not need to be dealt with at all.
 source
 ::::::::
 
-*source*. The source collection has much in common with site, but
+The source collection has much in common with site, but
 has two fundamental differences:  (1) the origin time of each source
 needs to be specified, and (2) multiple estimates are frequently
 available for the same source.
@@ -627,8 +631,8 @@ The origin time issue is a more multifaceted problem that it might at
 first appear.  The first is that MongoDB, like ArcGIS, is map-centric
 and stock geospatial queries lack a depth attribute, let alone a time
 variable.   Hence, associating a waveform to a source position defined
-in terms of hypocenter coordinates (*latitude, longitude,
-depth*, and *time* attributes in *source*) requires a multistage query that can
+in terms of hypocenter coordinates (:code:`latitude`, :code:`longitude`,
+:code:`depth`, and :code:`time` attributes in :code:`source`) requires a multistage query that can
 potentially be very slow for a large data set.
 
 The other issue that distinguishes origin time is that it's accuracy
@@ -656,23 +660,23 @@ similar to rule 2:
   **Rule 3**
     The source collection should contain any useful source
     positions that define locations in space and time (attributes
-    *source_lat, source_lon, source_depth*, and *source_time*).  Linking
+    :code:`source_lat`, :code:`source_lon`, :code:`source_depth`, and :code:`source_time`).  Linking
     each document in a wf collection to the desired point in the source
     collection is a preprocessing step to define a valid dataset.
-    The link should always be done with by inserting the *ObjectId* of
-    the appropriate document in *source* as in wf_Seismogram or
-    wf_TimeSeries with the key *source_id*.
+    The link should always be done with by inserting the :code:`ObjectId` of
+    the appropriate document in :code:`source` as in wf_Seismogram or
+    wf_TimeSeries with the key :code:`source_id`.
 
 A first-order limitation this imposes on MsPASS is that it means that
 normal behavior should be that there is a one-to-one mapping of a single
-*source* document to a given wf document as defined by the *source_id* key.
+:code:`source` document to a given wf document as defined by the :code:`source_id` key.
 Note MongoDB is flexible enough that it would be possible to support
 multiple event location estimates for each wf document but that is not
 a feature we have elected to support.  As noted other places we consider the
 catalog preparation problem a solved problem with multiple solutions.
 
-A final point about *source* is that we emphasize normalizing *source*
-by defining *source_id* values in wf collections should always be thought of
+A final point about :code:`source` is that we emphasize normalizing :code:`source`
+by defining :code:`source_id` values in wf collections should always be thought of
 as an (optional) preprocessing step.   If your workflow requires source
 information, you must complete the association of records in source to
 wf_Seismogram and/or wf_TimeSeries documents before your primary processing.
@@ -707,15 +711,15 @@ is correctly.
    one of these collections define a parallel dataset that is the
    required input for any parallel job.
 *  The Database api simplifies the processing of reading and writing.
-   We abstract the always complex process of reading and writing to *save* and
-   *read* methods of the python class Database.  See the reference manual
+   We abstract the always complex process of reading and writing to :code:`save` and
+   :code:`read` methods of the python class Database.  See the reference manual
    for details.
 *  Assembling the wf_Seismogram and/or wf_TimeSeries collection should
    always be viewed as a preprocessing step to build a clean dataset.  That
    model is essential for efficiency because all the complexity of real
    data problems cannot be anticipated and are best treated as a special
    problem you as a user are responsible for solving.
-*  Assembling the metadata stored in *site*, *channel*, and/or *source*
+*  Assembling the metadata stored in :code:`site`, :code:`channel`, and/or :code:`source`
    is also always treated as a preprocessing problem.   Linking of these
    normalized collections to wf_Seismogram and/or wf_TimeSeries is
    required if the associated metadata is needed in your workflow.
@@ -754,7 +758,7 @@ For more details about SEED and miniseed can be found
 `here <https://ds.iris.edu/ds/nodes/dmc/data/formats/seed/>`__ ).
 
 Python modules to handle the import of SEED data are packages found
-under *mspasspy.preprocessing.seed*.   Our current implementation depends
+under :code:`mspasspy.preprocessing.seed`.   Our current implementation depends
 upon obspy's miniseed reader that imposes some restrictions.
 A fundamental scalability problem in the current version of obspy's reader
 is it makes what we might call the SAC model of data management.  That is,
@@ -784,14 +788,14 @@ reader will try to eat the whole file and convert the data to a potentially
 large list of Trace objects bundled into a Stream container.  We plan to
 eventually implement a foff index as used in CSS3.0's wfdisc table, but
 that idea is not currently supported.  (For those familiar with raw data
-handling *foff* in css3.0 implementation is used as a argument to the low
+handling :code:`foff` in css3.0 implementation is used as a argument to the low
 level, C function fseek to position the read pointer to a particular
 position in a file containing multiple waveform segments.  A more efficent
 reader would also need to store the number of bytes to load to know the
 range of data defining data to be uncoded to produce a single Trace/TimeSeries
 object.)
 
-Our current code in the module *mspasspy.preprocessing.seed.ensembles*
+Our current code in the module :code:`mspasspy.preprocessing.seed.ensembles`
 imports data through a two step procedure:
 
 1.  Run the following function on each seed file that is a bundle of
@@ -801,12 +805,12 @@ imports data through a two step procedure:
 
        def dbsave_seed_ensemble_file(db,file,gather_type="event",keys=None):
 
-    where *file* is assumed to be a miniseed file and *db* is a *Database*
-    object, which is our database handle class.  The *dbsave_seed_ensemble_file*
+    where :code:`file` is assumed to be a miniseed file and :code:`db` is a :code:`Database`
+    object, which is our database handle class.  The :code:`dbsave_seed_ensemble_file`
     function builds only an index of the given file and writes the index to
-    a special collection called *wf_miniseed*.
+    a special collection called :code:`wf_miniseed`.
 
-2.  The same data can be loaded into memory as a MsPASS *TimeSeriesEnsemble*
+2.  The same data can be loaded into memory as a MsPASS :code:`TimeSeriesEnsemble`
     object using the related function with this signature:
 
     .. code-block:: python
@@ -820,7 +824,7 @@ imports data through a two step procedure:
 		              apply_calib=False,
                   verbose=False):
 
-    where *doc* is a document retrieved from the wf_miniseed collection.
+    where :code:`doc` is a document retrieved from the wf_miniseed collection.
     For example, the following shows how an entire dataset of miniseed files indexed
     previously with dbsave_seed_ensemble_file can be read sequentially:
 
@@ -845,11 +849,11 @@ imports data through a two step procedure:
 The above would produce a bare bones set of documents in the wf_TimeSeries
 collection.   For some processing like noise correlation studies that may
 be enough.   For any event-based processing the data will need to be
-linked to the *channel* and *source* collections.   Current capability is
+linked to the :code:`channel` and :code:`source` collections.   Current capability is
 limited to ensemble processing and is best understood by examining the
 sphynx generated documentation for the following functions:  *link_source_collection,
 load_hypocenter_data_by_id, load_hypoceter_data_by_time, load_site_data*, and
-*load_channel_data*.   In addition, see our tutorial section for a detailed
+:code:`load_channel_data`.   In addition, see our tutorial section for a detailed
 example of how to use these functions.
 
 
@@ -858,24 +862,24 @@ Advanced Topics
 =================
 
 
-Customizing the  schema
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Customizing the schema
+----------------------
 
 Importing Data Formats other than miniSEED
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------
 
 Obspy's generic file reader supports a long list of formats described
-`here.<https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__
+`here <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__.
 Any of these formats are readily imported into MsPASS, but would require
-writing a custom reader.  Our miniseed reader in *mspasspy.preprocessing.seed*
+writing a custom reader.  Our miniseed reader in :code:`mspasspy.preprocessing.seed`
 provides a model to do this.  One version of such a custom algorithm could
 be summarized in the following common steps:
 
 #.  Run the obspy read function on a file.  It will return a Stream container
     with one or more Trace objects.
 #.  Run the mspass Stream2TimeSeriesEnsemble function found in
-    *mspasspy.util.converter*.
-#.  Run the loop as above containing *db.save(d)* on the output of
+    :code:`mspasspy.util.converter`.
+#.  Run the loop as above containing :code:`db.save(d)` on the output of
     Stream2TimeSeriesEnsemble
 
 If you need to import a format not on that list, the problem is much harder.
