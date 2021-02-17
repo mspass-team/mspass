@@ -5,9 +5,9 @@ The MsPASS C++ API's key components are the following classes.
 
 .. toctree::
 
-   ../cxx_api/mspass.Metadata
-   ../cxx_api/mspass.TimeSeries
-   ../cxx_api/mspass.Seismogram
+   ../cxx_api/mspass.utility.Metadata
+   ../cxx_api/mspass.seismic.TimeSeries
+   ../cxx_api/mspass.seismic.Seismogram
 
 Please refer to the :ref:`Doxygen documents<mspass_namespace>` 
 for more details.
