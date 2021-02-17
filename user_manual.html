@@ -95,24 +95,14 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User’s Manual</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#overview-primary-features-of-mspass">Overview - Primary Features of MsPASS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#design-concepts">Design Concepts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#role-of-python-and-c">Role of Python and C++</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user_manual/database_concepts.html#id7">Summary</a></li>
-<li class="toctree-l4"><a class="reference internal" href="user_manual/database_concepts.html#advanced-topics">Advanced Topics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#crud-operations-in-mspass">CRUD operations in MsPASS</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#parallel-processing">Parallel Processing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#transformation-action-map-reduce-concepts">Transformation-Action (Map-Reduce) Concepts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#apache-spark">Apache Spark</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mspass-simplified-interface">MsPASS Simplified Interface</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#id7">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#advanced-topics">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
@@ -212,19 +202,17 @@
 </style>
 <div class="section" id="user-s-manual">
 <h1>User’s Manual<a class="headerlink" href="#user-s-manual" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview-primary-features-of-mspass">
-<h2>Overview - Primary Features of MsPASS<a class="headerlink" href="#overview-primary-features-of-mspass" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="design-concepts">
-<h2>Design Concepts<a class="headerlink" href="#design-concepts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="role-of-python-and-c">
-<h3>Role of Python and C++<a class="headerlink" href="#role-of-python-and-c" title="Permalink to this headline">¶</a></h3>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/data_object_design_concepts.html">Data Object Design Concepts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html#history">History</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html#core-concepts">Core Concepts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html#global-versus-object-level-history">Global versus object level history</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a><ul>
@@ -234,25 +222,29 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html#id7">Summary</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html#advanced-topics">Advanced Topics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html#advanced-topics">Advanced Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#customizing-the-schema">Customizing the schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#importing-data-formats-other-than-miniseed">Importing Data Formats other than miniSEED</a></li>
 </ul>
-</div>
-<div class="section" id="crud-operations-in-mspass">
-<h4>CRUD operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
-<div class="section" id="parallel-processing">
-<h3>Parallel Processing<a class="headerlink" href="#parallel-processing" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="transformation-action-map-reduce-concepts">
-<h4>Transformation-Action (Map-Reduce) Concepts<a class="headerlink" href="#transformation-action-map-reduce-concepts" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="apache-spark">
-<h4>Apache Spark<a class="headerlink" href="#apache-spark" title="Permalink to this headline">¶</a></h4>
-</div>
-<div class="section" id="mspass-simplified-interface">
-<h4>MsPASS Simplified Interface<a class="headerlink" href="#mspass-simplified-interface" title="Permalink to this headline">¶</a></h4>
-</div>
-</div>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#create">Create</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#read">Read</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#update">Update</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#delete">Delete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#key-io-concepts">Key IO Concepts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#what-you-will-need-to-implement">What you will need to implement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 

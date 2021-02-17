@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>mspass::seismic::TimeSeries &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mspass::seismic::Seismogram" href="mspass.seismic.Seismogram.html" />
+    <link rel="prev" title="mspass::utility::Metadata" href="mspass.utility.Metadata.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference_manual.html">Reference Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#python-api">Python API</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../reference_manual.html#c-api">C++ API</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mspass.utility.Metadata.html">mspass::utility::Metadata</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mspass::seismic::TimeSeries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mspass.seismic.Seismogram.html">mspass::seismic::Seismogram</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#mspass-schema">MsPASS Schema</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../reference_manual.html">Reference Manual</a> &raquo;</li>
+        
+      <li>mspass::seismic::TimeSeries</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/cxx_api/mspass.seismic.TimeSeries.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="mspass-seismic-timeseries">
+<h1>mspass::seismic::TimeSeries<a class="headerlink" href="#mspass-seismic-timeseries" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp class">
+<dt id="_CPPv4N6mspass7seismic10TimeSeriesE">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series"></span><em class="property">class </em><code class="sig-prename descclassname">mspass::seismic<code class="sig-prename descclassname">::</code></code><code class="sig-name descname">TimeSeries</code> : <em class="property">public</em> <em class="property">virtual</em> mspass::seismic::CoreTimeSeries, <em class="property">public</em> mspass::utility::ProcessingHistory<a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeriesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Implemntation of <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> for MsPASS. </p>
+<p>This is the working version of a three-component <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> object used in the MsPASS framework. It extends CoreTimeSeries by adding common MsPASS components (ProcessingHistory). It may evolve with additional special features. </p>
+<p>Subclassed by mspass::seismic::TimeSeriesWGaps</p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEv">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a45c61ee8b73600c3576f8f750f926311"></span><em class="property">inline</em> <code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Default constructor. Only runs subclass default constructors. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a88937f6f1cd72c8f20d8a798cf5b951a"></span><em class="property">inline</em> <code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> size_t <em>nsamples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesEK6size_t" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Bare bones constructor allocates space and little else.</p>
+<p>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates an nsamples vector and initializes it to all zeros. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data vector, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nsamples</span></code>: is the number of samples needed for storing the data vector. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1ad50dc65d5845189ef178195589665e5e"></span><em class="property">inline</em> <code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> BasicTimeSeries &amp;<em>bts</em>, <em class="property">const</em> Metadata &amp;<em>md</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK15BasicTimeSeriesRK8Metadata" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Partially construct from components.</p>
+<p>There are times one wants to use the Metadata area as a template to flesh out a CoreTimeSeries as what might be called skin and bones: skin is Metadata and bones as BasicTimeSeries data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(“npts”)). It then creates the data vector of that length and initialzies it to all zeros.</p>
+<p>This constructor is largely a wrapper for the CoreTimeSeries version with the same signature but it also initalizes the ProcessingHistory to null (calling the default constructor) </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesE">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a08f3ad76e126f1e26fbabeca1d9e7796"></span><em class="property">inline</em> <code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::CoreTimeSeries &amp;<em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Construct from lower level CoreTimeSeries. </p>
+<p>In MsPASS CoreTimeSeries has the primary functions that define the concept of a a single channel seismogram. <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> implements mspass specific features needed to mesh with the mspass processing system. This constructor clones only the CoreTimeSeries components and initializes the ProcessingHistory with the default constructor leaving the history in an empty state. Users should call methods in ProcessingHistory to initiate a valid history chain. Processing can continue if left in that state, but the history chain will have an undefined origin. Job information will also be lost if not initialized (see BasicProcessingHistory)</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: is the data to be copied to create the new <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> object. Note that means a deep copy wherein the data vector is copied. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesEKNSt6stringE">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a1d23975e71b4fe23b21dd6a7a9f10a46"></span><code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::CoreTimeSeries &amp;<em>d</em>, <em class="property">const</em> std::string <em>alg</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic14CoreTimeSeriesEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Contruct from a core time series and initialize history as origin.</p>
+<p>This constructor is a variant of a similar one built only from a CoreTimeSeries. This constuctor is intended to be used mainly on simulation data created by some mechanism (e.g. a python procedure). It is more rigid that the simple one arg constructor as it will create a top level history record. The record will mark the result as an origin with an id set as a uuid created by a random number generator (boost implementation). The jobname and jobid are frozen as “test”. Use a different constructor and/or reset job info if more flexibility is desired. Use of this constructor is recommended only for test python programs that do not need to interact with MongoDB.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">is</span></code>: core data to be cloned </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">alg</span></code>: is the algorithm name to set for the origin history record. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataERKN6mspass7utility17ProcessingHistoryERKNSt6vectorIdEE">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1aa631eb4114fc29b2152e048eba1bc218"></span><code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::BasicTimeSeries &amp;<em>b</em>, <em class="property">const</em> mspass::utility::<a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<em>m</em>, <em class="property">const</em> mspass::utility::ProcessingHistory &amp;<em>mcts</em>, <em class="property">const</em> std::vector&lt;double&gt; &amp;<em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataERKN6mspass7utility17ProcessingHistoryERKNSt6vectorIdEE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Special constructor for pickle interface.</p>
+<p>The pickle interface required by spark presented problems for MsPASS. The complicated data objects of <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> and <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> have to be serialized in pieces. This constructor is only used in the function called indirectly by pickle.load. It essentially contains a <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> dismembered into the pieces that can be the serialized independently. The parameters are each associated with one of those required pieces and are simply copied to build a valid <a class="reference internal" href="#classmspass_1_1seismic_1_1_time_series"><span class="std std-ref">TimeSeries</span></a> object in the pickle.load function </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK10TimeSeries">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1a518cbd17b96169fe12db31f80c82fc8c"></span><em class="property">inline</em> <code class="sig-name descname">TimeSeries</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK10TimeSeries" title="mspass::seismic::TimeSeries::TimeSeries">TimeSeries</a> &amp;<em>parent</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeries10TimeSeriesERK10TimeSeries" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Standard copy constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N6mspass7seismic10TimeSeriesaSERK10TimeSeries">
+<span class="target" id="classmspass_1_1seismic_1_1_time_series_1abdea57bd025f81cc00375db3a7e1c854"></span><a class="reference internal" href="#_CPPv4N6mspass7seismic10TimeSeriesE" title="mspass::seismic::TimeSeries">TimeSeries</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7seismic10TimeSeriesE" title="mspass::seismic::TimeSeries">TimeSeries</a> &amp;<em>parent</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10TimeSeriesaSERK10TimeSeries" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Standard assignment operator. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="mspass.seismic.Seismogram.html" class="btn btn-neutral float-right" title="mspass::seismic::Seismogram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mspass.utility.Metadata.html" class="btn btn-neutral float-left" title="mspass::utility::Metadata" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

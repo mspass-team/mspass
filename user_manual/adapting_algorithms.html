@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Adapting an Existing Algorithm to MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial" href="../tutorial.html" />
+    <link rel="prev" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_manual.html">User’s Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id7">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#advanced-topics">Advanced Topics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Adapting an Existing Algorithm to MsPASS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-you-will-need-to-implement">What you will need to implement</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#required">Required</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-but-recommended">Optional but recommended</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../user_manual.html">User’s Manual</a> &raquo;</li>
+        
+      <li>Adapting an Existing Algorithm to MsPASS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user_manual/adapting_algorithms.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="adapting-an-existing-algorithm-to-mspass">
+<span id="adapting-algorithms"></span><h1>Adapting an Existing Algorithm to MsPASS<a class="headerlink" href="#adapting-an-existing-algorithm-to-mspass" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="purpose">
+<h2>Purpose<a class="headerlink" href="#purpose" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of this document is to describe how an existing algorithm written
+in C/C++ or python can be adapted to the MsPASS framework.  The ideas should
+also readily be adapted to Fortran algorithms as well, but the authors have
+no experience at this point in adapting Fortran code.  If this grows as we
+hope someone in the community with experience adapting Fortran to python
+may want to modify this document to describe how to do that.</p>
+<p>The audience of this document is assumed to be core MsPASS developers who are
+working directly with the MsPASS git repository.  The examples all show
+how to add an algorithm to become a full component of MsPASS.   Eventually
+a parallel document will be needed to produce a private, custom module that
+can work as a custom extension of MsPASS.</p>
+<p>We begin with some common requirements needed to implement a function compatible
+with the framework.  The remainder of the document centers on a set of examples
+of increasing complexity.</p>
+</div>
+<div class="section" id="what-you-will-need-to-implement">
+<h2>What you will need to implement<a class="headerlink" href="#what-you-will-need-to-implement" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="required">
+<h3>Required<a class="headerlink" href="#required" title="Permalink to this headline">¶</a></h3>
+<p>The following must be satisfied by an implementation to mesh with the MsPASS
+framework.</p>
+<ul class="simple">
+<li><p>The algorithm must be encapsulated in a single computing function form.
+That is it must be expressible in the form x=f(y).  We mean this in the most
+general form of object oriented languages like python.  x and y can be any
+valid object.   x can and often is void provided y is mutable (i.e. the
+function acts like as FORTRAN subroutine).  y also is rarely a single symbol
+but is usually a mix of simple parameters and arbitrarily complex object.
+In most cases the arguments would be typical python key-default value pairs.</p></li>
+<li><p>All data passed in and out of any such function must have support for
+“pickle”.   This is trivial for simple types like integers and floats, but
+is not a given for an arbitrary data structure.  Support for pickle is required
+if the algorithm is to be run under spark because in a multiprocessor
+environment the scheduler has to automatically move data between
+processing nodes.  Spark does this under the hood with pickle.</p></li>
+<li><p>The algorithm must not use any graphical displays or interactive user
+input of any kind.  MsPASS is designed for massive processing in a background
+mode.  Graphical displays and interactive inputs are not compatible with this
+model.</p></li>
+<li><p>The algorithm must never throw an unhandled exception or abort for
+any reason other than a fatal system error.  Unhandled exceptions on
+one piece of data can abort an entire job, so bombproof implementations
+are essential.   We describe some tricks below to assure this constraint is
+satisfied.</p></li>
+</ul>
+</div>
+<div class="section" id="optional-but-recommended">
+<h3>Optional but recommended<a class="headerlink" href="#optional-but-recommended" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>MsPASS has a global level and object level history mechanism an algorithm
+should implement to be fully integrated in the framework.  The history mechanisms were
+implemented to enhance the community’s ability to reproduce work done by
+others to validate previous results.  It can also provide a mechanism to
+not have to constantly “recreate the wheel” and add to an existing workflow
+instead of having to start from scratch.   Use of a nonstandard module
+that does not use the history features may break preservation of the
+workflow history chain.  In any case, as we consider in detail below
+history preservation should always be made optional.</p></li>
+<li><p>Many of the constraints of MsPASS are more easily satisfied if the
+algorithm uses MsPASS seismic data objects as inputs and outputs and
+converting to alternative structures required by a legacy
+algorithm with some kind of wrapper code.  e.g. Many legacy algorithms
+have interwoven dependencies on SAC or segy file images.   At some cost
+of efficiency many such algorithms can be adapted with converters that
+reorganize mspass Metadata attributes and build the fixed data structures
+such algorithms depend upon.  An example of how to do this can be see in
+the wrappers we developed for adapting obspy to the framework.</p></li>
+<li><p>If the algorithm you are adapting is in C or C++ you will need a means to
+create wrapper code to expose the C/C++ code to the python interpreter.
+We use pybind11 and the examples below focus on how to use that package
+to build these wrappers.  There are other packages like swig,
+boost python, and others (including low level C code wrappers)
+for accomplishing this requirement, but for ease of compatibility we
+recommend using pybind11 unless there is a compelling reason to do
+otherwise.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="example-1-simple-function-time-windowing-function">
+<h2>Example 1:  Simple function - Time Windowing Function<a class="headerlink" href="#example-1-simple-function-time-windowing-function" title="Permalink to this headline">¶</a></h2>
+<p>This example illustrates how we adapted an existing C++ algorithm to the
+MsPASS framework.   The objective was to produce a standard processing
+function to cut smaller time windows of data from a longer (in time)
+segment of data.</p>
+<p>For us the cleanest starting point for this goal was an existing C++
+function in the seispp library that Pavlis had used extensively for
+some time.   The prototype for this function can be found at the
+Antelope User’s group contrib repository in the file
+<a class="reference external" href="https://github.com/antelopeusersgroup/antelope_contrib/blob/master/lib/seismic/libseispp/slice_and_dice.cc">slice_and_dice.cpp</a></p>
+<p>We retained the original function interface:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">TimeSeries</span> <span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span> <span class="n">TimeSeries</span><span class="o">&amp;</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">TimeWindow</span><span class="o">&amp;</span> <span class="n">tw</span><span class="p">);</span>
+<span class="n">ThreeComponentSeismogram</span> <span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span> <span class="n">ThreeComponentSeismogram</span><span class="o">&amp;</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">TimeWindow</span><span class="o">&amp;</span> <span class="n">tw</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>with two changes.</p>
+<ol class="arabic simple">
+<li><p>What we call a Seismogram in MsPASSs had the excessively verbose name ThreeComponentSeismogram in the older SEISPP library.</p></li>
+<li><p>To simplify the binding code in pybind11 (see below) we changed the name for the Seismogram version.</p></li>
+</ol>
+<p>The MsPASS C++ version of these two functions became the following (we include the doxygen
+comments for reference):</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/*! \brief Extracts a requested time window of data from a parent TimeSeries object.</span>
+<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
+<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
+<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
+<span class="cm">handling time.</span>
+<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
+<span class="cm">      time window range.</span>
+<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
+<span class="cm">\param parent is the larger TimeSeries object to be windowed</span>
+<span class="cm">\param tw defines the data range to be extracted from parent.</span>
+<span class="cm">*/</span>
+<span class="n">TimeSeries</span> <span class="nf">WindowData</span><span class="p">(</span><span class="k">const</span> <span class="n">TimeSeries</span><span class="o">&amp;</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">TimeWindow</span><span class="o">&amp;</span> <span class="n">tw</span><span class="p">);</span>
+<span class="cm">/*! \brief Extracts a requested time window of data from a parent Seismogram object.</span>
+<span class="cm">It is common to need to extract a smaller segment of data from a larger</span>
+<span class="cm">time window of data.  This function accomplishes this in a nifty method that</span>
+<span class="cm">takes advantage of the methods contained in the BasicTimeSeries object for</span>
+<span class="cm">handling time.</span>
+<span class="cm">\return new Seismgram object derived from  parent but windowed by input</span>
+<span class="cm">      time window range.</span>
+<span class="cm">\exception MsPASSError object if the requested time window is not inside data range</span>
+<span class="cm">\param parent is the larger Seismogram object to be windowed</span>
+<span class="cm">\param tw defines the data range to be extracted from parent.</span>
+<span class="cm">*/</span>
+<span class="n">Seismogram</span> <span class="nf">WindowData3C</span><span class="p">(</span><span class="k">const</span> <span class="n">Seismogram</span><span class="o">&amp;</span> <span class="n">parent</span><span class="p">,</span> <span class="k">const</span> <span class="n">TimeWindow</span><span class="o">&amp;</span> <span class="n">tw</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>A nontrivial detail we will not inflict on the reader is how we modified
+the original code to MsPASS libraries.  In addition to name changes
+there are some major differences in the API for TimeSeries and Seismogram
+objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
+The current version of the implementations of these two algorithms can be
+found <a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+<p>MsPASS uses the <cite>pybind11 package&lt;https://pybind11.readthedocs.io/en/stable/&gt;</cite>
+to bind C++ or C code for use by the python interpreter.  For the present
+all C/C++ code is bound to a single module we call mspasspy.ccore.
+The details of the build system used in MsPASS are best discussed in a
+separate document (Need a link here eventually).  This particular example
+required adding the above function prototype definitions to
+<a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">this include file</a>
+and the C++ function code <a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+<p>Creating the python bindings for these two functions required inserting the
+following blocks in the binding code for the algorithms module found
+<a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="p">;</span>
+<span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData3C&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData3C</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>
+  <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;twin&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="p">;</span>
+</pre></div>
+</div>
+<p>We note a few details about this block of code:</p>
+<ol class="arabic">
+<li><p>The <code class="code docutils literal notranslate"><span class="pre">m</span></code> symbol is defined earlier in this file as a tag for the module to which we aim to bind this function.
+It is defined earlier in the file with this construct:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">PYBIND11_MODULE</span><span class="p">(</span><span class="n">ccore</span><span class="p">,</span><span class="n">m</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That is, this construct defines the symbol <code class="code docutils literal notranslate"><span class="pre">m</span></code> as an abstraction for the
+python module ccore.</p>
+</li>
+<li><p>The actual C++ function names are “WindowData” and “WindowData3C”, but
+we change the names here to “_WindowData” and “_WindowData3C” respectively.
+We recommend that convention as it is conventional in python, although not really
+rigidly enforced by the language, to assume a symbol with one or
+leading underscores is “for internal use”
+(see e.g. obspy documentation or
+<a class="reference external" href="https://www.datacamp.com/community/tutorials/role-underscore-python">this nice overview</a>).
+That usage is appropriate here as our next step will be to write a master python
+wrapper used as a front end to simplify the user api to this pair of
+functions that implement the same conceptual algorithm on two different types of
+data.</p></li>
+<li><p>Our binding code does nothing fancy with the arguments.  The pybind11 documentation
+describes how to set default argument values.  We intentionally do not use such
+a construct here as these ccore functions should only be used through
+the master python wrapper we will discuss next (This is also why we intentionally
+wrapped the functions with a name containing a leading underscore.)</p></li>
+</ol>
+</div>
+<div class="section" id="example-2-pure-python-function">
+<h2>Example 2:  Pure Python Function<a class="headerlink" href="#example-2-pure-python-function" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="example-3-more-complicated-mixed-c-and-python-example-scale-function">
+<h2>Example 3:  More complicated mixed C++ and python example - scale function<a class="headerlink" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="CRUD_operations.html" class="btn btn-neutral float-left" title="CRUD Operations in MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
