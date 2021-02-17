@@ -826,6 +826,6 @@ Error Logging Concepts
   linked back to the data with which they are associated through the
   ObjectID of the data in the wf collection. 
 
-.. |TimeSeries Inheritance| image:: /_static/html/classmspass_1_1seismic_1_1_time_series.png
+.. |TimeSeries Inheritance| image:: /../_static/html/classmspass_1_1seismic_1_1_time_series.png
 
-.. |Seismogram Inheritance| image:: /_static/html/classmspass_1_1seismic_1_1_seismogram.png
+.. |Seismogram Inheritance| image:: /../_static/html/classmspass_1_1seismic_1_1_seismogram.png
