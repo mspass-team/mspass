@@ -405,7 +405,7 @@ Metadata and MetadataDefinitions
   algorithms implemented in compiled languages and use generic object
   attributes with care.
 
-| An important footnote to this section is that a mspass::Metadata object
+| An important footnote to this section is that a :code:`mspass::Metadata` object
   can be constructed directly from a python dict.   That is used, for example,
   in MongoDB database readers because a MongoDB "document" is returned as a
   python dict in MongoDB's python API.
@@ -419,16 +419,16 @@ Managing Metadata type with mspasspy.db.Schema
   methods available in the :code:`Schema` class and discuss how these
   can be used in developing a workflow with MsPASS.
 
-  The most important implementation of :code:`Schema` is a subclass with the
-  name MetadataSchema.  You can create an instance easily like this:
+| The most important implementation of :code:`Schema` is a subclass with the
+  name :code:`MetadataSchema`.  You can create an instance easily like this:
 
   .. code-block:: python
 
      from mspasspy.db.schema import MetadataSchema
       schema=MetadataSchema()
 
-MetadataSchema currently has two main definitions that can be extracted
-from the class as follows:
+| :code:`MetadataSchema` currently has two main definitions that can be extracted
+  from the class as follows:
 
   .. code-block:: python
 
@@ -436,19 +436,19 @@ from the class as follows:
        mdts=schema.TimeSeries
 
 
-  There are minor variations in the namespace between these two definitions,
+| There are minor variations in the namespace between these two definitions,
   but the restrictions they impose can be interogated through a common
   interface.   Both the :code:`mdseis` and :code:`mdts` symbols above are instances of
-  a the MDSchemaDefinition class described here_.
+  a the :code:`MDSchemaDefinition` class described here_.
 
-  .. _here: <https://wangyinz.github.io/mspass/python_api/mspasspy.db.html#module-mspasspy.db.schema>(here)
+  .. _here: ../python_api/mspasspy.db.html#module-mspasspy.db.schema
 
-  The key point for this introduction is that the :code:`mdseis` and :code:`mdts`
+| The key point for this introduction is that the :code:`mdseis` and :code:`mdts`
   objects contain methods that can be used to get a list of restricted symbols
   (the :code:`keys()` method), the type that the framework expects that symbol
   to define (the :code:`type()` method), and a set of other utility methods.
 
-  One subset of the methods of the MDSchemaDefinitions class that deserves
+| One subset of the methods of the MDSchemaDefinitions class that deserves
   particular discussion is a set of methods designed to handle aliases.
   These methods exist to simplify the support in the framework for adapting
   other packages that use a different set of names to define a common
@@ -759,7 +759,7 @@ following foundational data is required:
   framework will need to learn the social norms (i.e. the API for ProcessingHistory
   and how it can be used to automate the process).   We expect to eventually
   produce a document on adapting algorithms to MsPASS that will cover this
-  subject. **Needs a link to a related document on ProcessingHistory API **
+  subject. **Needs a link to a related document on ProcessingHistory API**
 
 Error Logging Concepts
 ^^^^^^^^^^^^^^^^^^^^^^

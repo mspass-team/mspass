@@ -51,7 +51,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['that_style']
+exclude_patterns = ['that_style', '**/_build']
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -74,6 +74,9 @@ breathe_default_project = 'MsPASS C++ API'
 breathe_projects = {}
 subprocess.call('doxygen Doxyfile', shell=True)
 breathe_projects['MsPASS C++ API'] = './doxygen/xml'
+
+# Enable figure numbering
+numfig = True
 
 # Create csv files for schema
 mspass_home = os.path.abspath('../..')
