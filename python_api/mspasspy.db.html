@@ -341,6 +341,35 @@ db=client[‘database_name’]</p>
 <p>where database_name is variable and the name of the database you
 wish to access with this handle.</p>
 <dl class="py method">
+<dt id="mspasspy.db.database.Database.get_response">
+<code class="sig-name descname">get_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sta</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chan</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an obspy Response object for seed channel defined by 
+the standard keys net, sta, chan, and loc and a time stamp.  
+Input time can be a UTCDateTime or an epoch time stored as a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db</strong> – mspasspy Database handle containing a channel collection
+to be queried</p></li>
+<li><p><strong>net</strong> – seed network code (required)</p></li>
+<li><p><strong>sta</strong> – seed station code (required)</p></li>
+<li><p><strong>chan</strong> – seed channel code (required)</p></li>
+<li><p><strong>loc</strong> – seed net code.  If None loc code will not be 
+included in the query.  If loc is anything else it is passed 
+as a literal.  Sometimes loc codes are not defined by in the 
+seed data and are literal two ascii space characters.  If so 
+MongoDB translates those to “”.   Use loc=”” for that case or 
+provided the station doesn’t mix null and other loc codes use None.</p></li>
+<li><p><strong>time</strong> – time stamp for which the response is requested.  
+seed metadata has a time range for validity this field is 
+required.   Can be passed as either a UTCDateTime object or 
+a raw epoch time stored as a python float.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.database.Database.get_seed_channel">
 <code class="sig-name descname">get_seed_channel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">chan</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_channel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>The channel collection is assumed to have a one to one

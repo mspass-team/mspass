@@ -1549,6 +1549,62 @@
                               <span class="o">+</span> <span class="s2">&quot;Specify at least time but a loc code if is not truly null&quot;</span><span class="p">,</span>
                               <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Database.get_response"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_response">[docs]</a>    <span class="k">def</span> <span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chan</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an obspy Response object for seed channel defined by </span>
+<span class="sd">        the standard keys net, sta, chan, and loc and a time stamp.  </span>
+<span class="sd">        Input time can be a UTCDateTime or an epoch time stored as a float.</span>
+<span class="sd">        </span>
+<span class="sd">        :param db:  mspasspy Database handle containing a channel collection</span>
+<span class="sd">          to be queried</span>
+<span class="sd">        :param net: seed network code (required)</span>
+<span class="sd">        :param sta: seed station code (required)</span>
+<span class="sd">        :param chan:  seed channel code (required)</span>
+<span class="sd">        :param loc:  seed net code.  If None loc code will not be </span>
+<span class="sd">          included in the query.  If loc is anything else it is passed </span>
+<span class="sd">          as a literal.  Sometimes loc codes are not defined by in the </span>
+<span class="sd">          seed data and are literal two ascii space characters.  If so </span>
+<span class="sd">          MongoDB translates those to &quot;&quot;.   Use loc=&quot;&quot; for that case or </span>
+<span class="sd">          provided the station doesn&#39;t mix null and other loc codes use None. </span>
+<span class="sd">        :param time:  time stamp for which the response is requested.  </span>
+<span class="sd">          seed metadata has a time range for validity this field is </span>
+<span class="sd">          required.   Can be passed as either a UTCDateTime object or </span>
+<span class="sd">          a raw epoch time stored as a python float. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sta</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">chan</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">net</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">time</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;get_response:  missing one of required arguments:  &#39;</span>
+                              <span class="o">+</span> <span class="s1">&#39;net, sta, chan, or time&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;net&#39;</span><span class="p">:</span> <span class="n">net</span><span class="p">,</span>
+            <span class="s1">&#39;sta&#39;</span><span class="p">:</span> <span class="n">sta</span><span class="p">,</span>
+            <span class="s1">&#39;chan&#39;</span><span class="p">:</span> <span class="n">chan</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">loc</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">query</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="s1">&#39;  &#39;</span>  <span class="c1"># set here but not used</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">UTCDateTime</span><span class="p">):</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$lt&#39;</span><span class="p">:</span> <span class="n">t0</span><span class="p">}</span>
+        <span class="n">query</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$gt&#39;</span><span class="p">:</span> <span class="n">t0</span><span class="p">}</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No matching documents found in channel for &#39;</span><span class="p">,</span>
+                  <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;chan&quot;</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;&lt;-&quot;</span><span class="p">,</span> <span class="s2">&quot; at time=&quot;</span><span class="p">,</span>
+                  <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t0</span><span class="p">))</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39; matching documents found in channel for &#39;</span><span class="p">,</span>
+                  <span class="n">net</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;chan&quot;</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="s2">&quot;&lt;-&quot;</span><span class="p">,</span> <span class="s2">&quot; at time=&quot;</span><span class="p">,</span>
+                  <span class="n">UTCDateTime</span><span class="p">(</span><span class="n">t0</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;There should be just one - returning the first one found&#39;</span><span class="p">)</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;serialized_channel_data&#39;</span><span class="p">]</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chan</span><span class="o">.</span><span class="n">response</span></div>
+
 <div class="viewcode-block" id="Database.save_catalog"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_catalog">[docs]</a>    <span class="k">def</span> <span class="nf">save_catalog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cat</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the contents of an obspy Catalog object to MongoDB</span>
