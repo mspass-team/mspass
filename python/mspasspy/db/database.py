@@ -878,7 +878,7 @@ class Database(pymongo.database.Database):
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec = matches.count_documents()
+        nrec = matches.count()
         if (nrec <= 0):
             return True
         else:
@@ -918,7 +918,7 @@ class Database(pymongo.database.Database):
         # this returns a warning that count is depricated but
         # I'm getting confusing results from google search on the
         # topic so will use this for now
-        nrec = matches.count_documents()
+        nrec = matches.count()
         if (nrec <= 0):
             return True
         else:
