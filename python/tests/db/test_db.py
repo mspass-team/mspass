@@ -592,6 +592,9 @@ class TestDatabase():
             r = self.db.get_response(net, sta, chan, loc, time)
             r0 = inv.get_response("TA.035A..BHE", time)
             assert r == r0
+        with pytest.raises(MsPASSError, match='missing one of required arguments'):
+            self.db.get_response()
+        assert self.db.get_response(net='TA', sta='036A', chan='BHE', time=time) is None
 
     def teardown_class(self):
         try:
