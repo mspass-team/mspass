@@ -117,7 +117,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id7">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-topics">Advanced Topics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#customizing-the-schema">Customizing the schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#importing-data-formats-other-than-miniseed">Importing Data Formats other than miniSEED</a></li>
@@ -701,20 +701,17 @@ Antelope users will know these as the collection of tables generated
 when <a class="reference external" href="https://brtt.com">sd2db</a> is run on a SEED file from an FDSN
 data center.  We expand on this below, but the following are useful
 summaries for Antelope and obspy users:</p>
-<ul>
+<ul class="simple">
 <li><p>Antelope user’s should think of the channel collection as nearly identical
 to the CSS3.0 sitechan table with response data handled through obspy.</p></li>
 <li><p>Obspy users can think of both <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">sitechan</span></code> as a way to
 manage the same information obspy handles with their
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html">Inventory</a>
 object.  In fact, channel documents produced from
-<a class="reference external" href="https://www.fdsn.org/xml/station/">stationxml</a>
+<a class="reference external" href="https://www.fdsn.org/xml/station/">StationXML</a>
 files contain an image of an obspy
-<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject">Channel</a></p>
-<blockquote>
-<div><p>object saved with pickle.</p>
-</div></blockquote>
-</li>
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject">Channel</a>
+object saved with pickle.</p></li>
 </ul>
 <p>We emphasize that <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code> support SEED indexed metadata, but
 they do not demand it.  We use the <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> of documents in both
@@ -722,7 +719,7 @@ collections as the primary cross-referencing key.  The <code class="code docutil
 referenced in collections outside of <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code>
 (i.e. wf_TimeSeries and wf_Seismogram) with the keys <code class="code docutils literal notranslate"><span class="pre">site_id</span></code> and <code class="code docutils literal notranslate"><span class="pre">chan_id</span></code>
 respectively.</p>
-<p>Although those :code:<a href="#id5"><span class="problematic" id="id6">`</span></a>ObjectId`s can be thought of as primary keys, we provide
+<p>Although those <code class="code docutils literal notranslate"><span class="pre">ObjectId</span></code> can be thought of as primary keys, we provide
 some support for two alternative indexing methods.</p>
 <blockquote>
 <div><ul class="simple">
@@ -733,14 +730,14 @@ format.  MiniSEED data is SEED data with minimal metadata.
 The primary keys SEED uses to define a specfic channel of data are
 three string attributes: (1) a network code referred to as <code class="code docutils literal notranslate"><span class="pre">net</span></code> in
 MsPASS, (2) a station code (<code class="code docutils literal notranslate"><span class="pre">sta</span></code>), (3) a channel (<code class="code docutils literal notranslate"><span class="pre">chan</span></code>), and
-a “location” code (<code class="code docutils literal notranslate"><span class="pre">loc</span></code>).   <code class="code docutils literal notranslate"><span class="pre">site</span></code> documents extracted from stationxml
+a “location” code (<code class="code docutils literal notranslate"><span class="pre">loc</span></code>).   <code class="code docutils literal notranslate"><span class="pre">site</span></code> documents extracted from StationXML
 files will always contain <code class="code docutils literal notranslate"><span class="pre">net</span></code>, <code class="code docutils literal notranslate"><span class="pre">sta</span></code>, and <code class="code docutils literal notranslate"><span class="pre">loc</span></code> names while
 <code class="code docutils literal notranslate"><span class="pre">channel</span></code> documents add the <code class="code docutils literal notranslate"><span class="pre">chan</span></code> attibute.  For documents generated
-from stationxml keys (3 keys for <code class="code docutils literal notranslate"><span class="pre">site</span></code> and 4 for <code class="code docutils literal notranslate"><span class="pre">channel</span></code>) can
+from StationXML keys (3 keys for <code class="code docutils literal notranslate"><span class="pre">site</span></code> and 4 for <code class="code docutils literal notranslate"><span class="pre">channel</span></code>) can
 be properly viewed as alternate keys to locate documents related to a
 particular station (<code class="code docutils literal notranslate"><span class="pre">site</span></code>) or channel (<code class="code docutils literal notranslate"><span class="pre">channel</span></code>).  With SEED data it
 is important to realize that those keys are frequently not sufficient
-to locate a single document.  All SEED-based data (stationxml) also
+to locate a single document.  All SEED-based data (StationXML) also
 use a pair of time range attributes that we call <code class="code docutils literal notranslate"><span class="pre">starttime</span></code> and
 <code class="code docutils literal notranslate"><span class="pre">endtime</span></code>.   Both are unix epoch times that define a time span for which
 the associated document’s data are valid.   These are used for a whole
@@ -764,7 +761,7 @@ for a CCP stack.   In this mode the <code class="code docutils literal notransla
 or <code class="code docutils literal notranslate"><span class="pre">chan_id</span></code> is the only index. The difference is geospatial queries
 in MongoDB can be used as an alternate index.  We note that
 geospatial queries can also be used on <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code> collections
-created with stationxml files too provided the user constructs the
+created with StationXML files too provided the user constructs the
 index with (NEEDS A REFERERENCE HERE - We need a database method for this)</p></li>
 </ul>
 </div></blockquote>
@@ -819,7 +816,7 @@ measurements demand detailed response metadata.   We address this problem
 by leaning heavily on the existing infrastructure for handling response data
 in obspy.   That is, obspy defines a python class they call <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code>.
 The <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> class is a complicated data structure that is best thought of,
-in fact, as a image of the data structure defined by an FDSN stationxml file.
+in fact, as a image of the data structure defined by an FDSN StationXML file.
 Embedded in that mess is the response data, but obspy has build a clean
 api to obtain the response information from the <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code>.   In MsPASS
 we handle this problem by storing a pickle image of the <code class="code docutils literal notranslate"><span class="pre">Inventory</span></code> object
@@ -911,8 +908,8 @@ a publication or as an archive you expect to need to work with at a later date.<
 </div>
 </div>
 </div>
-<div class="section" id="id7">
-<h1>Summary<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id5">
+<h1>Summary<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
 <p>The details above may obscure a few critical points about what the
 database in MsPASS does for you and what you must keep in mind to use
 is correctly.</p>

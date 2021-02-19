@@ -99,7 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id7">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id5">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="database_concepts.html#advanced-topics">Advanced Topics</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">CRUD Operations in MsPASS</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
@@ -342,7 +342,7 @@ As with <code class="code docutils literal notranslate"><span class="pre">save_c
 from data downloaded with web services to the form needed in MsPASS.
 It may be helpful to realize that Obspy’s Inventory object is actually
 a python translation of the data structure defined by the
-<a href="#id1"><span class="problematic" id="id2">`FDSN STATIONXML&lt;https://www.fdsn.org/xml/station/&gt;`__</span></a>
+<a class="reference external" href="https://www.fdsn.org/xml/station/">FDSN StationXML</a>
 standardized format defined for web service requests for station metadata.
 Like <code class="code docutils literal notranslate"><span class="pre">save_source</span></code> an example from the getting started tutorial
 should be instructive:</p>
@@ -357,7 +357,7 @@ time variable.  The reason is that sensors change, three-component sensors
 are reoriented, digitizers change, etc.  That means station metadata
 have a time span for which they are valid that has to be handled to
 assure we associate the right metadata with any piece of data.</p>
-<p>In MsPASS we translate the STATIONXML data to documents stored in two
+<p>In MsPASS we translate the StationXML data to documents stored in two
 collections:  <code class="code docutils literal notranslate"><span class="pre">site</span></code> and <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.  Both collections contain the
 attributes <code class="code docutils literal notranslate"><span class="pre">starttime</span></code> and <code class="code docutils literal notranslate"><span class="pre">endtime</span></code> that define the time interval for which
 that document’s data are valid.  <code class="code docutils literal notranslate"><span class="pre">site</span></code> is simpler.  It mainly contains
@@ -368,7 +368,7 @@ contains station location information but it also contains two additional
 important pieces of metadata:  (1) orientation information defined by
 the keys <code class="code docutils literal notranslate"><span class="pre">hang</span></code> and <code class="code docutils literal notranslate"><span class="pre">vang</span></code>, and (2) full response information.
 We store response data in MongoDB as a pickle image of the data stored
-in the STATIONXML data as translated by obspy.   In the read section
+in the StationXML data as translated by obspy.   In the read section
 below we describe how to retrieve response data from <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.</p>
 </li>
 </ol>
@@ -379,7 +379,7 @@ below we describe how to retrieve response data from <code class="code docutils 
 design to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
-reader to the sphynx documentation for full usage.</p>
+reader to the sphinx documentation for full usage.</p>
 <ol class="arabic">
 <li><p><code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is the core method to read atomic data.  The method has
 one required argument.  That argument can be either a MongoDB object
@@ -397,22 +397,25 @@ If a workflow uses both data types we recommend creating two handles with
 different names.  For interactive work one can also use the
 <code class="code docutils literal notranslate"><span class="pre">set_database_schema</span></code> to switch.   Avoid frequent calls to
 <code class="code docutils literal notranslate"><span class="pre">set_database_schema</span></code> for handling mixed data as it is a relatively
-expensive (in time) operation that involkes reading of a file defining
+expensive (in time) operation that invokes reading of a file defining
 the schema.</p>
 <p>The data objects in MsPASS are stored internally as C++ objects with
 multiple elements illustrated in the figure below.   Although these
 objects can conceptually be thought of as a single entity the individual
 parts are handled differently because they define different concepts
-and are subject to different read, write, and storage rules.  The
-following figure illustrates this fragmentation:</p>
-<p>insert figure here</p>
+and are subject to different read, write, and storage rules.
+<a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 1</span></a> illustrates this fragmentation:</p>
+<div class="figure align-center" id="id1">
+<span id="crud-operations-figure1"></span><a class="reference internal image-reference" href="../_images/CRUD_operations_figure1.png"><img alt="../_images/CRUD_operations_figure1.png" src="../_images/CRUD_operations_figure1.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">A schematic diagram of how different parts of a data object is handled.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
 <p>The key point of this figure is that the waveform data is treated differently
 from the Metadata and two auxiliary items we call ProcessingHistory and the
 error log (elog).  Waveform data is currently stored either internally in
 MongoDB’s gridfs storage or in external files.  The wf collection for
 the data type being read (wf_TimeSeries or wf_Seismogram) stores only
 data we store as Metadata.  A more extensive discussion of Metadata and
-how we use it can be found <a class="reference external" href="https://wangyinz.github.io/mspass/user_manual/data_object_design_concepts.html">here</a>.
+how we use it can be found <a class="reference internal" href="data_object_design_concepts.html#data-object-design-concepts"><span class="std std-ref">here</span></a>.
 That section also gives details about ProcessingHistory and the error
 log and the reasons they are part of MsPASS.</p>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> reads Metadata in what we call “promiscuous” mode.

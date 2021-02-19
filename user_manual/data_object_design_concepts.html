@@ -115,7 +115,7 @@
 <li class="toctree-l2"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id7">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id5">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="database_concepts.html#advanced-topics">Advanced Topics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
@@ -643,7 +643,7 @@ algorithms implemented in compiled languages and use generic object
 attributes with care.</div>
 </div>
 <div class="line-block">
-<div class="line">An important footnote to this section is that a mspass::Metadata object
+<div class="line">An important footnote to this section is that a <code class="code docutils literal notranslate"><span class="pre">mspass::Metadata</span></code> object
 can be constructed directly from a python dict.   That is used, for example,
 in MongoDB database readers because a MongoDB “document” is returned as a
 python dict in MongoDB’s python API.</div>
@@ -658,30 +658,42 @@ that acts as a handle to interact with MongoDB.  Here we only document
 methods available in the <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class and discuss how these
 can be used in developing a workflow with MsPASS.</div>
 </div>
+<div class="line-block">
+<div class="line">The most important implementation of <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> is a subclass with the
+name <code class="code docutils literal notranslate"><span class="pre">MetadataSchema</span></code>.  You can create an instance easily like this:</div>
+</div>
 <blockquote>
-<div><p>The most important implementation of <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> is a subclass with the
-name MetadataSchema.  You can create an instance easily like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">MetadataSchema</span>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">MetadataSchema</span>
  <span class="n">schema</span><span class="o">=</span><span class="n">MetadataSchema</span><span class="p">()</span>
 </pre></div>
 </div>
 </div></blockquote>
-<p>MetadataSchema currently has two main definitions that can be extracted
-from the class as follows:</p>
+<div class="line-block">
+<div class="line"><code class="code docutils literal notranslate"><span class="pre">MetadataSchema</span></code> currently has two main definitions that can be extracted
+from the class as follows:</div>
+</div>
 <blockquote>
 <div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mdseis</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
  <span class="n">mdts</span><span class="o">=</span><span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
 </pre></div>
 </div>
-<p>There are minor variations in the namespace between these two definitions,
+</div></blockquote>
+<div class="line-block">
+<div class="line">There are minor variations in the namespace between these two definitions,
 but the restrictions they impose can be interogated through a common
 interface.   Both the <code class="code docutils literal notranslate"><span class="pre">mdseis</span></code> and <code class="code docutils literal notranslate"><span class="pre">mdts</span></code> symbols above are instances of
-a the MDSchemaDefinition class described <a class="reference external" href="&lt;https://wangyinz.github.io/mspass/python_api/mspasspy.db.html#module-mspasspy.db.schema&gt;(here)">here</a>.</p>
-<p>The key point for this introduction is that the <code class="code docutils literal notranslate"><span class="pre">mdseis</span></code> and <code class="code docutils literal notranslate"><span class="pre">mdts</span></code>
+a the <code class="code docutils literal notranslate"><span class="pre">MDSchemaDefinition</span></code> class described <a class="reference external" href="../python_api/mspasspy.db.html#module-mspasspy.db.schema">here</a>.</div>
+</div>
+<blockquote>
+<div></div></blockquote>
+<div class="line-block">
+<div class="line">The key point for this introduction is that the <code class="code docutils literal notranslate"><span class="pre">mdseis</span></code> and <code class="code docutils literal notranslate"><span class="pre">mdts</span></code>
 objects contain methods that can be used to get a list of restricted symbols
 (the <code class="code docutils literal notranslate"><span class="pre">keys()</span></code> method), the type that the framework expects that symbol
-to define (the <code class="code docutils literal notranslate"><span class="pre">type()</span></code> method), and a set of other utility methods.</p>
-<p>One subset of the methods of the MDSchemaDefinitions class that deserves
+to define (the <code class="code docutils literal notranslate"><span class="pre">type()</span></code> method), and a set of other utility methods.</div>
+</div>
+<div class="line-block">
+<div class="line">One subset of the methods of the MDSchemaDefinitions class that deserves
 particular discussion is a set of methods designed to handle aliases.
 These methods exist to simplify the support in the framework for adapting
 other packages that use a different set of names to define a common
@@ -693,8 +705,8 @@ database implementation uses the CSS3.0 schema) loaded from relational
 database joins directly into the MsPASS namespace.  The methods used to
 handle aliases are readily apparent from the documentation page linked
 above as they all contain the keyword <code class="code docutils literal notranslate"><span class="pre">alias</span></code>.  We leave the exercise
-of understanding how to use this feature to planned tutorials.</p>
-</div></blockquote>
+of understanding how to use this feature to planned tutorials.</div>
+</div>
 </div>
 <div class="section" id="scalar-versus-3c-data">
 <h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this headline">¶</a></h3>
@@ -990,7 +1002,7 @@ as an option.   User’s interested in adapting their own code to the
 framework will need to learn the social norms (i.e. the API for ProcessingHistory
 and how it can be used to automate the process).   We expect to eventually
 produce a document on adapting algorithms to MsPASS that will cover this
-subject. <a href="#id2"><span class="problematic" id="id3">**</span></a>Needs a link to a related document on ProcessingHistory API **</div>
+subject. <strong>Needs a link to a related document on ProcessingHistory API</strong></div>
 </div>
 </div>
 <div class="section" id="error-logging-concepts">
