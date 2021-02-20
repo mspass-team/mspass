@@ -139,7 +139,7 @@ description of each method.  We refer to the docstring pages for detailed
     from data downloaded with web services to the form needed in MsPASS.
     It may be helpful to realize that Obspy's Inventory object is actually
     a python translation of the data structure defined by the
-    `FDSN STATIONXML<https://www.fdsn.org/xml/station/>`__
+    `FDSN StationXML <https://www.fdsn.org/xml/station/>`__
     standardized format defined for web service requests for station metadata.
     Like :code:`save_source` an example from the getting started tutorial
     should be instructive:
@@ -157,7 +157,7 @@ description of each method.  We refer to the docstring pages for detailed
     have a time span for which they are valid that has to be handled to
     assure we associate the right metadata with any piece of data.
 
-    In MsPASS we translate the STATIONXML data to documents stored in two
+    In MsPASS we translate the StationXML data to documents stored in two
     collections:  :code:`site` and :code:`channel`.  Both collections contain the
     attributes :code:`starttime` and :code:`endtime` that define the time interval for which
     that document's data are valid.  :code:`site` is simpler.  It mainly contains
@@ -168,7 +168,7 @@ description of each method.  We refer to the docstring pages for detailed
     important pieces of metadata:  (1) orientation information defined by
     the keys :code:`hang` and :code:`vang`, and (2) full response information.
     We store response data in MongoDB as a pickle image of the data stored
-    in the STATIONXML data as translated by obspy.   In the read section
+    in the StationXML data as translated by obspy.   In the read section
     below we describe how to retrieve response data from :code:`channel`.
 
 Read
@@ -178,7 +178,7 @@ Read operation is the inverse of save (create).  The core readers were
 design to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
-reader to the sphynx documentation for full usage.
+reader to the sphinx documentation for full usage.
 
 1.  :code:`read_data` is the core method to read atomic data.  The method has
     one required argument.  That argument can be either a MongoDB object
@@ -197,17 +197,23 @@ reader to the sphynx documentation for full usage.
     different names.  For interactive work one can also use the
     :code:`set_database_schema` to switch.   Avoid frequent calls to
     :code:`set_database_schema` for handling mixed data as it is a relatively
-    expensive (in time) operation that involkes reading of a file defining
+    expensive (in time) operation that invokes reading of a file defining
     the schema.
 
     The data objects in MsPASS are stored internally as C++ objects with
     multiple elements illustrated in the figure below.   Although these
     objects can conceptually be thought of as a single entity the individual
     parts are handled differently because they define different concepts
-    and are subject to different read, write, and storage rules.  The
-    following figure illustrates this fragmentation:
+    and are subject to different read, write, and storage rules.   
+    :numref:`CRUD_operations_figure1` illustrates this fragmentation:
 
-    insert figure here
+    .. _CRUD_operations_figure1:
+
+    .. figure:: ../_static/figures/CRUD_operations_figure1.png
+        :width: 600px
+        :align: center
+
+        A schematic diagram of how different parts of a data object is handled.
 
     The key point of this figure is that the waveform data is treated differently
     from the Metadata and two auxiliary items we call ProcessingHistory and the
@@ -215,7 +221,7 @@ reader to the sphynx documentation for full usage.
     MongoDB's gridfs storage or in external files.  The wf collection for
     the data type being read (wf_TimeSeries or wf_Seismogram) stores only
     data we store as Metadata.  A more extensive discussion of Metadata and
-    how we use it can be found `here <https://wangyinz.github.io/mspass/user_manual/data_object_design_concepts.html>`__.
+    how we use it can be found :ref:`here<data_object_design_concepts>`.
     That section also gives details about ProcessingHistory and the error
     log and the reasons they are part of MsPASS.
 
