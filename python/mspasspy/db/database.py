@@ -1386,6 +1386,62 @@ class Database(pymongo.database.Database):
                               + "Specify at least time but a loc code if is not truly null",
                               "Fatal")
 
+    def get_response(self, net=None, sta=None, chan=None, loc=None, time=None):
+        """
+        Returns an obspy Response object for seed channel defined by 
+        the standard keys net, sta, chan, and loc and a time stamp.  
+        Input time can be a UTCDateTime or an epoch time stored as a float.
+        
+        :param db:  mspasspy Database handle containing a channel collection
+          to be queried
+        :param net: seed network code (required)
+        :param sta: seed station code (required)
+        :param chan:  seed channel code (required)
+        :param loc:  seed net code.  If None loc code will not be 
+          included in the query.  If loc is anything else it is passed 
+          as a literal.  Sometimes loc codes are not defined by in the 
+          seed data and are literal two ascii space characters.  If so 
+          MongoDB translates those to "".   Use loc="" for that case or 
+          provided the station doesn't mix null and other loc codes use None. 
+        :param time:  time stamp for which the response is requested.  
+          seed metadata has a time range for validity this field is 
+          required.   Can be passed as either a UTCDateTime object or 
+          a raw epoch time stored as a python float. 
+        """
+        if sta == None or chan == None or net == None or time == None:
+            raise MsPASSError('get_response:  missing one of required arguments:  '
+                              + 'net, sta, chan, or time', 'Invalid')
+        query = {
+            'net': net,
+            'sta': sta,
+            'chan': chan,
+        }
+        if loc != None:
+            query['loc'] = loc
+        else:
+            loc = '  '  # set here but not used
+        if isinstance(time, UTCDateTime):
+            t0 = time.timestamp
+        else:
+            t0 = time
+        query['starttime'] = {'$lt': t0}
+        query['endtime'] = {'$gt': t0}
+        n = self.channel.count_documents(query)
+        if n == 0:
+            print('No matching documents found in channel for ',
+                  net, ":", sta, ":", "chan", chan, "->", loc, "<-", " at time=",
+                  UTCDateTime(t0))
+            return None
+        elif n > 1:
+            print(n, ' matching documents found in channel for ',
+                  net, ":", sta, ":", "chan", "->", loc, "<-", " at time=",
+                  UTCDateTime(t0))
+            print('There should be just one - returning the first one found')
+        doc = self.channel.find_one(query)
+        s = doc['serialized_channel_data']
+        chan = pickle.loads(s)
+        return chan.response
+
     def save_catalog(self, cat, verbose=False):
         """
         Save the contents of an obspy Catalog object to MongoDB

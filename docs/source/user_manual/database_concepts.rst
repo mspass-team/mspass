@@ -498,10 +498,10 @@ summaries for Antelope and obspy users:
   manage the same information obspy handles with their
   `Inventory <https://docs.obspy.org/packages/autogen/obspy.core.inventory.inventory.Inventory.html>`__
   object.  In fact, channel documents produced from
-  `stationxml <https://www.fdsn.org/xml/station/>`__
+  `StationXML <https://www.fdsn.org/xml/station/>`__
   files contain an image of an obspy
   `Channel <https://docs.obspy.org/packages/autogen/obspy.core.inventory.channel.Channel.htmlobject>`__
-   object saved with pickle.
+  object saved with pickle.
 
 We emphasize that :code:`site` and :code:`channel` support SEED indexed metadata, but
 they do not demand it.  We use the :code:`ObjectId` of documents in both
@@ -510,7 +510,7 @@ referenced in collections outside of :code:`site` and :code:`channel`
 (i.e. wf_TimeSeries and wf_Seismogram) with the keys :code:`site_id` and :code:`chan_id`
 respectively.
 
-Although those :code:`ObjectId`s can be thought of as primary keys, we provide
+Although those :code:`ObjectId` can be thought of as primary keys, we provide
 some support for two alternative indexing methods.
 
  * *SEED net, sta, chan, loc keys*.  Any data obtained from FDSN
@@ -520,14 +520,14 @@ some support for two alternative indexing methods.
    The primary keys SEED uses to define a specfic channel of data are
    three string attributes: (1) a network code referred to as :code:`net` in
    MsPASS, (2) a station code (:code:`sta`), (3) a channel (:code:`chan`), and
-   a "location" code (:code:`loc`).   :code:`site` documents extracted from stationxml
+   a "location" code (:code:`loc`).   :code:`site` documents extracted from StationXML
    files will always contain :code:`net`, :code:`sta`, and :code:`loc` names while
    :code:`channel` documents add the :code:`chan` attibute.  For documents generated
-   from stationxml keys (3 keys for :code:`site` and 4 for :code:`channel`) can
+   from StationXML keys (3 keys for :code:`site` and 4 for :code:`channel`) can
    be properly viewed as alternate keys to locate documents related to a
    particular station (:code:`site`) or channel (:code:`channel`).  With SEED data it
    is important to realize that those keys are frequently not sufficient
-   to locate a single document.  All SEED-based data (stationxml) also
+   to locate a single document.  All SEED-based data (StationXML) also
    use a pair of time range attributes that we call :code:`starttime` and
    :code:`endtime`.   Both are unix epoch times that define a time span for which
    the associated document's data are valid.   These are used for a whole
@@ -552,7 +552,7 @@ some support for two alternative indexing methods.
     or :code:`chan_id` is the only index. The difference is geospatial queries
     in MongoDB can be used as an alternate index.  We note that
     geospatial queries can also be used on :code:`site` and :code:`channel` collections
-    created with stationxml files too provided the user constructs the
+    created with StationXML files too provided the user constructs the
     index with (NEEDS A REFERERENCE HERE - We need a database method for this)
 
 A spatial query to link anything to a point in the :code:`site` or :code:`channel` collection has
@@ -605,7 +605,7 @@ measurements demand detailed response metadata.   We address this problem
 by leaning heavily on the existing infrastructure for handling response data
 in obspy.   That is, obspy defines a python class they call :code:`Inventory`.
 The :code:`Inventory` class is a complicated data structure that is best thought of,
-in fact, as a image of the data structure defined by an FDSN stationxml file.
+in fact, as a image of the data structure defined by an FDSN StationXML file.
 Embedded in that mess is the response data, but obspy has build a clean
 api to obtain the response information from the :code:`Inventory`.   In MsPASS
 we handle this problem by storing a pickle image of the :code:`Inventory` object
