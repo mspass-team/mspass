@@ -7,72 +7,68 @@
     <includedby refid="_data_gap_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <invincdepgraph>
-      <node id="596">
+      <node id="598">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="598">
+      <node id="600">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
-      <node id="594">
+      <node id="596">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="590">
+      <node id="592">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h"/>
-        <childnode refid="591" relation="include">
-        </childnode>
-        <childnode refid="592" relation="include">
-        </childnode>
-        <childnode refid="600" relation="include">
-        </childnode>
-      </node>
-      <node id="595">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
-        <link refid="amplitudes_8h_source"/>
-      </node>
-      <node id="601">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
-        <link refid="_time_series_w_gaps_8h_source"/>
-      </node>
-      <node id="592">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
         <childnode refid="593" relation="include">
+        </childnode>
+        <childnode refid="594" relation="include">
+        </childnode>
+        <childnode refid="602" relation="include">
         </childnode>
       </node>
       <node id="597">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
-        <link refid="_ensemble_8h_source"/>
-        <childnode refid="591" relation="include">
-        </childnode>
-        <childnode refid="594" relation="include">
-        </childnode>
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
+        <link refid="amplitudes_8h_source"/>
+      </node>
+      <node id="603">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
+        <link refid="_time_series_w_gaps_8h_source"/>
+      </node>
+      <node id="594">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
         <childnode refid="595" relation="include">
         </childnode>
       </node>
-      <node id="591">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
-        <link refid="mspass_8h_source"/>
-      </node>
-      <node id="600">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</label>
-        <link refid="_data_gap_8h_source"/>
-        <childnode refid="598" relation="include">
+      <node id="599">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
+        <link refid="_ensemble_8h_source"/>
+        <childnode refid="593" relation="include">
         </childnode>
-        <childnode refid="601" relation="include">
+        <childnode refid="596" relation="include">
+        </childnode>
+        <childnode refid="597" relation="include">
         </childnode>
       </node>
       <node id="593">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
+        <link refid="mspass_8h_source"/>
+      </node>
+      <node id="602">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</label>
+        <link refid="_data_gap_8h_source"/>
+        <childnode refid="600" relation="include">
+        </childnode>
+        <childnode refid="603" relation="include">
+        </childnode>
+      </node>
+      <node id="595">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="591" relation="include">
-        </childnode>
-        <childnode refid="594" relation="include">
-        </childnode>
-        <childnode refid="595" relation="include">
+        <childnode refid="593" relation="include">
         </childnode>
         <childnode refid="596" relation="include">
         </childnode>
@@ -82,8 +78,12 @@
         </childnode>
         <childnode refid="599" relation="include">
         </childnode>
+        <childnode refid="600" relation="include">
+        </childnode>
+        <childnode refid="601" relation="include">
+        </childnode>
       </node>
-      <node id="599">
+      <node id="601">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
       </node>

@@ -420,8 +420,8 @@ time variable channel metadata.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.db.database.Database.get_seed_station">
-<code class="sig-name descname">get_seed_station</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">'NONE'</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_station" title="Permalink to this definition">¶</a></dt>
+<dt id="mspasspy.db.database.Database.get_seed_site">
+<code class="sig-name descname">get_seed_site</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em>, <em class="sig-param"><span class="n">sta</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">'NONE'</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">- 1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_seed_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_seed_site" title="Permalink to this definition">¶</a></dt>
 <dd><p>The site collection is assumed to have a one to one
 mapping of net:sta:loc:starttime - endtime.
 This method uses a restricted query to match the
@@ -446,10 +446,10 @@ as the primary index.</p>
 :param time: epoch time for requested metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>handle to query result</p>
+<dd class="field-odd"><p>MongoDB doc (dict) matching query</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>MondoDB Cursor object of query result.</p>
+<dd class="field-even"><p>python dict (document) of result.  None if there is no match.</p>
 </dd>
 </dl>
 </dd></dl>

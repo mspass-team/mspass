@@ -59,7 +59,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="268" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="268" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" static="no" mutable="no">
-        <type>TimeReferenceType</type>
+        <type><ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref></type>
         <definition>TimeReferenceType mspass::seismic::BasicTimeSeries::tref</definition>
         <argsstring></argsstring>
         <name>tref</name>
@@ -406,7 +406,7 @@
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="166" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="166" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>TimeReferenceType</type>
+        <type><ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref></type>
         <definition>TimeReferenceType mspass::seismic::BasicTimeSeries::timetype</definition>
         <argsstring>() const</argsstring>
         <name>timetype</name>
@@ -544,7 +544,7 @@
         <argsstring>(const TimeReferenceType newtref)</argsstring>
         <name>set_tref</name>
         <param>
-          <type>const TimeReferenceType</type>
+          <type>const <ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref></type>
           <declname>newtref</declname>
         </param>
         <briefdescription>

@@ -7,46 +7,46 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includedby refid="amplitudes_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</includedby>
     <incdepgraph>
-      <node id="856">
+      <node id="858">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="859" relation="include">
+        </childnode>
+        <childnode refid="860" relation="include">
+        </childnode>
+      </node>
+      <node id="860">
+        <label>exception</label>
+      </node>
+      <node id="855">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h</label>
+        <link refid="_vector_statistics_8h"/>
+        <childnode refid="856" relation="include">
+        </childnode>
         <childnode refid="857" relation="include">
         </childnode>
         <childnode refid="858" relation="include">
         </childnode>
       </node>
-      <node id="858">
-        <label>exception</label>
-      </node>
-      <node id="853">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h</label>
-        <link refid="_vector_statistics_8h"/>
-        <childnode refid="854" relation="include">
-        </childnode>
-        <childnode refid="855" relation="include">
-        </childnode>
-        <childnode refid="856" relation="include">
-        </childnode>
-      </node>
-      <node id="854">
+      <node id="856">
         <label>vector</label>
       </node>
-      <node id="857">
+      <node id="859">
         <label>iostream</label>
       </node>
-      <node id="855">
+      <node id="857">
         <label>algorithm</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="860">
+      <node id="862">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
-      <node id="859">
+      <node id="861">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h"/>
-        <childnode refid="860" relation="include">
+        <childnode refid="862" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

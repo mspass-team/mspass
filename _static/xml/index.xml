@@ -719,13 +719,39 @@
     <member refid="amplitudes_8h_1ae189abc306db43f917c0c805fd62dce5" kind="function"><name>scale_ensemble</name></member>
   </compound>
   <compound refid="namespacemspass_1_1seismic" kind="namespace"><name>mspass::seismic</name>
-    <member refid="_basic_time_series_8h_1a0b8373068c66c7453bd012fe5367dbd2" kind="enum"><name>TimeReferenceType</name></member>
-    <member refid="dummy_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" kind="enumvalue"><name>UTC</name></member>
-    <member refid="dummy_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" kind="enumvalue"><name>Relative</name></member>
-    <member refid="_ensemble_8h_1a9bdfc71411e6ef751bb5daa7e97987d0" kind="typedef"><name>TimeSeriesEnsemble</name></member>
-    <member refid="_ensemble_8h_1accd4b8b7754c4bec01071aad61edf3cc" kind="typedef"><name>ThreeComponentEnsemble</name></member>
-    <member refid="_taper_8cc_1ac593dcd952e8270c874be5c630039d3c" kind="function"><name>headcos</name></member>
-    <member refid="_taper_8cc_1aca4e4a41dbb0cd855873ae1296a2a416" kind="function"><name>tailcos</name></member>
+    <member refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kind="enum"><name>TimeReferenceType</name></member>
+    <member refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" kind="enumvalue"><name>UTC</name></member>
+    <member refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" kind="enumvalue"><name>Relative</name></member>
+    <member refid="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" kind="typedef"><name>TimeSeriesEnsemble</name></member>
+    <member refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kind="typedef"><name>ThreeComponentEnsemble</name></member>
+    <member refid="namespacemspass_1_1seismic_1ac848a79911ca1930abf265f01a6d635f" kind="function"><name>SEISMICMD_npts</name></member>
+    <member refid="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772" kind="function"><name>SEISMICMD_dt</name></member>
+    <member refid="namespacemspass_1_1seismic_1a1e5b45ce0ed02e9c1d154ea0434138c0" kind="function"><name>SEISMICMD_t0</name></member>
+    <member refid="namespacemspass_1_1seismic_1aa4af747de9dc5b4dba5dc37de80a05eb" kind="function"><name>SEISMICMD_sampling_rate</name></member>
+    <member refid="namespacemspass_1_1seismic_1ac1a7513c761787a80a1798f2f2e66235" kind="function"><name>SEISMICMD_rlat</name></member>
+    <member refid="namespacemspass_1_1seismic_1aaaa7deae118c2fabe6146f4e44facc2a" kind="function"><name>SEISMICMD_rlon</name></member>
+    <member refid="namespacemspass_1_1seismic_1a8261a3979c07230a72a1d69d8d45b862" kind="function"><name>SEISMICMD_relev</name></member>
+    <member refid="namespacemspass_1_1seismic_1ae726d0c4329425d61fd1606336b18e4c" kind="function"><name>SEISMICMD_clat</name></member>
+    <member refid="namespacemspass_1_1seismic_1ae7714c21f072de9472956add73bf014d" kind="function"><name>SEISMICMD_clon</name></member>
+    <member refid="namespacemspass_1_1seismic_1a9098b27e4b7c79ebe30901274f2d1e09" kind="function"><name>SEISMICMD_celev</name></member>
+    <member refid="namespacemspass_1_1seismic_1af6f66d6ba46332022801fc62f96168a8" kind="function"><name>SEISMICMD_hang</name></member>
+    <member refid="namespacemspass_1_1seismic_1a477252b5b499a023541fdba2cb62bfe5" kind="function"><name>SEISMICMD_vang</name></member>
+    <member refid="namespacemspass_1_1seismic_1a6185ce4ed163335717824e4802ac686f" kind="function"><name>SEISMICMD_slat</name></member>
+    <member refid="namespacemspass_1_1seismic_1aa9af0818785cfdf6d6389fe463f39fdb" kind="function"><name>SEISMICMD_slon</name></member>
+    <member refid="namespacemspass_1_1seismic_1aea5a4fdffb82053c6029fd0207a4e66d" kind="function"><name>SEISMICMD_selev</name></member>
+    <member refid="namespacemspass_1_1seismic_1a6d89cd9142f9c69d7ecfa521dad9a1a9" kind="function"><name>SEISMICMD_stime</name></member>
+    <member refid="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" kind="function"><name>SEISMICMD_dfile</name></member>
+    <member refid="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" kind="function"><name>SEISMICMD_dir</name></member>
+    <member refid="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" kind="function"><name>SEISMICMD_foff</name></member>
+    <member refid="namespacemspass_1_1seismic_1ab9de221412c0076cce8197b4f2e9df7a" kind="function"><name>SEISMICMD_tmatrix</name></member>
+    <member refid="namespacemspass_1_1seismic_1a8429ed597db1b001609ef812ed118e25" kind="function"><name>SEISMICMD_uuid</name></member>
+    <member refid="namespacemspass_1_1seismic_1ae150f608f6b8bf8a77f934f325170eb6" kind="function"><name>SEISMICMD_rawdata</name></member>
+    <member refid="namespacemspass_1_1seismic_1a8585005cd5eddd7bc658b1c1bc901aa8" kind="function"><name>SEISMICMD_net</name></member>
+    <member refid="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522" kind="function"><name>SEISMICMD_sta</name></member>
+    <member refid="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47" kind="function"><name>SEISMICMD_chan</name></member>
+    <member refid="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4" kind="function"><name>SEISMICMD_loc</name></member>
+    <member refid="namespacemspass_1_1seismic_1ac593dcd952e8270c874be5c630039d3c" kind="function"><name>headcos</name></member>
+    <member refid="namespacemspass_1_1seismic_1aca4e4a41dbb0cd855873ae1296a2a416" kind="function"><name>tailcos</name></member>
   </compound>
   <compound refid="namespacemspass_1_1utility" kind="namespace"><name>mspass::utility</name>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" kind="enum"><name>MDtype</name></member>
@@ -854,6 +880,8 @@
   <compound refid="_data_gap_8h" kind="file"><name>DataGap.h</name>
   </compound>
   <compound refid="_ensemble_8h" kind="file"><name>Ensemble.h</name>
+  </compound>
+  <compound refid="keywords_8h" kind="file"><name>keywords.h</name>
   </compound>
   <compound refid="_power_spectrum_8h" kind="file"><name>PowerSpectrum.h</name>
   </compound>

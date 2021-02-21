@@ -20,16 +20,16 @@
     <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_vector_taper" prot="public">mspass::seismic::VectorTaper</innerclass>
       <sectiondef kind="enum">
-      <memberdef kind="enum" id="_basic_time_series_8h_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no">
+      <memberdef kind="enum" id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no">
         <name>TimeReferenceType</name>
-        <enumvalue id="dummy_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" prot="public">
+        <enumvalue id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" prot="public">
           <name>UTC</name>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
 <para>Use an absolute (usually UTC) time base - previously absolute in SEISPP. </para>          </detaileddescription>
         </enumvalue>
-        <enumvalue id="dummy_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" prot="public">
+        <enumvalue id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" prot="public">
           <name>Relative</name>
           <briefdescription>
           </briefdescription>
@@ -46,7 +46,7 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="_ensemble_8h_1a9bdfc71411e6ef751bb5daa7e97987d0" prot="public" static="no">
+      <memberdef kind="typedef" id="namespacemspass_1_1seismic_1a9bdfc71411e6ef751bb5daa7e97987d0" prot="public" static="no">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
         <definition>typedef Ensemble&lt;TimeSeries&gt; mspass::seismic::TimeSeriesEnsemble</definition>
         <argsstring></argsstring>
@@ -59,7 +59,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="117" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="117" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="_ensemble_8h_1accd4b8b7754c4bec01071aad61edf3cc" prot="public" static="no">
+      <memberdef kind="typedef" id="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" prot="public" static="no">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt;</type>
         <definition>typedef Ensemble&lt;Seismogram&gt; mspass::seismic::ThreeComponentEnsemble</definition>
         <argsstring></argsstring>
@@ -74,7 +74,423 @@
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
-      <memberdef kind="function" id="_taper_8cc_1ac593dcd952e8270c874be5c630039d3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ac848a79911ca1930abf265f01a6d635f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_npts</definition>
+        <argsstring>(&quot;npts&quot;)</argsstring>
+        <name>SEISMICMD_npts</name>
+        <param>
+          <type>&quot;npts&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Number of data samples. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="17" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_dt</definition>
+        <argsstring>(&quot;delta&quot;)</argsstring>
+        <name>SEISMICMD_dt</name>
+        <param>
+          <type>&quot;delta&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>data sample interval in seconds. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="19" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a1e5b45ce0ed02e9c1d154ea0434138c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_t0</definition>
+        <argsstring>(&quot;starttime&quot;)</argsstring>
+        <name>SEISMICMD_t0</name>
+        <param>
+          <type>&quot;starttime&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Time of first sample of data (epoch time or relative to some other time mark) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="21" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1aa4af747de9dc5b4dba5dc37de80a05eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_sampling_rate</definition>
+        <argsstring>(&quot;sampling_rate&quot;)</argsstring>
+        <name>SEISMICMD_sampling_rate</name>
+        <param>
+          <type>&quot;sampling_rate&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Data sampling frequency in Hz=1/s </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="23" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ac1a7513c761787a80a1798f2f2e66235" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_rlat</definition>
+        <argsstring>(&quot;site_lat&quot;)</argsstring>
+        <name>SEISMICMD_rlat</name>
+        <param>
+          <type>&quot;site_lat&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="28" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1aaaa7deae118c2fabe6146f4e44facc2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_rlon</definition>
+        <argsstring>(&quot;site_lon&quot;)</argsstring>
+        <name>SEISMICMD_rlon</name>
+        <param>
+          <type>&quot;site_lon&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="30" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a8261a3979c07230a72a1d69d8d45b862" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_relev</definition>
+        <argsstring>(&quot;site_elev&quot;)</argsstring>
+        <name>SEISMICMD_relev</name>
+        <param>
+          <type>&quot;site_elev&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="33" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ae726d0c4329425d61fd1606336b18e4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_clat</definition>
+        <argsstring>(&quot;channel_lat&quot;)</argsstring>
+        <name>SEISMICMD_clat</name>
+        <param>
+          <type>&quot;channel_lat&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="38" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ae7714c21f072de9472956add73bf014d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_clon</definition>
+        <argsstring>(&quot;channel_lon&quot;)</argsstring>
+        <name>SEISMICMD_clon</name>
+        <param>
+          <type>&quot;channel_lon&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="40" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a9098b27e4b7c79ebe30901274f2d1e09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_celev</definition>
+        <argsstring>(&quot;channel_elev&quot;)</argsstring>
+        <name>SEISMICMD_celev</name>
+        <param>
+          <type>&quot;channel_elev&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="43" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1af6f66d6ba46332022801fc62f96168a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_hang</definition>
+        <argsstring>(&quot;channel_hang&quot;)</argsstring>
+        <name>SEISMICMD_hang</name>
+        <param>
+          <type>&quot;channel_hang&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Azimuth (in degree) of a seismometer component - horizontal angle </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="45" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a477252b5b499a023541fdba2cb62bfe5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_vang</definition>
+        <argsstring>(&quot;channel_vang&quot;)</argsstring>
+        <name>SEISMICMD_vang</name>
+        <param>
+          <type>&quot;channel_vang&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Inclination from +up (in degree) of a seismometer component - vertical angle </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="47" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a6185ce4ed163335717824e4802ac686f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_slat</definition>
+        <argsstring>(&quot;source_lat&quot;)</argsstring>
+        <name>SEISMICMD_slat</name>
+        <param>
+          <type>&quot;source_lat&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Latitude (in degrees) of the hypocenter of seismic source </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="54" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1aa9af0818785cfdf6d6389fe463f39fdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_slon</definition>
+        <argsstring>(&quot;source_lon&quot;)</argsstring>
+        <name>SEISMICMD_slon</name>
+        <param>
+          <type>&quot;source_lon&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Longitude (in degrees) of the hypocenter of seismic source </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="56" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1aea5a4fdffb82053c6029fd0207a4e66d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_selev</definition>
+        <argsstring>(&quot;source_elev&quot;)</argsstring>
+        <name>SEISMICMD_selev</name>
+        <param>
+          <type>&quot;source_elev&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Depth (in km) of the hypocenter of seismic source </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="58" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a6d89cd9142f9c69d7ecfa521dad9a1a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_stime</definition>
+        <argsstring>(&quot;source_time&quot;)</argsstring>
+        <name>SEISMICMD_stime</name>
+        <param>
+          <type>&quot;source_time&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Origin time of the hypocenter of a seismic source. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="60" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_dfile</definition>
+        <argsstring>(&quot;dfile&quot;)</argsstring>
+        <name>SEISMICMD_dfile</name>
+        <param>
+          <type>&quot;dfile&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>External data file name. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="62" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_dir</definition>
+        <argsstring>(&quot;dir&quot;)</argsstring>
+        <name>SEISMICMD_dir</name>
+        <param>
+          <type>&quot;dir&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Directory path to an external file (always used with dfile) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="64" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_foff</definition>
+        <argsstring>(&quot;foff&quot;)</argsstring>
+        <name>SEISMICMD_foff</name>
+        <param>
+          <type>&quot;foff&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Offset in bytes from beginning of a file to first data sample. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="66" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ab9de221412c0076cce8197b4f2e9df7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_tmatrix</definition>
+        <argsstring>(&quot;tmatrix&quot;)</argsstring>
+        <name>SEISMICMD_tmatrix</name>
+        <param>
+          <type>&quot;tmatrix&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Holds transformation matrix in MsPASS use for <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="68" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a8429ed597db1b001609ef812ed118e25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_uuid</definition>
+        <argsstring>(&quot;uuid&quot;)</argsstring>
+        <name>SEISMICMD_uuid</name>
+        <param>
+          <type>&quot;uuid&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Universal Unique Identifier used for history. </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="70" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ae150f608f6b8bf8a77f934f325170eb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_rawdata</definition>
+        <argsstring>(&quot;rawdata&quot;)</argsstring>
+        <name>SEISMICMD_rawdata</name>
+        <param>
+          <type>&quot;rawdata&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Boolean used to tag a history chain as beginning with raw data </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="72" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a8585005cd5eddd7bc658b1c1bc901aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_net</definition>
+        <argsstring>(&quot;net&quot;)</argsstring>
+        <name>SEISMICMD_net</name>
+        <param>
+          <type>&quot;net&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>network code (net component of SEED net:sta:chan) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="74" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_sta</definition>
+        <argsstring>(&quot;sta&quot;)</argsstring>
+        <name>SEISMICMD_sta</name>
+        <param>
+          <type>&quot;sta&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>station code assigned to a spot on Earth (sta component of SEED net:sta:chan) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="76" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_chan</definition>
+        <argsstring>(&quot;chan&quot;)</argsstring>
+        <name>SEISMICMD_chan</name>
+        <param>
+          <type>&quot;chan&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="78" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::string</type>
+        <definition>const std::string mspass::seismic::SEISMICMD_loc</definition>
+        <argsstring>(&quot;loc&quot;)</argsstring>
+        <name>SEISMICMD_loc</name>
+        <param>
+          <type>&quot;loc&quot;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>location code assigned to an instrument (loc component of SEED net:sta:chan) </para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="80" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1ac593dcd952e8270c874be5c630039d3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::seismic::headcos</definition>
         <argsstring>(double t0, double t1, double t)</argsstring>
@@ -99,7 +515,7 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" line="180" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="180" bodyend="189"/>
       </memberdef>
-      <memberdef kind="function" id="_taper_8cc_1aca4e4a41dbb0cd855873ae1296a2a416" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="namespacemspass_1_1seismic_1aca4e4a41dbb0cd855873ae1296a2a416" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::seismic::tailcos</definition>
         <argsstring>(double t0, double t1, double t)</argsstring>
@@ -126,9 +542,9 @@
       </memberdef>
       </sectiondef>
     <briefdescription>
-    </briefdescription>
+<para>Define metadata keys. </para>    </briefdescription>
     <detaileddescription>
-    </detaileddescription>
+<para>This include file defines a set ofconst std::string values that serve as keys to Metadata get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map Metadata keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>    </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="6" column="1"/>
   </compounddef>
 </doxygen>

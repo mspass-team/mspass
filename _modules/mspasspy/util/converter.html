@@ -175,7 +175,8 @@
                                     <span class="n">TimeReferenceType</span><span class="p">,</span>
                                     <span class="n">TimeSeries</span><span class="p">,</span>
                                     <span class="n">TimeSeriesEnsemble</span><span class="p">,</span>
-                                    <span class="n">SeismogramEnsemble</span><span class="p">)</span>
+                                    <span class="n">SeismogramEnsemble</span><span class="p">,</span>
+                                    <span class="n">Keywords</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">ExtractComponent</span>
 
 
@@ -259,20 +260,20 @@
     <span class="c1"># These are required by obspy but optional in mspass.  Hence, we have</span>
     <span class="c1"># to extract them with caution.  Note defaults are identical to</span>
     <span class="c1"># Trace constructor</span>
-    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;net&#39;</span><span class="p">):</span>
-        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">&#39;net&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">net</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">net</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;sta&#39;</span><span class="p">):</span>
-        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">&#39;sta&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">):</span>
-        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;loc&#39;</span><span class="p">):</span>
-        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="s1">&#39;loc&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span><span class="p">):</span>
+        <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">get_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">if</span> <span class="n">ts</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="s1">&#39;calib&#39;</span><span class="p">):</span>
@@ -345,9 +346,9 @@
         <span class="n">logstuff</span> <span class="o">=</span> <span class="n">sg</span><span class="o">.</span><span class="n">elog</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">sg</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
-            <span class="n">ts</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="s1">&#39;chan&#39;</span><span class="p">,</span> <span class="n">chanmap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s1">&#39;hang&#39;</span><span class="p">,</span> <span class="n">hang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="s1">&#39;vang&#39;</span><span class="p">,</span> <span class="n">vang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_string</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span><span class="p">,</span> <span class="n">chanmap</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="n">hang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">put_double</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="n">vang</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="c1"># ts is a CoreTimeSeries but we need to add a few things to</span>
             <span class="c1"># make it mesh with TimeSeries2Trace</span>
             <span class="n">tsex</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">uuids</span><span class="p">)</span>
@@ -401,13 +402,13 @@
     <span class="c1"># These tests are excessively paranoid since starttime and endtime</span>
     <span class="c1"># are required attributes in Trace, but better save in case</span>
     <span class="c1"># someone creates one outside obspy</span>
-    <span class="k">if</span> <span class="s1">&#39;starttime&#39;</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
-        <span class="n">t</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span>
-        <span class="n">h</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
+    <span class="k">if</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># We have to set this to something if it isn&#39;t set or</span>
         <span class="c1"># the TimeSeries constructor may abort</span>
-        <span class="n">h</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
     <span class="c1"># we don&#39;t require endtime in TimeSeries so ignore if it is not set</span>
     <span class="k">if</span> <span class="s1">&#39;endtime&#39;</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
         <span class="n">t</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span>    
@@ -416,11 +417,11 @@
     <span class="c1"># these define a map of aliases to apply when we convert to mspass</span>
     <span class="c1"># metadata from trace - we redefined these names but others could</span>
     <span class="c1"># surface as obspy evolves independently from mspass</span>
-    <span class="n">mspass_aliases</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
-    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;sta&#39;</span>
-    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;net&#39;</span>
-    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;loc&#39;</span>
-    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;chan&#39;</span>
+    <span class="n">mspass_aliases</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;station&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">sta</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">net</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">loc</span>
+    <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mspass_aliases</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
             <span class="n">x</span><span class="o">=</span><span class="n">h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
@@ -525,18 +526,18 @@
     <span class="c1"># even if the hang and vang are the names although with some inefficiency</span>
     <span class="c1"># assume that would not be normal so avoid unnecessary code</span>
     <span class="k">if</span> <span class="n">cardinal</span><span class="p">:</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;hang&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;vang&quot;</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;vang&quot;</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
-        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;vang&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">90.0</span><span class="p">)</span>
+        <span class="n">bundle</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
             <span class="n">hang</span> <span class="o">=</span> <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="n">azimuth</span><span class="p">)</span>
-            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;hang&#39;</span><span class="p">,</span> <span class="n">hang</span><span class="p">)</span>
+            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_hang</span><span class="p">,</span> <span class="n">hang</span><span class="p">)</span>
             <span class="n">vang</span> <span class="o">=</span> <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="n">dip</span><span class="p">)</span>
-            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;vang&#39;</span><span class="p">,</span> <span class="n">vang</span><span class="p">)</span>
+            <span class="n">bundle</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">Keywords</span><span class="o">.</span><span class="n">channel_vang</span><span class="p">,</span> <span class="n">vang</span><span class="p">)</span>
     <span class="c1"># Assume now bundle contains all the pieces we need.   This constructor</span>
     <span class="c1"># for _CoreSeismogram should then do the job</span>
     <span class="c1"># This may throw an exception, but we require the caller to handle it</span>

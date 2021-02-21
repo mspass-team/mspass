@@ -6,50 +6,50 @@
     <includes refid="_basic_time_series_8h" local="yes">mspass/seismic/BasicTimeSeries.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1220">
+      <node id="1223">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1221" relation="include">
-        </childnode>
-        <childnode refid="1222" relation="include">
-        </childnode>
-        <childnode refid="1223" relation="include">
-        </childnode>
-      </node>
-      <node id="1222">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="1218">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
-        <link refid="_basic_time_series_8cc"/>
-        <childnode refid="1219" relation="include">
-        </childnode>
-        <childnode refid="1220" relation="include">
-        </childnode>
         <childnode refid="1224" relation="include">
         </childnode>
-      </node>
-      <node id="1224">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
         <childnode refid="1225" relation="include">
         </childnode>
         <childnode refid="1226" relation="include">
         </childnode>
       </node>
-      <node id="1226">
-        <label>exception</label>
-      </node>
-      <node id="1219">
-        <label>ostream</label>
-      </node>
-      <node id="1223">
-        <label>boost/archive/text_oarchive.hpp</label>
+      <node id="1225">
+        <label>boost/archive/text_iarchive.hpp</label>
       </node>
       <node id="1221">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
+        <link refid="_basic_time_series_8cc"/>
+        <childnode refid="1222" relation="include">
+        </childnode>
+        <childnode refid="1223" relation="include">
+        </childnode>
+        <childnode refid="1227" relation="include">
+        </childnode>
+      </node>
+      <node id="1227">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="1228" relation="include">
+        </childnode>
+        <childnode refid="1229" relation="include">
+        </childnode>
+      </node>
+      <node id="1229">
+        <label>exception</label>
+      </node>
+      <node id="1222">
+        <label>ostream</label>
+      </node>
+      <node id="1226">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="1224">
         <label>math.h</label>
       </node>
-      <node id="1225">
+      <node id="1228">
         <label>iostream</label>
       </node>
     </incdepgraph>
@@ -71,10 +71,10 @@
 <codeline lineno="10"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>dead<sp/>traces<sp/>should<sp/>to<sp/>totally<sp/>ignored<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!(this-&gt;mlive))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==TimeReferenceType::Relative)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" kindref="member">TimeReferenceType::Relative</ref>)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>t0shift=tshift;</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>mt0<sp/>-=<sp/>tshift;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>tref=TimeReferenceType::Relative;</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>tref=<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" kindref="member">TimeReferenceType::Relative</ref>;</highlight></codeline>
 <codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>t0shift_is_valid=</highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="18"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">//<sp/>inverse<sp/>of<sp/>ator<sp/>--<sp/>note<sp/>minus<sp/>becomes<sp/>plus</highlight><highlight class="normal"></highlight></codeline>
@@ -84,7 +84,7 @@
 <codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>dead<sp/>traces<sp/>should<sp/>to<sp/>totally<sp/>ignored<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!(this-&gt;mlive))<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;BasicTimeSeries::rtoa()<sp/>t0shift<sp/>for<sp/>conversion<sp/>is<sp/>not<sp/>defined.&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==TimeReferenceType::UTC)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" kindref="member">TimeReferenceType::UTC</ref>)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>rather<sp/>odd<sp/>test<sp/>for<sp/>a<sp/>nonzero.<sp/><sp/><sp/>We<sp/>use<sp/>100<sp/>s<sp/>assuming<sp/>no<sp/>active</highlight></codeline>
 <codeline lineno="28"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>source<sp/>data<sp/>would<sp/>use<sp/>a<sp/>shift<sp/>longer<sp/>than<sp/>that<sp/>unless<sp/>it<sp/>really<sp/>did</highlight></codeline>
 <codeline lineno="29"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/>*<sp/>have<sp/>an<sp/>UTC<sp/>time<sp/>standard.<sp/>Also<sp/>assumes<sp/>we&apos;ll<sp/>never<sp/>use<sp/>data<sp/>from</highlight></codeline>
@@ -92,7 +92,7 @@
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(t0shift_is_valid<sp/>||<sp/>(t0shift&gt;100.0)<sp/>)</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mt0<sp/>+=<sp/>t0shift;</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tref=TimeReferenceType::UTC;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tref=<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" kindref="member">TimeReferenceType::UTC</ref>;</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>t0shift_is_valid=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/>t0shift=0.0;</highlight></codeline>
 <codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -103,7 +103,7 @@
 <codeline lineno="42"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a02072f2001d400e7f7ab5f9463e236c8" kindref="member">BasicTimeSeries::BasicTimeSeries</ref>()</highlight></codeline>
 <codeline lineno="43"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>mt0=0.0;</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>tref=TimeReferenceType::Relative;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>tref=<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" kindref="member">TimeReferenceType::Relative</ref>;</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/>mlive=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>mdt=1.0;</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>nsamp=0;</highlight></codeline>
@@ -147,7 +147,7 @@
 <codeline lineno="86"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" kindref="member">BasicTimeSeries::time_reference</ref>()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="87"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;BasicTimeSeries::time_reference<sp/>method:<sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==TimeReferenceType::UTC)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tref==<ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" kindref="member">TimeReferenceType::UTC</ref>)</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(base_error</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;data<sp/>have<sp/>UTC<sp/>time<sp/>set<sp/>so<sp/>requesting<sp/>the<sp/>reference&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>time<sp/>make<sp/>no<sp/>sense<sp/>-<sp/>likely<sp/>a<sp/>coding<sp/>error&quot;</highlight><highlight class="normal">,</highlight></codeline>

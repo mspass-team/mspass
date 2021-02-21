@@ -16,5 +16,6 @@ var searchData=
   ['mlive',['mlive',['../classmspass_1_1seismic_1_1_basic_time_series.html#a7b2e9b878959d376790f09194edc51d9',1,'mspass::seismic::BasicTimeSeries']]],
   ['modified',['modified',['../classmspass_1_1utility_1_1_metadata.html#a0fec2640022e944afe1ae1180e741da5',1,'mspass::utility::Metadata']]],
   ['mspasserror',['MsPASSError',['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html',1,'mspass::utility::MsPASSError'],['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a19f527c5f3f2e761e51c9b2d478d02c6',1,'mspass::utility::MsPASSError::MsPASSError()'],['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a78088c104a7c2a47e41ce8ecdf5513cd',1,'mspass::utility::MsPASSError::MsPASSError(const std::string mess, const char *howbad)'],['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a0f75099c3f9c8130b44398601753745f',1,'mspass::utility::MsPASSError::MsPASSError(const std::string mess, const ErrorSeverity s=ErrorSeverity::Invalid)'],['../classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af209344a8eb784695556f02b7df481c9',1,'mspass::utility::MsPASSError::MsPASSError(const char *mess, const ErrorSeverity s)']]],
-  ['mt0',['mt0',['../classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757',1,'mspass::seismic::BasicTimeSeries']]]
+  ['mt0',['mt0',['../classmspass_1_1seismic_1_1_basic_time_series.html#aeb40f4223a8ee73e79f9af065372a757',1,'mspass::seismic::BasicTimeSeries']]],
+  ['seismic',['seismic',['../namespacemspass_1_1seismic.html',1,'mspass']]]
 ];

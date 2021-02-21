@@ -1255,13 +1255,13 @@
                     <span class="n">loc_stime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_starttime</span><span class="p">(</span><span class="n">loc_stime</span><span class="p">)</span>
                     <span class="n">loc_etime</span> <span class="o">=</span> <span class="n">loc_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                     <span class="n">loc_etime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_null_endtime</span><span class="p">(</span><span class="n">loc_etime</span><span class="p">)</span>
-                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lat</span>
-                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lon</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lat</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_lon</span>
                     <span class="c1"># This is MongoDBs way to set a geographic</span>
                     <span class="c1"># point - allows spatial queries.  Note longitude</span>
                     <span class="c1"># must be first of the pair</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">loc_lat</span><span class="p">,</span> <span class="n">loc_lon</span><span class="p">]</span>
-                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;elevation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_elev</span>
+                    <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;elev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_elev</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loc_edepth</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">starttime</span><span class="o">.</span><span class="n">timestamp</span>
                     <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">endtime</span><span class="o">.</span><span class="n">timestamp</span>
@@ -1403,7 +1403,7 @@
                 <span class="c1"># if poorly documented in obspy</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">netw</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">result</span></div>
-<div class="viewcode-block" id="Database.get_seed_station"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_station">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.get_seed_site"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_site">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;NONE&#39;</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The site collection is assumed to have a one to one</span>
 <span class="sd">        mapping of net:sta:loc:starttime - endtime.</span>
@@ -1424,8 +1424,8 @@
 <span class="sd">        default ignores loc in query.</span>
 <span class="sd">        :param time: epoch time for requested metadata</span>
 
-<span class="sd">        :return: handle to query result</span>
-<span class="sd">        :rtype:  MondoDB Cursor object of query result.</span>
+<span class="sd">        :return: MongoDB doc (dict) matching query</span>
+<span class="sd">        :rtype:  python dict (document) of result.  None if there is no match.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dbsite</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site</span>
         <span class="n">query</span> <span class="o">=</span> <span class="p">{}</span>
@@ -1444,7 +1444,9 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_site (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">stations</span></div>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returning first entry found&quot;</span><span class="p">)</span>
+            <span class="n">stadoc</span><span class="o">=</span><span class="n">dbsite</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">stadoc</span></div>
 
 <div class="viewcode-block" id="Database.get_seed_channel"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.get_seed_channel">[docs]</a>    <span class="k">def</span> <span class="nf">get_seed_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">sta</span><span class="p">,</span> <span class="n">chan</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1633,8 +1635,9 @@
             <span class="n">picklestr</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
             <span class="n">rec</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="c1"># rec[&#39;source_id&#39;]=source_id</span>
-            <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;latitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">latitude</span>
-            <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;longitude&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span>
+            <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">latitude</span>
+            <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span>
+            <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;coords&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">latitude</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">longitude</span><span class="p">]</span>
             <span class="c1"># It appears quakeml puts source depths in meter</span>
             <span class="c1"># convert to km</span>
             <span class="c1"># also obspy&#39;s catalog object seesm to allow depth to be</span>

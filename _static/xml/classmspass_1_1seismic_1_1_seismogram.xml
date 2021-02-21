@@ -43,7 +43,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="37" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="6" bodyend="10"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="37" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -68,7 +68,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="52" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="13" bodyend="16"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="52" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="15" bodyend="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -140,7 +140,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="82" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="27" bodyend="54"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="82" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="29" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -181,7 +181,7 @@
 <para>This constructor build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from all the pieces that define this highest level object in mspass. This constructor is planned to be hidden from python programmers and not exposed with pybind11 wrappers because is has some potentially undesirable side effects if not used carefully. The primary purpose of this constructor is for serialization and deserializaton in spark with pickle. The pickle interface is purely in C for this function so again python programmers don&apos;t need to see this constructor. The parameter names are obvious because they are associated one for one with the objects they are used to construct. The only exceptions are card and ortho which are booleans used to set the internal booleans components_are_cardinal and components_are_orthogonal respectively (two internals users should not mess with). tm is also a dmatrix representation the tmatrix stored internally as a 2d C array, but we use the dmatrix to mesh with serialization. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="104" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="63" bodyend="76"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="104" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="65" bodyend="78"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -274,7 +274,7 @@
 <para>Standard assignment operator. </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="112" bodyend="120"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="114" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -299,7 +299,7 @@
 </para>        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="145" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="121" bodyend="124"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="145" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="123" bodyend="126"/>
       </memberdef>
       </sectiondef>
     <briefdescription>

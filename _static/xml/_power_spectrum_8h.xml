@@ -7,22 +7,18 @@
     <includes refid="_error_logger_8h" local="yes">mspass/utility/ErrorLogger.h</includes>
     <includedby refid="_power_spectrum_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc</includedby>
     <incdepgraph>
-      <node id="346">
+      <node id="348">
         <label>list</label>
       </node>
-      <node id="359">
+      <node id="361">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="356">
+      <node id="358">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="357" relation="include">
-        </childnode>
-        <childnode refid="346" relation="include">
-        </childnode>
-        <childnode refid="358" relation="include">
-        </childnode>
         <childnode refid="359" relation="include">
+        </childnode>
+        <childnode refid="348" relation="include">
         </childnode>
         <childnode refid="360" relation="include">
         </childnode>
@@ -30,90 +26,90 @@
         </childnode>
         <childnode refid="362" relation="include">
         </childnode>
-        <childnode refid="352" relation="include">
+        <childnode refid="363" relation="include">
         </childnode>
-        <childnode refid="356" relation="include">
+        <childnode refid="364" relation="include">
         </childnode>
-      </node>
-      <node id="352">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="347" relation="include">
+        <childnode refid="354" relation="include">
         </childnode>
-        <childnode refid="353" relation="include">
+        <childnode refid="358" relation="include">
         </childnode>
-      </node>
-      <node id="355">
-        <label>string</label>
-      </node>
-      <node id="344">
-        <label>map</label>
-      </node>
-      <node id="353">
-        <label>exception</label>
-      </node>
-      <node id="348">
-        <label>fstream</label>
-      </node>
-      <node id="350">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="360">
-        <label>boost/archive/text_oarchive.hpp</label>
       </node>
       <node id="354">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="349" relation="include">
+        </childnode>
         <childnode refid="355" relation="include">
         </childnode>
       </node>
-      <node id="343">
-        <label>typeinfo</label>
-      </node>
       <node id="357">
-        <label>unistd.h</label>
+        <label>string</label>
       </node>
-      <node id="341">
-        <label>vector</label>
+      <node id="346">
+        <label>map</label>
       </node>
-      <node id="349">
-        <label>sstream</label>
+      <node id="355">
+        <label>exception</label>
       </node>
-      <node id="351">
-        <label>pybind11/pybind11.h</label>
+      <node id="350">
+        <label>fstream</label>
       </node>
-      <node id="347">
-        <label>iostream</label>
+      <node id="352">
+        <label>boost/any.hpp</label>
       </node>
       <node id="362">
-        <label>boost/serialization/list.hpp</label>
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="356">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="357" relation="include">
+        </childnode>
       </node>
       <node id="345">
+        <label>typeinfo</label>
+      </node>
+      <node id="359">
+        <label>unistd.h</label>
+      </node>
+      <node id="343">
+        <label>vector</label>
+      </node>
+      <node id="351">
+        <label>sstream</label>
+      </node>
+      <node id="353">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="349">
+        <label>iostream</label>
+      </node>
+      <node id="364">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="347">
         <label>set</label>
       </node>
-      <node id="361">
+      <node id="363">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="340">
+      <node id="342">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h</label>
         <link refid="_power_spectrum_8h"/>
-        <childnode refid="341" relation="include">
-        </childnode>
-        <childnode refid="342" relation="include">
-        </childnode>
-        <childnode refid="356" relation="include">
-        </childnode>
-      </node>
-      <node id="358">
-        <label>boost/archive/basic_archive.hpp</label>
-      </node>
-      <node id="342">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
         <childnode refid="343" relation="include">
         </childnode>
         <childnode refid="344" relation="include">
         </childnode>
+        <childnode refid="358" relation="include">
+        </childnode>
+      </node>
+      <node id="360">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="344">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
         <childnode refid="345" relation="include">
         </childnode>
         <childnode refid="346" relation="include">
@@ -130,7 +126,11 @@
         </childnode>
         <childnode refid="352" relation="include">
         </childnode>
+        <childnode refid="353" relation="include">
+        </childnode>
         <childnode refid="354" relation="include">
+        </childnode>
+        <childnode refid="356" relation="include">
         </childnode>
       </node>
     </incdepgraph>
