@@ -140,9 +140,9 @@ PYBIND11_MODULE(seismic, m) {
   m.attr("_KeywordDict") = scope["_KeywordDict"];
   auto Keywords = scope["_KeywordDict"]();
   Keywords["npts"] = SEISMICMD_npts;
-  Keywords["delta"] = SEISMICMD_npts;
-  Keywords["starttime"] = SEISMICMD_npts;
-  Keywords["sampling_rate"] = SEISMICMD_npts;
+  Keywords["delta"] = SEISMICMD_dt;
+  Keywords["starttime"] = SEISMICMD_t0;
+  Keywords["sampling_rate"] = SEISMICMD_sampling_rate;
   Keywords["site_lat"] = SEISMICMD_rlat;
   Keywords["site_lon"] = SEISMICMD_rlon;
   Keywords["site_elev"] = SEISMICMD_relev;
