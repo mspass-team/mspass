@@ -3,9 +3,11 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/operators.h>
+#include <pybind11/embed.h>
 
 #include <boost/archive/text_oarchive.hpp>
 
+#include <mspass/seismic/keywords.h>
 #include <mspass/seismic/SlownessVector.h>
 #include <mspass/seismic/TimeWindow.h>
 #include <mspass/seismic/TimeSeries.h>
@@ -118,6 +120,56 @@ public:
 PYBIND11_MODULE(seismic, m) {
   m.attr("__name__") = "mspasspy.ccore.seismic";
   m.doc() = "A submodule for seismic namespace of ccore";
+
+  /* Define the keywords here*/
+  py::object scope = py::module_::import("__main__").attr("__dict__");
+  /* The following hack on __name__ is needed to avoid contaminating 
+     user's namespace of __main__. This way _KeywordDict is defined
+     under mspasspy.ccore.seismic instead of __main__. */
+  /* TODO: Note that we could also disable editing by overriding 
+     methods such as __setattr__ and __setitem__, but it is not
+     essential for now. */
+  py::exec(R"(
+        __name__ = "mspasspy.ccore.seismic"
+        class _KeywordDict(dict):
+          def __init__(self, *args, **kwargs):
+              super(_KeywordDict, self).__init__(*args, **kwargs)
+              self.__dict__ = self
+        __name__ = "__main__"
+    )", scope);
+  m.attr("_KeywordDict") = scope["_KeywordDict"];
+  auto Keywords = scope["_KeywordDict"]();
+  Keywords["npts"] = SEISMICMD_npts;
+  Keywords["delta"] = SEISMICMD_dt;
+  Keywords["starttime"] = SEISMICMD_t0;
+  Keywords["sampling_rate"] = SEISMICMD_sampling_rate;
+  Keywords["site_lat"] = SEISMICMD_rlat;
+  Keywords["site_lon"] = SEISMICMD_rlon;
+  Keywords["site_elev"] = SEISMICMD_relev;
+  Keywords["channel_lat"] = SEISMICMD_clat;
+  Keywords["channel_lon"] = SEISMICMD_clon;
+  Keywords["channel_elev"] = SEISMICMD_celev;
+  Keywords["channel_hang"] = SEISMICMD_hang;
+  Keywords["channel_vang"] = SEISMICMD_vang;
+  Keywords["source_lat"] = SEISMICMD_slat;
+  Keywords["source_lon"] = SEISMICMD_slon;
+  Keywords["source_elev"] = SEISMICMD_selev;
+  Keywords["source_time"] = SEISMICMD_stime;
+  Keywords["dfile"] = SEISMICMD_dfile;
+  Keywords["dir"] = SEISMICMD_dir;
+  Keywords["foff"] = SEISMICMD_foff;
+  Keywords["tmatrix"] = SEISMICMD_tmatrix;
+  Keywords["uuid"] = SEISMICMD_uuid;
+  Keywords["rawdata"] = SEISMICMD_rawdata;
+  Keywords["net"] = SEISMICMD_net;
+  Keywords["sta"] = SEISMICMD_sta;
+  Keywords["chan"] = SEISMICMD_chan;
+  Keywords["loc"] = SEISMICMD_loc;
+  m.attr("Keywords") = Keywords;
+  py::exec(R"(
+        import __main__
+        del __main__.__dict__['_KeywordDict']
+    )", scope);
 
   /* We need one of these for each std::vector container to make them function correctly*/
   py::bind_vector<std::vector<double>>(m, "DoubleVector");
@@ -397,9 +449,9 @@ PYBIND11_MODULE(seismic, m) {
         Metadata md;
         md=py::cast<Metadata>(py::module_::import("mspasspy.ccore.utility").attr("Metadata")(d));
         BasicTimeSeries bts;
-        double dt=md.get_double("delta");
+        double dt=md.get_double(mspass::seismic::SEISMICMD_dt);
         bts.set_dt(dt);
-        double t0=md.get_double("starttime");
+        double t0=md.get_double(mspass::seismic::SEISMICMD_t0);
         bts.set_t0(t0);
         /* We invoke the BasicTimeSeries method for set_npts which sets the
         internal protected npts attribute of the base class.  We then set
@@ -408,7 +460,7 @@ PYBIND11_MODULE(seismic, m) {
         Otherwise we could do an initalization zeros followed by insertion.
         This algorithm will be slightly faster. */
         bts.set_npts(npts);
-        md.put("npts",npts);  // don't assume npts is set in metadata
+        md.put(mspass::seismic::SEISMICMD_npts,npts);  // don't assume npts is set in metadata
         /* We only support UTC for this constructor assuming it is only used
         to go back and forth from obspy trace objects. */
         bts.set_tref(TimeReferenceType::UTC);

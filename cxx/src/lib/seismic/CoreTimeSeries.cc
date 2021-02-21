@@ -1,6 +1,7 @@
 #include <vector>
 #include "misc/blas.h"
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/Metadata.h"
 namespace mspass::seismic
@@ -184,8 +185,9 @@ CoreTimeSeries& CoreTimeSeries::operator*=(const double scale)
 void CoreTimeSeries::set_dt(const double sample_interval)
 {
   this->BasicTimeSeries::set_dt(sample_interval);
-  /* This is the unique name - we always set it. */
-  this->put("delta",sample_interval);
+  /* This is the unique name - we always set it.
+  Feb 2021 - changed to used const string value set in keywords.h*/
+  this->put(SEISMICMD_dt,sample_interval);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
@@ -201,8 +203,9 @@ void CoreTimeSeries::set_dt(const double sample_interval)
 void CoreTimeSeries::set_t0(const double t0in)
 {
   this->BasicTimeSeries::set_t0(t0in);
-  /* This is the unique name - we always set it. */
-  this->put("starttime",t0in);
+  /* This is the unique name - we always set it.
+  Changed Feb 2021 to use const string value defined in keywords.h*/
+  this->put(SEISMICMD_t0,t0in);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
@@ -220,8 +223,9 @@ void CoreTimeSeries::set_npts(const size_t npts)
 {
   this->BasicTimeSeries::set_npts(npts);
   /* This is the unique name - we always set it. Cast is necessary to
-  avoid type mismatch in python for unsigned*/
-  this->put("npts",(long int)npts);
+  avoid type mismatch in python for unsigned.
+  Changed Feb 2021 to use key defined in in keywords.h*/
+  this->put(SEISMICMD_npts,(long int)npts);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
@@ -246,8 +250,9 @@ void CoreTimeSeries::sync_npts()
   if(nsamp != this->s.size()) {
     this->BasicTimeSeries::set_npts(this->s.size());
     /* This is the unique name - we always set it.  The weird
-    cast is necessary to avoid type mismatch with unsigned*/
-    this->put("npts",(long int)nsamp);
+    cast is necessary to avoid type mismatch with unsigned
+    Changed Feb 2021 to use key defined in keywords.h*/
+    this->put(SEISMICMD_npts,(long int)nsamp);
     /* these are hard coded aliases for sample_interval */
     std::set<string> aliases;
     std::set<string>::iterator aptr;

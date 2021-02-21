@@ -73,8 +73,8 @@ def load_css30_arrivals(db,filename,attribute_names=['evid',
     return ret
 def load_css30_sources(db,srcdict,collection='source',
                        attribute_names=['evid',
-                                        'latitude',
-                                        'longitude',
+                                        'lat',
+                                        'lon',
                                         'depth',
                                         'time']):
     """
@@ -253,8 +253,8 @@ def extract_unique_css30_sources(filename,attribute_names=['evid',
         #this depends upon container replacing content when keys match
         # inefficient but should work
         sources[evid]={'evid' : evid,
-               'latitude' : lat,
-               'longitude': lon,
+               'lat' : lat,
+               'lon': lon,
                'depth' : depth,
                'time' : time}
     return sources

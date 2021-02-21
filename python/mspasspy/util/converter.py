@@ -10,7 +10,8 @@ from mspasspy.ccore.seismic import (_CoreSeismogram,
                                     TimeReferenceType,
                                     TimeSeries,
                                     TimeSeriesEnsemble,
-                                    SeismogramEnsemble)
+                                    SeismogramEnsemble,
+                                    Keywords)
 from mspasspy.ccore.algorithms.basic import ExtractComponent
 
 
@@ -94,20 +95,20 @@ def TimeSeries2Trace(ts):
     # These are required by obspy but optional in mspass.  Hence, we have
     # to extract them with caution.  Note defaults are identical to
     # Trace constructor
-    if ts.is_defined('net'):
-        dresult.stats['network'] = ts.get_string('net')
+    if ts.is_defined(Keywords.net):
+        dresult.stats['network'] = ts.get_string(Keywords.net)
     else:
         dresult.stats['network'] = ''
-    if ts.is_defined('sta'):
-        dresult.stats['station'] = ts.get_string('sta')
+    if ts.is_defined(Keywords.sta):
+        dresult.stats['station'] = ts.get_string(Keywords.sta)
     else:
         dresult.stats['station'] = ''
-    if ts.is_defined('chan'):
-        dresult.stats['channel'] = ts.get_string('chan')
+    if ts.is_defined(Keywords.chan):
+        dresult.stats['channel'] = ts.get_string(Keywords.chan)
     else:
         dresult.stats['channel'] = ''
-    if ts.is_defined('loc'):
-        dresult.stats['location'] = ts.get_string('loc')
+    if ts.is_defined(Keywords.loc):
+        dresult.stats['location'] = ts.get_string(Keywords.loc)
     else:
         dresult.stats['location'] = ''
     if ts.is_defined('calib'):
@@ -180,9 +181,9 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
         logstuff = sg.elog
         for i in range(3):
             ts = ExtractComponent(sg, i)
-            ts.put_string('chan', chanmap[i])
-            ts.put_double('hang', hang[i])
-            ts.put_double('vang', vang[i])
+            ts.put_string(Keywords.chan, chanmap[i])
+            ts.put_double(Keywords.channel_hang, hang[i])
+            ts.put_double(Keywords.channel_vang, vang[i])
             # ts is a CoreTimeSeries but we need to add a few things to
             # make it mesh with TimeSeries2Trace
             tsex = TimeSeries(ts, uuids)
@@ -236,13 +237,13 @@ def Trace2TimeSeries(trace,history=None):
     # These tests are excessively paranoid since starttime and endtime
     # are required attributes in Trace, but better save in case
     # someone creates one outside obspy
-    if 'starttime' in trace.stats:
-        t=h['starttime']
-        h['starttime']=t.timestamp
+    if Keywords.starttime in trace.stats:
+        t=h[Keywords.starttime]
+        h[Keywords.starttime]=t.timestamp
     else:
         # We have to set this to something if it isn't set or
         # the TimeSeries constructor may abort
-        h['starttime']=0.0
+        h[Keywords.starttime]=0.0
     # we don't require endtime in TimeSeries so ignore if it is not set
     if 'endtime' in trace.stats:
         t=h['endtime']    
@@ -251,11 +252,11 @@ def Trace2TimeSeries(trace,history=None):
     # these define a map of aliases to apply when we convert to mspass
     # metadata from trace - we redefined these names but others could
     # surface as obspy evolves independently from mspass
-    mspass_aliases=dict()
-    mspass_aliases['station']='sta'
-    mspass_aliases['network']='net'
-    mspass_aliases['location']='loc'
-    mspass_aliases['channel']='chan'
+    mspass_aliases = dict()
+    mspass_aliases['station'] = Keywords.sta
+    mspass_aliases['network'] = Keywords.net
+    mspass_aliases['location'] = Keywords.loc
+    mspass_aliases['channel'] = Keywords.chan
     for k in mspass_aliases:
         if k in h:
             x=h.pop(k)
@@ -360,18 +361,18 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
     # even if the hang and vang are the names although with some inefficiency
     # assume that would not be normal so avoid unnecessary code
     if cardinal:
-        bundle[0].put("hang", 90.0)
-        bundle[1].put("hang", 0.0)
-        bundle[2].put("hang", 0.0)
-        bundle[0].put("vang", 90.0)
-        bundle[1].put("vang", 90.0)
-        bundle[2].put("vang", 0.0)
+        bundle[0].put(Keywords.channel_hang, 90.0)
+        bundle[1].put(Keywords.channel_hang, 0.0)
+        bundle[2].put(Keywords.channel_hang, 0.0)
+        bundle[0].put(Keywords.channel_vang, 90.0)
+        bundle[1].put(Keywords.channel_vang, 90.0)
+        bundle[2].put(Keywords.channel_vang, 0.0)
     else:
         for i in range(3):
             hang = bundle[i].get_double(azimuth)
-            bundle[i].put('hang', hang)
+            bundle[i].put(Keywords.channel_hang, hang)
             vang = bundle[i].get_double(dip)
-            bundle[i].put('vang', vang)
+            bundle[i].put(Keywords.channel_vang, vang)
     # Assume now bundle contains all the pieces we need.   This constructor
     # for _CoreSeismogram should then do the job
     # This may throw an exception, but we require the caller to handle it

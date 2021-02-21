@@ -1,6 +1,7 @@
 #include <float.h>
 #include <string>
 #include <vector>
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
@@ -21,27 +22,27 @@ TimeSeries make_testdatum(const string net, const string sta,const string chan,
   d.set_live();
   d.set_tref(TimeReferenceType::UTC);
   d.force_t0_shift(0.0);
-  d.put("net",net);
-  d.put("sta",sta);
-  d.put("chan",chan);
-  d.put("loc",loc);
+  d.put(SEISMICMD_net,net);
+  d.put(SEISMICMD_sta,sta);
+  d.put(SEISMICMD_chan,chan);
+  d.put(SEISMICMD_loc,loc);
   string comp;
   comp.assign(chan,2,1);
   if(comp=="Z")
   {
-    d.put("hang",0.0);
-    d.put("vang",0.0);
+    d.put(SEISMICMD_hang,0.0);
+    d.put(SEISMICMD_vang,0.0);
   }
   /* For this test we don't worry about real issue of HH1 and HH2 */
   else if(comp=="N")
   {
-    d.put("hang",0.0);
-    d.put("vang",90.0);
+    d.put(SEISMICMD_hang,0.0);
+    d.put(SEISMICMD_vang,90.0);
   }
   else
   {
-    d.put("hang",90.0);
-    d.put("vang",90.0);
+    d.put(SEISMICMD_hang,90.0);
+    d.put(SEISMICMD_vang,90.0);
   }
   return d;
 }
@@ -51,17 +52,17 @@ void print_input_pattern(const Ensemble<TimeSeries>& e)
   cout <<"net sta chan loc npts fill_value"<<endl;
   for(auto d=e.member.begin();d!=e.member.end();++d)
   {
-    if(d->is_defined("net"))
+    if(d->is_defined(SEISMICMD_net))
     {
-      cout << d->get_string("net")<<" ";
+      cout << d->get_string(SEISMICMD_net)<<" ";
     }
     else
     {
       cout << "Undefined"<<" ";
     }
-    if(d->is_defined("sta"))
+    if(d->is_defined(SEISMICMD_sta))
     {
-      cout << d->get_string("sta")<<" ";
+      cout << d->get_string(SEISMICMD_sta)<<" ";
     }
     else
     {
@@ -75,9 +76,9 @@ void print_input_pattern(const Ensemble<TimeSeries>& e)
     {
       cout << "Undefined"<<" ";
     }
-    if(d->is_defined("loc"))
+    if(d->is_defined(SEISMICMD_loc))
     {
-      loc=d->get_string("loc");
+      loc=d->get_string(SEISMICMD_loc);
       if(loc=="")
         cout << "EMPTY ";
       else
@@ -103,27 +104,27 @@ void print_output(const Ensemble<Seismogram>& e)
     {
       cout << "Ensemble member "<<i<<" was killed"<<endl;
     }
-    if(d->is_defined("net"))
+    if(d->is_defined(SEISMICMD_net))
     {
-      cout << d->get_string("net")<<" ";
+      cout << d->get_string(SEISMICMD_net)<<" ";
     }
     else
     {
       cout << "Undefined"<<" ";
     }
-    if(d->is_defined("sta"))
+    if(d->is_defined(SEISMICMD_sta))
     {
-      cout << d->get_string("sta")<<" ";
+      cout << d->get_string(SEISMICMD_sta)<<" ";
     }
     else
     {
       cout << "Undefined"<<" ";
     }
-    if(d->is_defined("loc"))
+    if(d->is_defined(SEISMICMD_loc))
     {
-      loc=d->get_string("loc");
+      loc=d->get_string(SEISMICMD_loc);
       if(loc!="")
-        cout << d->get_string("loc")<<" ";
+        cout << d->get_string(SEISMICMD_loc)<<" ";
       else
         cout << "EMPTY" << " ";
     }
@@ -150,7 +151,7 @@ bool compare_stas(const Ensemble<Seismogram>& d,const vector<string>& pattern)
   size_t i(0);
   for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr,++i)
   {
-    string sta=dptr->get_string("sta");
+    string sta=dptr->get_string(SEISMICMD_sta);
     if(sta!=pattern[i]) return false;
   }
   return true;
@@ -245,28 +246,35 @@ int main(int argc, char **argv)
   ens3c=bundle_seed_data(ens1);
   print_output(ens3c);
   assert(compare_stas(ens3c,pattern));
+  int nlive;
+  nlive=count_live(ens3c);
+  assert(nlive==12);
   ens2=ens0;
   cout << "Trying an ensemble with some net values undefined"<<endl;
   for(auto d=ens2.member.begin();d!=ens2.member.end();++d)
   {
     string netname;
-    netname=d->get_string("net");
-    if(netname=="AA") d->erase("net");
+    netname=d->get_string(SEISMICMD_net);
+    if(netname=="AA") d->erase(SEISMICMD_net);
   }
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
   assert(compare_stas(ens3c,pattern));
+  nlive=count_live(ens3c);
+  assert(nlive==12);
   ens3=ens0;
   cout << "Trying similar test with some loc values undefined"<<endl;
   for(auto d=ens3.member.begin();d!=ens3.member.end();++d)
   {
     string name;
-    name=d->get_string("loc");
-    if(name=="00") d->erase("loc");
+    name=d->get_string(SEISMICMD_loc);
+    if(name=="00") d->erase(SEISMICMD_loc);
   }
   ens3c=bundle_seed_data(ens3);
   print_output(ens3c);
   assert(compare_stas(ens3c,pattern));
+  nlive=count_live(ens3c);
+  assert(nlive==12);
   cout << "Test handling of pure duplicates"<<endl;
   ens2=ens0;
   ens2.member.push_back(ens0.member[4]);
@@ -274,6 +282,8 @@ int main(int argc, char **argv)
   ens3c=bundle_seed_data(ens2);
   print_output(ens3c);
   assert(compare_stas(ens3c,pattern));
+  nlive=count_live(ens3c);
+  assert(nlive==12);
   cout << "Test handling of incomplete bundles"<<endl;
   ens2=ens0;
   ens2.member.erase(ens2.member.begin());
@@ -310,7 +320,7 @@ int main(int argc, char **argv)
   ens4.member[5].set_dt(0.5);
   ens3c=bundle_seed_data(ens4);
   cout << "test Ensemble output size="<<ens3c.member.size()<<endl;
-  int nlive=count_live(ens3c);
+  nlive=count_live(ens3c);
   cout << "This should say number marked live is 10"<<endl;
   cout << "Number marked live="<<nlive<<endl;
   cout << "This should show two different errors and define last two members as marked dead"<<endl;
