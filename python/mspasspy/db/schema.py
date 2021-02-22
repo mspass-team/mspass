@@ -12,6 +12,7 @@ from mspasspy.ccore.utility import MsPASSError
 
 class SchemaBase:
     def __init__(self, schema_file=None):
+        self._attr_dict = {}
         if schema_file is None:
             if 'MSPASS_HOME' in os.environ:
                 schema_file = os.path.abspath(os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
@@ -47,6 +48,9 @@ class SchemaBase:
             return delattr(self, key)
         except AttributeError as ae:
             raise MsPASSError('The schema of ' + key + ' is not defined', 'Invalid') from ae
+
+    def __contains__(self, key):
+        return key in self._attr_dict
 
 class SchemaDefinitionBase:
     _main_dic = {}
@@ -295,7 +299,9 @@ class DatabaseSchema(SchemaBase):
         super().__init__(schema_file)
         self._default_dic = {}
         for collection in self._raw['Database']:
-            setattr(self, collection, DBSchemaDefinition(self._raw['Database'], collection))
+            schemadef = DBSchemaDefinition(self._raw['Database'], collection)
+            setattr(self, collection, schemadef)
+            self._attr_dict[collection] = schemadef
             if 'default' in self._raw['Database'][collection]:
                 self._default_dic[self._raw['Database']
                 [collection]['default']] = collection
@@ -304,6 +310,7 @@ class DatabaseSchema(SchemaBase):
         if not isinstance(value, DBSchemaDefinition):
             raise MsPASSError('value is not a DBSchemaDefinition', 'Invalid')
         setattr(self, key, value)
+        self._attr_dict[key] = value
         self._default_dic[key] = key
 
     def default(self, name):
@@ -444,11 +451,14 @@ class MetadataSchema(SchemaBase):
         super().__init__(schema_file)
         dbschema = DatabaseSchema(schema_file)
         for collection in self._raw['Metadata']:
-            setattr(self, collection, MDSchemaDefinition(self._raw['Metadata'], collection, dbschema))
+            schemadef = MDSchemaDefinition(self._raw['Metadata'], collection, dbschema)
+            setattr(self, collection, schemadef)
+            self._attr_dict[collection] = schemadef
     def __setitem__(self, key, value):
         if not isinstance(value, MDSchemaDefinition):
             raise MsPASSError('value is not a MDSchemaDefinition', 'Invalid')
         setattr(self, key, value)
+        self._attr_dict[key] = value
 
 
 class MDSchemaDefinition(SchemaDefinitionBase):
