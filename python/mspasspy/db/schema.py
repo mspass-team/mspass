@@ -178,6 +178,20 @@ class SchemaDefinitionBase:
             raise MsPASSError('concept is not defined for ' + key, 'Complaint')
         return self._main_dic[key]['concept']
 
+    def constraint(self, key):
+        """
+        Return a description of the constraint this attribute defines.
+
+        :param key: The name that defines the attribute of interest
+        :type key: str
+        :return: A string with a terse description of the constraint this attribute defines
+        :rtype: str
+        :raises mspasspy.ccore.utility.MsPASSError: if constraint is not defined
+        """
+        if 'constraint' not in self._main_dic[key]:
+            raise MsPASSError('constraint is not defined for ' + key, 'Complaint')
+        return self._main_dic[key]['constraint']
+
     def has_alias(self, key):
         """
         Test if a key has registered aliases
