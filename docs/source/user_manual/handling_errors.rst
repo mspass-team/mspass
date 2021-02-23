@@ -1,3 +1,5 @@
+.. _handling_errors:
+
 Handling Errors
 ===================
 
@@ -10,11 +12,11 @@ amounts of data that can generate hundreds to thousands of error messages
 know that stderr logging is problematic because the critical errors
 can be hard to find in the debris.  A common solution used for single
 threading was to use a log file that could be searched post mortem to
-find problems.   In a multithreaded situation that solution can work, but
+find problems.   In a multi-threaded situation that solution can work, but
 requires specialized io libraries to avoid write collisions if two threads
 try to write the to same file.  An example that may be familiar to many
 seismologists of that approach is the elog library used in
-`Antelope<https://brtt.com>`__.  That approach can work for a shared memory
+`Antelope <https://brtt.com>`__.  That approach can work for a shared memory
 system but is more problematic in a large cluster of distributed machines
 or (worse) a cloud system.  In a distributed system a centralized error
 logger would need to maintain a connection to every running process, which
@@ -45,6 +47,7 @@ The reason, of course, is that most algorithms have limitations on
 what they receive as inputs or can evolve to a state that is untenable.
 There are multiple standard ways to handle errors.   In MsPASS we aimed to
 treat errors with one of three approaches.
+
 1.  The python language is flexible, but standard practice encourages the
     use of the try-raise-except construct (the try-throw-catch keywords in C++).
     We use that exception mechanism internally to handle most error conditions.
@@ -54,18 +57,20 @@ treat errors with one of three approaches.
     base class Exception.  That allows generic error handlers like the
     following to catch MsPASSError exceptions as described in most
     books and online python tutorials
-    (`Follow this link for a good example<https://medium.com/better-programming/a-comprehensive-guide-to-handling-exceptions-in-python-7175f0ce81f7>`__)
+    (`Follow this link for a good example <https://medium.com/better-programming/a-comprehensive-guide-to-handling-exceptions-in-python-7175f0ce81f7>`__)
+
 2.  As with most python packages, with some algorithms we sometimes return
     something that can indicate full or partial success.   We reserve that
     model to situations where "partial success" is not really an error but
     the result of an algorithm that is expected to behave in different ways
     with different inputs.  For example, the save_inventory method of
-    `database<https://wangyinz.github.io/mspass/python_api/mspasspy.db.html#module-mspasspy.db.database>`__
+    `database <../python_api/mspasspy.db.html#module-mspasspy.db.database>`__
     returns a tuple with three numbers: number of site documents added,
     number of channel documents added, and the number of stations in the
     obspy Inventory object that the method received.  The result is dependent
     on history of what was saved previously because this particular algorithm
     tests the input to not add duplicates to the database.
+
 3.  Processing functions in MsPASS that are properly designed for the
     framework MUST obey a very important rule:  a function to be run in
     parallel should never throw an exception, but use the error log and (optional)
@@ -85,21 +90,22 @@ using a kill mechanism.
 The atomic data objects of MsPASS, which we call TimeSeries and Seismogram,
 are defined and implemented in C++.  (They are bound to python through
 wrappers using a package called pybind11.)  Both atomic data objects
-have a C++ class called `ErrorLogger<https://wangyinz.github.io/mspass/cxx_api/mspass.html#mspass-namespace>`__
+have a C++ class called `ErrorLogger <../_static/html/classmspass_1_1utility_1_1_error_logger.html>`__
 as a public attribute we define with the symbol :code:`elog`.  That mechanism
 allows processing functions to handle all exceptions without aborting
 through constructs similar to the following pythonic pseudocode:
 
 .. code-block:: python
 
-   code that may throw an error processing data object "d"
-   except MsPASSError a merr:
-     d.elog.log_error(merr)
-     if merr.severity() == ErrorSeverity.Invalid:
-       d.kill()
-   except Exception as err:
-     d.log.log_error('Unexcepted exception: more details','Invalid')
-     d.kill()
+    try:
+        # code that may throw an error processing data object "d"
+    except MsPASSError as merr:
+        d.elog.log_error(merr)
+        if merr.severity() == ErrorSeverity.Invalid:
+            d.kill()
+    except Exception as err:
+        d.log.log_error('Unexcepted exception: more details','Invalid')
+        d.kill()
 
 The kill method is described further in the next section.  The key point
 is that generic error handlers catch any exceptions and post message to
@@ -107,7 +113,7 @@ the ErrorLogger carried with the data in a container
 with the symbolic name elog.   An error posted to the ErrorLogger
 always contains two components:  (1) a (hopefully informative)
 string that describes the error, and (2) a severity tag.   The
-`class description<https://wangyinz.github.io/mspass/cxx_api/mspass.html#mspass-namespace>`__
+class description
 describes the severity method that returns a special class called
 ErrorSeverity.   ErrorSeverity is technically a binding to a C++ enum
 class that defines a finite set of values that should be understood
