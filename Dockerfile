@@ -88,7 +88,7 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
-RUN pip3 install /mspass -vvv
+RUN pip3 install /mspass -v
 
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
