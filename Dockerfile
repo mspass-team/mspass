@@ -22,9 +22,6 @@ RUN mkdir /home/data
 
 # Prepare the environment
 ENV SPARK_VERSION 3.0.0
-ENV SPARK_MASTER_PORT 7077
-
-ENV MSPASS_ROLE master
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV SPARK_HOME /usr/local/spark
@@ -53,7 +50,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Install Dask through pip
-RUN pip3 --no-cache-dir install "dask[complete]" 
+RUN pip3 --no-cache-dir install "dask[complete]"
 
 # Install obspy through pip
 RUN pip3 --no-cache-dir install numpy \
@@ -94,5 +91,12 @@ RUN pip3 install /mspass -v
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
+
+# Set the default behavior of this container
+ENV SPARK_MASTER_PORT 7077
+ENV DASK_SCHEDULER_PORT 8786
+ENV MONGODB_PORT 27017
+ENV MSPASS_ROLE all
+ENV MSPASS_SCHEDULER dask
 
 ENTRYPOINT ["/usr/sbin/start-mspass.sh"]
