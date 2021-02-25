@@ -14,7 +14,7 @@ services:
       - mspass-shard-1
     environment:
       MSPASS_ROLE: dbmanager
-      MSPASS_SHARD_LIST: (mspass-shard-0:27017 mspass-shard-1:27017)
+      MSPASS_SHARD_LIST: mspass-shard-0:27017 mspass-shard-1:27017
       MONGODB_PORT: 27017
   
   mspass-shard-0:
