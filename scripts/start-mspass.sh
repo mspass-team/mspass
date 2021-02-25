@@ -13,11 +13,11 @@ fi
 if [ $# -eq 0 ]; then
   MY_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
   if [ "$MSPASS_SCHEDULER" = "dask" ]; then
-    MSPASS_SCHEDULER_CMD="dask-scheduler --port $DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5"
-    MSPASS_WORKER_CMD="dask-worker --local-directory $SPARK_LOG_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &"
+    MSPASS_SCHEDULER_CMD='dask-scheduler --port $DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
+    MSPASS_WORKER_CMD='dask-worker --local-directory $SPARK_LOG_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
   elif [ "$MSPASS_SCHEDULER" = "spark" ]; then
-    MSPASS_SCHEDULER_CMD="$SPARK_HOME/sbin/start-master.sh"
-    MSPASS_WORKER_CMD="$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT"
+    MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
+    MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
   fi
 
   if [ "$MSPASS_ROLE" = "all" ]; then
