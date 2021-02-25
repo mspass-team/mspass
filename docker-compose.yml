@@ -2,26 +2,58 @@ version: '3'
 
 services:
 
-  mspass-master:
+  mspass-dbmanager:
     image: wangyinz/mspass
-    container_name: mspass-master
+    volumes:
+      - "${PWD}:/home"
+    entrypoint: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
+    ports:
+      - 27017:27017
+    depends_on:
+      - mspass-shard-0
+      - mspass-shard-1
+    environment:
+      MSPASS_ROLE: dbmanager
+      MSPASS_SHARD_LIST: (mspass-shard-0:27017 mspass-shard-1:27017)
+      MONGODB_PORT: 27017
+  
+  mspass-shard-0:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 0
+      MONGODB_PORT: 27017
+  
+  mspass-shard-1:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 1
+      MONGODB_PORT: 27017
+
+  mspass-scheduler:
+    image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
     ports:
-      - 8080:8080
+      - 8786:8786
     environment:
-      MSPASS_ROLE: master
+      MSPASS_ROLE: scheduler
+      MSPASS_SCHEDULER: dask
+      DASK_SCHEDULER_PORT: 8786
   
   mspass-worker:
     image: wangyinz/mspass
-    container_name: mspass-worker
     volumes:
       - "${PWD}:/home"
-    entrypoint: dockerize -wait tcp://mspass-master:7077 -timeout 240s /usr/sbin/start-mspass.sh
-    ports:
-      - 8081:8081
+    entrypoint: dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
     depends_on:
-      - mspass-master
+      - mspass-scheduler
     environment:
-      SPARK_MASTER: mspass-master
       MSPASS_ROLE: worker
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
