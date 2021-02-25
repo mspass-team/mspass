@@ -64,7 +64,7 @@ ENV PYBIND11_VERSION 2.6.0
 ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
-    && mkdir build && cd build && cmake .. && make install
+    && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install
 RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 
 # Upgrade setuptools to enable namespace package
@@ -76,7 +76,8 @@ RUN cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake .. \
     && make \
-    && make install 
+    && make install \ 
+    && rm -rf ../build
 
 # Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
