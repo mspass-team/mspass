@@ -35,8 +35,8 @@ if [ $# -eq 0 ]; then
     mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
     sleep 5
     mongo --port $MONGODB_CONFIG_PORT --eval \
-      "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"127.0.0.1:$MONGODB_CONFIG_PORT\" }]})"
-    mongos --port $MONGODB_PORT --configdb configserver/127.0.0.1:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
+      "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
+    mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
     sleep 5
     for i in ${MSPASS_SHARD_LIST[@]}; do 
       mongo --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
