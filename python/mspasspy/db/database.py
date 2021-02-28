@@ -894,7 +894,6 @@ class Database(pymongo.database.Database):
                 self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'channel')
 
 
-    @staticmethod
     # clean a single document in the given collection atomically
     def _clean_doc(self, collection, doc, log_id_keys):
         fixes = []
@@ -953,7 +952,8 @@ class Database(pymongo.database.Database):
         
         return fixes
 
-    def _sync_metadata_before_update(self, mspass_object):
+    @staticmethod
+    def _sync_metadata_before_update(mspass_object):
         """
         MsPASS data objects are designed to cleanly handle what we call relative
         and UTC time.  This small helper function assures the Metadata of
