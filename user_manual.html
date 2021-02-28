@@ -40,7 +40,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Data Object Design Concepts" href="user_manual/data_object_design_concepts.html" />
+    <link rel="next" title="Introduction" href="user_manual/introduction.html" />
     <link rel="prev" title="MsPASS Documentation" href="index.html" />  
 
   <style>
@@ -95,13 +95,15 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">User’s Manual</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/introduction.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#id5">Summary</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#advanced-topics">Advanced Topics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 </li>
@@ -204,6 +206,12 @@
 <h1>User’s Manual<a class="headerlink" href="#user-s-manual" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/introduction.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/introduction.html#mspass-features">MsPASS Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/introduction.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/introduction.html#organization-of-user-manual">Organization of User Manual</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/data_object_design_concepts.html">Data Object Design Concepts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/data_object_design_concepts.html#history">History</a></li>
@@ -211,10 +219,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html#global-versus-object-level-history">Global versus object level history</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/database_concepts.html">Database Concepts</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#nonsql-database">NonSQL Database</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/database_concepts.html#schema">Schema</a></li>
@@ -236,6 +240,18 @@
 <li class="toctree-l2"><a class="reference internal" href="user_manual/CRUD_operations.html#key-io-concepts">Key IO Concepts</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/handling_errors.html">Handling Errors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html#exceptions-and-error-handlers">Exceptions and Error Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html#error-logger">Error Logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html#kills">Kills</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/handling_errors.html#undertaker">Undertaker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_manual/processing_history_concepts.html">Processing History Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_manual/processing_history_concepts.html#global-versus-object-level-history">Global versus object level history</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#purpose">Purpose</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user_manual/adapting_algorithms.html#what-you-will-need-to-implement">What you will need to implement</a></li>
@@ -254,7 +270,7 @@
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="user_manual/data_object_design_concepts.html" class="btn btn-neutral float-right" title="Data Object Design Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="user_manual/introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="index.html" class="btn btn-neutral float-left" title="MsPASS Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
