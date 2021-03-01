@@ -282,9 +282,9 @@ class Database(pymongo.database.Database):
 
         # not continue step 2 & 3 if the mspass object is dead
         if is_dead:
+            mspass_object.kill()
             for msg in log_error_msg:
                 mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Invalid)
-            self._save_elog(mspass_object)
         else: 
             # 2.load data from different modes
             storage_mode = object_doc['storage_mode']

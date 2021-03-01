@@ -344,7 +344,6 @@ class TestDatabase():
         cautious_seis2 = self.db.read_data(cautious_seis['_id'], mode='cautious', normalize=['site', 'source'])
         assert cautious_seis2.elog.get_error_log()[-1].message == "cautious mode: Required attribute npts has type <class 'str'>, forbidden by definition and unable to convert"
         elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': cautious_seis2['_id'], 'gravestone': {'$exists': True}})
-        assert elog_doc['gravestone'] == dict(cautious_seis2)
         assert 'data' not in cautious_seis2
 
         # test pedantic read
@@ -355,7 +354,6 @@ class TestDatabase():
         pedantic_seis2 = self.db.read_data(pedantic_seis['_id'], mode='pedantic', normalize=['site', 'source'])
         assert pedantic_seis2.elog.get_error_log()[-1].message == "pedantic mode: sampling_rate has type <class 'str'>, forbidden by definition"
         elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': pedantic_seis['_id'], 'gravestone': {'$exists': True}})
-        assert elog_doc['gravestone'] == dict(pedantic_seis2)
         assert 'data' not in pedantic_seis2
 
         # test read exclude parameter
