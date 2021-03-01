@@ -411,7 +411,7 @@ class Database(pymongo.database.Database):
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
-    def clean(self, collection, log_id_keys=[], is_print=False, query={}):
+    def clean_collection(self, collection, log_id_keys=[], is_print=False, query={}):
         fixes = []
         # fix the queried documents in the collection
         col = self[self.database_schema.default_name(collection)]
@@ -422,10 +422,76 @@ class Database(pymongo.database.Database):
         else:
             docs = col.find(query)
             for doc in docs:
-                fixes.extend(self._clean_doc(collection, doc, log_id_keys))
+                if '_id' in doc:
+                    fixes.extend(self.clean(doc['_id'], collection, log_id_keys))
         if is_print:
             for fix in fixes:
                 print(fix)
+        
+        return fixes
+
+    # clean a single document in the given collection atomically
+    def clean(self, document_id, collection='wf', log_id_keys=[]):
+        fixes = []
+
+        # if the document does not exist in the db collection, return
+        collection = self.database_schema.default_name(collection)
+        col = self[collection]
+        doc = col.find_one({'_id': document_id})
+        if not doc:
+            fixes.append("collection {} document _id: {}, is not found".format(collection, document_id))
+            return fixes
+        
+        # access each key
+        log_id_dict = {}
+        # get all the values of the log_id_keys
+        for k in doc:
+            if k in log_id_keys:
+                log_id_dict[k] = doc[k]
+        log_helper = "collection {} document _id: {}, ".format(collection, doc['_id'])
+        for k, v in log_id_dict.items():
+            log_helper += "{}: {}, ".format(k, v)
+
+        # check if the document has all the rquired fields
+        missing_required_attr_list = []
+        for k in self.database_schema[collection].keys():
+            if self.database_schema[collection].is_required(k) and k not in doc:
+                missing_required_attr_list.append(k)
+        if missing_required_attr_list:
+            # delete this document
+            col.delete_one({'_id': doc['_id']})
+            error_msg = "required attribute "
+            for missing_attr in missing_required_attr_list:
+                error_msg += "{} ".format(missing_attr)
+            error_msg += "are missing."
+            fixes.append("{}{} the document is deleted.".format(log_helper, error_msg))
+            return fixes
+
+        # try to fix the error in the doc
+        update_dict = {}
+        for k in doc:
+            if k == '_id':
+                continue
+            # if not the schema keys, ignore schema type check enforcement
+            if not self.database_schema[collection].is_defined(k):
+                update_dict[k] = doc[k]
+                continue
+            # to remove aliases, get the unique key name defined in the schema
+            unique_k = self.database_schema[collection].unique_name(k)
+            if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
+                try:
+                    update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
+                    fixes.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                except:
+                    fixes.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+            else:
+                # attribute values remain the same
+                update_dict[unique_k] = doc[k]
+                
+        # update the fixed attributes in the document in the collection
+        filter_ = {'_id': doc['_id']}
+        # use replace_one here because there may be some aliases in the document
+        col.replace_one(filter_, update_dict)
         
         return fixes
 
@@ -892,64 +958,6 @@ class Database(pymongo.database.Database):
             for member_object in mspass_object.member:
                 self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'channel')
 
-
-    # clean a single document in the given collection atomically
-    def _clean_doc(self, collection, doc, log_id_keys):
-        fixes = []
-        col = self[self.database_schema.default_name(collection)]
-        
-        # access each key
-        log_id_dict = {}
-        # get all the values of the log_id_keys
-        for k in doc:
-            if k in log_id_keys:
-                log_id_dict[k] = doc[k]
-        log_helper = "collection {} document _id: {}, ".format(collection, doc['_id'])
-        for k, v in log_id_dict.items():
-            log_helper += "{}: {}, ".format(k, v)
-
-        # check if the document has all the rquired fields
-        missing_required_attr_list = []
-        for k in self.database_schema[collection].keys():
-            if self.database_schema[collection].is_required(k) and k not in doc:
-                missing_required_attr_list.append(k)
-        if missing_required_attr_list:
-            # delete this document
-            col.delete_one({'_id': doc['_id']})
-            error_msg = "required attribute "
-            for missing_attr in missing_required_attr_list:
-                error_msg += "{} ".format(missing_attr)
-            error_msg += "are missing."
-            fixes.append("{}{} the document is deleted.".format(log_helper, error_msg))
-            return fixes
-
-        # try to fix the error in the doc
-        update_dict = {}
-        for k in doc:
-            if k == '_id':
-                continue
-            # if not the schema keys, ignore schema type check enforcement
-            if not self.database_schema[collection].is_defined(k):
-                update_dict[k] = doc[k]
-                continue
-            # to remove aliases, get the unique key name defined in the schema
-            unique_k = self.database_schema[collection].unique_name(k)
-            if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
-                try:
-                    update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
-                    fixes.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
-                except:
-                    fixes.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
-            else:
-                # attribute values remain the same
-                update_dict[unique_k] = doc[k]
-                
-        # update the fixed attributes in the document in the collection
-        filter_ = {'_id': doc['_id']}
-        # use replace_one here because there may be some aliases in the document
-        col.replace_one(filter_, update_dict)
-        
-        return fixes
 
     @staticmethod
     def _sync_metadata_before_update(mspass_object):
