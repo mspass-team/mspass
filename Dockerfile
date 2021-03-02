@@ -88,6 +88,14 @@ ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 RUN pip3 install /mspass -v
 
+# Install Jupyter notebook
+RUN pip --no-cache-dir install notebook==6.2.0
+
+# Tini operates as a process subreaper for jupyter.
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/sbin/tini
+RUN chmod +x /usr/sbin/tini
+
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
@@ -97,6 +105,7 @@ RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/do
 ENV SPARK_MASTER_PORT 7077
 ENV DASK_SCHEDULER_PORT 8786
 ENV MONGODB_PORT 27017
+ENV JUPYTER_PORT 8888
 ENV MSPASS_ROLE all
 ENV MSPASS_SCHEDULER dask
 
