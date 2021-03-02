@@ -11,22 +11,32 @@ else
 fi
 
 if [ $# -eq 0 ]; then
+
+  function start_mspass_frontend {
+    if [ "$MSPASS_SCHEDULER" = "spark" ]; then
+      export PYSPARK_DRIVER_PYTHON=jupyter
+      export PYSPARK_DRIVER_PYTHON_OPTS="notebook --notebook-dir=${SPARK_LOG_DIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
+      /usr/sbin/tini -g -- pyspark \
+        --conf "spark.mongodb.input.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+        --conf "spark.mongodb.output.uri=mongodb://${MSPASS_DB_ADDRESS}:${MONGODB_PORT}/test.misc" \
+        --conf "spark.master=spark://${MSPASS_SCHEDULER_ADDRESS}:${SPARK_MASTER_PORT}" \
+        --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.0
+    else # if [ "$MSPASS_SCHEDULER" = "dask" ]
+      export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
+      /usr/sbin/tini -g -- notebook --notebook-dir=${SPARK_LOG_DIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root
+    fi
+  }
+
   MY_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
-  if [ "$MSPASS_SCHEDULER" = "dask" ]; then
-    MSPASS_SCHEDULER_CMD='dask-scheduler --port $DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
-    MSPASS_WORKER_CMD='dask-worker --local-directory $SPARK_LOG_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
-  elif [ "$MSPASS_SCHEDULER" = "spark" ]; then
+  if [ "$MSPASS_SCHEDULER" = "spark" ]; then
     MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
     MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
+  else # if [ "$MSPASS_SCHEDULER" = "dask" ]
+    MSPASS_SCHEDULER_CMD='dask-scheduler --port $DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
+    MSPASS_WORKER_CMD='dask-worker --local-directory $SPARK_LOG_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${SPARK_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
   fi
 
-  if [ "$MSPASS_ROLE" = "all" ]; then
-    MSPASS_SCHEDULER_ADDRESS=127.0.0.1
-    eval $MSPASS_SCHEDULER_CMD
-    eval $MSPASS_WORKER_CMD
-    [[ -d $MONGO_DATA ]] || mkdir $MONGO_DATA
-    mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
-  elif [ "$MSPASS_ROLE" = "db" ]; then
+  if [ "$MSPASS_ROLE" = "db" ]; then
     [[ -d $MONGO_DATA ]] || mkdir $MONGO_DATA
     mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
   elif [ "$MSPASS_ROLE" = "dbmanager" ]; then
@@ -52,7 +62,15 @@ if [ $# -eq 0 ]; then
   elif [ "$MSPASS_ROLE" = "worker" ]; then
     eval $MSPASS_WORKER_CMD
     tail -f /dev/null
-  fi
+  elif [ "$MSPASS_ROLE" = "frontend" ]; then
+    start_mspass_frontend
+  else # if [ "$MSPASS_ROLE" = "all" ]
+    MSPASS_SCHEDULER_ADDRESS=127.0.0.1
+    eval $MSPASS_SCHEDULER_CMD
+    eval $MSPASS_WORKER_CMD
+    [[ -d $MONGO_DATA ]] || mkdir $MONGO_DATA
+    mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all &
+    start_mspass_frontend
 else
   docker-entrypoint.sh $@
 fi

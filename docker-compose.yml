@@ -57,3 +57,20 @@ services:
       MSPASS_ROLE: worker
       MSPASS_SCHEDULER: dask
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+  
+  mspass-frontend:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    entrypoint: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
+    ports:
+      - 8888:8888
+    depends_on:
+      - mspass-dbmanager
+      - mspass-scheduler
+    environment:
+      MSPASS_ROLE: frontend
+      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_DB_ADDRESS: mspass-dbmanager
+      JUPYTER_PORT: 8888
