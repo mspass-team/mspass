@@ -28,7 +28,7 @@ services:
       MONGODB_PORT: 27017
   
   mspass-shard-1:
-    hostname: mspass-shard-0
+    hostname: mspass-shard-1
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
