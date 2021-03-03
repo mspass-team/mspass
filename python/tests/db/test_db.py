@@ -4,6 +4,7 @@ import os
 import dask.bag
 import gridfs
 import numpy as np
+import obspy 
 import pytest
 import sys
 
@@ -74,6 +75,10 @@ class TestDatabase():
         self.test_ts['site_id'] = site_id
         self.test_ts['source_id'] = source_id
         self.test_ts['channel_id'] = channel_id
+
+        # save inventory to db
+        inv = obspy.read_inventory('python/tests/data/TA.035A.xml')
+        self.db.save_inventory(inv)
 
     def test_init(self):
         db_schema = DatabaseSchema("mspass_lite.yaml")
@@ -799,6 +804,19 @@ class TestDatabase():
         for i in range(3):
             assert np.isclose(res.member[i].data, seis_ensemble.member[i].data).all()
 
+    def test_get_response(self):
+        inv = obspy.read_inventory('python/tests/data/TA.035A.xml')
+        net = 'TA'
+        sta = '035A'
+        loc = ''
+        time = 1263254400.0+100.0
+        for chan in ['BHE', 'BHN', 'BHZ']:
+            r = self.db.get_response(net, sta, chan, loc, time)
+            r0 = inv.get_response("TA.035A..BHE", time)
+            assert r == r0
+        with pytest.raises(MsPASSError, match='missing one of required arguments'):
+            self.db.get_response()
+        assert self.db.get_response(net='TA', sta='036A', chan='BHE', time=time) is None
 
     def teardown_class(self):
         try:

@@ -36,6 +36,10 @@ class TestSchema():
             self.dbschema['site'] = 1
         self.dbschema['site'] = def_site
         assert self.dbschema['site'] == self.dbschema.site
+        # test for __contains__
+        assert 'site' in self.dbschema
+        assert 'dummy' not in self.dbschema
+        assert '_raw' not in self.dbschema
 
     def test_DatabaseSchema_default(self):
         assert self.dbschema.default_name('wf') == 'wf_TimeSeries'

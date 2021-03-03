@@ -1,3 +1,5 @@
+#include <string>
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::seismic
 {
@@ -88,7 +90,7 @@ Seismogram::Seismogram(const Metadata& md, const string jobname,
    */
   string thisid;
   try{
-    string thisid=this->get_string("uuid");
+    string thisid=this->get_string(SEISMICMD_uuid);
     this->set_id(thisid);
   }catch(MsPASSError& merr)
   {
@@ -99,7 +101,7 @@ Seismogram::Seismogram(const Metadata& md, const string jobname,
   }
   bool mark_as_raw;
   try{
-    mark_as_raw=this->get_bool("rawdata");
+    mark_as_raw=this->get_bool(SEISMICMD_rawdata);
   } catch(MsPASSError& merr)
   {
     this->elog.log_error(algname,"rawdata boolean not found - default to false",

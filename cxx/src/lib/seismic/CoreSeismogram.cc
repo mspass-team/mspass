@@ -5,9 +5,11 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 #include "misc/blas.h"
+#include "mspass/seismic/keywords.h"
 #include "mspass/seismic/CoreSeismogram.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
+
 
 namespace mspass::seismic
 {
@@ -110,9 +112,9 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         We don't need to call the set methods for these attributes as they
         would add the overhead of setting delta, startime, and npts to the
         same value passed. */
-        this->mdt = this->get_double("delta");
-        this->mt0 = this->get_double("starttime");
-        this->nsamp = this->get_long("npts");
+        this->mdt = this->get_double(SEISMICMD_dt);
+        this->mt0 = this->get_double(SEISMICMD_t0);
+        this->nsamp = this->get_long(SEISMICMD_npts);
         /* Assume the data t0 is UTC. */
         this->set_tref(TimeReferenceType::UTC);
         /* tmatrix should be put in as a python object of ndarray or list */
@@ -125,9 +127,9 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         u=dmatrix(3,nsamp);
         if(load_data)
         {
-            dir = this->get_string("dir");
-            dfile = this->get_string("dfile");
-            foff = this->get_long("foff");
+            dir = this->get_string(SEISMICMD_dir);
+            dfile = this->get_string(SEISMICMD_dfile);
+            foff = this->get_long(SEISMICMD_foff);
             string fname=dir+"/"+dfile;
             if((fp=fopen(fname.c_str(),"r")) == NULL)
                 throw(MsPASSError(string("Open failure for file ")+fname,
@@ -213,13 +215,17 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         /* WARNING hang and vang attributes in Metadata
         are always assumed to have been read from a database where they
         were stored in degrees.  We convert these to radians below to
-        compute the transformation matrix. */
-        hang[0]=ts[0].get_double("hang");
-        hang[1]=ts[1].get_double("hang");
-        hang[2]=ts[2].get_double("hang");
-        vang[0]=ts[0].get_double("vang");
-        vang[1]=ts[1].get_double("vang");
-        vang[2]=ts[2].get_double("vang");
+        compute the transformation matrix.
+
+        Feb 2021:  converted to use keywords.h definitions assuming these
+        came from the channel collection in MongoDB - Can be changed in
+        kewords.h for application outside mspass */
+        hang[0]=ts[0].get_double(SEISMICMD_hang);
+        hang[1]=ts[1].get_double(SEISMICMD_hang);
+        hang[2]=ts[2].get_double(SEISMICMD_hang);
+        vang[0]=ts[0].get_double(SEISMICMD_vang);
+        vang[1]=ts[1].get_double(SEISMICMD_vang);
+        vang[2]=ts[2].get_double(SEISMICMD_vang);
     } catch (MetadataGetError& mde)
     {
         stringstream ss;
@@ -232,8 +238,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
        we don't test for that condition.  We do need to clear hang and vang
        from result here, however, as both attributes are meaningless
        for a 3C seismogram */
-    this->erase("hang");
-    this->erase("vang");
+    this->erase(SEISMICMD_hang);
+    this->erase(SEISMICMD_vang);
     // These are loaded just for convenience
     t0_component[0]=ts[0].t0();
     t0_component[1]=ts[1].t0();
@@ -724,7 +730,7 @@ bool CoreSeismogram::set_transformation_matrix(const dmatrix& A)
     py::list tmatrix_l;
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix_l.append(A(i, j));
-    this->put_object("tmatrix", tmatrix_l);
+    this->put_object(SEISMICMD_tmatrix, tmatrix_l);
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)
@@ -747,7 +753,7 @@ bool CoreSeismogram::set_transformation_matrix(const double a[3][3])
     py::list tmatrix_l;
     for(int i=0;i<3;++i)
         for(int j=0;j<3;++j) tmatrix_l.append(a[i][j]);
-    this->put_object("tmatrix", tmatrix_l);
+    this->put_object(SEISMICMD_tmatrix, tmatrix_l);
     bool cardinal;
     cardinal=this->tmatrix_is_cardinal();
     if(cardinal)
@@ -963,11 +969,13 @@ const CoreSeismogram CoreSeismogram::operator-(const CoreSeismogram& other) cons
 void CoreSeismogram::set_dt(const double sample_interval)
 {
   this->BasicTimeSeries::set_dt(sample_interval);
-  /* This is the unique name - we always set it. */
-  this->put("delta",sample_interval);
+  /* This is the unique name defined in the mspass schema - we always set it. */
+  this->put(SEISMICMD_dt,sample_interval);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
+  /* Note these aren't set in keywords - aliases are flexible and this
+  can allow another way to make these attribute names more flexible. */
   aliases.insert("dt");
   for(aptr=aliases.begin();aptr!=aliases.end();++aptr)
   {
@@ -980,8 +988,10 @@ void CoreSeismogram::set_dt(const double sample_interval)
 void CoreSeismogram::set_t0(const double t0in)
 {
   this->BasicTimeSeries::set_t0(t0in);
-  /* This is the unique name - we always set it. */
-  this->put("starttime",t0in);
+  /* This is the unique name - we always set it.  Pulled from keywords.h
+  which should match the schema.  aliases are hard coded not defined as
+  keywords */
+  this->put(SEISMICMD_t0,t0in);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
@@ -999,8 +1009,10 @@ void CoreSeismogram::set_npts(const size_t npts)
 {
   this->BasicTimeSeries::set_npts(npts);
   /* This is the unique name - we always set it.  The weird
-  cast is necessary to avoid type mismatch with unsigned*/
-  this->put("npts",(long int)npts);
+  cast is necessary to avoid type mismatch with unsigned.
+  We use the name defined in keywords.h which we can always assume
+  matches the schema for the unique name*/
+  this->put(SEISMICMD_npts,(long int)npts);
   /* these are hard coded aliases for sample_interval */
   std::set<string> aliases;
   std::set<string>::iterator aptr;
@@ -1023,8 +1035,10 @@ void CoreSeismogram::sync_npts()
   if(nsamp != this->u.columns()) {
     this->BasicTimeSeries::set_npts(this->u.columns());
     /* This is the unique name - we always set it.  The weird
-    cast is necessary to avoid type mismatch with unsigned*/
-    this->put("npts",(long int)nsamp);
+    cast is necessary to avoid type mismatch with unsigned.
+    As above converted to keywords.h const string to make
+    this easier to maintain*/
+    this->put(SEISMICMD_npts,(long int)nsamp);
     /* these are hard coded aliases for sample_interval */
     std::set<string> aliases;
     std::set<string>::iterator aptr;

@@ -1478,13 +1478,13 @@ class Database(pymongo.database.Database):
                     loc_stime = self._handle_null_starttime(loc_stime)
                     loc_etime = loc_tuple[1]
                     loc_etime = self._handle_null_endtime(loc_etime)
-                    rec['latitude'] = loc_lat
-                    rec['longitude'] = loc_lon
+                    rec['lat'] = loc_lat
+                    rec['lon'] = loc_lon
                     # This is MongoDBs way to set a geographic
                     # point - allows spatial queries.  Note longitude
                     # must be first of the pair
                     rec['coords'] = [loc_lat, loc_lon]
-                    rec['elevation'] = loc_elev
+                    rec['elev'] = loc_elev
                     rec['edepth'] = loc_edepth
                     rec['starttime'] = starttime.timestamp
                     rec['endtime'] = endtime.timestamp
@@ -1626,7 +1626,7 @@ class Database(pymongo.database.Database):
                 # if poorly documented in obspy
                 result.extend([netw])
         return result
-    def get_seed_station(self, net, sta, loc='NONE', time=-1.0):
+    def get_seed_site(self, net, sta, loc='NONE', time=-1.0):
         """
         The site collection is assumed to have a one to one
         mapping of net:sta:loc:starttime - endtime.
@@ -1647,8 +1647,8 @@ class Database(pymongo.database.Database):
         default ignores loc in query.
         :param time: epoch time for requested metadata
 
-        :return: handle to query result
-        :rtype:  MondoDB Cursor object of query result.
+        :return: MongoDB doc (dict) matching query
+        :rtype:  python dict (document) of result.  None if there is no match.
         """
         dbsite = self.site
         query = {}
@@ -1667,7 +1667,9 @@ class Database(pymongo.database.Database):
             if (matchsize > 1):
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")
-            return stations
+                print("Returning first entry found")
+            stadoc=dbsite.find_one(query)
+            return stadoc
 
     def get_seed_channel(self, net, sta, chan, loc=None, time=-1.0):
         """
@@ -1772,6 +1774,62 @@ class Database(pymongo.database.Database):
                               + "Specify at least time but a loc code if is not truly null",
                               "Fatal")
 
+    def get_response(self, net=None, sta=None, chan=None, loc=None, time=None):
+        """
+        Returns an obspy Response object for seed channel defined by 
+        the standard keys net, sta, chan, and loc and a time stamp.  
+        Input time can be a UTCDateTime or an epoch time stored as a float.
+        
+        :param db:  mspasspy Database handle containing a channel collection
+          to be queried
+        :param net: seed network code (required)
+        :param sta: seed station code (required)
+        :param chan:  seed channel code (required)
+        :param loc:  seed net code.  If None loc code will not be 
+          included in the query.  If loc is anything else it is passed 
+          as a literal.  Sometimes loc codes are not defined by in the 
+          seed data and are literal two ascii space characters.  If so 
+          MongoDB translates those to "".   Use loc="" for that case or 
+          provided the station doesn't mix null and other loc codes use None. 
+        :param time:  time stamp for which the response is requested.  
+          seed metadata has a time range for validity this field is 
+          required.   Can be passed as either a UTCDateTime object or 
+          a raw epoch time stored as a python float. 
+        """
+        if sta == None or chan == None or net == None or time == None:
+            raise MsPASSError('get_response:  missing one of required arguments:  '
+                              + 'net, sta, chan, or time', 'Invalid')
+        query = {
+            'net': net,
+            'sta': sta,
+            'chan': chan,
+        }
+        if loc != None:
+            query['loc'] = loc
+        else:
+            loc = '  '  # set here but not used
+        if isinstance(time, UTCDateTime):
+            t0 = time.timestamp
+        else:
+            t0 = time
+        query['starttime'] = {'$lt': t0}
+        query['endtime'] = {'$gt': t0}
+        n = self.channel.count_documents(query)
+        if n == 0:
+            print('No matching documents found in channel for ',
+                  net, ":", sta, ":", "chan", chan, "->", loc, "<-", " at time=",
+                  UTCDateTime(t0))
+            return None
+        elif n > 1:
+            print(n, ' matching documents found in channel for ',
+                  net, ":", sta, ":", "chan", "->", loc, "<-", " at time=",
+                  UTCDateTime(t0))
+            print('There should be just one - returning the first one found')
+        doc = self.channel.find_one(query)
+        s = doc['serialized_channel_data']
+        chan = pickle.loads(s)
+        return chan.response
+
     def save_catalog(self, cat, verbose=False):
         """
         Save the contents of an obspy Catalog object to MongoDB
@@ -1800,8 +1858,9 @@ class Database(pymongo.database.Database):
             picklestr = pickle.dumps(event)
             rec = {}
             # rec['source_id']=source_id
-            rec['latitude'] = o.latitude
-            rec['longitude'] = o.longitude
+            rec['lat'] = o.latitude
+            rec['lon'] = o.longitude
+            rec['coords'] = [o.latitude, o.longitude]
             # It appears quakeml puts source depths in meter
             # convert to km
             # also obspy's catalog object seesm to allow depth to be
