@@ -1,0 +1,79 @@
+version: '3'
+
+services:
+
+  mspass-dbmanager:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    command: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
+    ports:
+      - 27017:27017
+    depends_on:
+      - mspass-shard-0
+      - mspass-shard-1
+    environment:
+      MSPASS_ROLE: dbmanager
+      MSPASS_SHARD_LIST: mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017
+      MONGODB_PORT: 27017
+  
+  mspass-shard-0:
+    hostname: mspass-shard-0
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 0
+      MONGODB_PORT: 27017
+  
+  mspass-shard-1:
+    hostname: mspass-shard-1
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    environment:
+      MSPASS_ROLE: shard
+      MSPASS_SHARD_ID: 1
+      MONGODB_PORT: 27017
+
+  mspass-scheduler:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    ports:
+      - 7077:7077
+    environment:
+      MSPASS_ROLE: scheduler
+      MSPASS_SCHEDULER: spark
+      SPARK_MASTER_PORT: 7077
+  
+  mspass-worker:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    command: dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
+    depends_on:
+      - mspass-scheduler
+    environment:
+      MSPASS_ROLE: worker
+      MSPASS_SCHEDULER: spark
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+  
+  mspass-frontend:
+    image: wangyinz/mspass
+    volumes:
+      - "${PWD}:/home"
+    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
+    ports:
+      - 8888:8888
+    depends_on:
+      - mspass-dbmanager
+      - mspass-scheduler
+    environment:
+      MSPASS_ROLE: frontend
+      MSPASS_SCHEDULER: spark
+      MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
+      MSPASS_DB_ADDRESS: mspass-dbmanager
+      MSPASS_JUPYTER_PWD: mspass
+      JUPYTER_PORT: 8888
