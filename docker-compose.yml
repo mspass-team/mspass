@@ -6,7 +6,7 @@ services:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    entrypoint: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 27017:27017
     depends_on:
@@ -14,10 +14,11 @@ services:
       - mspass-shard-1
     environment:
       MSPASS_ROLE: dbmanager
-      MSPASS_SHARD_LIST: mspass-shard-0:27017 mspass-shard-1:27017
+      MSPASS_SHARD_LIST: mspass-shard-0/mspass-shard-0:27017 mspass-shard-1/mspass-shard-1:27017
       MONGODB_PORT: 27017
   
   mspass-shard-0:
+    hostname: mspass-shard-0
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
@@ -27,6 +28,7 @@ services:
       MONGODB_PORT: 27017
   
   mspass-shard-1:
+    hostname: mspass-shard-0
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
@@ -50,7 +52,7 @@ services:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    entrypoint: dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     depends_on:
       - mspass-scheduler
     environment:
@@ -62,7 +64,7 @@ services:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    entrypoint: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 8888:8888
     depends_on:
@@ -73,4 +75,5 @@ services:
       MSPASS_SCHEDULER: dask
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
       MSPASS_DB_ADDRESS: mspass-dbmanager
+      MSPASS_JUPYTER_PWD: mspass
       JUPYTER_PORT: 8888
