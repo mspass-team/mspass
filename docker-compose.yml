@@ -52,7 +52,7 @@ services:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
     depends_on:
       - mspass-scheduler
     environment:
@@ -64,7 +64,7 @@ services:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 8888:8888
     depends_on:
