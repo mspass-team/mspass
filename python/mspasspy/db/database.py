@@ -147,8 +147,11 @@ class Database(pymongo.database.Database):
 
         :param object_id: "_id" of the mspasspy object or a dict that contains the "_id".
         :type object_id: :class:`bson.objectid.ObjectId`/dict
+        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :type mode: class:`str`
+        :param normalize: normalized collection you want to read into a mspass object
+        :type normalize: a :class:`list` of :class:`str`
         :param load_history: `True` to load object-level history into the mspasspy object.
-        :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
         :param exclude_keys: the metadata attributes you want to exclude from being read.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
@@ -314,22 +317,17 @@ class Database(pymongo.database.Database):
 
         :param mspass_object: the object you want to save.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        
-        :param mode: should be one of [promiscuous, cautious, pedantic]
-
+        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :type mode: class:`str`
         :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
             the object in a binary file, which requires `dfile` and `dir`.
         :type storage_mode: :class:`str`
-        
         :param dfile: file name if using "file" storage mode.
         :type dfile: :class:`str`
-        
         :param dir: file directory if using "file" storage mode.
         :type dir: :class:`str`
-        
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
-        
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -412,35 +410,69 @@ class Database(pymongo.database.Database):
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
     def clean_collection(self, collection, log_id_keys=[], is_print=False, query={}):
-        fixes = []
+        """
+        clean a collection in user's database by a user defined query
+
+        :param collection: the collection name you would like to clean.
+        :type collection: :class:`str`
+        :param log_id_keys: a list of attributes you want to identify in the documents during cleaning.
+        :type log_id_keys: a :class:`list` of :class:`str`
+        :param is_print: if specify as True, we will print all the message verbosely, default to be False
+        :param query: the query dict that passed to MongoDB to find mtached documents.
+        :type query: :class:`dict`
+        """
+        print_messages = []
+        fixed_cnt = {}
         # fix the queried documents in the collection
         col = self[self.database_schema.default_name(collection)]
         matchsize = col.count_documents(query)
         # no match documents return
         if (matchsize == 0):
-            return fixes
+            return fixed_cnt
         else:
             docs = col.find(query)
             for doc in docs:
                 if '_id' in doc:
-                    fixes.extend(self.clean(doc['_id'], collection, log_id_keys))
+                    fixed_attr_cnt, messages = self.clean(doc['_id'], collection, log_id_keys)
+                    print_messages.extend(messages)
+                    for k, v in fixed_attr_cnt.items():
+                        if k not in fixed_cnt:
+                            fixed_cnt[k] = 1
+                        else:
+                            fixed_cnt[k] += v
         if is_print:
-            for fix in fixes:
-                print(fix)
+            for msg in print_messages:
+                print(msg)
         
-        return fixes
+        return fixed_cnt
 
     # clean a single document in the given collection atomically
     def clean(self, document_id, collection='wf', log_id_keys=[]):
-        fixes = []
+        """
+        Clean a document in a collection, including deleting the document if required keys are absent or fix the types if there are mismatches.
+
+        :param document_id: the value of the _id field in the document you want to clean
+        :type document_id: class:`bson.objectid.ObjectId`
+        :param collection: the name of collection saving the document. If not specified, use the default wf collection
+        :param log_id_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
+        :type log_id_keys: :class:`list` of :class:`str`
+
+        :return: 
+        :fixed_cnt: number of keys that are fixed
+        :type fixed_cnt: class:`dict`
+        :print_messages: the verbose informative/invalid messages
+        :type print_messages: class:`list`
+        """
+        print_messages = []
+        fixed_cnt = {}
 
         # if the document does not exist in the db collection, return
         collection = self.database_schema.default_name(collection)
         col = self[collection]
         doc = col.find_one({'_id': document_id})
         if not doc:
-            fixes.append("collection {} document _id: {}, is not found".format(collection, document_id))
-            return fixes
+            print_messages.append("collection {} document _id: {}, is not found".format(collection, document_id))
+            return fixed_cnt, print_messages
         
         # access each key
         log_id_dict = {}
@@ -464,8 +496,8 @@ class Database(pymongo.database.Database):
             for missing_attr in missing_required_attr_list:
                 error_msg += "{} ".format(missing_attr)
             error_msg += "are missing."
-            fixes.append("{}{} the document is deleted.".format(log_helper, error_msg))
-            return fixes
+            print_messages.append("{}{} the document is deleted.".format(log_helper, error_msg))
+            return fixed_cnt, print_messages
 
         # try to fix the error in the doc
         update_dict = {}
@@ -481,9 +513,13 @@ class Database(pymongo.database.Database):
             if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
                 try:
                     update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
-                    fixes.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                    print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                    if k in fixed_cnt:
+                        fixed_cnt[k] += 1
+                    else:
+                        fixed_cnt[k] = 1
                 except:
-                    fixes.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                    print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
             else:
                 # attribute values remain the same
                 update_dict[unique_k] = doc[k]
@@ -493,7 +529,7 @@ class Database(pymongo.database.Database):
         # use replace_one here because there may be some aliases in the document
         col.replace_one(filter_, update_dict)
         
-        return fixes
+        return fixed_cnt, print_messages
 
     def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=[], collection=None, ignore_metadata_changed_test=False):
         """
@@ -502,10 +538,12 @@ class Database(pymongo.database.Database):
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param include_undefined: `True` to also update the metadata attributes not defined in the schema.
+        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :type mode: class:`str`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
+        :param ignore_metadata_changed_test: if specify as True, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be false.
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -746,6 +784,18 @@ class Database(pymongo.database.Database):
                 self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection)
 
     def delete_data(self, object_id, object_type, remove_unreferenced_files=False, clear_history=True, clear_elog=True):
+        """
+        Delete the wf document by passing mspass object's _id, including deleting the processing history, elogs
+        and files/gridfs data the mspass object contains.
+
+        :param object_id: the wf object id you want to delete.
+        :type object_id: class:`bson.objectid.ObjectId`
+        :param object_type: the object type you want to delete, must be one of ['TimeSeries', 'Seismogram']
+        :type object_type: class:`str`
+        :param remove_unreferenced_files: if True, we will try to remove the file that no wf data is referencing. Default to be False
+        :param clear_history: if True, we will clear the processing history of the associated wf object, default to be True
+        :param clear_elog: if True, we will clear the elog entries of the associated wf object, default to be True
+        """
         if object_type not in ["TimeSeries", "Seismogram"]:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -816,12 +866,9 @@ class Database(pymongo.database.Database):
 
         :param mspass_object:   data where the metadata is to be loaded
         :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-        
         :param exclude_keys: list of attributes that should not normally be loaded.
         Default attributes not normally need that are loaded from stationxml.  Ignored if include_undefined is set True.
-        
         :param include_undefined:  when true all data in the matching document are loaded.
-
         :param collection: requested collection metadata should be loaded
         :type collection: str 
 
@@ -889,10 +936,8 @@ class Database(pymongo.database.Database):
 
         :param mspass_object:   data where the source metadata is to be loaded
         :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-        
         :param exclude_keys: list of attributes that should not normally be loaded.
         Default attributes not normally need that are loaded from stationxml.  Ignored if include_undefined is set True.
-        
         :param include_undefined:  when true all data in the matching source document are loaded. 
 
         :exception:  any detected errors will cause a MsPASSError to be thrown
@@ -917,11 +962,8 @@ class Database(pymongo.database.Database):
 
         :param mspass_object:   data where the site metadata is to be loaded
         :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-        
         :param exclude_keys: list of attributes that should not normally be loaded.  Default is none.   Ignored if include_undefined is set True.
-        
         :param include_undefined:  when true all data in the matching source document are loaded 
-        
         :exception:  any detected errors will cause a MsPASSError to be thrown
         (colleagues:  this may be wrong sphynx syntax for defining an exception)
         """
@@ -943,10 +985,8 @@ class Database(pymongo.database.Database):
 
         :param mspass_object:   data where the channel metadata is to be loaded
         :type mspass_object:  must be TimeSeries, Seismogram, TimeSeriesEnsemble, or SeismogramEnsemble.
-        
         :param exclude_keys: list of attributes that should not normally be loaded.
         Default excludes the serialized obspy class that is used to store response data.   Ignored if include_undefined is set True.
-        
         :param include_undefined:  when true all data in the matching source document are loaded 
         
         :exception:  any detected errors will cause a MsPASSError to be thrown

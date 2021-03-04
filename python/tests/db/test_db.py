@@ -579,13 +579,13 @@ class TestDatabase():
         assert ts.live
         
         # test empty query
-        fixes = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, query={'_id': ObjectId()})
-        assert not fixes
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, query={'_id': ObjectId()})
+        assert not fixes_cnt
 
         # test log_id_keys and delete required fields missing document
-        fixes = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False)
-        assert len(fixes) == 1
-        assert "".join(sorted(fixes[0])) == "".join(sorted('collection wf_TimeSeries document _id: {}, delta: 0.1, calib: 0.1, extra1: extra1, required attribute npts are missing. the document is deleted.'.format(ts['_id'])))
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False)
+        # no fixed keys because it is deleted
+        assert len(fixes_cnt) == 0
 
         # test conversion success
         ts = copy.deepcopy(self.test_ts)
@@ -595,13 +595,13 @@ class TestDatabase():
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
-        fixes = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['_id'] == ts['_id']
         assert 'npts' in res and res['npts'] == 123
-        assert len(fixes) == 1
-        assert fixes[0] == "collection wf_TimeSeries document _id: {}, attribute npts conversion from <class 'str'> to <class 'int'> is done.".format(ts['_id'])
+        assert len(fixes_cnt) == 1
+        assert fixes_cnt == {"npts": 1}
 
         # test conversion fail
         ts = copy.deepcopy(self.test_ts)
@@ -610,25 +610,25 @@ class TestDatabase():
         ts['npts'] = "xyz"
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        fixes = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'npts' not in res
-        assert len(fixes) == 1
-        assert fixes[0] == "collection wf_TimeSeries document _id: {}, attribute npts conversion from <class 'str'> to <class 'int'> cannot be done.".format(ts['_id'])
+        # can not be fixed
+        assert len(fixes_cnt) == 0
 
         # test removing aliases
         test_source_id = ObjectId()
         self.db['source'].insert_one({'_id': test_source_id, 'EVLA': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'MAG': 1.0})
-        fixes = self.db.clean_collection('source', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('source', log_id_keys=[], is_print=False)
         res = self.db['source'].find_one({'_id': test_source_id})
         assert res
         assert 'EVLA' not in res
         assert 'MAG' not in res
         assert 'lat' in res
         assert 'magnitude' in res
-        assert len(fixes) == 0
+        assert len(fixes_cnt) == 0
         self.db['source'].delete_one({'_id': test_source_id})
 
     def test_update_ensemble_metadata(self):
