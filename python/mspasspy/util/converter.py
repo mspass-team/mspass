@@ -4,10 +4,9 @@ Functions for converting to and from MsPASS data types.
 import numpy as np
 import obspy.core
 
-from mspasspy.ccore.utility import (ErrorSeverity, Metadata)
+from mspasspy.ccore.utility import (Metadata,MsPASSError)
 from mspasspy.ccore.seismic import (_CoreSeismogram,
                                     Seismogram,
-                                    TimeReferenceType,
                                     TimeSeries,
                                     TimeSeriesEnsemble,
                                     SeismogramEnsemble,
@@ -116,10 +115,10 @@ def TimeSeries2Trace(ts):
     else:
         dresult.stats['calib'] = 1.0
 
-    # We have to copy other metadata to preserve them too.  That is 
+    # We have to copy other metadata to preserve them too.  That is
     # complicated by the fact that some (notably endtime) are read only
-    # and will abort the program if we just naively copy them. 
-    # The list below are the keys to exclude either because they 
+    # and will abort the program if we just naively copy them.
+    # The list below are the keys to exclude either because they
     # are computed by Trace (i.e. endtime) or are already set above
     do_not_copy=["delta","npts","starttime","endtime","network","station",
                    "channel","location","calib"]
@@ -246,7 +245,7 @@ def Trace2TimeSeries(trace,history=None):
         h[Keywords.starttime]=0.0
     # we don't require endtime in TimeSeries so ignore if it is not set
     if 'endtime' in trace.stats:
-        t=h['endtime']    
+        t=h['endtime']
     h['endtime']=t.timestamp
     #
     # these define a map of aliases to apply when we convert to mspass
@@ -389,11 +388,32 @@ obspy.core.Stream.toSeismogram = Stream2Seismogram
 
 def TimeSeriesEnsemble2Stream(tse):
     """
-    Convert a timeseries ensemble to stream.
+    Convert a timeseries ensemble to stream.  Always copies
+    all ensemble Metadata to tse members before conversion.   That is
+    necessary to avoid loss of data in the case where the only copy is
+    stored in the ensemble's metadata.
+
     :param tse: timeseries ensemble
     :return: converted stream
     """
     res = obspy.core.Stream()
+    # Save the set of keys in ensemble metadata and post the list
+    # to ensmeble md with a special key.  The inverse function
+    # looks for that special list and uses it to restore the
+    # ensemble's metadata.  That handling is similar to how we handle
+    # dead on atomic data.  Note _get_ensemble_md is not a C function but
+    # defined only in the pybind11 wrappers
+    md=tse._get_ensemble_md()
+    # Having this as const in is a maitenanc issue.  Shouldn't be a problem
+    # provided no other file uses this key.  For now it is self contained in
+    # this module.
+    tse['CONVERTER_ENSEMBLE_KEYS']=md.keys()
+    # This pushes all conents of ensemble md to all members. That includes
+    # the scratch list we just posted. inverse needs to clear the temp
+    tse.sync_metadata()
+    # Remover the temporary from the ensemble metadata or the return 
+    # will be inconsistent with the input
+    tse.erase('CONVERTER_ENSEMBLE_KEYS')
     for ts in tse.member:
         res.append(TimeSeries2Trace(ts))
     return res
@@ -401,6 +421,20 @@ def TimeSeriesEnsemble2Stream(tse):
 
 TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
+def _converter_get_ensemble_keys(ens):
+    """
+    Small helper for converting from Stream to either of the
+    mspass ensemble objects.   Returns a list of keys from the first
+    live member using the internal key CONVERTER_ENSEMBLE_KEYS.
+    Normally should return a list of any ensemble keys.  If the
+    special key is not found it returns an empty list.
+    """
+    for d in ens.member:
+        if d.live:
+            if d.is_defined('CONVERTER_ENSEMBLE_KEYS'):
+                return d['CONVERTER_ENSEMBLE_KEYS']
+            else:
+                return list()
 
 def Stream2TimeSeriesEnsemble(stream):
     """
@@ -413,6 +447,19 @@ def Stream2TimeSeriesEnsemble(stream):
     for i in range(size):
         tse.member.append(Trace2TimeSeries(stream[i]))
         # potential dead loss problem is resolved by saving the info in converted objects
+
+    # Handle the ensemble metadata.   The little helper we call here
+    # get the list set with CONVERTER_ENSEMBLE_KEYS.
+    enskeys=_converter_get_ensemble_keys(tse)
+    if len(enskeys)>0:
+        post_ensemble_metadata(tse,enskeys)
+        # By default the above leaves copies of the ensemble md in each member
+        # Treat that a ok, but we do need to clear the temporary we posted
+        for d in tse.member:
+            # Depend on the temp being set in all members - watch out in
+            # maintenance if any of the related code changes that may be wrong
+            d.erase('CONVERTER_ENSEMBLE_KEYS')
+
     return tse
 
 
@@ -425,6 +472,14 @@ def SeismogramEnsemble2Stream(sge):
     :param sge: seismogram ensemble input
     :return: stream
     """
+    # This uses the same approach as TimeSeriesEnsemblet2Stream to handle
+    # ensemble metadata.  See comments there for potential maintenanc issues
+    md=sge._get_ensemble_md()
+    sge['CONVERTER_ENSEMBLE_KEYS']=md.keys()
+    sge.sync_metadata()
+    # as above remove this temporary from sge or it alters the 
+    # input - python gives us a pointer to this thing so it is mutable
+    sge.erase('CONVERTER_ENSEMBLE_KEYS')
     res = obspy.core.Stream()
     for sg in sge.member:
         res += Seismogram2Stream(sg)
@@ -445,7 +500,135 @@ def Stream2SeismogramEnsemble(stream):
     for i in range(int(size / 3)):
         res.member.append(Stream2Seismogram(stream[i * 3:i * 3 + 3], cardinal=True))
         # fixme cardinal
+    # Handle the ensemble metadata.   The little helper we call here
+    # get the list set with CONVERTER_ENSEMBLE_KEYS.  The
+    # code here is identical to that for TimeSeriesEnsemble version
+    # because the ensemble containers have parallel symbols and the atomic
+    # members are close relatives
+    enskeys=_converter_get_ensemble_keys(res)
+    if len(enskeys)>0:
+        post_ensemble_metadata(res,enskeys)
+        # By default the above leaves copies of the ensemble md in each member
+        # Treat that a ok, but we do need to clear the temporary we posted
+        for d in res.member:
+            # Depend on the temp being set in all members - watch out in
+            # maintenance if any of the related code changes that may be wrong
+            d.erase('CONVERTER_ENSEMBLE_KEYS')
     return res
 
 
 obspy.core.Stream.toSeismogramEnsemble = Stream2SeismogramEnsemble
+
+def _all_members_match(ens,key):
+    """
+    This is a helper function for below.  I scans ens to assure all members
+    of the ensemble have the same value for the requested key. It uses
+    the python operator == for testing.  That can fail for a variety of
+    reasons the "match" may be overly restrictive for some types of data
+    linked to key.
+
+    :param ens:  ensemble data to scan.  Function will throw a MsPASS error if
+      the data this symbol is associated with is not a mspass ensemble object.
+    :param key:  key whose values are to be tested for all members of ens.
+    :return:  True of all members match, false if there are any differences.
+      Note if a key is not defined in a live member the result will be false.
+      Dead data are ignored.
+    """
+    if isinstance(ens,TimeSeriesEnsemble) or isinstance(ens,SeismogramEnsemble):
+        nlive=0
+        for d in ens.member:
+            if d.live:
+                if nlive==0:
+                    val0=d[key]
+                    nlive += 1
+                else:
+                    if not key in d:
+                        return False
+                    val=d[key]
+                    if val0 != val:
+                        return False
+                    nlive+=1
+        return True
+    else:
+        raise MsPASSError("_all_members_match:  input is not a mspass ensemble object","Invalid")
+def post_ensemble_metadata(ens,keys=[],check_all_members=False,clean_members=False):
+    """
+    It may be necessary to call this function after conversion from
+    an obspy Stream to one of the mspass Ensemble classes.  This function
+    is necessary because a mspass Ensemble has a concept not part of the
+    obspy Stream object.  That is, mspass ensembles have a global
+    Metadata container.  That container is expected to contain Metadata
+    common to all members of the ensemble.  For example, for data from
+    a single earthquake it would be sensible to post the source location
+    information in the ensemble metadata container rather than
+    having duplicates in each member.
+
+    Two different approaches can be used to do this copy.  The faster,
+    but least reliable method is to simply copy the values from the first
+    member of the ensemble.  That approach is enabled by default.
+    It is completely reliable when used after a conversion from an obspy
+    Stream but ONLY if the data began life as a mspass ensemble with
+    exactly the same keys set as global.   The type example of that
+    is after an obspy algorithm is applied to a mspass ensemble
+    via the mspass decorators.
+
+    A more cautious algorithm can be enabled by setting check_all_members
+    True. In that mode the list of keys received is tested with a
+    not equal test for against each member.  Note we do not do anything
+    fancy with floating point data to allow for finite precision.
+    The reason is Metadata float values are normally expected to be
+    constant data.  In that case an != test will yield false when the
+    comparison is between two copies.  The not equal test may fail, however,
+    if used with computed floating point numbers.   An example where
+    that is possible would be spatial gathers like PP data assembled by
+    midpoint coordinates.  If you need to build gathers in such a context
+    we recommend you use an integer image point tied to a specialized
+    document collection in MongoDB that defines the geometry of that
+    point.  There may be other examples, but the point is don't trust
+    computed floating point values to work.  It will also not work if
+    the values of a key-value pair don't support an != comparison.
+    That could be common if the value request for copy was a python object.
+
+    :param ens:  ensemble data to be processed.  The function will throw
+      a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a
+      SeismogramEnsemble.
+    :param keys:  is expected to be a list of metadata keys (required to be
+      strings) that are to be copied from member metadata to ensemble
+      metadata.
+    :param check_all_members:  switch controlling method used to extract
+      metadata that is to be copied (see above for details). Default is False
+    :param clean_members:  when true data copied to ensemble metadata
+      will be removed from all members.  This option is only allowed
+      if check_all_members is set True.  It will be silently ignored if
+      check_all_members is False.
+    """
+    alg='post_ensemble_metadata'
+
+    if isinstance(ens,TimeSeriesEnsemble) or isinstance(ens,SeismogramEnsemble):
+        md=Metadata()
+        for d in ens.member:
+            if d.live:
+                for k in keys:
+                    if not k in d:
+                        raise MsPASSError(alg
+                          + ':  no data matching requested key='+k
+                          + ' Cannot post to ensemble','Invalid')
+                    md[k]=d[k]
+        if check_all_members:
+            for d in ens.member:
+                for k in keys:
+                    if not _all_members_match(ens,k):
+                        raise MsPASSError(alg
+                          + ':  Data mismatch data members with key='
+                          + k +'\n  In check_all_members mode all values associated with this key must match',
+                          'Invalid')
+            if clean_members:
+                for d in ens.member:
+                    for k in keys:
+                        d.erase(k)
+        ens.update_metadata(md)
+
+    else:
+        raise MsPASSError(alg
+            +':  Illegal data received.  This function runs only on mspass ensemble objects',
+           'Invalid')
