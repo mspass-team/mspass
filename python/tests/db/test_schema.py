@@ -113,6 +113,24 @@ class TestSchema():
     def test_concept(self):
         assert self.dbschema.wf_TimeSeries.concept('_id') == 'ObjectId used to define a data object'
 
+    def test_constraint(self):
+        assert self.dbschema.wf_TimeSeries.constraint('_id') == 'required'
+
+    def test_is_required(self):
+        assert self.dbschema.wf_TimeSeries.is_required('_id')
+
+    def test_is_required(self):
+        assert self.dbschema.wf_TimeSeries.is_required('_id')
+
+    def test_is_xref_key(self):
+        assert self.dbschema.wf_TimeSeries.is_xref_key('site_id')
+
+    def test_is_normal(self):
+        assert self.dbschema.wf_TimeSeries.is_normal('calib')
+
+    def test_is_optional(self):
+        assert self.dbschema.wf_TimeSeries.is_optional('dir')
+
     def test_has_alias(self):
         assert not self.dbschema.wf_TimeSeries.has_alias('_id')
         assert self.dbschema.wf_TimeSeries.has_alias('test')
@@ -160,6 +178,12 @@ class TestSchema():
         assert self.dbschema.wf_Seismogram.data_type() == Seismogram
         assert self.dbschema.site.data_type() is None
         assert self.dbschema.source.data_type() is None
+
+    def test_DBSchemaDefinition_required_keys(self):
+        assert self.dbschema.wf_TimeSeries.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode']
+        assert self.dbschema.wf_Seismogram.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode','tmatrix']
+        assert self.dbschema.site.required_keys() == ['_id']
+        assert self.dbschema.source.required_keys() == ['_id']
 
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection('sta') == 'site'

@@ -9,7 +9,9 @@ is found in the docs.
 import argparse
 from bson import json_util
 from bson.objectid import ObjectId
-import mspasspy.db.database.verify
+from mspasspy.db.database import (check_links,
+                                 check_attribute_types,
+                                 check_required)
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.db.database import Database
 from mspasspy.db.client import Client as DBClient
@@ -86,7 +88,7 @@ def run_check_links(db,wfcollection,nrmlist,elimit,verbose):
     """
 
     for nrmcol in nrmlist:
-        errs=verify.check_links(db,normalize=nrmcol,
+        errs=check_links(db,normalize=nrmcol,
                           wf=wfcollection,
                           error_limit=elimit)
         broken=errs[0]
@@ -147,7 +149,7 @@ def run_check_attribute_types(db,col,elimit,verbose):
     # definitions for each collection listed.  Verbose is 
     # also always off.  Note the solution to enter one from 
     # an input is to use json.loads
-    errs=verify.check_attribute_types(db,col,error_limit=elimit)
+    errs=check_attribute_types(db,col,error_limit=elimit)
     mismatch=errs[0]
     undef=errs[1]
     print('check_attribute_types result for collection=',col)
@@ -218,7 +220,7 @@ def run_check_required(db,col,required_list,elimit,verbose):
     readable layout with json_util.dumps.  
 
     """
-    errs=verify.check_required(db,col,required_list,error_limit=elimit)
+    errs=check_required(db,col,required_list,error_limit=elimit)
     mismatch=errs[0]
     undef=errs[1]
     print('////Results from run_check_required on collection=',col)
