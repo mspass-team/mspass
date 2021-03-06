@@ -1,7 +1,9 @@
 #include <math.h>
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/SphericalCoordinate.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
+#include "mspass/seismic/keywords.h"
 namespace mspass::algorithms
 {
 using namespace std;
@@ -201,6 +203,43 @@ TimeSeries ExtractComponent(const Seismogram& tcs,const unsigned int component)
       dynamic_cast<const Metadata&>(tcs),
         dynamic_cast<const ProcessingHistory&>(tcs),
           scomp);
+    /* This section insert hang and vang.  We use the SphericalCoordinate
+    function to convert the unit vector stored in the rows of the tmatrix. */
+    double nu[3],hang,vang;
+    if(tcs.cardinal())
+    {
+      /* We handle this case under an assumption it is worth avoiding the
+      cost of the trig functions needed to handle the not cardinal case */
+      switch(component)
+      {
+        case 0:
+          hang=90.0;
+          vang=90.0;
+          break;
+        case 1:
+          hang=0.0;
+          vang=90.0;
+          break;
+        case 2:
+          hang=0.0;
+          vang=0.0;
+      };
+    }
+    else
+    {
+      dmatrix tm=tcs.get_transformation_matrix();
+      for(size_t k=0;k<3;++k)
+      {
+        nu[k]=tm(component,k);
+      }
+      SphericalCoordinate sc;
+      sc=UnitVectorToSpherical(nu);
+      vang=mspass::utility::deg(sc.theta);
+      hang=90.0-mspass::utility::deg(sc.phi);
+    }
+    result.put(SEISMICMD_hang,hang);
+    result.put(SEISMICMD_vang,vang);
+
     /*we hard code some ProcessingHistory here with the algid defining the
     component number extracted.   This model should work for any algorithm that
     has only one argument that can be represented as a string.  We do do
