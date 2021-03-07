@@ -584,8 +584,21 @@ class TestDatabase():
 
         # test log_id_keys and delete required fields missing document
         fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False)
-        # no fixed keys because it is deleted
         assert len(fixes_cnt) == 0
+        # test if it is deleted
+        assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+
+        # test check_xref and delete required xref_keys missing document
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        ts.erase('site_id')
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, check_xref=['site_id'])
+        assert len(fixes_cnt) == 0
+        # test if it is deleted
+        assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
 
         # test conversion success
         ts = copy.deepcopy(self.test_ts)
@@ -630,6 +643,70 @@ class TestDatabase():
         assert 'magnitude' in res
         assert len(fixes_cnt) == 0
         self.db['source'].delete_one({'_id': test_source_id})
+
+        # test undefined key-value pair and delete those attributes
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        assert 'extra1' in res
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, delete_undefined=True)
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        assert 'extra1' not in res
+        assert len(fixes_cnt) == 0
+
+        # test rename attributs
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        assert 'extra1' in res
+        val = res['extra1']
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, rename={'extra1': 'rename_extra'})
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        assert 'extra1' not in res
+        assert 'rename_extra' in res
+        assert res['rename_extra'] == val
+        assert len(fixes_cnt) == 0
+
+    def test_verify(self):
+        self.db['wf_TimeSeries'].delete_many({})
+
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        # xref_key doc not found
+        ts['site_id'] = ObjectId()
+        # undefined required key
+        ts.erase('npts')
+        # mismatch type
+        ts['delta'] = '123'
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert not 'npts' in res
+        assert res['delta'] == '123'
+
+        # test doc that does not exist
+        problematic_keys = self.db.verify(ObjectId(), 'wf_TimeSeries', tests=['xref', 'type', 'undefined'])
+        assert not problematic_keys
+
+        # test xref, undefined and type
+        problematic_keys = self.db.verify(ts['_id'], 'wf_TimeSeries', tests=['xref', 'type', 'undefined'])
+        print(problematic_keys)
+        assert len(problematic_keys) == 3
+        assert 'site_id' in problematic_keys and problematic_keys['site_id'] == 'xref'
+        assert 'npts' in problematic_keys and problematic_keys['npts'] == 'undefined'
+        assert 'delta' in problematic_keys and problematic_keys['delta'] == 'type'
 
     def test_update_ensemble_metadata(self):
         ts1 = copy.deepcopy(self.test_ts)

@@ -591,10 +591,10 @@ class Database(pymongo.database.Database):
             if test == 'xref':
                 # test every possible xref keys in the doc
                 for key in doc:
-                    if self.database_schema[collection].is_defined(key) and self.database_schema.is_xref_key(key):
+                    if self.database_schema[collection].is_defined(key) and self.database_schema[collection].is_xref_key(key):
                         # only test normalized keys with '_id'
-                        if '_id' in key and key.split('_')[-1] == 'id':
-                            normalized_collection_name = key.split('_', 1)[0]
+                        if '_id' in key and key.rsplit('_', 1)[1] == 'id':
+                            normalized_collection_name = key.rsplit('_', 1)[0]
                             normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
                             normalized_col = self[normalized_collection_name]
                             # try to find the referenced docuement
