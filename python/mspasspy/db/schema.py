@@ -182,6 +182,62 @@ class SchemaDefinitionBase:
             raise MsPASSError('concept is not defined for ' + key, 'Complaint')
         return self._main_dic[key]['concept']
 
+    def constraint(self, key):
+        """
+        Return a description of the constraint this attribute defines.
+
+        :param key: The name that defines the attribute of interest
+        :type key: str
+        :return: A string with a terse description of the constraint this attribute defines
+        :rtype: str
+        :raises mspasspy.ccore.utility.MsPASSError: if constraint is not defined
+        """
+        return self._main_dic[key]['constraint']
+
+    def is_required(self, key):
+        """
+        Test if the constraint of the key is required to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is required
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'required'
+
+    def is_xref_key(self, key):
+        """
+        Test if the constraint of the key is xref_key to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is xref_key
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'xref_key'
+
+    def is_normal(self, key):
+        """
+        Test if the constraint of the key is normal to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is normal
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'normal'
+
+    def is_optional(self, key):
+        """
+        Test if the constraint of the key is optional to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is optional
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'optional'
+
     def has_alias(self, key):
         """
         Test if a key has registered aliases
@@ -224,17 +280,6 @@ class SchemaDefinitionBase:
         :rtype: bool
         """
         return key in self._main_dic or key in self._alias_dic
-
-    def is_optional(self, key):
-        """
-        Test if a key is optional to the schema
-
-        :param key: key to be tested
-        :type key: str
-        :return: `True` if the key is optional
-        :rtype: bool
-        """
-        return False if 'optional' not in self._main_dic[key] else self._main_dic[key]['optional']
 
     def keys(self):
         """
@@ -780,13 +825,13 @@ def _check_format(schema_dic):
         schema.Optional('reference'):schema.And(str, lambda s: s in collection_name_list),
         schema.Optional('concept'):str,
         schema.Optional('aliases'):schema.Use(lambda s: [s] if type(s) is str else s),
-        schema.Optional('optional'):bool,
+        schema.Optional('constraint', default='normal'):schema.And(str, lambda s: s in ['required','xref_key','normal','optional']),
         schema.Optional('readonly'):bool
     }, ignore_extra_keys=True)
     
     reference_attribute_schema = schema.Schema({
         'reference':schema.And(str, lambda s: s in collection_name_list),
-        schema.Optional('optional'):bool
+        schema.Optional('constraint'):str
     }, ignore_extra_keys=True)
     
     metadata_attribute_schema = schema.Schema({
