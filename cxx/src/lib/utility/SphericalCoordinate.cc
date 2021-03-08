@@ -47,12 +47,12 @@ double *SphericalToUnitVector(const SphericalCoordinate& scor)
 /* Other procedures conveniently placed here. */
 double rad(const double theta_deg)
 {
-    const double deg_to_rad(57.295779513082321);
+    const double deg_to_rad(0.017453292519943);
     return theta_deg*deg_to_rad;
 }
 double deg(const double theta_rad)
 {
-    const double rad_to_deg(0.017453292519943);
+    const double rad_to_deg(57.295779513082321);
     return theta_rad*rad_to_deg;
 }
 } // end namespace declaration

@@ -160,6 +160,7 @@ def test_TimeSeriesEnsemble_as_Stream():
     # use data object to verify converter
     tse = get_live_timeseries_ensemble(3)
     stream = tse.toStream()
+    assert len(tse.member) == len(stream)
     tse_c = stream.toTimeSeriesEnsemble()
     assert len(tse) == len(tse_c)
     for k in range(3):
@@ -167,13 +168,29 @@ def test_TimeSeriesEnsemble_as_Stream():
 
     # dead member is also dead after conversion
     tse.member[0].kill()
+    # Add Emsemble Metadata to verify it gets handled properly
+    tse.put_string('foo','bar')
+    tse.put_double('fake_lat',22.4)
+    tse.put_long('fake_evid',9999)
     stream = tse.toStream()
     tse_c = stream.toTimeSeriesEnsemble()
     for k in range(3):
         assert tse.member[k].live == tse_c.member[k].live
+        if tse.member[k].live:
+            # the magic 4 here comes from a weird combination of 
+            # deleting the temp key in tse_c  (-1) + 5 attributes
+            # the Trace object converter puts back 
+            # net, sta, chan, starttime, endtime
+            # This test is fragile
+            assert len(tse.member[k])+4 == len(tse_c.member[k])
 
     # dead member will be an empty object after conversion
     assert len(tse_c.member[0].data) == 0
+    # Confirm the ensemble metadata are carried through
+    teststr=tse_c['foo']
+    assert teststr=='bar'
+    assert tse_c['fake_lat'] == 22.4
+    assert tse_c['fake_evid'] == 9999
 
 def test_SeismogramEnsemble_as_Stream():
     seis_e = get_live_seismogram_ensemble(3)
@@ -186,9 +203,23 @@ def test_SeismogramEnsemble_as_Stream():
 
     # dead member is also dead after conversion
     seis_e.member[0].kill()
+    # This tests posting the same junk ensemble metadata as TimeSeriesEnsemble
+    seis_e.put_string('foo','bar')
+    seis_e.put_double('fake_lat',22.4)
+    seis_e.put_long('fake_evid',9999)
     stream = seis_e.toStream()
     seis_e_c = stream.toSeismogramEnsemble()
     for k in range(3):
         assert seis_e_c.member[k].live == seis_e.member[k].live
+        if seis_e.member[k].live:
+            # the magic 4 here comes from a weird combination of 
+            # deleting the temp key in tse_c  (-1) + 5 attributes
+            # the Trace object converter puts back 
+            # net, sta, chan, starttime, endtime
+            # This test is fragile
+            assert len(seis_e.member[k])+4 == len(seis_e_c.member[k])
     assert seis_e_c.member[0].data.rows() == 0
     assert seis_e_c.member[0].data.columns() == 0
+    assert seis_e_c['foo'] == 'bar'
+    assert seis_e_c['fake_lat'] == 22.4
+    assert seis_e_c['fake_evid'] == 9999
