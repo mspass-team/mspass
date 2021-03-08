@@ -5,29 +5,29 @@
     <includes local="no">string</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1510">
+      <node id="1511">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1511" relation="include">
-        </childnode>
         <childnode refid="1512" relation="include">
         </childnode>
+        <childnode refid="1513" relation="include">
+        </childnode>
       </node>
-      <node id="1509">
+      <node id="1510">
         <label>string</label>
       </node>
-      <node id="1512">
+      <node id="1513">
         <label>exception</label>
       </node>
-      <node id="1508">
+      <node id="1509">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/data_directory.cc</label>
         <link refid="data__directory_8cc"/>
-        <childnode refid="1509" relation="include">
-        </childnode>
         <childnode refid="1510" relation="include">
         </childnode>
+        <childnode refid="1511" relation="include">
+        </childnode>
       </node>
-      <node id="1511">
+      <node id="1512">
         <label>iostream</label>
       </node>
     </incdepgraph>

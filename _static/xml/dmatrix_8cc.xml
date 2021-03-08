@@ -6,25 +6,23 @@
     <includes local="yes">misc/blas.h</includes>
     <includes refid="dmatrix_8h" local="yes">mspass/utility/dmatrix.h</includes>
     <incdepgraph>
-      <node id="1522">
+      <node id="1523">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1525">
+      <node id="1526">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1519" relation="include">
+        <childnode refid="1520" relation="include">
         </childnode>
-        <childnode refid="1526" relation="include">
+        <childnode refid="1527" relation="include">
         </childnode>
       </node>
-      <node id="1524">
+      <node id="1525">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1517">
+      <node id="1518">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1518" relation="include">
-        </childnode>
         <childnode refid="1519" relation="include">
         </childnode>
         <childnode refid="1520" relation="include">
@@ -39,39 +37,41 @@
         </childnode>
         <childnode refid="1525" relation="include">
         </childnode>
-      </node>
-      <node id="1518">
-        <label>string</label>
-      </node>
-      <node id="1526">
-        <label>exception</label>
-      </node>
-      <node id="1523">
-        <label>boost/archive/binary_oarchive.hpp</label>
-      </node>
-      <node id="1521">
-        <label>vector</label>
-      </node>
-      <node id="1520">
-        <label>sstream</label>
-      </node>
-      <node id="1515">
-        <label>math.h</label>
+        <childnode refid="1526" relation="include">
+        </childnode>
       </node>
       <node id="1519">
+        <label>string</label>
+      </node>
+      <node id="1527">
+        <label>exception</label>
+      </node>
+      <node id="1524">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="1522">
+        <label>vector</label>
+      </node>
+      <node id="1521">
+        <label>sstream</label>
+      </node>
+      <node id="1516">
+        <label>math.h</label>
+      </node>
+      <node id="1520">
         <label>iostream</label>
       </node>
-      <node id="1514">
+      <node id="1515">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc</label>
         <link refid="dmatrix_8cc"/>
-        <childnode refid="1515" relation="include">
-        </childnode>
         <childnode refid="1516" relation="include">
         </childnode>
         <childnode refid="1517" relation="include">
         </childnode>
+        <childnode refid="1518" relation="include">
+        </childnode>
       </node>
-      <node id="1516">
+      <node id="1517">
         <label>misc/blas.h</label>
       </node>
     </incdepgraph>

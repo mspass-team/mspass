@@ -14,118 +14,116 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_spherical_coordinate_8h" local="yes">mspass/utility/SphericalCoordinate.h</includes>
     <incdepgraph>
-      <node id="1247">
+      <node id="1248">
         <label>list</label>
       </node>
-      <node id="1258">
+      <node id="1259">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1233" relation="include">
-        </childnode>
-        <childnode refid="1259" relation="include">
+        <childnode refid="1234" relation="include">
         </childnode>
         <childnode refid="1260" relation="include">
         </childnode>
+        <childnode refid="1261" relation="include">
+        </childnode>
       </node>
-      <node id="1255">
+      <node id="1256">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1232">
+      <node id="1233">
         <label>float.h</label>
       </node>
-      <node id="1259">
+      <node id="1260">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1257">
+      <node id="1258">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1250">
+      <node id="1251">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1248" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
-        <childnode refid="1251" relation="include">
+        <childnode refid="1252" relation="include">
         </childnode>
       </node>
-      <node id="1254">
+      <node id="1255">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1253" relation="include">
+        <childnode refid="1254" relation="include">
         </childnode>
-        <childnode refid="1248" relation="include">
+        <childnode refid="1249" relation="include">
         </childnode>
-        <childnode refid="1234" relation="include">
+        <childnode refid="1235" relation="include">
         </childnode>
-        <childnode refid="1242" relation="include">
-        </childnode>
-        <childnode refid="1255" relation="include">
+        <childnode refid="1243" relation="include">
         </childnode>
         <childnode refid="1256" relation="include">
         </childnode>
         <childnode refid="1257" relation="include">
         </childnode>
-        <childnode refid="1250" relation="include">
-        </childnode>
-      </node>
-      <node id="1253">
-        <label>string</label>
-      </node>
-      <node id="1261">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
-        <childnode refid="1242" relation="include">
-        </childnode>
         <childnode refid="1258" relation="include">
         </childnode>
+        <childnode refid="1251" relation="include">
+        </childnode>
+      </node>
+      <node id="1254">
+        <label>string</label>
+      </node>
+      <node id="1262">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
         <childnode refid="1243" relation="include">
         </childnode>
-      </node>
-      <node id="1245">
-        <label>map</label>
-      </node>
-      <node id="1251">
-        <label>exception</label>
-      </node>
-      <node id="1249">
-        <label>fstream</label>
-      </node>
-      <node id="1237">
-        <label>pybind11/numpy.h</label>
-      </node>
-      <node id="1263">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="1253" relation="include">
+        <childnode refid="1259" relation="include">
+        </childnode>
+        <childnode refid="1244" relation="include">
         </childnode>
       </node>
-      <node id="1256">
-        <label>boost/archive/binary_oarchive.hpp</label>
+      <node id="1246">
+        <label>map</label>
       </node>
-      <node id="1235">
-        <label>boost/any.hpp</label>
+      <node id="1252">
+        <label>exception</label>
       </node>
-      <node id="1260">
-        <label>boost/archive/text_oarchive.hpp</label>
+      <node id="1250">
+        <label>fstream</label>
+      </node>
+      <node id="1238">
+        <label>pybind11/numpy.h</label>
       </node>
       <node id="1264">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="1254" relation="include">
+        </childnode>
+      </node>
+      <node id="1257">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="1236">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="1261">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="1265">
         <label>mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="1262">
+      <node id="1263">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="1252">
+      <node id="1253">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1253" relation="include">
+        <childnode refid="1254" relation="include">
         </childnode>
       </node>
-      <node id="1231">
+      <node id="1232">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc</label>
         <link refid="_core_seismogram_8cc"/>
-        <childnode refid="1232" relation="include">
-        </childnode>
         <childnode refid="1233" relation="include">
         </childnode>
         <childnode refid="1234" relation="include">
@@ -142,37 +140,37 @@
         </childnode>
         <childnode refid="1240" relation="include">
         </childnode>
-        <childnode refid="1250" relation="include">
-        </childnode>
-        <childnode refid="1262" relation="include">
-        </childnode>
-      </node>
-      <node id="1244">
-        <label>typeinfo</label>
-      </node>
-      <node id="1242">
-        <label>vector</label>
-      </node>
-      <node id="1234">
-        <label>sstream</label>
-      </node>
-      <node id="1236">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="1240">
-        <label>mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
         <childnode refid="1241" relation="include">
         </childnode>
+        <childnode refid="1251" relation="include">
+        </childnode>
+        <childnode refid="1263" relation="include">
+        </childnode>
+      </node>
+      <node id="1245">
+        <label>typeinfo</label>
+      </node>
+      <node id="1243">
+        <label>vector</label>
+      </node>
+      <node id="1235">
+        <label>sstream</label>
+      </node>
+      <node id="1237">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="1241">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
         <childnode refid="1242" relation="include">
         </childnode>
         <childnode refid="1243" relation="include">
         </childnode>
-        <childnode refid="1254" relation="include">
+        <childnode refid="1244" relation="include">
         </childnode>
-        <childnode refid="1258" relation="include">
+        <childnode refid="1255" relation="include">
         </childnode>
-        <childnode refid="1261" relation="include">
+        <childnode refid="1259" relation="include">
         </childnode>
         <childnode refid="1262" relation="include">
         </childnode>
@@ -180,31 +178,31 @@
         </childnode>
         <childnode refid="1264" relation="include">
         </childnode>
+        <childnode refid="1265" relation="include">
+        </childnode>
       </node>
-      <node id="1233">
+      <node id="1234">
         <label>math.h</label>
       </node>
-      <node id="1248">
+      <node id="1249">
         <label>iostream</label>
       </node>
-      <node id="1239">
+      <node id="1240">
         <label>mspass/seismic/keywords.h</label>
         <link refid="keywords_8h_source"/>
       </node>
-      <node id="1246">
+      <node id="1247">
         <label>set</label>
       </node>
-      <node id="1238">
+      <node id="1239">
         <label>misc/blas.h</label>
       </node>
-      <node id="1241">
+      <node id="1242">
         <label>memory</label>
       </node>
-      <node id="1243">
+      <node id="1244">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1244" relation="include">
-        </childnode>
         <childnode refid="1245" relation="include">
         </childnode>
         <childnode refid="1246" relation="include">
@@ -215,15 +213,17 @@
         </childnode>
         <childnode refid="1249" relation="include">
         </childnode>
-        <childnode refid="1234" relation="include">
+        <childnode refid="1250" relation="include">
         </childnode>
         <childnode refid="1235" relation="include">
         </childnode>
         <childnode refid="1236" relation="include">
         </childnode>
-        <childnode refid="1250" relation="include">
+        <childnode refid="1237" relation="include">
         </childnode>
-        <childnode refid="1252" relation="include">
+        <childnode refid="1251" relation="include">
+        </childnode>
+        <childnode refid="1253" relation="include">
         </childnode>
       </node>
     </incdepgraph>

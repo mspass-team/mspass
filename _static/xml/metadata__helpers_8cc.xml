@@ -6,87 +6,85 @@
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_antelope_pf_8h" local="yes">mspass/utility/AntelopePf.h</includes>
     <incdepgraph>
-      <node id="1568">
+      <node id="1569">
         <label>list</label>
       </node>
-      <node id="1561">
+      <node id="1562">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1562" relation="include">
-        </childnode>
         <childnode refid="1563" relation="include">
         </childnode>
-      </node>
-      <node id="1574">
-        <label>string</label>
-      </node>
-      <node id="1566">
-        <label>map</label>
-      </node>
-      <node id="1563">
-        <label>exception</label>
-      </node>
-      <node id="1569">
-        <label>fstream</label>
-      </node>
-      <node id="1571">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="1573">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1574" relation="include">
+        <childnode refid="1564" relation="include">
         </childnode>
-      </node>
-      <node id="1565">
-        <label>typeinfo</label>
-      </node>
-      <node id="1570">
-        <label>sstream</label>
-      </node>
-      <node id="1572">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="1562">
-        <label>iostream</label>
       </node>
       <node id="1575">
-        <label>mspass/utility/AntelopePf.h</label>
-        <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="1568" relation="include">
-        </childnode>
-        <childnode refid="1574" relation="include">
-        </childnode>
-        <childnode refid="1564" relation="include">
-        </childnode>
+        <label>string</label>
       </node>
       <node id="1567">
-        <label>set</label>
+        <label>map</label>
       </node>
-      <node id="1560">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/metadata_helpers.cc</label>
-        <link refid="metadata__helpers_8cc"/>
-        <childnode refid="1561" relation="include">
-        </childnode>
-        <childnode refid="1564" relation="include">
-        </childnode>
+      <node id="1564">
+        <label>exception</label>
+      </node>
+      <node id="1570">
+        <label>fstream</label>
+      </node>
+      <node id="1572">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="1574">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
         <childnode refid="1575" relation="include">
         </childnode>
       </node>
-      <node id="1564">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
+      <node id="1566">
+        <label>typeinfo</label>
+      </node>
+      <node id="1571">
+        <label>sstream</label>
+      </node>
+      <node id="1573">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="1563">
+        <label>iostream</label>
+      </node>
+      <node id="1576">
+        <label>mspass/utility/AntelopePf.h</label>
+        <link refid="_antelope_pf_8h_source"/>
+        <childnode refid="1569" relation="include">
+        </childnode>
+        <childnode refid="1575" relation="include">
+        </childnode>
         <childnode refid="1565" relation="include">
         </childnode>
+      </node>
+      <node id="1568">
+        <label>set</label>
+      </node>
+      <node id="1561">
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/metadata_helpers.cc</label>
+        <link refid="metadata__helpers_8cc"/>
+        <childnode refid="1562" relation="include">
+        </childnode>
+        <childnode refid="1565" relation="include">
+        </childnode>
+        <childnode refid="1576" relation="include">
+        </childnode>
+      </node>
+      <node id="1565">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
         <childnode refid="1566" relation="include">
         </childnode>
         <childnode refid="1567" relation="include">
         </childnode>
         <childnode refid="1568" relation="include">
         </childnode>
-        <childnode refid="1562" relation="include">
-        </childnode>
         <childnode refid="1569" relation="include">
+        </childnode>
+        <childnode refid="1563" relation="include">
         </childnode>
         <childnode refid="1570" relation="include">
         </childnode>
@@ -94,9 +92,11 @@
         </childnode>
         <childnode refid="1572" relation="include">
         </childnode>
-        <childnode refid="1561" relation="include">
-        </childnode>
         <childnode refid="1573" relation="include">
+        </childnode>
+        <childnode refid="1562" relation="include">
+        </childnode>
+        <childnode refid="1574" relation="include">
         </childnode>
       </node>
     </incdepgraph>

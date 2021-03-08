@@ -847,53 +847,53 @@ problem and thus had generic solutions. Hundreds of solutions to this problem ex
 utilize BRTT’s “parameter files”, because of the generous license agreement BRTT provides for U.S. scientists. Furthermore, both of primary authors of MsPASS were familiar with parameter files and we had an open source implementation we could build on from Pavlis’s plane wave migration code.</p>
 <p>We thus adopted the “parameter files” syntax to implement an extension of Metadata we call an <em>AntelopePf</em>. The <em>AntelopePf</em> is a child of <em>Metadata</em> so the same methods introduced for <em>Metadata</em> can be used for an <em>AntelopePf</em>. The use, however, is more than a little subtle and is best understood from an example.</p>
 <p>Let’s look at a concrete example of the kind of complex parameter file that <em>AntelopePf</em> was designed to handle. The following is the default configuration for a new deconvolution routine in MsPASS we call CNR3CDecon (for Colored Noise 3C (Three-component) Deconvolution):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">########################################################################</span>
-<span class="n">operator_nfft</span> <span class="mi">4096</span>
-<span class="c1">#damping_factor 1000.0</span>
-<span class="n">damping_factor</span> <span class="mf">1.0</span>
-<span class="n">snr_regularization_floor</span> <span class="mf">2.0</span>
-<span class="n">target_sample_interval</span> <span class="mf">0.05</span>
-<span class="n">deconvolution_data_window_start</span> <span class="o">-</span><span class="mf">2.0</span>
-<span class="n">deconvolution_data_window_end</span> <span class="mf">30.0</span>
-<span class="n">time_bandwidth_product</span> <span class="mf">4.5</span>
-<span class="n">number_tapers</span> <span class="mi">8</span>
-<span class="n">shaping_wavelet_dt</span> <span class="mf">0.05</span>
-<span class="n">shaping_wavelet_type</span> <span class="n">ricker</span>
-<span class="n">shaping_wavelet_frequency</span> <span class="mf">1.0</span>
-<span class="n">shaping_wavelet_frequency_for_inverse</span> <span class="mf">0.5</span>
-<span class="n">noise_window_start</span> <span class="o">-</span><span class="mf">30.0</span>
-<span class="n">noise_window_end</span> <span class="o">-</span><span class="mf">5.0</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>########################################################################
+operator_nfft 4096
+#damping_factor 1000.0
+damping_factor 1.0
+snr_regularization_floor 2.0
+target_sample_interval 0.05
+deconvolution_data_window_start -2.0
+deconvolution_data_window_end 30.0
+time_bandwidth_product 4.5
+number_tapers 8
+shaping_wavelet_dt 0.05
+shaping_wavelet_type ricker
+shaping_wavelet_frequency 1.0
+shaping_wavelet_frequency_for_inverse 0.5
+noise_window_start -30.0
+noise_window_end -5.0
 
-<span class="n">taper_type</span> <span class="n">cosine</span>
-<span class="n">CosineTaper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-  <span class="n">data_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-    <span class="n">front0</span> <span class="o">-</span><span class="mf">2.0</span>
-    <span class="n">front1</span> <span class="o">-</span><span class="mf">1.0</span>
-    <span class="n">tail1</span> <span class="mf">27.0</span>
-    <span class="n">tail0</span> <span class="mf">29.5</span>
-  <span class="p">}</span>
-  <span class="n">wavelet_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-   <span class="n">front0</span> <span class="o">-</span><span class="mf">0.75</span>
-   <span class="n">front1</span> <span class="o">-</span><span class="mf">0.25</span>
-   <span class="n">tail1</span> <span class="mf">2.5</span>
-   <span class="n">tail0</span> <span class="mf">3.0</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="n">LinearTaper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-  <span class="n">data_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-    <span class="n">front0</span> <span class="o">-</span><span class="mf">2.0</span>
-    <span class="n">front1</span> <span class="o">-</span><span class="mf">1.0</span>
-    <span class="n">tail1</span> <span class="mf">27.0</span>
-    <span class="n">tail0</span> <span class="mf">29.5</span>
-  <span class="p">}</span>
-  <span class="n">wavelet_taper</span> <span class="o">&amp;</span><span class="n">Arr</span><span class="p">{</span>
-   <span class="n">front0</span> <span class="o">-</span><span class="mf">0.75</span>
-   <span class="n">front1</span> <span class="o">-</span><span class="mf">0.25</span>
-   <span class="n">tail1</span> <span class="mf">2.5</span>
-   <span class="n">tail0</span> <span class="mf">3.0</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="c1">########################################################################</span>
+taper_type cosine
+CosineTaper &amp;Arr{
+  data_taper &amp;Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 27.0
+    tail0 29.5
+  }
+  wavelet_taper &amp;Arr{
+   front0 -0.75
+   front1 -0.25
+   tail1 2.5
+   tail0 3.0
+  }
+}
+LinearTaper &amp;Arr{
+  data_taper &amp;Arr{
+    front0 -2.0
+    front1 -1.0
+    tail1 27.0
+    tail0 29.5
+  }
+  wavelet_taper &amp;Arr{
+   front0 -0.75
+   front1 -0.25
+   tail1 2.5
+   tail0 3.0
+  }
+}
+########################################################################
 </pre></div>
 </div>
 <p>We have supplied a copy of the data above in a file called data/test.pf. You should then be able to load this file with the following:</p>
@@ -954,35 +954,35 @@ Metadata keys found for wavelet_taper branch:  {&#39;front0&#39;, &#39;tail0&#39
 </pre></div></div>
 </div>
 <p>This particular example is a little unusual in that the result of the first get_branch call has simple name-value pairs, but only two branches. It also doesn’t demonstrate have data that can be fetched with the other <em>AntelopePf</em> extension called <em>get_tbl</em>. To see, here is the default parameter file for the Antelope contrib program export_to_mspass that can be used to take a data set defined by an Antelope database and import it to MsPASS.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">required</span> <span class="o">&amp;</span><span class="n">Tbl</span><span class="p">{</span>
-<span class="n">dt</span> <span class="n">delta</span> <span class="n">real</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">depth</span> <span class="n">source_depth</span> <span class="n">real</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">lat</span> <span class="n">source_lat</span> <span class="n">real</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">lon</span> <span class="n">source_lon</span> <span class="n">real</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">time</span> <span class="n">source_time</span> <span class="n">real</span>
-<span class="n">site</span><span class="o">.</span><span class="n">lat</span> <span class="n">site_lat</span> <span class="n">real</span>
-<span class="n">site</span><span class="o">.</span><span class="n">lon</span> <span class="n">site_lon</span> <span class="n">real</span>
-<span class="n">site</span><span class="o">.</span><span class="n">elev</span> <span class="n">site_elev</span> <span class="n">real</span>
-<span class="n">nsamp</span> <span class="n">npts</span> <span class="nb">int</span>
-<span class="n">sta</span> <span class="n">sta</span> <span class="n">string</span>
-<span class="n">evid</span> <span class="n">source_id</span> <span class="nb">int</span>
-<span class="n">U11</span> <span class="n">U11</span> <span class="n">real</span>
-<span class="n">U12</span> <span class="n">U12</span> <span class="n">real</span>
-<span class="n">U13</span> <span class="n">U13</span> <span class="n">real</span>
-<span class="n">U21</span> <span class="n">U21</span> <span class="n">real</span>
-<span class="n">U22</span> <span class="n">U22</span> <span class="n">real</span>
-<span class="n">U23</span> <span class="n">U23</span> <span class="n">real</span>
-<span class="n">U31</span> <span class="n">U31</span> <span class="n">real</span>
-<span class="n">U32</span> <span class="n">U32</span> <span class="n">real</span>
-<span class="n">U33</span> <span class="n">U33</span> <span class="n">real</span>
-<span class="p">}</span>
-<span class="n">optional</span> <span class="o">&amp;</span><span class="n">Tbl</span><span class="p">{</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">mb</span> <span class="n">mb</span> <span class="n">real</span>
-<span class="n">origin</span><span class="o">.</span><span class="n">ms</span> <span class="n">ms</span> <span class="n">real</span>
-<span class="n">arrival</span><span class="o">.</span><span class="n">iphase</span> <span class="n">iphase</span> <span class="n">string</span>
-<span class="n">assoc</span><span class="o">.</span><span class="n">phase</span> <span class="n">phase</span> <span class="n">string</span>
-<span class="n">orid</span> <span class="n">orid</span> <span class="nb">int</span>
-<span class="p">}</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>required &amp;Tbl{
+dt delta real
+origin.depth source_depth real
+origin.lat source_lat real
+origin.lon source_lon real
+origin.time source_time real
+site.lat site_lat real
+site.lon site_lon real
+site.elev site_elev real
+nsamp npts int
+sta sta string
+evid source_id int
+U11 U11 real
+U12 U12 real
+U13 U13 real
+U21 U21 real
+U22 U22 real
+U23 U23 real
+U31 U31 real
+U32 U32 real
+U33 U33 real
+}
+optional &amp;Tbl{
+origin.mb mb real
+origin.ms ms real
+arrival.iphase iphase string
+assoc.phase phase string
+orid orid int
+}
 </pre></div>
 </div>
 <p>The above data are contained in another file data/test2.pf. You should be able to load it by running the following:</p>

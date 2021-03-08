@@ -1699,9 +1699,18 @@ object will be returned if d was marked dead</p>
 <dl class="py method">
 <dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.toStream">
 <code class="sig-name descname">toStream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.toStream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a timeseries ensemble to stream.
-:param tse: timeseries ensemble
-:return: converted stream</p>
+<dd><p>Convert a timeseries ensemble to stream.  Always copies
+all ensemble Metadata to tse members before conversion.   That is
+necessary to avoid loss of data in the case where the only copy is
+stored in the ensemble’s metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tse</strong> – timeseries ensemble</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>converted stream</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

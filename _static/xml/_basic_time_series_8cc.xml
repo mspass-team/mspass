@@ -6,50 +6,50 @@
     <includes refid="_basic_time_series_8h" local="yes">mspass/seismic/BasicTimeSeries.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1223">
+      <node id="1224">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1224" relation="include">
-        </childnode>
         <childnode refid="1225" relation="include">
         </childnode>
         <childnode refid="1226" relation="include">
         </childnode>
-      </node>
-      <node id="1225">
-        <label>boost/archive/text_iarchive.hpp</label>
-      </node>
-      <node id="1221">
-        <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
-        <link refid="_basic_time_series_8cc"/>
-        <childnode refid="1222" relation="include">
-        </childnode>
-        <childnode refid="1223" relation="include">
-        </childnode>
         <childnode refid="1227" relation="include">
         </childnode>
       </node>
-      <node id="1227">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1228" relation="include">
-        </childnode>
-        <childnode refid="1229" relation="include">
-        </childnode>
-      </node>
-      <node id="1229">
-        <label>exception</label>
+      <node id="1226">
+        <label>boost/archive/text_iarchive.hpp</label>
       </node>
       <node id="1222">
-        <label>ostream</label>
-      </node>
-      <node id="1226">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="1224">
-        <label>math.h</label>
+        <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc</label>
+        <link refid="_basic_time_series_8cc"/>
+        <childnode refid="1223" relation="include">
+        </childnode>
+        <childnode refid="1224" relation="include">
+        </childnode>
+        <childnode refid="1228" relation="include">
+        </childnode>
       </node>
       <node id="1228">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="1229" relation="include">
+        </childnode>
+        <childnode refid="1230" relation="include">
+        </childnode>
+      </node>
+      <node id="1230">
+        <label>exception</label>
+      </node>
+      <node id="1223">
+        <label>ostream</label>
+      </node>
+      <node id="1227">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="1225">
+        <label>math.h</label>
+      </node>
+      <node id="1229">
         <label>iostream</label>
       </node>
     </incdepgraph>

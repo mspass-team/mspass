@@ -384,9 +384,18 @@ object will be returned if d was marked dead</p>
 <dl class="py function">
 <dt id="mspasspy.util.converter.TimeSeriesEnsemble2Stream">
 <code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">TimeSeriesEnsemble2Stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tse</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#TimeSeriesEnsemble2Stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.TimeSeriesEnsemble2Stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a timeseries ensemble to stream.
-:param tse: timeseries ensemble
-:return: converted stream</p>
+<dd><p>Convert a timeseries ensemble to stream.  Always copies
+all ensemble Metadata to tse members before conversion.   That is
+necessary to avoid loss of data in the case where the only copy is
+stored in the ensemble’s metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tse</strong> – timeseries ensemble</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>converted stream</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -442,6 +451,62 @@ that are used as headers in the C++ components of mspass.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Metadata</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mspasspy.util.converter.post_ensemble_metadata">
+<code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">post_ensemble_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ens</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">check_all_members</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">clean_members</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#post_ensemble_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.post_ensemble_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>It may be necessary to call this function after conversion from
+an obspy Stream to one of the mspass Ensemble classes.  This function
+is necessary because a mspass Ensemble has a concept not part of the
+obspy Stream object.  That is, mspass ensembles have a global
+Metadata container.  That container is expected to contain Metadata
+common to all members of the ensemble.  For example, for data from
+a single earthquake it would be sensible to post the source location
+information in the ensemble metadata container rather than
+having duplicates in each member.</p>
+<p>Two different approaches can be used to do this copy.  The faster,
+but least reliable method is to simply copy the values from the first
+member of the ensemble.  That approach is enabled by default.
+It is completely reliable when used after a conversion from an obspy
+Stream but ONLY if the data began life as a mspass ensemble with
+exactly the same keys set as global.   The type example of that
+is after an obspy algorithm is applied to a mspass ensemble
+via the mspass decorators.</p>
+<p>A more cautious algorithm can be enabled by setting check_all_members
+True. In that mode the list of keys received is tested with a
+not equal test for against each member.  Note we do not do anything
+fancy with floating point data to allow for finite precision.
+The reason is Metadata float values are normally expected to be
+constant data.  In that case an != test will yield false when the
+comparison is between two copies.  The not equal test may fail, however,
+if used with computed floating point numbers.   An example where
+that is possible would be spatial gathers like PP data assembled by
+midpoint coordinates.  If you need to build gathers in such a context
+we recommend you use an integer image point tied to a specialized
+document collection in MongoDB that defines the geometry of that
+point.  There may be other examples, but the point is don’t trust
+computed floating point values to work.  It will also not work if
+the values of a key-value pair don’t support an != comparison.
+That could be common if the value request for copy was a python object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ens</strong> – ensemble data to be processed.  The function will throw
+a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a
+SeismogramEnsemble.</p></li>
+<li><p><strong>keys</strong> – is expected to be a list of metadata keys (required to be
+strings) that are to be copied from member metadata to ensemble
+metadata.</p></li>
+<li><p><strong>check_all_members</strong> – switch controlling method used to extract
+metadata that is to be copied (see above for details). Default is False</p></li>
+<li><p><strong>clean_members</strong> – when true data copied to ensemble metadata
+will be removed from all members.  This option is only allowed
+if check_all_members is set True.  It will be silently ignored if
+check_all_members is False.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

@@ -6,29 +6,29 @@
     <includes local="no">math.h</includes>
     <includes refid="_slowness_vector_8h" local="yes">mspass/seismic/SlownessVector.h</includes>
     <incdepgraph>
-      <node id="1361">
+      <node id="1362">
         <label>float.h</label>
       </node>
-      <node id="1364">
+      <node id="1365">
         <label>string</label>
       </node>
-      <node id="1363">
+      <node id="1364">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="1364" relation="include">
+        <childnode refid="1365" relation="include">
         </childnode>
       </node>
-      <node id="1362">
+      <node id="1363">
         <label>math.h</label>
       </node>
-      <node id="1360">
+      <node id="1361">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</label>
         <link refid="_slowness_vector_8cc"/>
-        <childnode refid="1361" relation="include">
-        </childnode>
         <childnode refid="1362" relation="include">
         </childnode>
         <childnode refid="1363" relation="include">
+        </childnode>
+        <childnode refid="1364" relation="include">
         </childnode>
       </node>
     </incdepgraph>
