@@ -624,7 +624,7 @@ class Database(pymongo.database.Database):
 
         return problematic_keys
 
-    def delete_attributes(self, collection, keylist,query={}, verbose=False):
+    def delete_attributes(self, collection, keylist, query={}, verbose=False):
         """
         Deletes all occurrences of attributes linked to keys defined 
         in a list of keywords passed as (required) keylist argument.  
@@ -668,7 +668,7 @@ class Database(pymongo.database.Database):
                 dbcol.update_one({'_id':id},{'$unset' : todel})
         return counts
     
-    def rename_attributes(self, collection, rename_map,query={}, verbose=False):
+    def rename_attributes(self, collection, rename_map, query={}, verbose=False):
         """
         Renames specified keys for all or a subset of documents in a 
         MongoDB collection.   The updates are driven by an input python 

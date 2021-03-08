@@ -7,6 +7,7 @@ import numpy as np
 import obspy 
 import pytest
 import sys
+import re
 
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory
@@ -678,8 +679,8 @@ class TestDatabase():
         assert len(fixes_cnt) == 0
 
     def test_verify(self):
+        # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
-
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
@@ -707,6 +708,135 @@ class TestDatabase():
         assert 'site_id' in problematic_keys and problematic_keys['site_id'] == 'xref'
         assert 'npts' in problematic_keys and problematic_keys['npts'] == 'undefined'
         assert 'delta' in problematic_keys and problematic_keys['delta'] == 'type'
+
+    def test_delete_attributes(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert 'delta' in res and 'sampling_rate' in res and 'starttime' in res
+        counts = self.db.delete_attributes('wf_TimeSeries', ['delta', 'sampling_rate', 'starttime'])
+        assert len(counts) == 3 and counts == {'delta':1,'sampling_rate':1,'starttime':1}
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert not 'delta' in res and not 'sampling_rate' in res and not 'starttime' in res
+    
+    def test_rename_attributes(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['starttime_shift'] = 1.0
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert 'delta' in res and 'sampling_rate' in res and 'starttime' in res
+        delta_val = res['delta']
+        sampling_rate_val = res['sampling_rate']
+        starttime_val = res['starttime']
+        counts = self.db.rename_attributes('wf_TimeSeries', {'delta':'dt', 'sampling_rate':'sr', 'starttime':'st'})
+        assert len(counts) == 3 and counts == {'delta':1,'sampling_rate':1,'starttime':1}
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert not 'delta' in res and not 'sampling_rate' in res and not 'starttime' in res
+        assert 'dt' in res and 'sr' in res and 'st' in res
+        assert res['dt'] == delta_val and res['sr'] == sampling_rate_val and res['st'] == starttime_val
+
+    def test_fix_attribute_types(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['npts'] = 'xyz'
+        ts['delta'] = '123'
+        ts['sampling_rate'] = '123'
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res['npts'] == 'xyz' and res['delta'] == '123' and res['sampling_rate'] == '123'
+        counts = self.db.fix_attribute_types('wf_TimeSeries')
+        assert len(counts) == 2 and counts == {'delta':1,'sampling_rate':1}
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res['npts'] == 'xyz' and res['delta'] == 123.0 and res['sampling_rate'] == 123.0
+
+    def test_check_links(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        missing_site_id_ts = copy.deepcopy(self.test_ts)
+        bad_site_id_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(missing_site_id_ts, 'deepcopy', '1')
+        logging_helper.info(bad_site_id_ts, 'deepcopy', '1')
+        missing_site_id_ts.erase('site_id')
+        bad_site_id_ts['site_id'] = ObjectId()
+
+        save_res_code = self.db.save_data(missing_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(bad_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+
+        (bad_id_list, missing_id_list) = self.db.check_links(normalize='site', wf='wf_TimeSeries')
+        assert len(bad_id_list) == 1
+        assert bad_id_list == [bad_site_id_ts['_id']]
+        assert len(missing_id_list) == 1
+        assert missing_id_list == [missing_site_id_ts['_id']]
+
+    def test_check_attribute_types(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        bad_type_docs_ts = copy.deepcopy(self.test_ts)
+        undefined_key_docs_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_type_docs_ts, 'deepcopy', '1')
+        logging_helper.info(undefined_key_docs_ts, 'deepcopy', '1')
+        bad_type_docs_ts['npts'] = 'xyz'
+
+        save_res_code = self.db.save_data(bad_type_docs_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(undefined_key_docs_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+
+        # test empty matched documents
+        query_dict = {'_id': ObjectId()}
+        with pytest.raises(MsPASSError, match=re.escape("check_attribute_types:  query={} yields zero matching documents".format(str(query_dict)))):
+            (bad_type_docs, undefined_key_docs) = self.db.check_attribute_types(collection='wf_TimeSeries', query=query_dict)
+        
+        # test bad_type_docs and undefined_key_docs
+        (bad_type_docs, undefined_key_docs) = self.db.check_attribute_types(collection='wf_TimeSeries')
+        assert len(bad_type_docs) == 1
+        assert bad_type_docs == {bad_type_docs_ts['_id']: {'npts': 'xyz'}}
+        assert len(undefined_key_docs) == 2
+        assert undefined_key_docs == {bad_type_docs_ts['_id']: {'extra1': 'extra1'}, undefined_key_docs_ts['_id']: {'extra1': 'extra1'}}
+
+    def test_check_required(self):
+        # clear all documents
+        self.db['wf_TimeSeries'].delete_many({})
+        wrong_types_ts = copy.deepcopy(self.test_ts)
+        undef_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(wrong_types_ts, 'deepcopy', '1')
+        logging_helper.info(undef_ts, 'deepcopy', '1')
+        wrong_types_ts['npts'] = 'xyz'
+
+        save_res_code = self.db.save_data(wrong_types_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(undef_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+
+        # test empty matched documents
+        query_dict = {'_id': ObjectId()}
+        with pytest.raises(MsPASSError, match=re.escape("check_required:  query={} yields zero matching documents".format(str(query_dict)))):
+            (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime'], query=query_dict)
+        
+        # test undefined keys
+        with pytest.raises(MsPASSError, match="check_required:  schema has no definition for key=undefined_key"):
+            (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['undefined_key'])
+
+        # test bad_type_docs and undefined_key_docs
+        (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime_shift'])
+        assert len(wrong_types) == 1
+        assert wrong_types == {wrong_types_ts['_id']: {'npts': 'xyz'}}
+        assert len(undef) == 2
+        assert undef == {wrong_types_ts['_id']: ['starttime_shift'], undef_ts['_id']: ['starttime_shift']}
 
     def test_update_ensemble_metadata(self):
         ts1 = copy.deepcopy(self.test_ts)
