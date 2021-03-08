@@ -583,8 +583,8 @@ class TestDatabase():
         fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, query={'_id': ObjectId()})
         assert not fixes_cnt
 
-        # test log_id_keys and delete required fields missing document
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False)
+        # test log_id_keys and delete required fields missing document if delete_missing_required is True
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False, delete_missing_required=True)
         assert len(fixes_cnt) == 0
         # test if it is deleted
         assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
@@ -598,8 +598,6 @@ class TestDatabase():
         assert save_res_code == 0
         fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, check_xref=['site_id'])
         assert len(fixes_cnt) == 0
-        # test if it is deleted
-        assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
 
         # test conversion success
         ts = copy.deepcopy(self.test_ts)

@@ -409,7 +409,7 @@ class Database(pymongo.database.Database):
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
-    def clean_collection(self, collection, log_id_keys=[], is_print=False, query={}, delete_undefined=False, rename={}, check_xref=[]):
+    def clean_collection(self, collection, log_id_keys=[], is_print=False, query={}, delete_undefined=False, rename={}, check_xref=[], delete_missing_required=False):
         """
         clean a collection in user's database by a user defined query
 
@@ -433,7 +433,7 @@ class Database(pymongo.database.Database):
             docs = col.find(query)
             for doc in docs:
                 if '_id' in doc:
-                    fixed_attr_cnt, messages = self.clean(doc['_id'], collection, log_id_keys, delete_undefined, rename, check_xref)
+                    fixed_attr_cnt, messages = self.clean(doc['_id'], collection, log_id_keys, delete_undefined, rename, check_xref, delete_missing_required)
                     print_messages.extend(messages)
                     for k, v in fixed_attr_cnt.items():
                         if k not in fixed_cnt:
@@ -447,7 +447,7 @@ class Database(pymongo.database.Database):
         return fixed_cnt
 
     # clean a single document in the given collection atomically
-    def clean(self, document_id, collection='wf', log_id_keys=[], delete_undefined=False, rename={}, check_xref=[]):
+    def clean(self, document_id, collection='wf', log_id_keys=[], delete_undefined=False, rename={}, check_xref=[], delete_missing_required=False):
         """
         Clean a document in a collection, including deleting the document if required keys are absent or fix the types if there are mismatches.
 
@@ -489,14 +489,16 @@ class Database(pymongo.database.Database):
             if self.database_schema[collection].is_required(k) and k not in doc:
                 missing_required_attr_list.append(k)
         if missing_required_attr_list:
-            # delete this document
-            col.delete_one({'_id': doc['_id']})
             error_msg = "required attribute: "
             for missing_attr in missing_required_attr_list:
                 error_msg += "{} ".format(missing_attr)
             error_msg += "are missing."
             print_messages.append("{}{} the document is deleted.".format(log_helper, error_msg))
-            return fixed_cnt, print_messages
+
+            # delete this document
+            if delete_missing_required:
+                col.delete_one({'_id': doc['_id']})
+                return fixed_cnt, print_messages
 
         missing_xref_key_list = []
         for xref_k in check_xref:
@@ -508,13 +510,11 @@ class Database(pymongo.database.Database):
                     missing_xref_key_list.append(xref_k)
         # missing required xref keys, should be deleted
         if missing_xref_key_list:
-            col.delete_one({'_id': doc['_id']})
-            error_msg = "required xref key: "
+            error_msg = "required xref keys: "
             for missing_key in missing_xref_key_list:
                 error_msg += "{} ".format(missing_key)
             error_msg += "are missing."
             print_messages.append("{}{} the document is deleted.".format(log_helper, error_msg))
-            return fixed_cnt, print_messages
 
         # try to fix the error in the doc
         update_dict = {}
