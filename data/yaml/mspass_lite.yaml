@@ -2,102 +2,105 @@ Database:
   wf_TimeSeries:
     default: wf
     data_type: TimeSeries
-    schema: 
+    schema: &wf_TimeSeries
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a data object
+        constraint: required
+      data_tag:
+        type: string
+        concept:  Used to label data at a particular stage of processing. Should be unique for each save operation.
+        constraint: normal7
+      npts:
+        type: int
+        concept: Number of data samples
+        aliases: [nsamp, wfdisc.nsamp]
+        constraint: required
+      delta:
+        type: double
+        concept: Data sample interval in seconds
+        aliases: [dt]
+        constraint: required
+      sampling_rate:
+        type: double
+        concept: Data sampling frequency in Hz=1/s
+        constraint: optional
+      starttime:
+        type: double
+        concept: Time of first sample of data (epoch time or relative to some other time mark)
+        aliases: [t0, time]
+        constraint: required
+      starttime_shift:
+        type: double
+        concept:  Time shift applied to define relative time of 0.0
+        aliases:  t0shift
+        constraint: required
+      utc_convertible:
+        type:  bool
+        concept:  When true starttime_shift can be used to convert relative time to UTC.
+        constraint: required
+      time_standard:
+        type: string
+        concept: Defines time standard for meaning of t0 (default should be UTC)
+        constraint: required
+      calib:
+        type: double
+        concept: Nominal conversion factor for changing sample data to ground motion units.
+        constraint: normal
+      storage_mode:
+        type: string
+        concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+        constraint: required
+      dir:
+        type: string
+        concept: Directory path to an external file (always used with dfile)
+        aliases: [file.dir, wfdisc.dir, wfprocess.dir]
+        constraint: optional
+      dfile:
+        type: string
+        concept: External data file name.
+        aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
+        constraint: optional
+      foff:
+        type: int
+        concept: Offset in bytes from beginning of a file to first data sample.
+        aliases: [file.foff, wfdisc.foff, wfprocess.foff]
+        constraint: optional
+      url:
+        type: string
+        concept: Url to external data file.
+        constraint: optional
+      net:
+        type: string
+        concept: network code (net component of SEED net:sta:chan)
+        aliases: [network, site.net, channel.net, wfdisc.net, site_net]
+        constraint: normal
+      sta:
+        type: string
+        concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
+        aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
+        constraint: normal
+      loc:
+        type: string
+        concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
+        aliases: [location, site.loc, channel.loc]
+        constraint: optional
       chan:
         type: string
         concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
         aliases: [channel, KCMPNM, channel.chan, wfdisc.chan]
         constraint: normal
-      <<: &wf_TimeSeries
-        _id:
-          type: ObjectID
-          concept: ObjectId used to define a data object
-          constraint: required
-        npts:
-          type: int
-          concept: Number of data samples
-          aliases: [nsamp, wfdisc.nsamp]
-          constraint: required
-        delta:
-          type: double
-          concept: Data sample interval in seconds
-          aliases: [dt]
-          constraint: required
-        sampling_rate:
-          type: double
-          concept: Data sampling frequency in Hz=1/s
-          constraint: optional
-        starttime:
-          type: double
-          concept: Time of first sample of data (epoch time or relative to some other time mark)
-          aliases: [t0, time]
-          constraint: required
-        starttime_shift:
-          type: double
-          concept:  Time shift applied to define relative time of 0.0
-          aliases:  t0shift
-          constraint: required
-        utc_convertible:
-          type:  bool
-          concept:  When true starttime_shift can be used to convert relative time to UTC.
-          constraint: required
-        time_standard:
-          type: string
-          concept: Defines time standard for meaning of t0 (default should be UTC)
-          constraint: required
-        calib:
-          type: double
-          concept: Nominal conversion factor for changing sample data to ground motion units.
-          constraint: normal
-        storage_mode:
-          type: string
-          concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
-          constraint: required
-        dir:
-          type: string
-          concept: Directory path to an external file (always used with dfile)
-          aliases: [file.dir, wfdisc.dir, wfprocess.dir]
-          constraint: optional
-        dfile:
-          type: string
-          concept: External data file name.
-          aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
-          constraint: optional
-        foff:
-          type: int
-          concept: Offset in bytes from beginning of a file to first data sample.
-          aliases: [file.foff, wfdisc.foff, wfprocess.foff]
-          constraint: optional
-        url:
-          type: string
-          concept: Url to external data file.
-          constraint: optional
-        net:
-          type: string
-          concept: network code (net component of SEED net:sta:chan)
-          aliases: [network, site.net, channel.net, wfdisc.net, site_net]
-          constraint: normal
-        sta:
-          type: string
-          concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
-          aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
-          constraint: normal
-        loc:
-          type: string
-          concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
-          aliases: [location, site.loc, channel.loc]
-          constraint: optional
-        gridfs_id:
-          type: ObjectID
-          concept: The _id of data file in the fs.files collection.
-          constraint: optional
-        history_object_id:
-          reference: history_object
-          constraint: xref_key
-        elog_id:
-          type: list
-          reference: elog
-          constraint: xref_key
+      gridfs_id:
+        type: ObjectID
+        concept: The _id of data file in the fs.files collection.
+        constraint: optional
+      history_object_id:
+        reference: history_object
+        constraint: xref_key
+      elog_id:
+        type: list
+        reference: elog
+        constraint: xref_key
 
   wf_Seismogram:
     data_type: Seismogram
@@ -107,7 +110,7 @@ Database:
         type: list
         concept: Three-component data's transformation matrix
         constraint: required
-  
+
   history_object:
     schema:
       _id:
@@ -167,17 +170,17 @@ Metadata:
         readonly: false
       net:
         collection: wf_TimeSeries
-        readonly: false
+        readonly: true
       sta:
         collection: wf_TimeSeries
-        readonly: false
+        readonly: true
       loc:
         collection: wf_TimeSeries
-        readonly: false
+        readonly: true
       chan:
         collection: wf_TimeSeries
-        readonly: false
-      
+        readonly: true
+
   Seismogram:
     schema:
       _id:
@@ -206,10 +209,10 @@ Metadata:
         readonly: false
       net:
         collection: wf_Seismogram
-        readonly: false
+        readonly: true
       sta:
         collection: wf_Seismogram
-        readonly: false
+        readonly: true
       loc:
         collection: wf_Seismogram
-        readonly: false 
+        readonly: true
