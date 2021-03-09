@@ -141,7 +141,7 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, mode='promiscuous', normalize=[], load_history=False, exclude_keys=[], collection='wf'):
+    def read_data(self, object_id, mode='promiscuous', normalize=[], load_history=False, exclude_keys=[], collection='wf', data_tag=None):
         """
         Reads and returns the mspasspy object stored in the database.
 
@@ -191,6 +191,9 @@ class Database(pymongo.database.Database):
             oid = object_id
         object_doc = col.find_one({'_id': oid})
         if not object_doc:
+            return None
+        
+        if 'data_tag' in object_doc and object_doc['data_tag'] != data_tag:
             return None
 
         # 1. build metadata as dict
@@ -311,7 +314,7 @@ class Database(pymongo.database.Database):
         
         return mspass_object
 
-    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dfile=None, dir=None, exclude_keys=[], collection=None):
+    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dfile=None, dir=None, exclude_keys=[], collection=None, data_tag=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
@@ -375,7 +378,7 @@ class Database(pymongo.database.Database):
         update_res_code = -1
         if mspass_object.live:
             # 1. save metadata, with update mode
-            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, False)
+            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, False, data_tag)
 
             if mspass_object.live:
                 # 2. save actual data in file/gridfs mode
@@ -1070,7 +1073,7 @@ class Database(pymongo.database.Database):
                 break
         return tuple([wrong_types,undef])
 
-    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=[], collection=None, ignore_metadata_changed_test=False):
+    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=[], collection=None, ignore_metadata_changed_test=False, data_tag=None):
         """
         Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
         and metadata attributes.
@@ -1203,6 +1206,9 @@ class Database(pymongo.database.Database):
                     elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
                     insert_dict.update({elog_id_name: elog_id})
                 
+                # add user defined data_tag
+                if data_tag:
+                    insert_dict['data_tag'] = data_tag
                 if '_id' not in copied_metadata:  # new_insertion
                     mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
                 else:
@@ -1232,7 +1238,7 @@ class Database(pymongo.database.Database):
             return -1
         return non_fatal_error_cnt
 
-    def read_ensemble_data(self, objectid_list, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf'):
+    def read_ensemble_data(self, objectid_list, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf', data_tag=None):
         """
         Reads and returns the mspasspy ensemble object stored in the database.
 
@@ -1258,12 +1264,12 @@ class Database(pymongo.database.Database):
             ensemble = SeismogramEnsemble(len(objectid_list))
 
         for i in objectid_list:
-            ensemble.member.append(self.read_data(i, mode, normalize, load_history, exclude_keys, wf_collection))
+            ensemble.member.append(self.read_data(i, mode, normalize, load_history, exclude_keys, wf_collection, data_tag))
 
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dfile_list=None, dir_list=None,
-                           exclude_keys=[], exclude_objects=[], collection=None):
+                           exclude_keys=[], exclude_objects=[], collection=None, data_tag=None):
         """
         Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
         database.
@@ -1293,7 +1299,7 @@ class Database(pymongo.database.Database):
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
                     self.save_data(ensemble_object.member[i], mode, storage_mode, dfile_list[j],
-                                   dir_list[j], exclude_keys, collection)
+                                   dir_list[j], exclude_keys, collection, data_tag)
                     j += 1
         elif storage_mode == "url":
             pass
@@ -1301,7 +1307,7 @@ class Database(pymongo.database.Database):
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
     def update_ensemble_metadata(self, ensemble_object, mode='promiscuous', exclude_keys=[], exclude_objects=[],
-                                 collection=None):
+                                 collection=None, ignore_metadata_changed_test=False, data_tag=None):
         """
         Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
         and metadata attributes.
@@ -1320,7 +1326,7 @@ class Database(pymongo.database.Database):
         """
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
-                self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection)
+                self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag)
 
     def delete_data(self, object_id, object_type, remove_unreferenced_files=False, clear_history=True, clear_elog=True):
         """

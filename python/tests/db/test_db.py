@@ -401,14 +401,17 @@ class TestDatabase():
         # not testing promiscuous/cautious/pedantic save->read here because it's coveraged by the tests above
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, 'deepcopy', '1')
-        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'], data_tag='tag1')
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
-        ts2 = self.db.read_data(ts['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'])
+        # test mismatch data_tag
+        assert not self.db.read_data(ts['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'], data_tag='tag2')
+        ts2 = self.db.read_data(ts['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'], data_tag='tag1')
         for key in wf_keys:
             if key in ts:
                 assert ts[key] == ts2[key]
         assert 'test' not in ts2
         assert 'extra2' not in ts2
+        assert 'data_tag' in ts2 and ts2['data_tag'] == 'tag1'
 
         res = self.db['site'].find_one({'_id': ts['site_id']})
         assert ts2['site_lat'] == res['lat']
