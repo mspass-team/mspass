@@ -23,11 +23,41 @@ package.
 .. .. mdinclude:: ../../README.md
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Getting Started
 
-   user_manual
-   tutorial
-   reference_manual
+   getting_started/run_mspass_with_docker
+   getting_started/deploy_mspass_with_docker_compose
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: User Manual
+
+   user_manual/introduction
+   user_manual/data_object_design_concepts
+   user_manual/time_standard_constraints
+   user_manual/database_concepts
+   user_manual/CRUD_operations
+   user_manual/handling_errors
+   user_manual/processing_history_concepts
+   user_manual/adapting_algorithms
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Tutorial
+
+   tutorial/metadata_pf
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference Manual
+
+   python_api/index
+   cxx_api/index
+   mspass_schema/mspass_schema
 
 .. warning::
 

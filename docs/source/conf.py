@@ -42,6 +42,7 @@ extensions = [
   'nbsphinx',
   'sphinx.ext.todo',
   'sphinx.ext.viewcode',
+  'sphinx_copybutton',
 ]
 
 

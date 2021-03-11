@@ -18,8 +18,6 @@ RUN apt-get update \
 
 RUN pip3 --no-cache-dir install pymongo
 
-RUN mkdir /home/data
-
 # Prepare the environment
 ENV SPARK_VERSION 3.0.0
 
