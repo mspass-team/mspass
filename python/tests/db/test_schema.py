@@ -182,8 +182,8 @@ class TestSchema():
     def test_DBSchemaDefinition_required_keys(self):
         assert self.dbschema.wf_TimeSeries.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode']
         assert self.dbschema.wf_Seismogram.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode','tmatrix']
-        assert self.dbschema.site.required_keys() == ['_id']
-        assert self.dbschema.source.required_keys() == ['_id']
+        assert self.dbschema.site.required_keys() == ['_id','lat','lon','elev']
+        assert self.dbschema.source.required_keys() == ['_id','lat','lon','depth','time']
 
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection('sta') == 'site'

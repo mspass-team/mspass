@@ -1,28 +1,28 @@
 # Notes on the format of this master configuration file
 #
-# The schema of the Database and the Metadata container are defined in 
+# The schema of the Database and the Metadata container are defined in
 # corresponding sections.
 #
-# The keys under Database defines the collection names. Each collection 
-# should have a schema key. Each entry of the schema should at least have 
-# its type defined. The types need to be compatible to BSON. If the 
-# optional key is absent, the attribute will be assumed required by default. 
+# The keys under Database defines the collection names. Each collection
+# should have a schema key. Each entry of the schema should at least have
+# its type defined. The types need to be compatible to BSON. If the
+# optional key is absent, the attribute will be assumed required by default.
 # All required attributes need to be defined in all entries of the collection.
-# The reference key defines an attribute that is referenced from a different 
-# collection, it will by default assume the type to be the same unless 
+# The reference key defines an attribute that is referenced from a different
+# collection, it will by default assume the type to be the same unless
 # otherwise specified (probably only as a list type). The default key is used
-# to define the default collection name, which should at least define three 
+# to define the default collection name, which should at least define three
 # collections, wf, history_object, and elog. The data_type key is used in wf
 # collections to specify what type of data is referenced by the collection.
 #
-# The keys under Metadata defines the metadata to be used for each type of 
-# MsPASS basic object. The entries under schema should have a collection 
-# name defined. The reader will insert the properties of the attributes from 
-# the database collections defined above. The "_" pattern of names with its 
-# collection name as prefix will be automatically resolved (note that the 
-# behavior under the hood is slightly different for the IDs). The readonly 
-# key will be used to test whether an attribute in the data object can be 
-# saved to the database. All the keys that are defined but without a readonly 
+# The keys under Metadata defines the metadata to be used for each type of
+# MsPASS basic object. The entries under schema should have a collection
+# name defined. The reader will insert the properties of the attributes from
+# the database collections defined above. The "_" pattern of names with its
+# collection name as prefix will be automatically resolved (note that the
+# behavior under the hood is slightly different for the IDs). The readonly
+# key will be used to test whether an attribute in the data object can be
+# saved to the database. All the keys that are defined but without a readonly
 # entry will by default treated as readonly.
 
 Database:
@@ -145,22 +145,22 @@ Database:
         constraint: normal
       loc:
         reference: channel
-        constraint: xref_key
+        constraint: normal
       lat:
         type: double
         concept: latitude of a seismic station/instrument in degrees
         aliases: [STLA, site.lat, site_lat]
-        constraint: normal
+        constraint: required
       lon:
         type: double
         concept: longitude of a seismic station/instrument in degrees
         aliases: [STLO, stlo, site.lon, site_lon]
-        constraint: normal
+        constraint: required
       elev:
         type: double
         concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
         aliases: [STEL, stel, site.elev, site_elev]
-        constraint: normal
+        constraint: required
       starttime:
         type: double
         concept: Time of seismic station/instrument starts recording
@@ -180,15 +180,15 @@ Database:
         constraint: required
       net:
         reference: site
-        constraint: xref_key
+        constraint: normal
       sta:
         reference: site
-        constraint: xref_key
+        constraint: normal
       loc:
         type: string
         concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
         aliases: [location, site.loc, channel.loc]
-        constraint: optional
+        constraint: normal
       chan:
         type: string
         concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
@@ -198,22 +198,22 @@ Database:
         type: double
         concept: latitude of a seismic station/instrument in degrees
         aliases: [channel_lat]
-        constraint: normal
+        constraint: required
       lon:
         type: double
         concept: longitude of a seismic station/instrument in degrees
         aliases: [channel_lon]
-        constraint: normal
+        constraint: required
       elev:
         type: double
         concept: elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments)
         aliases: [channel_elev]
-        constraint: normal
+        constraint: required
       edepth:
         type: double
         concept: depth of a seismic station/instrument in km
         aliases: [channel_edepth]
-        constraint: normal
+        constraint: optional
       hang:
         type: double
         concept:  Azimuth (in degree) of a seismometer component - horizontal angle
@@ -245,22 +245,22 @@ Database:
         type: double
         concept: Latitude (in degrees) of the hypocenter of seismic source
         aliases: [source.lat, EVLA, origin.lat, source_lat]
-        constraint: normal
+        constraint: required
       lon:
         type: double
         concept: Longitude (in degrees) of the hypocenter of seismic source
         aliases: [source.lon, EVLO, origin.lon, source_lon]
-        constraint: normal
+        constraint: required
       depth:
         type: double
         concept: Depth (in km) of the hypocenter of seismic source
         aliases: [source.depth, EVDP, origin.depth, source_depth]
-        constraint: normal
+        constraint: required
       time:
         type: double
         concept: Origin time of the hypocenter of seismic source (epoch time)
         aliases: [source.time, origin.time, source_time]
-        constraint: normal
+        constraint: required
       magnitude:
         type: double
         concept: Generic magnitude attribute
