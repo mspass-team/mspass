@@ -57,7 +57,7 @@ Time Standard Constraints
        set as :code:`Relative` (TimeReferenceType.Relative in python or
        TimeReferenceType::Relative in C++).   Relative time in this context
        is nearly always equivalent to having time 0 set to the shot time.
-        In the design of MsPASS, however, we aimed to support the range of
+       In the design of MsPASS, however, we aimed to support the range of
        instrumentation in active source data acquisition with three different
        absolute time precisions:
 
@@ -80,15 +80,16 @@ Time Standard Constraints
            so TimeReferenceType is "Relative" and the time is shifted so 0
            is the shot time.
 
-       The common denominator for all active source data is that the they should
-       have TimeReferenceType set to "Relative".   The first two cases when
-       the absolute timing is not reliable should have the internal attribute
-       :code:`t0shift_is_valid` set to False.  That assures the users won't make the
-       mistake of calling the rtoa function and creating a potentially misleading
-       (at best) data set.  That constraint can be enforced using the :code:`set_tref`
-       method that can be called from either TimeSeries or Seismogram objects.
-       The complete set of methods available to handle this issue are discussed at the
-       end of this document.
+    The common denominator for all active source data is that the they should
+    have TimeReferenceType set to "Relative".   The first two cases when
+    the absolute timing is not reliable should have the internal attribute
+    :code:`t0shift_is_valid` set to False.  That assures the users won't make the
+    mistake of calling the rtoa function and creating a potentially misleading
+    (at best) data set.  That constraint can be enforced using the :code:`set_tref`
+    method that can be called from either TimeSeries or Seismogram objects.
+    The complete set of methods available to handle this issue are discussed at the
+    end of this document.
+
    3.  Synthetic seismograms are a special case that have to be handled with
        care.   The reason is putting synthetic seismogram signals into this
        framework almost always has to be carefully aware of the distinction
@@ -114,8 +115,9 @@ Time Standard Constraints
       following:
 
       .. code-block:: python
-         d.t0=arrival_time      # t0 as a setter (alias for set_to(arrival.time)
-         t=d.t0                 # t0 as a getter (alias for to())
+
+        d.t0 = arrival_time      # t0 as a setter (alias for set_to(arrival.time)
+        t = d.t0                 # t0 as a getter (alias for to())
 
    *   There are several convenience methods that are useful for managing time
        as a variable.  The :code:`time(int i)` method can be used get the computed
