@@ -33,7 +33,7 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
 def read_distributed_data(client_arg, db_name, cursors, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf',
-                          format='spark', spark_context=None):
+                          format='spark', spark_context=None, data_tag=None):
     """
      This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
      manner, and return all of the mspasspy objects using the format required by the distributed computing framework
@@ -55,15 +55,15 @@ def read_distributed_data(client_arg, db_name, cursors, mode='promiscuous', norm
     """
     if format == 'spark':
         list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     elif format == 'dask':
         list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection))
+        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     else:
         raise TypeError("Only spark and dask are supported")
 
 
-def _read_distributed_data(client_arg, db_name, id, mode='promiscuous', normalize=[], load_history=True, include_undefined=False, exclude_keys=[], collection='wf'):
+def _read_distributed_data(client_arg, db_name, id, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf', data_tag=None):
     """
      A helper method used in the distributed map operation. It creates a mongodb connection with provided
      configurations, reads data from the database, constructs a mspasspy object and returns it.
@@ -82,7 +82,7 @@ def _read_distributed_data(client_arg, db_name, id, mode='promiscuous', normaliz
     from mspasspy.db.client import Client
     client = Client(client_arg)
     db = Database(client, db_name)
-    return db.read_data(id, mode, normalize, load_history, exclude_keys, collection)
+    return db.read_data(id, mode, normalize, load_history, exclude_keys, collection, data_tag)
 
 
 class Database(pymongo.database.Database):
@@ -193,8 +193,9 @@ class Database(pymongo.database.Database):
         if not object_doc:
             return None
         
-        if 'data_tag' in object_doc and object_doc['data_tag'] != data_tag:
-            return None
+        if data_tag:
+            if 'data_tag' not in object_doc or object_doc['data_tag'] != data_tag:
+                return None
 
         # 1. build metadata as dict
         md = Metadata()
@@ -627,7 +628,7 @@ class Database(pymongo.database.Database):
 
         return problematic_keys
 
-    def delete_attributes(self, collection, keylist, query={}, verbose=False):
+    def _delete_attributes(self, collection, keylist, query={}, verbose=False):
         """
         Deletes all occurrences of attributes linked to keys defined 
         in a list of keywords passed as (required) keylist argument.  
@@ -671,7 +672,7 @@ class Database(pymongo.database.Database):
                 dbcol.update_one({'_id':id},{'$unset' : todel})
         return counts
     
-    def rename_attributes(self, collection, rename_map, query={}, verbose=False):
+    def _rename_attributes(self, collection, rename_map, query={}, verbose=False):
         """
         Renames specified keys for all or a subset of documents in a 
         MongoDB collection.   The updates are driven by an input python 
@@ -721,7 +722,7 @@ class Database(pymongo.database.Database):
             dbcol.replace_one({'_id':id},doc)
         return counts
 
-    def fix_attribute_types(self, collection, query={}, verbose=False):
+    def _fix_attribute_types(self, collection, query={}, verbose=False):
         """
         This function attempts to fix type collisions in the schema defined 
         for the specified database and collection.  It tries to fix any 
@@ -793,7 +794,7 @@ class Database(pymongo.database.Database):
                 
         return counts
 
-    def check_links(self, normalize='site', wf="wf_TimeSeries", wfquery={}, verbose=False, error_limit=1000):
+    def _check_links(self, xref_key='site_id', collection="wf", wfquery={}, verbose=False, error_limit=1000):
         """
         This function checks for missing cross-referencing ids in a 
         specified wf collection (i.e. wf_TimeSeries or wf_Seismogram)
@@ -836,28 +837,34 @@ class Database(pymongo.database.Database):
         # schema doesn't currently have a way to list normalized 
         # collection names.  For now we just freeze the names 
         # and put them in this one place for maintainability
-        norm_collection_list=['site','channel','source']
-        wf_collection_list=['wf_TimeSeries','wf_Seismogram']
+        try:
+            wf_collection = self.database_schema.default_name(collection)
+        except MsPASSError as err:
+            raise MsPASSError('check_links:  collection {} is not defined in database schema'.format(collection), 'Invalid') from err
 
-        if not (normalize in norm_collection_list):
-            raise MsPASSError('check_links:  illegal value for normalize arg='+normalize,
-                            'Fatal')
-        if not (wf in wf_collection_list):
-            raise MsPASSError('check_links:  illegal value for wf arg='+wf,
-                            'Fatal')
+        xref_keys_list = self.database_schema[wf_collection].xref_keys()
+
+        if xref_key not in xref_keys_list:
+            raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key, 'Fatal')
         # this uses our convention - we need a standard method for to 
         # define this key
-        idkey=normalize+'_id'
+        
+        if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
+            normalize = xref_key.rsplit('_', 1)[0]
+            normalize = self.database_schema.default_name(normalize)
+        else:
+            raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key + ' should be in the form of xxx_id', 'Fatal')
+        
         dbnorm=self[normalize]
-        dbwf=self[wf]
+        dbwf=self[wf_collection]
         n=dbwf.count_documents(wfquery)
         if n==0:
-            raise MsPASSError('checklinks:  '+wf
+            raise MsPASSError('checklinks:  '+wf_collection
                 +' collection has no data matching query=',str(wfquery),
                 'Fatal')
         if verbose:
-            print('Starting cross reference link check for ',wf,
-                ' collection using id=',idkey)
+            print('Starting cross reference link check for ',wf_collection,
+                ' collection using id=',xref_key)
             print('This should resolve links to ',normalize,' collection')
         # We accumulate bad ids in this list that is returned
         bad_id_list=list()
@@ -865,8 +872,8 @@ class Database(pymongo.database.Database):
         cursor=dbwf.find(wfquery)
         for doc in cursor:
             wfid=doc['_id']
-            if idkey in doc:
-                nrmid=doc[idkey]
+            if xref_key in doc:
+                nrmid=doc[xref_key]
                 n_nrm=dbnorm.count_documents({'_id' : nrmid})
                 if n_nrm==0:
                     bad_id_list.append(wfid)
@@ -878,15 +885,16 @@ class Database(pymongo.database.Database):
             else:
                 missing_id_list.append(wfid)
                 if verbose:
-                    print(str(wfid),' is missing required key=',idkey)
+                    print(str(wfid),' is missing required key=',xref_key)
                 if len(missing_id_list) > error_limit:
                         raise MsPASSError('checklinks:  number of missing id errors exceeds internal limit',
                                         'Fatal')
             if len(bad_id_list)>=error_limit or len(missing_id_list)>=error_limit:
                 break
+        
         return tuple([bad_id_list,missing_id_list])
 
-    def check_attribute_types(self, collection="wf_TimeSeries", query={}, verbose=False, error_limit=1000):
+    def _check_attribute_types(self, collection="wf_TimeSeries", query={}, verbose=False, error_limit=1000):
         """
         This function checks the integrity of all attributes 
         found in a specfied collection.  It is designed to detect two 
@@ -978,7 +986,7 @@ class Database(pymongo.database.Database):
         return tuple([bad_type_docs,undefined_key_docs])
                 
         
-    def check_required(self, collection='site', keys=['lat','lon','elev','starttime','endtime'], query={}, verbose=False, error_limit=100):
+    def _check_required(self, collection='site', keys=['lat','lon','elev','starttime','endtime'], query={}, verbose=False, error_limit=100):
         """
         This function applies a test to assure a list of attributes 
         are defined and of the right type.   This function is needed 

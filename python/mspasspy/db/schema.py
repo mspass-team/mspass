@@ -441,6 +441,7 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         self._alias_dic = {}
         self._data_type = None
         self._required_keys = []
+        self._xref_keys = []
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'reference' in attr:
@@ -462,8 +463,11 @@ class DBSchemaDefinition(SchemaDefinitionBase):
             if 'aliases' in attr:
                 self._alias_dic.update({item: key for item in attr['aliases'] if item != key})
 
-            if 'constraint' in attr and attr['constraint'] == 'required':
-                self._required_keys.append(key)
+            if 'constraint' in attr:
+                if attr['constraint'] == 'required':
+                    self._required_keys.append(key)
+                elif attr['constraint'] == 'xref_key':
+                    self._xref_keys.append(key)
         
         if 'data_type' in schema_dic[collection_str]:
             self._data_type = schema_dic[collection_str]['data_type']
@@ -504,6 +508,15 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         :rtype: a class:`list` of class:`str`
         """
         return self._required_keys
+
+    def xref_keys(self):
+        """
+        Return all the xref keys in the current collection as a list
+
+        :return: type of data associated with the collection
+        :rtype: a class:`list` of class:`str`
+        """
+        return self._xref_keys
 
 class MetadataSchema(SchemaBase):
     def __init__(self, schema_file=None):

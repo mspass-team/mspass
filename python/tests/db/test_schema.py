@@ -185,6 +185,12 @@ class TestSchema():
         assert self.dbschema.site.required_keys() == ['_id','lat','lon','elev']
         assert self.dbschema.source.required_keys() == ['_id','lat','lon','depth','time']
 
+    def test_DBSchemaDefinition_xref_keys(self):
+        assert self.dbschema.wf_TimeSeries.xref_keys() == ['site_id','channel_id','source_id','history_object_id','elog_id']
+        assert self.dbschema.wf_Seismogram.xref_keys() == ['site_id','channel_id','source_id','history_object_id','elog_id']
+        assert self.dbschema.site.xref_keys() == []
+        assert self.dbschema.source.xref_keys() == []
+
     def test_MDSchemaDefinition_collection(self):
         assert self.mdschema.TimeSeries.collection('sta') == 'site'
         assert self.mdschema.TimeSeries.collection('starttime') == 'wf_TimeSeries'

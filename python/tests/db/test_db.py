@@ -412,6 +412,11 @@ class TestDatabase():
         assert 'test' not in ts2
         assert 'extra2' not in ts2
         assert 'data_tag' in ts2 and ts2['data_tag'] == 'tag1'
+        # dummy ts without data_tag
+        dummy_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(dummy_ts, 'deepcopy', '1')
+        self.db.save_data(dummy_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert not self.db.read_data(dummy_ts['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'], data_tag='tag1')
 
         res = self.db['site'].find_one({'_id': ts['site_id']})
         assert ts2['site_lat'] == res['lat']
@@ -720,7 +725,7 @@ class TestDatabase():
         assert save_res_code == 0
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert 'delta' in res and 'sampling_rate' in res and 'starttime' in res
-        counts = self.db.delete_attributes('wf_TimeSeries', ['delta', 'sampling_rate', 'starttime'])
+        counts = self.db._delete_attributes('wf_TimeSeries', ['delta', 'sampling_rate', 'starttime'])
         assert len(counts) == 3 and counts == {'delta':1,'sampling_rate':1,'starttime':1}
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert not 'delta' in res and not 'sampling_rate' in res and not 'starttime' in res
@@ -738,7 +743,7 @@ class TestDatabase():
         delta_val = res['delta']
         sampling_rate_val = res['sampling_rate']
         starttime_val = res['starttime']
-        counts = self.db.rename_attributes('wf_TimeSeries', {'delta':'dt', 'sampling_rate':'sr', 'starttime':'st'})
+        counts = self.db._rename_attributes('wf_TimeSeries', {'delta':'dt', 'sampling_rate':'sr', 'starttime':'st'})
         assert len(counts) == 3 and counts == {'delta':1,'sampling_rate':1,'starttime':1}
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert not 'delta' in res and not 'sampling_rate' in res and not 'starttime' in res
@@ -757,7 +762,7 @@ class TestDatabase():
         assert save_res_code == 0
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['npts'] == 'xyz' and res['delta'] == '123' and res['sampling_rate'] == '123'
-        counts = self.db.fix_attribute_types('wf_TimeSeries')
+        counts = self.db._fix_attribute_types('wf_TimeSeries')
         assert len(counts) == 2 and counts == {'delta':1,'sampling_rate':1}
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['npts'] == 'xyz' and res['delta'] == 123.0 and res['sampling_rate'] == 123.0
@@ -777,7 +782,7 @@ class TestDatabase():
         save_res_code = self.db.save_data(bad_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
 
-        (bad_id_list, missing_id_list) = self.db.check_links(normalize='site', wf='wf_TimeSeries')
+        (bad_id_list, missing_id_list) = self.db._check_links(xref_key='site_id', collection='wf')
         assert len(bad_id_list) == 1
         assert bad_id_list == [bad_site_id_ts['_id']]
         assert len(missing_id_list) == 1
@@ -800,10 +805,10 @@ class TestDatabase():
         # test empty matched documents
         query_dict = {'_id': ObjectId()}
         with pytest.raises(MsPASSError, match=re.escape("check_attribute_types:  query={} yields zero matching documents".format(str(query_dict)))):
-            (bad_type_docs, undefined_key_docs) = self.db.check_attribute_types(collection='wf_TimeSeries', query=query_dict)
+            (bad_type_docs, undefined_key_docs) = self.db._check_attribute_types(collection='wf_TimeSeries', query=query_dict)
         
         # test bad_type_docs and undefined_key_docs
-        (bad_type_docs, undefined_key_docs) = self.db.check_attribute_types(collection='wf_TimeSeries')
+        (bad_type_docs, undefined_key_docs) = self.db._check_attribute_types(collection='wf_TimeSeries')
         assert len(bad_type_docs) == 1
         assert bad_type_docs == {bad_type_docs_ts['_id']: {'npts': 'xyz'}}
         assert len(undefined_key_docs) == 2
@@ -826,14 +831,14 @@ class TestDatabase():
         # test empty matched documents
         query_dict = {'_id': ObjectId()}
         with pytest.raises(MsPASSError, match=re.escape("check_required:  query={} yields zero matching documents".format(str(query_dict)))):
-            (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime'], query=query_dict)
+            (wrong_types, undef) = self.db._check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime'], query=query_dict)
         
         # test undefined keys
         with pytest.raises(MsPASSError, match="check_required:  schema has no definition for key=undefined_key"):
-            (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['undefined_key'])
+            (wrong_types, undef) = self.db._check_required(collection='wf_TimeSeries', keys=['undefined_key'])
 
         # test bad_type_docs and undefined_key_docs
-        (wrong_types, undef) = self.db.check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime_shift'])
+        (wrong_types, undef) = self.db._check_required(collection='wf_TimeSeries', keys=['npts','delta','starttime_shift'])
         assert len(wrong_types) == 1
         assert wrong_types == {wrong_types_ts['_id']: {'npts': 'xyz'}}
         assert len(undef) == 2
