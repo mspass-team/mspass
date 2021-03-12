@@ -596,15 +596,9 @@ class Database(pymongo.database.Database):
                 # test every possible xref keys in the doc
                 for key in doc:
                     if self.database_schema[collection].is_defined(key) and self.database_schema[collection].is_xref_key(key):
-                        # only test normalized keys with '_id'
-                        if '_id' in key and key.rsplit('_', 1)[1] == 'id':
-                            normalized_collection_name = key.rsplit('_', 1)[0]
-                            normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
-                            normalized_col = self[normalized_collection_name]
-                            # try to find the referenced docuement
-                            normalized_doc = normalized_col.find_one({'_id': doc[key]})
-                            if not normalized_doc:
-                                problematic_keys[key] = test
+                        is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, key)
+                        if is_bad_xref_key:
+                            problematic_keys[key] = test
 
             elif test == 'undefined':
                 # check if doc has every required key in the collection schema
@@ -634,7 +628,6 @@ class Database(pymongo.database.Database):
         in a list of keywords passed as (required) keylist argument.  
         If a key is not in a given document no action is taken. 
         
-        :param db:  Database handle to be updated
         :param collection:  MongoDB collection to be updated
         :param keylist:  list of keys for elements of each document 
         that are to be deleted.   key are not test against schema 
@@ -681,7 +674,6 @@ class Database(pymongo.database.Database):
         pairs in rename_map are the new keys assigned to each match.  
         
         
-        :param db:  Database handle to be updated
         :param collection:  MongoDB collection to be updated
         :param rename_map:  remap definition dict used as described above.
         :param query: optional query string passed to find database 
@@ -740,7 +732,6 @@ class Database(pymongo.database.Database):
         this function (directly or indirectly through the command line 
         tool dbclean).   
         
-        :param db:  Database handle to be updated
         :param collection:  MongoDB collection to be updated
         :param query: optional query string passed to find database 
         collection method.  Can be used to limit edits to documents 
@@ -794,6 +785,39 @@ class Database(pymongo.database.Database):
                 
         return counts
 
+    def _check_xref_key(self, doc, xref_key):
+        """
+        This atmoic function checks for a single xref_key for a single document
+
+        :param doc:  the wf document, which is a type of dict
+        :param xref_key:  the xref key we need to check in the document
+
+        :return: is_bad_xref_key
+        :rtype :class:`bool`
+        :return: is_bad_wf: the verbose informative/invalid messages
+        :rtype :class:`bool`
+        """
+
+        is_bad_xref_key = False
+        is_bad_wf = False
+        # if the xref_key is not in the doc
+        if xref_key not in doc:
+            is_bad_wf = True
+        else:
+            if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
+                normalized_collection_name = xref_key.rsplit('_', 1)[0]
+                normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
+                normalized_col = self[normalized_collection_name]
+                # try to find the referenced docuement
+                normalized_doc = normalized_col.find_one({'_id': doc[xref_key]})
+                if not normalized_doc:
+                    is_bad_xref_key = True
+            # invalid xref_key name
+            else:
+               is_bad_xref_key = True
+
+        return is_bad_xref_key, is_bad_wf
+
     def _check_links(self, xref_key='site_id', collection="wf", wfquery={}, verbose=False, error_limit=1000):
         """
         This function checks for missing cross-referencing ids in a 
@@ -809,8 +833,8 @@ class Database(pymongo.database.Database):
         in this module.  The function can be run in independently 
         so there is a verbose option to print errors as they are encountered.
         
-        :param db:  required MongoDB database handle.
-        :param wf:  mspass waveform collection on which the normalization
+        :param xref_key: the normalized key you would like to check
+        :param collection:  mspass waveform collection on which the normalization
         check is to be performed.  default is wf_TimeSeries.  
         Currently only accepted alternative is wf_Seismogram.
         :param wfquery:  optional dict passed as a query to limit the 
@@ -837,17 +861,18 @@ class Database(pymongo.database.Database):
         # schema doesn't currently have a way to list normalized 
         # collection names.  For now we just freeze the names 
         # and put them in this one place for maintainability
+        
+        # undefined collection name in the schema
         try:
             wf_collection = self.database_schema.default_name(collection)
         except MsPASSError as err:
             raise MsPASSError('check_links:  collection {} is not defined in database schema'.format(collection), 'Invalid') from err
 
+        # undefined xref key in the schema
         xref_keys_list = self.database_schema[wf_collection].xref_keys()
-
         if xref_key not in xref_keys_list:
             raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key, 'Fatal')
-        # this uses our convention - we need a standard method for to 
-        # define this key
+
         
         if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
             normalize = xref_key.rsplit('_', 1)[0]
@@ -871,18 +896,16 @@ class Database(pymongo.database.Database):
         missing_id_list=list()
         cursor=dbwf.find(wfquery)
         for doc in cursor:
-            wfid=doc['_id']
-            if xref_key in doc:
-                nrmid=doc[xref_key]
-                n_nrm=dbnorm.count_documents({'_id' : nrmid})
-                if n_nrm==0:
-                    bad_id_list.append(wfid)
-                    if verbose:
-                        print(str(wfid),' link with ',str(nrmid),' failed')
-                    if len(bad_id_list) > error_limit:
-                        raise MsPASSError('checklinks:  number of bad id errors exceeds internal limit',
+            wfid = doc['_id']
+            is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, xref_key)
+            if is_bad_xref_key:
+                bad_id_list.append(wfid)
+                if verbose:
+                    print(str(wfid),' link with ',str(xref_key),' failed')
+                if len(bad_id_list) > error_limit:
+                    raise MsPASSError('checklinks:  number of bad id errors exceeds internal limit',
                                         'Fatal')
-            else:
+            if is_bad_wf:
                 missing_id_list.append(wfid)
                 if verbose:
                     print(str(wfid),' is missing required key=',xref_key)
@@ -909,11 +932,6 @@ class Database(pymongo.database.Database):
         Hence, it is important to run this test on all collections needed 
         by a workflow before starting a large job.  
         
-        :param db:  mspass Database handle.   Note this must be 
-        a Database class defined by "from mspasspy.db.database import Database".
-        The reason is that the mspass handle is an extension of MongoDB's 
-        handle that includes the Schema class used to run the tests in 
-        this function. This arg is required
         :param collection:  MongoDB collection that is to be scanned 
         for errors.  Note with normalized data this function should be 
         run on the appropriate wf collection and all normalization 
@@ -1000,11 +1018,6 @@ class Database(pymongo.database.Database):
         as source.  The opposite is noise correlation work where only 
         station information is essential.  
 
-        :param db:  mspass Database handle.   Note this must be 
-        a Database class defined by "from mspasspy.db.database import Database".
-        The reason is that the mspass handle is an extension of MongoDB's 
-        handle that includes the Schema class used to run the tests in 
-        this function. This arg is required
         :param collection:  MongoDB collection that is to be scanned 
         for errors.  Note with normalized data this function should be 
         run on the appropriate wf collection and all normalization 

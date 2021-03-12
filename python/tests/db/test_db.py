@@ -767,6 +767,29 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['npts'] == 'xyz' and res['delta'] == 123.0 and res['sampling_rate'] == 123.0
 
+    def test_check_xref_key(self):
+        bad_xref_key_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_xref_key_ts, 'deepcopy', '1')
+        bad_xref_key_ts['site_id'] = ObjectId()
+        bad_wf_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_wf_ts, 'deepcopy', '1')
+
+        save_res_code = self.db.save_data(bad_xref_key_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(bad_wf_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2','site_id'])
+        assert save_res_code == 0
+
+        bad_xref_key_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_xref_key_ts['_id']})
+        bad_wf_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_wf_ts['_id']})
+
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'site_id')
+        assert is_bad_xref_key
+        assert not is_bad_wf
+
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_wf_doc, 'site_id')
+        assert not is_bad_xref_key
+        assert is_bad_wf
+
     def test_check_links(self):
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
