@@ -126,18 +126,16 @@ of modern digital data acquisition systems (about 8 bits for graphics compared
 to 24 bit acquisition that is now the norm for earthquake data).  There is
 an internal scaling parameter that can be used for all graphics, but the
 internal scaling is inflexible.  If the default scaling proves inadequate
-use one of the mspass amplitude modules for data scaling in the algorithm
-section of the ccore modules
-`found here <https://wangyinz.github.io/mspass/python_api/mspasspy.ccore.html#module-mspasspy.ccore.algorithms.basic>`__.
+use one of the functions for data scaling in :py:mod:`mspasspy.ccore.algorithms.amplitudes`.
 
 Obspy Graphics
 ~~~~~~~~~~~~~~~~~~~~~~
 
 User's familiar with obspy may, in come cases, prefer to utilize obspy's
 buil in graphics.   Obspy's data objects
-(`Trace <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html>`__
+(:py:class:`Trace <obspy.core.trace.Trace>`
 and
-`Stream <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html>`__)
+:py:class:`Stream <obspy.core.stream.Stream>`)
 have a plot method as a member of the data object.  Part of MsPASS are
 a suite of fast converters between obspy and MsPASS data objects.
 These converters can be used in plotting scrips like the following:
