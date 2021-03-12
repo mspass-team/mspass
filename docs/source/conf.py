@@ -43,8 +43,10 @@ extensions = [
   'sphinx.ext.todo',
   'sphinx.ext.viewcode',
   'sphinx_copybutton',
+  'sphinx.ext.intersphinx',
 ]
 
+intersphinx_mapping = {'obspy': ('https://docs.obspy.org/', None)}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
