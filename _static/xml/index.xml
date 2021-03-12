@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.13">
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.17">
   <compound refid="classmspass_1_1utility_1_1_algorithm_definition" kind="class"><name>mspass::utility::AlgorithmDefinition</name>
     <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a5710be2a0e914ed47c80cb12a72f4e91" kind="variable"><name>nm</name></member>
     <member refid="classmspass_1_1utility_1_1_algorithm_definition_1a865187a8175d8624cdf20f637e99a6cc" kind="variable"><name>myid</name></member>
@@ -532,9 +532,9 @@
     <member refid="classmspass_1_1utility_1_1_processing_history_1a35cd2643171f354ded06e1a34681961d" kind="function"><name>is_saved</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1a04eaa592369744d85f54da21b8de9776" kind="function"><name>number_of_stages</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1a0621aa8adf8ebaab44a375a299c14fd8" kind="function"><name>set_as_origin</name></member>
-    <member refid="classmspass_1_1utility_1_1_processing_history_1a4179eb1f453e094c541f8c4a7b5ea3d0" kind="function"><name>new_ensemble_process</name></member>
+    <member refid="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" kind="function"><name>new_ensemble_process</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" kind="function"><name>add_one_input</name></member>
-    <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" kind="function"><name>add_many_inputs</name></member>
+    <member refid="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" kind="function"><name>add_many_inputs</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" kind="function"><name>merge</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" kind="function"><name>accumulate</name></member>
     <member refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" kind="function"><name>clean_accumulate_uuids</name></member>
@@ -701,10 +701,10 @@
   </compound>
   <compound refid="namespacemspass_1_1algorithms_1_1amplitudes" kind="namespace"><name>mspass::algorithms::amplitudes</name>
     <member refid="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991" kind="enum"><name>ScalingMethod</name></member>
-    <member refid="dummy_1a06feda79ea43acddafc6490d70fe8991aa21e600ebbe2eab6697e3087ee1fdb9f" kind="enumvalue"><name>Peak</name></member>
-    <member refid="dummy_1a06feda79ea43acddafc6490d70fe8991a6a04f9e9b7a0c60c00fe0daa2e12eca0" kind="enumvalue"><name>RMS</name></member>
-    <member refid="dummy_1a06feda79ea43acddafc6490d70fe8991aa9cd85059c37be2ad6de4d3b33338986" kind="enumvalue"><name>ClipPerc</name></member>
-    <member refid="dummy_1a06feda79ea43acddafc6490d70fe8991a93720e823d9d9af2323095152cb82906" kind="enumvalue"><name>MAD</name></member>
+    <member refid="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991aa21e600ebbe2eab6697e3087ee1fdb9f" kind="enumvalue"><name>Peak</name></member>
+    <member refid="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991a6a04f9e9b7a0c60c00fe0daa2e12eca0" kind="enumvalue"><name>RMS</name></member>
+    <member refid="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991aa9cd85059c37be2ad6de4d3b33338986" kind="enumvalue"><name>ClipPerc</name></member>
+    <member refid="amplitudes_8h_1a06feda79ea43acddafc6490d70fe8991a93720e823d9d9af2323095152cb82906" kind="enumvalue"><name>MAD</name></member>
     <member refid="amplitudes_8h_1aa0a17feb9807a734a5392c315bf6fb46" kind="function"><name>PeakAmplitude</name></member>
     <member refid="amplitudes_8h_1ab03e48fee66c761ec81d488464a3dad2" kind="function"><name>PeakAmplitude</name></member>
     <member refid="amplitudes_8h_1ab7a8bbe38038b955d8f1353fd9558d33" kind="function"><name>RMSAmplitude</name></member>
@@ -755,38 +755,38 @@
   </compound>
   <compound refid="namespacemspass_1_1utility" kind="namespace"><name>mspass::utility</name>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" kind="enum"><name>MDtype</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a7f80fcc452c2f1ed2bb51b39d0864df1" kind="enumvalue"><name>Real</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a37c033a29fead212bd12fc7a19e8f405" kind="enumvalue"><name>Real32</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3ad909d38d705ce75386dd86e611a82f5b" kind="enumvalue"><name>Double</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3aa4ab3dab2f871e1a5389c934fa26a06d" kind="enumvalue"><name>Real64</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3aa0faef0851b4294c06f2b94bb1cb2044" kind="enumvalue"><name>Integer</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3ac06129f6e6e15c09328365e553f1dc31" kind="enumvalue"><name>Int32</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a8394f0347c184cf156ac5924dccb773b" kind="enumvalue"><name>Long</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3afbde23b11d7e59af7828e81144c8b487" kind="enumvalue"><name>Int64</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a27118326006d3829667a400ad23d5d98" kind="enumvalue"><name>String</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a27226c864bac7454a8504f8edb15d95b" kind="enumvalue"><name>Boolean</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a4b2ab4db4213395205ba0a18bd6c0a0e" kind="enumvalue"><name>Double_Array</name></member>
-    <member refid="dummy_1a8e3dcdd4343f59850c331c8b1309c4e3a4bbb8f967da6d1a610596d7257179c2b" kind="enumvalue"><name>Invalid</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a7f80fcc452c2f1ed2bb51b39d0864df1" kind="enumvalue"><name>Real</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a37c033a29fead212bd12fc7a19e8f405" kind="enumvalue"><name>Real32</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3ad909d38d705ce75386dd86e611a82f5b" kind="enumvalue"><name>Double</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3aa4ab3dab2f871e1a5389c934fa26a06d" kind="enumvalue"><name>Real64</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3aa0faef0851b4294c06f2b94bb1cb2044" kind="enumvalue"><name>Integer</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3ac06129f6e6e15c09328365e553f1dc31" kind="enumvalue"><name>Int32</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a8394f0347c184cf156ac5924dccb773b" kind="enumvalue"><name>Long</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3afbde23b11d7e59af7828e81144c8b487" kind="enumvalue"><name>Int64</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a27118326006d3829667a400ad23d5d98" kind="enumvalue"><name>String</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a27226c864bac7454a8504f8edb15d95b" kind="enumvalue"><name>Boolean</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a4b2ab4db4213395205ba0a18bd6c0a0e" kind="enumvalue"><name>Double_Array</name></member>
+    <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3a4bbb8f967da6d1a610596d7257179c2b" kind="enumvalue"><name>Invalid</name></member>
     <member refid="_metadata_definitions_8h_1a1910cc7e89b541e3aac43632522cec55" kind="enum"><name>MDDefFormat</name></member>
-    <member refid="dummy_1a1910cc7e89b541e3aac43632522cec55a21080924b5d026e4a6011eb987ae1ec8" kind="enumvalue"><name>PF</name></member>
-    <member refid="dummy_1a1910cc7e89b541e3aac43632522cec55a9463f87bbed1fcdacfb8d40e185ca2bc" kind="enumvalue"><name>YAML</name></member>
+    <member refid="_metadata_definitions_8h_1a1910cc7e89b541e3aac43632522cec55a21080924b5d026e4a6011eb987ae1ec8" kind="enumvalue"><name>PF</name></member>
+    <member refid="_metadata_definitions_8h_1a1910cc7e89b541e3aac43632522cec55a9463f87bbed1fcdacfb8d40e185ca2bc" kind="enumvalue"><name>YAML</name></member>
     <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386a" kind="enum"><name>ErrorSeverity</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aa882384ec38ce8d9582b57e70861730e4" kind="enumvalue"><name>Fatal</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aa4bbb8f967da6d1a610596d7257179c2b" kind="enumvalue"><name>Invalid</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aa06197f478ef19e4e580f3517579137a3" kind="enumvalue"><name>Suspect</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aab510ff4b686f023f81a6b973c8928427" kind="enumvalue"><name>Complaint</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aaa603905470e2a5b8c13e96b579ef0dba" kind="enumvalue"><name>Debug</name></member>
-    <member refid="dummy_1a5b3d616387780ce356bfde3578e6386aa5391f9a882a54c787b206138ed6d28b0" kind="enumvalue"><name>Informational</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aa882384ec38ce8d9582b57e70861730e4" kind="enumvalue"><name>Fatal</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aa4bbb8f967da6d1a610596d7257179c2b" kind="enumvalue"><name>Invalid</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aa06197f478ef19e4e580f3517579137a3" kind="enumvalue"><name>Suspect</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aab510ff4b686f023f81a6b973c8928427" kind="enumvalue"><name>Complaint</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aaa603905470e2a5b8c13e96b579ef0dba" kind="enumvalue"><name>Debug</name></member>
+    <member refid="_ms_p_a_s_s_error_8h_1a5b3d616387780ce356bfde3578e6386aa5391f9a882a54c787b206138ed6d28b0" kind="enumvalue"><name>Informational</name></member>
     <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3" kind="enum"><name>ProcessingStatus</name></member>
-    <member refid="dummy_1a81a390507e7c574e0226915cd1bb1ac3a633d6abff0a3fc22404347728d195059" kind="enumvalue"><name>RAW</name></member>
-    <member refid="dummy_1a81a390507e7c574e0226915cd1bb1ac3a6d7b0f55d14f78a5611f7e00a2e3c2ec" kind="enumvalue"><name>ORIGIN</name></member>
-    <member refid="dummy_1a81a390507e7c574e0226915cd1bb1ac3a87129c163298099723f5eb9201684b70" kind="enumvalue"><name>VOLATILE</name></member>
-    <member refid="dummy_1a81a390507e7c574e0226915cd1bb1ac3aec09e9e688c30b57cd64c0180da5c34a" kind="enumvalue"><name>SAVED</name></member>
-    <member refid="dummy_1a81a390507e7c574e0226915cd1bb1ac3a0db45d2a4141101bdfe48e3314cfbca3" kind="enumvalue"><name>UNDEFINED</name></member>
+    <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3a633d6abff0a3fc22404347728d195059" kind="enumvalue"><name>RAW</name></member>
+    <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3a6d7b0f55d14f78a5611f7e00a2e3c2ec" kind="enumvalue"><name>ORIGIN</name></member>
+    <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3a87129c163298099723f5eb9201684b70" kind="enumvalue"><name>VOLATILE</name></member>
+    <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3aec09e9e688c30b57cd64c0180da5c34a" kind="enumvalue"><name>SAVED</name></member>
+    <member refid="_processing_history_8h_1a81a390507e7c574e0226915cd1bb1ac3a0db45d2a4141101bdfe48e3314cfbca3" kind="enumvalue"><name>UNDEFINED</name></member>
     <member refid="_processing_history_8h_1ab5891df6f20b9c8401ed237d8da60683" kind="enum"><name>AtomicType</name></member>
-    <member refid="dummy_1ab5891df6f20b9c8401ed237d8da60683a11deb1121651c5b5cc81e4eb1e791c48" kind="enumvalue"><name>SEISMOGRAM</name></member>
-    <member refid="dummy_1ab5891df6f20b9c8401ed237d8da60683a5eb907bdd20f7bdad174e0525e3c4097" kind="enumvalue"><name>TIMESERIES</name></member>
-    <member refid="dummy_1ab5891df6f20b9c8401ed237d8da60683a0db45d2a4141101bdfe48e3314cfbca3" kind="enumvalue"><name>UNDEFINED</name></member>
+    <member refid="_processing_history_8h_1ab5891df6f20b9c8401ed237d8da60683a11deb1121651c5b5cc81e4eb1e791c48" kind="enumvalue"><name>SEISMOGRAM</name></member>
+    <member refid="_processing_history_8h_1ab5891df6f20b9c8401ed237d8da60683a5eb907bdd20f7bdad174e0525e3c4097" kind="enumvalue"><name>TIMESERIES</name></member>
+    <member refid="_processing_history_8h_1ab5891df6f20b9c8401ed237d8da60683a0db45d2a4141101bdfe48e3314cfbca3" kind="enumvalue"><name>UNDEFINED</name></member>
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7d" kind="enum"><name>PfStyleInputType</name></member>
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7da6493b05cb33fe8436013669c9f850bf1" kind="enumvalue"><name>PFMDSTRING</name></member>
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7dafd9df0c5be320e077326a458de7eab35" kind="enumvalue"><name>PFMDREAL</name></member>
@@ -794,7 +794,7 @@
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7dae7dd33bf35177181b067ed26ca759186" kind="enumvalue"><name>PFMDBOOL</name></member>
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7dacf033d665148aa32b5bd7fc159e1ac3e" kind="enumvalue"><name>PFMDARR</name></member>
     <member refid="_antelope_pf_8cc_1ae5c17f122618887b008273f04c244f7da43d5f9723fd14ae70a63299ca6f94336" kind="enumvalue"><name>PFMDTBL</name></member>
-    <member refid="_metadata_8h_1ae42bd67ecf06b71318d5053a8f017dfa" kind="typedef"><name>Metadata_typedef</name></member>
+    <member refid="_metadata_8h_1af422eedc4bcae87065cc9b9a48d2766f" kind="typedef"><name>Metadata_typedef</name></member>
     <member refid="_metadata_8h_1a6f794f1b2bc2e5de51e312f79bb75607" kind="typedef"><name>MetadataList</name></member>
     <member refid="_processing_history_8cc_1ae6909235462ad6b1de144ecfcb9e4d98" kind="typedef"><name>Algdata</name></member>
     <member refid="_antelope_pf_8h_1abc62555a5731e1b394f7afb4e96ba4f2" kind="function"><name>pftbl_key</name></member>

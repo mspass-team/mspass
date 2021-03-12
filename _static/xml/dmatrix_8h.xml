@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dmatrix_8h" kind="file" language="C++">
     <compoundname>dmatrix.h</compoundname>
     <includes local="no">string</includes>
@@ -16,131 +16,131 @@
     <includedby refid="dmatrix_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc</includedby>
     <includedby refid="normalize_8cc" local="no">/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc</includedby>
     <incdepgraph>
-      <node id="686">
+      <node id="6">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="689">
+      <node id="9">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="683" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="690" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="688">
+      <node id="8">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="681">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h"/>
-        <childnode refid="682" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="683" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="684" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="685" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="686" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="687" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="688" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="689" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="682">
+      <node id="2">
         <label>string</label>
       </node>
-      <node id="690">
+      <node id="10">
         <label>exception</label>
       </node>
-      <node id="687">
+      <node id="7">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="685">
+      <node id="5">
         <label>vector</label>
       </node>
-      <node id="684">
+      <node id="4">
         <label>sstream</label>
       </node>
-      <node id="683">
+      <node id="3">
         <label>iostream</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="691">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h"/>
-        <childnode refid="692" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="693" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="701" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="697">
+      <node id="7">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="699">
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
-      <node id="695">
+      <node id="5">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="696">
+      <node id="6">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
-      <node id="701">
+      <node id="11">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/utility.h</label>
         <link refid="utility_8h_source"/>
-        <childnode refid="692" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="693">
+      <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="694" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="698">
+      <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
-        <childnode refid="692" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="695" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="696" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="692">
+      <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
         <link refid="mspass_8h_source"/>
       </node>
-      <node id="694">
+      <node id="4">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="692" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="695" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="696" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="697" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="698" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="699" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="700" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="700">
+      <node id="10">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
       </node>
@@ -169,7 +169,7 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/binary_oarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/archive/binary_iarchive.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass</highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">//==================================================================</highlight></codeline>
@@ -188,7 +188,7 @@
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kindref="member">badness</ref><sp/>=<sp/>ErrorSeverity::Invalid;</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>necessary<sp/>baggage<sp/>for<sp/>some<sp/>compilers<sp/>-<sp/>empty<sp/>destructor<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="classmspass_1_1utility_1_1dmatrix__index__error" kindref="compound">dmatrix_index_error</ref>()<sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">(){};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="classmspass_1_1utility_1_1dmatrix__index__error" kindref="compound">dmatrix_index_error</ref>()<sp/>throw(){};</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>row,column;</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nrr,<sp/>ncc;</highlight></codeline>
@@ -209,31 +209,31 @@
 <codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kindref="member">badness</ref><sp/>=<sp/>ErrorSeverity::Invalid;</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>necessary<sp/>baggage<sp/>for<sp/>some<sp/>compilers<sp/>-<sp/>empty<sp/>destructor<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref>()<sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">(){};</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>~<ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref>()<sp/>throw(){};</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nrow1,<sp/>ncol1,<sp/>nrow2,<sp/>ncol2;</highlight></codeline>
 <codeline lineno="85"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="101" refid="classmspass_1_1utility_1_1dmatrix" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref></highlight></codeline>
 <codeline lineno="102"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="105"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>();</highlight></codeline>
-<codeline lineno="112"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nc);</highlight></codeline>
-<codeline lineno="114"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"><sp/><sp/>~<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>();</highlight></codeline>
-<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>operator()(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rowindex,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>colindex)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;<sp/></highlight></codeline>
-<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>operator()(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>r,</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c);</highlight></codeline>
-<codeline lineno="129"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="149"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>operator-=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="159"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="169"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" kindref="member">dmatrix</ref>();</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" kindref="member">dmatrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nr,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nc);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" kindref="member">dmatrix</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1aef2e20478c6d9adb649e37b59812cb42" kindref="member">~dmatrix</ref>();</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1adb1442ad936c98c4191a59072b834d97" kindref="member">operator()</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rowindex,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>colindex)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;<sp/></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1adb1442ad936c98c4191a59072b834d97" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>r,</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1a05d02bb630bf3a4b9180f81aca0f835e" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1a2cdc2349f9f027d6caa41379ac7c8a3c" kindref="member">operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1a2b2f4889e00cd1d42e7100cfb8791fcc" kindref="member">operator-=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ab96bc752b9fb5a1d33a628d8fbae8953" kindref="member">operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ac5c5bfbf8873f0deeea6143b07c09574" kindref="member">operator-</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//friend<sp/>class<sp/>dvector;</highlight></codeline>
-<codeline lineno="184"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>operator*(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>B);</highlight></codeline>
+<codeline lineno="184"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>B);</highlight></codeline>
 <codeline lineno="186"><highlight class="comment">//<sp/>Scale<sp/>a<sp/>matrix<sp/>by<sp/>a<sp/>constant.<sp/><sp/>X=c*A<sp/>where<sp/>c<sp/>is<sp/>a<sp/>constant.</highlight></codeline>
 <codeline lineno="188"><highlight class="comment"></highlight></codeline>
-<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>operator*(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>s,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)<sp/>noexcept;</highlight></codeline>
-<codeline lineno="198"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>operator*<sp/>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>s)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept;</highlight></codeline>
-<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>tr(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)<sp/>noexcept;</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>s,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)<sp/>noexcept;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1aa4dc8326b91ab817ed3ca4c757c51eb3" kindref="member">operator* </ref>(</highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>s)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept;</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ac8bd8f853d25a05e32f9e4c152d6af61" kindref="member">tr</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A)<sp/>noexcept;</highlight></codeline>
 <codeline lineno="208"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>\brief<sp/>Get<sp/>a<sp/>pointer<sp/>to<sp/>the<sp/>location<sp/>of<sp/>a<sp/>matrix<sp/>component.</highlight></codeline>
 <codeline lineno="209"><highlight class="comment"><sp/><sp/><sp/></highlight></codeline>
 <codeline lineno="210"><highlight class="comment"><sp/><sp/>Although<sp/>a<sp/>sharp<sp/>knife<sp/>it<sp/>is<sp/>useful<sp/>at<sp/>times<sp/>to<sp/>get<sp/>a<sp/>raw<sp/>pointer<sp/>to<sp/></highlight></codeline>
@@ -251,11 +251,11 @@
 <codeline lineno="222"><highlight class="comment"><sp/><sp/><sp/><sp/>matrix<sp/>dimensions.<sp/></highlight></codeline>
 <codeline lineno="223"><highlight class="comment"><sp/><sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="224"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*<sp/>get_address(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>r,<sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>c)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="232"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>std::ostream&amp;<sp/>operator&lt;&lt;(std::ostream&amp;<sp/>os,<sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A);</highlight></codeline>
-<codeline lineno="234"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rows()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>columns()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="242"><highlight class="normal"><sp/><sp/>std::vector&lt;size_t&gt;<sp/>size()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="244"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>zero();</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/>std::ostream&amp;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1a16be1d0ed64f705413d3c57a3d848320" kindref="member">operator&lt;&lt;</ref>(std::ostream&amp;<sp/>os,<sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>&amp;<sp/>A);</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1a178f65f7f0efb2c99980c8c81cf71bca" kindref="member">rows</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ac32006f0dff7ca1b59fa8f3889deb9e5" kindref="member">columns</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/>std::vector&lt;size_t&gt;<sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1aa78dbbdf719f69c8422734612e9a56af" kindref="member">size</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix_1ab9e34acc9b193854c5148e8c3d9650c2" kindref="member">zero</ref>();</highlight></codeline>
 <codeline lineno="245"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/>ary;<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>initial<sp/>size<sp/>of<sp/>container<sp/>0</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="247"><highlight class="normal"><sp/><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>length;</highlight></codeline>
@@ -274,10 +274,10 @@
 <codeline lineno="268"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="270" refid="classmspass_1_1utility_1_1dvector_1a8d6c8cc42ead0feea6d195ac689aed54" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector_1a8d6c8cc42ead0feea6d195ac689aed54" kindref="member">dvector</ref>():<ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(){};</highlight></codeline>
 <codeline lineno="272" refid="classmspass_1_1utility_1_1dvector_1af7a725c9b60712cdec20fd96e67db537" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector_1af7a725c9b60712cdec20fd96e67db537" kindref="member">dvector</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>nrv)<sp/>:<sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref>(nrv,1){};</highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/>other);</highlight></codeline>
-<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>&amp;operator()(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rowindex);</highlight></codeline>
-<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref><sp/>operator*(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>&amp;A,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref><sp/>&amp;x);</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector_1a8d6c8cc42ead0feea6d195ac689aed54" kindref="member">dvector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1dvector_1a64bc0a75cb80e934fd48ea9879482907" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref>&amp;<sp/>other);</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>&amp;<ref refid="classmspass_1_1utility_1_1dvector_1accddc88c31d3d73955fc91c0eed54035" kindref="member">operator()</ref>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>rowindex);</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref><sp/><ref refid="classmspass_1_1utility_1_1dvector_1ac66d1dfe674fe885c028c57135366acc" kindref="member">operator*</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref><sp/>&amp;A,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1dvector" kindref="compound">dvector</ref><sp/>&amp;x);</highlight></codeline>
 <codeline lineno="290"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="291"><highlight class="normal"></highlight></codeline>
 <codeline lineno="292"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_core_seismogram" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::CoreSeismogram</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
@@ -15,10 +15,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Holds the actual data.</para><para>Matrix is 3xns. Thus the rows are the component number and columns define time position. Note there is a redundancy in these definitions that must be watched if you manipulate the contents of this matrix. That is, <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> defines ns, but the u matrix has it&apos;s own internal size definitions. Currently no tests are done to validate this consistency. All constructors handle this, but again because u is public be very careful in altering u. </para>        </detaileddescription>
+<para>Holds the actual data.</para>
+<para>Matrix is 3xns. Thus the rows are the component number and columns define time position. Note there is a redundancy in these definitions that must be watched if you manipulate the contents of this matrix. That is, <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> defines ns, but the u matrix has it&apos;s own internal size definitions. Currently no tests are done to validate this consistency. All constructors handle this, but again because u is public be very careful in altering u. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="54" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="54" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="54" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="protected-attrib">
@@ -30,10 +32,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Defines if the contents of this object are components of an orthogonal basis.</para><para>Most raw 3c seismic data use orthogonal components, but this is not universal. Furthermore, some transformations (e.g. the free surface transformation operator) define transformations to basis sets that are not orthogonal. Because detecting orthogonality from a transformation is a nontrivial thing (rounding error is the complication) this is made a part of the object to simplify a number of algorithms. </para>        </detaileddescription>
+<para>Defines if the contents of this object are components of an orthogonal basis.</para>
+<para>Most raw 3c seismic data use orthogonal components, but this is not universal. Furthermore, some transformations (e.g. the free surface transformation operator) define transformations to basis sets that are not orthogonal. Because detecting orthogonality from a transformation is a nontrivial thing (rounding error is the complication) this is made a part of the object to simplify a number of algorithms. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="495" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="482" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="495" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="482" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1af87b223c30872f55e8c5a5246da143ba" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -43,10 +47,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Defines of the contents of the object are in Earth cardinal coordinates.</para><para>Cardinal means the cardinal directions at a point on the earth. That is, x1 is positive east, x2 is positive north, and x3 is positive up. Like the components_are_orthogonal variable the purpose of this variable is to simplify common tests for properties of a given data series. </para>        </detaileddescription>
+<para>Defines of the contents of the object are in Earth cardinal coordinates.</para>
+<para>Cardinal means the cardinal directions at a point on the earth. That is, x1 is positive east, x2 is positive north, and x3 is positive up. Like the components_are_orthogonal variable the purpose of this variable is to simplify common tests for properties of a given data series. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="504" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="504" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="504" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="504" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_core_seismogram_1a30316a5d8ed7794f0d51da0c96d97882" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -56,10 +62,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Transformation matrix.</para><para>This is a 3x3 transformation that defines how the data in this object is produced from cardinal coordinates. That is, if u is the contents of this object the data in cardinal directions can be produced by tmatrix^-1 * u. </para>        </detaileddescription>
+<para>Transformation matrix.</para>
+<para>This is a 3x3 transformation that defines how the data in this object is produced from cardinal coordinates. That is, if u is the contents of this object the data in cardinal directions can be produced by tmatrix^-1 * u. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="512" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="512" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="512" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="512" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -71,7 +79,9 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor.</para><para>Sets ns to zero and builds an empty data matrix. The live variable in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> is also set false. </para>        </detaileddescription>
+<para>Default constructor.</para>
+<para>Sets ns to zero and builds an empty data matrix. The live variable in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> is also set false. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="62" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="28" bodyend="43"/>
@@ -88,15 +98,18 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Simplest parameterized constructor.</para><para>Initializes data and sets aside memory for matrix of size 3xnsamples. The data matrix is not initialized and the object is marked as not live. <parameterlist kind="param"><parameteritem>
+<para>Simplest parameterized constructor.</para>
+<para>Initializes data and sets aside memory for matrix of size 3xnsamples. The data matrix is not initialized and the object is marked as not live. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nsamples</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>number of samples expected for holding data. </para></parameterdescription>
+<para>number of samples expected for holding data. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="71" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="44" bodyend="63"/>
@@ -118,12 +131,17 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct a three component seismogram from three <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects.</para><para>A three component seismogram is commonly assembled from individual single channel components. This constructor does the process taking reasonable care to deal with (potentially) irregular start and end times of the individual components. If the start and end times are all the same it uses a simple copy operation. Otherwise it runs a more complicated (read much slower) algorithm that handles the ragged start and stop times by adding a marked gap.</para><para>If start or end times are not constant the algorithm shortens the output to the latest start time and earliest end time respectively.</para><para>Note this constructor requires variables hang and vang, which are orientation angles defined in the CSS3.0 schema (NOT spherical coordinates by the way), by set for each component. This is used to construct the transformation matrix for the object that allows, for example, removing raw data orientation errors using rotate_to_standard. The constructor will throw an exception if any component does not have these attributes set in their Metadata area.</para><para><parameterlist kind="exception"><parameteritem>
+<para>Construct a three component seismogram from three <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects.</para>
+<para>A three component seismogram is commonly assembled from individual single channel components. This constructor does the process taking reasonable care to deal with (potentially) irregular start and end times of the individual components. If the start and end times are all the same it uses a simple copy operation. Otherwise it runs a more complicated (read much slower) algorithm that handles the ragged start and stop times by adding a marked gap.</para>
+<para>If start or end times are not constant the algorithm shortens the output to the latest start time and earliest end time respectively.</para>
+<para>Note this constructor requires variables hang and vang, which are orientation angles defined in the CSS3.0 schema (NOT spherical coordinates by the way), by set for each component. This is used to construct the transformation matrix for the object that allows, for example, removing raw data orientation errors using rotate_to_standard. The constructor will throw an exception if any component does not have these attributes set in their Metadata area.</para>
+<para><parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>SeisppError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>exception can be throw for a variety of serious problems. </para></parameterdescription>
+<para>exception can be throw for a variety of serious problems. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="param"><parameteritem>
@@ -131,17 +149,20 @@
 <parametername>ts</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>vector of 3 <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects to be used to assemble this <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. Input vector order could be arbitrary because a transformation matrix is computed, but for efficiency standard order (E,N,Z) is advised. </para></parameterdescription>
+<para>vector of 3 <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> objects to be used to assemble this <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. Input vector order could be arbitrary because a transformation matrix is computed, but for efficiency standard order (E,N,Z) is advised. </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>component_to_clone</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>the auxiliary parameters (Metadata and <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> common parameters) from one of the components is cloned to assure common required parameters are copied to this object. This argument controls which of the three components passed through ts is used. Default is 0. </para></parameterdescription>
+<para>the auxiliary parameters (Metadata and <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> common parameters) from one of the components is cloned to assure common required parameters are copied to this object. This argument controls which of the three components passed through ts is used. Default is 0. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="107" column="1"/>
@@ -161,21 +182,25 @@
           <defval>true</defval>
         </param>
         <briefdescription>
-<para>Construct from Metadata definition that includes data path. </para>        </briefdescription>
+<para>Construct from Metadata definition that includes data path. </para>
+        </briefdescription>
         <detaileddescription>
-<para>A Metadata object is sufficiently general that it can contain enough information to contruct an object from attributes contained in it. This constuctor uses that approach, with the actual loading of data being an option (on by default). In mspass this is constructor is used to load data with Metadata constructed from MongoDB and then using the path created from two parameters (dir and dfile used as in css3.0 wfdisc) to read data. The API is general but the implementation in mspass is very rigid. It blindly assumes the data being read are binary doubles in the right byte order and ordered in the native order for dmatrix (Fortran order). i.e. the constuctor does a raw fread of ns*3 doubles into the internal array used in the dmatrix implementation.</para><para><parameterlist kind="param"><parameteritem>
+<para>A Metadata object is sufficiently general that it can contain enough information to contruct an object from attributes contained in it. This constuctor uses that approach, with the actual loading of data being an option (on by default). In mspass this is constructor is used to load data with Metadata constructed from MongoDB and then using the path created from two parameters (dir and dfile used as in css3.0 wfdisc) to read data. The API is general but the implementation in mspass is very rigid. It blindly assumes the data being read are binary doubles in the right byte order and ordered in the native order for dmatrix (Fortran order). i.e. the constuctor does a raw fread of ns*3 doubles into the internal array used in the dmatrix implementation.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>md</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the Metadata used for the construction. It MUST contain all of the following or it will fail: delta, starttime,npts,U11,U21, U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.</para></parameterdescription>
+<para>is the Metadata used for the construction. It MUST contain all of the following or it will fail: delta, starttime,npts,U11,U21, U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.</para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>load_data</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if true (default) a file name is constructed from dir+&quot;/&quot;+dfile, the file is openned, fseek is called to foff, data are read with fread, and the file is closed. If false a dmatrix for u is still created of size 3xns, but the matrix is only initialized to all zeros.</para></parameterdescription>
+<para>if true (default) a file name is constructed from dir+&quot;/&quot;+dfile, the file is openned, fseek is called to foff, data are read with fread, and the file is closed. If false a dmatrix for u is still created of size 3xns, but the matrix is only initialized to all zeros.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -183,13 +208,15 @@
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if required metadata are missing. </para></parameterdescription>
+<para>throw a MsPASSError if required metadata are missing. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="100" bodyend="168"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="136" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="100" bodyend="168"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a9c993726c259d7a6f1c213d0d04db5ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -203,7 +230,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. </para>        </detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="141" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="65" bodyend="75"/>
@@ -219,20 +247,24 @@
           <declname>sample_interval</declname>
         </param>
         <briefdescription>
-<para>Set the sample interval. </para>        </briefdescription>
+<para>Set the sample interval. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined dt in Metadata. That is handled by first setting the internal dt value and then going through a fixed list of valid alias keys for dt. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined dt in Metadata. That is handled by first setting the internal dt value and then going through a fixed list of valid alias keys for dt. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample_interval</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="155" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="969" bodyend="987"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="155" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="969" bodyend="987"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -245,20 +277,25 @@
           <declname>npts</declname>
         </param>
         <briefdescription>
-<para>Set the number of samples attribute for data. </para>        </briefdescription>
+<para>Set the number of samples attribute for data. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal npts value (actually ns) and then going through a fixed list of valid alias keys for npts. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para>This attribute has an additional complication compared to other setter that are overrides from <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref>. That is, the number of points define the data buffer size to hold the sample data. To guarantee the buffer size and the internal remain consistent this method clears any existing content of the dmatrix u and initializes the 3xnpts matrix to 0s. Note this means if one is using this to assemble a data object in pieces you MUST call this method before loading any data or it will be cleared and you will mysteriously find the data are all zeros.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal npts value (actually ns) and then going through a fixed list of valid alias keys for npts. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para>This attribute has an additional complication compared to other setter that are overrides from <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref>. That is, the number of points define the data buffer size to hold the sample data. To guarantee the buffer size and the internal remain consistent this method clears any existing content of the dmatrix u and initializes the 3xnpts matrix to 0s. Note this means if one is using this to assemble a data object in pieces you MUST call this method before loading any data or it will be cleared and you will mysteriously find the data are all zeros.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>npts</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new number of points to set. </para></parameterdescription>
+<para>is the new number of points to set. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="177" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1008" bodyend="1032"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="177" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1008" bodyend="1032"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a629ae308ad656912abd32d086730f35d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -266,12 +303,14 @@
         <argsstring>()</argsstring>
         <name>sync_npts</name>
         <briefdescription>
-<para>Sync the number of samples attribute with actual data size. </para>        </briefdescription>
+<para>Sync the number of samples attribute with actual data size. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method syncs the npts attribute with the actual size of the dmatrix u. It also syncs aliases in the same way as the set_npts method. </para>        </detaileddescription>
+<para>This method syncs the npts attribute with the actual size of the dmatrix u. It also syncs aliases in the same way as the set_npts method. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="184" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1033" bodyend="1055"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="184" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1033" bodyend="1055"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -284,20 +323,25 @@
           <declname>t0in</declname>
         </param>
         <briefdescription>
-<para>Set the data start time. </para>        </briefdescription>
+<para>Set the data start time. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal t0 value and then going through a fixed list of valid alias keys for it. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para>This is a dangerous method to use on real data as it can mess up the time if not handled correctly. It should be used only when that sharp knife is needed such as in assembling data outside of constructors in a test program.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal t0 value and then going through a fixed list of valid alias keys for it. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para>This is a dangerous method to use on real data as it can mess up the time if not handled correctly. It should be used only when that sharp knife is needed such as in assembling data outside of constructors in a test program.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>t0in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="201" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="988" bodyend="1007"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="201" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="988" bodyend="1007"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aaa906f3915cfd8ba04adefedc35032e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
@@ -311,10 +355,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator. </para>        </detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="205" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="835" bodyend="853"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="205" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="835" bodyend="853"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a4824e03f8697c3f36fa7957bb82e122c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
@@ -326,14 +371,17 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Summation operator. </para>        </briefdescription>
+<para>Summation operator. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is other signal to add to this. </para></parameterdescription>
+<para>is other signal to add to this. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -341,13 +389,15 @@
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="222" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="865" bodyend="908"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="222" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="865" bodyend="908"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a0254f287fe5fb2217fcda0131b65410f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
@@ -361,10 +411,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Addition operator.</para><para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>        </detaileddescription>
+<para>Addition operator.</para>
+<para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="230" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="957" bodyend="962"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="230" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="957" bodyend="962"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1acb19d36d0e3ed2e52eb77da34c65f4f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
@@ -378,10 +430,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Multiply data by a scalar. </para>        </detaileddescription>
+<para>Multiply data by a scalar. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="232" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="854" bodyend="864"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="232" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="854" bodyend="864"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1af749235404f3cf11808598ef133bf781" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> &amp;</type>
@@ -393,14 +446,17 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Subtraction operator. </para>        </briefdescription>
+<para>Subtraction operator. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is other signal to subract from this. </para></parameterdescription>
+<para>is other signal to subract from this. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -408,13 +464,15 @@
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="249" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="913" bodyend="956"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="249" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="913" bodyend="956"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ac44e27ef57299045b2e0c7a252e32a89" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref></type>
@@ -428,10 +486,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Subtraction operator.</para><para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>        </detaileddescription>
+<para>Subtraction operator.</para>
+<para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="257" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="963" bodyend="968"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="257" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="963" bodyend="968"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1b8fc85ca5a5e14d2e2cdd51a9697fcc" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -445,12 +505,15 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Extract a sample from data vector.</para><para>A sample in this context means a three-vector at a requested sample index. Range checking is implicit because of the internal use of the dmatrix to store the samples of data. This operator is an alternative to extracting samples through indexing of the internal dmatrix u that holds the data.</para><para><parameterlist kind="param"><parameteritem>
+<para>Extract a sample from data vector.</para>
+<para>A sample in this context means a three-vector at a requested sample index. Range checking is implicit because of the internal use of the dmatrix to store the samples of data. This operator is an alternative to extracting samples through indexing of the internal dmatrix u that holds the data.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the sample number requested (must be in range or an exception will be thrown)</para></parameterdescription>
+<para>is the sample number requested (must be in range or an exception will be thrown)</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -458,22 +521,26 @@
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead. Note the code does this by catching an error thrown by dmatrix in this situation, printing the error message from the dmatrix object, and then throwing a new SeisppError with a shorter message. </para></parameterdescription>
+<para>if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead. Note the code does this by catching an error thrown by dmatrix in this situation, printing the error message from the dmatrix object, and then throwing a new SeisppError with a shorter message. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>std::vector containing a 3 vector of the samples at requested sample number</para></simplesect>
+<simplesect kind="return"><para>std::vector containing a 3 vector of the samples at requested sample number</para>
+</simplesect>
 <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the integer sample number of data desired. </para></parameterdescription>
+<para>is the integer sample number of data desired. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="280" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1057" bodyend="1066"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="280" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1057" bodyend="1066"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1abdf52d3336018194da73d6832150169d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -485,29 +552,35 @@
           <declname>time</declname>
         </param>
         <briefdescription>
-<para>Overloaded version of operator[] for time. </para>        </briefdescription>
+<para>Overloaded version of operator[] for time. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Sometimes it is useful to ask for data at a specified time without worrying about the time conversion. This simplifies that process. It is still subject to an exception if the the time requested is outside the data range.</para><para><parameterlist kind="param"><parameteritem>
+<para>Sometimes it is useful to ask for data at a specified time without worrying about the time conversion. This simplifies that process. It is still subject to an exception if the the time requested is outside the data range.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>time</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the time of the requested sample </para></parameterdescription>
+<para>is the time of the requested sample </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>3 vector of data samples at requested time </para></simplesect>
+<simplesect kind="return"><para>3 vector of data samples at requested time </para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>will be thrown if the time is outside the data range. </para></parameterdescription>
+<para>will be thrown if the time is outside the data range. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="292" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1067" bodyend="1078"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="292" column="21" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="1067" bodyend="1078"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a22f733f1d159422844f3091450813445" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type></type>
@@ -517,10 +590,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard destructor. </para>        </detaileddescription>
+<para>Standard destructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="294" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="294" bodyend="294"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="294" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="294" bodyend="294"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a756ee542caaa6001f9f40fed3607ff7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -530,18 +604,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Apply inverse transformation matrix to return data to cardinal direction components.</para><para>It is frequently necessary to make certain a set of three component data are oriented to the standard reference frame (EW, NS, Vertical). This function does this. For efficiency it checks the components_are_cardinal variable and does nothing if it is set true. Otherwise, it applies the inverse transformation and then sets this variable true. Note even if the current transformation matrix is not orthogonal it will be put back into cardinal coordinates. <parameterlist kind="exception"><parameteritem>
+<para>Apply inverse transformation matrix to return data to cardinal direction components.</para>
+<para>It is frequently necessary to make certain a set of three component data are oriented to the standard reference frame (EW, NS, Vertical). This function does this. For efficiency it checks the components_are_cardinal variable and does nothing if it is set true. Otherwise, it applies the inverse transformation and then sets this variable true. Note even if the current transformation matrix is not orthogonal it will be put back into cardinal coordinates. <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>SeisppError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>thrown if the an inversion of the transformation matrix is required and that matrix is singular. This can happen if the transformation matrix is incorrectly defined or the actual data are coplanar. </para></parameterdescription>
+<para>thrown if the an inversion of the transformation matrix is required and that matrix is singular. This can happen if the transformation matrix is incorrectly defined or the actual data are coplanar. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="308" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="343" bodyend="448"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="308" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="343" bodyend="448"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ab52a292c7c7bc8fc5fef68db9eb847e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -555,18 +632,24 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Rotate data using a P wave type coordinate definition.</para><para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered. The transformation matrix is effectively the matrix product of two coordinate rotations: (1) rotation around x3 by angle phi and (2) rotation around x1 by theta.</para><para>The sense of this transformation is confusing because of a difference in convention between spherical coordinates and standard earth coordinates. In particular, orientation on the earth uses a convention with x2 being the x2 axis and bearings are relative to that with a standard azimuth measured clockwise from north. Spherical coordinate angle phi (used here) is measured counterclockwise relative to the x1 axis, which is east in standard earth coordinates. This transformation is computed using a phi angle. To use this then to compute a transformation to standard ray coordinates with x2 pointing in the direction of wavefront advance, phi should be set to pi/2-azimuth which gives the phi angle needed to rotate x2 to radial. This is extremely confusing because in spherical coordinates it would be more intuitive to rotate x1 to radial, but this is NOT the convention used here. In general to use this feature the best way to avoid this confusion is to use the PMHalfSpaceModel procedure to compute a SphericalCoordinate object consistent with given propagation direction defined by a slowness vector. Alternatively, use the free_surface_transformation method defined below.</para><para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to create cummulative transformations.</para><para><parameterlist kind="param"><parameteritem>
+<para>Rotate data using a P wave type coordinate definition.</para>
+<para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered. The transformation matrix is effectively the matrix product of two coordinate rotations: (1) rotation around x3 by angle phi and (2) rotation around x1 by theta.</para>
+<para>The sense of this transformation is confusing because of a difference in convention between spherical coordinates and standard earth coordinates. In particular, orientation on the earth uses a convention with x2 being the x2 axis and bearings are relative to that with a standard azimuth measured clockwise from north. Spherical coordinate angle phi (used here) is measured counterclockwise relative to the x1 axis, which is east in standard earth coordinates. This transformation is computed using a phi angle. To use this then to compute a transformation to standard ray coordinates with x2 pointing in the direction of wavefront advance, phi should be set to pi/2-azimuth which gives the phi angle needed to rotate x2 to radial. This is extremely confusing because in spherical coordinates it would be more intuitive to rotate x1 to radial, but this is NOT the convention used here. In general to use this feature the best way to avoid this confusion is to use the PMHalfSpaceModel procedure to compute a SphericalCoordinate object consistent with given propagation direction defined by a slowness vector. Alternatively, use the free_surface_transformation method defined below.</para>
+<para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to create cummulative transformations.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sc</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>defines final x3 direction (longitudinal) in a spherical coordinate structure. </para></parameterdescription>
+<para>defines final x3 direction (longitudinal) in a spherical coordinate structure. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="349" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="487" bodyend="557"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="349" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="487" bodyend="557"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a8bfacfda2b33e2df7938695126fbb0db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -581,18 +664,24 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Rotate data using a P wave type coordinate definition.</para><para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered.</para><para>This method effectively turns nu into a SphericalCoordinate object and calles the related rotate method that has a SphericalCoordinate object as an argument. The potential confusion of orientation is not as extreme here. After the transformation x3prime will point in the direction of nu, x2 will be in the x3-x3prime plane (rotation by theta) and orthogonal to x3prime, and x1 will be horizontal and perpendicular to x2prime and x3prime.</para><para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to</para><para><parameterlist kind="param"><parameteritem>
+<para>Rotate data using a P wave type coordinate definition.</para>
+<para>In seismology the longitudinal motion direction of a P wave defines a direction in space. This method rotates the data into a coordinate system defined by a direction passed through the argument. The data are rotated such that x1 becomes the transverse component, x2 becomes radial, and x3 becomes longitudinal. In the special case for a vector pointing in the x3 direction the data are not altered.</para>
+<para>This method effectively turns nu into a SphericalCoordinate object and calles the related rotate method that has a SphericalCoordinate object as an argument. The potential confusion of orientation is not as extreme here. After the transformation x3prime will point in the direction of nu, x2 will be in the x3-x3prime plane (rotation by theta) and orthogonal to x3prime, and x1 will be horizontal and perpendicular to x2prime and x3prime.</para>
+<para>A VERY IMPORTANT thing to recognize about this tranformation is it will always yield a result relative to cardinal coordinates. i.e. if the data had been previously rotated or were not originally in ENZ form they will be first transformed to ENZ before actually performing this transformation. Use the transform or horizontal rotation method to</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nu</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>defines direction of x3 direction (longitudinal) as a unit vector with three components. </para></parameterdescription>
+<para>defines direction of x3 direction (longitudinal) as a unit vector with three components. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="375" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="558" bodyend="563"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="375" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="558" bodyend="563"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a895a06c26825e8abe8c8617622cf8d5e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -604,20 +693,27 @@
           <declname>phi</declname>
         </param>
         <briefdescription>
-<para>Rotate horizontals by a simple angle in degrees. </para>        </briefdescription>
+<para>Rotate horizontals by a simple angle in degrees. </para>
+        </briefdescription>
         <detaileddescription>
-<para>A common transformation in 3C processing is a rotation of the horizontal components by an angle. This leaves the vertical (assumed here x3) unaltered. This routine rotates the horizontals by angle phi using with positive phi counterclockwise as in polar coordinates and the azimuth angle of spherical coordinates.</para><para>Note this transformation is cummulative. i.e. this transformation is cumulative. The internal transformation matrix will be updated. This is a useful feature for things like incremental horizontal rotation in rotational angle grid searches.</para><para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername>phi</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>rotation angle around x3 axis in counterclockwise direction (in radians). </para></parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>        </detaileddescription>
+<para><verbatim>A common transformation in 3C processing is a rotation of the
+horizontal components by an angle.  This leaves the vertical
+(assumed here x3) unaltered.   This routine rotates the horizontals
+by angle phi using with positive phi counterclockwise as in
+polar coordinates and the azimuth angle of spherical coordinates.
+
+Note this transformation is cummulative.  i.e. this transformation
+is cumulative.  The internal transformation matrix will be updated.
+This is a useful feature for things like incremental horizontal
+rotation in rotational angle grid searches.
+
+\param phi rotation angle around x3 axis in counterclockwise
+  direction (in radians).
+</verbatim> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="392" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="568" bodyend="611"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="392" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="568" bodyend="611"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae9ea31f9e36577a51660c61e0749d4a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -632,18 +728,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Applies an arbitrary transformation matrix to the data. i.e. after calling this method the data will have been multiplied by the matrix a and the transformation matrix will be updated. The later allows cascaded transformations to data.</para><para><parameterlist kind="param"><parameteritem>
+<para>Applies an arbitrary transformation matrix to the data. i.e. after calling this method the data will have been multiplied by the matrix a and the transformation matrix will be updated. The later allows cascaded transformations to data.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>a</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a C style 3x3 matrix. </para></parameterdescription>
+<para>is a C style 3x3 matrix. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="401" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="612" bodyend="647"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="401" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="612" bodyend="647"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1adccfb78a6ebcdf62039e5cb351566438" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -665,32 +764,38 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Computes and applies the Kennett [1991] free surface transformation matrix.</para><para>Kennett [1991] gives the form for a free surface transformation operator that reduces to a nonorthogonal transformation matrix when the wavefield is not evanescent. On output x1 will be transverse, x2 will be SV (radial), and x3 will be longitudinal.</para><para><parameterlist kind="param"><parameteritem>
+<para>Computes and applies the Kennett [1991] free surface transformation matrix.</para>
+<para>Kennett [1991] gives the form for a free surface transformation operator that reduces to a nonorthogonal transformation matrix when the wavefield is not evanescent. On output x1 will be transverse, x2 will be SV (radial), and x3 will be longitudinal.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>u</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>slowness vector off the incident wavefield </para></parameterdescription>
+<para>slowness vector off the incident wavefield </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>vp0</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Surface P wave velocity </para></parameterdescription>
+<para>Surface P wave velocity </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>vs0</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>Surface S wave velocity. </para></parameterdescription>
+<para>Surface S wave velocity. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="414" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="662" bodyend="725"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="414" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="662" bodyend="725"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1aae2950b408052bda849ba07c4ea9b018" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref></type>
@@ -700,11 +805,15 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return current transformation matrix.</para><para>The transformation matrix is maintained internally in this object. Transformations like rotations and the transform method can change make this matrix not an identity matrix. It should always be an identity matrix when the coordinates are cardinal (i.e. ENZ).</para><para><simplesect kind="return"><para>3x3 transformation matrix. </para></simplesect>
-</para>        </detaileddescription>
+<para>Return current transformation matrix.</para>
+<para>The transformation matrix is maintained internally in this object. Transformations like rotations and the transform method can change make this matrix not an identity matrix. It should always be an identity matrix when the coordinates are cardinal (i.e. ENZ).</para>
+<para><simplesect kind="return"><para>3x3 transformation matrix. </para>
+</simplesect>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="424" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="424" bodyend="430"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="424" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="424" bodyend="430"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a94e13495475bfb8c1e62f40006f13bdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -716,29 +825,35 @@
           <declname>A</declname>
         </param>
         <briefdescription>
-<para>Define the transformaton matrix. </para>        </briefdescription>
+<para>Define the transformaton matrix. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Occasionally we need to set the transformation matrix manually. The type example is input with a format where the component directions are embedded. We use a dmatrix as it is more easily wrapped for python than the raw C 2D array which really doesn&apos;t translate well between the languages.</para><para><parameterlist kind="param"><parameteritem>
+<para>Occasionally we need to set the transformation matrix manually. The type example is input with a format where the component directions are embedded. We use a dmatrix as it is more easily wrapped for python than the raw C 2D array which really doesn&apos;t translate well between the languages.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>A</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the 3X3 matrix copied to the internal transformation matrix array.</para></parameterdescription>
+<para>is the 3X3 matrix copied to the internal transformation matrix array.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para></simplesect>
+<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input matrix is not 3x3. </para></parameterdescription>
+<para>throw a MsPASSError if the input matrix is not 3x3. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="448" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="726" bodyend="748"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="448" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="726" bodyend="748"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ad60b2dca7acfd76ff1f8d677ef609f8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -751,29 +866,34 @@
           <array>[3][3]</array>
         </param>
         <briefdescription>
-<para>Define the transformaton matrix with a C style 3x3 matrix. </para>        </briefdescription>
+<para>Define the transformaton matrix with a C style 3x3 matrix. </para>
+        </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>a</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a C style 3x3 matrix.</para></parameterdescription>
+<para>is a C style 3x3 matrix.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para></simplesect>
+<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input matrix is not 3x3. </para></parameterdescription>
+<para>throw a MsPASSError if the input matrix is not 3x3. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="459" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="749" bodyend="771"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="459" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="749" bodyend="771"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a686a13c4938df315e175cd249a52b74e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>bool</type>
@@ -785,29 +905,34 @@
           <declname>a</declname>
         </param>
         <briefdescription>
-<para>Define the transformaton matrix with a python object. </para>        </briefdescription>
+<para>Define the transformaton matrix with a python object. </para>
+        </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>a</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a python object of 9 elements with types of dmatrix, numpy array, or list.</para></parameterdescription>
+<para>is a python object of 9 elements with types of dmatrix, numpy array, or list.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para></simplesect>
+<simplesect kind="return"><para>true if the given transformation matrix is an identity meaning components_are_cardinal gets set true. false if the test for an identity matrix fails. </para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>Will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPASSError if the input type or dimension is not recognized. </para></parameterdescription>
+<para>throw a MsPASSError if the input type or dimension is not recognized. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="469" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="469" column="8"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a1dd1a9469bca89f7e07c6aa928dc4a09" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -817,10 +942,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns true of components are cardinal. </para>        </detaileddescription>
+<para>Returns true of components are cardinal. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="472" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="472" bodyend="472"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="472" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="472" bodyend="472"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1a41711bd9b0c88089e6e217f318c01de2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -830,12 +956,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return true if the components are orthogonal. </para>        </detaileddescription>
+<para>Return true if the components are orthogonal. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="474" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="474" bodyend="474"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="474" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="474" bodyend="474"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::seismic::CoreSeismogram::endtime</definition>
         <argsstring>() const noexcept</argsstring>
@@ -843,10 +970,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the end time (time associated with last data sample) of this data object. </para>        </detaileddescription>
+<para>Returns the end time (time associated with last data sample) of this data object. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="479" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="479" bodyend="482"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="479" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" bodystart="479" bodyend="482"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="private-func">
@@ -861,77 +989,80 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="516" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="76" bodyend="99"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h" line="516" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc" bodystart="76" bodyend="99"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Vector (three-component) seismogram data object. </para>    </briefdescription>
+<para>Vector (three-component) seismogram data object. </para>
+    </briefdescription>
     <detaileddescription>
-<para>A three-component seismogram is a common concept in seismology. The concept used here is that a three-component seismogram is a time series with a 3-vector as the data at each time step. As a result the data are stored internally as a matrix with row defining the component number (C indexing 0,1,2) and the column defining the time variable. The object inherits common concepts of a time series through the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> object. Auxiliary parameters are defined for the object through inheritance of a Metadata object. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
-</para>    </detaileddescription>
+<para>A three-component seismogram is a common concept in seismology. The concept used here is that a three-component seismogram is a time series with a 3-vector as the data at each time step. As a result the data are stored internally as a matrix with row defining the component number (C indexing 0,1,2) and the column defining the time variable. The object inherits common concepts of a time series through the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> object. Auxiliary parameters are defined for the object through inheritance of a Metadata object. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="55">
+      <node id="2">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="54">
+      <node id="1">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="55" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="56" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="56">
+      <node id="3">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="57" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="59">
+      <node id="6">
         <label>mspass::seismic::SeismogramWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="58" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="57">
+      <node id="4">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="58">
+      <node id="5">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="54" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="64">
+      <node id="5">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="61">
+      <node id="2">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="60">
+      <node id="1">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="61" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="62" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="64" relation="usage">
+        <childnode refid="5" relation="usage">
           <edgelabel>u</edgelabel>
         </childnode>
       </node>
-      <node id="62">
+      <node id="3">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="63" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="63">
+      <node id="4">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>

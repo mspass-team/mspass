@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_time_series_w_gaps" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::TimeSeriesWGaps</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_time_series" prot="public" virt="non-virtual">mspass::seismic::TimeSeries</basecompoundref>
@@ -11,12 +11,14 @@
         <argsstring>()</argsstring>
         <name>TimeSeriesWGaps</name>
         <briefdescription>
-<para>Constructor. </para>        </briefdescription>
+<para>Constructor. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Will need a set of conastructors. Requires some thought as how to set gap is an issue. </para>        </detaileddescription>
+<para>Will need a set of conastructors. Requires some thought as how to set gap is an issue. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="13" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a2499cb34652f342028785384117d2ecb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -30,10 +32,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copy constructor. </para>        </detaileddescription>
+<para>Copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="15" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="15" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ad60b9b5ef539e354d48ba7abc01409b7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" kindref="compound">TimeSeriesWGaps</ref> &amp;</type>
@@ -50,7 +53,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="16" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="16" column="19"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a364cc91f8c6943a99720fd220a0afb14" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -63,7 +66,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="17" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="17" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -78,18 +81,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Absolute to relative time conversion. Sometimes we want to convert data from absolute time (epoch times) to a relative time standard. Examples are conversions to travel time using an event origin time or shifting to an arrival time reference frame. This operation simply switches the tref variable and alters t0 by tshift.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
+<para>Absolute to relative time conversion. Sometimes we want to convert data from absolute time (epoch times) to a relative time standard. Examples are conversions to travel time using an event origin time or shifting to an arrival time reference frame. This operation simply switches the tref variable and alters t0 by tshift.</para>
+<para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>tshift</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- time shift applied to data before switching data to relative time mode. </para></parameterdescription>
+<para>- time shift applied to data before switching data to relative time mode. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="29" column="8"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a94b8dec417673158de0d68b31b353d49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -103,18 +109,21 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database. This operation simply switches the tref variable and alters t0 by tshift.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
+<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database. This operation simply switches the tref variable and alters t0 by tshift.</para>
+<para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>tshift</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- time shift applied to data before switching data to absolute time mode.</para></parameterdescription>
+<para>- time shift applied to data before switching data to absolute time mode.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-NOTE: This method is maintained only for backward compatibility. May be depricated in favor of method that uses internally stored private shift variable. </para>        </detaileddescription>
+NOTE: This method is maintained only for backward compatibility. May be depricated in favor of method that uses internally stored private shift variable. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="44" column="8"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a51eefbc8e6a034148da8f36e21870fe2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -125,10 +134,13 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para><para>This method returns data previously converted to relative back to absolute using the internally stored time shift attribute.</para><para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. </para>        </detaileddescription>
+<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an absolute time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para>
+<para>This method returns data previously converted to relative back to absolute using the internally stored time shift attribute.</para>
+<para>This method overrides the one in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to correctly reference gaps. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="56" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="56" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -143,10 +155,12 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Shift the reference time.</para><para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>        </detaileddescription>
+<para>Shift the reference time.</para>
+<para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="63" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="63" column="10"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -157,10 +171,11 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Force all data inside data gaps to zero. </para>        </detaileddescription>
+<para>Force all data inside data gaps to zero. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h" line="66" column="8"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -168,117 +183,117 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="235">
+      <node id="7">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="236" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="230">
+      <node id="2">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="231" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="235" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="237">
+      <node id="9">
         <label>mspass::seismic::DataGap</label>
         <link refid="classmspass_1_1seismic_1_1_data_gap"/>
       </node>
-      <node id="232">
+      <node id="4">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="233">
+      <node id="5">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="234" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="229">
+      <node id="1">
         <label>mspass::seismic::TimeSeriesWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="230" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="237" relation="public-inheritance">
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="234">
+      <node id="6">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="236">
+      <node id="8">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="231">
+      <node id="3">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="232" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
-        <childnode refid="233" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="244">
+      <node id="7">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="245" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
-        <childnode refid="246" relation="usage">
+        <childnode refid="9" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
       </node>
-      <node id="239">
+      <node id="2">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="240" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="244" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="247">
+      <node id="10">
         <label>mspass::seismic::DataGap</label>
         <link refid="classmspass_1_1seismic_1_1_data_gap"/>
       </node>
-      <node id="241">
+      <node id="4">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="242">
+      <node id="5">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="243" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="238">
+      <node id="1">
         <label>mspass::seismic::TimeSeriesWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="239" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="247" relation="public-inheritance">
+        <childnode refid="10" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="246">
+      <node id="9">
         <label>mspass::utility::ErrorLogger</label>
         <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-      <node id="243">
+      <node id="6">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="245">
+      <node id="8">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="240">
+      <node id="3">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="241" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
-        <childnode refid="242" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
@@ -286,7 +301,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>accumulate</name></member>
       <member refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_gap</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_many_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_many_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>add_one_input</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1ac0738e8e0441f49d3c03b504dc7e44b9" prot="public" virt="virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>ator</name></member>
@@ -355,7 +370,7 @@ NOTE: This method is maintained only for backward compatibility. May be depricat
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>mlive</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>modified</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" prot="protected" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>mt0</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a4179eb1f453e094c541f8c4a7b5ea3d0" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_ensemble_process</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_ensemble_process</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a75af2861c06a905968cc9c727b8cc877" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_map</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ae0225ef6ba03dc64ebb711bb54b1554d" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>new_map</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeSeriesWGaps</scope><name>newid</name></member>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_time_window_cmp" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::TimeWindowCmp</compoundname>
     <includes refid="_data_gap_8h" local="no">DataGap.h</includes>
@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="18" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="18" bodyend="19"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="18" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="18" bodyend="19"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -44,14 +44,17 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="73" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="73" bodyend="74"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="73" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="73" bodyend="74"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Function object used for weak comparison to order <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects. </para>    </briefdescription>
+<para>Function object used for weak comparison to order <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects. </para>
+    </briefdescription>
     <detaileddescription>
-<para><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
-</para>    </detaileddescription>
+<para><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="15" bodyend="20"/>
     <listofallmembers>
       <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindowCmp</scope><name>operator()</name></member>

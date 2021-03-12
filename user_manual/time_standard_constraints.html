@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
 
   
   
@@ -33,6 +34,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -40,7 +43,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Database Concepts" href="database_concepts.html" />
+    <link rel="next" title="Using ObsPy with MsPASS" href="obspy_interface.html" />
     <link rel="prev" title="Data Object Design Concepts" href="data_object_design_concepts.html" />  
 
   <style>
@@ -93,22 +96,33 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../user_manual.html">User’s Manual</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Time Standard Constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id5">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#advanced-topics">Advanced Topics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
             
@@ -158,8 +172,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../user_manual.html">User’s Manual</a> &raquo;</li>
         
       <li>Time Standard Constraints</li>
     
@@ -262,15 +274,13 @@ time standard.</p>
 <li><p>Active source data are normally best loaded with the TimeReferenceType
 set as <code class="code docutils literal notranslate"><span class="pre">Relative</span></code> (TimeReferenceType.Relative in python or
 TimeReferenceType::Relative in C++).   Relative time in this context
-is nearly always equivalent to having time 0 set to the shot time.</p>
-<blockquote>
-<div><p>In the design of MsPASS, however, we aimed to support the range of</p>
-</div></blockquote>
-<p>instrumentation in active source data acquisition with three different
-absolute time precisions:</p>
-</li>
+is nearly always equivalent to having time 0 set to the shot time.
+In the design of MsPASS, however, we aimed to support the range of
+instrumentation in active source data acquisition with three different
+absolute time precisions:</p></li>
 </ol>
 <blockquote>
+<div><blockquote>
 <div><ol class="loweralpha simple">
 <li><p>Much old data had very imprecise absolute timing or none at all.
 It is common, for example, with old SEGY files to find none of
@@ -291,8 +301,8 @@ conceptually identical to data that begins as UTC but is time shifted
 so TimeReferenceType is “Relative” and the time is shifted so 0
 is the shot time.</p></li>
 </ol>
-<blockquote>
-<div><p>The common denominator for all active source data is that the they should
+</div></blockquote>
+<p>The common denominator for all active source data is that the they should
 have TimeReferenceType set to “Relative”.   The first two cases when
 the absolute timing is not reliable should have the internal attribute
 <code class="code docutils literal notranslate"><span class="pre">t0shift_is_valid</span></code> set to False.  That assures the users won’t make the
@@ -301,7 +311,6 @@ mistake of calling the rtoa function and creating a potentially misleading
 method that can be called from either TimeSeries or Seismogram objects.
 The complete set of methods available to handle this issue are discussed at the
 end of this document.</p>
-</div></blockquote>
 </div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p>Synthetic seismograms are a special case that have to be handled with
@@ -325,12 +334,17 @@ of these are components of the BasicTimeSeries base class, but there are
 some deviations between the C++ and python APIs.</div>
 </div>
 <blockquote>
-<div><ul class="simple">
+<div><ul>
 <li><p>The time stamp that is to handle time 0 is managed in C++ by a getter
 with he simple name <code class="code docutils literal notranslate"><span class="pre">t0()</span></code> and a setter called <code class="code docutils literal notranslate"><span class="pre">set_t0()</span></code>.  In python
 these are merged to a single symbol t0 with decorators in a fairly
 standard way to make t0 appear like a class attribute as in the
-following:</p></li>
+following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">d</span><span class="o">.</span><span class="n">t0</span> <span class="o">=</span> <span class="n">arrival_time</span>      <span class="c1"># t0 as a setter (alias for set_to(arrival.time)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span>                 <span class="c1"># t0 as a getter (alias for to())</span>
+</pre></div>
+</div>
+</li>
 <li><p>There are several convenience methods that are useful for managing time
 as a variable.  The <code class="code docutils literal notranslate"><span class="pre">time(int</span> <span class="pre">i)</span></code> method can be used get the computed
 time (Relative or absolute depending on the TimeReferenceType set)
@@ -387,7 +401,7 @@ be compared sample by sample to data.</p></li>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="database_concepts.html" class="btn btn-neutral float-right" title="Database Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="obspy_interface.html" class="btn btn-neutral float-right" title="Using ObsPy with MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="data_object_design_concepts.html" class="btn btn-neutral float-left" title="Data Object Design Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

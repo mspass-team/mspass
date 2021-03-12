@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_cosine_taper" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::CosineTaper</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_taper" prot="public" virt="non-virtual">mspass::seismic::BasicTaper</basecompoundref>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_cosine_taper_1a9c7eb345d3ddca46842e4f0bf67a98e6" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_cosine_taper_1aca222ddba903a8cbf392c8b54a8378e1" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_cosine_taper_1a2c927ea079cab34fd4a2169a119b4862" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="75" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="75" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="62" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="199" bodyend="204"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="62" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="199" bodyend="204"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_cosine_taper_1a031af07364de5377d5efaa34e6277546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -94,12 +94,14 @@
           <declname>t0tail</declname>
         </param>
         <briefdescription>
-<para>primary constructor. </para>        </briefdescription>
+<para>primary constructor. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Defines half-cycle sine taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Taper between t0head and t1head and in opposite sense from t1tail to t0tail. </para>        </detaileddescription>
+<para>Defines half-cycle sine taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Taper between t0head and t1head and in opposite sense from t1tail to t0tail. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="69" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="205" bodyend="226"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="69" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="205" bodyend="226"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_cosine_taper_1a2bd5b3a37045c6ac4b5ad72d136b88b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -117,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="72" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="227" bodyend="289"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="72" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="227" bodyend="289"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_cosine_taper_1acf77d59638d58274141adc0d2981c6b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -135,34 +137,36 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="73" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="290" bodyend="355"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="73" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="290" bodyend="355"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Taper front and/or end of a time seris with a half cosine function. </para>    </briefdescription>
+<para>Taper front and/or end of a time seris with a half cosine function. </para>
+    </briefdescription>
     <detaileddescription>
-<para>A sine taper is a common, simple approach to taper data. When applied at the front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0. On the right it defines the same function for the range 0 to pi. The period of the left and right operator can be different. Turn off left or right by giving illegal start and end points and the operator will silently be only one sided. </para>    </detaileddescription>
+<para>A sine taper is a common, simple approach to taper data. When applied at the front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0. On the right it defines the same function for the range 0 to pi. The period of the left and right operator can be different. Turn off left or right by giving illegal start and end points and the operator will silently be only one sided. </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="76">
+      <node id="2">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="75">
+      <node id="1">
         <label>mspass::seismic::CosineTaper</label>
         <link refid="classmspass_1_1seismic_1_1_cosine_taper"/>
-        <childnode refid="76" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="78">
+      <node id="2">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="77">
+      <node id="1">
         <label>mspass::seismic::CosineTaper</label>
         <link refid="classmspass_1_1seismic_1_1_cosine_taper"/>
-        <childnode refid="78" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

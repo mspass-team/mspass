@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_error_logger_8h" kind="file" language="C++">
     <compoundname>ErrorLogger.h</compoundname>
     <includes local="no">unistd.h</includes>
@@ -19,164 +19,164 @@
     <includedby refid="_processing_history_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h</includedby>
     <includedby refid="_error_logger_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc</includedby>
     <incdepgraph>
-      <node id="704">
+      <node id="3">
         <label>list</label>
       </node>
-      <node id="706">
+      <node id="5">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="702">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h"/>
-        <childnode refid="703" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="704" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="705" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="706" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="707" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="708" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="709" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="710" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="702" relation="include">
+        <childnode refid="1" relation="include">
         </childnode>
       </node>
-      <node id="710">
+      <node id="9">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="711" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="712" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="712">
+      <node id="11">
         <label>exception</label>
       </node>
-      <node id="707">
+      <node id="6">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="703">
+      <node id="2">
         <label>unistd.h</label>
       </node>
-      <node id="711">
+      <node id="10">
         <label>iostream</label>
       </node>
-      <node id="709">
+      <node id="8">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="708">
+      <node id="7">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="705">
+      <node id="4">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="713">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h"/>
-        <childnode refid="714" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="715" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="716" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="723" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="713" relation="include">
+        <childnode refid="1" relation="include">
         </childnode>
-        <childnode refid="725" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="719">
+      <node id="7">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="725">
+      <node id="13">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
-        <childnode refid="716" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="723" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="721">
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
-      <node id="717">
+      <node id="5">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="718">
+      <node id="6">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
-      <node id="723">
+      <node id="11">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeries.h</label>
         <link refid="_time_series_8h_source"/>
-        <childnode refid="714" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="717" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="718" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="719" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="720" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="722" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="724" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="724">
+      <node id="12">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
       </node>
-      <node id="720">
+      <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
-        <childnode refid="714" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="717" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="718" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="714">
+      <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
         <link refid="mspass_8h_source"/>
       </node>
-      <node id="716">
+      <node id="4">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="714" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="717" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="718" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="719" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="720" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="721" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="722" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="715">
+      <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h</label>
         <link refid="_power_spectrum_8h_source"/>
       </node>
-      <node id="722">
+      <node id="10">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
       </node>
@@ -201,7 +201,7 @@
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/serialization/list.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ErrorLogger.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass</highlight></codeline>
 <codeline lineno="13"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
 <codeline lineno="15" refid="classmspass_1_1utility_1_1_log_data" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_log_data" kindref="compound">LogData</ref></highlight></codeline>
@@ -239,15 +239,15 @@
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>parent);</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>set_job_id(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>jid){job_id=jid;};</highlight></codeline>
 <codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>get_job_id(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>job_id;};</highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>log_error(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>merr);</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>log_error(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess,</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>merr);</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" kindref="member">log_error</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess,</highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>mspass::utility::ErrorSeverity<sp/>level);</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"></highlight></codeline>
-<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>log_verbose(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a570cc3c845bd18dd0417e84a8cafe05f" kindref="member">log_verbose</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>alg,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mess);</highlight></codeline>
 <codeline lineno="103"><highlight class="normal"><sp/><sp/>std::list&lt;LogData&gt;<sp/>get_error_log()</highlight><highlight class="keyword">const</highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages;};</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>size()</highlight><highlight class="keyword">const</highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>allmessages.size();};</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">ErrorLogger</ref>&amp;<sp/>parent);</highlight></codeline>
-<codeline lineno="107"><highlight class="normal"><sp/><sp/>std::list&lt;LogData&gt;<sp/>worst_errors()</highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>std::list&lt;LogData&gt;<sp/><ref refid="classmspass_1_1utility_1_1_error_logger_1a78cd3444e267065b7e9858cc27a36103" kindref="member">worst_errors</ref>()</highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="108"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>job_id;</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/><sp/>std::list&lt;LogData&gt;<sp/>allmessages;</highlight></codeline>

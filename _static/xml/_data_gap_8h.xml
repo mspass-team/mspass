@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_data_gap_8h" kind="file" language="C++">
     <compoundname>DataGap.h</compoundname>
     <includes local="no">set</includes>
@@ -7,42 +7,43 @@
     <includedby refid="_seismogram_w_gaps_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</includedby>
     <includedby refid="_time_series_w_gaps_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</includedby>
     <incdepgraph>
-      <node id="289">
+      <node id="3">
         <label>mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="288">
+      <node id="2">
         <label>set</label>
       </node>
-      <node id="287">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</label>
         <link refid="_data_gap_8h"/>
-        <childnode refid="288" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="289" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="291">
+      <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
-      <node id="292">
+      <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
       </node>
-      <node id="290">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</label>
         <link refid="_data_gap_8h"/>
-        <childnode refid="291" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="292" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_data_gap" prot="public">mspass::seismic::DataGap</innerclass>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -64,13 +65,13 @@
 <codeline lineno="21" refid="classmspass_1_1seismic_1_1_data_gap" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_data_gap" kindref="compound">DataGap</ref></highlight></codeline>
 <codeline lineno="22"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_gap(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>is);<sp/><sp/></highlight><highlight class="comment">//query<sp/>by<sp/>sample<sp/>number</highlight></codeline>
-<codeline lineno="38"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_gap(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ttest);<sp/><sp/></highlight><highlight class="comment">//query<sp/>by<sp/>time</highlight></codeline>
-<codeline lineno="48"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_gap(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>twin);</highlight></codeline>
-<codeline lineno="55" refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" kindref="member">has_gap</ref>(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(!gaps.empty());};</highlight></codeline>
-<codeline lineno="62" refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" kindref="member">add_gap</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw){gaps.insert(tw);};</highlight></codeline>
-<codeline lineno="69" refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" kindref="member">clear_gaps</ref>(){</highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!gaps.empty())gaps.clear();};</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>zero_gaps()=0;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a2d3e9e782c3422fcde7a022179aadce1" kindref="member">is_gap</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>is);<sp/><sp/></highlight><highlight class="comment">//query<sp/>by<sp/>sample<sp/>number</highlight></codeline>
+<codeline lineno="38"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a2d3e9e782c3422fcde7a022179aadce1" kindref="member">is_gap</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ttest);<sp/><sp/></highlight><highlight class="comment">//query<sp/>by<sp/>time</highlight></codeline>
+<codeline lineno="48"><highlight class="comment"></highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a2d3e9e782c3422fcde7a022179aadce1" kindref="member">is_gap</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>twin);</highlight></codeline>
+<codeline lineno="55" refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a965fe5d75c39296d2ea32641d7d8db69" kindref="member">has_gap</ref>(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(!<ref refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kindref="member">gaps</ref>.empty());};</highlight></codeline>
+<codeline lineno="62" refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1afa1ba5dff45194cf4889131a67640392" kindref="member">add_gap</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>tw){<ref refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kindref="member">gaps</ref>.insert(tw);};</highlight></codeline>
+<codeline lineno="69" refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1a8a5b2919df07147fe740a5d4f2af1908" kindref="member">clear_gaps</ref>(){</highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(!<ref refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kindref="member">gaps</ref>.empty())<ref refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kindref="member">gaps</ref>.clear();};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1ad57272fa5685b99efb01bd4c740900d6" kindref="member">zero_gaps</ref>()=0;</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
 <codeline lineno="80" refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" refkind="member"><highlight class="normal"><sp/><sp/>std::set&lt;TimeWindow,TimeWindowCmp&gt;<sp/><ref refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kindref="member">gaps</ref>;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal">};</highlight></codeline>

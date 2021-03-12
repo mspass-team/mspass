@@ -1,80 +1,81 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="dmatrix_8cc" kind="file" language="C++">
     <compoundname>dmatrix.cc</compoundname>
     <includes local="no">math.h</includes>
     <includes local="yes">misc/blas.h</includes>
     <includes refid="dmatrix_8h" local="yes">mspass/utility/dmatrix.h</includes>
     <incdepgraph>
-      <node id="1523">
+      <node id="9">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1526">
+      <node id="12">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1520" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1527" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="1525">
+      <node id="11">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1518">
+      <node id="4">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1519" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1520" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1521" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1522" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1523" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1524" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1525" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1526" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="1519">
+      <node id="5">
         <label>string</label>
       </node>
-      <node id="1527">
+      <node id="13">
         <label>exception</label>
       </node>
-      <node id="1524">
+      <node id="10">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="1522">
+      <node id="8">
         <label>vector</label>
       </node>
-      <node id="1521">
+      <node id="7">
         <label>sstream</label>
       </node>
-      <node id="1516">
+      <node id="2">
         <label>math.h</label>
       </node>
-      <node id="1520">
+      <node id="6">
         <label>iostream</label>
       </node>
-      <node id="1515">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc</label>
         <link refid="dmatrix_8cc"/>
-        <childnode refid="1516" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1517" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1518" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="1517">
+      <node id="3">
         <label>misc/blas.h</label>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -85,8 +86,8 @@
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;misc/blas.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/dmatrix.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>{</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1dmatrix_1ae6bfdbc8f954f4d5340baa7e02975fb1" kindref="member">dmatrix::dmatrix</ref>()</highlight></codeline>
 <codeline lineno="9"><highlight class="normal">{</highlight></codeline>
@@ -245,7 +246,7 @@
 <codeline lineno="162"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="163"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i;</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/>dmatrix<sp/>tempmat(zx.rows(),zx.columns());</highlight></codeline>
-<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>lenary=zx.<ref refid="classmspass_1_1utility_1_1dmatrix_1a178f65f7f0efb2c99980c8c81cf71bca" kindref="member">rows</ref>()*zx.columns();</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>lenary=zx.rows()*zx.columns();</highlight></codeline>
 <codeline lineno="166"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*zptr,*dptr;</highlight></codeline>
 <codeline lineno="167"><highlight class="normal"><sp/><sp/>zptr=</highlight><highlight class="keyword">const_cast&lt;</highlight><highlight class="normal">dmatrix&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(zx).get_address(0,0);</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"><sp/><sp/>dptr=tempmat.get_address(0,0);</highlight></codeline>
@@ -353,8 +354,8 @@
 <codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/>dvector<sp/>prod(nrx1);</highlight></codeline>
 <codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(i=0;i&lt;nrx1;i++)</highlight></codeline>
 <codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>prod(i)=ddot(nrb,</highlight></codeline>
-<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const_cast&lt;dmatrix&amp;&gt;(x1).get_address(i,0),nrx1,</highlight></codeline>
-<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const_cast&lt;dvector&amp;&gt;(b).get_address(0,0),1);</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const_cast&lt;</highlight><highlight class="normal">dmatrix&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(x1).get_address(i,0),nrx1,</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const_cast&lt;</highlight><highlight class="normal">dvector&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(b).get_address(0,0),1);</highlight></codeline>
 <codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>prod;</highlight></codeline>
 <codeline lineno="276"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="277"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>end<sp/>mspass<sp/>namespace<sp/></highlight><highlight class="normal"></highlight></codeline>

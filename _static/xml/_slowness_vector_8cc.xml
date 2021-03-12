@@ -1,37 +1,38 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_slowness_vector_8cc" kind="file" language="C++">
     <compoundname>SlownessVector.cc</compoundname>
     <includes local="no">float.h</includes>
     <includes local="no">math.h</includes>
     <includes refid="_slowness_vector_8h" local="yes">mspass/seismic/SlownessVector.h</includes>
     <incdepgraph>
-      <node id="1362">
+      <node id="2">
         <label>float.h</label>
       </node>
-      <node id="1365">
+      <node id="5">
         <label>string</label>
       </node>
-      <node id="1364">
+      <node id="4">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="1365" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="1363">
+      <node id="3">
         <label>math.h</label>
       </node>
-      <node id="1361">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</label>
         <link refid="_slowness_vector_8cc"/>
-        <childnode refid="1362" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1363" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1364" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -53,7 +54,7 @@
 <codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>=0.0;</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>azimuth0=0.0;</highlight></codeline>
 <codeline lineno="15"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector::SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>old)</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector::SlownessVector</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>old)</highlight></codeline>
 <codeline lineno="17"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>=old.ux;</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>=old.uy;</highlight></codeline>
@@ -65,7 +66,7 @@
 <codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>=uy0;</highlight></codeline>
 <codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>azimuth0=az0;</highlight></codeline>
 <codeline lineno="27"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="28"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1af71bd0577298577ffb0d543263476393" kindref="member">SlownessVector::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="28"><highlight class="normal">SlownessVector&amp;<sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1af71bd0577298577ffb0d543263476393" kindref="member">SlownessVector::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="29"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;parent)</highlight></codeline>
 <codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -75,24 +76,24 @@
 <codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="37"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="38"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>SlownessVector::operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">SlownessVector&amp;<sp/>SlownessVector::operator+=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>other)</highlight></codeline>
 <codeline lineno="39"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>+=other.ux;</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>+=other.uy;</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="43"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>SlownessVector::operator-=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>other)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">SlownessVector&amp;<sp/>SlownessVector::operator-=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>other)</highlight></codeline>
 <codeline lineno="45"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1aed8526fcbb32eb86bfb4f193d2ff03f9" kindref="member">ux</ref>-=other.ux;</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a2a7134614117cc5a648a1d292021fab0" kindref="member">uy</ref>-=other.uy;</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref><sp/>SlownessVector::operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector<sp/>SlownessVector::operator+(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>+=<sp/>other;</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="54"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref><sp/>SlownessVector::operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector<sp/>SlownessVector::operator-(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>SlownessVector&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_slowness_vector_1a3286002cf8085454b4acb253a57e3c1b" kindref="member">SlownessVector</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>result<sp/>-=<sp/>other;</highlight></codeline>
 <codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>

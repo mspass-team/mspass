@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::MsPASSError</compoundname>
     <basecompoundref prot="public" virt="non-virtual">exception</basecompoundref>
@@ -17,10 +17,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Holds error message that can be printed with log_error method. </para>        </detaileddescription>
+<para>Holds error message that can be printed with log_error method. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="114" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="114" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" prot="protected" static="no" mutable="no">
         <type>ErrorSeverity</type>
@@ -30,10 +31,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Defines the severity of this error - see enum class above </para>        </detaileddescription>
+<para>Defines the severity of this error - see enum class above </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="116" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="116" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="116" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -45,7 +47,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor built inline. </para>        </detaileddescription>
+<para>Default constructor built inline. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="46" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="46" bodyend="49"/>
@@ -64,24 +67,29 @@
           <declname>howbad</declname>
         </param>
         <briefdescription>
-<para>Construct from a std::string with badness defined by keywords in a string. </para>        </briefdescription>
+<para>Construct from a std::string with badness defined by keywords in a string. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Sometimes it is easier and more readable to use a string literal to define the error class. This uses that approach.</para><para><parameterlist kind="param"><parameteritem>
+<para>Sometimes it is easier and more readable to use a string literal to define the error class. This uses that approach.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>mess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the error message posted. </para></parameterdescription>
+<para>is the error message posted. </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>howbad</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a string to translate to one of the allowed enum values. The allowed values are the same as the enum defined in this file: FATAL,Invalid,Suspect,Complaint,Debug,Informational. </para></parameterdescription>
+<para>is a string to translate to one of the allowed enum values. The allowed values are the same as the enum defined in this file: FATAL,Invalid,Suspect,Complaint,Debug,Informational. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="60" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="60" bodyend="66"/>
@@ -103,22 +111,27 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from a string with enum defining severity.</para><para>This should be the normal form of this error object to throw. Default of the enum allows simpler usage for most errors.</para><para><parameterlist kind="param"><parameteritem>
+<para>Construct from a string with enum defining severity.</para>
+<para>This should be the normal form of this error object to throw. Default of the enum allows simpler usage for most errors.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>mess</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- is the error message to be posted. </para></parameterdescription>
+<para>- is the error message to be posted. </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>s</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the severity enum (default Invalid). </para></parameterdescription>
+<para>is the severity enum (default Invalid). </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="75" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="75" bodyend="79"/>
@@ -139,7 +152,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Construct from a char * and severity enum. </para>        </detaileddescription>
+<para>Construct from a char * and severity enum. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="82" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="82" bodyend="85"/>
@@ -152,10 +166,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Sends error message thrown by MsPASS library functions to standard error. </para>        </detaileddescription>
+<para>Sends error message thrown by MsPASS library functions to standard error. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="89" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="89" bodyend="91"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="89" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="89" bodyend="91"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a9c44cc909971a1c5f8d443f12b5d45ed" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -169,12 +184,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Overloaded method for sending error message to other than stderr. </para>        </detaileddescription>
+<para>Overloaded method for sending error message to other than stderr. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="93" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="93" bodyend="96"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="93" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="93" bodyend="96"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1ae47776d160eafa42f854be5bf47e00a8" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <type>const char *</type>
         <definition>const char* mspass::utility::MsPASSError::what</definition>
         <argsstring>() const noexcept</argsstring>
@@ -182,10 +198,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>This overrides the method in std::exception to load our string. This allows handlers to use the what method and get the error string from seisp. Idea copied from: <ulink url="http://www.cplusplus.com/doc/tutorial/exceptions/">http://www.cplusplus.com/doc/tutorial/exceptions/</ulink></para><para>pybind11 limitations make it problematic for python error handlers to get the output of the severity method or even get to the badness attribute. See the cc code for the implementation detail. </para>        </detaileddescription>
+<para>This overrides the method in std::exception to load our string. This allows handlers to use the what method and get the error string from seisp. Idea copied from: <ulink url="http://www.cplusplus.com/doc/tutorial/exceptions/">http://www.cplusplus.com/doc/tutorial/exceptions/</ulink></para>
+<para>pybind11 limitations make it problematic for python error handlers to get the output of the severity method or even get to the badness attribute. See the cc code for the implementation detail. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="107" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="107" bodyend="107"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="107" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="107" bodyend="107"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a3393c3878bee1728628fd3e063640d94" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>ErrorSeverity</type>
@@ -195,60 +213,64 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return error severity as the enum value. </para>        </detaileddescription>
+<para>Return error severity as the enum value. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="109" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="109"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" line="109" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/MsPASSError.h" bodystart="109" bodyend="109"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Base class for error object thrown by MsPASS library routines. </para>    </briefdescription>
+<para>Base class for error object thrown by MsPASS library routines. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This is the generic error object thrown by the MsPASS library. it is similar in concept to basic error objects described in various books by Stroustrup. The base object contains only a simple generic message and a virtual log_error method common to all MsPASS error objects that are it&apos;s descendents. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
-</para>    </detaileddescription>
+<para>This is the generic error object thrown by the MsPASS library. it is similar in concept to basic error objects described in various books by Stroustrup. The base object contains only a simple generic message and a virtual log_error method common to all MsPASS error objects that are it&apos;s descendents. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="142">
+      <node id="1">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
-        <childnode refid="143" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="143">
+      <node id="2">
         <label>std::exception</label>
       </node>
-      <node id="145">
+      <node id="4">
         <label>mspass::utility::dmatrix_index_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__index__error"/>
-        <childnode refid="142" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="144">
+      <node id="3">
         <label>mspass::utility::AntelopePfError</label>
         <link refid="classmspass_1_1utility_1_1_antelope_pf_error"/>
-        <childnode refid="142" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="147">
+      <node id="6">
         <label>mspass::utility::MetadataGetError</label>
         <link refid="classmspass_1_1utility_1_1_metadata_get_error"/>
-        <childnode refid="142" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="146">
+      <node id="5">
         <label>mspass::utility::dmatrix_size_error</label>
         <link refid="classmspass_1_1utility_1_1dmatrix__size__error"/>
-        <childnode refid="142" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="148">
+      <node id="1">
         <label>mspass::utility::MsPASSError</label>
         <link refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error"/>
-        <childnode refid="149" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="149">
+      <node id="2">
         <label>std::exception</label>
       </node>
     </collaborationgraph>

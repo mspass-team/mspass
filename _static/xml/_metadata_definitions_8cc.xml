@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_metadata_definitions_8cc" kind="file" language="C++">
     <compoundname>MetadataDefinitions.cc</compoundname>
     <includes local="no">fstream</includes>
@@ -12,169 +12,170 @@
     <includes local="yes">yaml-cpp/yaml.h</includes>
     <includes refid="_metadata_definitions_8h" local="yes">mspass/utility/MetadataDefinitions.h</includes>
     <incdepgraph>
-      <node id="1593">
+      <node id="16">
         <label>list</label>
       </node>
-      <node id="1587">
+      <node id="10">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1590">
+      <node id="13">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1585" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1591" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="1589">
+      <node id="12">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1584">
+      <node id="7">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1582" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1585" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1580" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1586" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1587" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1588" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1589" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="1590" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="1582">
+      <node id="5">
         <label>string</label>
       </node>
-      <node id="1596">
+      <node id="19">
         <label>map</label>
       </node>
-      <node id="1578">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc</label>
         <link refid="_metadata_definitions_8cc"/>
-        <childnode refid="1579" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1580" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1581" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1582" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1583" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1590" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1592" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1601" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="1602" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="1591">
+      <node id="14">
         <label>exception</label>
       </node>
-      <node id="1579">
+      <node id="2">
         <label>fstream</label>
       </node>
-      <node id="1588">
+      <node id="11">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="1598">
+      <node id="21">
         <label>boost/any.hpp</label>
       </node>
-      <node id="1601">
+      <node id="24">
         <label>yaml-cpp/yaml.h</label>
       </node>
-      <node id="1600">
+      <node id="23">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1582" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="1581">
+      <node id="4">
         <label>string.h</label>
       </node>
-      <node id="1595">
+      <node id="18">
         <label>typeinfo</label>
       </node>
-      <node id="1583">
+      <node id="6">
         <label>mspass/utility/utility.h</label>
         <link refid="utility_8h_source"/>
-        <childnode refid="1582" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1584" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="1603">
+      <node id="26">
         <label>tuple</label>
       </node>
-      <node id="1586">
+      <node id="9">
         <label>vector</label>
       </node>
-      <node id="1580">
+      <node id="3">
         <label>sstream</label>
       </node>
-      <node id="1599">
+      <node id="22">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="1585">
+      <node id="8">
         <label>iostream</label>
       </node>
-      <node id="1592">
+      <node id="15">
         <label>mspass/utility/AntelopePf.h</label>
         <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="1593" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="1582" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1594" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="1597">
+      <node id="20">
         <label>set</label>
       </node>
-      <node id="1602">
+      <node id="25">
         <label>mspass/utility/MetadataDefinitions.h</label>
         <link refid="_metadata_definitions_8h_source"/>
-        <childnode refid="1596" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="1603" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
       </node>
-      <node id="1594">
+      <node id="17">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1595" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="1596" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="1597" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="1593" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="1585" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1579" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1580" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1598" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="1599" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="1590" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1600" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
       <sectiondef kind="func">
       <memberdef kind="function" id="_metadata_definitions_8cc_1a2634affdcad151af05e532edc11e90cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
@@ -191,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" line="10" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" line="10" column="19" declfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/MetadataDefinitions.cc" declline="10" declcolumn="19"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
@@ -209,9 +210,9 @@
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;yaml-cpp/yaml.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MetadataDefinitions.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>DefaultSchemaName(</highlight><highlight class="stringliteral">&quot;mspass&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>{</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility{</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="14"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5cca4385b19e235ff08215a6b731dc23" kindref="member">MetadataDefinitions::MetadataDefinitions</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>mdname)</highlight></codeline>
 <codeline lineno="15"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
@@ -318,8 +319,8 @@
 <codeline lineno="117"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="118"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>base_error(</highlight><highlight class="stringliteral">&quot;MetadataDefinitions::type:<sp/><sp/>&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/>map&lt;std::string,mspass::utility::MDtype&gt;::const_iterator<sp/>tptr;</highlight></codeline>
-<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_alias(key))</highlight></codeline>
-<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;unique_name(key).second;</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a63d73a129374c69d01c9cf23bf4157ed" kindref="member">is_alias</ref>(key))</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a7f6f48e89b074e16112475d7d620e747" kindref="member">unique_name</ref>(key).second;</highlight></codeline>
 <codeline lineno="122"><highlight class="normal"><sp/><sp/>tptr=tmap.find(key);</highlight></codeline>
 <codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tptr==tmap.end())</highlight></codeline>
 <codeline lineno="124"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
@@ -475,7 +476,7 @@
 <codeline lineno="274"><highlight class="normal"><sp/><sp/>roptr=roset.find(key);</highlight></codeline>
 <codeline lineno="275"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(roptr==roset.end())</highlight></codeline>
 <codeline lineno="276"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_alias(key))</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a63d73a129374c69d01c9cf23bf4157ed" kindref="member">is_alias</ref>(key))</highlight></codeline>
 <codeline lineno="278"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>roset<sp/>only<sp/>contains<sp/>unique<sp/>key<sp/>entries.<sp/><sp/>This<sp/>checks<sp/>any<sp/>possible</highlight></codeline>
 <codeline lineno="280"><highlight class="comment"><sp/><sp/><sp/><sp/>aliases.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -484,7 +485,7 @@
 <codeline lineno="283"><highlight class="comment"><sp/><sp/><sp/><sp/>We<sp/>avoid<sp/>that<sp/>and<sp/>silently<sp/>return<sp/>false<sp/>if<sp/>that<sp/>happens,<sp/>although</highlight></codeline>
 <codeline lineno="284"><highlight class="comment"><sp/><sp/><sp/><sp/>that<sp/>situation<sp/>will<sp/>likely<sp/>create<sp/>downstream<sp/>problems.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>kp=this-&gt;unique_name(key);</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>kp=this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a7f6f48e89b074e16112475d7d620e747" kindref="member">unique_name</ref>(key);</highlight></codeline>
 <codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(<ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref><sp/>&amp;mderr)</highlight></codeline>
 <codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cerr<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;MetadataDefinitions::writeable<sp/>method<sp/>(WARNING):<sp/><sp/>Requested<sp/>key<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
@@ -508,7 +509,7 @@
 <codeline lineno="307"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>function<sp/>is<sp/>a<sp/>thin<sp/>wrapper<sp/>for<sp/>writeable<sp/>for<sp/>efficiency<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="308"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1ac86b8ddbe4917e7748698aad348d60ec" kindref="member">MetadataDefinitions::readonly</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="309"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="310"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(<sp/>!<sp/>(this-&gt;writeable(key)));</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(<sp/>!<sp/>(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a2dc9424f37c2535492b34061b8c06e88" kindref="member">writeable</ref>(key)));</highlight></codeline>
 <codeline lineno="311"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="312"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a434ba3fc278489639212ae2dbe46f3d8" kindref="member">MetadataDefinitions::set_readonly</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight></codeline>
 <codeline lineno="313"><highlight class="normal">{</highlight></codeline>
@@ -638,7 +639,7 @@
 <codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref><sp/>pfb(pf.get_branch(*kptr));</highlight></codeline>
 <codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;string&gt;<sp/>con_list;</highlight></codeline>
-<codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>con_list=pfb.<ref refid="classmspass_1_1utility_1_1_antelope_pf_1a64065097fb1ebc22192ce455cbeca3fb" kindref="member">get_tbl</ref>(</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>con_list=pfb.get_tbl(</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="441"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>con_str=list_to_1str(con_list);</highlight></codeline>
 <codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>cmap[*kptr]=con_str;</highlight></codeline>
 <codeline lineno="443"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>tstr=pfb.get_string(</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -648,7 +649,7 @@
 <codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>list&lt;string&gt;<sp/>alist=pfb.get_tbl(</highlight><highlight class="stringliteral">&quot;aliases&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=alist.begin();aptr!=alist.end();++aptr)</highlight></codeline>
 <codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;add_alias(*kptr,*aptr);</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a07447e104a6d689730d53c68a4c1f07a" kindref="member">add_alias</ref>(*kptr,*aptr);</highlight></codeline>
 <codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="452"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="453"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
@@ -671,8 +672,8 @@
 <codeline lineno="470"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key;</highlight></codeline>
 <codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>key=attributes[i][</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
-<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>concept=attributes[i][</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
-<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cmap[key]=concept;</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" kindref="member">concept</ref>=attributes[i][</highlight><highlight class="stringliteral">&quot;concept&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cmap[key]=<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a5d131b51d99fb29753295847891ff2de" kindref="member">concept</ref>;</highlight></codeline>
 <codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>styp=attributes[i][</highlight><highlight class="stringliteral">&quot;type&quot;</highlight><highlight class="normal">].as&lt;</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;();</highlight></codeline>
 <codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MDtype<sp/>mdt_this=str2mdt(styp);</highlight></codeline>
 <codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tmap[key]=mdt_this;</highlight></codeline>
@@ -688,7 +689,7 @@
 <codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>delim(</highlight><highlight class="stringliteral">&quot;<sp/>,&quot;</highlight><highlight class="normal">);<sp/><sp/></highlight><highlight class="comment">//<sp/>allow<sp/>either<sp/>spaces<sp/>or<sp/>commas<sp/>as<sp/>delimiters</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*p=strtok(s,delim.c_str());</highlight></codeline>
 <codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal">(p!=NULL){</highlight></codeline>
-<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;add_alias(key,</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(p));;</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a07447e104a6d689730d53c68a4c1f07a" kindref="member">add_alias</ref>(key,</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(p));;</highlight></codeline>
 <codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>p=strtok(NULL,delim.c_str());<sp/><sp/></highlight><highlight class="comment">//strtok<sp/>oddity<sp/>of<sp/>NULL<sp/>meaning<sp/>use<sp/>last<sp/>position</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>free(s);</highlight></codeline>
@@ -725,9 +726,9 @@
 <codeline lineno="524"><highlight class="normal"><sp/><sp/>std::pair&lt;string,MDtype&gt;<sp/>nmpair;</highlight></codeline>
 <codeline lineno="525"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(aptr=aliaslist.begin();aptr!=aliaslist.end();++aptr)</highlight></codeline>
 <codeline lineno="526"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_alias(*aptr))</highlight></codeline>
+<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a63d73a129374c69d01c9cf23bf4157ed" kindref="member">is_alias</ref>(*aptr))</highlight></codeline>
 <codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nmpair=this-&gt;unique_name(*aptr);</highlight></codeline>
+<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nmpair=this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a7f6f48e89b074e16112475d7d620e747" kindref="member">unique_name</ref>(*aptr);</highlight></codeline>
 <codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>ukey=nmpair.first;</highlight></codeline>
 <codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Silently<sp/>skip<sp/>any<sp/>aliases<sp/>not<sp/>defined.<sp/><sp/>That<sp/>assures<sp/>that<sp/>if<sp/>the</highlight></codeline>
 <codeline lineno="532"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/>name<sp/>had<sp/>already<sp/>been<sp/>changed<sp/>to<sp/>this<sp/>alias<sp/>it<sp/>will<sp/>be<sp/>prserved.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
@@ -751,9 +752,9 @@
 <codeline lineno="550"><highlight class="normal"><sp/><sp/>std::pair&lt;string,MDtype&gt;<sp/>nmpair;</highlight></codeline>
 <codeline lineno="551"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(kptr=keys.begin();kptr!=keys.end();++kptr)</highlight></codeline>
 <codeline lineno="552"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="553"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;is_alias(*kptr))</highlight></codeline>
+<codeline lineno="553"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a63d73a129374c69d01c9cf23bf4157ed" kindref="member">is_alias</ref>(*kptr))</highlight></codeline>
 <codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nmpair=this-&gt;unique_name(*kptr);</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nmpair=this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_definitions_1a7f6f48e89b074e16112475d7d620e747" kindref="member">unique_name</ref>(*kptr);</highlight></codeline>
 <codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>ukey=nmpair.first;</highlight></codeline>
 <codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>d.<ref refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kindref="member">change_key</ref>(*kptr,ukey);</highlight></codeline>
 <codeline lineno="558"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>

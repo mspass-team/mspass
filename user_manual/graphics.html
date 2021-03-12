@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Graphics in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Processing History Concepts" href="processing_history_concepts.html" />
+    <link rel="prev" title="Handling Errors" href="handling_errors.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Graphics in MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#native-graphics">Native Graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obspy-graphics">Obspy Graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extending-mspass-graphics">Extending MsPASS Graphics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Graphics in MsPASS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user_manual/graphics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="graphics-in-mspass">
+<span id="graphics"></span><h1>Graphics in MsPASS<a class="headerlink" href="#graphics-in-mspass" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Data visualization in general and graphics to visualize seismic data
+in particular are critical elements to understand data and the
+result of a processing workflow.   On the other hand, because of the
+importance of graphical presentation there are a huge number of packages
+available today to create various types of graphics.   The main goal of
+MsPASS is a framework to support parallel processing to make previously
+unfeasible data sets and/or algorithms feasible.  Consequently, in our
+initial development we aimed to provide only basic support for graphics
+of native data types.  Users should understand that custom graphics beyond our
+basic support support is the user’s responsibility.  Because of the
+large number of options in existence believe that is reasonable compromise
+with finite resources.</p>
+<p>The current support for graphics has two component.</p>
+<ol class="arabic simple">
+<li><p>We have plotting classes called <code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code>
+and <code class="code docutils literal notranslate"><span class="pre">Sectionplotter</span></code> to plot our native data types.</p></li>
+<li><p>As noted elsewhere a core component of MsPASS are fast conversions routines
+to and from obspy’s native data types (<code class="code docutils literal notranslate"><span class="pre">Trace</span></code> and <code class="code docutils literal notranslate"><span class="pre">Stream</span></code>).
+That is relevant because obspy’s native data types have integrated
+plot methods that produce wiggle trace plots of seismic data using the
+matplotlib library.</p></li>
+</ol>
+</div>
+<div class="section" id="native-graphics">
+<h2>Native Graphics<a class="headerlink" href="#native-graphics" title="Permalink to this headline">¶</a></h2>
+<p>Since our goal was simple methods to plot native data types, we first remind
+the user what is considered native data in MsPASS.  They are:
+(1) <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects are scalar, uniformly sampled seismic
+seismic signals (a single channel), (2) <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects are
+bundled three-component seismic data, and (3) <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> objects are logical groupings of the two
+“atomic” objects in their names.</p>
+<p>The second issue is what types of plots are most essential?   Our core
+graphics support two plot conventions:</p>
+<ol class="arabic simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> plots data in the standard convention used to plot
+nearly all earthquake data.  <code class="code docutils literal notranslate"><span class="pre">SeismicPlotter</span></code> plots data with
+time as the x (horizontal axis).</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">SectionPlotter</span></code> plots data in the standard convention for seismic
+reflection data.  Because with seismic reflection data normal moveout
+corrected time is a proxy for depth it is universal to plot time
+as the y axis (vertical) and running backward from the normal
+mathematical graphic convention.   i.e. time is always plotted with
+0 at the top of the plot and the longest travel time at the bottom of
+the plot.</p></li>
+</ol>
+<p>There are also a number of common ways to plot seismic data.   Our graphics
+classes support the four most common methods:</p>
+<ol class="arabic simple">
+<li><p>Many seismologists prefer the simple <code class="code docutils literal notranslate"><span class="pre">wiggle</span> <span class="pre">trace</span> <span class="pre">(wt)</span></code> plot for
+displaying earthquake signals.  As the name implies the plot is a line
+graphic of the signal.</p></li>
+<li><p>The traditional standard plot method for reflection data is usually called a
+<code class="code docutils literal notranslate"><span class="pre">wiggle</span> <span class="pre">trace</span> <span class="pre">variable</span> <span class="pre">area</span> <span class="pre">(wtva)</span></code> plot.  As the name implies such plots are
+first a wiggle trace plot, but the plot adds a “variable area”.  The
+“variable area” term means you fill positive values with a color.
+Traditional plots from past when paper records were the norm is black but
+other colors are common in published papers today.  Our plotting
+classes allow changing the fill to any color.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">image</span> <span class="pre">plot</span> <span class="pre">(img)</span></code> graphics became the norm in plotting reflection data since
+at least the 1990s.  An image plot uses a color map scaled by amplitude.
+These plots are most appropriate that are like modern reflection data:
+the data density is high and there is a strong correlation between
+signals plotted side-by-side.</p></li>
+<li><p>The most complicated plot is what we call a
+<code class="code docutils literal notranslate"><span class="pre">wiggle</span> <span class="pre">trace</span> <span class="pre">variable</span> <span class="pre">area</span> <span class="pre">with</span> <span class="pre">image</span> <span class="pre">overlay</span> <span class="pre">(wtvaimg)</span></code> plot.
+The best way to understand this plot, and in fact is exactly how it is
+produced, is first plot the data as an image plot and then overlay a
+wiggle trace plot.</p></li>
+</ol>
+<p>Below are examples of all four types of plots from our graphics tutorial.
+For details of the API and how to use our plotting capabilities is
+to run that tutorial and review the sphynx documentation.</p>
+<p>Wiggle trace examples</p>
+<p>variable area example colored fill</p>
+<p>image plot examples</p>
+<p>wtvaimg examples</p>
+<p>wtvaimag example with sectionplot.  Caption should explain that wt, wtva,
+and img options are defined for this type of plot as well but omitted for
+brevity</p>
+<p>Finally, we would note that the plotters automatically handle switching to
+plot all the standard MsPASS data objects.   Some implementation details
+we note are:</p>
+<ol class="arabic simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>  data generate one plot frame with a time axis and
+a y axis of amplitude.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> data are displayed on one plot frame.  The three
+components plotted at equal y intervals in SeismicPlotter
+(equal x intervals in SectionPlotter) with the x1, x2, x3 components arranged in
+from the bottum up (left to right for SectionPlotter).   There is an option
+for both types of plots to reverse the order.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsmble</span></code> data in a SeismicPlotter plot are plotted
+at equal intervals from the bottom up (i.e. member[0] is at the bottom)
+of the plot and the last member is a the top.   Similarly, the
+SectionPlotter plots members at equal intervals ordered from left to right.
+As with the Seismogram plot the order can be flipped.  We currently have
+no support for variable spacing of plots used, for example, to plot
+record sections.   We recommend using other packages for that purpose.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">SeismogramEnsembles</span></code> have the most variance in how they could be
+plotted.  We chose to always plot such data in three different windows.
+The graphic for each component is actually done using a same method
+as that for plotting a TimeSeriesEnsemble.  i.e. the plots generated to
+plot a SeismogramEnsemble are three instances of plots for TimeSeriesEnsemble
+data - one for each component.</p></li>
+</ol>
+<p>A final point is that any plotting of earthquake data nearly always
+requires some form of scaling to prevent some data from clipping while others
+will look like flat lines even if they contain valid.  The technical reason
+is that the dynamic range of any graphics devices is tiny compared that
+of modern digital data acquisition systems (about 8 bits for graphics compared
+to 24 bit acquisition that is now the norm for earthquake data).  There is
+an internal scaling parameter that can be used for all graphics, but the
+internal scaling is inflexible.  If the default scaling proves inadequate
+use one of the functions for data scaling in <a class="reference internal" href="../python_api/mspasspy.ccore.html#module-mspasspy.ccore.algorithms.amplitudes" title="mspasspy.ccore.algorithms.amplitudes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.amplitudes</span></code></a>.</p>
+</div>
+<div class="section" id="obspy-graphics">
+<h2>Obspy Graphics<a class="headerlink" href="#obspy-graphics" title="Permalink to this headline">¶</a></h2>
+<p>User’s familiar with obspy may, in come cases, prefer to utilize obspy’s
+buil in graphics.   Obspy’s data objects
+(<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>
+and
+<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a>)
+have a plot method as a member of the data object.  Part of MsPASS are
+a suite of fast converters between obspy and MsPASS data objects.
+These converters can be used in plotting scrips like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Something above created d as a TimeSeriesEnsemble</span>
+<span class="n">d_obspy</span><span class="o">=</span><span class="n">TimeSeriesEnsemble2Stream</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">d_obspy</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="extending-mspass-graphics">
+<h2>Extending MsPASS Graphics<a class="headerlink" href="#extending-mspass-graphics" title="Permalink to this headline">¶</a></h2>
+<p>As noted at the beginning of this section the graphics available in
+MsPASS are simple by design.   If you need different graphics capabilities
+you have two different choices:</p>
+<ol class="arabic simple">
+<li><p>Export the subset of your dataset you want to plot and use a different
+graphics package to make the graphic you need.</p></li>
+<li><p>Extend the SectionPlotter or SeismicPlotter classes using python’s inheritance
+mechanism.  If you look under the hook you will find that both classes use the
+same python graphics library as obspy:
+<a class="reference external" href="https://matplotlib.org/stable/index.html">matplotlib</a>.
+Although the top level <code class="code docutils literal notranslate"><span class="pre">plot</span></code> method returns nothing, the internal
+methods that function uses all return a matplotlib handle.  Many
+extensions of our graphics could be implemented by using those
+plot handles and using additional matplotlib functions to decorate the
+graphic or create GUI extensions.</p></li>
+</ol>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="processing_history_concepts.html" class="btn btn-neutral float-right" title="Processing History Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="handling_errors.html" class="btn btn-neutral float-left" title="Handling Errors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

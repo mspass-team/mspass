@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_attribute_map_8cc" kind="file" language="C++">
     <compoundname>AttributeMap.cc</compoundname>
     <includes local="no">sstream</includes>
@@ -7,156 +7,157 @@
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_attribute_map_8h" local="yes">mspass/utility/AttributeMap.h</includes>
     <incdepgraph>
-      <node id="1501">
+      <node id="17">
         <label>list</label>
       </node>
-      <node id="1485">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeMap.cc</label>
         <link refid="_attribute_map_8cc"/>
-        <childnode refid="1486" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1487" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1497" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1506" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
-      <node id="1492">
+      <node id="8">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1495">
+      <node id="11">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1490" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1496" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="1494">
+      <node id="10">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1489">
+      <node id="5">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1488" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1490" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1486" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1491" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1492" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1493" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1494" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1495" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
       </node>
-      <node id="1488">
+      <node id="4">
         <label>string</label>
       </node>
-      <node id="1499">
+      <node id="15">
         <label>map</label>
       </node>
-      <node id="1506">
+      <node id="22">
         <label>mspass/utility/AttributeMap.h</label>
         <link refid="_attribute_map_8h_source"/>
-        <childnode refid="1488" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1499" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1501" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1497" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1507" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="1496">
+      <node id="12">
         <label>exception</label>
       </node>
-      <node id="1502">
+      <node id="18">
         <label>fstream</label>
       </node>
-      <node id="1493">
+      <node id="9">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="1503">
+      <node id="19">
         <label>boost/any.hpp</label>
       </node>
-      <node id="1505">
+      <node id="21">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1488" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="1498">
+      <node id="14">
         <label>typeinfo</label>
       </node>
-      <node id="1487">
+      <node id="3">
         <label>mspass/utility/utility.h</label>
         <link refid="utility_8h_source"/>
-        <childnode refid="1488" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1489" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="1491">
+      <node id="7">
         <label>vector</label>
       </node>
-      <node id="1486">
+      <node id="2">
         <label>sstream</label>
       </node>
-      <node id="1504">
+      <node id="20">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="1490">
+      <node id="6">
         <label>iostream</label>
       </node>
-      <node id="1507">
+      <node id="23">
         <label>mspass/utility/AntelopePf.h</label>
         <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="1501" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1488" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1497" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="1500">
+      <node id="16">
         <label>set</label>
       </node>
-      <node id="1497">
+      <node id="13">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1498" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="1499" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1500" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="1501" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1490" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1502" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="1486" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1503" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="1504" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="1495" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1505" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -167,9 +168,9 @@
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/utility.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/AttributeMap.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>{</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility{</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">//<sp/>AttributeProperties<sp/>encapsulate<sp/>concepts<sp/>about<sp/>what<sp/>a<sp/>piece</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">//<sp/>of<sp/>metadata<sp/>is.<sp/><sp/>It<sp/>was<sp/>designed<sp/>originally<sp/>with<sp/>attributes</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">//<sp/>extracted<sp/>from<sp/>a<sp/>relational<sp/>database<sp/>as<sp/>the<sp/>model.<sp/><sp/>The</highlight><highlight class="normal"></highlight></codeline>
@@ -431,7 +432,7 @@
 <codeline lineno="266"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;AttributeMap::aliases<sp/>method:<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="267"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Attribute<sp/>named<sp/>&quot;</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="268"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>(*listiter)</highlight></codeline>
-<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>string(</highlight><highlight class="stringliteral">&quot;<sp/>is<sp/>not<sp/>defined<sp/>for<sp/>this<sp/>AttributeMap&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;<sp/>is<sp/>not<sp/>defined<sp/>for<sp/>this<sp/>AttributeMap&quot;</highlight><highlight class="normal">));</highlight></codeline>
 <codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>need<sp/>to<sp/>copy<sp/>this<sp/>AttributeProperty<sp/>and</highlight></codeline>
 <codeline lineno="271"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>*<sp/>change<sp/>the<sp/>internal_name<sp/>to<sp/>the<sp/>alias<sp/>name<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_attribute_properties" kindref="compound">AttributeProperties</ref><sp/>alias_property(amiter-&gt;second);</highlight></codeline>
@@ -475,7 +476,7 @@
 <codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;AttributeMap::aliastables<sp/>method:<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Attribute<sp/>named<sp/>&quot;</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>(*listiter)</highlight></codeline>
-<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>string(</highlight><highlight class="stringliteral">&quot;<sp/>is<sp/>not<sp/>defined<sp/>for<sp/>this<sp/>AttributeMap&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;<sp/>is<sp/>not<sp/>defined<sp/>for<sp/>this<sp/>AttributeMap&quot;</highlight><highlight class="normal">));</highlight></codeline>
 <codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result.push_back(amiter-&gt;second.db_table_name);</highlight></codeline>
 <codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>

@@ -1,42 +1,43 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_ms_p_a_s_s_error_8cc" kind="file" language="C++">
     <compoundname>MsPASSError.cc</compoundname>
     <includes local="no">cstring</includes>
     <includes local="no">string</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="1608">
+      <node id="4">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1609" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1610" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="1607">
+      <node id="3">
         <label>string</label>
       </node>
-      <node id="1610">
+      <node id="6">
         <label>exception</label>
       </node>
-      <node id="1609">
+      <node id="5">
         <label>iostream</label>
       </node>
-      <node id="1605">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/MsPASSError.cc</label>
         <link refid="_ms_p_a_s_s_error_8cc"/>
-        <childnode refid="1606" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1607" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1608" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="1606">
+      <node id="2">
         <label>cstring</label>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -46,8 +47,8 @@
 <codeline lineno="1"><highlight class="preprocessor">#include<sp/>&lt;cstring&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>{</highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility{</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>These<sp/>are<sp/>two<sp/>useful<sp/>helper<sp/>functions<sp/>for<sp/>MsPASSError<sp/>constructors<sp/>and</highlight></codeline>
 <codeline lineno="7"><highlight class="comment">for<sp/>inverse<sp/>needed<sp/>for<sp/>python<sp/>wrappers<sp/>-<sp/>there<sp/>is<sp/>no<sp/>way<sp/>currently<sp/>with</highlight></codeline>
 <codeline lineno="8"><highlight class="comment">pybind11<sp/>to<sp/>have<sp/>a<sp/>custom<sp/>exception<sp/>class<sp/>have<sp/>access<sp/>to<sp/>members<sp/>other</highlight></codeline>
@@ -120,7 +121,7 @@
 <codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(fpos==string::npos)<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>string(</highlight><highlight class="stringliteral">&quot;Invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>badness_str=s.substr(fpos+1);</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Similarly<sp/>be<sp/>careful<sp/>of<sp/>a<sp/>terminating<sp/>:<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(badness_str.empty())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(badness_str.empty())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>string(</highlight><highlight class="stringliteral">&quot;Invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>badness_str;</highlight></codeline>
 <codeline lineno="80"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="81"><highlight class="normal">ErrorSeverity<sp/>message_error_severity(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">mspass::utility::MsPASSError</ref>&amp;<sp/>err)</highlight></codeline>

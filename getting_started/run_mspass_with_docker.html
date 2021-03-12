@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Run MsPASS with Docker &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Deploy MsPASS with Docker Compose" href="deploy_mspass_with_docker_compose.html" />
+    <link rel="prev" title="MsPASS Documentation" href="../index.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Run MsPASS with Docker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-mspass-container">Download MsPASS Container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-mspass-container-in-all-in-one-mode">Run MsPASS Container in All-in-one Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Run MsPASS with Docker</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/getting_started/run_mspass_with_docker.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="run-mspass-with-docker">
+<span id="id1"></span><h1>Run MsPASS with Docker<a class="headerlink" href="#run-mspass-with-docker" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Docker is required for users to run MsPASS.
+It is a piece of software to create containers (lightweight virtual machine) that will run on your machine.
+To install Docker on machines that you have root access, please refer to the guide <a class="reference external" href="https://docs.docker.com/get-docker/">here</a> and follow the instructions for your specific platform.
+Docker is well-supported on all popular operating systems.
+Please make sure Docker is correctly installed and the Docker Engine is running in the background before proceeding to the next step.</p>
+</div>
+<div class="section" id="download-mspass-container">
+<h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this headline">¶</a></h2>
+<p>The MsPASS container image is built and hosted on Docker Hub <a class="reference external" href="https://hub.docker.com/r/wangyinz/mspass">here</a>.
+You may want to create an account and sign in your Docker following <a class="reference external" href="https://docs.docker.com/docker-id/">this</a> instruction.
+Once you have docker setup properly, use the following command in a terminal to pull the MsPASS image from Docker Hub to your local machine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>Be patient as this can take a few minutes depending on your internet speed.
+Note you can run this command from anywhere.
+It loads data only in Docker’s data space so you will not see anything happen in the directory where you run this command but it will eat up several hundred megabytes on your disk.
+Any data created and stored inside the container will be opaque from the local system (outside) except for the ones in the directories that are mounted to the container.</p>
+<p>It can be confusing to understand where data is stored in a containerized environment.
+In the discussion below files or data we reference that reside in a container will be set in italics.
+Local files/data will be referred to with normal font text.</p>
+</div>
+<div class="section" id="run-mspass-container-in-all-in-one-mode">
+<h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Permalink to this headline">¶</a></h2>
+<p>To run MsPASS in its default setting, use this command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code> argument maps host’s <code class="docutils literal notranslate"><span class="pre">8888</span></code> port to the container’s <code class="docutils literal notranslate"><span class="pre">8888</span></code> port.
+Note that <code class="docutils literal notranslate"><span class="pre">8888</span></code> is the default port for the Jupyter Notebook frontend.
+If there are collisions with <code class="docutils literal notranslate"><span class="pre">8888</span></code> port on the host, change the first number (e.g. to use port <code class="docutils literal notranslate"><span class="pre">9999</span></code> on the host use <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">9999:8888</span></code>.)</p>
+<p>Now, you can use the link printed on the output that starts with <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1/</span></code> to access the notebook and run codes within the container.
+If you are not familiar with Jupyter Notebook, please refer to its <a class="reference external" href="https://jupyter-notebook.readthedocs.io/en/stable/ui_components.html">documentation</a> on how to use the user interface.
+The root directory of the notebook contains three different directories: <em>db</em>, <em>logs</em>, and <em>work</em>.
+<em>db</em> contains MongoDB’s database files.
+<em>logs</em> contains the logs generated by the database, the scheduler, and the worker.
+<em>work</em> is the worker’s local scratch space.
+Because no mounting arguments were given to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command above, any files you created will stay in the container, and will be removed when the container is removed.
+To shut down and exit the container, you can either click the “Quit” button of the Notebook Dashboard or simply use Control-C.</p>
+<p>If you want to mount current directory on your system to the container, use this command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind wangyinz/mspass
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--mount</span></code> option binds current directory on your system to <em>/home</em> within the container.
+<em>/home</em> is the root directory of the notebook.
+This option keeps the files outside of the container, so your data will be accessible after the container is removed.
+The same db, logs, and work directories will be created if they do not already exist.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="deploy_mspass_with_docker_compose.html" class="btn btn-neutral float-right" title="Deploy MsPASS with Docker Compose" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="MsPASS Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

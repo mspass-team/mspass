@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
 
   
   
@@ -33,6 +34,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -41,7 +44,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CRUD Operations in MsPASS" href="CRUD_operations.html" />
-    <link rel="prev" title="Time Standard Constraints" href="time_standard_constraints.html" />  
+    <link rel="prev" title="Using ObsPy with MsPASS" href="obspy_interface.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -93,44 +96,82 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../user_manual.html">User’s Manual</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Database Concepts</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#nonsql-database">NonSQL Database</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#schema">Schema</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#design-concepts">Design Concepts</a></li>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Database Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nonsql-database">NonSQL Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#schema">Schema</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#design-concepts">Design Concepts</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Schema</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#schema-in-mspass">Schema in MsPASS</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#some-key-concepts">Some Key Concepts</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#objectid">ObjectId</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#normalized-data">Normalized Data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#waveform-processing">Waveform Processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#concepts">Concepts</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#waveform-data-storage">Waveform Data Storage</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id3">Overview</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#some-key-concepts">Some Key Concepts</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#waveform-processing">Waveform Processing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#waveform-data-storage">Waveform Data Storage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#elog">elog</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#history">history</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#normalized-collections">Normalized collections</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gridfs-storage">gridfs storage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#file-storage">File storage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#elog">elog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#history">history</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#normalized-collections">Normalized collections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#site-and-channel">site and channel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#source">source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#history-object-and-history-global">history_object and history_global</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">Summary</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing-import-collections">Preprocessing/Import collections</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#seed-and-miniseed">SEED and MiniSEED</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-topics">Advanced Topics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#customizing-the-schema">Customizing the schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#importing-data-formats-other-than-miniseed">Importing Data Formats other than miniSEED</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
             
@@ -180,8 +221,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../user_manual.html">User’s Manual</a> &raquo;</li>
         
       <li>Database Concepts</li>
     
@@ -357,10 +396,10 @@ this system.</p></li>
 </ol>
 </div>
 </div>
+<div class="section" id="schema-in-mspass">
+<h2>Schema in MsPASS<a class="headerlink" href="#schema-in-mspass" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id2">
-<h2>Schema<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>Overview<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3>Overview<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="line-block">
 <div class="line">We reiterate the important concept that in
 MongoDB a <em>collection</em> is roughly equivalent to a table (relation)
@@ -508,8 +547,8 @@ datum is run through which of a set of parallel jobs.</p>
 </div>
 <div class="section" id="waveform-data-storage">
 <h3>Waveform Data Storage<a class="headerlink" href="#waveform-data-storage" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="id4">
-<h4>Overview<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id3">
+<h4>Overview<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>All seismogram read operations access one of the wf Collections.
 The default behavior is to read all key-value pairs in a single document
 and insert most of the attributes into the Metadata for one
@@ -790,7 +829,7 @@ site_elev may not even be needed.  We deal with this complexity by a
 defining another rule that user’s need to recognize and abide by:</p>
 <blockquote>
 <div><dl class="simple">
-<dt><strong>Rule 2</strong></dt><dd><p>The site and channel collections should only contain metadata relevant to
+<dt>Rule 3:</dt><dd><p>The site and channel collections should only contain metadata relevant to
 the data set.   Used documents are not a problem but waste space.
 Missing metadata is a problem as it will always lead to dropped data.
 Assembly of a working data set requires linking documents in <code class="code docutils literal notranslate"><span class="pre">site</span></code>
@@ -866,7 +905,7 @@ Thus, for the same reason as above we state rule 3 which is very
 similar to rule 2:</p>
 <blockquote>
 <div><dl class="simple">
-<dt><strong>Rule 3</strong></dt><dd><p>The source collection should contain any useful source
+<dt>Rule 4:</dt><dd><p>The source collection should contain any useful source
 positions that define locations in space and time (attributes
 <code class="code docutils literal notranslate"><span class="pre">source_lat</span></code>, <code class="code docutils literal notranslate"><span class="pre">source_lon</span></code>, <code class="code docutils literal notranslate"><span class="pre">source_depth</span></code>, and <code class="code docutils literal notranslate"><span class="pre">source_time</span></code>).  Linking
 each document in a wf collection to the desired point in the source
@@ -909,9 +948,8 @@ a publication or as an archive you expect to need to work with at a later date.<
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="id5">
-<h1>Summary<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id4">
+<h2>Summary<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>The details above may obscure a few critical points about what the
 database in MsPASS does for you and what you must keep in mind to use
 is correctly.</p>
@@ -934,6 +972,10 @@ is also always treated as a preprocessing problem.   Linking of these
 normalized collections to wf_Seismogram and/or wf_TimeSeries is
 required if the associated metadata is needed in your workflow.</p></li>
 </ul>
+<div class="section" id="preprocessing-import-collections">
+<h3>Preprocessing/Import collections<a class="headerlink" href="#preprocessing-import-collections" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h4>Overview<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
 <p>We use the MongoDB database to manage waveform data import.  Waveform data
 import should always be understood as another component of preprocessing
 needed to assemble a working data set.   The reason we are dogmatic on that
@@ -944,6 +986,9 @@ has intrinsic assumptions the data are multichannel, seismic-reflection data and
 SEED was designed for archive of permanent observatory data.
 We discuss import methods currently available in MsPASS in separate
 sections below.</p>
+</div>
+<div class="section" id="seed-and-miniseed">
+<h4>SEED and MiniSEED<a class="headerlink" href="#seed-and-miniseed" title="Permalink to this headline">¶</a></h4>
 <p>The Standard for the Exchange of Earthquake Data (SEED) format is the primary
 format used by global data centers in seismology.   It has also become
 a common format for raw data handling from portable earthquake recording
@@ -1049,13 +1094,15 @@ load_hypocenter_data_by_id, load_hypoceter_data_by_time, load_site_data</em>, an
 <code class="code docutils literal notranslate"><span class="pre">load_channel_data</span></code>.   In addition, see our tutorial section for a detailed
 example of how to use these functions.</p>
 </div>
+</div>
+</div>
 <div class="section" id="advanced-topics">
-<h1>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permalink to this headline">¶</a></h1>
+<h2>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="customizing-the-schema">
-<h2>Customizing the schema<a class="headerlink" href="#customizing-the-schema" title="Permalink to this headline">¶</a></h2>
+<h3>Customizing the schema<a class="headerlink" href="#customizing-the-schema" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="importing-data-formats-other-than-miniseed">
-<h2>Importing Data Formats other than miniSEED<a class="headerlink" href="#importing-data-formats-other-than-miniseed" title="Permalink to this headline">¶</a></h2>
+<h3>Importing Data Formats other than miniSEED<a class="headerlink" href="#importing-data-formats-other-than-miniseed" title="Permalink to this headline">¶</a></h3>
 <p>Obspy’s generic file reader supports a long list of formats described
 <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html">here</a>.
 Any of these formats are readily imported into MsPASS, but would require
@@ -1078,6 +1125,7 @@ object so it was plug compatible in obspy or convert the data directly to
 TimeSeries or TimeSeriesEnemble objects with the mspass ccore api.</p>
 </div>
 </div>
+</div>
 
 
            </div>
@@ -1086,7 +1134,7 @@ TimeSeries or TimeSeriesEnemble objects with the mspass ccore api.</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="CRUD_operations.html" class="btn btn-neutral float-right" title="CRUD Operations in MsPASS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="time_standard_constraints.html" class="btn btn-neutral float-left" title="Time Standard Constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="obspy_interface.html" class="btn btn-neutral float-left" title="Using ObsPy with MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1utility_1_1dvector" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::dvector</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1dmatrix" prot="public" virt="non-virtual">mspass::utility::dmatrix</basecompoundref>
@@ -13,7 +13,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor creates an empty vector. </para>        </detaileddescription>
+<para>Default constructor creates an empty vector. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="270" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="270" bodyend="270"/>
@@ -30,7 +31,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Create a (zero initialized) vector of length nrv. </para>        </detaileddescription>
+<para>Create a (zero initialized) vector of length nrv. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="272" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" bodystart="272" bodyend="272"/>
@@ -47,7 +49,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Copy constructor. </para>        </detaileddescription>
+<para>Copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="274" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="249" bodyend="255"/>
@@ -64,10 +67,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator. </para>        </detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="276" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="238" bodyend="248"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="276" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="238" bodyend="248"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1dvector_1accddc88c31d3d73955fc91c0eed54035" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double &amp;</type>
@@ -81,10 +85,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Extract component rowindex. </para>        </detaileddescription>
+<para>Extract component rowindex. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="256" bodyend="261"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="278" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="256" bodyend="261"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="friend">
@@ -104,61 +109,71 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Matrix vector multiple operator.</para><para>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. <parameterlist kind="param"><parameteritem>
+<para>Matrix vector multiple operator.</para>
+<para>This operator is used for constructs like y=Ax where x is a vector and A is a matrix. y is the returned vector. <linebreak/>
+ <parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>A</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- matrix on right in multiply </para></parameterdescription>
+<para>- matrix on right in multiply </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>x</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- vector on left of multiply operation</para></parameterdescription>
+<para>- vector on left of multiply operation</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>product A*x </para></simplesect>
+<simplesect kind="return"><para>product A*x </para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername><ref refid="classmspass_1_1utility_1_1dmatrix__size__error" kindref="compound">dmatrix_size_error</ref></parametername>
 </parameternamelist>
 <parameterdescription>
-<para>thrown if size of A and x do not match. </para></parameterdescription>
+<para>thrown if size of A and x do not match. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="289" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="262" bodyend="276"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/dmatrix.h" line="289" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc" bodystart="262" bodyend="276"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>A vector compatible with dmatrix objects. </para>    </briefdescription>
+<para>A vector compatible with dmatrix objects. </para>
+    </briefdescription>
     <detaileddescription>
-<para>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. </para>    </detaileddescription>
+<para>A vector is a special case of a matrix with one row or column. In this implementation, however, it always means a column vector. Hence, it is possible to multiply a vector x and a matrix A as Ax provided they are compatible sizes. This differs from matlab where row and columns vectors are sometimes used interchangably. <linebreak/>
+ </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="99">
+      <node id="2">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="98">
+      <node id="1">
         <label>mspass::utility::dvector</label>
         <link refid="classmspass_1_1utility_1_1dvector"/>
-        <childnode refid="99" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="101">
+      <node id="2">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="100">
+      <node id="1">
         <label>mspass::utility::dvector</label>
         <link refid="classmspass_1_1utility_1_1dvector"/>
-        <childnode refid="101" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

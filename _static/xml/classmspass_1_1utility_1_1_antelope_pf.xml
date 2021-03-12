@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1utility_1_1_antelope_pf" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::AntelopePf</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="151" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="151" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="151" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1utility_1_1_antelope_pf_1ae2055483c16df9d35067a3538fe48d8b" prot="private" static="no" mutable="no">
         <type>std::map&lt; std::string, <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> &gt;</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="153" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="153" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="153" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="153" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -41,10 +41,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor - does nothing. </para>        </detaileddescription>
+<para>Default constructor - does nothing. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="65" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="65" bodyend="65"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="65" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" bodystart="65" bodyend="65"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a35df43d52aca279262f4cb672cfe13ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -56,14 +57,17 @@
           <declname>pfbase</declname>
         </param>
         <briefdescription>
-<para>Construct from a base pf name. </para>        </briefdescription>
+<para>Construct from a base pf name. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This constructor acts like the antelope pfread function for parameter files constructed in plain C. That is, the argument is a base name sans the .pf extension. Like antelope&apos;s pfread it will follow the chain of directories defined by PFPATH. As with the antelope pfread procedure the last file read takes precendence. Note if PFPATH is not defined the path defaults to &quot;.&quot;. Further if pfbase begins with a slash (i.e. &quot;/&quot;) it is assumed to be the actual file name to read and the PFPATH feature is disabled.</para><para><parameterlist kind="param"><parameteritem>
+<para>This constructor acts like the antelope pfread function for parameter files constructed in plain C. That is, the argument is a base name sans the .pf extension. Like antelope&apos;s pfread it will follow the chain of directories defined by PFPATH. As with the antelope pfread procedure the last file read takes precendence. Note if PFPATH is not defined the path defaults to &quot;.&quot;. Further if pfbase begins with a slash (i.e. &quot;/&quot;) it is assumed to be the actual file name to read and the PFPATH feature is disabled.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>pfbase</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a the base pf name (always adds .pf to each name in PFPATH)</para></parameterdescription>
+<para>is a the base pf name (always adds .pf to each name in PFPATH)</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -71,13 +75,15 @@
 <parametername>-</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throws a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> object with an informative message if constuctor fails for any reason. </para></parameterdescription>
+<para>throws a <ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref> object with an informative message if constuctor fails for any reason. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="82" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="82" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a768ccdd08e9b1eaebc904852cd36b8b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -89,20 +95,24 @@
           <declname>lines</declname>
         </param>
         <briefdescription>
-<para>Construct from a set of text lines. </para>        </briefdescription>
+<para>Construct from a set of text lines. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is a cruder constructor that could be used for small pf file. Read the contents of a pf file into a vector of lines with each line being one line from the pf. The constructor then sequentially parses this series of lines as it would if reading from a file.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is a cruder constructor that could be used for small pf file. Read the contents of a pf file into a vector of lines with each line being one line from the pf. The constructor then sequentially parses this series of lines as it would if reading from a file.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>lines</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the modified version of the text pf file. </para></parameterdescription>
+<para>is the modified version of the text pf file. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="91" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="91" column="5"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a7661b242706a2845f6b5225f42c8108b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -116,10 +126,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. </para>        </detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="93" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="385" bodyend="390"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="93" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="385" bodyend="390"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a64065097fb1ebc22192ce455cbeca3fb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::list&lt; std::string &gt;</type>
@@ -131,14 +142,17 @@
           <declname>key</declname>
         </param>
         <briefdescription>
-<para>get a Tbl component by key. </para>        </briefdescription>
+<para>get a Tbl component by key. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Antelope has the idea of a tbl, which is a list of lines that are parsed independently. This is the get method to extract one of these by its key.</para><para><parameterlist kind="param"><parameteritem>
+<para>Antelope has the idea of a tbl, which is a list of lines that are parsed independently. This is the get method to extract one of these by its key.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the key for the Tbl desired. </para></parameterdescription>
+<para>is the key for the Tbl desired. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -146,13 +160,15 @@
 <parametername><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
-<para>will be thrown if the key is not present. </para></parameterdescription>
+<para>will be thrown if the key is not present. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="103" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="391" bodyend="398"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="103" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="391" bodyend="398"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref></type>
@@ -164,29 +180,35 @@
           <declname>key</declname>
         </param>
         <briefdescription>
-<para>used for subtrees (nested Arrs in antelope) </para>        </briefdescription>
+<para>used for subtrees (nested Arrs in antelope) </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is used for nested Arr constructs. This returns a copy of the branch defined by key attached to this object. The original from the parent is retained.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is used for nested Arr constructs. This returns a copy of the branch defined by key attached to this object. The original from the parent is retained.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>key</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the key used to locate this branch. </para></parameterdescription>
+<para>is the key used to locate this branch. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>a copy of the contents of the branch linked to key.</para></simplesect>
+<simplesect kind="return"><para>a copy of the contents of the branch linked to key.</para>
+</simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername><ref refid="classmspass_1_1utility_1_1_antelope_pf_error" kindref="compound">AntelopePfError</ref></parametername>
 </parameternamelist>
 <parameterdescription>
-<para>will be thrown if the key is not found. </para></parameterdescription>
+<para>will be thrown if the key is not found. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="399" bodyend="406"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="116" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="399" bodyend="406"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1a118fb63722ad11707cb2fbd58df5f6e6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::list&lt; std::string &gt;</type>
@@ -196,10 +218,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return a list of keys for branches (Arrs) in the pf file. </para>        </detaileddescription>
+<para>Return a list of keys for branches (Arrs) in the pf file. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="118" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="407" bodyend="414"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="118" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="407" bodyend="414"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1ada5c4a1b9407cb17a0fa953946473211" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::list&lt; std::string &gt;</type>
@@ -209,10 +232,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return a list of keys for Tbls in the pf. </para>        </detaileddescription>
+<para>Return a list of keys for Tbls in the pf. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="120" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="415" bodyend="422"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="120" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="415" bodyend="422"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1adcf3ebf85924a353c9c2d8d6666c4068" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref></type>
@@ -220,13 +244,20 @@
         <argsstring>()</argsstring>
         <name>ConvertToMetadata</name>
         <briefdescription>
-<para>Return an object with only simple name:value pairs. </para>        </briefdescription>
+<para>Return an object with only simple name:value pairs. </para>
+        </briefdescription>
         <detaileddescription>
-<para>The <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> parent of this object only handles name:value pairs. The values can, however, be any object boost::any can handle. The documentation says that means it is copy constructable. For now this method returns an object containin the boost::any values. Any Arr and Tbl entries are pushed directly to the output <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> using boost::any and the two keys defined as const strings at the top of this file (pftbl_key and pfarr_key).</para><para><simplesect kind="return"><para><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> sans any Arr and Tbl entries. </para></simplesect>
-</para>        </detaileddescription>
+<para>The <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> parent of this object only handles name:value pairs. The values can, however, be any object boost::any can handle. <linebreak/>
+ The documentation says that means it is copy constructable. <linebreak/>
+ For now this method returns an object containin the boost::any values. Any Arr and Tbl entries are pushed directly to the output <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> using boost::any and the two keys defined as const strings at the top of this file (pftbl_key and pfarr_key). <linebreak/>
+</para>
+<para><simplesect kind="return"><para><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> sans any Arr and Tbl entries. </para>
+</simplesect>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="133" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="434" bodyend="447"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="133" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="434" bodyend="447"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1ac19f21b1716e98b66ea05fa4c128ce3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> &amp;</type>
@@ -240,10 +271,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator, </para>        </detaileddescription>
+<para>Standard assignment operator, </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="135" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="423" bodyend="433"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="135" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="423" bodyend="433"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_antelope_pf_1af61da804652e1b6c6791147ae4b27aab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -255,20 +287,24 @@
           <declname>ofs</declname>
         </param>
         <briefdescription>
-<para>save result in a pf format. </para>        </briefdescription>
+<para>save result in a pf format. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is functionally equivalent to the Antelope pfwrite procedure, but is a member of this object. A feature of the current implementation is that all simply type parameters will usually be listed twice in the output file. The reason is that the constructor attempts to guess type, but to allow for mistakes all simple parameters are also treated as string variables so get methods are more robust.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is functionally equivalent to the Antelope pfwrite procedure, but is a member of this object. A feature of the current implementation is that all simply type parameters will usually be listed twice in the output file. The reason is that the constructor attempts to guess type, but to allow for mistakes all simple parameters are also treated as string variables so get methods are more robust.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>ofs</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a std::ostream (e.g. cout) where the result will be written in pf style. Usually should end in &quot;.pf&quot;. </para></parameterdescription>
+<para>is a std::ostream (e.g. cout) where the result will be written in pf style. Usually should end in &quot;.pf&quot;. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="149" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="149" column="10"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="private-func">
@@ -287,47 +323,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="157" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="268" bodyend="300"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/AntelopePf.h" line="157" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/AntelopePf.cc" bodystart="268" bodyend="300"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>C++ object version of a parameter file. </para>    </briefdescription>
+<para>C++ object version of a parameter file. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This object encapsulates the Antelope concept of a parameter file in a single wrapper. The main constructor is actually act much like the Antelope pfread procedure. Internally this object does not use an antelope Pf at all directly, but it is a child of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. Simple attributes (i.e. key-value pairs) are posted directly to the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> associative array (map) container. Note that the parser attempts to guess the type of each value given in the obvious ways (periods imply real numbers, e or E imply real numbers, etc.) but the algorithm used may not be foolproof. The get methods are from the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object. Be warned like the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object the type of an entry for a key can change and will be the last one set. An Antelope Tbl in a pf file is converted to an stl list container of stl::string&apos;s that contain the input lines. This is a strong divergence from the tbl interface of Antelope, but one I judged a reasonable modernization. Similarly, Arr&apos;s are converted to what I am here calling a &quot;branch&quot;. Branches are map indexed containers with the key pointing to nested versions of this sampe object type. This is in keeping with the way Arr&apos;s are used in antelope, but with an object flavor instead of the pointer style of pfget_arr. Thus, get_branch returns a <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> object instead of a pointer that has to be memory managed. A final note about this beast is that the entire thing was created with a tacit assumption the object itself is not huge. i.e. this implementation may not scale well if applied to very large (millions) line pf files. This is a job for something like MongoDB. View this as a convenient format for building a <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object. Note, a code fragment to use this to create lower level metadata would go like this: <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> pfdata(&quot;example&quot;); //parameter file constructor <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> md(dynamic_cast&lt;Metadata&amp;&gt;(pfdata);</para><para><simplesect kind="author"><para>Gary L. Pavlis, Indiana University</para></simplesect>
-This version for MsPASS is derived from a similar thing called a PfStyleMetadata object in antelope contrib. </para>    </detaileddescription>
+<para>This object encapsulates the Antelope concept of a parameter file in a single wrapper. The main constructor is actually act much like the Antelope pfread procedure. Internally this object does not use an antelope Pf at all directly, but it is a child of <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>. Simple attributes (i.e. key-value pairs) are posted directly to the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> associative array (map) container. Note that the parser attempts to guess the type of each value given in the obvious ways (periods imply real numbers, e or E imply real numbers, etc.) but the algorithm used may not be foolproof. The get methods are from the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object. Be warned like the <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object the type of an entry for a key can change and will be the last one set. <linebreak/>
+ An Antelope Tbl in a pf file is converted to an stl list container of stl::string&apos;s that contain the input lines. This is a strong divergence from the tbl interface of Antelope, but one I judged a reasonable modernization. Similarly, Arr&apos;s are converted to what I am here calling a &quot;branch&quot;. Branches are map indexed containers with the key pointing to nested versions of this sampe object type. This is in keeping with the way Arr&apos;s are used in antelope, but with an object flavor instead of the pointer style of pfget_arr. Thus, get_branch returns a <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> object instead of a pointer that has to be memory managed. A final note about this beast is that the entire thing was created with a tacit assumption the object itself is not huge. i.e. this implementation may not scale well if applied to very large (millions) line pf files. This is a job for something like MongoDB. View this as a convenient format for building a <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> object. Note, a code fragment to use this to create lower level metadata would go like this: <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> pfdata(&quot;example&quot;); //parameter file constructor <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref> md(dynamic_cast&lt;Metadata&amp;&gt;(pfdata);</para>
+<para><simplesect kind="author"><para>Gary L. Pavlis, Indiana University</para>
+</simplesect>
+This version for MsPASS is derived from a similar thing called a PfStyleMetadata object in antelope contrib. <linebreak/>
+ </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="3">
+      <node id="2">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="4">
+      <node id="3">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="2">
+      <node id="1">
         <label>mspass::utility::AntelopePf</label>
         <link refid="classmspass_1_1utility_1_1_antelope_pf"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="6">
+      <node id="2">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="7" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="3">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="5">
+      <node id="1">
         <label>mspass::utility::AntelopePf</label>
         <link refid="classmspass_1_1utility_1_1_antelope_pf"/>
-        <childnode refid="6" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

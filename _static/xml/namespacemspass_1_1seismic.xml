@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="namespacemspass_1_1seismic" kind="namespace" language="C++">
     <compoundname>mspass::seismic</compoundname>
     <innerclass refid="classmspass_1_1seismic_1_1_basic_taper" prot="public">mspass::seismic::BasicTaper</innerclass>
@@ -20,29 +20,34 @@
     <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_vector_taper" prot="public">mspass::seismic::VectorTaper</innerclass>
       <sectiondef kind="enum">
-      <memberdef kind="enum" id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no">
+      <memberdef kind="enum" id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" prot="public" static="no" strong="yes">
+        <type></type>
         <name>TimeReferenceType</name>
         <enumvalue id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a9234324ddf6b4176b57d803a925b7961" prot="public">
           <name>UTC</name>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Use an absolute (usually UTC) time base - previously absolute in SEISPP. </para>          </detaileddescription>
+<para>Use an absolute (usually UTC) time base - previously absolute in SEISPP. </para>
+          </detaileddescription>
         </enumvalue>
         <enumvalue id="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2a2ca9469819fb0fb61ff98e914a7ccca0" prot="public">
           <name>Relative</name>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Time is relative to some other standard like shot time </para>          </detaileddescription>
+<para>Time is relative to some other standard like shot time </para>
+          </detaileddescription>
         </enumvalue>
         <briefdescription>
-<para>Type of time standard for time series data. </para>        </briefdescription>
+<para>Type of time standard for time series data. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Time series data have two common standards. Absolute time means the time is an epoch time. Relative means time is some other arbitrary reference. An example is an arrival time reference frame where all data are set with time zero defined by a set of arrival time picks. </para>        </detaileddescription>
+<para>Time series data have two common standards. Absolute time means the time is an epoch time. Relative means time is some other arbitrary reference. An example is an arrival time reference frame where all data are set with time zero defined by a set of arrival time picks. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="14" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="14" bodyend="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="14" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="14" bodyend="17"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="typedef">
@@ -54,10 +59,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Useful alias for Ensemble&lt;TimeSeries&gt; </para>        </detaileddescription>
+<para>Useful alias for Ensemble&lt;TimeSeries&gt; </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="117" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="117" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="117" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="117" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" prot="public" static="no">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt;</type>
@@ -67,10 +73,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Useful alias for Ensemble&lt;Seismogram&gt; </para>        </detaileddescription>
+<para>Useful alias for Ensemble&lt;Seismogram&gt; </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="119" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="119" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" line="119" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h" bodystart="119" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="func">
@@ -85,10 +92,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Number of data samples. </para>        </detaileddescription>
+<para>Number of data samples. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="17" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="17" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="17" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a3f7a9857fd532d0e6800f2a316b50772" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -101,10 +109,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>data sample interval in seconds. </para>        </detaileddescription>
+<para>data sample interval in seconds. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="19" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="19" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="19" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a1e5b45ce0ed02e9c1d154ea0434138c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -117,10 +126,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Time of first sample of data (epoch time or relative to some other time mark) </para>        </detaileddescription>
+<para>Time of first sample of data (epoch time or relative to some other time mark) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="21" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="21" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="21" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1aa4af747de9dc5b4dba5dc37de80a05eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -133,10 +143,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Data sampling frequency in Hz=1/s </para>        </detaileddescription>
+<para>Data sampling frequency in Hz=1/s </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="23" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="23" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="23" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ac1a7513c761787a80a1798f2f2e66235" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -149,10 +160,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="28" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="28" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="28" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1aaaa7deae118c2fabe6146f4e44facc2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -165,10 +177,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="30" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="30" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="30" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a8261a3979c07230a72a1d69d8d45b862" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -181,10 +194,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>        </detaileddescription>
+<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="33" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="33" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="33" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ae726d0c4329425d61fd1606336b18e4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -197,10 +211,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+<para>latitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="38" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="38" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="38" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ae7714c21f072de9472956add73bf014d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -213,10 +228,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+<para>longitude of a seismic station/instrument in degrees - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="40" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="40" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="40" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a9098b27e4b7c79ebe30901274f2d1e09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -229,10 +245,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>        </detaileddescription>
+<para>elevation of a seismic station/instrument in km (subtract emplacement depth for borehole instruments) - <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="43" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="43" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="43" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1af6f66d6ba46332022801fc62f96168a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -245,10 +262,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Azimuth (in degree) of a seismometer component - horizontal angle </para>        </detaileddescription>
+<para>Azimuth (in degree) of a seismometer component - horizontal angle </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="45" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="45" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="45" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a477252b5b499a023541fdba2cb62bfe5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -261,10 +279,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Inclination from +up (in degree) of a seismometer component - vertical angle </para>        </detaileddescription>
+<para>Inclination from +up (in degree) of a seismometer component - vertical angle </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="47" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="47" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="47" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a6185ce4ed163335717824e4802ac686f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -277,10 +296,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Latitude (in degrees) of the hypocenter of seismic source </para>        </detaileddescription>
+<para>Latitude (in degrees) of the hypocenter of seismic source </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="54" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="54" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="54" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1aa9af0818785cfdf6d6389fe463f39fdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -293,10 +313,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Longitude (in degrees) of the hypocenter of seismic source </para>        </detaileddescription>
+<para>Longitude (in degrees) of the hypocenter of seismic source </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="56" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="56" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="56" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1aea5a4fdffb82053c6029fd0207a4e66d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -309,10 +330,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Depth (in km) of the hypocenter of seismic source </para>        </detaileddescription>
+<para>Depth (in km) of the hypocenter of seismic source </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="58" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="58" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="58" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a6d89cd9142f9c69d7ecfa521dad9a1a9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -325,10 +347,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Origin time of the hypocenter of a seismic source. </para>        </detaileddescription>
+<para>Origin time of the hypocenter of a seismic source. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="60" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="60" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="60" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a1254f7fb8e1be5b198218604ac9b3c8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -341,10 +364,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>External data file name. </para>        </detaileddescription>
+<para>External data file name. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="62" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="62" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="62" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ab8ff84666cf6d1c391987306eaad2546" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -357,10 +381,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Directory path to an external file (always used with dfile) </para>        </detaileddescription>
+<para>Directory path to an external file (always used with dfile) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="64" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="64" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="64" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a17279751e3795fee46d6a3cdfe427c33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -373,10 +398,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Offset in bytes from beginning of a file to first data sample. </para>        </detaileddescription>
+<para>Offset in bytes from beginning of a file to first data sample. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="66" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="66" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="66" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ab9de221412c0076cce8197b4f2e9df7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -389,10 +415,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Holds transformation matrix in MsPASS use for <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>        </detaileddescription>
+<para>Holds transformation matrix in MsPASS use for <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. <linebreak/>
+ </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="68" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="68" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="68" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a8429ed597db1b001609ef812ed118e25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -405,10 +433,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Universal Unique Identifier used for history. </para>        </detaileddescription>
+<para>Universal Unique Identifier used for history. <linebreak/>
+ </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="70" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="70" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="70" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ae150f608f6b8bf8a77f934f325170eb6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -421,10 +451,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Boolean used to tag a history chain as beginning with raw data </para>        </detaileddescription>
+<para>Boolean used to tag a history chain as beginning with raw data </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="72" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="72" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="72" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a8585005cd5eddd7bc658b1c1bc901aa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -437,10 +468,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>network code (net component of SEED net:sta:chan) </para>        </detaileddescription>
+<para>network code (net component of SEED net:sta:chan) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="74" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="74" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="74" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -453,10 +485,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>station code assigned to a spot on Earth (sta component of SEED net:sta:chan) </para>        </detaileddescription>
+<para>station code assigned to a spot on Earth (sta component of SEED net:sta:chan) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="76" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="76" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="76" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -469,10 +502,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code </para>        </detaileddescription>
+<para>channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="78" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="78" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="78" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>const std::string</type>
@@ -485,10 +519,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>location code assigned to an instrument (loc component of SEED net:sta:chan) </para>        </detaileddescription>
+<para>location code assigned to an instrument (loc component of SEED net:sta:chan) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="80" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" line="80" column="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/keywords.h" declline="80" declcolumn="19"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1ac593dcd952e8270c874be5c630039d3c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -513,7 +548,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" line="180" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="180" bodyend="189"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" line="180" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="180" bodyend="189"/>
       </memberdef>
       <memberdef kind="function" id="namespacemspass_1_1seismic_1aca4e4a41dbb0cd855873ae1296a2a416" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -538,13 +573,15 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" line="190" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="190" bodyend="198"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" line="190" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="190" bodyend="198"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Define metadata keys. </para>    </briefdescription>
+<para>Define metadata keys. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This include file defines a set ofconst std::string values that serve as keys to Metadata get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map Metadata keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>    </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="6" column="1"/>
+<para>This include file defines a set ofconst std::string values that serve as keys to Metadata get and put calls. They are placed in this one file to easy maintainability of the code base. This is essential because in MsPaSS we need to map Metadata keys to and from MongoDB database key names. If the schema needs to change due to some external constraint like assimilating some external code base we need only change the names here. The comments with each name are roughly the same as the concept line in the yaml file for the mspass schema at the time this file was created. Do not depend on an exact match, but the idea behind each phrase should not change (the concept). </para>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="6" column="25"/>
   </compounddef>
 </doxygen>

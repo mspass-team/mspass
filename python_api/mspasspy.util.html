@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
 
   
   
@@ -33,6 +34,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -40,7 +43,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mspass::utility::Metadata" href="../cxx_api/mspass.utility.Metadata.html" />
+    <link rel="next" title="C++ API" href="../cxx_api/index.html" />
     <link rel="prev" title="mspasspy.history" href="mspasspy.history.html" />  
 
   <style>
@@ -93,29 +96,47 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../reference_manual.html">Reference Manual</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../reference_manual.html#python-api">Python API</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">mspasspy.util</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.util.converter">converter</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a></li>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.algorithms.html">mspasspy.algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.ccore.html">mspasspy.ccore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.db.html">mspasspy.db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.graphics.html">mspasspy.graphics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mspasspy.history.html">mspasspy.history</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mspasspy.util</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.converter">converter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.decorators">decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.logging_helper">logging_helper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.util.seispp">seispp</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#c-api">C++ API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference_manual.html#mspass-schema">MsPASS Schema</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
             
@@ -166,7 +187,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../reference_manual.html">Reference Manual</a> &raquo;</li>
+          <li><a href="index.html">Python API</a> &raquo;</li>
         
       <li>mspasspy.util</li>
     
@@ -270,7 +291,7 @@ mspass component order. Presently the data are ALWAYS returned to
 cardinal directions (see above). It will be empty if sg was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">obspy.core.stream.Stream</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -376,7 +397,7 @@ python uses call by reference d may thus be altered.</p>
 object will be returned if d was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -422,7 +443,7 @@ no sanity checks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trace</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code>) – obspy trace object to convert</p></li>
+<li><p><strong>trace</strong> (<a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a>) – obspy trace object to convert</p></li>
 <li><p><strong>history</strong> – mspass ProcessingHistory object to post to result.</p></li>
 </ul>
 </dd>
@@ -845,7 +866,7 @@ filebase.ext (Arg 3 defaulting to d3C).</p></li>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../cxx_api/mspass.utility.Metadata.html" class="btn btn-neutral float-right" title="mspass::utility::Metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../cxx_api/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="mspasspy.history.html" class="btn btn-neutral float-left" title="mspasspy.history" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

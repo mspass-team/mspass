@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_seismogram" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::Seismogram</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="virtual">mspass::seismic::CoreSeismogram</basecompoundref>
@@ -15,10 +15,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor. Only runs subclass default constructors. </para>        </detaileddescription>
+<para>Default constructor. Only runs subclass default constructors. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="18" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="18" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="18" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="18" bodyend="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad590dfa3a949494f55a93a567e785f51" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -32,18 +33,22 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Bare bones constructor allocates space and little else.</para><para>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates a 3xnsamples array and sets the matrix to all zeros. It also sets the orientation information to cardinal and defines the data in relative time units. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data matrix, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</para><para><parameterlist kind="param"><parameteritem>
+<para>Bare bones constructor allocates space and little else.</para>
+<para>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates a 3xnsamples array and sets the matrix to all zeros. It also sets the orientation information to cardinal and defines the data in relative time units. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data matrix, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>nsamples</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the number of 3c vector samples to iniitalize the object with (creates a 3xnsamples matrix). </para></parameterdescription>
+<para>is the number of 3c vector samples to iniitalize the object with (creates a 3xnsamples matrix). </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="37" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="12"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="37" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="8" bodyend="12"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -55,20 +60,24 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Construct from lower level <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. </para>        </briefdescription>
+<para>Construct from lower level <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. </para>
+        </briefdescription>
         <detaileddescription>
-<para>In MsPASS <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> has the primary functions that define the concept of a three-component seismogram. <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> implements mspass specific features needed to mesh with the mspass processing system. This constructor clones onlyh the <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> components and initializes the ProcessingHistory with the default constructor leaves the history in an empty state. Users should call methods in ProcessingHistory to initiate a valid history chain. Processing can continue if left in that state, but the history chain will have an undefined origin. Job information will also be lost if not initialized (see BasicProcessingHistory)</para><para><parameterlist kind="param"><parameteritem>
+<para>In MsPASS <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> has the primary functions that define the concept of a three-component seismogram. <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> implements mspass specific features needed to mesh with the mspass processing system. This constructor clones onlyh the <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> components and initializes the ProcessingHistory with the default constructor leaves the history in an empty state. Users should call methods in ProcessingHistory to initiate a valid history chain. Processing can continue if left in that state, but the history chain will have an undefined origin. Job information will also be lost if not initialized (see BasicProcessingHistory)</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the data to be copied to create the new <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object </para></parameterdescription>
+<para>is the data to be copied to create the new <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="52" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="15" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="52" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="15" bodyend="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -86,25 +95,30 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Contruct from a core seismogram and initialize history as origin.</para><para>This constructor is a variant of a similar one built only from a <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. This constuctor is intended to be used mainly on simulation data created by some mechanism (e.g. a python procedure). It is more rigid that the simple one arg constructor as it will create a top level history record. The record will mark the result as an origin with an id set as a uuid created by a random number generator (boost implementation). The jobname and jobid are frozen as &quot;test&quot;. Use a different constructor and/or reset job info if more flexibility is desired. Use of this constructor is recommended only for test python programs that do not need to interact with MongoDB.</para><para><parameterlist kind="param"><parameteritem>
+<para>Contruct from a core seismogram and initialize history as origin.</para>
+<para>This constructor is a variant of a similar one built only from a <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>. This constuctor is intended to be used mainly on simulation data created by some mechanism (e.g. a python procedure). It is more rigid that the simple one arg constructor as it will create a top level history record. The record will mark the result as an origin with an id set as a uuid created by a random number generator (boost implementation). The jobname and jobid are frozen as &quot;test&quot;. Use a different constructor and/or reset job info if more flexibility is desired. Use of this constructor is recommended only for test python programs that do not need to interact with MongoDB.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>is</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>core data to be cloned </para></parameterdescription>
+<para>core data to be cloned </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>alg</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the algorithm name to set for the origin history record. </para></parameterdescription>
+<para>is the algorithm name to set for the origin history record. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="70" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="70" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1ae4126ada587a52ed991ed25308a5c9cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -120,27 +134,32 @@
           <declname>md</declname>
         </param>
         <briefdescription>
-<para>Partial constructor from base classes. </para>        </briefdescription>
+<para>Partial constructor from base classes. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is a partial constructor useful sometimes for building a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from scratch such as in a simultion. It clones the Metadata and uses attributes in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to build a framework that data can be added into. It initialzies the data array to npts stored in the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> passed to the constructor.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is a partial constructor useful sometimes for building a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from scratch such as in a simultion. It clones the Metadata and uses attributes in <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> to build a framework that data can be added into. It initialzies the data array to npts stored in the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> passed to the constructor.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>bts</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> that overrides any md data. </para></parameterdescription>
+<para>is the <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> that overrides any md data. </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>md</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the Metadata cloned to make the partially constructed object. </para></parameterdescription>
+<para>is the Metadata cloned to make the partially constructed object. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="82" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="29" bodyend="56"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="82" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="29" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a5705fbcf6d39464827889bc2e96dfb92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -176,12 +195,14 @@
           <declname>uin</declname>
         </param>
         <briefdescription>
-<para>Construct from all pieces. </para>        </briefdescription>
+<para>Construct from all pieces. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This constructor build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from all the pieces that define this highest level object in mspass. This constructor is planned to be hidden from python programmers and not exposed with pybind11 wrappers because is has some potentially undesirable side effects if not used carefully. The primary purpose of this constructor is for serialization and deserializaton in spark with pickle. The pickle interface is purely in C for this function so again python programmers don&apos;t need to see this constructor. The parameter names are obvious because they are associated one for one with the objects they are used to construct. The only exceptions are card and ortho which are booleans used to set the internal booleans components_are_cardinal and components_are_orthogonal respectively (two internals users should not mess with). tm is also a dmatrix representation the tmatrix stored internally as a 2d C array, but we use the dmatrix to mesh with serialization. </para>        </detaileddescription>
+<para>This constructor build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object from all the pieces that define this highest level object in mspass. This constructor is planned to be hidden from python programmers and not exposed with pybind11 wrappers because is has some potentially undesirable side effects if not used carefully. The primary purpose of this constructor is for serialization and deserializaton in spark with pickle. The pickle interface is purely in C for this function so again python programmers don&apos;t need to see this constructor. The parameter names are obvious because they are associated one for one with the objects they are used to construct. The only exceptions are card and ortho which are booleans used to set the internal booleans components_are_cardinal and components_are_orthogonal respectively (two internals users should not mess with). tm is also a dmatrix representation the tmatrix stored internally as a 2d C array, but we use the dmatrix to mesh with serialization. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="104" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="65" bodyend="78"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="104" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="65" bodyend="78"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1acbb2f19850e7f5d4e9452ed3728b2b32" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -215,32 +236,39 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Constructor driven by a Metadata object.</para><para>The flexibilityof Metadata makes it helpful at times to build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object driven by Metadata key:value pairs. This implementation always uses file io to read the actual data and clone the Metadata. ProcessingHistory is initialized to define the result as raw data. The id field is set from Metadata using the special (frozen) key &quot;wf_id&quot; that is assumed to hold the string representation of an ObjectID of the waveform read.</para><para>Note all but the Metadata argument are defaulted, but setting the jobname and jobid is strongly recommended to avoid ambiguity - these define a unique run of a particular workflow.</para><para><parameterlist kind="param"><parameteritem>
+<para>Constructor driven by a Metadata object.</para>
+<para>The flexibilityof Metadata makes it helpful at times to build a <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> object driven by Metadata key:value pairs. This implementation always uses file io to read the actual data and clone the Metadata. ProcessingHistory is initialized to define the result as raw data. The id field is set from Metadata using the special (frozen) key &quot;wf_id&quot; that is assumed to hold the string representation of an ObjectID of the waveform read.</para>
+<para>Note all but the Metadata argument are defaulted, but setting the jobname and jobid is strongly recommended to avoid ambiguity - these define a unique run of a particular workflow.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>md</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the Metadata that is used to drive the constructor. </para></parameterdescription>
+<para>is the Metadata that is used to drive the constructor. </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>jobname</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the jobname (defaults to test, but should be changed) </para></parameterdescription>
+<para>is the jobname (defaults to test, but should be changed) </para>
+</parameterdescription>
 </parameteritem>
 <parameteritem>
 <parameternamelist>
 <parametername>readername</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the algorithm name assigned to the top level history record. Defaults to &quot;load3C&quot; </para></parameterdescription>
+<para>is the algorithm name assigned to the top level history record. Defaults to &quot;load3C&quot; </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="127" column="1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="127" column="3"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a275d43464679a4cb963fba217d9383c0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type></type>
@@ -254,10 +282,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. </para>        </detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="132" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="132" bodyend="134"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="132" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="132" bodyend="134"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a68ddfc28edecdb64a007d5163adb9292" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
@@ -271,10 +300,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator. </para>        </detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="136" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="114" bodyend="122"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="136" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="114" bodyend="122"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -286,134 +316,141 @@
           <declname>h</declname>
         </param>
         <briefdescription>
-<para>Load just the ProcessingHistory data from another data source. </para>        </briefdescription>
+<para>Load just the ProcessingHistory data from another data source. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Some algorithms don&apos;t handle processing history. In those situations it can prove helpful to manage ProcessingHistory separately and load the history data through this method.</para><para><parameterlist kind="param"><parameteritem>
+<para>Some algorithms don&apos;t handle processing history. In those situations it can prove helpful to manage ProcessingHistory separately and load the history data through this method.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>h</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the ProcessingHistory data to copy into this <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para></parameterdescription>
+<para>is the ProcessingHistory data to copy into this <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="145" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="123" bodyend="126"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="145" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Seismogram.cc" bodystart="123" bodyend="126"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Implemntation of <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> for MsPASS. </para>    </briefdescription>
+<para>Implemntation of <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> for MsPASS. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This is the working version of a three-component seismogram object used in the MsPASS framework. It extends <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> by adding ProcessingHistory. </para>    </detaileddescription>
+<para>This is the working version of a three-component seismogram object used in the MsPASS framework. It extends <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref> by adding ProcessingHistory. <linebreak/>
+ </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="175">
+      <node id="6">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="176" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="172">
+      <node id="3">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="171">
+      <node id="2">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="172" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="173" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="173">
+      <node id="4">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="174" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="177">
+      <node id="8">
         <label>mspass::seismic::SeismogramWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="170" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="174">
+      <node id="5">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="176">
+      <node id="7">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="170">
+      <node id="1">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="171" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="175" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="184">
+      <node id="7">
         <label>mspass::utility::ProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_processing_history"/>
-        <childnode refid="185" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
-        <childnode refid="186" relation="usage">
+        <childnode refid="9" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
       </node>
-      <node id="183">
+      <node id="6">
         <label>mspass::utility::dmatrix</label>
         <link refid="classmspass_1_1utility_1_1dmatrix"/>
       </node>
-      <node id="180">
+      <node id="3">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="179">
+      <node id="2">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="180" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
-        <childnode refid="181" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
-        <childnode refid="183" relation="usage">
+        <childnode refid="6" relation="usage">
           <edgelabel>u</edgelabel>
         </childnode>
       </node>
-      <node id="181">
+      <node id="4">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="182" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="186">
+      <node id="9">
         <label>mspass::utility::ErrorLogger</label>
         <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-      <node id="182">
+      <node id="5">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="185">
+      <node id="8">
         <label>mspass::utility::BasicProcessingHistory</label>
         <link refid="classmspass_1_1utility_1_1_basic_processing_history"/>
       </node>
-      <node id="178">
+      <node id="1">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="179" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="184" relation="public-inheritance">
+        <childnode refid="7" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h" bodystart="13" bodyend="146"/>
     <listofallmembers>
       <member refid="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>accumulate</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a400d628f653391fa3d582412eeda90dc" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_many_inputs</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_many_inputs</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>add_one_input</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>append_chain</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" virt="virtual"><scope>mspass::seismic::Seismogram</scope><name>ator</name></member>
@@ -482,7 +519,7 @@
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>mlive</name></member>
       <member refid="classmspass_1_1utility_1_1_metadata_1a0fec2640022e944afe1ae1180e741da5" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>modified</name></member>
       <member refid="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" prot="protected" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>mt0</name></member>
-      <member refid="classmspass_1_1utility_1_1_processing_history_1a4179eb1f453e094c541f8c4a7b5ea3d0" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_ensemble_process</name></member>
+      <member refid="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_ensemble_process</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a75af2861c06a905968cc9c727b8cc877" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_map</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1ae0225ef6ba03dc64ebb711bb54b1554d" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>new_map</name></member>
       <member refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" prot="public" virt="non-virtual"><scope>mspass::seismic::Seismogram</scope><name>newid</name></member>

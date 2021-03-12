@@ -1,7 +1,7 @@
 .. _processing_history_concepts:
 
 Processing History Concepts
-========================
+===========================
 
 Global versus object level history
 ---------------------------------------

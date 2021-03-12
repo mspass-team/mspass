@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_basic_time_series" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::BasicTimeSeries</compoundname>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="non-virtual">mspass::seismic::CoreSeismogram</derivedcompoundref>
@@ -14,10 +14,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Boolean defining if a data object has valid data or is to be ignored. Data processing often requires data to be marked bad but keep the original data around in case an error was made. This boolean allows this capability. </para>        </detaileddescription>
+<para>Boolean defining if a data object has valid data or is to be ignored. Data processing often requires data to be marked bad but keep the original data around in case an error was made. This boolean allows this capability. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="256" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="256" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="256" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="256" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1aea80df11992ca2c7ff915aab5fcba6f5" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -27,10 +28,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Sample interval. </para>        </detaileddescription>
+<para>Sample interval. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="260" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="260" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="260" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="260" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1aeb40f4223a8ee73e79f9af065372a757" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -40,10 +42,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Data start time. That is the time of the first sample of data. </para>        </detaileddescription>
+<para>Data start time. That is the time of the first sample of data. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="264" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="264" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="264" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="264" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1a0cb0afe9272567b8fd3394f79f46628a" prot="protected" static="no" mutable="no">
         <type>size_t</type>
@@ -53,10 +56,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Number of data samples in this data object. </para>        </detaileddescription>
+<para>Number of data samples in this data object. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="268" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="268" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="268" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="268" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1abb88ddef3bab3b3205dfe6c6cfdb91aa" prot="protected" static="no" mutable="no">
         <type><ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref></type>
@@ -66,10 +70,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Time reference standard for this data object. Defined by enum Time_Reference this currently is only one of two things. When set as &quot;UTC&quot; the time standard is an epoch time. When set as &quot;relative&quot; time has no relationship to any external standard but are relative to some arbitrary reference that must ascertained by the algorithm by some other means (in seispp this is normally done through a metadata object). A classic example is multichannel data where channels have a time relative to a shot time. </para>        </detaileddescription>
+<para>Time reference standard for this data object. Defined by enum Time_Reference this currently is only one of two things. When set as &quot;UTC&quot; the time standard is an epoch time. When set as &quot;relative&quot; time has no relationship to any external standard but are relative to some arbitrary reference that must ascertained by the algorithm by some other means (in seispp this is normally done through a metadata object). A classic example is multichannel data where channels have a time relative to a shot time. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="278" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="278" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="278" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="278" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1af749170531556c0c39ba6916057d2b17" prot="protected" static="no" mutable="no">
         <type>bool</type>
@@ -82,7 +87,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="282" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="282" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="282" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="282" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_basic_time_series_1ae79b68bf89b4cd4e6001bbf2c491f539" prot="protected" static="no" mutable="no">
         <type>double</type>
@@ -95,7 +100,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="285" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="285" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="285" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="285" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -107,7 +112,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor. Does essentially nothing since a <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> object has no data. Does initialize data to avoid run time checkers bitching about unitialized data, but values are meaningless when this constructor is called. </para>        </detaileddescription>
+<para>Default constructor. Does essentially nothing since a <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> object has no data. Does initialize data to avoid run time checkers bitching about unitialized data, but values are meaningless when this constructor is called. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="44" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="42" bodyend="51"/>
@@ -124,7 +130,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. </para>        </detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="48" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="52" bodyend="61"/>
@@ -135,12 +142,14 @@
         <argsstring>()</argsstring>
         <name>~BasicTimeSeries</name>
         <briefdescription>
-<para>Virtual destructor. </para>        </briefdescription>
+<para>Virtual destructor. </para>
+        </briefdescription>
         <detaileddescription>
-<para>A base class with virtual members like this requires this incantation to avoid some odd conflicts. This particular one was added to make the boost::serialization code work properly. The geeky details for why this is necessary can be found in Scott Meyers book &quot;Effective C++&quot; </para>        </detaileddescription>
+<para>A base class with virtual members like this requires this incantation to avoid some odd conflicts. This particular one was added to make the boost::serialization code work properly. The geeky details for why this is necessary can be found in Scott Meyers book &quot;Effective C++&quot; </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="56" bodyend="56"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="56" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="56" bodyend="56"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -159,13 +168,15 @@
 <parametername>i</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- sample number to compute time for. </para></parameterdescription>
+<para>- sample number to compute time for. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="63" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="63" bodyend="66"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="63" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="63" bodyend="66"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -179,12 +190,13 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Inverse of time function. That is, it returns the integer position of a given time t within a time series. The returned number is not tested for validity compared to the data range. This is the callers responsibility as this is a common error condition that should not require the overhead of an exception. </para>        </detaileddescription>
+<para>Inverse of time function. That is, it returns the integer position of a given time t within a time series. The returned number is not tested for validity compared to the data range. This is the callers responsibility as this is a common error condition that should not require the overhead of an exception. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="74" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="74" bodyend="77"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="74" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="74" bodyend="77"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+      <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
         <type>double</type>
         <definition>double mspass::seismic::BasicTimeSeries::endtime</definition>
         <argsstring>() const noexcept</argsstring>
@@ -192,10 +204,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns the end time (time associated with last data sample) of this data object. </para>        </detaileddescription>
+<para>Returns the end time (time associated with last data sample) of this data object. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="82" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="82" bodyend="85"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="82" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="82" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a1e83b446d82202d808504429b0257eb0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -205,10 +218,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return true if a time shift has been applied to the data. Never true if data were never in an absolute time frame (i.e.UTC) </para>        </detaileddescription>
+<para>Return true if a time shift has been applied to the data. Never true if data were never in an absolute time frame (i.e.UTC) </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="88" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="88" bodyend="91"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="88" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="88" bodyend="91"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a83c9a758b4a05ebddf09e17373b1e656" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -218,18 +232,22 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the reference time.</para><para>We distinguish relative and UTC time by a time shift constant stored with the object. This returns the time shift to return data to an epoch time.</para><para><parameterlist kind="exception"><parameteritem>
+<para>Return the reference time.</para>
+<para>We distinguish relative and UTC time by a time shift constant stored with the object. This returns the time shift to return data to an epoch time.</para>
+<para><parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>SeisppError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>object if the request is not rational. That is this request only makes sense if the data began with an absolute time and was converted with the ator method. Some cross checks are made for consistency that can throw an error in this condition. </para></parameterdescription>
+<para>object if the request is not rational. That is this request only makes sense if the data began with an absolute time and was converted with the ator method. Some cross checks are made for consistency that can throw an error in this condition. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="102" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="86" bodyend="100"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="102" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="86" bodyend="100"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ab87672dc6adffed90b0dc9c144219d44" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -241,20 +259,24 @@
           <declname>t</declname>
         </param>
         <briefdescription>
-<para>Force a t0 shift value on data. </para>        </briefdescription>
+<para>Force a t0 shift value on data. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is largely an interface routine for constructors that need to handle data in relative time that are derived from an absolute base. It can also be used to fake processing routines that demand data be in absolute time when the original data were not. It was added for MsPASS to support reads and writes to MongoDB where we want to be able to read and write data that had been previously time shifted (e.g. ArrivalTimeReference).</para><para><parameterlist kind="param"><parameteritem>
+<para>This is largely an interface routine for constructors that need to handle data in relative time that are derived from an absolute base. It can also be used to fake processing routines that demand data be in absolute time when the original data were not. It was added for MsPASS to support reads and writes to MongoDB where we want to be able to read and write data that had been previously time shifted (e.g. ArrivalTimeReference).</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>t</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the time shift to force </para></parameterdescription>
+<para>is the time shift to force </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="115" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="115" bodyend="119"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="115" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="115" bodyend="119"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1adfb9a7a1162b72d5d33e7e3430117611" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -274,13 +296,15 @@
 <parametername>tshift</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>- time shift applied to data before switching data to relative time mode. </para></parameterdescription>
+<para>- time shift applied to data before switching data to relative time mode. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="129" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="9" bodyend="18"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="129" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="9" bodyend="18"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a21faa1455f1b3a0b723e7ee136ac4d2b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -291,10 +315,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an UTC time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para><para>This method returns data previously converted to relative back to UTC using the internally stored time shift attribute. </para>        </detaileddescription>
+<para>Relative to absolute time conversion. Sometimes we want to convert data from relative time to to an UTC time standard. An example would be converting segy shot data to something that could be processed like earthquake data in a css3.0 database.</para>
+<para>This method returns data previously converted to relative back to UTC using the internally stored time shift attribute. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="138" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="21" bodyend="40"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="138" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="21" bodyend="40"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a35bf7426cc825e9b3dcf3226816d8316" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -309,10 +335,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Shift the reference time.</para><para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>        </detaileddescription>
+<para>Shift the reference time.</para>
+<para>Sometimes we need to shift the reference time t0. An example is a moveout correction. This method shifts the reference time by dt. Note a positive dt means data aligned to zero will be shifted left because relative time is t-t0. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="145" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="76" bodyend="85"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="145" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="76" bodyend="85"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -322,10 +350,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Returns true of data are marked valid (live). </para>        </detaileddescription>
+<para>Returns true of data are marked valid (live). <linebreak/>
+ </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="147" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="147" bodyend="147"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="147" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="147" bodyend="147"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -335,10 +365,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return true if the data have been marked bad (killed) - inverse of <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" kindref="member">live()</ref> </para>        </detaileddescription>
+<para>Return true if the data have been marked bad (killed) - inverse of <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a8aae898b7cf2f75d111b3eb6d8184396" kindref="member">live()</ref> </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="149" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="149" bodyend="149"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="149" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="149" bodyend="149"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1acc56784b2aaadf8223a9e189830ae3dc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -348,10 +379,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Mark these data bad. </para>        </detaileddescription>
+<para>Mark these data bad. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="151" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="151" bodyend="151"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="151" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="151" bodyend="151"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -361,10 +393,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Inverse of kill - marks data live overriding anything set before. Use to resurrect data improperly killed (useful only for interactive editing) or creating data pieces outside constructors. </para>        </detaileddescription>
+<para>Inverse of kill - marks data live overriding anything set before. Use to resurrect data improperly killed (useful only for interactive editing) or creating data pieces outside constructors. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="155" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="155" bodyend="155"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="155" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="155" bodyend="155"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -374,10 +407,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the data sample interval. </para>        </detaileddescription>
+<para>Return the data sample interval. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="157" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="157" bodyend="157"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="157" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="157" bodyend="157"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1aaf47da6a5d44415cf8a3b70e9a0bc5d5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -387,10 +421,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Test if the time standard is UTC. </para>        </detaileddescription>
+<para>Test if the time standard is UTC. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="159" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="159" bodyend="165"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="159" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="159" bodyend="165"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a858bde44fbc9801ba833970604c965d1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>bool</type>
@@ -403,7 +438,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="166" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="166" bodyend="172"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="166" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="166" bodyend="172"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ac0f23a3d725302665f4ff0c576b39237" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type><ref refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kindref="member">TimeReferenceType</ref></type>
@@ -416,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="173" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="173" bodyend="176"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="173" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="173" bodyend="176"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a21bbb21d3debe26b9c185dc0c93651d0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -426,10 +461,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return sample rate. </para>        </detaileddescription>
+<para>Return sample rate. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="178" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="178" bodyend="181"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="178" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="178" bodyend="181"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>size_t</type>
@@ -439,10 +475,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return the number of points in the data series. </para>        </detaileddescription>
+<para>Return the number of points in the data series. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="183" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="183" bodyend="183"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="183" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="183" bodyend="183"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -452,10 +489,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Return time of first data sample. An epoch time or relative time depending on TimeReferenceType private variable tref </para>        </detaileddescription>
+<para>Return time of first data sample. An epoch time or relative time depending on TimeReferenceType private variable tref </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="186" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="186" bodyend="186"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="186" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="186" bodyend="186"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a1813dfea28479ff50528e8ed008e62e8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -469,20 +507,24 @@
           <declname>sample_interval</declname>
         </param>
         <briefdescription>
-<para>Set the sample interval. </para>        </briefdescription>
+<para>Set the sample interval. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the sample interval attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define sample interval in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is a simple setter for the sample interval attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define sample interval in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample_interval</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="198" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="198" bodyend="201"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="198" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="198" bodyend="201"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1a4101771f4d687d43f4ae79bfebef3f7c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -496,20 +538,24 @@
           <declname>npts</declname>
         </param>
         <briefdescription>
-<para>Set the number of samples attribute for data. </para>        </briefdescription>
+<para>Set the number of samples attribute for data. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the number of samples attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define the number of points in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is a simple setter for the number of samples attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define the number of points in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>npts</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new number of points to set. </para></parameterdescription>
+<para>is the new number of points to set. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="213" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="213" bodyend="216"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="213" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="213" bodyend="216"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1abe29da17a295b2b439951d3ab6378caf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
         <type>void</type>
@@ -523,20 +569,24 @@
           <declname>t0in</declname>
         </param>
         <briefdescription>
-<para>Set the data start time. </para>        </briefdescription>
+<para>Set the data start time. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is a simple setter for the start time attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define t0 in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is a simple setter for the start time attribute. It is virtual because children may want to do more than just set the attribute in this base class. In MsPASS that means keeping the Metadata attributes that define t0 in sync with the data. Aliases further complicate that issue so it is not trivial. Other data objects that could be derived form this base could have similar issues.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>t0in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="228" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="228" bodyend="231"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="228" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="228" bodyend="231"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
         <type>void</type>
@@ -548,20 +598,24 @@
           <declname>newtref</declname>
         </param>
         <briefdescription>
-<para>Force the time standard. </para>        </briefdescription>
+<para>Force the time standard. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Time series data may have multiple concepts of what the time standard is. In MsPASS the allowed values currently are UTC and relative defined by the TimeReferenceType enum class. Other implementations might need to use some other standard (e.g. raw gps time is not utc). This method allows forcing a standard. It is not recommended for normal use, but only as a brutal solution for assembling a data object outside normal constructors.</para><para><parameterlist kind="param"><parameteritem>
+<para>Time series data may have multiple concepts of what the time standard is. In MsPASS the allowed values currently are UTC and relative defined by the TimeReferenceType enum class. Other implementations might need to use some other standard (e.g. raw gps time is not utc). This method allows forcing a standard. It is not recommended for normal use, but only as a brutal solution for assembling a data object outside normal constructors.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>newtref</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new time standard to set for these data. </para></parameterdescription>
+<para>is the new time standard to set for these data. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="243" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="243" bodyend="246"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="243" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="243" bodyend="246"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_basic_time_series_1aaf05bc1fe471e194bec093906c1a607c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> &amp;</type>
@@ -575,10 +629,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator. </para>        </detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="248" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="62" bodyend="75"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="248" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/BasicTimeSeries.cc" bodystart="62" bodyend="75"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="private-func">
@@ -606,53 +661,58 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="289" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="289" bodyend="298"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" line="289" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/BasicTimeSeries.h" bodystart="289" bodyend="298"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Base class for time series objects. </para>    </briefdescription>
+<para>Base class for time series objects. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This is a mostly abstract class defining data and methods shared by all data objects that are time series. In MsPASS time series means data sampled on a 1d, uniform grid defined by a sample rate, start time, and number of samples. Derived types can be scalar, vector, complex, or any data that is uniformly sampled.</para><para>The seispp version of this class had public attributes for key data are essential for defining any time series data (e.g. sample interval). This was revised in MsPASS to use getters and putters to provide a cleaner interface to python with pybind11.</para><para><simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
-</para>    </detaileddescription>
+<para>This is a mostly abstract class defining data and methods shared by all data objects that are time series. In MsPASS time series means data sampled on a 1d, uniform grid defined by a sample rate, start time, and number of samples. Derived types can be scalar, vector, complex, or any data that is uniformly sampled.</para>
+<para>The seispp version of this class had public attributes for key data are essential for defining any time series data (e.g. sample interval). This was revised in MsPASS to use getters and putters to provide a cleaner interface to python with pybind11.</para>
+<para><simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="49">
+      <node id="6">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="48" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="44">
+      <node id="1">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="45">
+      <node id="2">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
-        <childnode refid="44" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="50">
+      <node id="7">
         <label>mspass::seismic::TimeSeriesWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="49" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="47">
+      <node id="4">
         <label>mspass::seismic::SeismogramWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="46" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="46">
+      <node id="3">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="45" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="48">
+      <node id="5">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="44" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>

@@ -1,151 +1,152 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_power_spectrum_8cc" kind="file" language="C++">
     <compoundname>PowerSpectrum.cc</compoundname>
     <includes local="no">sstream</includes>
     <includes local="no">cmath</includes>
     <includes refid="_power_spectrum_8h" local="yes">mspass/seismic/PowerSpectrum.h</includes>
     <incdepgraph>
-      <node id="1300">
+      <node id="10">
         <label>list</label>
       </node>
-      <node id="1312">
+      <node id="22">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1309">
+      <node id="19">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="1310" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="1300" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1311" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="1312" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
-        <childnode refid="1313" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="1314" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="1315" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="1305" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1309" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="1305">
+      <node id="15">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1301" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1306" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="1293">
+      <node id="3">
         <label>cmath</label>
       </node>
-      <node id="1308">
+      <node id="18">
         <label>string</label>
       </node>
-      <node id="1298">
+      <node id="8">
         <label>map</label>
       </node>
-      <node id="1306">
+      <node id="16">
         <label>exception</label>
       </node>
-      <node id="1302">
+      <node id="12">
         <label>fstream</label>
       </node>
-      <node id="1291">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc</label>
         <link refid="_power_spectrum_8cc"/>
-        <childnode refid="1292" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1293" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1294" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="1303">
+      <node id="13">
         <label>boost/any.hpp</label>
       </node>
-      <node id="1313">
+      <node id="23">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="1307">
+      <node id="17">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1308" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="1297">
+      <node id="7">
         <label>typeinfo</label>
       </node>
-      <node id="1310">
+      <node id="20">
         <label>unistd.h</label>
       </node>
-      <node id="1295">
+      <node id="5">
         <label>vector</label>
       </node>
-      <node id="1292">
+      <node id="2">
         <label>sstream</label>
       </node>
-      <node id="1304">
+      <node id="14">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="1301">
+      <node id="11">
         <label>iostream</label>
       </node>
-      <node id="1315">
+      <node id="25">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="1299">
+      <node id="9">
         <label>set</label>
       </node>
-      <node id="1314">
+      <node id="24">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="1294">
+      <node id="4">
         <label>mspass/seismic/PowerSpectrum.h</label>
         <link refid="_power_spectrum_8h_source"/>
-        <childnode refid="1295" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1296" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1309" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
-      <node id="1311">
+      <node id="21">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="1296">
+      <node id="6">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1297" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1298" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1299" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1300" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1301" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1302" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="1292" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1303" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1304" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="1305" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1307" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -157,8 +158,8 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/PowerSpectrum.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref></highlight></codeline>
 <codeline lineno="5"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal">PowerSpectrum::PowerSpectrum():<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>(),<sp/>elog()</highlight></codeline>
 <codeline lineno="10"><highlight class="normal">{</highlight></codeline>
@@ -181,8 +182,8 @@
 <codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
 <codeline lineno="28"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="29"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(parent);</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/>df=parent.df;</highlight></codeline>
-<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/>f0=parent.f0;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>=parent.df;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>=parent.f0;</highlight></codeline>
 <codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>spectrum_type=parent.spectrum_type;</highlight></codeline>
 <codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/>spectrum=parent.spectrum;</highlight></codeline>
 <codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/>elog=parent.elog;</highlight></codeline>
@@ -202,7 +203,7 @@
 <codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>stringstream<sp/>ss;</highlight></codeline>
 <codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>ss<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;operator+=(accumulation)<sp/>size<sp/>mismatch<sp/>of<sp/>spectrum<sp/>arrays&quot;</highlight><highlight class="normal">&lt;&lt;endl</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;right<sp/>hade<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;spectrum.<ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">size</ref>()&lt;&lt;endl</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;right<sp/>hade<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;spectrum.size()&lt;&lt;endl</highlight></codeline>
 <codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;left<sp/>had<sp/>side<sp/>spectrum<sp/>size=&quot;</highlight><highlight class="normal">&lt;&lt;other.spectrum.size()&lt;&lt;endl;</highlight></codeline>
 <codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(ss.str(),ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
@@ -224,14 +225,14 @@
 <codeline lineno="70"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(f&lt;0.0)<sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;PowerSpectrum::amplitude:<sp/><sp/>requested<sp/>amplitude<sp/>for<sp/>a<sp/>negative<sp/>frequency<sp/>which<sp/>is<sp/>assumed<sp/>to<sp/>be<sp/>an<sp/>erorr&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>filow;</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/>filow=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">((f-f0)/df);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>filow=</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">int</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">((f-<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>)/<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Force<sp/>0<sp/>at<sp/>Nyquist<sp/>and<sp/>above<sp/>-<sp/>this<sp/>allows<sp/>simple<sp/>interpolation<sp/>in<sp/>else<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(filow&gt;=(spectrum.size()-1))</highlight></codeline>
 <codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>slope=(spectrum[filow+1]-spectrum[filow])/df;</highlight></codeline>
-<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>flow=f0+((double)filow)*df;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>slope=(spectrum[filow+1]-spectrum[filow])/<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>flow=<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" kindref="member">f0</ref>+((double)filow)*<ref refid="classmspass_1_1seismic_1_1_power_spectrum_1af4023fd0eee89576ca87ce0df394a672" kindref="member">df</ref>;</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sqrt(spectrum[filow]+slope*(f-flow));</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="83"><highlight class="normal">}</highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_slowness_vector_8h" kind="file" language="C++">
     <compoundname>SlownessVector.h</compoundname>
     <includes local="no">string</includes>
@@ -7,85 +7,86 @@
     <includedby refid="_core_seismogram_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</includedby>
     <includedby refid="_slowness_vector_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</includedby>
     <incdepgraph>
-      <node id="460">
+      <node id="2">
         <label>string</label>
       </node>
-      <node id="459">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h"/>
-        <childnode refid="460" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="467">
+      <node id="7">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="469">
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
-      <node id="461">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h"/>
-        <childnode refid="462" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="463" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="465">
+      <node id="5">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="466">
+      <node id="6">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
-      <node id="463">
+      <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="464" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="468">
+      <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
-        <childnode refid="462" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="465" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="466" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="462">
+      <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
         <link refid="mspass_8h_source"/>
       </node>
-      <node id="464">
+      <node id="4">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="462" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="465" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="466" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="467" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="468" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="469" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="470" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="470">
+      <node id="10">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1seismic_1_1_slowness_vector" prot="public">mspass::seismic::SlownessVector</innerclass>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
     <briefdescription>
     </briefdescription>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="tseries__helpers_8cc" kind="file" language="C++">
     <compoundname>tseries_helpers.cc</compoundname>
     <includes local="no">math.h</includes>
@@ -8,303 +8,304 @@
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_ensemble_8h" local="yes">mspass/seismic/Ensemble.h</includes>
     <incdepgraph>
-      <node id="1193">
+      <node id="17">
         <label>list</label>
       </node>
-      <node id="1186">
+      <node id="10">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="1178" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1187" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1188" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="1201">
+      <node id="25">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="1216">
+      <node id="40">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1177">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</label>
         <link refid="tseries__helpers_8cc"/>
-        <childnode refid="1178" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1179" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1182" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1183" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1211" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
-      <node id="1187">
+      <node id="11">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1207">
+      <node id="31">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="1208" relation="include">
+        <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="1193" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1209" relation="include">
+        <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="1187" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1188" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="1202" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="1210" relation="include">
+        <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="1179" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="1218">
+      <node id="42">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="1179">
+      <node id="3">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1180" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1181" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="1205">
+      <node id="29">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="1215">
+      <node id="39">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="1199" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="1180" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1195" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="1185" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1216" relation="include">
+        <childnode refid="40" relation="include">
         </childnode>
-        <childnode refid="1217" relation="include">
+        <childnode refid="41" relation="include">
         </childnode>
-        <childnode refid="1218" relation="include">
+        <childnode refid="42" relation="include">
         </childnode>
-        <childnode refid="1179" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="1200">
+      <node id="24">
         <label>mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
-        <childnode refid="1199" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="1193" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1185" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1191" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1201" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="1202" relation="include">
+        <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="1203" relation="include">
+        <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="1204" relation="include">
+        <childnode refid="28" relation="include">
         </childnode>
-        <childnode refid="1205" relation="include">
+        <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="1206" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
-        <childnode refid="1187" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1188" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="1199">
+      <node id="23">
         <label>string</label>
       </node>
-      <node id="1184">
+      <node id="8">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
-        <childnode refid="1185" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1186" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1189" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
-      <node id="1191">
+      <node id="15">
         <label>map</label>
       </node>
-      <node id="1181">
+      <node id="5">
         <label>exception</label>
       </node>
-      <node id="1194">
+      <node id="18">
         <label>fstream</label>
       </node>
-      <node id="1220">
+      <node id="44">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="1199" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="1217">
+      <node id="41">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="1196">
+      <node id="20">
         <label>boost/any.hpp</label>
       </node>
-      <node id="1188">
+      <node id="12">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="1182">
+      <node id="6">
         <label>mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="1219">
+      <node id="43">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="1198">
+      <node id="22">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="1199" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="1183">
+      <node id="7">
         <label>mspass/seismic/TimeSeries.h</label>
         <link refid="_time_series_8h_source"/>
-        <childnode refid="1184" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1200" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="1190">
+      <node id="14">
         <label>typeinfo</label>
       </node>
-      <node id="1208">
+      <node id="32">
         <label>unistd.h</label>
       </node>
-      <node id="1185">
+      <node id="9">
         <label>vector</label>
       </node>
-      <node id="1204">
+      <node id="28">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="1195">
+      <node id="19">
         <label>sstream</label>
       </node>
-      <node id="1197">
+      <node id="21">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="1213">
+      <node id="37">
         <label>mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="1214" relation="include">
+        <childnode refid="38" relation="include">
         </childnode>
-        <childnode refid="1185" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1189" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1215" relation="include">
+        <childnode refid="39" relation="include">
         </childnode>
-        <childnode refid="1186" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="1184" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1219" relation="include">
+        <childnode refid="43" relation="include">
         </childnode>
-        <childnode refid="1220" relation="include">
+        <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="1182" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
       </node>
-      <node id="1178">
+      <node id="2">
         <label>math.h</label>
       </node>
-      <node id="1211">
+      <node id="35">
         <label>mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
-        <childnode refid="1185" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="1183" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1212" relation="include">
+        <childnode refid="36" relation="include">
         </childnode>
       </node>
-      <node id="1180">
+      <node id="4">
         <label>iostream</label>
       </node>
-      <node id="1206">
+      <node id="30">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="1210">
+      <node id="34">
         <label>boost/serialization/list.hpp</label>
       </node>
-      <node id="1203">
+      <node id="27">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="1192">
+      <node id="16">
         <label>set</label>
       </node>
-      <node id="1202">
+      <node id="26">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="1212">
+      <node id="36">
         <label>mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
-        <childnode refid="1213" relation="include">
+        <childnode refid="37" relation="include">
         </childnode>
-        <childnode refid="1200" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
-        <childnode refid="1207" relation="include">
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="1209">
+      <node id="33">
         <label>boost/archive/basic_archive.hpp</label>
       </node>
-      <node id="1214">
+      <node id="38">
         <label>memory</label>
       </node>
-      <node id="1189">
+      <node id="13">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="1190" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="1191" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1192" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="1193" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1180" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1194" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="1195" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="1196" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="1197" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="1179" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1198" relation="include">
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -316,11 +317,11 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Ensemble.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1algorithms" kindref="compound">mspass::algorithms</ref></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms</highlight></codeline>
 <codeline lineno="7"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>;</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>;</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">mspass::utility;</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>file<sp/>is<sp/>very<sp/>very<sp/>similar<sp/>to<sp/>a<sp/>related<sp/>set<sp/>of<sp/>procedures<sp/>found</highlight></codeline>
 <codeline lineno="13"><highlight class="comment">in<sp/>the<sp/>file<sp/>three_component_helpers.cc.<sp/><sp/>Future<sp/>efforts<sp/>could<sp/>merge</highlight></codeline>
@@ -380,8 +381,8 @@
 <codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>here<sp/>as<sp/>we<sp/>have<sp/>no<sp/>idea<sp/>what<sp/>the<sp/>time<sp/>standard<sp/>might<sp/>be<sp/>otherwise</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(tcsi.time_is_relative())</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;ArrivalTimeReference:<sp/><sp/>&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>string(</highlight><highlight class="stringliteral">&quot;received<sp/>data<sp/>in<sp/>relative<sp/>time<sp/>units\n&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>string(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>proceed<sp/>as<sp/>timing<sp/>is<sp/>ambiguous&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;received<sp/>data<sp/>in<sp/>relative<sp/>time<sp/>units\n&quot;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>proceed<sp/>as<sp/>timing<sp/>is<sp/>ambiguous&quot;</highlight><highlight class="normal">),</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="73"><highlight class="normal"></highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>start<sp/>with<sp/>a<sp/>clone<sp/>of<sp/>the<sp/>original</highlight><highlight class="normal"></highlight></codeline>
@@ -419,7 +420,7 @@
 <codeline lineno="106"><highlight class="comment"></highlight></codeline>
 <codeline lineno="107"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this<sp/>is<sp/>the<sp/>new<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>newt0;</highlight></codeline>
-<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newt0=tcso-&gt;t0()<sp/>+<sp/>(tcso-&gt;dt())*static_cast&lt;double&gt;(jstart);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>newt0=tcso-&gt;t0()<sp/>+<sp/>(tcso-&gt;dt())*</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(jstart);</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tcso-&gt;set_t0(newt0);</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>This<sp/>same<sp/>block<sp/>of<sp/>code<sp/>appeared<sp/>in<sp/>the<sp/>parallel<sp/>function<sp/>for</highlight></codeline>
 <codeline lineno="112"><highlight class="comment"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>CoreSeismogram.<sp/><sp/><sp/>I<sp/>don&apos;t<sp/>think<sp/>this<sp/>is<sp/>necessary<sp/>with<sp/>the<sp/>new<sp/>api,<sp/>but</highlight></codeline>
@@ -452,7 +453,7 @@
 <codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>use<sp/>the<sp/>special<sp/>constructor<sp/>to<sp/>only<sp/>clone<sp/>the<sp/>metadata<sp/>and</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>set<sp/>aside<sp/>slots<sp/>for<sp/>the<sp/>new<sp/>ensemble.</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/>shared_ptr&lt;TimeSeriesEnsemble&gt;</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>tceo(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>(dynamic_cast&lt;Metadata&amp;&gt;(tcei),</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>tceo(</highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">TimeSeriesEnsemble</ref>(</highlight><highlight class="keyword">dynamic_cast&lt;</highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(tcei),</highlight></codeline>
 <codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nmembers));</highlight></codeline>
 <codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/>tceo-&gt;member.reserve(nmembers);<sp/><sp/></highlight><highlight class="comment">//<sp/>reserve<sp/>this<sp/>many<sp/>slots<sp/>for<sp/>efficiency</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>We<sp/>have<sp/>to<sp/>use<sp/>a<sp/>loop<sp/>instead<sp/>of<sp/>for_each<sp/>as<sp/>I<sp/>don&apos;t<sp/>see<sp/>how</highlight><highlight class="normal"></highlight></codeline>

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_power_spectrum" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::PowerSpectrum</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_metadata" prot="public" virt="non-virtual">mspass::utility::Metadata</basecompoundref>
@@ -13,10 +13,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>frequency bin interval. </para>        </detaileddescription>
+<para>frequency bin interval. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="15" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="15" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="15" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="15" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1a53bb92009189c7d297b20656cdf820a4" prot="public" static="no" mutable="no">
         <type>double</type>
@@ -26,10 +27,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Frequencey of first sample of spectrum array (usually 0). Be warned a valid construction of a <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> requires f0+df*nf() be Nyquist. </para>        </detaileddescription>
+<para>Frequencey of first sample of spectrum array (usually 0). Be warned a valid construction of a <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> requires f0+df*nf() be Nyquist. <linebreak/>
+ </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="19" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="19" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="19" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="19" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1affca22f42c28a0fe251405b227674ce6" prot="public" static="no" mutable="no">
         <type>std::string</type>
@@ -42,7 +45,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="20" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="20" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="20" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="20" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1a924f5b005efdeef3f2da34355821e0c0" prot="public" static="no" mutable="no">
         <type>std::vector&lt; double &gt;</type>
@@ -55,7 +58,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="21" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="21" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="21" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="21" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_power_spectrum_1a920cd0761252df4312168f4571165f2b" prot="public" static="no" mutable="no">
         <type><ref refid="classmspass_1_1utility_1_1_error_logger" kindref="compound">mspass::utility::ErrorLogger</ref></type>
@@ -68,7 +71,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="22" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="22" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="22" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -83,7 +86,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="23" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="9" bodyend="14"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="23" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="9" bodyend="14"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1ace419f03d3d017601e16f6b0287cfaf0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <templateparamlist>
@@ -117,7 +120,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="73" bodyend="83"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="24" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="73" bodyend="83"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a377c8508a72f2aff53da0d528de12bb7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -134,7 +137,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="26" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="15" bodyend="24"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="26" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="15" bodyend="24"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a5045c9886a94320a3f351058cd3d6ea3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
@@ -151,7 +154,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="27" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="25" bodyend="37"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="27" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="25" bodyend="37"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a8306434c52e142797c227fed6f91fd82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
@@ -163,20 +166,24 @@
           <declname>other</declname>
         </param>
         <briefdescription>
-<para>Standard accumulation operator. </para>        </briefdescription>
+<para>Standard accumulation operator. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Sometimes we need to sume power spectra. Type examplel would be total noise amplitude on a 3C seismogram or average noise amplitude in an array of instruments. This can be used to build such sum in the usual way. Add spectral elements sample by sample.</para><para><parameterlist kind="exception"><parameteritem>
+<para>Sometimes we need to sume power spectra. Type examplel would be total noise amplitude on a 3C seismogram or average noise amplitude in an array of instruments. This can be used to build such sum in the usual way. Add spectral elements sample by sample.</para>
+<para><parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPaSSError if the left and right side are not equal length. </para></parameterdescription>
+<para>throw a MsPaSSError if the left and right side are not equal length. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="37" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="38" bodyend="59"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="37" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="38" bodyend="59"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1abbfb81f3ad4a3f0a1488b869a60148a2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::vector&lt; double &gt;</type>
@@ -184,12 +191,14 @@
         <argsstring>() const</argsstring>
         <name>amplitude</name>
         <briefdescription>
-<para>Compute amplitude spectrum from power spectrum. </para>        </briefdescription>
+<para>Compute amplitude spectrum from power spectrum. </para>
+        </briefdescription>
         <detaileddescription>
-<para>The amplitude spectrum is sqrt of the power values. This is a convenience class to return the values in that form. </para>        </detaileddescription>
+<para>The amplitude spectrum is sqrt of the power values. This is a convenience class to return the values in that form. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="42" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="60" bodyend="67"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="42" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="60" bodyend="67"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1a8cdc3c59b4e204b1b04d0c1951e73076" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -201,14 +210,17 @@
           <declname>f</declname>
         </param>
         <briefdescription>
-<para>Amplitude at a given frequency. </para>        </briefdescription>
+<para>Amplitude at a given frequency. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This is an overloaded method that returns the interpolated amplitude (sqrt(power)) at a requested frequency. If the frequency exceeds the Nyquist the function silently returns 0.</para><para><parameterlist kind="param"><parameteritem>
+<para>This is an overloaded method that returns the interpolated amplitude (sqrt(power)) at a requested frequency. If the frequency exceeds the Nyquist the function silently returns 0.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>f</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the frequency for which amplitude is desired.</para></parameterdescription>
+<para>is the frequency for which amplitude is desired.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -216,13 +228,15 @@
 <parametername>will</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>throw a MsPaSSError if f is less than 0. </para></parameterdescription>
+<para>throw a MsPaSSError if f is less than 0. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="53" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="68" bodyend="83"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="53" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc" bodystart="68" bodyend="83"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1ae4580db0b75a6db419467d2374dfdd80" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -235,7 +249,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="54" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="54" bodyend="54"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="54" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="54" bodyend="54"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1ad2f979f7662aba3e46f277d9c45fd07d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -252,7 +266,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="55" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="55" bodyend="63"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="55" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="55" bodyend="63"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1aef0b54806f9e5367df7dfa03804a2f87" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>double</type>
@@ -265,7 +279,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="64" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="64" bodyend="67"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="64" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="64" bodyend="67"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_power_spectrum_1abf25df63633c262938c7957c70e4df37" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -282,52 +296,53 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="68" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="68" bodyend="71"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" line="68" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/PowerSpectrum.h" bodystart="68" bodyend="71"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
-<para>Class defining the concept of a power psectrum. </para>    </detaileddescription>
+<para>Class defining the concept of a power psectrum. </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="153">
+      <node id="2">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="154" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="154">
+      <node id="3">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="152">
+      <node id="1">
         <label>mspass::seismic::PowerSpectrum</label>
         <link refid="classmspass_1_1seismic_1_1_power_spectrum"/>
-        <childnode refid="153" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="156">
+      <node id="2">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="157" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="158">
+      <node id="4">
         <label>mspass::utility::ErrorLogger</label>
         <link refid="classmspass_1_1utility_1_1_error_logger"/>
       </node>
-      <node id="157">
+      <node id="3">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="155">
+      <node id="1">
         <label>mspass::seismic::PowerSpectrum</label>
         <link refid="classmspass_1_1seismic_1_1_power_spectrum"/>
-        <childnode refid="156" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="158" relation="usage">
+        <childnode refid="4" relation="usage">
           <edgelabel>elog</edgelabel>
         </childnode>
       </node>

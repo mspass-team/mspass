@@ -1,0 +1,436 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Using ObsPy with MsPASS &mdash; MsPASS 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Database Concepts" href="database_concepts.html" />
+    <link rel="prev" title="Time Standard Constraints" href="time_standard_constraints.html" />  
+
+  <style>
+    .wy-nav-content { max-width: 1600px; }
+  </style>
+
+  
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> MsPASS
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using ObsPy with MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#role-of-obspy-in-mspass">Role of ObsPy in MsPASS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#converters">Converters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#decorated-obspy-functions">Decorated ObsPy Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#obspy-processing-in-parallel">ObsPy Processing in Parallel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
+</ul>
+
+            
+          
+    <a href= "../genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MsPASS</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Using ObsPy with MsPASS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/user_manual/obspy_interface.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="using-obspy-with-mspass">
+<span id="obspy-interface"></span><h1>Using ObsPy with MsPASS<a class="headerlink" href="#using-obspy-with-mspass" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="role-of-obspy-in-mspass">
+<h2>Role of ObsPy in MsPASS<a class="headerlink" href="#role-of-obspy-in-mspass" title="Permalink to this headline">¶</a></h2>
+<p>The home page for <a class="reference external" href="https://docs.obspy.org/">Obspy</a> defines the package as follows:</p>
+<blockquote>
+<div><p>ObsPy is an open-source project dedicated to provide a Python framework for processing seismological data.
+It provides parsers for common file formats and seismological signal processing routines which allow the manipulation of seismological time series (see Beyreuther et al. 2010, Megies et al. 2011, Krischer et al. 2015)</p>
+</div></blockquote>
+<p>Python is sometimes called a “glue language” because of its capability for joining different software packages.
+Our integration of ObsPy in MsPASS is a case in point.
+Some user’s may find a good starting point for working with MsPASS is to treat it as a supplement to ObsPy that provides data management and parallel processing support.
+All feasible processing algorithms in ObsPy have MsPASS “wrappers” that provide that support.
+On the other hand, to interact correctly with the MsPASS framework requires frequent conversion between native ObsPy data objects and MsPASS data objects.
+We have implemented fast algorithms to do those operation, but the performance cost is not zero.
+We describe more details on converters below and how ObsPy processing algorithms can be used in parallel workflows.</p>
+</div>
+<div class="section" id="converters">
+<h2>Converters<a class="headerlink" href="#converters" title="Permalink to this headline">¶</a></h2>
+<p>To understand converters and their limitations it is helpful to describe details of ObsPy and MsPASS data objects.
+They have similarities but some major differences that a software engineer might call “a collision in concept”.
+ObsPy defines two core data objects:</p>
+<ol class="arabic simple">
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a> containers hold a single channel of seismic data.
+An ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> maps almost directly into the MsPASS atomic object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code>.
+Both containers store sample data in a contiguous block of memory that implement the linear algebra concept of an N-dimensional vector.
+Both store the sample data as Python float values that always map to 64 bit floating point numbers (double in C/C++).
+Both containers also put auxiliary data used to expand on the definition of what the data are in an indexed container that behaves like a Python dict.
+ObsPy calls that container a <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Stats.html#obspy.core.trace.Stats" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stats</span></code></a> attribute.
+MsPASS defines a similar entity we call <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code>.
+Some users may find it convenient to think of both as a generalized “header” that defines a fixed namespace like that in <a class="reference external" href="https://wiki.seismic-unix.org/doku.php">Seismic Unix</a>.
+From a user’s perspective the “headers” in ObsPy and MsPASS behave the same but the API is different.
+In ObsPy the header parameters are stored in an attribute with a different name (Stats) while in MsPASS the dict behavior is part of the TimeSeries object.
+(For those familiar with Object Oriented Programming generic concepts ObsPy views metadata using the concept that a Trace object “has a Stats” container while in MsPASS we say a TimeSeries “is a Metadata”.)</p></li>
+<li><p>ObsPy <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.html#obspy.core.stream.Stream" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a> containers are little more than a Python list of <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> objects.
+A <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> is very similar in concept to the MsPASS data object we call a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code>.
+Both are containers holding a collection of single channel seismic data.
+In terms of the data they contain there is only one fundamental difference;
+a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> is no just a list of data but it also contains a <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> container that contains attributes common to all members of the ensemble.</p></li>
+</ol>
+<p>There are some major collisions in concept between ObsPy’s approach and that we use in MsPASS that impose some limitations on switching between the packages.</p>
+<ol class="arabic simple">
+<li><p>First, ObsPy’s authors took a different perspective on what defines data than we did.
+ObsPy’s <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> and <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> objects both define some processing functions as methods for the objects.
+That is a design choice we completely rejected in MsPASS.
+An axiom of our design was data is data and processing is processing and they should intersect only through processing functions.
+A technical detail, however, is that methods in an object never represent a conversion problem.
+They only add overhead in constructing ObsPy data objects.</p></li>
+<li><p>ObsPy’s support for three-component data is mixed in the concept of a <code class="code docutils literal notranslate"><span class="pre">Stream</span></code>.
+A novel feature of MsPASS is support for an atomic data class we call a Seismogram that is a container designed for consistent handling of three component data.</p></li>
+<li><p>In MsPASS we define a second type of “Ensemble” we call a <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble</span></code> that is a collection of <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects.
+It is conceptually identical to a <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble</span></code> except the members are <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects instead of <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> objects.</p></li>
+</ol>
+<p>The concept collision between Seismograms objects and any ObsPy data creates some limitations in conversions.
+A good starting point is this axiom:  converting from MsPASS Seismogram objects or SeismogramEnsemble to ObsPy Stream objects is simple and robust;
+the reverse is not.</p>
+<p>With that background the set of converters are:</p>
+<ul>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Trace2TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">TimeSeries2Trace</span></code> are, as the names imply, converters between the ObsPy Trace and the MsPASS TimeSeries objects.
+As noted above that process is relatively straightforward.</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">Seismogram2Stream</span></code> and <code class="code docutils literal notranslate"><span class="pre">Stream2Seismogram</span></code> are the converters related to Seismogram objects.
+The Stream produced by Seismogram2Stream has some predictable restriction.
+First, the output Trace objects will all have exactly the same start time and number of samples even if raw data from which the data originated had subsample time differences or had irregular lengths.
+More significant is that not all an channel-dependent metadata will not be retained.
+Currently the only retained channel properties are orientation information (<code class="code docutils literal notranslate"><span class="pre">hang</span></code> and <code class="code docutils literal notranslate"><span class="pre">vang</span></code> attributes).
+For most users the critical information lost in the opposite conversion (<code class="code docutils literal notranslate"><span class="pre">Stream2Seismogram</span></code>) is any system response data.
+A corollary that follows logically is that if you need to do response corrections for your workflow you need to do so equally on all three components before converting the data to Seismogram objects.
+Because of complexities in converting from <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> to <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> objects we, in fact, do not recommend using <code class="code docutils literal notranslate"><span class="pre">Stream2Seismogram</span></code> for that purpose.
+If the parent data originated as miniSEED from an FDSN data center, a more reliable and flexible algorithm is the <code class="code docutils literal notranslate"><span class="pre">BundleSEEDGroup</span></code> function.</p></li>
+<li><p>The MsPASS ensemble data converters can be used to convert to and from ObsPy <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> objects, although with side effects in some situations.
+As with the other converters the (verbose) names are mnemonic for their purpose.
+<code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsemble2Stream</span></code> and its inverse <code class="code docutils literal notranslate"><span class="pre">Stream2TimeSeriesEnsemble</span></code> convert <code class="code docutils literal notranslate"><span class="pre">TimeSeriesEnsembles</span></code> to a <code class="code docutils literal notranslate"><span class="pre">Stream</span></code> and vice-versa.
+The comparable functions for <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsembles</span></code> are <code class="code docutils literal notranslate"><span class="pre">SeismogramEnsemble2Stream</span></code> and <code class="code docutils literal notranslate"><span class="pre">Stream2SeismogramEnsemble</span></code>.
+A complication in the conversion both directions is handling of the ensemble Metadata.
+As noted, that concept does not exist in the Stream object so some compromises were necessary.
+There are tradeoffs in complexity (increasing execution time) and the odds of unexpected changes.
+One way to explain this is to describe the two algorithms in pseudocode.
+First, the Ensemble to Stream algorithm is the following:</p>
+<ol class="arabic simple">
+<li><p>Copy all ensemble metadata to every live member</p></li>
+<li><p>Save the keys for ensemble metadata to a Python list</p></li>
+<li><p>Post the list to each member with an internal (hidden) key</p></li>
+<li><p>Run the converter for each atomic member and push to the Stream result</p></li>
+</ol>
+<p>Reversing the conversion (Stream to Ensemble) then follows this algorithm:</p>
+<ol class="arabic simple">
+<li><p>Convert all Trace objects in the stream to build the Ensemble result</p></li>
+<li><p>Extract the Python list of keys from the first live member</p></li>
+<li><p>Copy the Metadata defined with the ensemble keys to the Ensemble’s Metadata</p></li>
+<li><p>Erase the list of ensemble keys field from the Metadata of all members</p></li>
+</ol>
+<p>This has two side effects of which you should be conscious.</p>
+<ol class="arabic simple">
+<li><p>When an Ensemble is converted to a Stream and back to an Ensemble, which is the norm for applying an ObsPy algorithms to an entire Ensemble, a copy of the Ensemble’s Metadata will be present in every live member of the Ensemble after the to and from conversion.
+That is a side effect to the double conversion if the input did not have the same property (i.e. all members having a copy of the Ensemble Metadata).
+That was, however, a design decision as having the only copy of Metadata in the Ensemble is considered an anomaly that needs to be handled anyway.
+The reason is our definition of “Atomic” that appears repeatedly in this User’s Manual.
+Atomic data are saved and read as the single entity.
+An Ensemble, in contrast, is like a molecule that can be dismembered into atoms.
+Ensemble Metadata are like valence electrons that have to be balanced when saved as atoms.</p></li>
+<li><p>The converters do not test for consistency of member Metadata and the Ensemble Metadata.
+If the member Metadata are different from those of the Ensemble the Ensemble version will silently overwrite that of the members when the data are converted to a Stream.
+That shouldn’t happen if the Ensemble Metadata are what they are asssumed to be - attributes that are the same for all members of the group.</p></li>
+</ol>
+</li>
+</ul>
+<p>A final critical issue about using ObsPy converters is handling of extra concepts that MsPASS data objects contain that are not part of ObsPy.
+That means two elements of atomic data in MsPASS that have no related concept in ObsPy.
+That is, what we call <code class="code docutils literal notranslate"><span class="pre">ErrorLogger</span></code> and <code class="code docutils literal notranslate"><span class="pre">ProcessingHistory</span></code>.
+Decorators described in the next section are used to make this conversion happen automatically for ObsPy algorithms applied to MsPASS objects.
+If the converters are used in isolation (e.g. one could easily run several ObsPy algorithms between converters from mspass to ObsPy and back) these extra components will be lost without custom coding to preserve them.
+For this reason we recommend only running ObsPy algorithms through the decorators described in the next section.</p>
+</div>
+<div class="section" id="decorated-obspy-functions">
+<h2>Decorated ObsPy Functions<a class="headerlink" href="#decorated-obspy-functions" title="Permalink to this headline">¶</a></h2>
+<p>The decorated ObsPy functions can be thought of as a way to run ObsPy’s functions on mspass data objects.
+That means both atomic data and Ensembles.
+This should be clearer from an example.</p>
+<p>Consider this small code fragment to apply a bandpass filter to an ObsPy <code class="code docutils literal notranslate"><span class="pre">Trace</span></code> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">read</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;mydatafile&#39;</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This little fragment uses the typical ObsPy approach of reading data from a file and applying an algorithm in a construct that makes the algorithm look like a method for the data class.
+That model does not mesh well with parallel schedulers that are a core component of MsPASS.
+The normal application of the map and reduce operations, which are a core idea of the parallel schedulers, requires the algorithm be cast in a function form.
+Hence, a comparable algorithm in MsPASS to the above is the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># in mspass all jobs normally start with an incantation similar to</span>
+<span class="c1"># this to create a database handle which we here link to the symbol db</span>
+<span class="kn">import</span> <span class="nn">mspasspy.algorithms.signals</span> <span class="k">as</span> <span class="nn">signals</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;mydata&#39;</span><span class="p">)</span>
+
+<span class="c1"># These three lines are comparable to ObsPy example above</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find_one</span><span class="p">()</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_data</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">])</span>
+<span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;bandpass&#39;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We include the top section of code to emphasize that building a database handle, which above is set to the symbol db, is comparable in some respects to opening a data file.
+That step is hidden in the ObsPy read function behind several layers of functions to make their reader generic.
+In this example data in the file ‘mydatafile’ is conceptually the same as what we fetch in mspass with the <code class="code docutils literal notranslate"><span class="pre">db.read_data</span></code> method call for “doc”.
+The <code class="code docutils literal notranslate"><span class="pre">filter</span></code> function applied above is an example of one of the ObsPy wrappers.
+It applies exactly the same algorithm as the ObsPy example but automatically handles the conversions from mspass to ObsPy and back again after the function is applied.
+All the ObsPy algorithms found in the <code class="code docutils literal notranslate"><span class="pre">mspasspy.algorithms.signals</span></code> module use the same concept.
+All accept any mspass data object for processing.
+Some require multiple input data objects and are more restricitve.
+For example, the <code class="code docutils literal notranslate"><span class="pre">correlate</span></code> function requires two TimeSeries inputs.
+See the <a class="reference internal" href="../python_api/mspasspy.algorithms.html#module-mspasspy.algorithms.signals" title="mspasspy.algorithms.signals"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mspasspy.algorithms.signals</span></code></a> documentation for details.</p>
+</div>
+<div class="section" id="obspy-processing-in-parallel">
+<h2>ObsPy Processing in Parallel<a class="headerlink" href="#obspy-processing-in-parallel" title="Permalink to this headline">¶</a></h2>
+<p>The ObsPy decorator allow ObsPy operators to be applied in parallel.
+For example, the following is a variant of filter algorithm but this example uses the Dask scheduler to process the entire data set:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume db is created as above</span>
+<span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">read_distributed_data</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">({})</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;dask&#39;</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">filter</span><span class="p">,</span> <span class="s2">&quot;bandpass&quot;</span><span class="p">,</span> <span class="n">freqmin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">freqmax</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The key thing to note here is the basic algorithm here is identical to above: <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> and <code class="code docutils literal notranslate"><span class="pre">filter</span></code>.
+The difference is that the entire data set is read and filtered instead of one TimeSeries/Trace.
+The added incantations are needed to translate the function call to the <code class="code docutils literal notranslate"><span class="pre">map</span></code> method of the parallel API, but the basic structure is the same.
+To better understand the Dask commands the reader is referred to the section of this manual on the parallel processing API.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="database_concepts.html" class="btn btn-neutral float-right" title="Database Concepts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="time_standard_constraints.html" class="btn btn-neutral float-left" title="Time Standard Constraints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Ian Wang.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

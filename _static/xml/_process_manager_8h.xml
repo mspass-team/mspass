@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_process_manager_8h" kind="file" language="C++">
     <compoundname>ProcessManager.h</compoundname>
     <includes local="no">map</includes>
@@ -15,63 +15,63 @@
     <includes local="no">boost/uuid/uuid_serialize.hpp</includes>
     <includedby refid="_process_manager_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc</includedby>
     <incdepgraph>
-      <node id="822">
+      <node id="5">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="823">
+      <node id="6">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="824">
+      <node id="7">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="828">
+      <node id="11">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="819">
+      <node id="2">
         <label>map</label>
       </node>
-      <node id="825">
+      <node id="8">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="820">
+      <node id="3">
         <label>vector</label>
       </node>
-      <node id="827">
+      <node id="10">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="818">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessManager.h</label>
         <link refid="_process_manager_8h"/>
-        <childnode refid="819" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="820" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="821" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="822" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="823" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="824" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="825" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="826" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="827" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="828" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="829" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
       </node>
-      <node id="829">
+      <node id="12">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="826">
+      <node id="9">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="821">
+      <node id="4">
         <label>boost/serialization/serialization.hpp</label>
       </node>
     </incdepgraph>
@@ -97,7 +97,7 @@
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_generators.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_io.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_serialize.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass" kindref="compound">mspass</ref>{</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass{</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">utility{</highlight></codeline>
 <codeline lineno="43" refid="classmspass_1_1utility_1_1_algorithm_definition" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_algorithm_definition" kindref="compound">AlgorithmDefinition</ref></highlight></codeline>
 <codeline lineno="44"><highlight class="normal">{</highlight></codeline>
@@ -169,7 +169,7 @@
 <codeline lineno="141"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="153" refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="classmspass_1_1utility_1_1_process_manager_1aa19241756ba1c486953668958fc2a21a" kindref="member">new_newid</ref>()</highlight></codeline>
 <codeline lineno="154"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::uuids::uuid<sp/><ref refid="classmspass_1_1utility_1_1_algorithm_definition_1ae249ed54773be28bc994b347106eb11b" kindref="member">id</ref>;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/>boost::uuids::uuid<sp/>id;</highlight></codeline>
 <codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">=gen();</highlight></codeline>
 <codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>boost::uuids::to_string(</highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="158"><highlight class="normal"><sp/><sp/>}</highlight></codeline>

@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
 
   
   
@@ -33,6 +34,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -40,7 +43,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tutorial" href="../tutorial.html" />
+    <link rel="next" title="Use of Metadata, MetadataDefinitions, and AntelopePf" href="../tutorial/metadata_pf.html" />
     <link rel="prev" title="Processing History Concepts" href="processing_history_concepts.html" />  
 
   <style>
@@ -93,33 +96,44 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../user_manual.html">User’s Manual</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#id5">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="database_concepts.html#advanced-topics">Advanced Topics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
-<li class="toctree-l2"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Adapting an Existing Algorithm to MsPASS</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-you-will-need-to-implement">What you will need to implement</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#required">Required</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#optional-but-recommended">Optional but recommended</a></li>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adapting an Existing Algorithm to MsPASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-you-will-need-to-implement">What you will need to implement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required">Required</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-but-recommended">Optional but recommended</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-simple-function-time-windowing-function">Example 1:  Simple function - Time Windowing Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-pure-python-function">Example 2:  Pure Python Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-3-more-complicated-mixed-c-and-python-example-scale-function">Example 3:  More complicated mixed C++ and python example - scale function</a></li>
 </ul>
 </li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
             
@@ -169,8 +183,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../user_manual.html">User’s Manual</a> &raquo;</li>
         
       <li>Adapting an Existing Algorithm to MsPASS</li>
     
@@ -417,7 +429,7 @@ wrapped the functions with a name containing a leading underscore.)</p></li>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../tutorial.html" class="btn btn-neutral float-right" title="Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../tutorial/metadata_pf.html" class="btn btn-neutral float-right" title="Use of Metadata, MetadataDefinitions, and AntelopePf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="processing_history_concepts.html" class="btn btn-neutral float-left" title="Processing History Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 

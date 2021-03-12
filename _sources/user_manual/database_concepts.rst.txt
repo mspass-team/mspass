@@ -21,10 +21,10 @@ NonSQL Database
   tutorialspoint.
 
 Schema
----------------
+------
 
 Overview
-~~~~~~~~~~
+~~~~~~~~
 
 Wikepedia defines a database schema as follow:
 
@@ -130,8 +130,8 @@ following design goals:
    real time processing as another solved problem outside the scope of
    this system.
 
-Schema
--------------
+Schema in MsPASS
+----------------
 Overview
 ~~~~~~~~~
 | We reiterate the important concept that in
@@ -577,7 +577,7 @@ stack would normally be assumed referenced to a common, fixed depth so
 site_elev may not even be needed.  We deal with this complexity by a
 defining another rule that user's need to recognize and abide by:
 
-  **Rule 2**
+  Rule 3:
     The site and channel collections should only contain metadata relevant to
     the data set.   Used documents are not a problem but waste space.
     Missing metadata is a problem as it will always lead to dropped data.
@@ -657,7 +657,7 @@ take in MsPASS is to treat that issue as somebody else's problem.
 Thus, for the same reason as above we state rule 3 which is very
 similar to rule 2:
 
-  **Rule 3**
+  Rule 4:
     The source collection should contain any useful source
     positions that define locations in space and time (attributes
     :code:`source_lat`, :code:`source_lon`, :code:`source_depth`, and :code:`source_time`).  Linking
@@ -700,7 +700,7 @@ Examples where this might be needed are preparing a final dataset to link to
 a publication or as an archive you expect to need to work with at a later date.
 
 Summary
-========
+-------
 
 The details above may obscure a few critical points about what the
 database in MsPASS does for you and what you must keep in mind to use
@@ -859,14 +859,14 @@ example of how to use these functions.
 
 
 Advanced Topics
-=================
+---------------
 
 
 Customizing the schema
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Importing Data Formats other than miniSEED
-------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Obspy's generic file reader supports a long list of formats described
 `here <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html>`__.

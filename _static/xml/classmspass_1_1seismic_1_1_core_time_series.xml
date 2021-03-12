@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_core_time_series" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::CoreTimeSeries</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_time_series" prot="public" virt="non-virtual">mspass::seismic::BasicTimeSeries</basecompoundref>
@@ -15,10 +15,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Actual data stored as an STL vector container. Note the STL guarantees the data elements of vector container are contiguous in memory like FORTRAN vectors. As a result things like the BLAS can be used with data object by using a syntax like this: if d is a <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object, the address of the first sample of the data is &amp;(d.s[0]). </para>        </detaileddescription>
+<para>Actual data stored as an STL vector container. Note the STL guarantees the data elements of vector container are contiguous in memory like FORTRAN vectors. As a result things like the BLAS can be used with data object by using a syntax like this: if d is a <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> object, the address of the first sample of the data is &amp;(d.s[0]). </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="27" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="27" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="27" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" bodystart="27" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -30,7 +31,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Default constructor. Initializes object data to zeros and sets the initial STL vector size to 0 length. </para>        </detaileddescription>
+<para>Default constructor. Initializes object data to zeros and sets the initial STL vector size to 0 length. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="32" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="15" bodyend="21"/>
@@ -47,7 +49,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Similar to the default constructor but creates a vector of data with nsin samples and initializes all samples to 0.0. This vector can safely be accessed with the vector index operator (i.e. operator []). A corollary is that push_back or push_front applied to this vector will alter it&apos;s length so use this only if the size of the data to fill the object is already known. </para>        </detaileddescription>
+<para>Similar to the default constructor but creates a vector of data with nsin samples and initializes all samples to 0.0. This vector can safely be accessed with the vector index operator (i.e. operator []). A corollary is that push_back or push_front applied to this vector will alter it&apos;s length so use this only if the size of the data to fill the object is already known. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="42" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="22" bodyend="34"/>
@@ -68,10 +71,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Partially construct from components.</para><para>There are times one wants to use the Metadata area as a template to flesh out a <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> as what might be called skin and bones: skin is Metadata and bones as <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(&quot;npts&quot;)). It then creates the data vector of that length and initialzies it to all zeros. </para>        </detaileddescription>
+<para>Partially construct from components.</para>
+<para>There are times one wants to use the Metadata area as a template to flesh out a <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> as what might be called skin and bones: skin is Metadata and bones as <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> data. This constructor initializes those two base classes but does not fully a valid data vector. It only attempts to fetch the number of points expected for the data vector using the npts metadata (integer) key (i.e. it sets npts to md.get_int(&quot;npts&quot;)). It then creates the data vector of that length and initialzies it to all zeros. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="52" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="57" bodyend="64"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="52" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="57" bodyend="64"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a4a8b98447f31911e6e18079541ab7b0d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -85,7 +90,8 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard copy constructor. </para>        </detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="56" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="37" bodyend="55"/>
@@ -101,20 +107,24 @@
           <declname>sample_interval</declname>
         </param>
         <briefdescription>
-<para>Set the sample interval. </para>        </briefdescription>
+<para>Set the sample interval. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined dt in Metadata. That is handled by first setting the internal dt value and then going through a fixed list of valid alias keys for dt. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined dt in Metadata. That is handled by first setting the internal dt value and then going through a fixed list of valid alias keys for dt. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>sample_interval</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="70" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="185" bodyend="202"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="70" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="185" bodyend="202"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -127,20 +137,25 @@
           <declname>npts</declname>
         </param>
         <briefdescription>
-<para>Set the number of samples attribute for data. </para>        </briefdescription>
+<para>Set the number of samples attribute for data. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal npts value (actually ns) and then going through a fixed list of valid alias keys for npts. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para>This attribute has an additional complication compared to other setter that are overrides from <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref>. That is, the number of points define the data buffer size to hold the sample data. To guarantee the buffer size and the internal remain consistent this method clears any existing content of the vector s and initializes npts points to 0.0. Note this means if one is using this to assemble a data object in pieces you MUST call this method before loading any data or it will be cleared and you will mysteriously find the data are all zeros.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal npts value (actually ns) and then going through a fixed list of valid alias keys for npts. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para>This attribute has an additional complication compared to other setter that are overrides from <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref>. That is, the number of points define the data buffer size to hold the sample data. To guarantee the buffer size and the internal remain consistent this method clears any existing content of the vector s and initializes npts points to 0.0. Note this means if one is using this to assemble a data object in pieces you MUST call this method before loading any data or it will be cleared and you will mysteriously find the data are all zeros.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>npts</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new number of points to set. </para></parameterdescription>
+<para>is the new number of points to set. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="92" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="222" bodyend="247"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="92" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="222" bodyend="247"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ac2755952b5e490ba8ea7469d5d0273c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -148,12 +163,14 @@
         <argsstring>()</argsstring>
         <name>sync_npts</name>
         <briefdescription>
-<para>Sync the number of samples attribute with actual data size. </para>        </briefdescription>
+<para>Sync the number of samples attribute with actual data size. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method syncs the npts attribute with the actual size of the vector s. It also syncs aliases in the same way as the set_npts method. </para>        </detaileddescription>
+<para>This method syncs the npts attribute with the actual size of the vector s. It also syncs aliases in the same way as the set_npts method. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="99" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="248" bodyend="269"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="99" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="248" bodyend="269"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>void</type>
@@ -166,20 +183,25 @@
           <declname>t0in</declname>
         </param>
         <briefdescription>
-<para>Set the data start time. </para>        </briefdescription>
+<para>Set the data start time. </para>
+        </briefdescription>
         <detaileddescription>
-<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal t0 value and then going through a fixed list of valid alias keys for it. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para><para>This is a dangerous method to use on real data as it can mess up the time if not handled correctly. It should be used only when that sharp knife is needed such as in assembling data outside of constructors in a test program.</para><para><parameterlist kind="param"><parameteritem>
+<para>This method is complicated by the need to sync the changed value with Metadata. That is further complicated by the need to support aliases for the keys used to defined npts in Metadata. That is handled by first setting the internal t0 value and then going through a fixed list of valid alias keys for it. Any that exist are changed. If none were previously defined the unique name (see documentation) is added to Metadata.</para>
+<para>This is a dangerous method to use on real data as it can mess up the time if not handled correctly. It should be used only when that sharp knife is needed such as in assembling data outside of constructors in a test program.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>t0in</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the new data sample interval to be used. </para></parameterdescription>
+<para>is the new data sample interval to be used. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="116" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="203" bodyend="221"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="116" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="203" bodyend="221"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a49e0add931b008600450413c4e0cbd40" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -193,10 +215,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Standard assignment operator. </para>        </detaileddescription>
+<para>Standard assignment operator. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="131" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="66" bodyend="75"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="131" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="66" bodyend="75"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aac97d69cfcec7f8b80eee2410adc4a6d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -208,14 +231,17 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Summation operator. </para>        </briefdescription>
+<para>Summation operator. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<para>Summing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a += operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is other signal to add to this. </para></parameterdescription>
+<para>is other signal to add to this. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -223,13 +249,15 @@
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="148" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="78" bodyend="120"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="148" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="78" bodyend="120"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a7cb0e689d13cc1696eaafc0bbec24754" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref></type>
@@ -243,10 +271,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Addition operator.</para><para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>        </detaileddescription>
+<para>Addition operator.</para>
+<para>This operator is implemented in a standard way utilizing operator+=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x+y will not yield the same result as z=y+x. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="156" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="168" bodyend="173"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="156" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="168" bodyend="173"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1aa4ea5ff317047cb30778eecd272bc8e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -260,10 +290,11 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Multiply data by a scalar. </para>        </detaileddescription>
+<para>Multiply data by a scalar. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="159" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="180" bodyend="184"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="159" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="180" bodyend="184"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1afdc1e6ce07e1101b2f33c9b455b3a3b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
@@ -275,14 +306,17 @@
           <declname>d</declname>
         </param>
         <briefdescription>
-<para>Subtraction operator. </para>        </briefdescription>
+<para>Subtraction operator. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para><para><parameterlist kind="param"><parameteritem>
+<para>Differencing data from signals of irregular length requires handling potential mismatches in size and overlap. This behaves the way a -= operator should logically behave in that situation. That is, because the lhs is where the sum is being accumulated, the size is always controlled by the left hand side of the operator. Any portions of the right hand side that are outside the t0 to <ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af8982109d3caaeee15bb5b3a63b89317" kindref="member">endtime()</ref> of the left hand side are silently discarded. If the start time of the right hand side is greater than t0 or the endtime is less than endtime of the lhs there will be discontinuties in the sum there the ends of the rhs are inside the range of the lhs.</para>
+<para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername>d</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is other signal to subract from this. </para></parameterdescription>
+<para>is other signal to subract from this. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="exception"><parameteritem>
@@ -290,13 +324,15 @@
 <parametername>MsPASSError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>can be thrown if lhs and rhs do not have matching time standards. </para></parameterdescription>
+<para>can be thrown if lhs and rhs do not have matching time standards. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="176" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="125" bodyend="167"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="176" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="125" bodyend="167"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref></type>
@@ -310,10 +346,12 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Subtraction operator.</para><para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>        </detaileddescription>
+<para>Subtraction operator.</para>
+<para>This operator is implemented in a standard way utilizing operator-=. For data with irregular start and end times that has an important consequence; the operator is not communative. i.e given x an y z=x-y will not yield the same result as z=-(y-x). </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="184" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="174" bodyend="179"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="184" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="174" bodyend="179"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>double</type>
@@ -327,12 +365,14 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
-<para>Extract a sample from data vector with range checking. Because the data vector is public in this interface this operator is simply an alterative interface to this-&gt;s[sample].</para><para><parameterlist kind="exception"><parameteritem>
+<para>Extract a sample from data vector with range checking. Because the data vector is public in this interface this operator is simply an alterative interface to this-&gt;s[sample].</para>
+<para><parameterlist kind="exception"><parameteritem>
 <parameternamelist>
 <parametername>SeisppError</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>exception if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead.</para></parameterdescription>
+<para>exception if the requested sample is outside the range of the data. Note this includes an implicit &quot;outside&quot; defined when the contents are marked dead.</para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
 <parameterlist kind="param"><parameteritem>
@@ -340,77 +380,82 @@
 <parametername>sample</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is the integer sample number of data desired. </para></parameterdescription>
+<para>is the integer sample number of data desired. </para>
+</parameterdescription>
 </parameteritem>
 </parameterlist>
-</para>        </detaileddescription>
+</para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="196" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="271" bodyend="283"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreTimeSeries.h" line="196" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc" bodystart="271" bodyend="283"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Scalar time series data object. </para>    </briefdescription>
+<para>Scalar time series data object. </para>
+    </briefdescription>
     <detaileddescription>
-<para>This data object extends <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> mainly by adding a vector of scalar data. It uses a Metadata object to contain auxiliary parameters that aren&apos;t essential to define the data object, but which are necessary for some algorithms. <simplesect kind="author"><para>Gary L. Pavlis </para></simplesect>
-</para>    </detaileddescription>
+<para>This data object extends <ref refid="classmspass_1_1seismic_1_1_basic_time_series" kindref="compound">BasicTimeSeries</ref> mainly by adding a vector of scalar data. It uses a Metadata object to contain auxiliary parameters that aren&apos;t essential to define the data object, but which are necessary for some algorithms. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="69">
+      <node id="5">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="65" relation="public-inheritance">
+        <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="66">
+      <node id="2">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="67">
+      <node id="3">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="68" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="70">
+      <node id="6">
         <label>mspass::seismic::TimeSeriesWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="69" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="68">
+      <node id="4">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="65">
+      <node id="1">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="66" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="67" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="72">
+      <node id="2">
         <label>mspass::seismic::BasicTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_basic_time_series"/>
       </node>
-      <node id="73">
+      <node id="3">
         <label>mspass::utility::Metadata</label>
         <link refid="classmspass_1_1utility_1_1_metadata"/>
-        <childnode refid="74" relation="public-inheritance">
+        <childnode refid="4" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="74">
+      <node id="4">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="71">
+      <node id="1">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
-        <childnode refid="72" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
-        <childnode refid="73" relation="public-inheritance">
+        <childnode refid="3" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>

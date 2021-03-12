@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_process_manager_8cc" kind="file" language="C++">
     <compoundname>ProcessManager.cc</compoundname>
     <includes local="no">fstream</includes>
@@ -10,104 +10,105 @@
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_process_manager_8h" local="yes">mspass/utility/ProcessManager.h</includes>
     <incdepgraph>
-      <node id="1664">
+      <node id="13">
         <label>boost/serialization/map.hpp</label>
       </node>
-      <node id="1665">
+      <node id="14">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="1666">
+      <node id="15">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="1658">
+      <node id="7">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="1659" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="1660" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="1668">
+      <node id="17">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
-      <node id="1655">
+      <node id="4">
         <label>map</label>
       </node>
-      <node id="1660">
+      <node id="9">
         <label>exception</label>
       </node>
-      <node id="1653">
+      <node id="2">
         <label>fstream</label>
       </node>
-      <node id="1667">
+      <node id="16">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="1662">
+      <node id="11">
         <label>vector</label>
       </node>
-      <node id="1657">
+      <node id="6">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="1661">
+      <node id="10">
         <label>mspass/utility/ProcessManager.h</label>
         <link refid="_process_manager_8h_source"/>
-        <childnode refid="1655" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1662" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="1663" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="1664" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="1665" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="1666" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="1667" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="1656" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1657" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1668" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="1669" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
-      <node id="1654">
+      <node id="3">
         <label>sstream</label>
       </node>
-      <node id="1659">
+      <node id="8">
         <label>iostream</label>
       </node>
-      <node id="1669">
+      <node id="18">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
-      <node id="1656">
+      <node id="5">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="1663">
+      <node id="12">
         <label>boost/serialization/serialization.hpp</label>
       </node>
-      <node id="1652">
+      <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessManager.cc</label>
         <link refid="_process_manager_8cc"/>
-        <childnode refid="1653" relation="include">
+        <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="1654" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="1655" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="1656" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="1657" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="1658" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="1661" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
     </incdepgraph>
+    <innernamespace refid="namespacemspass">mspass</innernamespace>
     <innernamespace refid="namespacemspass_1_1utility">mspass::utility</innernamespace>
     <briefdescription>
     </briefdescription>
@@ -121,8 +122,8 @@
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;boost/uuid/uuid_generators.hpp&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/MsPASSError.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/ProcessManager.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal"><ref refid="namespacestd" kindref="compound">std</ref>;</highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1utility" kindref="compound">mspass::utility</ref>{</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="keyword">using<sp/>namespace<sp/></highlight><highlight class="normal">std;</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::utility{</highlight></codeline>
 <codeline lineno="10"><highlight class="normal">ProcessManager::ProcessManager()<sp/>:<sp/>jobnm()</highlight></codeline>
 <codeline lineno="11"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="12"><highlight class="normal"><sp/><sp/>job_uuid=gen();</highlight></codeline>

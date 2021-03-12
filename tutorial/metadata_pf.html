@@ -13,6 +13,7 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
 
   
   
@@ -33,6 +34,8 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -40,8 +43,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Reference Manual" href="../reference_manual.html" />
-    <link rel="prev" title="Prerequisites" href="prerequisites.html" />  
+    <link rel="next" title="Python API" href="../python_api/index.html" />
+    <link rel="prev" title="Adapting an Existing Algorithm to MsPASS" href="../user_manual/adapting_algorithms.html" />  
 
   <style>
     .wy-nav-content { max-width: 1600px; }
@@ -93,20 +96,38 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User’s Manual</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="concepts.html">Key Concepts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="prerequisites.html">Prerequisites</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Use of Metadata, MetadataDefinitions, and AntelopePf</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Metadata">Metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#MetadataDefinitions">MetadataDefinitions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#AntelopePf">AntelopePf</a></li>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/data_object_design_concepts.html">Data Object Design Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/time_standard_constraints.html">Time Standard Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/obspy_interface.html">Using ObsPy with MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/database_concepts.html">Database Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/CRUD_operations.html">CRUD Operations in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/handling_errors.html">Handling Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/graphics.html">Graphics in MsPASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Use of Metadata, MetadataDefinitions, and AntelopePf</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Metadata">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#MetadataDefinitions">MetadataDefinitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#AntelopePf">AntelopePf</a></li>
 </ul>
 </li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../reference_manual.html">Reference Manual</a></li>
+<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
             
@@ -156,8 +177,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../tutorial.html">Tutorial</a> &raquo;</li>
         
       <li>Use of Metadata, MetadataDefinitions, and AntelopePf</li>
     
@@ -488,7 +507,7 @@ because the implementation is cleaner at the C++ level. It is also, in principle
 </pre></div>
 </div>
 </div>
-<p>The Metadata container is more flexible, but in MsPASS to provide a cleaner mapping to MongoDB we restrict the contents to the four lowest common demoninator types native to most computer languages: * real numbers, which are always promoted in MsPASS to double (64 bit floats) * integers, which are always promoted to 64 bit signed ints * character strings, which are handled in C++ as string objects and wrapped to python strings. i.e. the conversion between C++ and python strings should be
+<p>The Metadata container is more flexible, but in MsPASS to provide a cleaner mapping to MongoDB we restrict the contents to the four lowest common demoninator types native to most computer languages: * real numbers, which are always promoted in MsPASS to double (64 bit floats) * integers, which are always promoted to 64 bit signed ints * character strings, which are handled in C++ as string objects and wrapped to python strings. i.e. the conversion between C++ and python strings should be
 seamless. * booleans - meaning values that are “True” or “False” in python.</p>
 <p>There are putters can create each of these core types by a clear name convention:</p>
 <div class="nbinput nblast docutils container">
@@ -822,7 +841,7 @@ Value with key= STLO  is  55.0
 Value with key= STLA  is  45.0
 </pre></div></div>
 </div>
-<p>Notice that apply_aliases silently skipped the inconsistency that <em>site_elev</em> is not defined in sacmd. That was an intentional design because we expect global alias lists (e.g. applying a set of fixed aliases for sac, obspy, or Antelope) to be the norm.</p>
+<p>Notice that apply_aliases silently skipped the inconsistency that <em>site_elev</em> is not defined in sacmd. That was an intentional design because we expect global alias lists (e.g. applying a set of fixed aliases for sac, obspy, or Antelope) to be the norm.</p>
 <p>Also notice that three additional Metadata attributes appeared when the printmd function was called: starttime(real), npts (integer), and delta (real). These are three attributes wired into private variables in the mspass data objects. The C++ api guarantees these Metadata name-value pairs are consistent with internal values. They appear in this output because the printmd lists all defined Metadata fields. Note finally printmd uses the alternative access method for Metadata fields using the key
 in the same syntax as a python dict. For purely pythonic interactions that approach is appropriate because python just returns the right type. In contrast calling a method like get_double that is dogmatic about type will generate an exception if the type does not match. Which you should use will depend on context.</p>
 <p>The <em>clear_aliases</em> method of <em>MetadataDefiniions</em> will restore all entries to the standard value as illustrated here:</p>
@@ -836,8 +855,8 @@ printmd(sacmd)
 </pre></div>
 </div>
 </div>
-<p>The <em>apply_aliases</em> and <em>clear_aliases</em> methods provide a generic support for working with different namespaces. The cost of applying them is not large, but not tiny either. For efficiency avoid unnecessary alias definitions by grouping processes using a common namespace when possible. On the other hand, when a block of processing steps requiring aliases are finished you should immediately call <em>clear_aliases</em> to avoid downstream errors. We emphasize <em>clear_aliases</em> resets ALL metadata
-defined as an alias by the MetadataDefinitions object.</p>
+<p>The <em>apply_aliases</em> and <em>clear_aliases</em> methods provide a generic support for working with different namespaces. The cost of applying them is not large, but not tiny either. For efficiency avoid unnecessary alias definitions by grouping processes using a common namespace when possible. On the other hand, when a block of processing steps requiring aliases are finished you should immediately call <em>clear_aliases</em> to avoid downstream errors. We emphasize <em>clear_aliases</em> resets ALL metadata defined
+as an alias by the MetadataDefinitions object.</p>
 </div>
 <div class="section" id="AntelopePf">
 <h2>AntelopePf<a class="headerlink" href="#AntelopePf" title="Permalink to this headline">¶</a></h2>
@@ -1016,8 +1035,8 @@ data expected (Antelope’s database has type constraints for the same reasons w
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../reference_manual.html" class="btn btn-neutral float-right" title="Reference Manual" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="prerequisites.html" class="btn btn-neutral float-left" title="Prerequisites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../python_api/index.html" class="btn btn-neutral float-right" title="Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../user_manual/adapting_algorithms.html" class="btn btn-neutral float-left" title="Adapting an Existing Algorithm to MsPASS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

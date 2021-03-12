@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="classmspass_1_1seismic_1_1_linear_taper" kind="class" language="C++" prot="public">
     <compoundname>mspass::seismic::LinearTaper</compoundname>
     <basecompoundref refid="classmspass_1_1seismic_1_1_basic_taper" prot="public" virt="non-virtual">mspass::seismic::BasicTaper</basecompoundref>
@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_linear_taper_1a7672ecee3eff5594beca7b0f90a46fae" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -29,7 +29,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_linear_taper_1a3028b670d373ace162c49e7db77c730e" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -42,7 +42,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_linear_taper_1a2cc2ce017d2ddc109f46fedd9cdcb8f4" prot="private" static="no" mutable="no">
         <type>double</type>
@@ -55,7 +55,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="49" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" bodystart="49" bodyend="-1"/>
       </memberdef>
       </sectiondef>
       <sectiondef kind="public-func">
@@ -70,7 +70,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="35" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="9" bodyend="14"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="35" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="9" bodyend="14"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_linear_taper_1a4d4da04e02721633af56564aa8a6576c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
@@ -94,12 +94,14 @@
           <declname>t0tail</declname>
         </param>
         <briefdescription>
-<para>primary constructor. </para>        </briefdescription>
+<para>primary constructor. </para>
+        </briefdescription>
         <detaileddescription>
-<para>Defines linear taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Linear ramp between t0head and t1head and in opposite sense from t1tail to t0tail. Setting 0 value = 1 value should be used as a signal to disable. </para>        </detaileddescription>
+<para>Defines linear taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Linear ramp between t0head and t1head and in opposite sense from t1tail to t0tail. Setting 0 value = 1 value should be used as a signal to disable. </para>
+        </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="43" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="15" bodyend="42"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="43" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="15" bodyend="42"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_linear_taper_1adce61f34eed91b32a7d8f93aebf940e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -117,7 +119,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="46" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="43" bodyend="105"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="46" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="43" bodyend="105"/>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1seismic_1_1_linear_taper_1aeb82c4aa67755869014a2e0cc41a2968" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
         <type>int</type>
@@ -135,34 +137,36 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="47" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="106" bodyend="176"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h" line="47" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc" bodystart="106" bodyend="176"/>
       </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Used to construct an operator to apply a linear taper to either end. </para>    </briefdescription>
+<para>Used to construct an operator to apply a linear taper to either end. </para>
+    </briefdescription>
     <detaileddescription>
-<para>Linear tapers are defined here as a time spanning a ramp running from 0 to 1. Data will be zeroed on each end of a 0 mark and a linear weight applied between 0 points and 1 points. Postive ramp slope on left and negative slope ramp on right. </para>    </detaileddescription>
+<para>Linear tapers are defined here as a time spanning a ramp running from 0 to 1. Data will be zeroed on each end of a 0 mark and a linear weight applied between 0 points and 1 points. Postive ramp slope on left and negative slope ramp on right. </para>
+    </detaileddescription>
     <inheritancegraph>
-      <node id="113">
+      <node id="2">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="112">
+      <node id="1">
         <label>mspass::seismic::LinearTaper</label>
         <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
-        <childnode refid="113" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </inheritancegraph>
     <collaborationgraph>
-      <node id="115">
+      <node id="2">
         <label>mspass::seismic::BasicTaper</label>
         <link refid="classmspass_1_1seismic_1_1_basic_taper"/>
       </node>
-      <node id="114">
+      <node id="1">
         <label>mspass::seismic::LinearTaper</label>
         <link refid="classmspass_1_1seismic_1_1_linear_taper"/>
-        <childnode refid="115" relation="public-inheritance">
+        <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
     </collaborationgraph>
