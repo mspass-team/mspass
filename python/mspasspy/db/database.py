@@ -595,32 +595,121 @@ class Database(pymongo.database.Database):
             if test == 'xref':
                 # test every possible xref keys in the doc
                 for key in doc:
-                    if self.database_schema[collection].is_defined(key) and self.database_schema[collection].is_xref_key(key):
-                        is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, key)
-                        if is_bad_xref_key:
-                            problematic_keys[key] = test
+                    is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, collection, key)
+                    if is_bad_xref_key:
+                        problematic_keys[key] = test
 
             elif test == 'undefined':
-                # check if doc has every required key in the collection schema
-                unique_doc_keys = []
-                # change possible aliases to unique keys
-                for key in doc:
-                    if self.database_schema[collection].is_defined(key):
-                        unique_doc_keys.append(self.database_schema[collection].unique_name(key))
-                    else:
-                        unique_doc_keys.append(key)
-                # check every required keys in the collection schema
-                for key in self.database_schema[collection].required_keys():
-                    if key not in unique_doc_keys:
-                        problematic_keys[key] = test
+                undefined_keys = self._check_undefined_keys(doc, collection)
+                for key in undefined_keys:
+                    problematic_keys[key] = test
             
             elif test == 'type':
                 # check if there are type mismatch between keys in doc and keys in schema
                 for key in doc:
-                    if self.database_schema[collection].is_defined(key) and not isinstance(doc[key], self.database_schema[collection].type(key)):
+                    if self._check_mismatch_key(doc, collection, key):
                         problematic_keys[key] = test
 
         return problematic_keys
+
+    def _check_xref_key(self, doc, collection, xref_key):
+        """
+        This atmoic function checks for a single xref_key in a single document
+
+        :param doc:  the wf document, which is a type of dict
+        :param collection: the name of collection saving the document.
+        :param xref_key:  the xref key we need to check in the document
+
+        :return: is_bad_xref_key
+        :rtype :class:`bool`
+        :return: is_bad_wf
+        :rtype :class:`bool`
+        """
+
+        is_bad_xref_key = False
+        is_bad_wf = False
+
+        # if xref_key is not defind -> not checking
+        if not self.database_schema[collection].is_defined(xref_key):
+            return is_bad_xref_key, is_bad_wf
+        
+        # if xref_key is not a xref_key -> not checking
+        unique_xref_key = self.database_schema[collection].unique_name(xref_key)
+        if not self.database_schema[collection].is_xref_key(unique_xref_key):
+            return is_bad_xref_key, is_bad_wf
+            
+        # if the xref_key is not in the doc -> bad_wf
+        if xref_key not in doc and unique_xref_key not in doc:
+            is_bad_wf = True
+            return is_bad_xref_key, is_bad_wf
+
+        if xref_key in doc:
+            xref_key_val = doc[xref_key]
+        else:
+            xref_key_val = doc[unique_xref_key]
+
+        # if we can't find document in the normalized collection/invalid xref_key naming -> bad_xref_key
+        if '_id' in unique_xref_key and unique_xref_key.rsplit('_', 1)[1] == 'id':
+            normalized_collection_name = unique_xref_key.rsplit('_', 1)[0]
+            normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
+            normalized_col = self[normalized_collection_name]
+            # try to find the referenced docuement
+            normalized_doc = normalized_col.find_one({'_id': xref_key_val})
+            if not normalized_doc:
+                is_bad_xref_key = True
+            # invalid xref_key name
+        else:
+            is_bad_xref_key = True
+
+        return is_bad_xref_key, is_bad_wf
+
+    def _check_undefined_keys(self, doc, collection):
+        """
+        This atmoic function checks for if there are undefined required keys in a single document
+
+        :param doc:  the wf document, which is a type of dict
+        :param collection: the name of collection saving the document.
+
+        :return: undefined_keys
+        :rtype :class:`list`
+        """
+
+        undefined_keys = []
+        # check if doc has every required key in the collection schema
+        unique_doc_keys = []
+        # change possible aliases to unique keys
+        for key in doc:
+            if self.database_schema[collection].is_defined(key):
+                unique_doc_keys.append(self.database_schema[collection].unique_name(key))
+            else:
+                unique_doc_keys.append(key)
+            # check every required keys in the collection schema
+        for key in self.database_schema[collection].required_keys():
+            if key not in unique_doc_keys:
+                undefined_keys.append(key)
+
+        return undefined_keys
+
+    def _check_mismatch_key(self, doc, collection, key):
+        """
+        This atmoic function checks for if the key is mismatch with the schema
+
+        :param doc:  the wf document, which is a type of dict
+        :param collection: the name of collection saving the document.
+        :param key:  the key we need to check in the document
+
+        :return: is_mismatch_key, if True, it means key is mismatch with the schema
+        :rtype :class:`bool`
+        """
+
+        is_mismatch_key = False
+        if self.database_schema[collection].is_defined(key):
+            unique_key = self.database_schema[collection].unique_name(key)
+            val = doc[key] if key in doc else doc[unique_key]
+            if not isinstance(val, self.database_schema[collection].type(unique_key)):
+                is_mismatch_key = True
+
+        return is_mismatch_key
 
     def _delete_attributes(self, collection, keylist, query={}, verbose=False):
         """
@@ -785,40 +874,7 @@ class Database(pymongo.database.Database):
                 
         return counts
 
-    def _check_xref_key(self, doc, xref_key):
-        """
-        This atmoic function checks for a single xref_key for a single document
-
-        :param doc:  the wf document, which is a type of dict
-        :param xref_key:  the xref key we need to check in the document
-
-        :return: is_bad_xref_key
-        :rtype :class:`bool`
-        :return: is_bad_wf: the verbose informative/invalid messages
-        :rtype :class:`bool`
-        """
-
-        is_bad_xref_key = False
-        is_bad_wf = False
-        # if the xref_key is not in the doc
-        if xref_key not in doc:
-            is_bad_wf = True
-        else:
-            if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
-                normalized_collection_name = xref_key.rsplit('_', 1)[0]
-                normalized_collection_name = self.database_schema.default_name(normalized_collection_name)
-                normalized_col = self[normalized_collection_name]
-                # try to find the referenced docuement
-                normalized_doc = normalized_col.find_one({'_id': doc[xref_key]})
-                if not normalized_doc:
-                    is_bad_xref_key = True
-            # invalid xref_key name
-            else:
-               is_bad_xref_key = True
-
-        return is_bad_xref_key, is_bad_wf
-
-    def _check_links(self, xref_key='site_id', collection="wf", wfquery={}, verbose=False, error_limit=1000):
+    def _check_links(self, xref_key=None, collection="wf", wfquery={}, verbose=False, error_limit=1000):
         """
         This function checks for missing cross-referencing ids in a 
         specified wf collection (i.e. wf_TimeSeries or wf_Seismogram)
@@ -868,52 +924,71 @@ class Database(pymongo.database.Database):
         except MsPASSError as err:
             raise MsPASSError('check_links:  collection {} is not defined in database schema'.format(collection), 'Invalid') from err
 
-        # undefined xref key in the schema
+        # get all the xref_keys in the collection by schema
         xref_keys_list = self.database_schema[wf_collection].xref_keys()
-        if xref_key not in xref_keys_list:
-            raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key, 'Fatal')
 
-        
-        if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
-            normalize = xref_key.rsplit('_', 1)[0]
-            normalize = self.database_schema.default_name(normalize)
-        else:
-            raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key + ' should be in the form of xxx_id', 'Fatal')
-        
-        dbnorm=self[normalize]
-        dbwf=self[wf_collection]
-        n=dbwf.count_documents(wfquery)
-        if n==0:
-            raise MsPASSError('checklinks:  '+wf_collection
-                +' collection has no data matching query=',str(wfquery),
-                'Fatal')
-        if verbose:
-            print('Starting cross reference link check for ',wf_collection,
-                ' collection using id=',xref_key)
-            print('This should resolve links to ',normalize,' collection')
+        # the list of xref_key that should be checked
+        xref_keys = xref_key
+
+        # if xref_key is not defined, check all xref_keys
+        if not xref_key:
+            xref_keys = xref_keys_list
+
+        # if specified as a single key, wrap it as a list for better processing next
+        if type(xref_key) is str:
+            xref_keys = [xref_key]
+
+        # check every key in the xref_key list if it is legal
+        for xref_key in xref_keys:
+            unique_xref_key = self.database_schema[wf_collection].unique_name(xref_key)
+            if unique_xref_key not in xref_keys_list:
+                raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key, 'Fatal')
+
         # We accumulate bad ids in this list that is returned
         bad_id_list=list()
         missing_id_list=list()
-        cursor=dbwf.find(wfquery)
-        for doc in cursor:
-            wfid = doc['_id']
-            is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, xref_key)
-            if is_bad_xref_key:
-                bad_id_list.append(wfid)
-                if verbose:
-                    print(str(wfid),' link with ',str(xref_key),' failed')
-                if len(bad_id_list) > error_limit:
-                    raise MsPASSError('checklinks:  number of bad id errors exceeds internal limit',
-                                        'Fatal')
-            if is_bad_wf:
-                missing_id_list.append(wfid)
-                if verbose:
-                    print(str(wfid),' is missing required key=',xref_key)
-                if len(missing_id_list) > error_limit:
-                        raise MsPASSError('checklinks:  number of missing id errors exceeds internal limit',
-                                        'Fatal')
-            if len(bad_id_list)>=error_limit or len(missing_id_list)>=error_limit:
-                break
+        # check for each xref_key in xref_keys
+        for xref_key in xref_keys:
+            if '_id' in xref_key and xref_key.rsplit('_', 1)[1] == 'id':
+                normalize = xref_key.rsplit('_', 1)[0]
+                normalize = self.database_schema.default_name(normalize)
+            else:
+                raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key + ' should be in the form of xxx_id', 'Fatal')
+            
+            dbnorm=self[normalize]
+            dbwf=self[wf_collection]
+            n=dbwf.count_documents(wfquery)
+            if n==0:
+                raise MsPASSError('checklinks:  '+wf_collection
+                    +' collection has no data matching query=' + str(wfquery),
+                    'Fatal')
+            if verbose:
+                print('Starting cross reference link check for ',wf_collection,
+                    ' collection using id=',xref_key)
+                print('This should resolve links to ',normalize,' collection')
+            
+            cursor=dbwf.find(wfquery)
+            for doc in cursor:
+                wfid = doc['_id']
+                is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, wf_collection, xref_key)
+                if is_bad_xref_key:
+                    if wfid not in bad_id_list:
+                        bad_id_list.append(wfid)
+                    if verbose:
+                        print(str(wfid),' link with ',str(xref_key),' failed')
+                    if len(bad_id_list) > error_limit:
+                        raise MsPASSError('checklinks:  number of bad id errors exceeds internal limit',
+                                            'Fatal')
+                if is_bad_wf:
+                    if wfid not in missing_id_list:
+                        missing_id_list.append(wfid)
+                    if verbose:
+                        print(str(wfid),' is missing required key=',xref_key)
+                    if len(missing_id_list) > error_limit:
+                            raise MsPASSError('checklinks:  number of missing id errors exceeds internal limit',
+                                            'Fatal')
+                if len(bad_id_list)>=error_limit or len(missing_id_list)>=error_limit:
+                    break
         
         return tuple([bad_id_list,missing_id_list])
 

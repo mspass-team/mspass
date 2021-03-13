@@ -9,6 +9,7 @@ dbverify.
 
 """
 import argparse
+import sys
 from bson import json_util
 from mspasspy.db.database import Database
 from mspasspy.db.client import Client as DBClient
@@ -34,7 +35,7 @@ def rename_list_to_dict(rlist):
     return result
         
 
-def main():
+def main(args):
     """
     """
     parser = argparse.ArgumentParser(prog="dbclean",
@@ -71,7 +72,7 @@ def main():
                         help='When used be echo each fix - default works silently'
                         )
     
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     dbname=args.dbname
     collection=args.collection
     fixtypes=args.fixtypes
@@ -109,22 +110,22 @@ def main():
     # accumulate counts of edits for each key
     
     if enable_deletion:
-        delcounts=db.delete_attributes(collection,delete,verbose=verbose)
+        delcounts=db._delete_attributes(collection,delete,verbose=verbose)
         print('delete processing compeleted on collection=',collection)
         print('Number of documents changed for each key requested follow:')
         print(json_util.dumps(delcounts,indent=4))
     if enable_rename:
-        repcounts=db.rename_attributes(collection,rename_map,verbose=verbose)
+        repcounts=db._rename_attributes(collection,rename_map,verbose=verbose)
         print('rename processing compeleted on collection=',collection)
         print('Here is the set of changes requested:')
         print(json_util.dumps(rename_map))
         print('Number of documents changed for each key requested follow:')
         print(json_util.dumps(repcounts,indent=4))
     if fixtypes:
-        fixcounts=db.fix_attribute_types(collection,verbose=verbose)
+        fixcounts=db._fix_attribute_types(collection,verbose=verbose)
         print('fixtype processing compeleted on collection=',collection)
         print('Keys of documents changed and number changed follow:')
         print(json_util.dumps(fixcounts,indent=4))
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

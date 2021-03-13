@@ -188,6 +188,7 @@ argument attached to the -t flag:
     Indiana University
 """
 
+import sys
 import argparse
 from bson import json_util
 from bson.objectid import ObjectId
@@ -267,8 +268,8 @@ def run_check_links(db,wfcollection,nrmlist,elimit,verbose):
     """
 
     for nrmcol in nrmlist:
-        errs=db.check_links(normalize=nrmcol,
-                          wf=wfcollection,
+        errs=db._check_links(xref_key=nrmcol,
+                          collection=wfcollection,
                           error_limit=elimit)
         broken=errs[0]
         undef=errs[1]
@@ -328,7 +329,7 @@ def run_check_attribute_types(db,col,elimit,verbose):
     # definitions for each collection listed.  Verbose is 
     # also always off.  Note the solution to enter one from 
     # an input is to use json.loads
-    errs=db.check_attribute_types(col,error_limit=elimit)
+    errs=db._check_attribute_types(col,error_limit=elimit)
     mismatch=errs[0]
     undef=errs[1]
     print('check_attribute_types result for collection=',col)
@@ -399,7 +400,7 @@ def run_check_required(db,col,required_list,elimit,verbose):
     readable layout with json_util.dumps.  
 
     """
-    errs=db.check_required(col,required_list,error_limit=elimit)
+    errs=db._check_required(col,required_list,error_limit=elimit)
     mismatch=errs[0]
     undef=errs[1]
     print('////Results from run_check_required on collection=',col)
@@ -426,7 +427,7 @@ def run_check_required(db,col,required_list,elimit,verbose):
         else:
             mmkeys=dict()
             for k in mismatch:
-                badkeys=undef[k]
+                badkeys=mismatch[k]
                 for bad in badkeys:
                     if bad in mmkeys:
                         n=mmkeys[bad]
@@ -468,7 +469,7 @@ def get_required(collection):
     else:
         raise MsPASSError('No data on required attributes for collection='
                           +collection,'Fatal')
-def main():
+def main(args):
     # As a script that would be run from the shell we let 
     # any functions below that throw exception do so and assume they 
     # will write a message that can help debug what went wrong
@@ -498,8 +499,8 @@ def main():
     parser.add_argument('-n',
                        '--normalize',
                        nargs='*',
-                       default=['site','channel','source'],
-                       help='List of normalization collections to test\n'
+                       default=['site_id','channel_id','source_id'],
+                       help='List of normalization keys to test\n'
                          + '(Used only for -test normalization option'
                        )
     parser.add_argument('-r',
@@ -522,7 +523,7 @@ def main():
                        help='When used print offending values.  Otherwise just return a summary'
                        )
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     test_to_run=args.test
     dbname=args.dbname
     dbclient=DBClient()
@@ -574,4 +575,4 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

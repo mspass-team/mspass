@@ -709,11 +709,80 @@ class TestDatabase():
 
         # test xref, undefined and type
         problematic_keys = self.db.verify(ts['_id'], 'wf_TimeSeries', tests=['xref', 'type', 'undefined'])
-        print(problematic_keys)
         assert len(problematic_keys) == 3
         assert 'site_id' in problematic_keys and problematic_keys['site_id'] == 'xref'
         assert 'npts' in problematic_keys and problematic_keys['npts'] == 'undefined'
         assert 'delta' in problematic_keys and problematic_keys['delta'] == 'type'
+
+    def test_check_xref_key(self):
+        bad_xref_key_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_xref_key_ts, 'deepcopy', '1')
+        bad_xref_key_ts['site_id'] = ObjectId()
+        bad_wf_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_wf_ts, 'deepcopy', '1')
+
+        save_res_code = self.db.save_data(bad_xref_key_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(bad_wf_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2','site_id'])
+        assert save_res_code == 0
+
+        bad_xref_key_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_xref_key_ts['_id']})
+        bad_wf_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_wf_ts['_id']})
+
+        # if xref_key is not defind -> not checking
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'wf_TimeSeries', 'xxx_id')
+        assert not is_bad_xref_key
+        assert not is_bad_wf
+
+        # if xref_key is not a xref_key -> not checking
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'wf_TimeSeries', 'npts')
+        assert not is_bad_xref_key
+        assert not is_bad_wf
+        # aliases
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'wf_TimeSeries', 'dt')
+        assert not is_bad_xref_key
+        assert not is_bad_wf
+
+        # can't find normalized document
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'wf_TimeSeries', 'site_id')
+        assert is_bad_xref_key
+        assert not is_bad_wf
+
+        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_wf_doc, 'wf_TimeSeries', 'site_id')
+        assert not is_bad_xref_key
+        assert is_bad_wf
+
+    def test_check_undefined_keys(self):
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts.erase('npts')
+
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
+        assert save_res_code == 0
+        self.db['wf_TimeSeries'].update_one({'_id': ts['_id']}, {'$set': {'t0':1.0}})
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert 'starttime' not in res
+        assert 'npts' not in res
+        assert 't0' in res
+
+        undefined_keys = self.db._check_undefined_keys(res, 'wf_TimeSeries')
+        assert len(undefined_keys) == 2
+        assert 'npts' in undefined_keys
+        assert 'starttime_shift' in undefined_keys
+
+    def test_check_mismatch_key(self):
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, 'deepcopy', '1')
+        ts['npts'] = 'xyz'
+
+        save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
+        assert save_res_code == 0
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+
+        assert self.db._check_mismatch_key(res, 'wf_TimeSeries', 'npts')
+        assert self.db._check_mismatch_key(res, 'wf_TimeSeries', 'nsamp')
+        assert not self.db._check_mismatch_key(res, 'wf_TimeSeries', 'xxx')
+        assert not self.db._check_mismatch_key(res, 'wf_TimeSeries', 'delta')
 
     def test_delete_attributes(self):
         # clear all documents
@@ -767,47 +836,65 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['npts'] == 'xyz' and res['delta'] == 123.0 and res['sampling_rate'] == 123.0
 
-    def test_check_xref_key(self):
-        bad_xref_key_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_xref_key_ts, 'deepcopy', '1')
-        bad_xref_key_ts['site_id'] = ObjectId()
-        bad_wf_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_wf_ts, 'deepcopy', '1')
-
-        save_res_code = self.db.save_data(bad_xref_key_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
-        save_res_code = self.db.save_data(bad_wf_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2','site_id'])
-        assert save_res_code == 0
-
-        bad_xref_key_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_xref_key_ts['_id']})
-        bad_wf_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_wf_ts['_id']})
-
-        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_xref_key_doc, 'site_id')
-        assert is_bad_xref_key
-        assert not is_bad_wf
-
-        is_bad_xref_key, is_bad_wf = self.db._check_xref_key(bad_wf_doc, 'site_id')
-        assert not is_bad_xref_key
-        assert is_bad_wf
-
     def test_check_links(self):
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
         missing_site_id_ts = copy.deepcopy(self.test_ts)
-        bad_site_id_ts = copy.deepcopy(self.test_ts)
         logging_helper.info(missing_site_id_ts, 'deepcopy', '1')
-        logging_helper.info(bad_site_id_ts, 'deepcopy', '1')
         missing_site_id_ts.erase('site_id')
+
+        bad_site_id_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_site_id_ts, 'deepcopy', '1')
         bad_site_id_ts['site_id'] = ObjectId()
+
+        bad_source_id_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_source_id_ts, 'deepcopy', '1')
+        bad_source_id_ts['source_id'] = ObjectId()
+
+        bad_channel_id_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(bad_channel_id_ts, 'deepcopy', '1')
+        bad_channel_id_ts['channel_id'] = ObjectId()
 
         save_res_code = self.db.save_data(missing_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
         save_res_code = self.db.save_data(bad_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
+        save_res_code = self.db.save_data(bad_source_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
+        save_res_code = self.db.save_data(bad_channel_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
+        assert save_res_code == 0
 
+        # undefined collection name
+        with pytest.raises(MsPASSError, match='check_links:  collection xxx is not defined in database schema'):
+            self.db._check_links(collection='xxx')
+
+        # undefined xref keys
+        with pytest.raises(MsPASSError, match='check_links:  illegal value for normalize arg=npts'):
+            self.db._check_links(xref_key='npts', collection='wf')
+
+        # no documents found
+        wfquery={'_id': ObjectId()}
+        with pytest.raises(MsPASSError, match=re.escape('checklinks:  wf_TimeSeries collection has no data matching query={}'.format(str(wfquery)))):
+            self.db._check_links(collection='wf', wfquery=wfquery)
+
+        # check with default, all xref keys
+        (bad_id_list, missing_id_list) = self.db._check_links(collection='wf')
+        assert len(bad_id_list) == 3
+        assert set(bad_id_list) == set([bad_site_id_ts['_id'], bad_source_id_ts['_id'], bad_channel_id_ts['_id']])
+        assert len(missing_id_list) == 1
+        assert missing_id_list == [missing_site_id_ts['_id']]
+
+        # check with a single xref key
         (bad_id_list, missing_id_list) = self.db._check_links(xref_key='site_id', collection='wf')
         assert len(bad_id_list) == 1
         assert bad_id_list == [bad_site_id_ts['_id']]
+        assert len(missing_id_list) == 1
+        assert missing_id_list == [missing_site_id_ts['_id']]
+
+        # check with a user specified xref keys
+        (bad_id_list, missing_id_list) = self.db._check_links(xref_key=['site_id','source_id'], collection='wf')
+        assert len(bad_id_list) == 2
+        assert set(bad_id_list) == set([bad_site_id_ts['_id'], bad_source_id_ts['_id']])
         assert len(missing_id_list) == 1
         assert missing_id_list == [missing_site_id_ts['_id']]
 
