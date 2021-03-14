@@ -275,23 +275,23 @@ def run_check_links(db,wfcollection,nrmlist,elimit,verbose):
         undef=errs[1]
         if verbose:
             if len(broken)==0:
-                print('check_links found no broken links with collection=',nrmcol)
+                print('check_links found no broken links with normalized key=',nrmcol)
             else:
                 print('check_link found the following docs in ',wfcollection,
                   ' with broken links to ',nrmcol)
-                print_bad_wf_docs(db,broken)
+                print_bad_wf_docs(db[wfcollection],broken)
             if len(undef)==0:
-                print('check_links found no undefined linking key to collection=',
+                print('check_links found no undefined linking key to normalized key=',
                   nrmcol)
             else:
                 print('check_link found the following docs in ',wfcollection,
                   ' with undefined link keys to ',nrmcol)
-                print_bad_wf_docs(db,undef)
+                print_bad_wf_docs(db[wfcollection],undef)
         else:
             if len(broken)==0:
-                print('check_links found no broken links with collection=',nrmcol)
+                print('check_links found no broken links with normalized key=',nrmcol)
             else:
-                print('normalization test on collection=',nrmcol,' found problems')
+                print('normalization test on normalized key=',nrmcol,' found problems')
                 print('Found broken links in ',len(broken),
                       'documents checked')
                 print('Note error count limit=',elimit)
