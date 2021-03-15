@@ -1234,7 +1234,7 @@ def test_read_distributed_data(spark_context):
     ts_list_rdd.foreach(lambda d, database=db: database.save_data(d, storage_mode='gridfs'))
     cursors = db['wf_TimeSeries'].find({})
 
-    spark_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, mode='cautious', normalize=['source','site','channel'], collection='wf_TimeSeries', spark_context=spark_context)
+    spark_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'], format='spark', spark_context=spark_context)
     list = spark_list.collect()
     assert len(list) == 3
     for l in list:
@@ -1282,7 +1282,7 @@ def test_read_distributed_data_dask():
     ts_list_dbg.map(db.save_data, storage_mode='gridfs').compute()
     cursors = db['wf_TimeSeries'].find({})
 
-    dask_list = read_distributed_data('localhost', 'mspasspy_test_db', cursors, mode='cautious', normalize=['source','site','channel'], collection='wf_TimeSeries', format='dask')
+    dask_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'])
     list = dask_list.compute()
     assert len(list) == 3
     for l in list:

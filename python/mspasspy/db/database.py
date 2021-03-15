@@ -32,57 +32,36 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 
-def read_distributed_data(client_arg, db_name, cursors, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf',
-                          format='spark', spark_context=None, data_tag=None):
+def read_distributed_data(db, cursor, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], 
+                          format='dask', spark_context=None, data_tag=None):
     """
-     This method takes a list of mongodb cursors as input, constructs a mspasspy object for each cursor in a distributed
+     This method takes a mongodb cursor as input, constructs a mspasspy object for each document in a distributed
      manner, and return all of the mspasspy objects using the format required by the distributed computing framework
-     (spark RDD or dask bag).
+     (dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection 
+     name is not needed in this function.
 
-    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
-    :param db_name: the database name in mongodb.
-    :param cursors: mongodb cursors where each corresponds to a stored mspasspy object.
+    :param db: the database to read from.
+    :type db: :class:`mspasspy.db.database.Database`.
+    :param cursor: mongodb cursor where each corresponds to a stored mspasspy object.
     :param load_history: `True` to load object-level history into the mspasspy object.
     :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
     :param exclude_keys: the metadata attributes you want to exclude from being read.
     :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
-    :param format: "spark" or "dask".
+    :param format: "dask" or "spark".
     :type format: :class:`str`
     :param spark_context: user specified spark context.
     :type spark_context: :class:`pyspark.SparkContext`
     :return: a spark `RDD` or dask `bag` format of mspasspy objects.
     """
+    collection = cursor.collection.name
     if format == 'spark':
-        list_ = spark_context.parallelize(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
+        list_ = spark_context.parallelize(cursor)
+        return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     elif format == 'dask':
-        list_ = daskbag.from_sequence(cursors)
-        return list_.map(lambda cur: _read_distributed_data(client_arg, db_name, cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
+        list_ = daskbag.from_sequence(cursor)
+        return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     else:
         raise TypeError("Only spark and dask are supported")
-
-
-def _read_distributed_data(client_arg, db_name, id, mode='promiscuous', normalize=[], load_history=True, exclude_keys=[], collection='wf', data_tag=None):
-    """
-     A helper method used in the distributed map operation. It creates a mongodb connection with provided
-     configurations, reads data from the database, constructs a mspasspy object and returns it.
-
-    :param client_arg: the argument to initialize a :class:`mspasspy.db.Client`.
-    :param db_name: the database name in mongodb.
-    :param id: the `bson.ObjectId` of the mspasspy object stored in mongodb or a dict that contains such an "_id".
-    :type id: :class:'bson.objectid.ObjectId'/dict.
-    :param load_history: `True` to load object-level history into the mspasspy object.
-    :param include_undefined: `True` to also read the attributes in the collection that are not defined in the schema.
-    :param exclude_keys: the metadata attributes you want to exclude from being read.
-    :type exclude_keys: a :class:`list` of :class:`str`
-    :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
-    :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-    """
-    from mspasspy.db.client import Client
-    client = Client(client_arg)
-    db = Database(client, db_name)
-    return db.read_data(id, mode, normalize, load_history, exclude_keys, collection, data_tag)
 
 
 class Database(pymongo.database.Database):
