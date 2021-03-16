@@ -55,7 +55,7 @@ const std::string SEISMICMD_slat("source_lat");
 /*! Longitude (in degrees) of the hypocenter of seismic source*/
 const std::string SEISMICMD_slon("source_lon");
 /*! Depth (in km) of the hypocenter of seismic source*/
-const std::string SEISMICMD_selev("source_elev");
+const std::string SEISMICMD_sdepth("source_depth");
 /*! Origin time of the hypocenter of a seismic source.*/
 const std::string SEISMICMD_stime("source_time");
 /*! External data file name.*/
