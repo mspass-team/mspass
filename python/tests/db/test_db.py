@@ -588,11 +588,11 @@ class TestDatabase():
         assert ts.live
         
         # test empty query
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, query={'_id': ObjectId()})
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False, query={'_id': ObjectId()})
         assert not fixes_cnt
 
         # test log_id_keys and delete required fields missing document if delete_missing_required is True
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], is_print=False, delete_missing_required=True)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=['delta','calib','extra1'], to_print=False, delete_missing_required=True)
         assert len(fixes_cnt) == 0
         # test if it is deleted
         assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
@@ -604,7 +604,7 @@ class TestDatabase():
         ts.erase('site_id')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, check_xref=['site_id'])
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False, check_xref=['site_id'])
         assert len(fixes_cnt) == 0
 
         # test conversion success
@@ -615,7 +615,7 @@ class TestDatabase():
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['_id'] == ts['_id']
@@ -630,7 +630,7 @@ class TestDatabase():
         ts['npts'] = "xyz"
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'npts' not in res
@@ -641,7 +641,7 @@ class TestDatabase():
         test_source_id = ObjectId()
         self.db['source'].insert_one({'_id': test_source_id, 'EVLA': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'MAG': 1.0})
-        fixes_cnt = self.db.clean_collection('source', log_id_keys=[], is_print=False)
+        fixes_cnt = self.db.clean_collection('source', log_id_keys=[], to_print=False)
         res = self.db['source'].find_one({'_id': test_source_id})
         assert res
         assert 'EVLA' not in res
@@ -660,7 +660,7 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' in res
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, delete_undefined=True)
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False, delete_undefined=True)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' not in res
@@ -676,7 +676,7 @@ class TestDatabase():
         assert res
         assert 'extra1' in res
         val = res['extra1']
-        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], is_print=False, rename={'extra1': 'rename_extra'})
+        fixes_cnt = self.db.clean_collection('wf_TimeSeries', log_id_keys=[], to_print=False, rename={'extra1': 'rename_extra'})
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' not in res
