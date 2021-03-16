@@ -64,6 +64,17 @@ class TestSchema():
         self.dbschema.wf_TimeSeries.add('test', {'type': 'boolean', 'aliases':['test1']})
         assert self.dbschema.wf_TimeSeries.type('test') == bool
         assert self.dbschema.wf_TimeSeries.aliases('test') == ['test1']
+        assert self.dbschema.wf_TimeSeries.constraint('test') == 'normal'
+        self.dbschema.channel.add('test', {'type': 'int', 'constraint': 'required', 'reference':'test2'})
+        assert self.dbschema.channel.constraint('test') == 'required'
+        assert self.dbschema.channel.is_required('test')
+        assert self.dbschema.channel.reference('test') == 'test2'
+        self.mdschema.TimeSeries.add('test', {'type': 'int', 'constraint': 'xref_key', 'collection':'test2'})
+        assert self.mdschema.TimeSeries.constraint('test') == 'xref_key'
+        assert self.mdschema.TimeSeries.is_xref_key('test')
+        assert self.mdschema.TimeSeries.collection('test') == 'test2'
+        self.mdschema.Seismogram.add('test', {'type': 'int', 'collection':'test2'})
+        assert self.mdschema.Seismogram.constraint('test') == 'normal'
 
     def test_add_remove_alias(self):
         self.dbschema.wf_TimeSeries.add_alias('test', 'test2')
