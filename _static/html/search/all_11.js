@@ -20,7 +20,7 @@ var searchData=
   ['seismicmd_5frlat_193',['SEISMICMD_rlat',['../namespacemspass_1_1seismic.html#ac1a7513c761787a80a1798f2f2e66235',1,'mspass::seismic']]],
   ['seismicmd_5frlon_194',['SEISMICMD_rlon',['../namespacemspass_1_1seismic.html#aaaa7deae118c2fabe6146f4e44facc2a',1,'mspass::seismic']]],
   ['seismicmd_5fsampling_5frate_195',['SEISMICMD_sampling_rate',['../namespacemspass_1_1seismic.html#aa4af747de9dc5b4dba5dc37de80a05eb',1,'mspass::seismic']]],
-  ['seismicmd_5fselev_196',['SEISMICMD_selev',['../namespacemspass_1_1seismic.html#aea5a4fdffb82053c6029fd0207a4e66d',1,'mspass::seismic']]],
+  ['seismicmd_5fsdepth_196',['SEISMICMD_sdepth',['../namespacemspass_1_1seismic.html#a7a434abd3d2465e73c54062a74d92150',1,'mspass::seismic']]],
   ['seismicmd_5fslat_197',['SEISMICMD_slat',['../namespacemspass_1_1seismic.html#a6185ce4ed163335717824e4802ac686f',1,'mspass::seismic']]],
   ['seismicmd_5fslon_198',['SEISMICMD_slon',['../namespacemspass_1_1seismic.html#aa9af0818785cfdf6d6389fe463f39fdb',1,'mspass::seismic']]],
   ['seismicmd_5fsta_199',['SEISMICMD_sta',['../namespacemspass_1_1seismic.html#ab8e65fa46b1de2e84418ed22a20cf522',1,'mspass::seismic']]],
