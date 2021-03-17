@@ -1,5 +1,6 @@
 import pymongo
 from mspasspy.db.database import Database
+from mspasspy.global_history.manager import GlobalHistoryManager
 
 class Client(pymongo.MongoClient):
     """
@@ -41,3 +42,6 @@ class Client(pymongo.MongoClient):
         return Database(
             self, name, codec_options, read_preference,
             write_concern, read_concern)
+
+    def get_global_history_manager(self, database_name, job_name, schema=None, collection=None):
+        return GlobalHistoryManager(self, database_name, job_name, schema, collection)

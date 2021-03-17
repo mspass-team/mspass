@@ -6,6 +6,7 @@ from mspasspy.util.converter import (Stream2Seismogram,
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.util import logging_helper
+from dill.source import getsource
 
 
 @decorator
@@ -461,3 +462,15 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
         else:
             logging_helper.ensemble_error(data1, algname, ex.message, ex.severity)
             logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
+
+
+@decorator
+def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):
+    if global_history:
+        alg_name = func.__name__
+        alg_id = global_history.new_alg_id()
+        parameters = getsource(func)
+        global_history.logging(alg_name, alg_id, parameters)
+        return func(*args, **kwargs)
+    else:
+        return func(*args, **kwargs)
