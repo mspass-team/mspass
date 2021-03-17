@@ -407,7 +407,7 @@ class Database(pymongo.database.Database):
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
-    def clean_collection(self, collection, query=None, log_id_keys=None, delete_undefined=False, rename=None, check_xref=None, delete_missing_required=False, to_print=False):
+    def clean_collection(self, collection='wf', query={}, log_id_keys=[], rename_undefined={}, check_xref=[], to_print=False, delete_undefined=False, delete_missing_required=False, delete_missing_xref=False):
         """
         clean a collection in user's database by a user defined query
 
@@ -419,8 +419,6 @@ class Database(pymongo.database.Database):
         :param query: the query dict that passed to MongoDB to find mtached documents.
         :type query: :class:`dict`
         """
-        if query is None:
-            query = {}
         print_messages = []
         fixed_cnt = {}
         # fix the queried documents in the collection
@@ -434,7 +432,7 @@ class Database(pymongo.database.Database):
             for doc in docs:
                 if '_id' in doc:
                     fixed_attr_cnt = self.clean(
-                        doc['_id'], collection, log_id_keys, delete_undefined, rename, check_xref, delete_missing_required, to_print)
+                        doc['_id'], collection, log_id_keys, rename_undefined, check_xref, to_print, delete_undefined, delete_missing_required, delete_missing_xref)
                     for k, v in fixed_attr_cnt.items():
                         if k not in fixed_cnt:
                             fixed_cnt[k] = 1
@@ -444,7 +442,7 @@ class Database(pymongo.database.Database):
         return fixed_cnt
 
     # clean a single document in the given collection atomically
-    def clean(self, document_id, collection='wf', log_id_keys=None, delete_undefined=False, rename=None, check_xref=None, delete_missing_required=False, to_print=False):
+    def clean(self, document_id, collection='wf', log_id_keys=[], rename_undefined={}, check_xref=[], to_print=False, delete_undefined=False, delete_missing_required=False, delete_missing_xref=False):
         """
         Clean a document in a collection, including deleting the document if required keys are absent or fix the types if there are mismatches.
 
@@ -461,12 +459,14 @@ class Database(pymongo.database.Database):
         :return: number of fixes applied to each key
         :rtype: :class:`dict`
         """
-        if log_id_keys is None:
-            log_id_keys = []
-        if rename is None:
-            rename = {}
-        if check_xref is None:
-            check_xref = []
+        # validate parameters
+        if type(log_id_keys) is not list:
+            raise MsPASSError('log_id_keys should be a list , but {} is requested.'.format(str(type(log_id_keys))), 'Fatal')
+        if type(rename_undefined) is not dict:
+            raise MsPASSError('rename_undefined should be a dict , but {} is requested.'.format(str(type(rename_undefined))), 'Fatal')
+        if type(check_xref) is not list:
+            raise MsPASSError('check_xref should be a list , but {} is requested.'.format(str(type(check_xref))), 'Fatal')
+
         if to_print:
             print_messages = []
         fixed_cnt = {}
@@ -491,42 +491,77 @@ class Database(pymongo.database.Database):
             for k, v in log_id_dict.items():
                 log_helper += "{}: {}, ".format(k, v)
 
-        # check if the document has all the required fields
+
+        # 1. check if the document has all the required fields
         missing_required_attr_list = []
         for k in self.database_schema[collection].keys():
-            if self.database_schema[collection].is_required(k) and k not in doc:
-                missing_required_attr_list.append(k)
+            if self.database_schema[collection].is_required(k):
+                keys_for_checking = []
+                if self.database_schema[collection].has_alias(k):
+                    # get the aliases list of the key
+                    keys_for_checking = self.database_schema[collection].aliases(k)
+                keys_for_checking.append(k)
+                # check if any key appear in the doc
+                key_in_doc = False
+                for key in keys_for_checking:
+                    if key in doc:
+                        key_in_doc = True
+                if not key_in_doc:
+                    missing_required_attr_list.append(k)
         if missing_required_attr_list:
-            if to_print:
-                error_msg = "required attribute: "
-                for missing_attr in missing_required_attr_list:
-                    error_msg += "{} ".format(missing_attr)
-                error_msg += "are missing."
-                print("{}{} the document is deleted.".format(log_helper, error_msg))
-
+            error_msg = "required attribute: "
+            for missing_attr in missing_required_attr_list:
+                error_msg += "{} ".format(missing_attr)
+            error_msg += "are missing."
+            
             # delete this document
             if delete_missing_required:
                 col.delete_one({'_id': doc['_id']})
+                if to_print:
+                    print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
+            else:
+                print_messages.append("{}{}".format(log_helper, error_msg))
 
+
+        # 2. check if the document has all xref keys in the check_xref list provided by user
         missing_xref_key_list = []
         for xref_k in check_xref:
             # xref_k in check_xref list should be defined in schema first
             if self.database_schema[collection].is_defined(xref_k):
                 unique_xref_k = self.database_schema[collection].unique_name(xref_k)
                 # xref_k should be a reference key as well
-                if self.database_schema[collection].is_xref_key(unique_xref_k) and unique_xref_k not in doc:
-                    missing_xref_key_list.append(xref_k)
+                if self.database_schema[collection].is_xref_key(unique_xref_k):
+                    keys_for_checking = []
+                    if self.database_schema[collection].has_alias(unique_xref_k):
+                        # get the aliases list of the key
+                        keys_for_checking = self.database_schema[collection].aliases(unique_xref_k)
+                    keys_for_checking.append(unique_xref_k)
+                    # check if any key appear in the doc
+                    key_in_doc = False
+                    for key in keys_for_checking:
+                        if key in doc:
+                            key_in_doc = True
+                    if not key_in_doc:
+                        missing_xref_key_list.append(unique_xref_k)
         # missing required xref keys, should be deleted
         if missing_xref_key_list:
-            if to_print:
-                error_msg = "required xref keys: "
-                for missing_key in missing_xref_key_list:
-                    error_msg += "{} ".format(missing_key)
-                error_msg += "are missing."
-                print_messages.append("{}{} the document is deleted.".format(log_helper, error_msg))
+            error_msg = "required xref keys: "
+            for missing_key in missing_xref_key_list:
+                error_msg += "{} ".format(missing_key)
+            error_msg += "are missing."
 
-        # try to fix the error in the doc
+            # delete this document
+            if delete_missing_xref:
+                col.delete_one({'_id': doc['_id']})
+                if to_print:
+                    print("{}{} the document is deleted.".format(log_helper, error_msg))
+                return fixed_cnt
+            else:
+                print_messages.append("{}{}".format(log_helper, error_msg))
+
+
+        # 3. try to fix the mismtach errors in the doc
         update_dict = {}
         for k in doc:
             if k == '_id':
@@ -536,8 +571,8 @@ class Database(pymongo.database.Database):
                 # delete undefined attributes in the doc if delete_undefined is True
                 if not delete_undefined:
                     # try to rename the user specified keys
-                    if k in rename:
-                        update_dict[rename[k]] = doc[k]
+                    if k in rename_undefined:
+                        update_dict[rename_undefined[k]] = doc[k]
                     else:
                         update_dict[k] = doc[k]
                 continue
@@ -547,19 +582,20 @@ class Database(pymongo.database.Database):
                 try:
                     update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
                     if to_print:
-                        print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                        print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
                     if k in fixed_cnt:
                         fixed_cnt[k] += 1
                     else:
                         fixed_cnt[k] = 1
                 except:
                     if to_print:
-                        print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, type(doc[k]), self.database_schema[collection].type(unique_k)))
+                        print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
             else:
                 # attribute values remain the same
                 update_dict[unique_k] = doc[k]
-                
-        # update the fixed attributes in the document in the collection
+        
+        
+        # 4. update the fixed attributes in the document in the collection
         filter_ = {'_id': doc['_id']}
         # use replace_one here because there may be some aliases in the document
         col.replace_one(filter_, update_dict)
@@ -1232,7 +1268,9 @@ class Database(pymongo.database.Database):
             # 1. create the dict of metadata to be saved in wf
             insert_dict = {}
 
+            # FIXME starttime will be automatically created in this function
             self._sync_metadata_before_update(mspass_object)
+
             copied_metadata = Metadata(mspass_object)
 
             # clear all the aliases
