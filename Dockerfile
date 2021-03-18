@@ -51,6 +51,9 @@ RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
     && rm -f requirements.txt
 
+# Install dill through pip
+RUN pip3 --no-cache-dir install dill
+
 # Download & install pybind11
 ENV PYBIND11_VERSION 2.6.0
 ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz

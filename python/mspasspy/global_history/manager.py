@@ -10,27 +10,56 @@ from mspasspy.db.database import Database
 from datetime import datetime
 from dill.source import getsource
 
-def mspass_map(self, func, *args, global_history=None, **kwargs):
+def mspass_spark_map(self, func, *args, global_history=None, **kwargs):
+    if global_history:
+        # get the whole lambda function
+        alg_string = getsource(func)
+        # truncate to get the algorithm name and parameters
+        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
+        # get the algorithm name
+        alg_name = alg[:alg.index('(')].strip()
+        # get the parameters
+        parameters = alg[alg.index('(')+1:].strip()
+        
+        alg_id = global_history.new_alg_id()
+        global_history.logging(alg_name, alg_id, parameters)
+    return self.map(func, *args, **kwargs)
+
+def mspass_dask_map(self, func, *args, global_history=None, **kwargs):
     if global_history:
         alg_name = func.__name__
         alg_id = global_history.new_alg_id()
-        parameters = getsource(func)
+        parameters = ' '.join(args) + ' ' + str(kwargs)
         global_history.logging(alg_name, alg_id, parameters)
     return self.map(func, *args, **kwargs)
 
 def mspass_spark_reduce(self, func, *args, global_history=None, **kwargs):
     if global_history:
-        alg_name = func.__name__
+        # get the whole lambda function
+        alg_string = getsource(func)
+        # truncate to get the algorithm name and parameters
+        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
+        # get the algorithm name
+        alg_name = alg[:alg.index('(')].strip()
+        # get the parameters
+        parameters = alg[alg.index('(')+1:].strip()
+        
         alg_id = global_history.new_alg_id()
-        parameters = getsource(func)
         global_history.logging(alg_name, alg_id, parameters)
     return self.reduce(func, *args, **kwargs)
 
 def mspass_dask_reduce(self, func, *args, global_history=None, **kwargs):
     if global_history:
-        alg_name = func.__name__
+        # get the whole lambda function
+        alg_string = getsource(func)
+        # truncate to get the algorithm name and parameters
+        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
+        # get the algorithm name
+        alg_name = alg[:alg.index('(')].strip()
+        # get the parameters
+        parameters = alg[alg.index('(')+1:].strip()
+
         alg_id = global_history.new_alg_id()
-        parameters = getsource(func)
         global_history.logging(alg_name, alg_id, parameters)
     return self.fold(func, *args, **kwargs)
 
@@ -59,12 +88,12 @@ class GlobalHistoryManager:
         self.collection = collection
 
         # modify pyspark/dask map to our defined map
-        pyspark.RDD.mspass_map = mspass_map
-        daskbag.mspass_map = mspass_map
+        pyspark.RDD.mspass_map = mspass_spark_map
+        daskbag.Bag.mspass_map = mspass_dask_map
 
         #modify pyspark/dask reduce to our defined reduce
         pyspark.RDD.mspass_reduce = mspass_spark_reduce
-        daskbag.mspass_reduce = mspass_dask_reduce
+        daskbag.Bag.mspass_reduce = mspass_dask_reduce
 
     def logging(self, alg_name, alg_id, parameters):
         if self.schema:

@@ -28,44 +28,40 @@ from helper import (get_live_seismogram,
 from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.ccore.utility import MsPASSError
 import mspasspy.algorithms.signals as signals
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
+from mspasspy.reduce import stack
 
-def dask_map(input):
-    ddb = daskbag.from_sequence(input)
-    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0')
-    return res.compute()
-
-
-def spark_map(input):
+def spark_map(input, manager):
     appName = 'mspass-test'
     master = 'local'
     conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext(conf=conf)
+    sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
-    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0'))
+    res = data.mspass_map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0'),  global_history=manager)
     return res.collect()
+
+def dask_map(input, manager):
+    ddb = daskbag.from_sequence(input)
+    res = ddb.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0', global_history=manager)
+    return res.compute()
+
+def dask_reduce(input, manager):
+    ddb = daskbag.from_sequence(input)
+    res = ddb.mspass_reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'), global_history=manager)
+    return res.compute()
+
+def spark_reduce(input, sc, manager):
+    data = sc.parallelize(input)
+    # zero = get_live_timeseries()
+    # zero.data = DoubleVector(np.zeros(255))
+    res = data.mspass_reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'), global_history=manager)
+    return res
 
 class TestManager():
 
     def setup_class(self):
         self.client = Client('localhost')
         self.db = Database(self.client, 'test_database')
-
-        self.test_ts = get_live_timeseries()
-        site_id = ObjectId()
-        channel_id = ObjectId()
-        source_id = ObjectId()
-        self.db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
-                            'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
-                            'endtime': datetime.utcnow().timestamp()})
-        self.db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
-                                'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
-                                'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
-                                'hang': 1.0})
-        self.db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
-                                'depth': 3.1, 'magnitude': 1.0})
-        self.test_ts['site_id'] = site_id
-        self.test_ts['source_id'] = source_id
-        self.test_ts['channel_id'] = channel_id
 
         self.manager = GlobalHistoryManager(self.client, 'test_manager', 'test_job', collection='history')
 
@@ -101,4 +97,27 @@ class TestManager():
         manager_db['history'].delete_many({})
 
     def test_mspass_map(self):
-        pass
+        l = [get_live_timeseries() for i in range(5)]
+        # test mspass_map for spark
+        spark_res = spark_map(l, self.manager)
+
+        manager_db = Database(self.client, 'test_manager')
+        res = manager_db['history'].find_one({'job_name': self.manager.job_name})
+        assert res['job_id'] == self.manager.job_id
+        assert res['job_name'] == self.manager.job_name
+        assert res['alg_name'] == 'signals.filter'
+        assert res['parameters'] == 'ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance=\'0\''
+
+        # test mspass_map for dask
+        manager_db['history'].delete_many({})
+        spark_res = dask_map(l, self.manager)
+
+        manager_db = Database(self.client, 'test_manager')
+        res = manager_db['history'].find_one({'job_name': self.manager.job_name})
+        assert res['job_id'] == self.manager.job_id
+        assert res['job_name'] == self.manager.job_name
+        assert res['alg_name'] == 'filter'
+        assert res['parameters'] == "bandpass {'freqmin': 1, 'freqmax': 5, 'preserve_history': True, 'instance': '0'}"
+
+        # test mspass_reduce for spark
+        
