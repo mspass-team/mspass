@@ -7,7 +7,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include
   ${PROJECT_BINARY_DIR}/include)
 
-add_library(utility STATIC ${sources_utility})
-target_link_libraries(utility PRIVATE ${BLAS_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PYTHON_LIBRARIES})
+add_library(utility OBJECT ${sources_utility})
+#target_link_libraries(utility PRIVATE ${BLAS_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PYTHON_LIBRARIES})
 
-install (TARGETS utility DESTINATION lib)
+#install (TARGETS utility DESTINATION lib)
