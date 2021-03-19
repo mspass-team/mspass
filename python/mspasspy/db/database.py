@@ -407,18 +407,34 @@ class Database(pymongo.database.Database):
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
-    def clean_collection(self, collection='wf', query={}, log_id_keys=[], rename_undefined={}, check_xref=[], to_print=False, delete_undefined=False, delete_missing_required=False, delete_missing_xref=False):
+    def clean_collection(self, collection='wf', query=None, rename_undefined=None, delete_undefined=False, check_xref=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
         """
         clean a collection in user's database by a user defined query
 
-        :param collection: the collection name you would like to clean.
+        :param collection: the collection you would like to clean. If not specified, use the default wf collection
         :type collection: :class:`str`
-        :param log_id_keys: a list of attributes you want to identify in the documents during cleaning.
-        :type log_id_keys: a :class:`list` of :class:`str`
-        :param to_print: if specify as True, we will print all the message verbosely, default to be False
-        :param query: the query dict that passed to MongoDB to find mtached documents.
+        :param query: the query dict that passed to MongoDB to find matched documents.
         :type query: :class:`dict`
+        :param rename_undefined: Specify a :class:`dict` of ``{original_key:new_key}`` to rename the undefined keys in the document.
+        :type rename_undefined: :class:`dict`
+        :param delete_undefined: Set to ``True`` to delete undefined keys in the doc. ``rename_undefined`` will not work if this is ``True``. Default is ``False``.
+        :param check_xref: a :class:`list` of xref keys to be checked.
+        :type check_xref: :class:`list`
+        :param delete_missing_xref: Set to ``True`` to delete this document if any keys specified in ``check_xref`` is missing. Default is ``False``.
+        :param delete_missing_required: Set to ``True`` to delete this document if any required keys in the database schema is missing. Default is ``False``.
+        :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
+        :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
+        :type verbose_keys: :class:`list` of :class:`str`
         """
+        if query is None:
+            query = {}
+        if verbose_keys is None:
+            verbose_keys = []
+        if check_xref is None:
+            check_xref = []
+        if rename_undefined is None:
+            rename_undefined = {}
+        
         print_messages = []
         fixed_cnt = {}
         # fix the queried documents in the collection
@@ -432,7 +448,7 @@ class Database(pymongo.database.Database):
             for doc in docs:
                 if '_id' in doc:
                     fixed_attr_cnt = self.clean(
-                        doc['_id'], collection, log_id_keys, rename_undefined, check_xref, to_print, delete_undefined, delete_missing_required, delete_missing_xref)
+                        doc['_id'], collection, rename_undefined, delete_undefined, check_xref, delete_missing_xref, delete_missing_required, verbose, verbose_keys)
                     for k, v in fixed_attr_cnt.items():
                         if k not in fixed_cnt:
                             fixed_cnt[k] = 1
@@ -442,32 +458,43 @@ class Database(pymongo.database.Database):
         return fixed_cnt
 
     # clean a single document in the given collection atomically
-    def clean(self, document_id, collection='wf', log_id_keys=[], rename_undefined={}, check_xref=[], to_print=False, delete_undefined=False, delete_missing_required=False, delete_missing_xref=False):
+    def clean(self, document_id, collection='wf', rename_undefined=None, delete_undefined=False, check_xref=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
         """
         Clean a document in a collection, including deleting the document if required keys are absent or fix the types if there are mismatches.
 
         :param document_id: the value of the _id field in the document you want to clean
         :type document_id: :class:`bson.objectid.ObjectId`
         :param collection: the name of collection saving the document. If not specified, use the default wf collection
-        :param log_id_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
-        :type log_id_keys: :class:`list` of :class:`str`
-        :param delete_undefined: Set to ``True`` to delete undefined attributes in the doc. Default is ``False``
-        :param rename: A user defined dictionary to rename keys.
-        :type rename: :class:`dict`
-        :param check_xref: a list of check_xref keys to be 
+        :param rename_undefined: Specify a :class:`dict` of ``{original_key:new_key}`` to rename the undefined keys in the document.
+        :type rename_undefined: :class:`dict`
+        :param delete_undefined: Set to ``True`` to delete undefined keys in the doc. ``rename_undefined`` will not work if this is ``True``. Default is ``False``.
+        :param check_xref: a :class:`list` of xref keys to be checked.
+        :type check_xref: :class:`list`
+        :param delete_missing_xref: Set to ``True`` to delete this document if any keys specified in ``check_xref`` is missing. Default is ``False``.
+        :param delete_missing_required: Set to ``True`` to delete this document if any required keys in the database schema is missing. Default is ``False``.
+        :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
+        :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
+        :type verbose_keys: :class:`list` of :class:`str`
  
         :return: number of fixes applied to each key
         :rtype: :class:`dict`
         """
+        if verbose_keys is None:
+            verbose_keys = []
+        if check_xref is None:
+            check_xref = []
+        if rename_undefined is None:
+            rename_undefined = {}
+        
         # validate parameters
-        if type(log_id_keys) is not list:
-            raise MsPASSError('log_id_keys should be a list , but {} is requested.'.format(str(type(log_id_keys))), 'Fatal')
+        if type(verbose_keys) is not list:
+            raise MsPASSError('verbose_keys should be a list , but {} is requested.'.format(str(type(verbose_keys))), 'Fatal')
         if type(rename_undefined) is not dict:
             raise MsPASSError('rename_undefined should be a dict , but {} is requested.'.format(str(type(rename_undefined))), 'Fatal')
         if type(check_xref) is not list:
             raise MsPASSError('check_xref should be a list , but {} is requested.'.format(str(type(check_xref))), 'Fatal')
 
-        if to_print:
+        if verbose:
             print_messages = []
         fixed_cnt = {}
 
@@ -476,16 +503,16 @@ class Database(pymongo.database.Database):
         col = self[collection]
         doc = col.find_one({'_id': document_id})
         if not doc:
-            if to_print:
+            if verbose:
                 print("collection {} document _id: {}, is not found".format(collection, document_id))
             return fixed_cnt
         
-        if to_print:
+        if verbose:
             # access each key
             log_id_dict = {}
-            # get all the values of the log_id_keys
+            # get all the values of the verbose_keys
             for k in doc:
-                if k in log_id_keys:
+                if k in verbose_keys:
                     log_id_dict[k] = doc[k]
             log_helper = "collection {} document _id: {}, ".format(collection, doc['_id'])
             for k, v in log_id_dict.items():
@@ -517,7 +544,7 @@ class Database(pymongo.database.Database):
             # delete this document
             if delete_missing_required:
                 col.delete_one({'_id': doc['_id']})
-                if to_print:
+                if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
             else:
@@ -554,7 +581,7 @@ class Database(pymongo.database.Database):
             # delete this document
             if delete_missing_xref:
                 col.delete_one({'_id': doc['_id']})
-                if to_print:
+                if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
             else:
@@ -581,14 +608,14 @@ class Database(pymongo.database.Database):
             if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
                 try:
                     update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
-                    if to_print:
+                    if verbose:
                         print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
                     if k in fixed_cnt:
                         fixed_cnt[k] += 1
                     else:
                         fixed_cnt[k] = 1
                 except:
-                    if to_print:
+                    if verbose:
                         print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
             else:
                 # attribute values remain the same
@@ -600,7 +627,7 @@ class Database(pymongo.database.Database):
         # use replace_one here because there may be some aliases in the document
         col.replace_one(filter_, update_dict)
         
-        if to_print:
+        if verbose:
             for msg in print_messages:
                 print(msg)
 

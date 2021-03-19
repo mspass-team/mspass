@@ -608,8 +608,8 @@ class TestDatabase():
         logging_helper.info(ts, 'deepcopy', '1')
 
         # invalid parameters
-        with pytest.raises(MsPASSError, match="log_id_keys should be a list , but <class 'str'> is requested."):
-            self.db.clean(ObjectId(), log_id_keys="123")
+        with pytest.raises(MsPASSError, match="verbose_keys should be a list , but <class 'str'> is requested."):
+            self.db.clean(ObjectId(), verbose_keys="123")
         with pytest.raises(MsPASSError, match="rename_undefined should be a dict , but <class 'str'> is requested."):
             self.db.clean(ObjectId(), rename_undefined="123")
         with pytest.raises(MsPASSError, match="check_xref should be a list , but <class 'str'> is requested."):
@@ -624,13 +624,13 @@ class TestDatabase():
         
         # test nonexist document
         nonexist_id = ObjectId()
-        fixes_cnt = self.db.clean(nonexist_id, to_print=True)
+        fixes_cnt = self.db.clean(nonexist_id, verbose=True)
         assert not fixes_cnt
         out, err = capfd.readouterr()
         assert out == "collection wf_TimeSeries document _id: {}, is not found\n".format(nonexist_id)
 
-        # test log_id_keys and delete required fields missing document if delete_missing_required is True
-        fixes_cnt = self.db.clean(ts['_id'], log_id_keys=['delta'], to_print=True, delete_missing_required=True)
+        # test verbose_keys and delete required fields missing document if delete_missing_required is True
+        fixes_cnt = self.db.clean(ts['_id'], verbose_keys=['delta'], verbose=True, delete_missing_required=True)
         assert len(fixes_cnt) == 0
         # test if it is deleted
         assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
@@ -644,7 +644,7 @@ class TestDatabase():
         ts.erase('site_id')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
-        fixes_cnt = self.db.clean(ts['_id'], to_print=True, check_xref=['site_id'], delete_missing_xref=True)
+        fixes_cnt = self.db.clean(ts['_id'], verbose=True, check_xref=['site_id'], delete_missing_xref=True)
         assert len(fixes_cnt) == 0
         assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         out, err = capfd.readouterr()
@@ -658,7 +658,7 @@ class TestDatabase():
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
-        fixes_cnt = self.db.clean(ts['_id'], to_print=True)
+        fixes_cnt = self.db.clean(ts['_id'], verbose=True)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['_id'] == ts['_id']
@@ -675,7 +675,7 @@ class TestDatabase():
         ts['npts'] = "xyz"
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        fixes_cnt = self.db.clean(ts['_id'], to_print=True)
+        fixes_cnt = self.db.clean(ts['_id'], verbose=True)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'npts' not in res
@@ -688,7 +688,7 @@ class TestDatabase():
         test_source_id = ObjectId()
         self.db['source'].insert_one({'_id': test_source_id, 'EVLA': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
                                       'depth': 3.1, 'MAG': 1.0})
-        fixes_cnt = self.db.clean(test_source_id, collection='source', to_print=True)
+        fixes_cnt = self.db.clean(test_source_id, collection='source', verbose=True)
         res = self.db['source'].find_one({'_id': test_source_id})
         assert res
         assert 'EVLA' not in res
@@ -709,7 +709,7 @@ class TestDatabase():
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' in res
-        fixes_cnt = self.db.clean(ts['_id'], to_print=True, delete_undefined=True)
+        fixes_cnt = self.db.clean(ts['_id'], verbose=True, delete_undefined=True)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' not in res
@@ -727,7 +727,7 @@ class TestDatabase():
         assert res
         assert 'extra1' in res
         val = res['extra1']
-        fixes_cnt = self.db.clean(ts['_id'], to_print=True, rename_undefined={'extra1': 'rename_extra'})
+        fixes_cnt = self.db.clean(ts['_id'], verbose=True, rename_undefined={'extra1': 'rename_extra'})
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' not in res
@@ -1249,100 +1249,100 @@ class TestDatabase():
         assert ts['channel_endtime'] == 1.0
     
 
-# def test_read_distributed_data(spark_context):
-#     client = Client('localhost')
-#     client.drop_database('mspasspy_test_db')
+def test_read_distributed_data(spark_context):
+    client = Client('localhost')
+    client.drop_database('mspasspy_test_db')
 
-#     test_ts = get_live_timeseries()
+    test_ts = get_live_timeseries()
 
-#     client = Client('localhost')
-#     db = Database(client, 'mspasspy_test_db')
+    client = Client('localhost')
+    db = Database(client, 'mspasspy_test_db')
 
-#     site_id = ObjectId()
-#     channel_id = ObjectId()
-#     source_id = ObjectId()
-#     db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
-#                            'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
-#                            'endtime': datetime.utcnow().timestamp()})
-#     db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
-#                               'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
-#                               'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
-#                               'hang': 1.0})
-#     db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
-#                              'depth': 3.1, 'magnitude': 1.0})
-#     test_ts['site_id'] = site_id
-#     test_ts['source_id'] = source_id
-#     test_ts['channel_id'] = channel_id
+    site_id = ObjectId()
+    channel_id = ObjectId()
+    source_id = ObjectId()
+    db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                           'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                           'endtime': datetime.utcnow().timestamp()})
+    db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
+                              'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
+                              'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                              'hang': 1.0})
+    db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
+                             'depth': 3.1, 'magnitude': 1.0})
+    test_ts['site_id'] = site_id
+    test_ts['source_id'] = source_id
+    test_ts['channel_id'] = channel_id
 
-#     ts1 = copy.deepcopy(test_ts)
-#     ts2 = copy.deepcopy(test_ts)
-#     ts3 = copy.deepcopy(test_ts)
-#     logging_helper.info(ts1, 'deepcopy', '1')
-#     logging_helper.info(ts2, 'deepcopy', '1')
-#     logging_helper.info(ts3, 'deepcopy', '1')
+    ts1 = copy.deepcopy(test_ts)
+    ts2 = copy.deepcopy(test_ts)
+    ts3 = copy.deepcopy(test_ts)
+    logging_helper.info(ts1, 'deepcopy', '1')
+    logging_helper.info(ts2, 'deepcopy', '1')
+    logging_helper.info(ts3, 'deepcopy', '1')
 
-#     ts_list = [ts1, ts2, ts3]
-#     ts_list_rdd = spark_context.parallelize(ts_list)
-#     ts_list_rdd.foreach(lambda d, database=db: database.save_data(d, storage_mode='gridfs'))
-#     cursors = db['wf_TimeSeries'].find({})
+    ts_list = [ts1, ts2, ts3]
+    ts_list_rdd = spark_context.parallelize(ts_list)
+    ts_list_rdd.foreach(lambda d, database=db: database.save_data(d, storage_mode='gridfs'))
+    cursors = db['wf_TimeSeries'].find({})
 
-#     spark_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'], format='spark', spark_context=spark_context)
-#     list = spark_list.collect()
-#     assert len(list) == 3
-#     for l in list:
-#         assert l
-#         assert np.isclose(l.data, test_ts.data).all()
+    spark_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'], format='spark', spark_context=spark_context)
+    list = spark_list.collect()
+    assert len(list) == 3
+    for l in list:
+        assert l
+        assert np.isclose(l.data, test_ts.data).all()
 
-#     client = Client('localhost')
-#     client.drop_database('mspasspy_test_db')
+    client = Client('localhost')
+    client.drop_database('mspasspy_test_db')
 
 
-# def test_read_distributed_data_dask():
-#     client = Client('localhost')
-#     client.drop_database('mspasspy_test_db')
+def test_read_distributed_data_dask():
+    client = Client('localhost')
+    client.drop_database('mspasspy_test_db')
 
-#     test_ts = get_live_timeseries()
+    test_ts = get_live_timeseries()
 
-#     client = Client('localhost')
-#     db = Database(client, 'mspasspy_test_db')
+    client = Client('localhost')
+    db = Database(client, 'mspasspy_test_db')
 
-#     site_id = ObjectId()
-#     channel_id = ObjectId()
-#     source_id = ObjectId()
-#     db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
-#                            'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
-#                            'endtime': datetime.utcnow().timestamp()})
-#     db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
-#                               'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
-#                               'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
-#                               'hang': 1.0})
-#     db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
-#                              'depth': 3.1, 'magnitude': 1.0})
-#     test_ts['site_id'] = site_id
-#     test_ts['source_id'] = source_id
-#     test_ts['channel_id'] = channel_id
+    site_id = ObjectId()
+    channel_id = ObjectId()
+    source_id = ObjectId()
+    db['site'].insert_one({'_id': site_id, 'net': 'net', 'sta': 'sta', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                           'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                           'endtime': datetime.utcnow().timestamp()})
+    db['channel'].insert_one({'_id': channel_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc1', 'chan': 'chan',
+                              'lat': 1.1, 'lon': 1.1, 'elev': 2.1, 'starttime': datetime.utcnow().timestamp(),
+                              'endtime': datetime.utcnow().timestamp(), 'edepth': 3.0, 'vang': 1.0,
+                              'hang': 1.0})
+    db['source'].insert_one({'_id': source_id, 'lat': 1.2, 'lon': 1.2, 'time': datetime.utcnow().timestamp(),
+                             'depth': 3.1, 'magnitude': 1.0})
+    test_ts['site_id'] = site_id
+    test_ts['source_id'] = source_id
+    test_ts['channel_id'] = channel_id
 
-#     ts1 = copy.deepcopy(test_ts)
-#     ts2 = copy.deepcopy(test_ts)
-#     ts3 = copy.deepcopy(test_ts)
-#     logging_helper.info(ts1, 'deepcopy', '1')
-#     logging_helper.info(ts2, 'deepcopy', '1')
-#     logging_helper.info(ts3, 'deepcopy', '1')
+    ts1 = copy.deepcopy(test_ts)
+    ts2 = copy.deepcopy(test_ts)
+    ts3 = copy.deepcopy(test_ts)
+    logging_helper.info(ts1, 'deepcopy', '1')
+    logging_helper.info(ts2, 'deepcopy', '1')
+    logging_helper.info(ts3, 'deepcopy', '1')
 
-#     ts_list = [ts1, ts2, ts3]
-#     ts_list_dbg = dask.bag.from_sequence(ts_list)
-#     ts_list_dbg.map(db.save_data, storage_mode='gridfs').compute()
-#     cursors = db['wf_TimeSeries'].find({})
+    ts_list = [ts1, ts2, ts3]
+    ts_list_dbg = dask.bag.from_sequence(ts_list)
+    ts_list_dbg.map(db.save_data, storage_mode='gridfs').compute()
+    cursors = db['wf_TimeSeries'].find({})
 
-#     dask_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'])
-#     list = dask_list.compute()
-#     assert len(list) == 3
-#     for l in list:
-#         assert l
-#         assert np.isclose(l.data, test_ts.data).all()
+    dask_list = read_distributed_data(db, cursors, mode='cautious', normalize=['source','site','channel'])
+    list = dask_list.compute()
+    assert len(list) == 3
+    for l in list:
+        assert l
+        assert np.isclose(l.data, test_ts.data).all()
 
-#     client = Client('localhost')
-#     client.drop_database('mspasspy_test_db')
+    client = Client('localhost')
+    client.drop_database('mspasspy_test_db')
 
 if __name__ == '__main__':
     pass
