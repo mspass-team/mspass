@@ -3,10 +3,10 @@
   <compounddef id="src_2lib_2seismic_2_c_make_lists_8txt" kind="file" language="C++">
     <compoundname>CMakeLists.txt</compoundname>
       <sectiondef kind="func">
-      <memberdef kind="function" id="src_2lib_2seismic_2_c_make_lists_8txt_1a7b97ed8d1d4f019ee3ee6c8c1c813f00" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="src_2lib_2seismic_2_c_make_lists_8txt_1ae23dd037353b7ba1172f65b437694d0a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type></type>
         <definition>include_directories</definition>
-        <argsstring>(${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include) add_library(seismic STATIC $</argsstring>
+        <argsstring>(${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include) add_library(seismic OBJECT $</argsstring>
         <name>include_directories</name>
         <param>
           <declname>${Boost_INCLUDE_DIRS} ${pybind11_INCLUDE_DIR} ${PYTHON_INCLUDE_DIRS} ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/</declname>
@@ -33,10 +33,10 @@
 <codeline lineno="6"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
 <codeline lineno="7"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">add_library(seismic<sp/>STATIC<sp/>${sources_seismic})</highlight></codeline>
-<codeline lineno="10"><highlight class="normal">target_link_libraries(seismic<sp/>PRIVATE<sp/>utility<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">add_library(seismic<sp/>OBJECT<sp/>${sources_seismic})</highlight></codeline>
+<codeline lineno="10"><highlight class="normal">#target_link_libraries(seismic<sp/>PRIVATE<sp/>utility<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight></codeline>
-<codeline lineno="12"><highlight class="normal">install<sp/>(TARGETS<sp/>seismic<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="12"><highlight class="normal">#install<sp/>(TARGETS<sp/>seismic<sp/>DESTINATION<sp/>lib)</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CMakeLists.txt"/>
   </compounddef>

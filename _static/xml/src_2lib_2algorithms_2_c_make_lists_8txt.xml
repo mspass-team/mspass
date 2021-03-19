@@ -45,18 +45,13 @@
 <codeline lineno="17"><highlight class="normal"><sp/><sp/>${PROJECT_BINARY_DIR}/include</highlight></codeline>
 <codeline lineno="18"><highlight class="normal"><sp/><sp/>${PROJECT_SOURCE_DIR}/include)</highlight></codeline>
 <codeline lineno="19"><highlight class="normal"></highlight></codeline>
-<codeline lineno="20"><highlight class="normal">add_library(alg_basics<sp/>STATIC<sp/>${sources_alg_basics})</highlight></codeline>
-<codeline lineno="21"><highlight class="normal">add_library(amplitudes<sp/>STATIC<sp/>${sources_amplitudes})</highlight></codeline>
-<codeline lineno="22"><highlight class="normal">target_link_libraries(alg_basics<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>deconvolution<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
-<codeline lineno="23"><highlight class="normal">target_link_libraries(amplitudes<sp/>PRIVATE<sp/>utility<sp/>seismic<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES})</highlight></codeline>
+<codeline lineno="20"><highlight class="normal">add_library(alg_basics<sp/>OBJECT<sp/>${sources_alg_basics})</highlight></codeline>
+<codeline lineno="21"><highlight class="normal">add_library(amplitudes<sp/>OBJECT<sp/>${sources_amplitudes})</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
 <codeline lineno="24"><highlight class="normal"></highlight></codeline>
-<codeline lineno="25"><highlight class="normal">add_subdirectory(deconvolution)</highlight></codeline>
-<codeline lineno="26"><highlight class="normal"></highlight></codeline>
-<codeline lineno="27"><highlight class="normal">file(WRITE<sp/>${CMAKE_BINARY_DIR}/src/dummy.cc<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">)</highlight></codeline>
-<codeline lineno="28"><highlight class="normal">add_library(algorithms<sp/>${CMAKE_BINARY_DIR}/src/dummy.cc)</highlight></codeline>
-<codeline lineno="29"><highlight class="normal">target_link_libraries(algorithms<sp/>PUBLIC<sp/>alg_basics<sp/>amplitudes<sp/>deconvolution)</highlight></codeline>
-<codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal">install<sp/>(TARGETS<sp/>algorithms<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#add_library(algorithms<sp/>OBJECT<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#target_link_libraries(algorithms<sp/>PRIVATE<sp/>seismic<sp/>utility<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/CMakeLists.txt"/>
   </compounddef>
