@@ -571,7 +571,7 @@ class TestDatabase():
         fname = os.path.join(res2['dir'], res2['dfile'])
         assert not os.path.exists(fname)
 
-    def test_clean_collection(self, capfd):
+    def test_clean_collection(self):
         # clear all the wf collection documents
         self.db['wf_TimeSeries'].delete_many({})
 
