@@ -35,9 +35,11 @@ def rename_list_to_dict(rlist):
     return result
         
 
-def main(args):
+def main(args=None):
     """
     """
+    if args is None:
+        args = sys.argv[1:]
     parser = argparse.ArgumentParser(prog="dbclean",
                                      usage="%(prog)s dbname collection [-ft] [-d k1 ...] [-r kold:knew ... ] [-v] [-h]",
                                      description="MsPASS program to fix most errors detected by dbverify")
@@ -128,4 +130,4 @@ def main(args):
         print(json_util.dumps(fixcounts,indent=4))
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

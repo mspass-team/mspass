@@ -469,10 +469,12 @@ def get_required(collection):
     else:
         raise MsPASSError('No data on required attributes for collection='
                           +collection,'Fatal')
-def main(args):
+def main(args=None):
     # As a script that would be run from the shell we let 
     # any functions below that throw exception do so and assume they 
     # will write a message that can help debug what went wrong
+    if args is None:
+        args = sys.argv[1:]
     parser = argparse.ArgumentParser(prog="dbverify",
                     usage="%(prog)s dbname [-t TEST -c [collection ...] -n [normalize ... ] -error_limit n -v]",
                     description="MsPASS database verify program")
@@ -575,4 +577,4 @@ def main(args):
     
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
