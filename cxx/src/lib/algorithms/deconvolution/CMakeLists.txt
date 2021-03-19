@@ -7,5 +7,5 @@ include_directories(
   ${PROJECT_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/include)
 
-add_library(deconvolution STATIC ${sources_deconvolution})
-target_link_libraries(deconvolution PRIVATE seismic utility alg_basics ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES} )
+add_library(deconvolution OBJECT ${sources_deconvolution})
+#target_link_libraries(deconvolution PRIVATE seismic utility alg_basics ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES} )
