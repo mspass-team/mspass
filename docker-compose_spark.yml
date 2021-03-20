@@ -42,29 +42,29 @@ services:
     volumes:
       - "${PWD}:/home"
     ports:
-      - 8786:8786
+      - 7077:7077
     environment:
       MSPASS_ROLE: scheduler
-      MSPASS_SCHEDULER: dask
-      DASK_SCHEDULER_PORT: 8786
+      MSPASS_SCHEDULER: spark
+      SPARK_MASTER_PORT: 7077
   
   mspass-worker:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     depends_on:
       - mspass-scheduler
     environment:
       MSPASS_ROLE: worker
-      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER: spark
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
   
   mspass-frontend:
     image: wangyinz/mspass
     volumes:
       - "${PWD}:/home"
-    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
+    command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh
     ports:
       - 8888:8888
     depends_on:
@@ -72,7 +72,7 @@ services:
       - mspass-scheduler
     environment:
       MSPASS_ROLE: frontend
-      MSPASS_SCHEDULER: dask
+      MSPASS_SCHEDULER: spark
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
       MSPASS_DB_ADDRESS: mspass-dbmanager
       MSPASS_JUPYTER_PWD: mspass

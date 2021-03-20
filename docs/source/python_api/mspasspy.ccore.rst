@@ -20,15 +20,24 @@ seismic
 algorithms
 ----------
 
+basic
+~~~~~
+
 .. automodule:: mspasspy.ccore.algorithms.basic
     :members:
     :undoc-members:
     :show-inheritance:
 
+amplitudes
+~~~~~
+
 .. automodule:: mspasspy.ccore.algorithms.amplitudes
     :members:
     :undoc-members:
     :show-inheritance:
+
+deconvolution
+~~~~~
 
 .. automodule:: mspasspy.ccore.algorithms.deconvolution
     :members:

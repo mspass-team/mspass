@@ -153,7 +153,7 @@ PYBIND11_MODULE(seismic, m) {
   Keywords["channel_vang"] = SEISMICMD_vang;
   Keywords["source_lat"] = SEISMICMD_slat;
   Keywords["source_lon"] = SEISMICMD_slon;
-  Keywords["source_elev"] = SEISMICMD_selev;
+  Keywords["source_depth"] = SEISMICMD_sdepth;
   Keywords["source_time"] = SEISMICMD_stime;
   Keywords["dfile"] = SEISMICMD_dfile;
   Keywords["dir"] = SEISMICMD_dir;

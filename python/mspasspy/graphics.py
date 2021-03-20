@@ -133,9 +133,9 @@ def image_raw(section, t0, dt, ranges=None, cmap=pyplot.cm.gray,
     t = numpy.linspace(t0, t0+dt*npts, npts)
     data = section
     if ranges is None:
-        ranges = (0, maxtraces)
+        ranges = (0, maxtraces-1)
     x0, x1 = ranges
-    extent = (x0, x1, t[-1:], t[0])
+    extent = (x0-0.5, x1+0.5, t[npts-1], t[0])
     if aspect is None:  # guarantee a rectangular picture
         aspect = numpy.round((x1 - x0)/numpy.max(t))
         if(aspect<=0.0):

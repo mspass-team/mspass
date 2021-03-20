@@ -18,13 +18,8 @@ RUN apt-get update \
 
 RUN pip3 --no-cache-dir install pymongo
 
-RUN mkdir /home/data
-
 # Prepare the environment
 ENV SPARK_VERSION 3.0.0
-ENV SPARK_MASTER_PORT 7077
-
-ENV MSPASS_ROLE master
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV SPARK_HOME /usr/local/spark
@@ -53,7 +48,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Install Dask through pip
-RUN pip3 --no-cache-dir install "dask[complete]" 
+RUN pip3 --no-cache-dir install "dask[complete]"
 
 # Install obspy through pip
 RUN pip3 --no-cache-dir install numpy \
@@ -67,7 +62,7 @@ ENV PYBIND11_VERSION 2.6.0
 ENV PYBIND11_URL https://github.com/pybind/pybind11/archive/v${PYBIND11_VERSION}.tar.gz
 RUN wget -qO - ${PYBIND11_URL} | tar -xz -C /usr/local/ \
     && cd /usr/local/pybind11-${PYBIND11_VERSION} \
-    && mkdir build && cd build && cmake .. && make install
+    && mkdir build && cd build && cmake .. -DPYBIND11_TEST=OFF && make install
 RUN rm -r /usr/local/pybind11-${PYBIND11_VERSION}
 
 # Upgrade setuptools to enable namespace package
@@ -79,7 +74,8 @@ RUN cd /mspass/cxx \
     && mkdir build && cd build \
     && cmake .. \
     && make \
-    && make install 
+    && make install \ 
+    && rm -rf ../build
 
 # Add data and env variable for the MetadataDefinition class
 ADD data /mspass/data
@@ -90,9 +86,25 @@ ADD setup.py /mspass/setup.py
 ADD python /mspass/python
 RUN pip3 install /mspass -v
 
+# Install Jupyter notebook
+RUN pip3 --no-cache-dir install notebook==6.2.0
+
+# Tini operates as a process subreaper for jupyter.
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/sbin/tini
+RUN chmod +x /usr/sbin/tini
+
 # Add startup script
 ADD scripts/start-mspass.sh /usr/sbin/start-mspass.sh
 RUN chmod +x /usr/sbin/start-mspass.sh
 RUN sed -i '/set -- mongod "$@"/i [[ -d data ]] || mkdir data' /usr/local/bin/docker-entrypoint.sh
 
-ENTRYPOINT ["/usr/sbin/start-mspass.sh"]
+# Set the default behavior of this container
+ENV SPARK_MASTER_PORT 7077
+ENV DASK_SCHEDULER_PORT 8786
+ENV MONGODB_PORT 27017
+ENV JUPYTER_PORT 8888
+ENV MSPASS_ROLE all
+ENV MSPASS_SCHEDULER dask
+
+ENTRYPOINT ["/usr/sbin/tini", "-g", "--", "/usr/sbin/start-mspass.sh"]
