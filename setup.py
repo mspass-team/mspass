@@ -61,6 +61,13 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
+ENTRY_POINTS = {
+    'console_scripts': [
+        'mspass-dbclean = mspasspy.db.script.dbclean:main',
+        'mspass-dbverify = mspasspy.db.script.dbverify:main',
+    ],
+}
+
 setup(
     name='mspasspy',
     version='0.0.1',
@@ -70,6 +77,7 @@ setup(
     long_description='',
     ext_modules=[CMakeExtension('mspasspy.ccore')],
     cmdclass=dict(build_ext=CMakeBuild),
+    entry_points=ENTRY_POINTS,
     zip_safe=False,
     package_dir={"": "python"},
     packages=find_namespace_packages(where="python", include=["mspasspy", "mspasspy.*"]),

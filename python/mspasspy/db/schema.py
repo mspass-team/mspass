@@ -55,6 +55,9 @@ class SchemaBase:
 class SchemaDefinitionBase:
     _main_dic = {}
     _alias_dic = {}
+    _required_keys = []
+    _xref_keys = []
+
     def add(self, name, attr):
         """
         Add a new entry to the definitions. Note that because the internal
@@ -68,12 +71,14 @@ class SchemaDefinitionBase:
         :type attr: dict
         :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr
         """
-        if 'type' not in attr:
-            raise MsPASSError('type is not defined for the new attribute', 'Invalid')
         self._main_dic[name] = attr
         if 'aliases' in attr:
             for als in attr['aliases']:
                 self._alias_dic[als] = name
+        if attr['constraint'] == 'required':
+            self._required_keys.append(name)
+        elif attr['constraint'] == 'xref_key':
+            self._xref_keys.append(name)
 
     def add_alias(self, key, aliasname):
         """
@@ -122,9 +127,9 @@ class SchemaDefinitionBase:
         internal alias container such that the same schema object can be used
         to convert the alias back.
 
-        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`
-            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.
-        :type md: class:`mspasspy.ccore.utility.Metadata`
+        :param md: Data object to be altered. Normally a :class:`mspasspy.ccore.seismic.Seismogram`
+            or :class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw :class:`mspasspy.ccore.utility.Metadata`.
+        :type md: :class:`mspasspy.ccore.utility.Metadata`
         :param alias: a yaml file or a dict that have pairs of key:alias
         :type alias: dict/str
 
@@ -157,9 +162,9 @@ class SchemaDefinitionBase:
         defined by this object. Note that if the unique_name is already defined, it will
         silently remove the alias only.
 
-        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`
-            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.
-        :type md: class:`mspasspy.ccore.utility.Metadata`
+        :param md: Data object to be altered. Normally a :class:`mspasspy.ccore.seismic.Seismogram`
+            or :class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw :class:`mspasspy.ccore.utility.Metadata`.
+        :type md: :class:`mspasspy.ccore.utility.Metadata`
         """
         for key in md.keys():
             if self.is_alias(key):
@@ -225,17 +230,6 @@ class SchemaDefinitionBase:
         """
         return key in self._main_dic or key in self._alias_dic
 
-    def is_optional(self, key):
-        """
-        Test if a key is optional to the schema
-
-        :param key: key to be tested
-        :type key: str
-        :return: `True` if the key is optional
-        :rtype: bool
-        """
-        return False if 'optional' not in self._main_dic[key] else self._main_dic[key]['optional']
-
     def keys(self):
         """
         Get a list of all the unique keys defined.
@@ -252,7 +246,7 @@ class SchemaDefinitionBase:
         :param key: The name that defines the attribute of interest
         :type key: str
         :return: type of the attribute associated with ``key``
-        :rtype: class:`type`
+        :rtype: :class:`type`
         """
         tp = self._main_dic[key]['type'].strip().casefold()
         if tp in ['int', 'integer']:
@@ -294,6 +288,79 @@ class SchemaDefinitionBase:
             return self._alias_dic[aliasname]
         raise MsPASSError(aliasname + ' is not defined', 'Invalid')
 
+    def required_keys(self):
+        """
+        Return all the required keys in the current collection as a list
+
+        :return: type of data associated with the collection
+        :rtype: a :class:`list` of :class:`str`
+        """
+        return self._required_keys
+
+    def xref_keys(self):
+        """
+        Return all the xref keys in the current collection as a list
+
+        :return: type of data associated with the collection
+        :rtype: a :class:`list` of :class:`str`
+        """
+        return self._xref_keys
+
+    def constraint(self, key):
+        """
+        Return a description of the constraint this attribute defines.
+
+        :param key: The name that defines the attribute of interest
+        :type key: str
+        :return: A string with a terse description of the constraint this attribute defines
+        :rtype: str
+        """
+        return self._main_dic[key]['constraint']
+
+    def is_required(self, key):
+        """
+        Test if the constraint of the key is required to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is required
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'required'
+
+    def is_xref_key(self, key):
+        """
+        Test if the constraint of the key is xref_key to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is xref_key
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'xref_key'
+
+    def is_normal(self, key):
+        """
+        Test if the constraint of the key is normal to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is normal
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'normal'
+
+    def is_optional(self, key):
+        """
+        Test if the constraint of the key is optional to the schema
+
+        :param key: key to be tested
+        :type key: str
+        :return: `True` if the constraint of the key is optional
+        :rtype: bool
+        """
+        return self._main_dic[key]['constraint'] == 'optional'
+
 class DatabaseSchema(SchemaBase):
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
@@ -328,7 +395,7 @@ class DatabaseSchema(SchemaBase):
         :param name: The requested default collection
         :type name: str
         :return: the schema definition of the default collection
-        :rtype: class:`mspasspy.db.schema.DBSchemaDefinition`
+        :rtype: :class:`mspasspy.db.schema.DBSchemaDefinition`
         :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined
         """
         if name in self._default_dic:
@@ -395,6 +462,8 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         self._main_dic = {}
         self._alias_dic = {}
         self._data_type = None
+        self._required_keys = []
+        self._xref_keys = []
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'reference' in attr:
@@ -415,8 +484,32 @@ class DBSchemaDefinition(SchemaDefinitionBase):
 
             if 'aliases' in attr:
                 self._alias_dic.update({item: key for item in attr['aliases'] if item != key})
+
+            if 'constraint' in attr:
+                if attr['constraint'] == 'required':
+                    self._required_keys.append(key)
+                elif attr['constraint'] == 'xref_key':
+                    self._xref_keys.append(key)
+        
         if 'data_type' in schema_dic[collection_str]:
             self._data_type = schema_dic[collection_str]['data_type']
+
+    def add(self, name, attr):
+        """
+        Add a new entry to the definitions. Note that because the internal
+        container is `dict` if attribute for name is already present it
+        will be silently replaced.
+
+        :param name: The name of the attribute to be added
+        :type name: str
+        :param attr: A dictionary that defines the property of the added attribute.
+            Note that the type must be defined.
+        :type attr: dict
+        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr
+        """
+        schema_v = _get_schema_definition_schema(None, 'database', False)
+        attr = schema_v.validate(attr)
+        SchemaDefinitionBase.add(self, name, attr)
 
     def reference(self, key):
         """
@@ -438,7 +531,7 @@ class DBSchemaDefinition(SchemaDefinitionBase):
         If not recognized, it returns None.
 
         :return: type of data associated with the collection
-        :rtype: class:`type`
+        :rtype: :class:`type`
         """
         if self._data_type in ['TimeSeries', 'timeseries']:
             return mspasspy.ccore.seismic.TimeSeries
@@ -465,6 +558,8 @@ class MDSchemaDefinition(SchemaDefinitionBase):
     def __init__(self, schema_dic, collection_str, dbschema):
         self._main_dic = {}
         self._alias_dic = {}
+        self._required_keys = []
+        self._xref_keys = []
         self._main_dic.update(schema_dic[collection_str]['schema'])
         for key, attr in self._main_dic.items():
             if 'collection' in attr:
@@ -482,7 +577,30 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 self._main_dic[key] = compiled_attr
             # have to use "self._main_dic[key]" instead of attr here because the dict is updated above
             if 'aliases' in self._main_dic[key]:
-                self._alias_dic.update({item:key for item in self._main_dic[key]['aliases'] if item != key})
+                self._alias_dic.update(
+                    {item: key for item in self._main_dic[key]['aliases'] if item != key})
+            if 'constraint' in self._main_dic[key]:
+                if self._main_dic[key]['constraint'] == 'required':
+                    self._required_keys.append(key)
+                elif self._main_dic[key]['constraint'] == 'xref_key':
+                    self._xref_keys.append(key)
+
+    def add(self, name, attr):
+        """
+        Add a new entry to the definitions. Note that because the internal
+        container is `dict` if attribute for name is already present it
+        will be silently replaced.
+
+        :param name: The name of the attribute to be added
+        :type name: str
+        :param attr: A dictionary that defines the property of the added attribute.
+            Note that the type must be defined.
+        :type attr: dict
+        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr
+        """
+        schema_v = _get_schema_definition_schema(None, 'metadata', False)
+        attr = schema_v.validate(attr)
+        SchemaDefinitionBase.add(self, name, attr)
 
     def collection(self, key):
         """
@@ -506,7 +624,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :param collection: the name of the collection
         :type collection: str
         :param dbschema: the database schema used to set the attributes of the key.
-        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`
+        :type dbschema: :class:`mspasspy.db.schema.DatabaseSchema`
         :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined
         """
         if key not in self._main_dic:
@@ -544,7 +662,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
         :param new_collection: the name of the collection to be changed into
         :type new_collection: str
         :param dbschema: the database schema used to set the attributes of the key.
-        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`
+        :type dbschema: :class:`mspasspy.db.schema.DatabaseSchema`
         """
         for key, attr in self._main_dic.items():
             if 'collection' in attr and attr['collection'] == original_collection:
@@ -630,41 +748,6 @@ def _is_basic_type(s):
         return True
     return False
 
-def _get_all_db_name(schema_dic):
-    """
-    Helper function used to get all the database names in the yaml file
-
-    :param schema_dic: the dictionary that a yaml file is dumped
-    :type schema_dic: dict
-
-    :return: a list of all database names
-    :rtype: list
-    """
-    db_name_list = []
-    for db in schema_dic:
-        db_name_list.append(db)
-    return db_name_list
-
-def _get_all_collection_name_by_db(schema_dic, db):
-    """
-    Helper function used to get all the collection names under a certain database
-
-    :param schema_dic: the dictionary that a yaml file is dumped
-    :type schema_dic: dict
-
-    :param db: a certain database name
-    :type db: str
-
-    :return: a list of all collection names
-    :rtype: list
-    """
-    collection_name_list = []
-    if db not in schema_dic:
-        return collection_name_list
-    for c in schema_dic[db]:
-        collection_name_list.append(c)
-    return collection_name_list
-
 def _check_min_default_key(db_dict):
     """
     Helper function used to check if there are at least 3 defined default keys, which are 'wf', 'elog' and 'history_object'
@@ -685,81 +768,137 @@ def _check_min_default_key(db_dict):
         raise schema.SchemaError("wf, elog and history_object must be all defined as default key in a collection or as a collection name itself")
     return True
 
-def _is_valid_database_schema(dic, database_collection_schema):
+def _is_valid_schema(dic, schema_):
     """
-    Helper function used to validate all collections in a database schema dictionary
-    :param dic: a database schema dictionary
+    Helper function used to validate all collections in a schema dictionary
+    :param dic: a schema dictionary
     :type dic: dict
     
-    :param database_collection_schema: the defined schema used to validate a database collection
-    :type database_collection_schema: schema.Schema
+    :param schema_: the defined schema used to validate a database collection
+    :type schema_: schema.Schema
     
     :return: True if all collections pass the validation
     :rtype: bool
     """
     for collection in dic:
-        database_collection_schema.validate(dic[collection])
+        schema_.validate(dic[collection])
     return True
 
-def _is_valid_metadata_schema(dic, metadata_collection_schema):
+
+def _is_valid_database_schema_definition(dic, collection_name_list):
     """
-    Helper function used to validate all collections in a metadata schema dictionary
-    :param dic: a metadata schema dictionary
+    Helper function used to validate all attributes in a database schema definition dictionary
+    :param dic: a schema definition dictionary
     :type dic: dict
 
-    :param metadata_collection_schema: the defined schema used to validate a metadata collection
-    :type metadata_collection_schema: schema.Schema
-
-    :return: True if all collections pass the validation
-    :rtype: bool
-    """
-    for collection in dic:
-        metadata_collection_schema.validate(dic[collection])
-    return True
-
-def _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema):
-    """
-    Helper function used to validate all attribtes in a database collection schema dictionary
-    :param dic: a database collection schema dictionary
-    :type dic: dict
-
-    :param type_attribute_schema: the defined schema used to validate a type attribute
-    :type type_attribute_schema: schema.Schema
-
-    :param reference_attribute_schema: the defined schema used to validate a reference attribute
-    :type reference_attribute_schema: schema.Schema
+    :param collection_name_list: a list of collection name to be used for reference
+    :type collection_name_list: list
 
     :return: True if all attributes pass the validation
     :rtype: bool
-    """
+    """    
     for attr in dic:
-        if 'type' in dic[attr]:
-            dic[attr] = type_attribute_schema.validate(dic[attr])
+        if 'reference' in dic[attr]:
+            dic[attr] = _get_schema_definition_schema(collection_name_list, 'database', True).validate(dic[attr])
         else:
-            reference_attribute_schema.validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(collection_name_list, 'database', False).validate(dic[attr])
     return True
 
-def _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_attribute_schema):
+
+def _is_valid_metadata_schema_definition(dic, collection_name_list):
     """
-    Helper function used to validate all attribtes in a metadata collection schema dictionary
-    :param dic: a metadata collection schema dictionary
+    Helper function used to validate all attributes in a metadata schema definition dictionary
+    :param dic: a schema definition dictionary
     :type dic: dict
 
-    :param type_attribute_schema: the defined schema used to validate a type attribute
-    :type type_attribute_schema: schema.Schema
+    :param collection_name_list: a list of collection name to be used for reference
+    :type collection_name_list: list
 
-    :param metadata_attribute_schema: the defined schema used to validate a attribute that has collection
-    :type metadata_attribute_schema: schema.Schema
-    
-    :return: True if all collections pass the validation
+    :return: True if all attributes pass the validation
     :rtype: bool
-    """
+    """    
     for attr in dic:
-        if 'type' in dic[attr]:
-            dic[attr] = type_attribute_schema.validate(dic[attr])
+        if 'collection' in dic[attr]:
+            dic[attr] = _get_schema_definition_schema(collection_name_list, 'metadata', True).validate(dic[attr])
         else:
-            metadata_attribute_schema.validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(collection_name_list, 'metadata', False).validate(dic[attr])
     return True
+
+
+def _get_schema_definition_schema(collection_name_list, name, ref):
+    """
+    Helper function to get the schema for schema definitions
+
+    :param collection_name_list: a list of collection name to be used for reference
+    :type collection_name_list: list
+
+    :param name: the name of the schema, which can be "database" or "metadata"
+    :type name: str
+
+    :param ref: whether the schema definition uses a reference key
+    :type ref: bool
+
+    :return: the schema for valication
+    :rtype: schema.Schema
+    """
+    type_key = schema.And(str, lambda s: _is_basic_type(s))
+    type_required_schema = {
+        'type': type_key,
+    }
+    type_optional_schema = {
+        schema.Optional('type'): type_key,
+    }
+
+    constraint_key = schema.And(str, lambda s: s in [
+        'required', 'xref_key', 'normal', 'optional'])
+    constraint_schema = {
+        schema.Optional('constraint'): constraint_key
+    }
+    constraint_default_schema = {
+        schema.Optional('constraint', default='normal'): constraint_key
+    }
+
+    common_db_schema = {
+        # if collection_name_list is empty, the reference check will always pass. This is used in the add method of SchemaDefinition only.
+        schema.Optional('reference'): schema.And(str, lambda s: s in collection_name_list if collection_name_list else True),
+        schema.Optional('concept'): str,
+        # aliases can only be string or a list of string anything else will be converted automatically here
+        schema.Optional('aliases'): schema.Use(lambda s: [s] if type(s) is str else ([str(i) for i in s] if type(s) is list else str(s))),
+    }
+    common_md_schema = {
+        schema.Optional('collection'): schema.And(str, lambda s: s in collection_name_list if collection_name_list else True),
+        schema.Optional('concept'): str,
+        # aliases can only be string or a list of string anything else will be converted automatically here
+        schema.Optional('aliases'): schema.Use(lambda s: [s] if type(s) is str else ([str(i) for i in s] if type(s) is list else str(s))),
+        schema.Optional('readonly'): bool
+    }
+
+    if name == 'database':
+        if ref:
+            return schema.Schema(dict(
+                list(common_db_schema.items()) + 
+                list(type_optional_schema.items()) + 
+                list(constraint_schema.items())),
+                ignore_extra_keys=True)
+        else:
+            return schema.Schema(dict(
+                list(common_db_schema.items()) +
+                list(type_required_schema.items()) +
+                list(constraint_default_schema.items())),
+                ignore_extra_keys=True)
+    else:  # name == "metadata"
+        if ref:
+            return schema.Schema(dict(
+                list(common_md_schema.items()) +
+                list(type_optional_schema.items()) +
+                list(constraint_schema.items())),
+                ignore_extra_keys=True)
+        else:
+            return schema.Schema(dict(
+                list(common_md_schema.items()) +
+                list(type_required_schema.items()) +
+                list(constraint_default_schema.items())),
+                ignore_extra_keys=True)
 
 def _check_format(schema_dic):
     """
@@ -770,45 +909,25 @@ def _check_format(schema_dic):
     :return: `True` if the schema is valid, else return `False`
     :rtype: bool
     """
-    db_name_list = _get_all_db_name(schema_dic)
-    collection_name_list = []
-    for db_name in db_name_list:
-        collection_name_list += _get_all_collection_name_by_db(schema_dic, db_name)
-
-    type_attribute_schema = schema.Schema({
-        'type':schema.And(str, lambda s: _is_basic_type(s)),
-        schema.Optional('reference'):schema.And(str, lambda s: s in collection_name_list),
-        schema.Optional('concept'):str,
-        schema.Optional('aliases'):schema.Use(lambda s: [s] if type(s) is str else s),
-        schema.Optional('optional'):bool,
-        schema.Optional('readonly'):bool
-    }, ignore_extra_keys=True)
-    
-    reference_attribute_schema = schema.Schema({
-        'reference':schema.And(str, lambda s: s in collection_name_list),
-        schema.Optional('optional'):bool
-    }, ignore_extra_keys=True)
-    
-    metadata_attribute_schema = schema.Schema({
-        'collection':schema.And(str, lambda s: s in collection_name_list),
-        schema.Optional('readonly'):bool
-    }, ignore_extra_keys=True)
+    # Make sure Database and Metadata exist
+    schema.Schema({'Database': dict, 'Metadata': dict}).validate(schema_dic)
+    collection_name_list = schema_dic['Database'].keys()
     
     database_collection_schema = schema.Schema({
         schema.Optional('default'):str,
         schema.Optional('data_type'):str,
         schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
-        'schema':schema.And(dict, lambda dic: _is_valid_database_collection_schema(dic, type_attribute_schema, reference_attribute_schema))
+        'schema':schema.And(dict, lambda dic: _is_valid_database_schema_definition(dic, collection_name_list))
     }, ignore_extra_keys=True)
     
     metadata_collection_schema = schema.Schema({
-        'schema':schema.And(dict, lambda dic: _is_valid_metadata_colletion_schema(dic, type_attribute_schema, metadata_attribute_schema))
+        'schema':schema.And(dict, lambda dic: _is_valid_metadata_schema_definition(dic, collection_name_list))
     }, ignore_extra_keys=True)
     
     yaml_schema = schema.Schema({
-        'Database':schema.And(dict, schema.And(lambda dic: _is_valid_database_schema(dic, database_collection_schema),
+        'Database': schema.And(dict, schema.And(lambda dic: _is_valid_schema(dic, database_collection_schema),
                                                lambda dic: _check_min_default_key(dic))),
-        'Metadata':schema.And(dict, lambda dic: _is_valid_metadata_schema(dic, metadata_collection_schema)),
+        'Metadata': schema.And(dict, lambda dic: _is_valid_schema(dic, metadata_collection_schema)),
     }, ignore_extra_keys=True)
     
     yaml_schema.validate(schema_dic)
