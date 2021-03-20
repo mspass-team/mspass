@@ -246,6 +246,9 @@
 <div class="viewcode-block" id="SchemaDefinitionBase"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase">[docs]</a><span class="k">class</span> <span class="nc">SchemaDefinitionBase</span><span class="p">:</span>
     <span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">_required_keys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_xref_keys</span> <span class="o">=</span> <span class="p">[]</span>
+
 <div class="viewcode-block" id="SchemaDefinitionBase.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
@@ -259,12 +262,14 @@
 <span class="sd">        :type attr: dict</span>
 <span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;type is not defined for the new attribute&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr</span>
         <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">als</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;aliases&#39;</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">als</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">als</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xref_key&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SchemaDefinitionBase.add_alias"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.add_alias">[docs]</a>    <span class="k">def</span> <span class="nf">add_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">aliasname</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -313,9 +318,9 @@
 <span class="sd">        internal alias container such that the same schema object can be used</span>
 <span class="sd">        to convert the alias back.</span>
 
-<span class="sd">        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.</span>
-<span class="sd">        :type md: class:`mspasspy.ccore.utility.Metadata`</span>
+<span class="sd">        :param md: Data object to be altered. Normally a :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">            or :class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw :class:`mspasspy.ccore.utility.Metadata`.</span>
+<span class="sd">        :type md: :class:`mspasspy.ccore.utility.Metadata`</span>
 <span class="sd">        :param alias: a yaml file or a dict that have pairs of key:alias</span>
 <span class="sd">        :type alias: dict/str</span>
 
@@ -348,9 +353,9 @@
 <span class="sd">        defined by this object. Note that if the unique_name is already defined, it will</span>
 <span class="sd">        silently remove the alias only.</span>
 
-<span class="sd">        :param md: Data object to be altered. Normally a class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">            or class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw class:`mspasspy.ccore.utility.Metadata`.</span>
-<span class="sd">        :type md: class:`mspasspy.ccore.utility.Metadata`</span>
+<span class="sd">        :param md: Data object to be altered. Normally a :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">            or :class:`mspasspy.ccore.seismic.TimeSeries` but can be a raw :class:`mspasspy.ccore.utility.Metadata`.</span>
+<span class="sd">        :type md: :class:`mspasspy.ccore.utility.Metadata`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_alias</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
@@ -416,17 +421,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span></div>
 
-<div class="viewcode-block" id="SchemaDefinitionBase.is_optional"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_optional">[docs]</a>    <span class="k">def</span> <span class="nf">is_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Test if a key is optional to the schema</span>
-
-<span class="sd">        :param key: key to be tested</span>
-<span class="sd">        :type key: str</span>
-<span class="sd">        :return: `True` if the key is optional</span>
-<span class="sd">        :rtype: bool</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="s1">&#39;optional&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;optional&#39;</span><span class="p">]</span></div>
-
 <div class="viewcode-block" id="SchemaDefinitionBase.keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of all the unique keys defined.</span>
@@ -443,7 +437,7 @@
 <span class="sd">        :param key: The name that defines the attribute of interest</span>
 <span class="sd">        :type key: str</span>
 <span class="sd">        :return: type of the attribute associated with ``key``</span>
-<span class="sd">        :rtype: class:`type`</span>
+<span class="sd">        :rtype: :class:`type`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">tp</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">]:</span>
@@ -483,7 +477,80 @@
             <span class="k">return</span> <span class="n">aliasname</span>
         <span class="k">if</span> <span class="n">aliasname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="p">[</span><span class="n">aliasname</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">aliasname</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div></div>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">aliasname</span> <span class="o">+</span> <span class="s1">&#39; is not defined&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.required_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.required_keys">[docs]</a>    <span class="k">def</span> <span class="nf">required_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all the required keys in the current collection as a list</span>
+
+<span class="sd">        :return: type of data associated with the collection</span>
+<span class="sd">        :rtype: a :class:`list` of :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.xref_keys"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.xref_keys">[docs]</a>    <span class="k">def</span> <span class="nf">xref_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return all the xref keys in the current collection as a list</span>
+
+<span class="sd">        :return: type of data associated with the collection</span>
+<span class="sd">        :rtype: a :class:`list` of :class:`str`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.constraint"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.constraint">[docs]</a>    <span class="k">def</span> <span class="nf">constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a description of the constraint this attribute defines.</span>
+
+<span class="sd">        :param key: The name that defines the attribute of interest</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: A string with a terse description of the constraint this attribute defines</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_required"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_required">[docs]</a>    <span class="k">def</span> <span class="nf">is_required</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the constraint of the key is required to the schema</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the constraint of the key is required</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;required&#39;</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_xref_key"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_xref_key">[docs]</a>    <span class="k">def</span> <span class="nf">is_xref_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the constraint of the key is xref_key to the schema</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the constraint of the key is xref_key</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xref_key&#39;</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_normal"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_normal">[docs]</a>    <span class="k">def</span> <span class="nf">is_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the constraint of the key is normal to the schema</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the constraint of the key is normal</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;normal&#39;</span></div>
+
+<div class="viewcode-block" id="SchemaDefinitionBase.is_optional"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.SchemaDefinitionBase.is_optional">[docs]</a>    <span class="k">def</span> <span class="nf">is_optional</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the constraint of the key is optional to the schema</span>
+
+<span class="sd">        :param key: key to be tested</span>
+<span class="sd">        :type key: str</span>
+<span class="sd">        :return: `True` if the constraint of the key is optional</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;optional&#39;</span></div></div>
 
 <div class="viewcode-block" id="DatabaseSchema"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DatabaseSchema">[docs]</a><span class="k">class</span> <span class="nc">DatabaseSchema</span><span class="p">(</span><span class="n">SchemaBase</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -519,7 +586,7 @@
 <span class="sd">        :param name: The requested default collection</span>
 <span class="sd">        :type name: str</span>
 <span class="sd">        :return: the schema definition of the default collection</span>
-<span class="sd">        :rtype: class:`mspasspy.db.schema.DBSchemaDefinition`</span>
+<span class="sd">        :rtype: :class:`mspasspy.db.schema.DBSchemaDefinition`</span>
 <span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the name has no default defined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_dic</span><span class="p">:</span>
@@ -586,6 +653,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;schema&#39;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
@@ -606,8 +675,32 @@
 
             <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;aliases&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="n">key</span><span class="p">})</span>
+
+            <span class="k">if</span> <span class="s1">&#39;constraint&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xref_key&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        
         <span class="k">if</span> <span class="s1">&#39;data_type&#39;</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_type</span> <span class="o">=</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;data_type&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DBSchemaDefinition.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
+<span class="sd">        container is `dict` if attribute for name is already present it</span>
+<span class="sd">        will be silently replaced.</span>
+
+<span class="sd">        :param name: The name of the attribute to be added</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param attr: A dictionary that defines the property of the added attribute.</span>
+<span class="sd">            Note that the type must be defined.</span>
+<span class="sd">        :type attr: dict</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema_v</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">schema_v</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="n">SchemaDefinitionBase</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DBSchemaDefinition.reference"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.DBSchemaDefinition.reference">[docs]</a>    <span class="k">def</span> <span class="nf">reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -629,7 +722,7 @@
 <span class="sd">        If not recognized, it returns None.</span>
 
 <span class="sd">        :return: type of data associated with the collection</span>
-<span class="sd">        :rtype: class:`type`</span>
+<span class="sd">        :rtype: :class:`type`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;TimeSeries&#39;</span><span class="p">,</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">mspasspy</span><span class="o">.</span><span class="n">ccore</span><span class="o">.</span><span class="n">seismic</span><span class="o">.</span><span class="n">TimeSeries</span>
@@ -656,6 +749,8 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">schema_dic</span><span class="p">,</span> <span class="n">collection_str</span><span class="p">,</span> <span class="n">dbschema</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">[</span><span class="n">collection_str</span><span class="p">][</span><span class="s1">&#39;schema&#39;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;collection&#39;</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
@@ -673,7 +768,30 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiled_attr</span>
             <span class="c1"># have to use &quot;self._main_dic[key]&quot; instead of attr here because the dict is updated above</span>
             <span class="k">if</span> <span class="s1">&#39;aliases&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">item</span><span class="p">:</span><span class="n">key</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;aliases&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="n">key</span><span class="p">})</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_alias_dic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="p">{</span><span class="n">item</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;aliases&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="n">key</span><span class="p">})</span>
+            <span class="k">if</span> <span class="s1">&#39;constraint&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_required_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s1">&#39;constraint&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;xref_key&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_xref_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MDSchemaDefinition.add"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new entry to the definitions. Note that because the internal</span>
+<span class="sd">        container is `dict` if attribute for name is already present it</span>
+<span class="sd">        will be silently replaced.</span>
+
+<span class="sd">        :param name: The name of the attribute to be added</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :param attr: A dictionary that defines the property of the added attribute.</span>
+<span class="sd">            Note that the type must be defined.</span>
+<span class="sd">        :type attr: dict</span>
+<span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if type is not defined in attr</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema_v</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">schema_v</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="n">SchemaDefinitionBase</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MDSchemaDefinition.collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.schema.MDSchemaDefinition.collection">[docs]</a>    <span class="k">def</span> <span class="nf">collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -697,7 +815,7 @@
 <span class="sd">        :param collection: the name of the collection</span>
 <span class="sd">        :type collection: str</span>
 <span class="sd">        :param dbschema: the database schema used to set the attributes of the key.</span>
-<span class="sd">        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`</span>
+<span class="sd">        :type dbschema: :class:`mspasspy.db.schema.DatabaseSchema`</span>
 <span class="sd">        :raises mspasspy.ccore.utility.MsPASSError: if the key is not defined</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="p">:</span>
@@ -735,7 +853,7 @@
 <span class="sd">        :param new_collection: the name of the collection to be changed into</span>
 <span class="sd">        :type new_collection: str</span>
 <span class="sd">        :param dbschema: the database schema used to set the attributes of the key.</span>
-<span class="sd">        :type dbschema: class:`mspasspy.db.schema.DatabaseSchema`</span>
+<span class="sd">        :type dbschema: :class:`mspasspy.db.schema.DatabaseSchema`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_main_dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="s1">&#39;collection&#39;</span> <span class="ow">in</span> <span class="n">attr</span> <span class="ow">and</span> <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;collection&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">original_collection</span><span class="p">:</span>
@@ -821,41 +939,6 @@
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span>
 
-<span class="k">def</span> <span class="nf">_get_all_db_name</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to get all the database names in the yaml file</span>
-
-<span class="sd">    :param schema_dic: the dictionary that a yaml file is dumped</span>
-<span class="sd">    :type schema_dic: dict</span>
-
-<span class="sd">    :return: a list of all database names</span>
-<span class="sd">    :rtype: list</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_name_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">db</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">:</span>
-        <span class="n">db_name_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">db_name_list</span>
-
-<span class="k">def</span> <span class="nf">_get_all_collection_name_by_db</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to get all the collection names under a certain database</span>
-
-<span class="sd">    :param schema_dic: the dictionary that a yaml file is dumped</span>
-<span class="sd">    :type schema_dic: dict</span>
-
-<span class="sd">    :param db: a certain database name</span>
-<span class="sd">    :type db: str</span>
-
-<span class="sd">    :return: a list of all collection names</span>
-<span class="sd">    :rtype: list</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">collection_name_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">db</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">collection_name_list</span>
-    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">schema_dic</span><span class="p">[</span><span class="n">db</span><span class="p">]:</span>
-        <span class="n">collection_name_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">collection_name_list</span>
-
 <span class="k">def</span> <span class="nf">_check_min_default_key</span><span class="p">(</span><span class="n">db_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to check if there are at least 3 defined default keys, which are &#39;wf&#39;, &#39;elog&#39; and &#39;history_object&#39;</span>
@@ -876,81 +959,137 @@
         <span class="k">raise</span> <span class="n">schema</span><span class="o">.</span><span class="n">SchemaError</span><span class="p">(</span><span class="s2">&quot;wf, elog and history_object must be all defined as default key in a collection or as a collection name itself&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="k">def</span> <span class="nf">_is_valid_database_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">database_collection_schema</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_is_valid_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">schema_</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to validate all collections in a database schema dictionary</span>
-<span class="sd">    :param dic: a database schema dictionary</span>
+<span class="sd">    Helper function used to validate all collections in a schema dictionary</span>
+<span class="sd">    :param dic: a schema dictionary</span>
 <span class="sd">    :type dic: dict</span>
 <span class="sd">    </span>
-<span class="sd">    :param database_collection_schema: the defined schema used to validate a database collection</span>
-<span class="sd">    :type database_collection_schema: schema.Schema</span>
+<span class="sd">    :param schema_: the defined schema used to validate a database collection</span>
+<span class="sd">    :type schema_: schema.Schema</span>
 <span class="sd">    </span>
 <span class="sd">    :return: True if all collections pass the validation</span>
 <span class="sd">    :rtype: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
-        <span class="n">database_collection_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">collection</span><span class="p">])</span>
+        <span class="n">schema_</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">collection</span><span class="p">])</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="k">def</span> <span class="nf">_is_valid_metadata_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">metadata_collection_schema</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_is_valid_database_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to validate all collections in a metadata schema dictionary</span>
-<span class="sd">    :param dic: a metadata schema dictionary</span>
+<span class="sd">    Helper function used to validate all attributes in a database schema definition dictionary</span>
+<span class="sd">    :param dic: a schema definition dictionary</span>
 <span class="sd">    :type dic: dict</span>
 
-<span class="sd">    :param metadata_collection_schema: the defined schema used to validate a metadata collection</span>
-<span class="sd">    :type metadata_collection_schema: schema.Schema</span>
-
-<span class="sd">    :return: True if all collections pass the validation</span>
-<span class="sd">    :rtype: bool</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">collection</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
-        <span class="n">metadata_collection_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">collection</span><span class="p">])</span>
-    <span class="k">return</span> <span class="kc">True</span>
-
-<span class="k">def</span> <span class="nf">_is_valid_database_collection_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">type_attribute_schema</span><span class="p">,</span> <span class="n">reference_attribute_schema</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to validate all attribtes in a database collection schema dictionary</span>
-<span class="sd">    :param dic: a database collection schema dictionary</span>
-<span class="sd">    :type dic: dict</span>
-
-<span class="sd">    :param type_attribute_schema: the defined schema used to validate a type attribute</span>
-<span class="sd">    :type type_attribute_schema: schema.Schema</span>
-
-<span class="sd">    :param reference_attribute_schema: the defined schema used to validate a reference attribute</span>
-<span class="sd">    :type reference_attribute_schema: schema.Schema</span>
+<span class="sd">    :param collection_name_list: a list of collection name to be used for reference</span>
+<span class="sd">    :type collection_name_list: list</span>
 
 <span class="sd">    :return: True if all attributes pass the validation</span>
 <span class="sd">    :rtype: bool</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
-            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_attribute_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;reference&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">reference_attribute_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
     <span class="k">return</span> <span class="kc">True</span>
 
-<span class="k">def</span> <span class="nf">_is_valid_metadata_colletion_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">type_attribute_schema</span><span class="p">,</span> <span class="n">metadata_attribute_schema</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_is_valid_metadata_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function used to validate all attribtes in a metadata collection schema dictionary</span>
-<span class="sd">    :param dic: a metadata collection schema dictionary</span>
+<span class="sd">    Helper function used to validate all attributes in a metadata schema definition dictionary</span>
+<span class="sd">    :param dic: a schema definition dictionary</span>
 <span class="sd">    :type dic: dict</span>
 
-<span class="sd">    :param type_attribute_schema: the defined schema used to validate a type attribute</span>
-<span class="sd">    :type type_attribute_schema: schema.Schema</span>
+<span class="sd">    :param collection_name_list: a list of collection name to be used for reference</span>
+<span class="sd">    :type collection_name_list: list</span>
 
-<span class="sd">    :param metadata_attribute_schema: the defined schema used to validate a attribute that has collection</span>
-<span class="sd">    :type metadata_attribute_schema: schema.Schema</span>
-<span class="sd">    </span>
-<span class="sd">    :return: True if all collections pass the validation</span>
+<span class="sd">    :return: True if all attributes pass the validation</span>
 <span class="sd">    :rtype: bool</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
     <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;type&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
-            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">type_attribute_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;collection&#39;</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]:</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">metadata_attribute_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
+            <span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="n">attr</span><span class="p">])</span>
     <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">_get_schema_definition_schema</span><span class="p">(</span><span class="n">collection_name_list</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to get the schema for schema definitions</span>
+
+<span class="sd">    :param collection_name_list: a list of collection name to be used for reference</span>
+<span class="sd">    :type collection_name_list: list</span>
+
+<span class="sd">    :param name: the name of the schema, which can be &quot;database&quot; or &quot;metadata&quot;</span>
+<span class="sd">    :type name: str</span>
+
+<span class="sd">    :param ref: whether the schema definition uses a reference key</span>
+<span class="sd">    :type ref: bool</span>
+
+<span class="sd">    :return: the schema for valication</span>
+<span class="sd">    :rtype: schema.Schema</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">type_key</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">_is_basic_type</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+    <span class="n">type_required_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">type_key</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">type_optional_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">):</span> <span class="n">type_key</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">constraint_key</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s1">&#39;required&#39;</span><span class="p">,</span> <span class="s1">&#39;xref_key&#39;</span><span class="p">,</span> <span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="s1">&#39;optional&#39;</span><span class="p">])</span>
+    <span class="n">constraint_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;constraint&#39;</span><span class="p">):</span> <span class="n">constraint_key</span>
+    <span class="p">}</span>
+    <span class="n">constraint_default_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;constraint&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;normal&#39;</span><span class="p">):</span> <span class="n">constraint_key</span>
+    <span class="p">}</span>
+
+    <span class="n">common_db_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># if collection_name_list is empty, the reference check will always pass. This is used in the add method of SchemaDefinition only.</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;reference&#39;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span> <span class="k">if</span> <span class="n">collection_name_list</span> <span class="k">else</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;concept&#39;</span><span class="p">):</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="c1"># aliases can only be string or a list of string anything else will be converted automatically here</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;aliases&#39;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))),</span>
+    <span class="p">}</span>
+    <span class="n">common_md_schema</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;collection&#39;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span> <span class="k">if</span> <span class="n">collection_name_list</span> <span class="k">else</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;concept&#39;</span><span class="p">):</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="c1"># aliases can only be string or a list of string anything else will be converted automatically here</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;aliases&#39;</span><span class="p">):</span> <span class="n">schema</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">))),</span>
+        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;readonly&#39;</span><span class="p">):</span> <span class="nb">bool</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;database&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">common_db_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> 
+                <span class="nb">list</span><span class="p">(</span><span class="n">type_optional_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> 
+                <span class="nb">list</span><span class="p">(</span><span class="n">constraint_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
+                <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">common_db_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">type_required_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">constraint_default_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
+                <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># name == &quot;metadata&quot;</span>
+        <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">common_md_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">type_optional_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">constraint_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
+                <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">common_md_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">type_required_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">constraint_default_schema</span><span class="o">.</span><span class="n">items</span><span class="p">())),</span>
+                <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">_check_format</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -961,45 +1100,25 @@
 <span class="sd">    :return: `True` if the schema is valid, else return `False`</span>
 <span class="sd">    :rtype: bool</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">db_name_list</span> <span class="o">=</span> <span class="n">_get_all_db_name</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">)</span>
-    <span class="n">collection_name_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">db_name</span> <span class="ow">in</span> <span class="n">db_name_list</span><span class="p">:</span>
-        <span class="n">collection_name_list</span> <span class="o">+=</span> <span class="n">_get_all_collection_name_by_db</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">,</span> <span class="n">db_name</span><span class="p">)</span>
-
-    <span class="n">type_attribute_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
-        <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">_is_basic_type</span><span class="p">(</span><span class="n">s</span><span class="p">)),</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;reference&#39;</span><span class="p">):</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span><span class="p">),</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;concept&#39;</span><span class="p">):</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;aliases&#39;</span><span class="p">):</span><span class="n">schema</span><span class="o">.</span><span class="n">Use</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">s</span><span class="p">),</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;optional&#39;</span><span class="p">):</span><span class="nb">bool</span><span class="p">,</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;readonly&#39;</span><span class="p">):</span><span class="nb">bool</span>
-    <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
-    <span class="n">reference_attribute_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
-        <span class="s1">&#39;reference&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span><span class="p">),</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;optional&#39;</span><span class="p">):</span><span class="nb">bool</span>
-    <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
-    <span class="n">metadata_attribute_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
-        <span class="s1">&#39;collection&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span><span class="p">),</span>
-        <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;readonly&#39;</span><span class="p">):</span><span class="nb">bool</span>
-    <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Make sure Database and Metadata exist</span>
+    <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span><span class="s1">&#39;Database&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;Metadata&#39;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">})</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">)</span>
+    <span class="n">collection_name_list</span> <span class="o">=</span> <span class="n">schema_dic</span><span class="p">[</span><span class="s1">&#39;Database&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     
     <span class="n">database_collection_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">):</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;data_type&#39;</span><span class="p">):</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">schema</span><span class="o">.</span><span class="n">Optional</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">):</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">collection_name_list</span><span class="p">),</span>
-        <span class="s1">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_database_collection_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">type_attribute_schema</span><span class="p">,</span> <span class="n">reference_attribute_schema</span><span class="p">))</span>
+        <span class="s1">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_database_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">))</span>
     <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     <span class="n">metadata_collection_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
-        <span class="s1">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_metadata_colletion_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">type_attribute_schema</span><span class="p">,</span> <span class="n">metadata_attribute_schema</span><span class="p">))</span>
+        <span class="s1">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_metadata_schema_definition</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">collection_name_list</span><span class="p">))</span>
     <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     <span class="n">yaml_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Schema</span><span class="p">({</span>
-        <span class="s1">&#39;Database&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_database_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">database_collection_schema</span><span class="p">),</span>
+        <span class="s1">&#39;Database&#39;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">database_collection_schema</span><span class="p">),</span>
                                                <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_check_min_default_key</span><span class="p">(</span><span class="n">dic</span><span class="p">))),</span>
-        <span class="s1">&#39;Metadata&#39;</span><span class="p">:</span><span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_metadata_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">metadata_collection_schema</span><span class="p">)),</span>
+        <span class="s1">&#39;Metadata&#39;</span><span class="p">:</span> <span class="n">schema</span><span class="o">.</span><span class="n">And</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">dic</span><span class="p">:</span> <span class="n">_is_valid_schema</span><span class="p">(</span><span class="n">dic</span><span class="p">,</span> <span class="n">metadata_collection_schema</span><span class="p">)),</span>
     <span class="p">},</span> <span class="n">ignore_extra_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     <span class="n">yaml_schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema_dic</span><span class="p">)</span>
