@@ -17,15 +17,10 @@ include_directories(
   ${PROJECT_BINARY_DIR}/include
   ${PROJECT_SOURCE_DIR}/include)
 
-add_library(alg_basics STATIC ${sources_alg_basics})
-add_library(amplitudes STATIC ${sources_amplitudes})
-target_link_libraries(alg_basics PRIVATE utility seismic deconvolution ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES})
-target_link_libraries(amplitudes PRIVATE utility seismic ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+add_library(alg_basics OBJECT ${sources_alg_basics})
+add_library(amplitudes OBJECT ${sources_amplitudes})
 
 add_subdirectory(deconvolution)
 
-file(WRITE ${CMAKE_BINARY_DIR}/src/dummy.cc "")
-add_library(algorithms ${CMAKE_BINARY_DIR}/src/dummy.cc)
-target_link_libraries(algorithms PUBLIC alg_basics amplitudes deconvolution)
-
-install (TARGETS algorithms DESTINATION lib)
+#add_library(algorithms OBJECT $<TARGET_OBJECTS:alg_basics> $<TARGET_OBJECTS:amplitudes> $<TARGET_OBJECTS:deconvolution>)
+#target_link_libraries(algorithms PRIVATE seismic utility ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${GSL_LIBRARIES})

@@ -2,8 +2,7 @@ add_subdirectory(utility)
 add_subdirectory(seismic)
 add_subdirectory(algorithms)
 
-file(WRITE ${CMAKE_BINARY_DIR}/src/dummy.cc "")
-add_library(mspass ${CMAKE_BINARY_DIR}/src/dummy.cc)
-target_link_libraries(mspass PUBLIC seismic utility deconvolution algorithms)
+add_library(mspass $<TARGET_OBJECTS:seismic> $<TARGET_OBJECTS:utility> $<TARGET_OBJECTS:alg_basics> $<TARGET_OBJECTS:amplitudes> $<TARGET_OBJECTS:deconvolution>)
+target_link_libraries(mspass PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${YAML_CPP_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
 
 install (TARGETS mspass DESTINATION lib)

@@ -7,85 +7,97 @@ Database:
         type: string
         concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
         aliases: [channel, KCMPNM, channel.chan, wfdisc.chan]
+        constraint: normal
       <<: &wf_TimeSeries
         _id:
           type: ObjectID
           concept: ObjectId used to define a data object
+          constraint: required
         npts:
           type: int
           concept: Number of data samples
           aliases: [nsamp, wfdisc.nsamp]
+          constraint: required
         delta:
           type: double
           concept: Data sample interval in seconds
           aliases: [dt]
+          constraint: required
         sampling_rate:
           type: double
           concept: Data sampling frequency in Hz=1/s
-          optional: true
+          constraint: optional
         starttime:
           type: double
           concept: Time of first sample of data (epoch time or relative to some other time mark)
           aliases: [t0, time]
+          constraint: required
         starttime_shift:
           type: double
           concept:  Time shift applied to define relative time of 0.0
           aliases:  t0shift
+          constraint: required
         utc_convertible:
           type:  bool
           concept:  When true starttime_shift can be used to convert relative time to UTC.
+          constraint: required
         time_standard:
           type: string
           concept: Defines time standard for meaning of t0 (default should be UTC)
+          constraint: required
         calib:
           type: double
           concept: Nominal conversion factor for changing sample data to ground motion units.
+          constraint: normal
         storage_mode:
           type: string
           concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
+          constraint: required
         dir:
           type: string
           concept: Directory path to an external file (always used with dfile)
           aliases: [file.dir, wfdisc.dir, wfprocess.dir]
-          optional: true
+          constraint: optional
         dfile:
           type: string
           concept: External data file name.
           aliases: [file.dfile, wfdisc.dfile, wfprocess.dfile]
-          optional: true
+          constraint: optional
         foff:
           type: int
           concept: Offset in bytes from beginning of a file to first data sample.
           aliases: [file.foff, wfdisc.foff, wfprocess.foff]
-          optional: true
+          constraint: optional
         url:
           type: string
           concept: Url to external data file.
-          optional: true
+          constraint: optional
         net:
           type: string
           concept: network code (net component of SEED net:sta:chan)
           aliases: [network, site.net, channel.net, wfdisc.net, site_net]
+          constraint: normal
         sta:
           type: string
           concept: station code assigned to a spot on Earth (sta component of SEED net:sta:chan)
           aliases: [station, site.sta, channel.sta, wfdisc.sta, KSTNM]
+          constraint: normal
         loc:
           type: string
           concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
           aliases: [location, site.loc, channel.loc]
-          optional: true
+          constraint: optional
         gridfs_id:
           type: ObjectID
           concept: The _id of data file in the fs.files collection.
-          optional: true
+          constraint: optional
         history_object_id:
           reference: history_object
-          optional: true
+          constraint: xref_key
         elog_id:
           type: list
           reference: elog
-          optional: true
+          constraint: xref_key
 
   wf_Seismogram:
     data_type: Seismogram
@@ -94,34 +106,39 @@ Database:
       tmatrix:
         type: list
         concept: Three-component data's transformation matrix
+        constraint: required
   
   history_object:
     schema:
       _id:
         type: string
         concept: UUID used to define an unique entry in history collection.
+        constraint: required
       nodedata:
         type: bytes
         concept: serialized content of ProcessingHistory.
+        constraint: required
 
   elog:
     schema:
       _id:
         type: ObjectID
         concept: ObjectID used to define an unique entry in elog collection.
+        constraint: required
       logdata:
         type: list
         concept: a list of LogData.
+        constraint: required
       wf_Seismogram_id:
         reference: wf_Seismogram
-        optional: true
+        constraint: xref_key
       wf_TimeSeries_id:
         reference: wf_TimeSeries
-        optional: true
+        constraint: xref_key
       gravestone:
         type: dict
         concept: a copy of the Metadata of a dead object.
-        optional: true
+        constraint: optional
 
 
 Metadata:
