@@ -30,8 +30,6 @@ from mspasspy.ccore.utility import (Metadata,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-from mspasspy.util.decorators import mspass_func_wrapper_global_history
-
 
 def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None, 
                           format='dask', spark_context=None, data_tag=None):

@@ -26,7 +26,6 @@ from helper import (get_live_seismogram,
                     get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 from mspasspy.global_history.manager import GlobalHistoryManager
-from mspasspy.ccore.utility import MsPASSError
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
 from mspasspy.reduce import stack
@@ -50,36 +49,27 @@ def dask_reduce(input, manager):
     res = ddb.mspass_reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'), global_history=manager)
     return res.compute()
 
-def spark_reduce(input, sc, manager):
+def spark_reduce(input, manager):
+    appName = 'mspass-test'
+    master = 'local'
+    conf = SparkConf().setAppName(appName).setMaster(master)
+    sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
-    # zero = get_live_timeseries()
-    # zero.data = DoubleVector(np.zeros(255))
-    res = data.mspass_reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'), global_history=manager)
+    res = data.mspass_reduce(lambda a, b: stack(a, b, preserve_history=True, instance='2'), global_history=manager)
     return res
 
 class TestManager():
 
     def setup_class(self):
         self.client = Client('localhost')
-        self.db = Database(self.client, 'test_database')
+        db = Database(self.client, 'test_manager')
 
-        self.manager = GlobalHistoryManager(self.client, 'test_manager', 'test_job', collection='history')
+        self.manager = GlobalHistoryManager(db, 'test_job', collection='history')
 
     def test_init(self):
-        with pytest.raises(MsPASSError, match="job_name should be a string but <class 'list'> is found."):
-            GlobalHistoryManager(self.client, 'test_manager', [], collection='history')
-        
-        with pytest.raises(MsPASSError, match="database_name should be a string but <class 'list'> is found."):
-            GlobalHistoryManager(self.client, [], 'test_job', collection='history')
-
-        with pytest.raises(MsPASSError, match="collection should be a string but <class 'list'> is found."):
-            GlobalHistoryManager(self.client, 'test_manager', 'test_job', collection=[])
-
         assert self.manager.job_name == 'test_job'
-        assert self.manager.client == self.client
-        assert self.manager.database_name == 'test_manager'
-        assert not self.manager.schema
         assert self.manager.collection == 'history'
+        assert self.manager.history_db.name == 'test_manager'
 
     def test_logging(self):
         alg_id = ObjectId()
@@ -102,22 +92,90 @@ class TestManager():
         spark_res = spark_map(l, self.manager)
 
         manager_db = Database(self.client, 'test_manager')
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 1
         res = manager_db['history'].find_one({'job_name': self.manager.job_name})
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'signals.filter'
         assert res['parameters'] == 'ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance=\'0\''
+        spark_alg_id = res['alg_id']
 
         # test mspass_map for dask
-        manager_db['history'].delete_many({})
-        spark_res = dask_map(l, self.manager)
+        dask_res = dask_map(l, self.manager)
 
-        manager_db = Database(self.client, 'test_manager')
-        res = manager_db['history'].find_one({'job_name': self.manager.job_name})
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 2
+        assert manager_db['history'].count_documents({'alg_name': 'filter'}) == 1
+        res = manager_db['history'].find_one({'alg_name': 'filter'})
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'filter'
-        assert res['parameters'] == "bandpass {'freqmin': 1, 'freqmax': 5, 'preserve_history': True, 'instance': '0'}"
+        assert res['parameters'] == "bandpass,freqmin=1,freqmax=5,preserve_history=True,instance=0"
+        # different alg -> different alg_id
+        assert not res['alg_id'] == spark_alg_id
+        dask_alg_id = res['alg_id']
 
+        # same alg + parameters combination -> same alg_id
+        dask_res = dask_map(l, self.manager)
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 3
+        assert manager_db['history'].count_documents({'alg_id': dask_alg_id}) == 2
+        docs = manager_db['history'].find({'alg_id': dask_alg_id})
+        doc1 = docs[0]
+        doc2 = docs[1]
+        assert not doc1['time'] == doc2['time']
+        assert doc1['job_id'] == doc2['job_id']
+        assert doc1['job_name'] == doc2['job_name']
+        assert doc1['alg_name'] == doc2['alg_name']
+        assert doc1['parameters'] == doc2['parameters']
+
+
+    def test_mspass_reduce(self):
+        l = [get_live_timeseries() for i in range(5)]
         # test mspass_reduce for spark
+        spark_res = spark_reduce(l, self.manager)
+
+        manager_db = Database(self.client, 'test_manager')
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 4
+        assert manager_db['history'].count_documents({'alg_name': 'stack'}) == 1
+        res = manager_db['history'].find_one({'alg_name': 'stack'})
+        assert res['job_id'] == self.manager.job_id
+        assert res['job_name'] == self.manager.job_name
+        assert res['alg_name'] == 'stack'
+        assert res['parameters'] == 'a, b, preserve_history=True, instance=\'2\''
+        spark_alg_id = res['alg_id']
+
+        # test mspass_reduce for dask
+        dask_res = dask_reduce(l, self.manager)
+
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 5
+        assert manager_db['history'].count_documents({'alg_name': 'stack'}) == 2
+        assert manager_db['history'].count_documents({'alg_id': spark_alg_id}) == 1
         
+        docs = manager_db['history'].find({'alg_name': 'stack'})
+        for doc in docs:
+            if doc['alg_id'] == spark_alg_id:
+                continue
+            res = doc
+        assert res['job_id'] == self.manager.job_id
+        assert res['job_name'] == self.manager.job_name
+        assert res['alg_name'] == 'stack'
+        assert res['parameters'] == 'a, b, preserve_history=True, instance=\'3\''
+        # different alg -> different alg_id
+        assert not res['alg_id'] == spark_alg_id
+        dask_alg_id = res['alg_id']
+
+        # same alg + parameters combination -> same alg_id
+        dask_res = dask_reduce(l, self.manager)
+        assert manager_db['history'].count_documents({'job_name': self.manager.job_name}) == 6
+        assert manager_db['history'].count_documents({'alg_name': 'stack'}) == 3
+        assert manager_db['history'].count_documents({'alg_id': dask_alg_id}) == 2
+        docs = manager_db['history'].find({'alg_id': dask_alg_id})
+        doc1 = docs[0]
+        doc2 = docs[1]
+        assert not doc1['time'] == doc2['time']
+        assert doc1['job_id'] == doc2['job_id']
+        assert doc1['job_name'] == doc2['job_name']
+        assert doc1['alg_name'] == doc2['alg_name']
+        assert doc1['parameters'] == doc2['parameters']
+
+        # clean up
+        manager_db['history'].delete_many({})

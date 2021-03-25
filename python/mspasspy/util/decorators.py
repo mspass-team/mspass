@@ -5,8 +5,10 @@ from mspasspy.util.converter import (Stream2Seismogram,
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
 from dill.source import getsource
+from bson.objectid import ObjectId
 
 
 @decorator
@@ -467,10 +469,23 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
 @decorator
 def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):
     if global_history:
+        if not isinstance(global_history, GlobalHistoryManager):
+            raise TypeError("only an object with the type GlobalHistoryManager should be passes as an argument as global_history.")
+
         alg_name = func.__name__
-        alg_id = global_history.new_alg_id()
-        parameters = getsource(func)
+        # get the whole map algorithm string
+        alg_string = getsource(func)
+        # extract parameters
+        args_str = ",".join(f"{value}" for value in args)
+        kwargs_str = ",".join(f"{key}={value}" for key, value in kwargs.items())
+        parameters = args_str
+        if kwargs_str:
+            parameters += "," + kwargs_str
+        
+        # get the alg_id if exists, else create a new one
+        alg_id = global_history.get_alg_id(alg_name, parameters)
+        if not alg_id:
+            alg_id = ObjectId()
         global_history.logging(alg_name, alg_id, parameters)
-        return func(*args, **kwargs)
-    else:
-        return func(*args, **kwargs)
+    
+    return func(*args, **kwargs)

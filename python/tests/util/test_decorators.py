@@ -5,6 +5,9 @@ import numpy as np
 
 from mspasspy.ccore.seismic import (Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble)
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
+from mspasspy.global_history.manager import GlobalHistoryManager
+from mspasspy.db.database import Database
+from mspasspy.db.client import Client
 
 # module to test
 sys.path.append("python/tests")
@@ -19,7 +22,8 @@ from decorators import (mspass_func_wrapper,
                         seismogram_ensemble_as_stream,
                         mspass_reduce_func_wrapper,
                         seismogram_copy_helper,
-                        timeseries_copy_helper)
+                        timeseries_copy_helper,
+                        mspass_func_wrapper_global_history)
 import logging_helper
 from helper import (get_live_seismogram,
                     get_live_timeseries,
@@ -355,6 +359,28 @@ def test_copy_helpers():
     seis2.dt = 1 / 255
     seismogram_copy_helper(seis1, seis2)
     assert seis1.dt == 1 / 255
+
+@mspass_func_wrapper_global_history
+def dummy_global_history_func(array, *args, mode='promiscuous', global_history=None, **kwargs):
+    array.append('test')
+
+def test_mspass_func_wrapper_global_history():
+    array = []
+    client = Client('localhost')
+    db = Database(client, 'test_decorator')
+    db['history'].delete_many({})
+
+    manager = GlobalHistoryManager(db, 'test_decorator_job', collection='history')
+    dummy_global_history_func(array, mode='promiscuous', global_history=manager)
+
+    assert array[0] == 'test'
+    # check record in the manager
+    assert db['history'].count_documents({'job_name': 'test_decorator_job'}) == 1
+    res = db['history'].find_one({'job_name': 'test_decorator_job'})
+    assert res['job_id'] == manager.job_id
+    assert res['job_name'] == manager.job_name
+    assert res['alg_name'] == 'dummy_global_history_func'
+    assert res['parameters'] == '[],mode=promiscuous'
 
 if __name__ == "__main__":
     test_copy_helpers()
