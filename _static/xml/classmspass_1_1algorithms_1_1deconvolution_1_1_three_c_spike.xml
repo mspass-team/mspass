@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::ThreeCSpike</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ThreeCSpike::col</definition>
+        <argsstring></argsstring>
+        <name>col</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The column position where this spike should be placed in parent three component dmatrix where time is the column field </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="25" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::ThreeCSpike::u[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>u</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This holds the amplitude of this spike as three components </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="27" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::ThreeCSpike::amp</definition>
+        <argsstring></argsstring>
+        <name>amp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>L2 norm of u savd for efficiency to avoid repeated calculations </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="29" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</definition>
+        <argsstring>(mspass::utility::dmatrix &amp;d, int k)</argsstring>
+        <name>ThreeCSpike</name>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>k</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="35" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc" bodystart="9" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a06623d666c1d41e52dbbfa4b539d803d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ThreeCSpike::ThreeCSpike</definition>
+        <argsstring>(const ThreeCSpike &amp;parent)</argsstring>
+        <name>ThreeCSpike</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Copy consructor. Could be defaulted, I think, but best to create it explicitly. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="38" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc" bodystart="21" bodyend="26"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" compoundref="_general_iter_decon_8h" startline="29">amp</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" compoundref="_general_iter_decon_8h" startline="25">col</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" compoundref="_general_iter_decon_8h" startline="27">u</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa8bdeef42c27a659671ac313eaafc116" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
+        <definition>ThreeCSpike &amp; mspass::algorithms::deconvolution::ThreeCSpike::operator=</definition>
+        <argsstring>(const ThreeCSpike &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Makign sure operator= is also essential be sure STL containers work correctly </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="41" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc" bodystart="27" bodyend="36"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" compoundref="_general_iter_decon_8h" startline="29">amp</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" compoundref="_general_iter_decon_8h" startline="25">col</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" compoundref="_general_iter_decon_8h" startline="27">u</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="21" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="20" bodyend="42"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a33bc82ddbebf5be8781c4833bd46b44d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>amp</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aec8775250f7d5d81b914cd1c1c4ebeec" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>col</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa8bdeef42c27a659671ac313eaafc116" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a4fd05cb28f3af9c4e934413e4de4f80c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>ThreeCSpike</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1a06623d666c1d41e52dbbfa4b539d803d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>ThreeCSpike</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike_1aa4b4869936d07d25a3078cdd52cb41e4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ThreeCSpike</scope><name>u</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

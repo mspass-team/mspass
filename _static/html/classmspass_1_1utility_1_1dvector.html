@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -195,7 +202,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Default constructor creates an empty vector. </p>
-
+<div class="fragment"><div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;:<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(){};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="af7a725c9b60712cdec20fd96e67db537"></a>
@@ -222,7 +230,8 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Create a (zero initialized) vector of length nrv. </p>
-
+<div class="fragment"><div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;: <a class="code" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>(nrv,1){};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ae281fd4808613c838195d34339212e56"></a>
@@ -241,7 +250,13 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Copy constructor. </p>
-
+<div class="fragment"><div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;{</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    ncc=1;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    nrr=other.nrr;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    length=other.length;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  ary=other.ary;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -261,7 +276,12 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Extract component rowindex. </p>
-
+<div class="fragment"><div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;{</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="keywordflow">if</span> (rowindex&gt;=nrr)</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="keywordflow">throw</span> dmatrix_index_error(nrr,1,rowindex,1);</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordflow">return</span> (ary[rowindex]);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}       </div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a64bc0a75cb80e934fd48ea9879482907"></a>
@@ -280,7 +300,17 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-
+<div class="fragment"><div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;{</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span> != &amp;other)</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        ncc=1;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        nrr=other.nrr;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        length=other.length;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                ary=other.ary;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    } </div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Friends And Related Function Documentation</h2>
@@ -333,7 +363,21 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;{</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordtype">size_t</span> i;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  <span class="keywordtype">size_t</span> nrx1=x1.rows();</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="keywordtype">size_t</span> ncx1=x1.columns();</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="keywordtype">size_t</span> nrb=<span class="keyword">const_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a>&amp;<span class="keyword">&gt;</span>(b).<a class="code" href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">rows</a>();</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="keywordflow">if</span>(ncx1!=nrb)</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">throw</span> dmatrix_size_error(nrx1, ncx1, nrb, 1);</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a> prod(nrx1);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="keywordflow">for</span>(i=0;i&lt;nrx1;i++)</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        prod(i)=ddot(nrb,</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;            <span class="keyword">const_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">dmatrix</a>&amp;<span class="keyword">&gt;</span>(x1).get_address(i,0),nrx1,</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;            <span class="keyword">const_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">dvector</a>&amp;<span class="keyword">&gt;</span>(b).get_address(0,0),1);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keywordflow">return</span> prod;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -341,6 +385,9 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>ncc</b></td></tr>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1dvector_html_a8d6c8cc42ead0feea6d195ac689aed54"><div class="ttname"><a href="classmspass_1_1utility_1_1dvector.html#a8d6c8cc42ead0feea6d195ac689aed54">mspass::utility::dvector::dvector</a></div><div class="ttdeci">dvector()</div><div class="ttdef"><b>Definition:</b> dmatrix.h:270</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_ae6bfdbc8f954f4d5340baa7e02975fb1"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#ae6bfdbc8f954f4d5340baa7e02975fb1">mspass::utility::dmatrix::dmatrix</a></div><div class="ttdeci">dmatrix()</div><div class="ttdef"><b>Definition:</b> dmatrix.cc:8</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1dmatrix_html_a178f65f7f0efb2c99980c8c81cf71bca"><div class="ttname"><a href="classmspass_1_1utility_1_1dmatrix.html#a178f65f7f0efb2c99980c8c81cf71bca">mspass::utility::dmatrix::rows</a></div><div class="ttdeci">size_t rows() const</div><div class="ttdef"><b>Definition:</b> dmatrix.cc:228</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

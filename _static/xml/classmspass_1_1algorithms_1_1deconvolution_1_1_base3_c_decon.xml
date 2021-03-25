@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>mspass::algorithms::deconvolution::Base3CDecon</compoundname>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::CNR3CDecon</derivedcompoundref>
+    <includes refid="_c_n_r3_c_decon_8h" local="no">CNR3CDecon.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a07131ead382078d283cc93614ca14a0b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::algorithms::deconvolution::Base3CDecon::~Base3CDecon</definition>
+        <argsstring>()</argsstring>
+        <name>~Base3CDecon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="69" column="13" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a27c19849be8b17f85d1d6807786da11c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
+        <definition>virtual mspass::seismic::Seismogram mspass::algorithms::deconvolution::Base3CDecon::process</definition>
+        <argsstring>()=0</argsstring>
+        <name>process</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a048f73981dd0c6baf93fe4e6126672aa">process</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="81" column="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>virtual mspass::seismic::TimeSeries mspass::algorithms::deconvolution::Base3CDecon::actual_output</definition>
+        <argsstring>()=0</argsstring>
+        <name>actual_output</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c">actual_output</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>\brif Return the actual output of the deconvolution operator.</para>
+<para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="88" column="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>virtual mspass::seismic::TimeSeries mspass::algorithms::deconvolution::Base3CDecon::inverse_wavelet</definition>
+        <argsstring>(double)=0</argsstring>
+        <name>inverse_wavelet</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1b2f893beb6c678f31d42ca579d539f3">inverse_wavelet</reimplementedby>
+        <param>
+          <type>double</type>
+        </param>
+        <briefdescription>
+<para>Return a FIR represention of the inverse filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="95" column="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>virtual mspass::utility::Metadata mspass::algorithms::deconvolution::Base3CDecon::QCMetrics</definition>
+        <argsstring>()=0</argsstring>
+        <name>QCMetrics</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0">QCMetrics</reimplementedby>
+        <briefdescription>
+<para>Return appropriate quality measures. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="100" column="39"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Absract base class for algorithms handling full 3C data. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::CNR3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::Base3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon"/>
+      </node>
+    </inheritancegraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="67" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="66" bodyend="101"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::Base3CDecon</scope><name>actual_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::Base3CDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a27c19849be8b17f85d1d6807786da11c" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::Base3CDecon</scope><name>process</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d" prot="public" virt="pure-virtual"><scope>mspass::algorithms::deconvolution::Base3CDecon</scope><name>QCMetrics</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a07131ead382078d283cc93614ca14a0b" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::Base3CDecon</scope><name>~Base3CDecon</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -182,6 +189,17 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="fragment"><div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    std::string pretty_name(boost::core::demangle(Texpected));</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    ss&lt;&lt;<span class="stringliteral">&quot;Error trying to extract Metadata with key=&quot;</span>&lt;&lt;key&lt;&lt;std::endl</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;No value associated with this key is set in Metadata object&quot;</span>&lt;&lt;std::endl</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;Expected an entry of type=&quot;</span>&lt;&lt;pretty_name&lt;&lt;std::endl;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=ss.str();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=ErrorSeverity::Suspect;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  };</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a>.</p>
 
 </div>
 </div>
@@ -233,6 +251,20 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Constructor called when type requested does not match contents. </p>
 <p>This implementation uses a pickle style map container where the contents of the map can by any type. We use boost::any to provide sanity checks on types. This is creates the error message thrown when the type of the return does not match the type requested. </p>
+<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    ss &lt;&lt; <span class="stringliteral">&quot;Error in Metadata get method.   Type mismatch in attem to get &quot;</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;data with key=&quot;</span>&lt;&lt;key&lt;&lt;std::endl</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;boost::any bad_any_cast wrote this message:  &quot;</span>&lt;&lt;std::endl</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      &lt;&lt; boostmessage&lt;&lt;std::endl;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    std::string name_e(boost::core::demangle(Texpected));</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    ss &lt;&lt; <span class="stringliteral">&quot;Trying to convert to data of type=&quot;</span>&lt;&lt;name_e&lt;&lt;std::endl;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    std::string name_a(boost::core::demangle(Tactual));</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    ss &lt;&lt; <span class="stringliteral">&quot;Actual entry has type=&quot;</span>&lt;&lt;name_a&lt;&lt;std::endl;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">message</a>=ss.str();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">badness</a>=ErrorSeverity::Suspect;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  };</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a>, and <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a>.</p>
 
 </div>
 </div>
@@ -240,6 +272,8 @@ Additional Inherited Members</h2></td></tr>
 <li>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/<a class="el" href="_metadata_8h_source.html">Metadata.h</a></li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_af808615110822967a251108b20708f51"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#af808615110822967a251108b20708f51">mspass::utility::MsPASSError::badness</a></div><div class="ttdeci">ErrorSeverity badness</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:116</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html_a47e9d74154f088f38fd7e5219abc81f5"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html#a47e9d74154f088f38fd7e5219abc81f5">mspass::utility::MsPASSError::message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:109</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -139,7 +146,8 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Default constructor.</p>
 <p>The default constructor is a pure placeholder that does nothing. Result is a null namespace mapper. </p>
-
+<div class="fragment"><div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a8170c188877f4dac1720d277499c0047"></a>
@@ -252,7 +260,12 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-
+<div class="fragment"><div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    itoe=parent.itoe;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    etoi=parent.etoi;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    imdtypemap=parent.imdtypemap;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -272,7 +285,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get external name for attribute with internal name key. </p>
-
+<div class="fragment"><div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;{</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    map&lt;string,string&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    iptr=itoe.find(key);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordflow">if</span>(iptr==itoe.end())</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;AttribureCrossReference::external:  &quot;</span>)</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;                + <span class="stringliteral">&quot;Cannot find attribute &quot;</span>+key</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                + <span class="stringliteral">&quot; in internal to external  namespace map&quot;</span>);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordflow">return</span>(iptr-&gt;second);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a19789014f1041b64582b6b565913c8de"></a>
@@ -291,7 +313,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the set of external names defined by this object.</p>
 <p>Returns an std::set container of strings that are the external names defined by this object. </p>
-
+<div class="fragment"><div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;{</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  map&lt;string,string&gt;::const_iterator mptr;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  set&lt;string&gt; keys;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keywordflow">for</span>(mptr=etoi.begin();mptr!=etoi.end();++mptr)</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  {</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    keys.insert(mptr-&gt;first);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  }</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keywordflow">return</span> keys;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a2264349fe7d2093900fa9b56ef84b96b"></a>
@@ -310,7 +341,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get internal name for attribute with external name key. </p>
-
+<div class="fragment"><div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;{</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    map&lt;string,string&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    iptr=etoi.find(key);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">if</span>(iptr==etoi.end())</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;AttribureCrossReference::internal:  &quot;</span>)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                + <span class="stringliteral">&quot;Cannot find attribute &quot;</span>+key</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                + <span class="stringliteral">&quot; in external to internal namespace map&quot;</span>);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">return</span>(iptr-&gt;second);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a33b5a77e159f3e114bbfccb24e3fff61"></a>
@@ -329,7 +369,16 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the set of internal names defined by this object.</p>
 <p>Returns an std::set container of strings that are the internal names defined by this object. </p>
-
+<div class="fragment"><div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;{</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  map&lt;string,string&gt;::const_iterator mptr;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  set&lt;string&gt; keys;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordflow">for</span>(mptr=itoe.begin();mptr!=itoe.end();++mptr)</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  {</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    keys.insert(mptr-&gt;first);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  }</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <span class="keywordflow">return</span> keys;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a619f37e593d5d259ec6cafed2eed1aea"></a>
@@ -348,7 +397,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
-
+<div class="fragment"><div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;{</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;parent)</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        itoe=parent.itoe;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        etoi=parent.etoi;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        imdtypemap=parent.imdtypemap;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a0d587eb08b5be753d7e0087bef6d61f4"></a>
@@ -385,7 +443,11 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;{</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    itoe.insert(pair&lt;string,string&gt;(i,e));</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    etoi.insert(pair&lt;string,string&gt;(e,i));</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a6a15859017c7559a06b6b38b1045bef7"></a>
@@ -403,7 +465,11 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Return number of entries in the cross reference map. </p>
-
+<div class="fragment"><div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;{</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="comment">// Assume the two maps are the same size</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordflow">return</span>(itoe.size());</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a546084d7cd4b9369ee7db723c3629422"></a>
@@ -422,7 +488,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get type information for attribute with internal name key. </p>
-
+<div class="fragment"><div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;{</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    map&lt;string,MDtype&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    iptr=imdtypemap.find(key);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="keywordflow">if</span>(iptr==imdtypemap.end())</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;AttributeCrossReference::type:  &quot;</span>)</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                + <span class="stringliteral">&quot;Cannot find attribute &quot;</span>+key</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;                + <span class="stringliteral">&quot; in type definitions&quot;</span>);</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">return</span>(iptr-&gt;second);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -430,6 +505,7 @@ Public Member Functions</h2></td></tr>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeCrossReference.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

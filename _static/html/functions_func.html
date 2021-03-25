@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -71,6 +78,16 @@ $(function() {
 <li>accumulate()
 : <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#afc16a9d2c81e0fce08669573ffa8d741">mspass::utility::ProcessingHistory</a>
 </li>
+<li>actual_output()
+: <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon.html#aa7d5bfc6e1adfc1bd7af1606bebddf86">mspass::algorithms::deconvolution::Base3CDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a0b7f51d901d32ef5a08e8d0de69f666c">mspass::algorithms::deconvolution::CNR3CDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon.html#a42ff385ce109add3972d5a8f6186878e">mspass::algorithms::deconvolution::GeneralIterDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon.html#ab455f00f32185381de65f1e399d185ea">mspass::algorithms::deconvolution::LeastSquareDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#a435c55ed82fb753b3a6d6874c90e7a59">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon.html#a9eb03c46506f2a8960a16d74d3068a5e">mspass::algorithms::deconvolution::MultiTaperXcorDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon.html#a84f320ad48e8bfc9c292f8dde33c0593">mspass::algorithms::deconvolution::ScalarDecon</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon.html#a4eca007bc2d8ab0236e9deebeb1a1f8c">mspass::algorithms::deconvolution::WaterLevelDecon</a>
+</li>
 <li>add()
 : <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a555a85e15897c780964a7e4f7018dca6">mspass::utility::MetadataDefinitions</a>
 </li>
@@ -95,17 +112,27 @@ $(function() {
 <li>aliastables()
 : <a class="el" href="classmspass_1_1utility_1_1_attribute_map.html#a5b7ec0194d2f25a916efd5f9d75f82ac">mspass::utility::AttributeMap</a>
 </li>
+<li>all_actual_outputs()
+: <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#afa7fbfa50708b7d879fdc19c4f63d636">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>
+</li>
+<li>all_inverse_wavelets()
+: <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#a8f24a2b7f65adaacc908e3486215e2a1">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>
+</li>
+<li>all_rfestimates()
+: <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon.html#a0cc2849e6de3afcb14caa685ec727ffe">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</a>
+</li>
 <li>amplitude()
 : <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#abbfb81f3ad4a3f0a1488b869a60148a2">mspass::seismic::PowerSpectrum</a>
 </li>
 <li>AntelopePf()
-: <a class="el" href="classmspass_1_1utility_1_1_antelope_pf.html#a35df43d52aca279262f4cb672cfe13ee">mspass::utility::AntelopePf</a>
+: <a class="el" href="classmspass_1_1utility_1_1_antelope_pf.html#aec63cc4c7b66e36254ee469f09d50abb">mspass::utility::AntelopePf</a>
 </li>
 <li>append_chain()
 : <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aa288eb54e6fafb8af13f71e2f3dce4a2">mspass::utility::Metadata</a>
 </li>
 <li>apply()
-: <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a76dc3f128a5305ca1b04d863ae72b73b">mspass::algorithms::Butterworth</a>
+: <a class="el" href="classmspass_1_1algorithms_1_1_butterworth.html#a10c30a560e4dce8a3bc9fe80409cee80">mspass::algorithms::Butterworth</a>
+, <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine</a>
 </li>
 <li>apply_aliases()
 : <a class="el" href="classmspass_1_1utility_1_1_metadata_definitions.html#a282ac6dba59505eac6f2c9a627d89654">mspass::utility::MetadataDefinitions</a>
@@ -121,7 +148,7 @@ $(function() {
 : <a class="el" href="classmspass_1_1utility_1_1_attribute_cross_reference.html#af4feeaca67737324a18508505f173604">mspass::utility::AttributeCrossReference</a>
 </li>
 <li>AttributeMap()
-: <a class="el" href="classmspass_1_1utility_1_1_attribute_map.html#a3282c7d9e7472e1febde63658bcc5598">mspass::utility::AttributeMap</a>
+: <a class="el" href="classmspass_1_1utility_1_1_attribute_map.html#a2233a03c6a1cdbbccc00720f81b5cca2">mspass::utility::AttributeMap</a>
 </li>
 <li>AttributeProperties()
 : <a class="el" href="classmspass_1_1utility_1_1_attribute_properties.html#a0e69bc8b50b01c8e060674dde29e13fa">mspass::utility::AttributeProperties</a>

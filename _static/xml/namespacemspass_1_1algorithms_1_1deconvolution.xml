@@ -1,0 +1,802 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacemspass_1_1algorithms_1_1deconvolution" kind="namespace" language="C++">
+    <compoundname>mspass::algorithms::deconvolution</compoundname>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" prot="public">mspass::algorithms::deconvolution::BandwidthData</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" prot="public">mspass::algorithms::deconvolution::Base3CDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator" prot="public">mspass::algorithms::deconvolution::BasicDeconOperator</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" prot="public">mspass::algorithms::deconvolution::CNR3CDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" prot="public">mspass::algorithms::deconvolution::ComplexArray</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r" prot="public">mspass::algorithms::deconvolution::ERR</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" prot="public">mspass::algorithms::deconvolution::FFTDeconOperator</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex32" prot="public">mspass::algorithms::deconvolution::FortranComplex32</innerclass>
+    <innerclass refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex64" prot="public">mspass::algorithms::deconvolution::FortranComplex64</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" prot="public">mspass::algorithms::deconvolution::GeneralIterDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r" prot="public">mspass::algorithms::deconvolution::LAPACK_ERROR</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon" prot="public">mspass::algorithms::deconvolution::LeastSquareDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" prot="public">mspass::algorithms::deconvolution::MTPowerSpectrumEngine</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_spec_div_decon" prot="public">mspass::algorithms::deconvolution::MultiTaperSpecDivDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_multi_taper_xcor_decon" prot="public">mspass::algorithms::deconvolution::MultiTaperXcorDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public">mspass::algorithms::deconvolution::ScalarDecon</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" prot="public">mspass::algorithms::deconvolution::ShapingWavelet</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" prot="public">mspass::algorithms::deconvolution::ThreeCSpike</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon" prot="public">mspass::algorithms::deconvolution::WaterLevelDecon</innerclass>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="_c_n_r3_c_decon_8h_1a0c5efa34ab2fcb868cbb312725e34569" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>CNR3C_algorithms</name>
+        <enumvalue id="_c_n_r3_c_decon_8h_1a0c5efa34ab2fcb868cbb312725e34569af05192c00139c85d9c1eece772b2dc12" prot="public">
+          <name>generalized_water_level</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_c_n_r3_c_decon_8h_1a0c5efa34ab2fcb868cbb312725e34569ae21698cd8e9a4a85902b077be210756c" prot="public">
+          <name>colored_noise_damping</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_c_n_r3_c_decon_8h_1a0c5efa34ab2fcb868cbb312725e34569a5e543256c480ac577d30f76f9120eb74" prot="public">
+          <name>undefined</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="112" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="112" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="enum" id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309" prot="public" static="no" strong="no">
+        <type></type>
+        <name>IterDeconType</name>
+        <enumvalue id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309a8ad37b8cdc24244e5bceea805206d999" prot="public">
+          <name>WATER_LEVEL</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309ad37dd9a7f6ab0ca1839863ce56707eca" prot="public">
+          <name>LEAST_SQ</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309a5cbb0448e38a87acad8dc485ee08e64d" prot="public">
+          <name>MULTI_TAPER</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="19" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="19" bodyend="19"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="_complex_array_8h_1a401dc10cea742b1f6689392808177438" prot="public" static="no">
+        <type>std::complex&lt; double &gt;</type>
+        <definition>typedef std::complex&lt;double&gt; mspass::algorithms::deconvolution::Complex64</definition>
+        <argsstring></argsstring>
+        <name>Complex64</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="13" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="_complex_array_8h_1ac7d824dd5dfab7367bb8b0a4fee7a9f8" prot="public" static="no">
+        <type>std::complex&lt; float &gt;</type>
+        <definition>typedef std::complex&lt;float&gt; mspass::algorithms::deconvolution::Complex32</definition>
+        <argsstring></argsstring>
+        <name>Complex32</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="14" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="_complex_array_8h_1a402194b447c34d598d776616d0e67f5d" prot="public" static="no">
+        <type>struct <ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex32" kindref="compound">mspass::algorithms::deconvolution::FortranComplex32</ref></type>
+        <definition>typedef struct mspass::algorithms::deconvolution::FortranComplex32 mspass::algorithms::deconvolution::FortranComplex32</definition>
+        <argsstring></argsstring>
+        <name>FortranComplex32</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="19" column="18"/>
+      </memberdef>
+      <memberdef kind="typedef" id="_complex_array_8h_1a548c511de9aa3ad563154aeb457dd7cb" prot="public" static="no">
+        <type>struct <ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex64" kindref="compound">mspass::algorithms::deconvolution::FortranComplex64</ref></type>
+        <definition>typedef struct mspass::algorithms::deconvolution::FortranComplex64 mspass::algorithms::deconvolution::FortranComplex64</definition>
+        <argsstring></argsstring>
+        <name>FortranComplex64</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="23" column="18"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="_general_iter_decon_8cc_1a37ea1ae4107d2b5b53f0dc3e201d065e" prot="public" static="no" mutable="no">
+        <type>vector&lt; double &gt;</type>
+        <definition>vector&lt;double&gt; mspass::algorithms::deconvolution::wtf</definition>
+        <argsstring></argsstring>
+        <name>wtf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="196" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="196" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="_general_iter_decon_8cc_1adb0ff249f1f415311fc3f9606987474b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::nwtf</definition>
+        <argsstring></argsstring>
+        <name>nwtf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="197" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="common__multitaper_8h_1a3e4f9a8d73d275e987aec1889568cbdb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ComputeTaperLength</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>ComputeTaperLength</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComputeTaperLength.cc" line="8" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComputeTaperLength.cc" bodystart="8" bodyend="19" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/common_multitaper.h" declline="6" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="dpss_8h_1af9678d058012daf0ea4ac455846ab404" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::compute_energy_concentrations</definition>
+        <argsstring>(double *h, int n, double NW, double *lambda, int nseq)</argsstring>
+        <name>compute_energy_concentrations</name>
+        <param>
+          <type>double *</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>NW</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>lambda</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>nseq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" line="9" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="9" bodyend="34" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" declline="24" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dpss_8h_1a46dcd81088f0b664ec648c3e76234d8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::eig_iit</definition>
+        <argsstring>(int n, double *D, double *E, int il, int iu, double *eig_val, double *eig_vec, int vec_length)</argsstring>
+        <name>eig_iit</name>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>D</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>E</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>il</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iu</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>eig_val</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>eig_vec</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>vec_length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" line="36" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="36" bodyend="71" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" declline="26" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dpss_8h_1a04c9561b260546622b83b468cae4cd09" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::normalize_vec</definition>
+        <argsstring>(double *h, int n)</argsstring>
+        <name>normalize_vec</name>
+        <param>
+          <type>double *</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" line="75" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="75" bodyend="85" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" declline="29" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dpss_8h_1a9706aa4329c753e1a740ffb08c8dce11" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::polarize_dpss</definition>
+        <argsstring>(double *h, int n, int iseq)</argsstring>
+        <name>polarize_dpss</name>
+        <param>
+          <type>double *</type>
+          <declname>h</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>iseq</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" line="88" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="88" bodyend="102" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" declline="32" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="dpss_8h_1ad7409fb03bf57e49205d02a9ecc0bb7b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::dpss_calc</definition>
+        <argsstring>(int n, double NW, int seql, int sequ, double *h)</argsstring>
+        <name>dpss_calc</name>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>NW</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>seql</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>sequ</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>h</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" line="105" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="105" bodyend="194" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" declline="35" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1a7387cf95055be2e4f58b847c8f66e428" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::circular_shift</definition>
+        <argsstring>(const std::vector&lt; double &gt; &amp;d, const int i0)</argsstring>
+        <name>circular_shift</name>
+        <param>
+          <type>const std::vector&lt; double &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>i0</declname>
+        </param>
+        <briefdescription>
+<para>Circular buffer procedure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>In the Fourier world circular vectors are an important thing to deal with because the fft is intimately connected with circlular things. This routine can be used, for example, to time shift the time domain version of a signal after it was processed with an fft.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the input vector to be shifted </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the wrap point. On exit sample i0 of d will be sample 0. (Warning - this is C convention sample number) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" line="76" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" declline="76" declcolumn="14"/>
+      </memberdef>
+      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1a550407cacfd1759a44401f45d94a3b8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ComputeFFTLength</definition>
+        <argsstring>(const mspass::seismic::TimeWindow w, const double dt)</argsstring>
+        <name>ComputeFFTLength</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Derive fft length from a time window.</para>
+<para>All deconvlution methods using an fft need to define nfft based on the length of the working time series. This procedure returns the size from an input window and sample interval. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc" line="156" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc" bodystart="156" bodyend="162" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" declline="82" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1a260a6a670781bcec14d0f02668fde607" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ComputeFFTLength</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>ComputeFFTLength</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Derive fft length using parameters in a metadata object.</para>
+<para>This procedure is basically a higher level version of the function of the same name with a time window and sample interval argument. This procedure extracts these using three parameter keys to extract the real numbers form md: deconvolution_data_window_start, decon_window_end, and target dt. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc" line="165" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc" bodystart="165" bodyend="183" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" declline="90" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1a229a74c492351850a66acbdf499cb647" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>unsigned int</type>
+        <definition>unsigned int mspass::algorithms::deconvolution::nextPowerOf2</definition>
+        <argsstring>(unsigned int n)</argsstring>
+        <name>nextPowerOf2</name>
+        <param>
+          <type>unsigned int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns next power of 2 larger than n.</para>
+<para>Some FFT implementations require the size of the input data vector be a power of 2. This routine can be used to define a buffer size satisfying that constraint. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" line="96" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/nextPowerOf2.c" bodystart="3" bodyend="13" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" declline="96" declcolumn="18"/>
+      </memberdef>
+      <memberdef kind="function" id="wavelet_8h_1a6e8b614cf929acba50d2f39e0d497cdc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::algorithms::deconvolution::rickerwavelet</definition>
+        <argsstring>(float fpeak, float dt, int n)</argsstring>
+        <name>rickerwavelet</name>
+        <param>
+          <type>float</type>
+          <declname>fpeak</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dt</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" line="12" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" bodystart="12" bodyend="52" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/wavelet.h" declline="4" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="wavelet_8h_1a6658f5b5ecca7774294e55bda8153e7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::algorithms::deconvolution::gaussian</definition>
+        <argsstring>(float sigma, float dt, int n)</argsstring>
+        <name>gaussian</name>
+        <param>
+          <type>float</type>
+          <declname>sigma</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>dt</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" line="62" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" bodystart="62" bodyend="95" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/wavelet.h" declline="5" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="wavelet_8h_1a3fa0683aa5d8908943b20e4c724f46e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::algorithms::deconvolution::slepian0</definition>
+        <argsstring>(double tbp, int n)</argsstring>
+        <name>slepian0</name>
+        <param>
+          <type>double</type>
+          <declname>tbp</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Creates frequency domain window as a 0th order slepian wavelet. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A novel concept this deconvolution package implements is the idea of using a 0th order Slepian function to define an (equivalent) shaping wavelet in the time domain. Note this is the inverse form of Slepian functions to that used in multitaper methods. There the Slepians are used to define time domain windows. Here we use Slepians in the inverse direction. This function should be called to window frequency domain data. Since windows in frequency = convolution in time there is an equivalent time domain pulse that has minimum possible sidebands for the specified time-bandwidth product. Time-bandwidth product is a nondimensional scaling concept. It enters here in a way better left to a higher level interface. Here we control the bandwidth be defining the size of the frequency domain window to be created (n) in samples. In applications n must be less than or equal to the number of samples in the frequency domain representation of the data. That number may be longer than the data duration because of padding. However, you are asking for problems if the n is greater than the parent time series length.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>tbb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the time bandwidth product to use to generate the window (Note increasing tbp will widen the equivalent time domain pulse. Pulse duration will be approximately tbp*N/n samples where N is the total DFT length) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the length of the 0th order slepian function returned for given tbp. See tbp description for how n interacts with tbp to define the shaped pulse duration.</para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>double</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>array of length n. Array is expected to be used as a window function in the frequency domain BUT will nearly always need to undergo a circular shift to put the peak at 0. NOT done here to avoid confusion. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" line="96" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/wavelet.cc" bodystart="96" bodyend="108" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/wavelet.h" declline="38" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="circular__shift_8cc_1ad9ee8ce4badd5a9ee1480377e52acadf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vector&lt; double &gt;</type>
+        <definition>vector&lt;double&gt; mspass::algorithms::deconvolution::circular_shift</definition>
+        <argsstring>(const vector&lt; double &gt; &amp;d, const int i0)</argsstring>
+        <name>circular_shift</name>
+        <param>
+          <type>const vector&lt; double &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>i0</declname>
+        </param>
+        <briefdescription>
+<para>Circular buffer procedure. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>In the Fourier world circular vectors are an important thing to deal with because the fft is intimately connected with circlular things. This routine can be used, for example, to time shift the time domain version of a signal after it was processed with an fft. The shifting here is done for a time domain vector. the same operation can be achieved in the frequency by the standard linear phase shift theorem.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the input vector to be shifted </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>i0</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- is the wrap point. On exit sample i0 of d will be sample 0. Note that negative i0 puts the wrap point at i0 points from the left. (Warning - this is C convention sample number)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>- time shifted signal (same length as input d) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/circular_shift.cc" line="25" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/circular_shift.cc" bodystart="25" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1ae15ca56752ff5927e3d4912baa2dd8be" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
+        <definition>BandwidthData mspass::algorithms::deconvolution::EstimateBandwidth</definition>
+        <argsstring>(const double signal_df, const PowerSpectrum &amp;s, const PowerSpectrum &amp;n, const double snr_threshold, const double tbp)</argsstring>
+        <name>EstimateBandwidth</name>
+        <param>
+          <type>const double</type>
+          <declname>signal_df</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
+          <declname>s</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">PowerSpectrum</ref> &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>snr_threshold</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>tbp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="374" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="374" bodyend="475"/>
+      </memberdef>
+      <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1a7c1416ccaf2db86bc6216af2514fe8dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
+        <definition>BandwidthData mspass::algorithms::deconvolution::band_overlap</definition>
+        <argsstring>(const BandwidthData &amp;b1, const BandwidthData &amp;b2)</argsstring>
+        <name>band_overlap</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <declname>b1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <declname>b2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="844" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="844" bodyend="872"/>
+      </memberdef>
+      <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1ad84500ca4a163b99e83f6d0d4ce5e5f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::post_bandwidth_data</definition>
+        <argsstring>(Seismogram &amp;d, const BandwidthData &amp;bwd)</argsstring>
+        <name>post_bandwidth_data</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <declname>bwd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="875" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="875" bodyend="882"/>
+      </memberdef>
+      <memberdef kind="function" id="_c_n_r3_c_decon_8cc_1af0b77066e1a96efc7772194f124f7fb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::print_bwdata</definition>
+        <argsstring>(const BandwidthData &amp;bwd)</argsstring>
+        <name>print_bwdata</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <declname>bwd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" line="884" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="884" bodyend="891"/>
+      </memberdef>
+      <memberdef kind="function" id="_general_iter_decon_8cc_1a4a875ef3f42f3d193ac38a1fcfc5e6cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>IterDeconType</type>
+        <definition>IterDeconType mspass::algorithms::deconvolution::parse_for_itertype</definition>
+        <argsstring>(const AntelopePf &amp;md)</argsstring>
+        <name>parse_for_itertype</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">AntelopePf</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="21" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="21" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="_general_iter_decon_8cc_1a02e12047206838d6f416b75201b2ec77" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::Linf</definition>
+        <argsstring>(dmatrix &amp;d)</argsstring>
+        <name>Linf</name>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="34" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="34" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="_general_iter_decon_8cc_1a785e5766431ee9c3c6fb4c46645ae45b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::L2</definition>
+        <argsstring>(dmatrix &amp;d)</argsstring>
+        <name>L2</name>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="47" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="47" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="_general_iter_decon_8cc_1a4b9421e97b2607381a44d5eecd024bb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vector&lt; double &gt;</type>
+        <definition>vector&lt;double&gt; mspass::algorithms::deconvolution::amp3c</definition>
+        <argsstring>(dmatrix &amp;d)</argsstring>
+        <name>amp3c</name>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">dmatrix</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="279" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="279" bodyend="294"/>
+      </memberdef>
+      <memberdef kind="function" id="_general_iter_decon_8cc_1aed90de11ea345da91efd8fbcc6dcce5f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::deconvolution::trim</definition>
+        <argsstring>(const CoreTimeSeries &amp;d, double floor=0.005)</argsstring>
+        <name>trim</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">CoreTimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>floor</declname>
+          <defval>0.005</defval>
+        </param>
+        <briefdescription>
+<para>Trim impulse response function for efficiency. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This helper trims a fir filter signal to reduce the computational cost of time domain subtraction of the expected output signal in the generalized iterative method. It first computes an envlope function. It uses a cruder algorithm than the more conventional hilbert-transform based envelope using smoothing of the absolute values of the fir filter amplitudes. This was done because the hilbert envelope is a complicated calculation and I (glp) didn&apos;t want debug the required combination of a hilbert transform code and the secondary problem of using that to compute an envelope function. May want to retrofit that eventually, but for the initial version I am assuming the smoothing method will work fine on deconvolution impulse response functions because the are mostly a near spike with ringing with a period near that of twice the sample interval. Hence a simple smoother a few samples wide should create a pretty effective envelope estimate.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- fir filter to be trimmed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>floor</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- length will be determined from sample here the envelope amplitude is peak amplitude times this value. (1/floor is kind of an snf floor).</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a copy of d shortened on both ends. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" line="421" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="421" bodyend="480"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/BasicDeconOperator.h" line="5" column="43"/>
+  </compounddef>
+</doxygen>

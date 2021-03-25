@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::ERR</compoundname>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::LAPACK_ERROR</derivedcompoundref>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a0ed4cfe1666a82fd2818714d798ca1f0" prot="protected" static="no" mutable="no">
+        <type>char</type>
+        <definition>char mspass::algorithms::deconvolution::ERR::msg[30]</definition>
+        <argsstring>[30]</argsstring>
+        <name>msg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="15" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a5ed2125f603b76ec0e51ce6227151f08" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ERR::ERR</definition>
+        <argsstring>()</argsstring>
+        <name>ERR</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="10" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" bodystart="10" bodyend="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a50abfd0e1cb73b8b5af4a07f779a5b68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ERR::ERR</definition>
+        <argsstring>(const char *msg)</argsstring>
+        <name>ERR</name>
+        <param>
+          <type>const char *</type>
+          <declname>msg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="11" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="196" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a70b0056a45c202565f553809283fb442" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::ERR::getmsg</definition>
+        <argsstring>(char *errmsg)</argsstring>
+        <name>getmsg</name>
+        <param>
+          <type>char *</type>
+          <declname>errmsg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="12" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="199" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a5c18331ade85b47040a9a40636b265a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * mspass::algorithms::deconvolution::ERR::getmsg</definition>
+        <argsstring>()</argsstring>
+        <name>getmsg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="13" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc" bodystart="202" bodyend="204"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::ERR</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r"/>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::LAPACK_ERROR</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_l_a_p_a_c_k___e_r_r_o_r"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" line="8" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/dpss.h" bodystart="8" bodyend="16"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a5ed2125f603b76ec0e51ce6227151f08" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ERR</scope><name>ERR</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a50abfd0e1cb73b8b5af4a07f779a5b68" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ERR</scope><name>ERR</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a70b0056a45c202565f553809283fb442" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ERR</scope><name>getmsg</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a5c18331ade85b47040a9a40636b265a5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ERR</scope><name>getmsg</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_e_r_r_1a0ed4cfe1666a82fd2818714d798ca1f0" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ERR</scope><name>msg</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

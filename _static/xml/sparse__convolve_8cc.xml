@@ -2,28 +2,34 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="sparse__convolve_8cc" kind="file" language="C++">
     <compoundname>sparse_convolve.cc</compoundname>
-    <includes local="yes">misc/blas.h</includes>
+    <includes refid="blas_8h" local="yes">misc/blas.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <includes refid="_core_seismogram_8h" local="yes">mspass/seismic/CoreSeismogram.h</includes>
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
     <incdepgraph>
-      <node id="13">
+      <node id="14">
         <label>list</label>
       </node>
-      <node id="24">
+      <node id="25">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="25" relation="include">
-        </childnode>
         <childnode refid="26" relation="include">
         </childnode>
         <childnode refid="27" relation="include">
         </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
       </node>
-      <node id="21">
+      <node id="22">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="26">
+      <node id="2">
+        <label>misc/blas.h</label>
+        <link refid="blas_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
       <node id="1">
@@ -31,121 +37,119 @@
         <link refid="sparse__convolve_8cc"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>boost/archive/binary_iarchive.hpp</label>
+      </node>
+      <node id="4">
+        <label>mspass/utility/MsPASSError.h</label>
+        <link refid="_ms_p_a_s_s_error_8h_source"/>
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
-        </childnode>
       </node>
-      <node id="23">
-        <label>boost/archive/binary_iarchive.hpp</label>
-      </node>
-      <node id="3">
-        <label>mspass/utility/MsPASSError.h</label>
-        <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="4" relation="include">
+      <node id="21">
+        <label>mspass/utility/dmatrix.h</label>
+        <link refid="dmatrix_8h_source"/>
+        <childnode refid="20" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-      </node>
-      <node id="20">
-        <label>mspass/utility/dmatrix.h</label>
-        <link refid="dmatrix_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="19">
-        <label>string</label>
-      </node>
-      <node id="28">
-        <label>mspass/seismic/CoreTimeSeries.h</label>
-        <link refid="_core_time_series_8h_source"/>
-        <childnode refid="8" relation="include">
-        </childnode>
         <childnode refid="24" relation="include">
         </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>string</label>
+      </node>
+      <node id="29">
+        <label>mspass/seismic/CoreTimeSeries.h</label>
+        <link refid="_core_time_series_8h_source"/>
         <childnode refid="9" relation="include">
         </childnode>
-      </node>
-      <node id="11">
-        <label>map</label>
-      </node>
-      <node id="5">
-        <label>exception</label>
-      </node>
-      <node id="14">
-        <label>fstream</label>
-      </node>
-      <node id="30">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
         </childnode>
       </node>
-      <node id="22">
-        <label>boost/archive/binary_oarchive.hpp</label>
+      <node id="12">
+        <label>map</label>
       </node>
-      <node id="16">
-        <label>boost/any.hpp</label>
+      <node id="6">
+        <label>exception</label>
       </node>
-      <node id="27">
-        <label>boost/archive/text_oarchive.hpp</label>
+      <node id="15">
+        <label>fstream</label>
       </node>
       <node id="31">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="17">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="28">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="32">
         <label>mspass/seismic/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="29">
+      <node id="30">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="18">
+      <node id="19">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>typeinfo</label>
       </node>
-      <node id="8">
+      <node id="9">
         <label>vector</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>sstream</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="6">
+      <node id="7">
         <label>mspass/seismic/CoreSeismogram.h</label>
         <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="7" relation="include">
-        </childnode>
         <childnode refid="8" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="28" relation="include">
+        <childnode refid="25" relation="include">
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
@@ -153,36 +157,36 @@
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
       </node>
-      <node id="25">
+      <node id="26">
         <label>math.h</label>
       </node>
-      <node id="4">
+      <node id="5">
         <label>iostream</label>
       </node>
-      <node id="12">
+      <node id="13">
         <label>set</label>
       </node>
-      <node id="2">
-        <label>misc/blas.h</label>
-      </node>
-      <node id="7">
+      <node id="8">
         <label>memory</label>
       </node>
-      <node id="9">
+      <node id="3">
+        <label>FC.h</label>
+      </node>
+      <node id="10">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="10" relation="include">
-        </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
@@ -190,9 +194,11 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
         <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
     </incdepgraph>

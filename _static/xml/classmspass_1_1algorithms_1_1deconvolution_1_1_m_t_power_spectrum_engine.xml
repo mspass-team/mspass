@@ -1,0 +1,391 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</compoundname>
+    <includes refid="_m_t_power_spectrum_engine_8h" local="no">MTPowerSpectrumEngine.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8965dd9992bc23686c899416fc01d833" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taperlen</definition>
+        <argsstring></argsstring>
+        <name>taperlen</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="97" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa2184647214f98ca31c9b918ea95cabd" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::MTPowerSpectrumEngine::ntapers</definition>
+        <argsstring></argsstring>
+        <name>ntapers</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="98" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a755509d55edcea79ddea1652d7eb115d" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::tbp</definition>
+        <argsstring></argsstring>
+        <name>tbp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="99" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1c890f6d04bf2cb6c276a79d70ba8b33" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1utility_1_1dmatrix" kindref="compound">mspass::utility::dmatrix</ref></type>
+        <definition>mspass::utility::dmatrix mspass::algorithms::deconvolution::MTPowerSpectrumEngine::tapers</definition>
+        <argsstring></argsstring>
+        <name>tapers</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="100" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aedb60b87afad3afa660be4e408766e0c" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::deltaf</definition>
+        <argsstring></argsstring>
+        <name>deltaf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="102" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a0986764ea5918f4436d751cd28bea3c6" prot="private" static="no" mutable="no">
+        <type>gsl_fft_complex_wavetable *</type>
+        <definition>gsl_fft_complex_wavetable* mspass::algorithms::deconvolution::MTPowerSpectrumEngine::wavetable</definition>
+        <argsstring></argsstring>
+        <name>wavetable</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="103" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7276cdd1dd824732514a05fd8cf3f326" prot="private" static="no" mutable="no">
+        <type>gsl_fft_complex_workspace *</type>
+        <definition>gsl_fft_complex_workspace* mspass::algorithms::deconvolution::MTPowerSpectrumEngine::workspace</definition>
+        <argsstring></argsstring>
+        <name>workspace</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="104" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::MTPowerSpectrumEngine::MTPowerSpectrumEngine</definition>
+        <argsstring>()</argsstring>
+        <name>MTPowerSpectrumEngine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="26" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="12" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7f082a7cca3a74d96b16df852f3ef040" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::MTPowerSpectrumEngine::MTPowerSpectrumEngine</definition>
+        <argsstring>(const int winsize, const double tbp, const int ntapers)</argsstring>
+        <name>MTPowerSpectrumEngine</name>
+        <param>
+          <type>const int</type>
+          <declname>winsize</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>tbp</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>ntapers</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="27" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="21" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a678a1167722867cfb20acc0c56932882" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::MTPowerSpectrumEngine::MTPowerSpectrumEngine</definition>
+        <argsstring>(const MTPowerSpectrumEngine &amp;parent)</argsstring>
+        <name>MTPowerSpectrumEngine</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="28" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="55" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8232d61152acbe74c6a890a662f89c63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::MTPowerSpectrumEngine::~MTPowerSpectrumEngine</definition>
+        <argsstring>()</argsstring>
+        <name>~MTPowerSpectrumEngine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="29" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="65" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a51379e47b45995eb44c519c2672de77b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref> &amp;</type>
+        <definition>MTPowerSpectrumEngine &amp; mspass::algorithms::deconvolution::MTPowerSpectrumEngine::operator=</definition>
+        <argsstring>(const MTPowerSpectrumEngine &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="31" column="25" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="70" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>PowerSpectrum mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;d)</argsstring>
+        <name>apply</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>\process a TimeSeries.</para>
+<para>This is one of two methods for applying the multiaper algorithm to data. This one uses dt and data length to set the Rayleigh bin size (df). If the input data vector length is not the same as the operator length an elog complaint is posted to parent. Short data are processed but should be considered suspect unless the sizes differ by only a tiny fraction (e.g. and off by one error from rounding). Long data will be truncated on the right (i.e. sample 0 will be the start of the window used).</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to process </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>vector containing estimated power spwecrum </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="45" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="84" bodyend="127"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" compoundref="_basic_time_series_8h" startline="157" endline="157">mspass::seismic::BasicTimeSeries::dt</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="183" endline="183">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" compoundref="_m_t_power_spectrum_engine_8h" startline="91" endline="95">set_df</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a3b7b9b8e20cd59a00ed0f4fbeab7829b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</definition>
+        <argsstring>(const std::vector&lt; double &gt; &amp;d)</argsstring>
+        <name>apply</name>
+        <param>
+          <type>const std::vector&lt; double &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+<para>Low level processing of vector of data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is lower level function that processes a raw vector of data. Since it does not know the sample interval it cannot compute the rayleigh bin size so if callers need that feature they must do that (simple) calculation themselves. Unlike the TimeSeries method this one will throw an exception if the input data size does not match the operator size.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the vector of data to process. d.size() must this-&gt;taperlen() value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>vector containing estimated power spectrum (usual convention with 0 containing 0 frequency value) </para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>throw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a MsPASSError if the size of d does not match operator length </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="59" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::df</definition>
+        <argsstring>() const</argsstring>
+        <name>df</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="60" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>vector&lt; double &gt; mspass::algorithms::deconvolution::MTPowerSpectrumEngine::frequencies</definition>
+        <argsstring>()</argsstring>
+        <name>frequencies</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="62" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MTPowerSpectrumEngine.cc" bodystart="198" bodyend="208"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</definition>
+        <argsstring>() const</argsstring>
+        <name>taper_length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Retrieve the taper length. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="64" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="64" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</definition>
+        <argsstring>() const</argsstring>
+        <name>time_bandwidth_product</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Retrieve time-bandwidth product. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="69" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="69" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</definition>
+        <argsstring>() const</argsstring>
+        <name>number_tapers</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return number of tapers used by this engine. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="74" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="74" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::MTPowerSpectrumEngine::set_df</definition>
+        <argsstring>(double dt)</argsstring>
+        <name>set_df</name>
+        <param>
+          <type>double</type>
+          <declname>dt</declname>
+        </param>
+        <briefdescription>
+<para>PUtter equivalent of df. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The computation of the Rayleigh bin size (dt) is actually quote trivial but this convenience functon allows users of the vector&lt;double&gt; method to handle the comutation easily. It uses the internal oeprator size, however, to compute the df size it returns because the operator is dogmatic about using that size. Users wishing to call the frequency method and the apply method on raw vector data need to call this function before calling frequency.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>dt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data sample interval (time domain)</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>computed df </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="91" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="91" bodyend="95"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Multittaper power spectral estimator. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The multitaper method uses averages of spectra windowed by Slepian functions. This class can be used to compute power spectra. For efficiency the design has constructors that build the Slepian functions and cache them in a private area. Use of the pply method that returns vector of power spectral estimates. Get methods can be called to get frequency properties of the data returned. This could have been done with a class, but that was judged better left to a python wrapper using this class. </para>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" line="24" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h" bodystart="23" bodyend="105"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a3b7b9b8e20cd59a00ed0f4fbeab7829b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aedb60b87afad3afa660be4e408766e0c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>deltaf</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1ada36c092fdc3aa128be8eb25d00349d6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>df</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a626438cc21ade06cfa7053c324ae58b4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>frequencies</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a509f3db8c91ae8e97b241bd5da67cd61" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>MTPowerSpectrumEngine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7f082a7cca3a74d96b16df852f3ef040" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>MTPowerSpectrumEngine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a678a1167722867cfb20acc0c56932882" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>MTPowerSpectrumEngine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa2184647214f98ca31c9b918ea95cabd" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>ntapers</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>number_tapers</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a51379e47b45995eb44c519c2672de77b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1dadcf9ec587fa2d48d04066ba1d55b4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>set_df</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>taper_length</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8965dd9992bc23686c899416fc01d833" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>taperlen</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a1c890f6d04bf2cb6c276a79d70ba8b33" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>tapers</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a755509d55edcea79ddea1652d7eb115d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>tbp</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>time_bandwidth_product</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a0986764ea5918f4436d751cd28bea3c6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>wavetable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a7276cdd1dd824732514a05fd8cf3f326" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>workspace</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a8232d61152acbe74c6a890a662f89c63" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::MTPowerSpectrumEngine</scope><name>~MTPowerSpectrumEngine</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

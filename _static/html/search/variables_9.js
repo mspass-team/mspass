@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['nsamp_549',['nsamp',['../classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a',1,'mspass::seismic::BasicTimeSeries']]]
+  ['low_5fedge_5ff_655',['low_edge_f',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e',1,'mspass::algorithms::deconvolution::BandwidthData']]],
+  ['low_5fedge_5fsnr_656',['low_edge_snr',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a2fc4344272ff062063f41934541caae4',1,'mspass::algorithms::deconvolution::BandwidthData']]]
 ];

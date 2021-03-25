@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['radius_551',['radius',['../structmspass_1_1utility_1_1_spherical_coordinate.html#a8f9f987e89e175fecb85c9cbe5bdbc13',1,'mspass::utility::SphericalCoordinate']]]
+  ['nsamp_662',['nsamp',['../classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a',1,'mspass::seismic::BasicTimeSeries']]]
 ];

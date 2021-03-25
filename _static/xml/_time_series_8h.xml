@@ -5,15 +5,18 @@
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
     <includes refid="_processing_history_8h" local="yes">mspass/utility/ProcessingHistory.h</includes>
     <includes refid="_error_logger_8h" local="yes">mspass/utility/ErrorLogger.h</includes>
-    <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="algorithms_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</includedby>
     <includedby refid="amplitudes_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</includedby>
     <includedby refid="_butterworth_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</includedby>
+    <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
+    <includedby refid="_m_t_power_spectrum_engine_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</includedby>
+    <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
     <includedby refid="_ensemble_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</includedby>
     <includedby refid="_taper_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</includedby>
     <includedby refid="_time_series_w_gaps_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</includedby>
     <includedby refid="amplitudes_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/amplitudes.cc</includedby>
     <includedby refid="bundle_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc</includedby>
+    <includedby refid="_c_n_r3_c_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc</includedby>
     <includedby refid="slice__and__dice_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc</includedby>
@@ -215,15 +218,15 @@
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="5">
+      <node id="4">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="3">
+      <node id="2">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
       </node>
-      <node id="4">
+      <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
       </node>
@@ -244,28 +247,44 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
       </node>
-      <node id="8">
+      <node id="10">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
         <link refid="_time_series_w_gaps_8h_source"/>
       </node>
-      <node id="6">
+      <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="4" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
       </node>
-      <node id="2">
+      <node id="7">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
         <link refid="mspass_8h_source"/>
       </node>
-      <node id="7">
+      <node id="5">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+      <node id="6">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h</label>
+        <link refid="_m_t_power_spectrum_engine_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
         <link refid="_taper_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
     <innerclass refid="classmspass_1_1seismic_1_1_time_series" prot="public">mspass::seismic::TimeSeries</innerclass>

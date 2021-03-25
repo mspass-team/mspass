@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -169,6 +176,12 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
+<div class="fragment"><div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;{</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a> = am.attributes;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    aliasmap=am.aliasmap;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a>.</p>
 
 </div>
 </div>
@@ -189,7 +202,12 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Overload for literals. </p>
-
+<div class="fragment"><div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;{</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">return</span> this-&gt;<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#aeb1df686651e0e3d138f1a3d73bdda77">aliases</a>(<span class="keywordtype">string</span>(key));</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aeb1df686651e0e3d138f1a3d73bdda77"></a>
@@ -240,7 +258,12 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Overload for literals </p>
-
+<div class="fragment"><div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;{</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">return</span> this-&gt;<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#a5b7ec0194d2f25a916efd5f9d75f82ac">aliastables</a>(<span class="keywordtype">string</span>(key));</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5b7ec0194d2f25a916efd5f9d75f82ac"></a>
@@ -292,7 +315,10 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Overloaded for string literal. </p>
-
+<div class="fragment"><div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;{</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordflow">return</span> this-&gt;<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#ad60bebd12b9f3ca2aa5254c451b7bd1e">is_alias</a>(<span class="keywordtype">string</span>(key));</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ad60bebd12b9f3ca2aa5254c451b7bd1e"></a>
@@ -337,6 +363,16 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator. </p>
+<div class="fragment"><div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;{</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;am)</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a> = am.attributes;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        aliasmap=am.aliasmap;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    }</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="keywordflow">return</span> (*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a>.</p>
 
 </div>
 </div>
@@ -356,7 +392,12 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
       </table>
 </div><div class="memdoc">
 <p>Overloaded operator for C strings constants. </p>
-
+<div class="fragment"><div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;{</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        <span class="keywordflow">return</span> this-&gt;<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#a3b308d94ea4122dc3f90aae8ad950ac8">operator[]</a>(<span class="keywordtype">string</span>(key));</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a3b308d94ea4122dc3f90aae8ad950ac8"></a>
@@ -389,7 +430,20 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;{</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    map&lt;std::string,AttributeProperties&gt;::const_iterator amptr;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    amptr=<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a>.find(key);</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">if</span>(amptr==<a class="code" href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">attributes</a>.end())</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    {</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="keywordtype">string</span>(<span class="stringliteral">&quot;AttributeMap::opertor[]: key=&quot;</span>)</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                + key + <span class="stringliteral">&quot; has not entry in this AttributeMap&quot;</span>);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    }</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        <span class="keywordflow">return</span> amptr-&gt;second;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    }</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -397,6 +451,12 @@ std::map&lt; std::string, <a class="el" href="classmspass_1_1utility_1_1_attribu
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/utility/AttributeMap.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_attribute_map_html_aeb1df686651e0e3d138f1a3d73bdda77"><div class="ttname"><a href="classmspass_1_1utility_1_1_attribute_map.html#aeb1df686651e0e3d138f1a3d73bdda77">mspass::utility::AttributeMap::aliases</a></div><div class="ttdeci">std::map&lt; std::string, AttributeProperties &gt; aliases(const std::string key) const</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_attribute_map_html_aa69adffd236ccf42ec87afdb34d7c419"><div class="ttname"><a href="classmspass_1_1utility_1_1_attribute_map.html#aa69adffd236ccf42ec87afdb34d7c419">mspass::utility::AttributeMap::attributes</a></div><div class="ttdeci">std::map&lt; std::string, AttributeProperties &gt; attributes</div><div class="ttdoc">Maps internal to external names. This object is little more than a wrapper around this Standard Templ...</div><div class="ttdef"><b>Definition:</b> AttributeMap.h:116</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_attribute_map_html_a3b308d94ea4122dc3f90aae8ad950ac8"><div class="ttname"><a href="classmspass_1_1utility_1_1_attribute_map.html#a3b308d94ea4122dc3f90aae8ad950ac8">mspass::utility::AttributeMap::operator[]</a></div><div class="ttdeci">AttributeProperties operator[](const std::string key) const</div><div class="ttdef"><b>Definition:</b> AttributeMap.cc:325</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_attribute_map_html_ad60bebd12b9f3ca2aa5254c451b7bd1e"><div class="ttname"><a href="classmspass_1_1utility_1_1_attribute_map.html#ad60bebd12b9f3ca2aa5254c451b7bd1e">mspass::utility::AttributeMap::is_alias</a></div><div class="ttdeci">bool is_alias(const std::string key) const</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_attribute_map_html_a5b7ec0194d2f25a916efd5f9d75f82ac"><div class="ttname"><a href="classmspass_1_1utility_1_1_attribute_map.html#a5b7ec0194d2f25a916efd5f9d75f82ac">mspass::utility::AttributeMap::aliastables</a></div><div class="ttdeci">std::list&lt; std::string &gt; aliastables(const std::string key) const</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

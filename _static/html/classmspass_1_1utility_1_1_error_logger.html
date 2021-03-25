@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -143,7 +150,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>size of error log after insertion. </dd></dl>
-
+<div class="fragment"><div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="classmspass_1_1utility_1_1_log_data.html">LogData</a> thislog(this-&gt;job_id,<span class="keywordtype">string</span>(<span class="stringliteral">&quot;MsPASSError&quot;</span>),merr);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  allmessages.push_back(thislog);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordflow">return</span> allmessages.size();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a51545bad29895f7c1393ccbfed6e2aa2"></a>
@@ -188,7 +200,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>size of error log after insertion. </dd></dl>
-
+<div class="fragment"><div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;{</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="classmspass_1_1utility_1_1_log_data.html">LogData</a> thislog(this-&gt;job_id,alg,mess,level);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  allmessages.push_back(thislog);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">return</span> allmessages.size();</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a570cc3c845bd18dd0417e84a8cafe05f"></a>
@@ -219,7 +236,12 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
 
 <p>Log a verbose message marking it informational. </p>
 <p>Frequently programs need a verbose option to log something of interest that is not an error but potentially useful. This alternate logging method posts the string mess and marks it Informational. Returns the size of the log after insertion. </p>
-
+<div class="fragment"><div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;{</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">int</span> count;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  count=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">log_error</a>(alg,mess,ErrorSeverity::Informational);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">return</span> count;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a78cd3444e267065b7e9858cc27a36103"></a>
@@ -237,7 +259,43 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
       </table>
 </div><div class="memdoc">
 <p>Return an std::list container with most serious error level marked. </p>
-
+<div class="fragment"><div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">/* Return immediately if the messages container is empty. */</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">if</span>(allmessages.size()&lt;=0) <span class="keywordflow">return</span> allmessages;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  list&lt;LogData&gt; flist,ivlist,slist,clist,dlist,ilist;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  list&lt;LogData&gt;::const_iterator aptr;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">for</span>(aptr=allmessages.begin();aptr!=allmessages.end();++aptr)</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">switch</span>(aptr-&gt;badness)</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Fatal:</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        flist.push_back(*aptr);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Invalid:</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        ivlist.push_back(*aptr);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Suspect:</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        slist.push_back(*aptr);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Complaint:</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        clist.push_back(*aptr);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Debug:</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        dlist.push_back(*aptr);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      <span class="keywordflow">case</span> ErrorSeverity::Informational:</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        ilist.push_back(*aptr);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    };</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">if</span>(flist.size()&gt;0) <span class="keywordflow">return</span> flist;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordflow">if</span>(ivlist.size()&gt;0) <span class="keywordflow">return</span> ivlist;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">if</span>(slist.size()&gt;0) <span class="keywordflow">return</span> slist;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">if</span>(clist.size()&gt;0) <span class="keywordflow">return</span> clist;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordflow">if</span>(dlist.size()&gt;0) <span class="keywordflow">return</span> dlist;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> ilist;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -245,6 +303,8 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>size</b> () const</td>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/utility/ErrorLogger.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_log_data_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_log_data.html">mspass::utility::LogData</a></div><div class="ttdef"><b>Definition:</b> ErrorLogger.h:15</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition:</b> ErrorLogger.cc:70</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

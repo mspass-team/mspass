@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -267,7 +274,14 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 
 <p>Compute amplitude spectrum from power spectrum. </p>
 <p>The amplitude spectrum is sqrt of the power values. This is a convenience class to return the values in that form. </p>
-
+<div class="fragment"><div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  vector&lt;double&gt; result;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  result.reserve(spectrum.size());</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    result.push_back(sqrt(spectrum[k]));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a8cdc3c59b4e204b1b04d0c1951e73076"></a>
@@ -300,6 +314,23 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
+<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span>(f&lt;0.0) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(<span class="stringliteral">&quot;PowerSpectrum::amplitude:  requested amplitude for a negative frequency which is assumed to be an erorr&quot;</span>,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">int</span> filow;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  filow=<span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>((f-<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a>)/<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">/* Force 0 at Nyquist and above - this allows simple interpolation in else */</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span>(filow&gt;=(spectrum.size()-1))</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;     <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">double</span> slope=(spectrum[filow+1]-spectrum[filow])/<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">double</span> flow=<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a>+((double)filow)*<a class="code" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> sqrt(spectrum[filow]+slope*(f-flow));</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">df</a>, and <a class="el" href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">f0</a>.</p>
 
 </div>
 </div>
@@ -327,7 +358,28 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">/* Allow self accumulation - double values */</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">this</span>==(&amp;other))</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k) spectrum[k]*=2.0;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">if</span>(this-&gt;spectrum.size() != other.spectrum.size())</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      stringstream ss;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      ss &lt;&lt; <span class="stringliteral">&quot;operator+=(accumulation) size mismatch of spectrum arrays&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;right hade side spectrum size=&quot;</span>&lt;&lt;spectrum.size()&lt;&lt;endl</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;left had side spectrum size=&quot;</span>&lt;&lt;other.spectrum.size()&lt;&lt;endl;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=0;k&lt;spectrum.size();++k)</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      spectrum[k] += other.spectrum[k];</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
@@ -367,6 +419,9 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/PowerSpectrum.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_a53bb92009189c7d297b20656cdf820a4"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#a53bb92009189c7d297b20656cdf820a4">mspass::seismic::PowerSpectrum::f0</a></div><div class="ttdeci">double f0</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:19</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_power_spectrum_html_af4023fd0eee89576ca87ce0df394a672"><div class="ttname"><a href="classmspass_1_1seismic_1_1_power_spectrum.html#af4023fd0eee89576ca87ce0df394a672">mspass::seismic::PowerSpectrum::df</a></div><div class="ttdeci">double df</div><div class="ttdef"><b>Definition:</b> PowerSpectrum.h:15</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

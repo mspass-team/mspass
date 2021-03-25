@@ -5,7 +5,7 @@
     <includes local="no">algorithm</includes>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
-    <includes local="yes">misc/blas.h</includes>
+    <includes refid="blas_8h" local="yes">misc/blas.h</includes>
     <includes refid="amplitudes_8h" local="yes">mspass/algorithms/amplitudes.h</includes>
     <incdepgraph>
       <node id="14">
@@ -26,6 +26,12 @@
       </node>
       <node id="39">
         <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="45">
+        <label>misc/blas.h</label>
+        <link refid="blas_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
       </node>
       <node id="8">
         <label>boost/archive/text_iarchive.hpp</label>
@@ -167,7 +173,7 @@
         <childnode refid="23" relation="include">
         </childnode>
       </node>
-      <node id="46">
+      <node id="47">
         <label>mspass/algorithms/amplitudes.h</label>
         <link refid="amplitudes_8h_source"/>
         <childnode refid="20" relation="include">
@@ -176,9 +182,9 @@
         </childnode>
         <childnode refid="35" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
-        </childnode>
         <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
         </childnode>
       </node>
       <node id="3">
@@ -191,7 +197,7 @@
         <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="48">
+      <node id="49">
         <label>mspass/utility/VectorStatistics.h</label>
         <link refid="_vector_statistics_8h_source"/>
         <childnode refid="5" relation="include">
@@ -215,7 +221,7 @@
         </childnode>
         <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
+        <childnode refid="47" relation="include">
         </childnode>
       </node>
       <node id="32">
@@ -258,7 +264,7 @@
       <node id="7">
         <label>math.h</label>
       </node>
-      <node id="47">
+      <node id="48">
         <label>mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
         <childnode refid="5" relation="include">
@@ -289,9 +295,6 @@
       <node id="2">
         <label>algorithm</label>
       </node>
-      <node id="45">
-        <label>misc/blas.h</label>
-      </node>
       <node id="35">
         <label>mspass/seismic/Seismogram.h</label>
         <link refid="_seismogram_8h_source"/>
@@ -307,6 +310,9 @@
       </node>
       <node id="37">
         <label>memory</label>
+      </node>
+      <node id="46">
+        <label>FC.h</label>
       </node>
       <node id="10">
         <label>mspass/utility/Metadata.h</label>

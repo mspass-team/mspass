@@ -4,8 +4,9 @@
     <compoundname>Butterworth.h</compoundname>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
-    <includes local="yes">mspass/algorithms/deconvolution/ComplexArray.h</includes>
+    <includes refid="_complex_array_8h" local="yes">mspass/algorithms/deconvolution/ComplexArray.h</includes>
     <includedby refid="_butterworth_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc</includedby>
+    <includedby refid="_shaping_wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc</includedby>
     <incdepgraph>
       <node id="13">
         <label>list</label>
@@ -19,6 +20,9 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+      </node>
+      <node id="47">
+        <label>gsl/gsl_fft_complex.h</label>
       </node>
       <node id="24">
         <label>boost/serialization/map.hpp</label>
@@ -64,9 +68,6 @@
       </node>
       <node id="28">
         <label>boost/uuid/uuid_io.hpp</label>
-      </node>
-      <node id="44">
-        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
       </node>
       <node id="37">
         <label>mspass/utility/dmatrix.h</label>
@@ -235,6 +236,20 @@
       <node id="14">
         <label>iostream</label>
       </node>
+      <node id="44">
+        <label>mspass/algorithms/deconvolution/ComplexArray.h</label>
+        <link refid="_complex_array_8h_source"/>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+      </node>
       <node id="29">
         <label>boost/uuid/uuid_serialize.hpp</label>
       </node>
@@ -249,6 +264,9 @@
       </node>
       <node id="25">
         <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="45">
+        <label>complex</label>
       </node>
       <node id="34">
         <label>mspass/seismic/Seismogram.h</label>
@@ -265,6 +283,9 @@
       </node>
       <node id="36">
         <label>memory</label>
+      </node>
+      <node id="46">
+        <label>gsl/gsl_errno.h</label>
       </node>
       <node id="9">
         <label>mspass/utility/Metadata.h</label>
@@ -330,7 +351,7 @@
 <codeline lineno="214"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">apply</ref>(std::vector&lt;double&gt;&amp;<sp/>d);</highlight></codeline>
 <codeline lineno="237"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d);</highlight></codeline>
 <codeline lineno="260"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1ad8c696b150ed18bfb3c4060dd884bfe3" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="277"><highlight class="normal"><sp/><sp/>mspass::algorithms::deconvolution::ComplexArray<sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a54e766697f72f1ba38b95915805dd6d9" kindref="member">transfer_function</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">mspass::algorithms::deconvolution::ComplexArray</ref><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a54e766697f72f1ba38b95915805dd6d9" kindref="member">transfer_function</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>
 <codeline lineno="295" refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_butterworth_1a94f20884465265de735d05946e1cea00" kindref="member">change_dt</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dtnew)</highlight></codeline>
 <codeline lineno="296"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;f3db_lo<sp/>*=<sp/>(dtnew/(this-&gt;dt));</highlight></codeline>

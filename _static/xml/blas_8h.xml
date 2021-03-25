@@ -1,0 +1,456 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="blas_8h" kind="file" language="C++">
+    <compoundname>blas.h</compoundname>
+    <includes local="yes">FC.h</includes>
+    <includedby refid="amplitudes_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/amplitudes.cc</includedby>
+    <includedby refid="_butterworth_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Butterworth.cc</includedby>
+    <includedby refid="dpss_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/dpss.cc</includedby>
+    <includedby refid="_multi_taper_spec_div_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/MultiTaperSpecDivDecon.cc</includedby>
+    <includedby refid="_shaping_wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc</includedby>
+    <includedby refid="sparse__convolve_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc</includedby>
+    <includedby refid="_core_seismogram_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreSeismogram.cc</includedby>
+    <includedby refid="_core_time_series_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/CoreTimeSeries.cc</includedby>
+    <includedby refid="dmatrix_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/dmatrix.cc</includedby>
+    <includedby refid="normalize_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/misc/blas.h</label>
+        <link refid="blas_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>FC.h</label>
+      </node>
+    </incdepgraph>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="blas_8h_1a61f2081ac704f35bf765b8763daf9e0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double ddot</definition>
+        <argsstring>(const int &amp;n, const double *x, const int &amp;incx, const double *y, const int &amp;incy)</argsstring>
+        <name>ddot</name>
+        <param>
+          <type>const int &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incx</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="7" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="7" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a24fe21ab801ae7b453403e6903d63982" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double dscal</definition>
+        <argsstring>(const int &amp;n, const double &amp;a, const double *x, const int &amp;incx)</argsstring>
+        <name>dscal</name>
+        <param>
+          <type>const int &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="9" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="9" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a5f3bf3ceaacbdb929f79db2100458a7c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double daxpy</definition>
+        <argsstring>(const int &amp;n, const double &amp;a, const double *x, const int &amp;incx, const double *y, const int &amp;incy)</argsstring>
+        <name>daxpy</name>
+        <param>
+          <type>const int &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double &amp;</type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incx</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="10" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="10" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1aeee663184623e22abfaa87593068aea6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double dcopy</definition>
+        <argsstring>(const int &amp;n, const double *x, const int &amp;incx, const double *y, const int &amp;incy)</argsstring>
+        <name>dcopy</name>
+        <param>
+          <type>const int &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incx</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="12" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="12" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a231a21a516b7810657e813e75972e72a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double dnrm2</definition>
+        <argsstring>(const int &amp;n, const double *x, const int &amp;incx)</argsstring>
+        <name>dnrm2</name>
+        <param>
+          <type>const int &amp;</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>const double *</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>const int &amp;</type>
+          <declname>incx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="14" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="14" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a2cb406f4ec898ac094c46e43c3a6191a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void dgetrf</definition>
+        <argsstring>(int &amp;, int &amp;, double *, int &amp;, int *, int &amp;)</argsstring>
+        <name>dgetrf</name>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>double *</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>int *</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="15" column="6" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="15" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1af55bbcbddcdb395385c54b9f8310f35e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void dgetri</definition>
+        <argsstring>(int &amp;, double *, int &amp;, int *, double *, int &amp;, int &amp;)</argsstring>
+        <name>dgetri</name>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>double *</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>int *</type>
+        </param>
+        <param>
+          <type>double *</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <param>
+          <type>int &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="16" column="6" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="16" declcolumn="6"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1aa8a8f91a492779cfefa6d799aeea31ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double dlamch</definition>
+        <argsstring>(const char *cmach)</argsstring>
+        <name>dlamch</name>
+        <param>
+          <type>const char *</type>
+          <declname>cmach</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="17" column="8" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="17" declcolumn="8"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a5d5c0321da6c67b6ee08c967d37453ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int dstebz</definition>
+        <argsstring>(char *range, char *order, int *n, double *vl, double *vu, int *il, int *iu, double *abstol, double *d__, double *e, int *m, int *nsplit, double *w, int *iblock, int *isplit, double *work, int *iwork, int *info)</argsstring>
+        <name>dstebz</name>
+        <param>
+          <type>char *</type>
+          <declname>range</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>order</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>vl</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>vu</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>il</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>iu</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>abstol</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>d__</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>nsplit</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>iblock</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>isplit</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>work</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>iwork</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="18" column="5" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="18" declcolumn="5"/>
+      </memberdef>
+      <memberdef kind="function" id="blas_8h_1a86c0ac602b5dfcc8e300b267177d4ce2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int dstein</definition>
+        <argsstring>(int *n, double *d__, double *e, int *m, double *w, int *iblock, int *isplit, double *z__, int *ldz, double *work, int *iwork, int *ifail, int *info)</argsstring>
+        <name>dstein</name>
+        <param>
+          <type>int *</type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>d__</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>e</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>m</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>w</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>iblock</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>isplit</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>z__</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>ldz</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>work</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>iwork</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>ifail</declname>
+        </param>
+        <param>
+          <type>int *</type>
+          <declname>info</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" line="23" column="5" declfile="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h" declline="23" declcolumn="5"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>__BLAS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>__BLAS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;FC.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ddot(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>n,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incx,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incy);</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dscal(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incx);</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>daxpy(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>&amp;n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&amp;<sp/>a,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incx,</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incy);</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dcopy(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>&amp;n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incx,</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*y,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incy);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dnrm2(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>&amp;n,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*x,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;<sp/>incx);</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dgetrf(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;);</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>dgetri(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">*,</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">*,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;,</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">&amp;);</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dlamch(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*cmach);</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dstebz(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*range,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*order,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*n,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>*vl,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*vu,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*il,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*iu,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*abstol,<sp/></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*d__,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*e,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*m,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*nsplit,<sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*w,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*iblock,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*isplit,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*work,<sp/></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*iwork,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*info);</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>dstein(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*n,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*d__,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*e,<sp/></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*m,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*w,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*iblock,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*isplit,<sp/></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*z__,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*ldz,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>*work,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*iwork,<sp/></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*ifail,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>*info);</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/misc/blas.h"/>
+  </compounddef>
+</doxygen>

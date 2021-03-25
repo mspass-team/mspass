@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -122,7 +129,12 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jobid</b> () c
 <p>Get a new UUID to define unique job run. </p>
 <p>MsPASS data objects are tagged with a UUID to properly handle processing history. Procedures can call his method to get a uuid based on boost's random_generator. We keep the generator in this object because web conversations suggest construction of random_generator is expensive in time and needs to not be done at the object level.</p>
 <dl class="section return"><dt>Returns</dt><dd>new uuid definign this job in string form. </dd></dl>
-
+<div class="fragment"><div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  {</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    boost::uuids::uuid id;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordtype">id</span>=gen();</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <span class="keywordflow">return</span> boost::uuids::to_string(<span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  }</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>

@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -144,6 +151,13 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Default constructor. </p>
+<div class="fragment"><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>=0.0;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>=0.0;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    azimuth0=0.0;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -189,6 +203,13 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
+<div class="fragment"><div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;{</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>=ux0;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>=uy0;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    azimuth0=az0;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -208,6 +229,13 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Copy constructor. </p>
+<div class="fragment"><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>=old.ux;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>=old.uy;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    azimuth0=old.azimuth0;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -235,6 +263,19 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns the propagation direction defined by a slowness vector. Azimuth is a direction clockwise from north in the standard geographic convention. Value returned is in radians. </p>
+<div class="fragment"><div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mag</a>() &lt;= FLT_EPSILON) <span class="keywordflow">return</span>(azimuth0);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">double</span> phi;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    phi=M_PI_2-atan2(<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>,<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">if</span>(phi&gt;M_PI)</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                <span class="keywordflow">return</span>(phi-2.0*M_PI);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(phi&lt;-M_PI)</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span>(phi+2.0*M_PI);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                <span class="keywordflow">return</span>(phi);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mag()</a>, <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -261,6 +302,21 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns the back azimuth direction defined by a slowness vector. A back azimuth is 180 degrees away from the direction of propagation and points along the great circle path directed back to the source point from a given position. The value returned is in radians. </p>
+<div class="fragment"><div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;{</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordtype">double</span> phi;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mag</a>() &lt;= FLT_EPSILON) </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        phi=M_PI-azimuth0;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        phi=3.0*M_PI_2-atan2(<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>,<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">if</span>(phi&gt;M_PI)</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                <span class="keywordflow">return</span>(phi-2.0*M_PI);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(phi&lt;-M_PI)</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">return</span>(phi+2.0*M_PI);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                <span class="keywordflow">return</span>(phi);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mag()</a>, <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -288,6 +344,11 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Computes the magntitude of the slowness vector. Value returned is in units of seconds/kilometer. <br  />
  </p>
+<div class="fragment"><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span>(hypot(<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>,<a class="code" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">ux</a>, and <a class="el" href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">uy</a>.</p>
 
 </div>
 </div>
@@ -327,6 +388,9 @@ Public Attributes</h2></td></tr>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/SlownessVector.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_slowness_vector_html_aed8526fcbb32eb86bfb4f193d2ff03f9"><div class="ttname"><a href="classmspass_1_1seismic_1_1_slowness_vector.html#aed8526fcbb32eb86bfb4f193d2ff03f9">mspass::seismic::SlownessVector::ux</a></div><div class="ttdeci">double ux</div><div class="ttdef"><b>Definition:</b> SlownessVector.h:20</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_slowness_vector_html_a2e1d2b9fb9e0267ffa99ccf3291f5540"><div class="ttname"><a href="classmspass_1_1seismic_1_1_slowness_vector.html#a2e1d2b9fb9e0267ffa99ccf3291f5540">mspass::seismic::SlownessVector::mag</a></div><div class="ttdeci">double mag() const noexcept</div><div class="ttdef"><b>Definition:</b> SlownessVector.cc:63</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_slowness_vector_html_a2a7134614117cc5a648a1d292021fab0"><div class="ttname"><a href="classmspass_1_1seismic_1_1_slowness_vector.html#a2a7134614117cc5a648a1d292021fab0">mspass::seismic::SlownessVector::uy</a></div><div class="ttdeci">double uy</div><div class="ttdef"><b>Definition:</b> SlownessVector.h:24</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

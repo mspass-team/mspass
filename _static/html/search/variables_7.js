@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['internal_5fname_542',['internal_name',['../classmspass_1_1utility_1_1_attribute_properties.html#a7fb564de0eb17ef42d3affee8b6bed52',1,'mspass::utility::AttributeProperties']]],
-  ['is_5fkey_543',['is_key',['../classmspass_1_1utility_1_1_attribute_properties.html#aa15f63627f9fc558154cb6ecb6e829a4',1,'mspass::utility::AttributeProperties']]]
+  ['high_5fedge_5ff_651',['high_edge_f',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4',1,'mspass::algorithms::deconvolution::BandwidthData']]],
+  ['high_5fedge_5fsnr_652',['high_edge_snr',['../classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#a974889d33c67086d368cbed0fc2d9602',1,'mspass::algorithms::deconvolution::BandwidthData']]]
 ];

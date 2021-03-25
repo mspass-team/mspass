@@ -1,0 +1,1052 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::GeneralIterDecon</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::ScalarDecon</basecompoundref>
+    <includes refid="_general_iter_decon_8h" local="no">GeneralIterDecon.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab7b5a392695343cb4aa0b00ea27aab5d" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::d_all</definition>
+        <argsstring></argsstring>
+        <name>d_all</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="118" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a11a5ef479ffa88deb24fbbf59a080473" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::d_decon</definition>
+        <argsstring></argsstring>
+        <name>d_decon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="118" column="42" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a72763a2290ee0954b75c4d08dd28a6c6" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::r</definition>
+        <argsstring></argsstring>
+        <name>r</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="118" column="49" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a63e215331712a4af000b8f782528d9b9" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>mspass::seismic::CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::n</definition>
+        <argsstring></argsstring>
+        <name>n</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="118" column="50" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af6c221095ccf9adb809c1fdb904bbef5" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::ndwin</definition>
+        <argsstring></argsstring>
+        <name>ndwin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="123" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1acf824ff20c3574d0d3443d7f41df42d6" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nnwin</definition>
+        <argsstring></argsstring>
+        <name>nnwin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="123" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a86dee25851eacf55702fe09a6f09d8aa" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nfft</definition>
+        <argsstring></argsstring>
+        <name>nfft</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="123" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="123" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a863c8f31fb2e82e4ee1dc1280c2e674b" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::time_shift</definition>
+        <argsstring></argsstring>
+        <name>time_shift</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="125" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a33663e864e54cb51cc294b8f9fea79b9" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+        <definition>mspass::seismic::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::dwin</definition>
+        <argsstring></argsstring>
+        <name>dwin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="128" column="33" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abd6f835a7534c7098dcbf01611b7f54f" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+        <definition>mspass::seismic::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::nwin</definition>
+        <argsstring></argsstring>
+        <name>nwin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="128" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a40ffbb745724e47e4743a2f9dd556287" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+        <definition>mspass::seismic::TimeWindow mspass::algorithms::deconvolution::GeneralIterDecon::fftwin</definition>
+        <argsstring></argsstring>
+        <name>fftwin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="128" column="41" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a5071c4dbe58304b77c42c7e748a7a2d1" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::noise_component</definition>
+        <argsstring></argsstring>
+        <name>noise_component</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>For preprocessor algorithms that are scalare we specify which channel is used to define the noise for regularization </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="131" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7f1d2810b61fd0a1605900613f6647e3" prot="private" static="no" mutable="no">
+        <type>std::list&lt; <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref> &gt;</type>
+        <definition>std::list&lt;ThreeCSpike&gt; mspass::algorithms::deconvolution::GeneralIterDecon::spikes</definition>
+        <argsstring></argsstring>
+        <name>spikes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The algorithm accumulates spikes in this linked list. To create the result as a normal time series this is converted to a conventional form in the getresult method </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="135" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abcac76ab7c47ac643c61204ebb501ed8" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lag_weights</definition>
+        <argsstring></argsstring>
+        <name>lag_weights</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Penalty function weights.</para>
+<para>This algorithm uses a penalty function that downweights a range of lags around the time of each spike subtracted in the iteration. This stl vector contains the accumulated weighting function at the end of the iteration. It is used for QC </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="142" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="142" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1adba20a631c1607052927ca1f472d7b79" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::wtf</definition>
+        <argsstring></argsstring>
+        <name>wtf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="145" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0f8d1f6fa8fee06e2390b12a4968ea6a" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::nwtf</definition>
+        <argsstring></argsstring>
+        <name>nwtf</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="146" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a08b5ec0c703d6dddb98d23b4df3563a0" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon" kindref="compound">ScalarDecon</ref> *</type>
+        <definition>ScalarDecon* mspass::algorithms::deconvolution::GeneralIterDecon::preprocessor</definition>
+        <argsstring></argsstring>
+        <name>preprocessor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="150" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0c4b553ac3cad957abbaec459ab4d6df" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref></type>
+        <definition>ShapingWavelet mspass::algorithms::deconvolution::GeneralIterDecon::shapingwavelet</definition>
+        <argsstring></argsstring>
+        <name>shapingwavelet</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="155" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a66d6cf5ac6bbe36dd367d6eeb9e2505c" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::wavelet_pad</definition>
+        <argsstring></argsstring>
+        <name>wavelet_pad</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="158" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0ee5922326251150752261a7f97e3379" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::winv_fir</definition>
+        <argsstring></argsstring>
+        <name>winv_fir</name>
+        <briefdescription>
+<para>Shorted inverse wavelet used for iteration. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The iteration is done here in the time domain. The wavelet returned by the preprocessor algorithm will commonly have lots of zeros or small numbers outside a central area. The constructor to needs to define how that long wavelet is shortened to build this one. winv_fir is the inverse wavelet vector and actual_o_fir is the ideal output fir filter vector. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="167" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a5ba7fde0b21ccfe184483db85e328159" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_fir</definition>
+        <argsstring></argsstring>
+        <name>actual_o_fir</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="167" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8e26a142a3719df11e68ce6e05823736" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::actual_o_0</definition>
+        <argsstring></argsstring>
+        <name>actual_o_0</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="168" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="168" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae4d348ef125ed3de2ce582249f159cef" prot="private" static="no" mutable="no">
+        <type>IterDeconType</type>
+        <definition>IterDeconType mspass::algorithms::deconvolution::GeneralIterDecon::decon_type</definition>
+        <argsstring></argsstring>
+        <name>decon_type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="169" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0fdd9a29feab2dc218b5215def2c7784" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_initial</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_initial</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="199" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8dedd8ba3473c086a3b110d600943d8d" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_prev</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_prev</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="199" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1add19140d31e779078cd88bf3c555f72e" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_initial</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_initial</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="200" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7a5faf8e3303becf915cb981fc11dbde" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_prev</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_prev</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="200" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="200" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad48ad99baa027a6cbed349be18ef3e32" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_initial</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="201" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a04730a3bef9b5a41134d06104625a6d0" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prev</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_prev</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="201" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8b1e7127d53634bd6136409a7585f011" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_initial</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_initial</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="202" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af6424f2f57b7a462a9b21e48f16891a4" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_prev</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_prev</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="202" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ac2cca5991cda6ce1bbcb72f65e1e1796" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::iter_count</definition>
+        <argsstring></argsstring>
+        <name>iter_count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="204" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad77b72746c8524cbc2dfa845414b7b72" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::iter_max</definition>
+        <argsstring></argsstring>
+        <name>iter_max</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="204" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a1bdfd1d428127ae1c254db80be034ffa" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_floor</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="207" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1aaa606d8fffd0754ead7ab80b08b040a4" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_floor</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="207" column="26" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a1d98ecf562e48288fab1e5db3a421dfc" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_prob</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_prob</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="210" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7caa3d205095d5ccf0457b9846ddd6b6" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_floor</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="210" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a3fa7a02a6eaadc16b524180d4cb90294" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_tol</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_tol</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="211" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7c6aa5d7c1e558e3e4f7983380d00c71" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lw_linf_history</definition>
+        <argsstring></argsstring>
+        <name>lw_linf_history</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="215" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abbd6c90ee3d5f5a4cb59c05ae6ec3938" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::lw_l2_history</definition>
+        <argsstring></argsstring>
+        <name>lw_l2_history</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="215" column="32" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a66819ecf99ff45ee8ee30d74ee54232f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::resid_l2_history</definition>
+        <argsstring></argsstring>
+        <name>resid_l2_history</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="215" column="45" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae13f50d93bfaf9a75d64e76fb86a745c" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::GeneralIterDecon::resid_linf_history</definition>
+        <argsstring></argsstring>
+        <name>resid_linf_history</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="215" column="61" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a716eeb950de422de7aceb5514accd9f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</definition>
+        <argsstring>(mspass::utility::AntelopePf &amp;md)</argsstring>
+        <name>GeneralIterDecon</name>
+        <param>
+          <type><ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+<para>Create an initialize an operator for subseqquent processing. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the primary constructor for this object. The PfStyleMetadata object is expected to contain a suite of parameters used to define how this operator will behave along with what inverse filter is to be constructed ans applied before the iterative algorithm is applied. The pf is required to have multiple Arr sections the components. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="77" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="55" bodyend="190"/>
+        <references refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" compoundref="_metadata_8h" startline="440" endline="458">mspass::utility::Metadata::get</references>
+        <references refid="classmspass_1_1utility_1_1_antelope_pf_1a7853329ba52cc91460a435057e6a8e85" compoundref="_antelope_pf_8cc" startline="399" endline="406">mspass::utility::AntelopePf::get_branch</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a592222a71497eaad44f75ace74e7fad6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::GeneralIterDecon::GeneralIterDecon</definition>
+        <argsstring>(const GeneralIterDecon &amp;parent)</argsstring>
+        <name>GeneralIterDecon</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" kindref="compound">GeneralIterDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="78" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae8231338852f209b1008e2af52b25857" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::changeparameter</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>changeparameter</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1a84111e230a365037569b17b2ca693100">changeparameter</reimplements>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="79" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="79" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a89ab691446f7b78698ba6c47e9d65504" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::seismic::TimeWindow dwin)</argsstring>
+        <name>load</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="82" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="295" bodyend="309"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a651bd46edc48ae50c3947b28cd7f004f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::loadnoise</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::seismic::TimeWindow nwin)</argsstring>
+        <name>loadnoise</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="83" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="310" bodyend="324"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af4e88706961b6d643c752de488aca42d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::GeneralIterDecon::load</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;d, mspass::seismic::TimeWindow dwin, mspass::seismic::TimeWindow nwin)</argsstring>
+        <name>load</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>dwin</declname>
+        </param>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <declname>nwin</declname>
+        </param>
+        <briefdescription>
+<para>Load all needed data and process. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method is little more than a call to loadnoise followed immediately by a call to load that is assumed to initiate the computation. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="89" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="325" bodyend="336"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad4eb398a16d8584d6515beaef8e97487" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::process</definition>
+        <argsstring>()</argsstring>
+        <name>process</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a71988c8a42788bd966945d78d5fdb6b3">process</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="90" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="481" bodyend="657"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a06f9463eec260097e51371485f69c7c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::GeneralIterDecon::~GeneralIterDecon</definition>
+        <argsstring>()</argsstring>
+        <name>~GeneralIterDecon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="91" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="191" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad930347fa623a399fa40c8d147162030" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::deconvolution::GeneralIterDecon::getresult</definition>
+        <argsstring>()</argsstring>
+        <name>getresult</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="92" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="696" bodyend="735"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ac12d3bedc4ffa2455cb10be832e8017c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::ideal_output</definition>
+        <argsstring>()</argsstring>
+        <name>ideal_output</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="93" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="93" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a42ff385ce109add3972d5a8f6186878e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::actual_output</definition>
+        <argsstring>()</argsstring>
+        <name>actual_output</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">actual_output</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>\brif Return the actual output of the deconvolution operator.</para>
+<para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="96" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="96" bodyend="98"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a84f320ad48e8bfc9c292f8dde33c0593">mspass::algorithms::deconvolution::ScalarDecon::actual_output</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0aa34a6a8703f3bc9d069538103e910c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</definition>
+        <argsstring>()</argsstring>
+        <name>inverse_wavelet</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">inverse_wavelet</reimplements>
+        <briefdescription>
+<para>Return a FIR represention of the inverse filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="99" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="99" bodyend="101"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a078d038467a3be52d1e91e0d080d503e">mspass::algorithms::deconvolution::ScalarDecon::inverse_wavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab953df1fd684513a45ba76473632ab93" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>mspass::seismic::CoreTimeSeries mspass::algorithms::deconvolution::GeneralIterDecon::inverse_wavelet</definition>
+        <argsstring>(double t0parent)</argsstring>
+        <name>inverse_wavelet</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9adc0519d5435d686edb32066f9f697a">inverse_wavelet</reimplements>
+        <param>
+          <type>double</type>
+          <declname>t0parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="102" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="102" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a788a9a7f1f0e7a9fcdedfb4625b98474" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>Metadata mspass::algorithms::deconvolution::GeneralIterDecon::QCMetrics</definition>
+        <argsstring>()</argsstring>
+        <name>QCMetrics</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af683c2f25e91155c2bc1f81f9b62bbb1">QCMetrics</reimplements>
+        <briefdescription>
+<para>Return appropriate quality measures. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each operator commonly has different was to measure the quality of the result. This method should return these in a generic Metadata object. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="105" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="736" bodyend="740"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af3204ea83400f3ecf86399239beb03be" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::construct_weight_penalty_function</definition>
+        <argsstring>(const mspass::utility::Metadata &amp;md)</argsstring>
+        <name>construct_weight_penalty_function</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="171" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="198" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a9dce9e0ba124819e152c7bf7db6c2a31" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::update_residual_matrix</definition>
+        <argsstring>(ThreeCSpike spk)</argsstring>
+        <name>update_residual_matrix</name>
+        <param>
+          <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_three_c_spike" kindref="compound">ThreeCSpike</ref></type>
+          <declname>spk</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Subtract current spike signal from data.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spk</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- vector amplitude and lag of spike - subtract ideal output at this lag. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="177" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="338" bodyend="362"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab438fd05188e17307bb00e27d20718d6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::update_lag_weights</definition>
+        <argsstring>(int col)</argsstring>
+        <name>update_lag_weights</name>
+        <param>
+          <type>int</type>
+          <declname>col</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Updates the lag weight vector.</para>
+<para>This implementation has an enhanced time weighting function beyond that given in Wang and Pavlis&apos;s paper. This private method updates the weight vector using the lag position (in samples) of the current spike. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="184" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="370" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a926683ed3ed2b6094ee368460ce17b00" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::GeneralIterDecon::compute_resid_linf_floor</definition>
+        <argsstring>()</argsstring>
+        <name>compute_resid_linf_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This private method is called after load noise to se the quantity resid_linf_floor = convergence criteria on amplitude. That paramters is computed from sorting the filtered, preevent noise and setting the threshold from a probability level. Returns the computed floor but also sets resid_linf_floor in this base object </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="383" bodyend="397"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1aab3c6a3e739664875b3c98ad48afc8ef" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::GeneralIterDecon::has_not_converged</definition>
+        <argsstring>()</argsstring>
+        <name>has_not_converged</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Apply all convergence tests. Returns false to terminate the iteration loop. This puts all such calculations in one place. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="193" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc" bodystart="659" bodyend="695"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a4f860cf6d4e2a91eeae38dca945d79a5" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::GeneralIterDecon::print_convergence_history</definition>
+        <argsstring>(std::ostream &amp;ofs)</argsstring>
+        <name>print_convergence_history</name>
+        <param>
+          <type>std::ostream &amp;</type>
+          <declname>ofs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="216" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="216" bodyend="255"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Implements the Generalized Iterative Method of Wang and Pavlis. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class is an extension of the idea o the generalized iterative method described in the paper by Wang and Pavlis. Their original paper worked on scalar seismograms. This implemenation differs by iterating on the vector data effectively reducing a 3c seismogram to a sequence of 3D vectors at computed lags. The iterative reduction then iterates on the data matrix. In addition, Wang&apos;s original implementation did the iteration by repeated forward and inverse fourier transforms. This algorithm works completely in the time domain.</para>
+<para>The class retains a concept Wang used in the original implementation. Many OOP books stress the idea of construction is initialization. That is not pruddent fo this case since construction involves some work that we do not want to repeat for each new seismogram. Hence, construction only initializes parameters required to run the algorithm. Calculation is triggered by calling one of the two overloaded load methods. The user should be warned, however, that we did not build ina test to assure the noise and signal windows are consistent. Anyone wanting to use this code outside of applications developed by the authors must recognize That the assure consistency they need to call loadnoise before load OR call only the load method that includes a signal and noise window. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::GeneralIterDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::BasicDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::GeneralIterDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::ScalarDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>shapingwavelet</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::ShapingWavelet</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" line="68" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h" bodystart="67" bodyend="256"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8e26a142a3719df11e68ce6e05823736" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>actual_o_0</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a5ba7fde0b21ccfe184483db85e328159" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>actual_o_fir</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a42ff385ce109add3972d5a8f6186878e" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>actual_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a94a28202041cf426f01ef1e10032c744" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>change_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae8231338852f209b1008e2af52b25857" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>changeparameter</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a926683ed3ed2b6094ee368460ce17b00" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>compute_resid_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af3204ea83400f3ecf86399239beb03be" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>construct_weight_penalty_function</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab7b5a392695343cb4aa0b00ea27aab5d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>d_all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a11a5ef479ffa88deb24fbbf59a080473" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>d_decon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a3352f80170606ad4b543493a9168bc9d" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae4d348ef125ed3de2ce582249f159cef" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>decon_type</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a33663e864e54cb51cc294b8f9fea79b9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>dwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a40ffbb745724e47e4743a2f9dd556287" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>fftwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a716eeb950de422de7aceb5514accd9f5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>GeneralIterDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a592222a71497eaad44f75ace74e7fad6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>GeneralIterDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad930347fa623a399fa40c8d147162030" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>getresult</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1aab3c6a3e739664875b3c98ad48afc8ef" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>has_not_converged</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ac12d3bedc4ffa2455cb10be832e8017c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ideal_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0aa34a6a8703f3bc9d069538103e910c" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab953df1fd684513a45ba76473632ab93" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ac2cca5991cda6ce1bbcb72f65e1e1796" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>iter_count</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad77b72746c8524cbc2dfa845414b7b72" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>iter_max</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abcac76ab7c47ac643c61204ebb501ed8" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lag_weights</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a89ab691446f7b78698ba6c47e9d65504" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af4e88706961b6d643c752de488aca42d" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a9478e366652c54b4331e14b5a0eb85ea" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::ScalarDecon::"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>load</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ac358e4143a01c4f979f3f09e401b8e7c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>loaddata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a651bd46edc48ae50c3947b28cd7f004f" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>loadnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1abfb57cb76746708723cac9a860221f2e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1aaa606d8fffd0754ead7ab80b08b040a4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_l2_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abbd6c90ee3d5f5a4cb59c05ae6ec3938" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_l2_history</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1add19140d31e779078cd88bf3c555f72e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_l2_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7a5faf8e3303becf915cb981fc11dbde" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_l2_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a1bdfd1d428127ae1c254db80be034ffa" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7c6aa5d7c1e558e3e4f7983380d00c71" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_linf_history</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0fdd9a29feab2dc218b5215def2c7784" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_linf_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8dedd8ba3473c086a3b110d600943d8d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>lw_linf_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a63e215331712a4af000b8f782528d9b9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>n</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af6c221095ccf9adb809c1fdb904bbef5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ndwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a86dee25851eacf55702fe09a6f09d8aa" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>nfft</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1acf824ff20c3574d0d3443d7f41df42d6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>nnwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a5071c4dbe58304b77c42c7e748a7a2d1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>noise_component</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abd6f835a7534c7098dcbf01611b7f54f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>nwin</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0f8d1f6fa8fee06e2390b12a4968ea6a" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>nwtf</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a87e82a9c95e7d55501e24e1cc95508f1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a08b5ec0c703d6dddb98d23b4df3563a0" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>preprocessor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a4f860cf6d4e2a91eeae38dca945d79a5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>print_convergence_history</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad4eb398a16d8584d6515beaef8e97487" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>process</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a788a9a7f1f0e7a9fcdedfb4625b98474" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>QCMetrics</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a72763a2290ee0954b75c4d08dd28a6c6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>r</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a66819ecf99ff45ee8ee30d74ee54232f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_l2_history</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a8b1e7127d53634bd6136409a7585f011" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_l2_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af6424f2f57b7a462a9b21e48f16891a4" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_l2_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a3fa7a02a6eaadc16b524180d4cb90294" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_l2_tol</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7caa3d205095d5ccf0457b9846ddd6b6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_linf_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae13f50d93bfaf9a75d64e76fb86a745c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_linf_history</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad48ad99baa027a6cbed349be18ef3e32" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_linf_initial</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a04730a3bef9b5a41134d06104625a6d0" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_linf_prev</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a1d98ecf562e48288fab1e5db3a421dfc" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>resid_linf_prob</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a0be7fa5b5fcf4928874f0e4c3c6a2022" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>result</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a2127063af2e8d0c3b4ab56dd73e81cdd" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ab7e5ecd4bce2d9da9cb7724cf0c50690" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1a5e500a76366d00c1b1d6ebc03084668e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1ae2488963949a1161f7a3b4f908a78807" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>ScalarDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0c4b553ac3cad957abbaec459ab4d6df" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>shapingwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7f1d2810b61fd0a1605900613f6647e3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>spikes</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a863c8f31fb2e82e4ee1dc1280c2e674b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>time_shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ab438fd05188e17307bb00e27d20718d6" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>update_lag_weights</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a9dce9e0ba124819e152c7bf7db6c2a31" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>update_residual_matrix</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1aa48f2182a7e7b1c7d63011a9c53c4ee1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a66d6cf5ac6bbe36dd367d6eeb9e2505c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>wavelet_pad</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a0ee5922326251150752261a7f97e3379" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>winv_fir</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1adba20a631c1607052927ca1f472d7b79" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>wtf</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_basic_decon_operator_1aaf5d01a101bc30f52cd0a54509417ac9" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>~BasicDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a06f9463eec260097e51371485f69c7c0" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>~GeneralIterDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_scalar_decon_1af8d516ba301ea2c2e4f8b7572eb3e784" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::GeneralIterDecon</scope><name>~ScalarDecon</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

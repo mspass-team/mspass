@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -235,7 +242,8 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </table>
 </div><div class="memdoc">
 <p>Default constructor. Does nothing. </p>
-
+<div class="fragment"><div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;{};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5255fc3ae6accb650f221c9065a92eff"></a>
@@ -303,7 +311,10 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  : md(parent.md),changed_or_set(parent.changed_or_set)</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;{</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a6d06560c0b169240031c6a274dc7990f"></a>
@@ -329,7 +340,8 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </table>
 </div><div class="memdoc">
 <p>Destructor - has to be explicitly implemented and declared virtual for reasons found in textbooks and various web forums. A very subtle feature of C++ inheritance. </p>
-
+<div class="fragment"><div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;{};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -381,6 +393,28 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
   </table>
   </dd>
 </dl>
+<div class="fragment"><div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;{</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined</a>(key))</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">string</span> typ=this-&gt;type(key);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">if</span>(typ.find(<span class="stringliteral">&quot;string&quot;</span>)==string::npos)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">throw</span> MsPASSError(<span class="stringliteral">&quot;Metadata::append_chain:  data for key=&quot;</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;          + key + <span class="stringliteral">&quot; is not string type but &quot;</span>+typ</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;          + <span class="stringliteral">&quot;\nMust be string type to define a valid chain&quot;</span>,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;          ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordtype">string</span> sval=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">get_string</a>(key);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    sval += separator;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    sval += val;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    this-&gt;put(key,sval);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    this-&gt;put(key,val);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  changed_or_set.insert(key);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">is_defined()</a>.</p>
 
 </div>
 </div>
@@ -407,7 +441,10 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </table>
 </div><div class="memdoc">
 <p>Return iterator to beginning of internal map container. </p>
-
+<div class="fragment"><div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;{</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordflow">return</span> md.begin();</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a20c1da469f6e0a073b291a680425f9e8"></a>
@@ -445,7 +482,17 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;{</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  map&lt;string,boost::any&gt;::iterator mdptr;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  mdptr=md.find(oldkey);</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="comment">/* We silently do nothing if old is not found */</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <span class="keywordflow">if</span>(mdptr!=md.end())</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  {</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    md.insert_or_assign(newkey, mdptr-&gt;second);</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    md.erase(mdptr);</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  }</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a610962d5ca59e48d1b2833e613bbad1d"></a>
@@ -473,7 +520,10 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 
 <p>Mark all data as unmodified. </p>
 <p>There are situations where it is necessary to clear the data structure used to mark changed metadata. The best example know is when data objects interact with a database and try to do updates. Effort can be wasted in unnecessary updates if metadata are improperly marked as modified. This method clears the entire container that defines changed data. </p>
-
+<div class="fragment"><div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  {</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      changed_or_set.clear();</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a7f1e227ec1acaab97343ecbf47bedac4"></a>
@@ -499,7 +549,10 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </table>
 </div><div class="memdoc">
 <p>Return iterator to end of internal map container. </p>
-
+<div class="fragment"><div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;{</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordflow">return</span> md.end();</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a096d3ea32cc03c3f9ae9c69cd9ee28ba"></a>
@@ -519,7 +572,18 @@ std::ostringstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>o
 </div><div class="memdoc">
 <p>Overload for C string</p>
 <p>Clear data associated with a particular key. </p>
-
+<div class="fragment"><div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;{</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  map&lt;string,boost::any&gt;::iterator iptr;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  iptr=md.find(key);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordflow">if</span>(iptr!=md.end())</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    md.erase(iptr);</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="comment">/* Also need to modify this set if the key is found there */</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  set&lt;std::string&gt;::iterator sptr;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  sptr=changed_or_set.find(key);</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keywordflow">if</span>(sptr!=changed_or_set.end())</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      changed_or_set.erase(sptr);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5d6876ed25c3f5d93052239ec828a3c5"></a>
@@ -560,7 +624,14 @@ on the string key version of this same generic function.
 
 \exception - will throw a MetadataGetError (child of MsPASSError) for
    type mismatch or in an overflow or underflow condition.
-</pre> 
+</pre> <div class="fragment"><div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  {</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      T val;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      val=get&lt;T&gt;(std::string(key));</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;      <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  }</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="af2b1cac0f295d9ab5fb240b8b5e12539"></a>
@@ -594,7 +665,25 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;{</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;  T result;</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  std::map&lt;std::string,boost::any&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  iptr=md.find(key);</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <span class="keywordflow">if</span>(iptr==md.end())</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  {</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;    <span class="keywordflow">throw</span> MetadataGetError(key,<span class="keyword">typeid</span>(T).name());</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  }</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  boost::any aval=iptr-&gt;second;</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;  <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;    result=boost::any_cast&lt;T&gt;(aval);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  }<span class="keywordflow">catch</span>(boost::bad_any_cast&amp; err)</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  {</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    <span class="keyword">const</span> std::type_info &amp;ti = aval.type();</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;    <span class="keywordflow">throw</span> MetadataGetError(err.what(),key,<span class="keyword">typeid</span>(T).name(),ti.name());</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  };</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a991516933477580b6b59dd578819df06"></a>
@@ -634,7 +723,16 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                                              {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    std::map&lt;std::string,boost::any&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    iptr=md.find(key);</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keywordflow">if</span>(iptr==md.end())</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;      <span class="keywordflow">throw</span> MetadataGetError(key,<span class="keyword">typeid</span>(boost::any).name());</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keywordflow">return</span> iptr-&gt;second;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a2631da9d437572ee0781ed9bd96a3ed3"></a>
@@ -670,7 +768,14 @@ template&lt;typename T &gt; </div>
 </dl>
 
 <p>Implements <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a>.</p>
-
+<div class="fragment"><div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                                                   {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;      <span class="keywordtype">bool</span> val;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;      val=get&lt;bool&gt;(key);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ad69a5786d997104df560775f4f688b02"></a>
@@ -711,7 +816,25 @@ template&lt;typename T &gt; </div>
 </dl>
 
 <p>Implements <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a>.</p>
-
+<div class="fragment"><div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                                                       {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      <span class="keywordtype">double</span> val;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      val=get&lt;double&gt;(key);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;      <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    }<span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    {</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="comment">/* Try a float if that failed */</span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="keywordtype">float</span> fval;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        fval=get&lt;float&gt;(key);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;        <span class="keywordflow">return</span> fval;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      }<span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      {</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keywordflow">throw</span> merr;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      }</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    }</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a78f3a01e1b1deccd84a0833bea4ef462"></a>
@@ -752,7 +875,25 @@ template&lt;typename T &gt; </div>
 </dl>
 
 <p>Implements <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a>.</p>
-
+<div class="fragment"><div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="keywordtype">int</span> val;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        val=get&lt;int&gt;(key);</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      }</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;      <span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;          <span class="keywordtype">long</span> lval;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      lval=get&lt;long&gt;(key);</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(lval);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    }<span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    {</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="keywordflow">throw</span> merr;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    }</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      }</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a7ace0c05ebb00b3c383cb8cccd225504"></a>
@@ -791,7 +932,25 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  {</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;      <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        <span class="keywordtype">long</span> val;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;        val=get&lt;long&gt;(key);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;          <span class="keywordtype">int</span> ival;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      ival=get&lt;int&gt;(key);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">long</span><span class="keyword">&gt;</span>(ival);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    }<span class="keywordflow">catch</span>(MetadataGetError&amp; merr)</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      <span class="keywordflow">throw</span> merr;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    }</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      }</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aa56da98a52f03babd67bf9fb55c40f3a"></a>
@@ -833,7 +992,14 @@ template&lt;typename T &gt; </div>
 </dl>
 
 <p>Implements <a class="el" href="classmspass_1_1utility_1_1_basic_metadata.html">mspass::utility::BasicMetadata</a>.</p>
-
+<div class="fragment"><div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                                                          {</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keywordflow">try</span>{</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      std::string val;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      val=get&lt;std::string&gt;(key);</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;      <span class="keywordflow">return</span> val;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    }<span class="keywordflow">catch</span>(...){<span class="keywordflow">throw</span>;};</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a1e96e8682297fe8b21acf09b4d399cc6"></a>
@@ -860,7 +1026,19 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Test if a key has an associated value. Returns true if a value is defined. </p>
-
+<div class="fragment"><div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;{</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  map&lt;string,boost::any&gt;::const_iterator mptr;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  mptr=md.find(key);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span>(mptr!=md.end())</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a52e2040555616a39b900aa0831c3bd10"></a>
@@ -886,7 +1064,17 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return all keys without any type information. </p>
-
+<div class="fragment"><div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;{</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  set&lt;string&gt; result;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  map&lt;string,boost::any&gt;::const_iterator mptr;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keywordflow">for</span>(mptr=md.begin();mptr!=md.end();++mptr)</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  {</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordtype">string</span> key(mptr-&gt;first);\</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    result.insert(key);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a0fec2640022e944afe1ae1180e741da5"></a>
@@ -912,7 +1100,10 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 <p>Return the keys of all altered <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> values. </p>
-
+<div class="fragment"><div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  {</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;      <span class="keywordflow">return</span> changed_or_set;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  };</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="afbd50c491ecc4d42cf2b4213b8bc3327"></a>
@@ -931,7 +1122,12 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Add two <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> objects. Uses operator+= </p>
-
+<div class="fragment"><div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;{</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <a class="code" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a> result(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  result += other;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="afadcdb42814abc1448a78d1d9f3d44aa"></a>
@@ -965,7 +1161,22 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;{</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;rhs))</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="comment">/* We depend here upon the map container replacing values associated with</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="comment">    existing keys.  We mark all entries changes anyway.  This is a vastly simpler</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="comment">    algorithm than the old SEISPP::Metadata.  */</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    map&lt;string,boost::any&gt;::const_iterator rhsptr;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordflow">for</span>(rhsptr=rhs.md.begin();rhsptr!=rhs.md.end();++rhsptr)</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      md[rhsptr-&gt;first]=rhsptr-&gt;second;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      changed_or_set.insert(rhsptr-&gt;first);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aadbae283dfdb87a82832519a9955fdfa"></a>
@@ -989,7 +1200,15 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;{</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span>(<span class="keyword">this</span>!=(&amp;parent))</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    md=parent.md;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    changed_or_set=parent.changed_or_set;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a153ca69299a4d70aa0c6e69e8c70a767"></a>
@@ -1016,7 +1235,10 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Overload for C string</p>
 <p>Return the size of the internal map container. </p>
-
+<div class="fragment"><div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;{</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">return</span> md.size();</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -1024,6 +1246,9 @@ template&lt;typename T &gt; </div>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/utility/Metadata.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a1e96e8682297fe8b21acf09b4d399cc6"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a1e96e8682297fe8b21acf09b4d399cc6">mspass::utility::Metadata::is_defined</a></div><div class="ttdeci">bool is_defined(const std::string key) const noexcept</div><div class="ttdef"><b>Definition:</b> Metadata.cc:72</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_a4a87cd6a6f8fc5cdbee65cb85958cb2c"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">mspass::utility::Metadata::Metadata</a></div><div class="ttdeci">Metadata()</div><div class="ttdef"><b>Definition:</b> Metadata.h:80</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html_aa56da98a52f03babd67bf9fb55c40f3a"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html#aa56da98a52f03babd67bf9fb55c40f3a">mspass::utility::Metadata::get_string</a></div><div class="ttdeci">std::string get_string(const std::string key) const override</div><div class="ttdef"><b>Definition:</b> Metadata.h:213</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -142,7 +149,14 @@ template&lt;class T &gt; </div>
   </table>
   </dd>
 </dl>
-
+<div class="fragment"><div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">if</span>(din.size()&lt;=1) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a>(std::string(<span class="stringliteral">&quot;VectorStatistics constructor:  &quot;</span>)</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        + <span class="stringliteral">&quot;input vector has insufficient data to compute statistics&quot;</span>,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      mspass::utility::ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    d=din;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    std::sort(d.begin(),d.end());</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="aa1e96022417eb6440ea57974d8d7a51e"></a>
@@ -173,7 +187,15 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Construct from a C style pointer to an array of T. </p>
-
+<div class="fragment"><div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;{</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordflow">if</span>(n&lt;=1) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a>(std::string(<span class="stringliteral">&quot;VectorStatistics constructor:  &quot;</span>)</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        + <span class="stringliteral">&quot;input vector has insufficient data to compute statistics&quot;</span>,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      mspass::utility::ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    d.reserve(n);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;n;++i) d.push_back(din[i]);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::sort(d.begin(),d.end());</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
@@ -191,7 +213,14 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return the interquartile (q3/4 - q1/4) </p>
-
+<div class="fragment"><div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;{</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    T result;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    T d1_4,d3_4;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    d1_4=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_vector_statistics.html#a5f4e279cde8acf41e6f77b3e01c8ee70">q1_4</a>();</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    d3_4=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_vector_statistics.html#a45eb0fa880a9f72b08e9cb92c9725c92">q3_4</a>();</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">return</span>(d3_4 - d1_4);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="ae1afa19142b902cd4934d2db0725e24f"></a>
@@ -208,7 +237,10 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return smallest value in the data set. </p>
-
+<div class="fragment"><div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;{</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordflow">return</span>(d[0]);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a8c88cf0408b2ff57da862b57fd87deb8"></a>
@@ -229,6 +261,22 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return the median absolute distance robust measure of spread. </p>
+<div class="fragment"><div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;{</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    std::vector&lt;T&gt; absdiff;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordtype">int</span> n=d.size();</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <span class="keywordtype">int</span> i;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">for</span>(i=0;i&lt;n;++i)</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        T diff;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        diff=d[i]-center;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">if</span>(diff&lt;0) diff=-diff;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        absdiff.push_back(diff);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    }</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    VectorStatistics&lt;T&gt; result(absdiff);</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordflow">return</span>(result.median());</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_vector_statistics.html#a228eee3fbd69e158a2cc0a62d855c7e6">mspass::utility::VectorStatistics&lt; T &gt;::median()</a>.</p>
 
 </div>
 </div>
@@ -246,7 +294,16 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return the mean </p>
-
+<div class="fragment"><div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;{</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    T result;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    result=0;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0;i&lt;d.size();++i)</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        result += d[i];</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> (result/d.size());</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a228eee3fbd69e158a2cc0a62d855c7e6"></a>
@@ -263,7 +320,15 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return median </p>
-
+<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">int</span> count=d.size();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">int</span> medposition=count/2;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">if</span>(count%2)</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordflow">return</span>(d[medposition]);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <span class="keywordflow">return</span>( (d[medposition]+d[medposition-1])/2 );</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5f4e279cde8acf41e6f77b3e01c8ee70"></a>
@@ -280,7 +345,33 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return the lower quartile. </p>
-
+<div class="fragment"><div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;{</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">int</span> n=d.size();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">double</span> result;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">if</span>(n&lt;4)</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">return</span>(d[0]);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        <span class="keywordtype">int</span> nover4=(n-1)/4;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        <span class="keywordflow">switch</span>(n%4)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        {</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordflow">case</span>(0):</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;            result=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4]);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        <span class="keywordflow">case</span>(1):</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;            result=0.75*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4]) + 0.25*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4+1]);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="keywordflow">case</span>(2):</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;            result=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4]) + <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4+1]);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            result /= 2.0;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        <span class="keywordflow">case</span>(3):</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;            result=0.25*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4]) + 0.75*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[nover4+1]);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span>(<span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(result));</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a45eb0fa880a9f72b08e9cb92c9725c92"></a>
@@ -297,7 +388,33 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return the upper (3/4) quartile. </p>
-
+<div class="fragment"><div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;{</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordtype">int</span> n=d.size();</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordtype">double</span> result;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordflow">if</span>(n&lt;4)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">return</span>(d[n-1]);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        <span class="keywordtype">int</span> n3_4=3*(n-1)/4;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">switch</span>(n%4)</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        <span class="keywordflow">case</span>(0):</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            result=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4]);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">case</span>(1):</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;            result=0.75*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4]) + 0.25*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4+1]);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        <span class="keywordflow">case</span>(2):</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;            result=<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4]) + <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4+1]);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;            result /= 2.0;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        <span class="keywordflow">case</span>(3):</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            result=0.25*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4]) + 0.75*<span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(d[n3_4+1]);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keywordflow">return</span>(<span class="keyword">static_cast&lt;</span>T<span class="keyword">&gt;</span>(result));</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a6d1e26b40cf27a90b97871b5302a55b1"></a>
@@ -318,7 +435,16 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return nth value from the sorted data that is the nth 1-quantile. Will throw a <a class="el" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html" title="Base class for error object thrown by MsPASS library routines.">MsPASSError</a> if n exceed the data length. </p>
-
+<div class="fragment"><div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;{</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">if</span>(n&gt;=d.size())</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        std::stringstream ss;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        ss &lt;&lt; <span class="stringliteral">&quot;VectorStatistics::quantile method:  asked for 1-quantile number &quot;</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;          &lt;&lt; n&lt;&lt;<span class="stringliteral">&quot; but data vecotor length is only &quot;</span>&lt;&lt;d.size()&lt;&lt;std::endl;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a>(ss.str(),mspass::utility::ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    }</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="adc1896ab0a7ba080ec4c0740e0506c36"></a>
@@ -335,7 +461,13 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return full range of data (largest - smallest) </p>
-
+<div class="fragment"><div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;{</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    T result;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    result=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_vector_statistics.html#adf7ccfac2a3d89a8c39a3a260a244dc7">upper_bound</a>();</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    result-=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_vector_statistics.html#ae1afa19142b902cd4934d2db0725e24f">lower_bound</a>();</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordflow">return</span>(result);</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a4f4fe42ae9c9cee2463fedbb21241a56"></a>
@@ -352,7 +484,13 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return sum of squares. </p>
-
+<div class="fragment"><div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;{</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    T result;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordtype">int</span> i;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    <span class="keywordflow">for</span>(i=0;i&lt;d.size();++i) result=d[i]*d[i];</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keywordflow">return</span>(result);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="adf7ccfac2a3d89a8c39a3a260a244dc7"></a>
@@ -369,13 +507,21 @@ template&lt;class T &gt; </div>
       </table>
 </div><div class="memdoc">
 <p>Return largest value in the data set. </p>
-
+<div class="fragment"><div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;{</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordflow">return</span>(d[d.size()-1]);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/runner/work/mspass/mspass/cxx/include/mspass/utility/<a class="el" href="_vector_statistics_8h_source.html">VectorStatistics.h</a></li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_vector_statistics_html_a5f4e279cde8acf41e6f77b3e01c8ee70"><div class="ttname"><a href="classmspass_1_1utility_1_1_vector_statistics.html#a5f4e279cde8acf41e6f77b3e01c8ee70">mspass::utility::VectorStatistics::q1_4</a></div><div class="ttdeci">T q1_4()</div><div class="ttdef"><b>Definition:</b> VectorStatistics.h:87</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_vector_statistics_html_adf7ccfac2a3d89a8c39a3a260a244dc7"><div class="ttname"><a href="classmspass_1_1utility_1_1_vector_statistics.html#adf7ccfac2a3d89a8c39a3a260a244dc7">mspass::utility::VectorStatistics::upper_bound</a></div><div class="ttdeci">T upper_bound()</div><div class="ttdef"><b>Definition:</b> VectorStatistics.h:171</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_vector_statistics_html_a45eb0fa880a9f72b08e9cb92c9725c92"><div class="ttname"><a href="classmspass_1_1utility_1_1_vector_statistics.html#a45eb0fa880a9f72b08e9cb92c9725c92">mspass::utility::VectorStatistics::q3_4</a></div><div class="ttdeci">T q3_4()</div><div class="ttdef"><b>Definition:</b> VectorStatistics.h:114</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
+<div class="ttc" id="aclassmspass_1_1utility_1_1_vector_statistics_html_ae1afa19142b902cd4934d2db0725e24f"><div class="ttname"><a href="classmspass_1_1utility_1_1_vector_statistics.html#ae1afa19142b902cd4934d2db0725e24f">mspass::utility::VectorStatistics::lower_bound</a></div><div class="ttdeci">T lower_bound()</div><div class="ttdef"><b>Definition:</b> VectorStatistics.h:175</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

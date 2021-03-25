@@ -225,14 +225,14 @@
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>etoi.insert(pair&lt;string,string&gt;(iptr-&gt;second,iptr-&gt;first));</highlight></codeline>
 <codeline lineno="94"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="95"><highlight class="normal">AttributeCrossReference::AttributeCrossReference</highlight></codeline>
-<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="96" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a6560b0c41600bafbefa6a91c10ce4057" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="97"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/>itoe=parent.itoe;</highlight></codeline>
 <codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>etoi=parent.etoi;</highlight></codeline>
 <codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/>imdtypemap=parent.imdtypemap;</highlight></codeline>
 <codeline lineno="101"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="102"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>AttributeCrossReference::operator=</highlight></codeline>
-<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="103" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a619f37e593d5d259ec6cafed2eed1aea" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_attribute_cross_reference" kindref="compound">AttributeCrossReference</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="104"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=&amp;parent)</highlight></codeline>
 <codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -242,7 +242,7 @@
 <codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="112"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="113"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>AttributeCrossReference::internal(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="113" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a2264349fe7d2093900fa9b56ef84b96b" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>AttributeCrossReference::internal(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="114"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/>map&lt;string,string&gt;::const_iterator<sp/>iptr;</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>iptr=etoi.find(key);</highlight></codeline>
@@ -252,7 +252,7 @@
 <codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>external<sp/>to<sp/>internal<sp/>namespace<sp/>map&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(iptr-&gt;second);</highlight></codeline>
 <codeline lineno="122"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>AttributeCrossReference::external(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="123" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1aeded33f763704fc1a42b884cf62762c6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>AttributeCrossReference::external(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="124"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>map&lt;string,string&gt;::const_iterator<sp/>iptr;</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/>iptr=itoe.find(key);</highlight></codeline>
@@ -262,7 +262,7 @@
 <codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>internal<sp/>to<sp/>external<sp/><sp/>namespace<sp/>map&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(iptr-&gt;second);</highlight></codeline>
 <codeline lineno="132"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="133"><highlight class="normal">MDtype<sp/>AttributeCrossReference::type(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="133" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a546084d7cd4b9369ee7db723c3629422" refkind="member"><highlight class="normal">MDtype<sp/>AttributeCrossReference::type(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="134"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>map&lt;string,MDtype&gt;::const_iterator<sp/>iptr;</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>iptr=imdtypemap.find(key);</highlight></codeline>
@@ -272,12 +272,12 @@
 <codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>in<sp/>type<sp/>definitions&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(iptr-&gt;second);</highlight></codeline>
 <codeline lineno="142"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AttributeCrossReference::size()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="143" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a6a15859017c7559a06b6b38b1045bef7" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>AttributeCrossReference::size()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="144"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Assume<sp/>the<sp/>two<sp/>maps<sp/>are<sp/>the<sp/>same<sp/>size</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(itoe.size());</highlight></codeline>
 <codeline lineno="147"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="148"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AttributeCrossReference::put(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>e)</highlight></codeline>
+<codeline lineno="148" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a0d587eb08b5be753d7e0087bef6d61f4" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>AttributeCrossReference::put(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>i,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>e)</highlight></codeline>
 <codeline lineno="149"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/>itoe.insert(pair&lt;string,string&gt;(i,e));</highlight></codeline>
 <codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/>etoi.insert(pair&lt;string,string&gt;(e,i));</highlight></codeline>
@@ -286,7 +286,7 @@
 <codeline lineno="154"><highlight class="comment"><sp/><sp/><sp/>to<sp/>fetch<sp/>the<sp/>appropriate<sp/>keys,<sp/>but<sp/>we<sp/>always<sp/>use<sp/>fetch<sp/>the</highlight></codeline>
 <codeline lineno="155"><highlight class="comment"><sp/><sp/><sp/>first<sp/>of<sp/>the<sp/>pair<sp/>as<sp/>that<sp/>will<sp/>always<sp/>yield<sp/>a<sp/>unique<sp/>set<sp/>that</highlight></codeline>
 <codeline lineno="156"><highlight class="comment"><sp/><sp/><sp/>exactly<sp/>matches<sp/>the<sp/>originating<sp/>map.<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="157"><highlight class="normal">set&lt;string&gt;<sp/>AttributeCrossReference::internal_names()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="157" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a33b5a77e159f3e114bbfccb24e3fff61" refkind="member"><highlight class="normal">set&lt;string&gt;<sp/>AttributeCrossReference::internal_names()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="158"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="159"><highlight class="normal"><sp/><sp/>map&lt;string,string&gt;::const_iterator<sp/>mptr;</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/>set&lt;string&gt;<sp/>keys;</highlight></codeline>
@@ -296,7 +296,7 @@
 <codeline lineno="164"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>keys;</highlight></codeline>
 <codeline lineno="166"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="167"><highlight class="normal">set&lt;string&gt;<sp/>AttributeCrossReference::external_names()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="167" refid="classmspass_1_1utility_1_1_attribute_cross_reference_1a19789014f1041b64582b6b565913c8de" refkind="member"><highlight class="normal">set&lt;string&gt;<sp/>AttributeCrossReference::external_names()</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="168"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
 <codeline lineno="169"><highlight class="normal"><sp/><sp/>map&lt;string,string&gt;::const_iterator<sp/>mptr;</highlight></codeline>
 <codeline lineno="170"><highlight class="normal"><sp/><sp/>set&lt;string&gt;<sp/>keys;</highlight></codeline>

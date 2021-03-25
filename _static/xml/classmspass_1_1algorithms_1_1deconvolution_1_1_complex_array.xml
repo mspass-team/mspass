@@ -1,0 +1,684 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::ComplexArray</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a7815bd317367c76fddb1e6995993446e" prot="private" static="no" mutable="no">
+        <type><ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex64" kindref="compound">FortranComplex64</ref> *</type>
+        <definition>FortranComplex64* mspass::algorithms::deconvolution::ComplexArray::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="148" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1afb61be3053b0bcf42100bafadc8cc1a1" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ComplexArray::nsamp</definition>
+        <argsstring></argsstring>
+        <name>nsamp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="149" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a3d86421b4c2e6c0efb76850f236ac2b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>()</argsstring>
+        <name>ComplexArray</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Empty constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="32" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="9" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab6b6f17b2bba5963d5a69afaeb357dc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(std::vector&lt; Complex64 &gt; &amp;d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>std::vector&lt; Complex64 &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from stl vector container of complex. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="34" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab00c92fb9de6a9414a2af17d97bac348" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(std::vector&lt; Complex32 &gt; &amp;d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>std::vector&lt; Complex32 &gt; &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Similar for 32 bit version </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="36" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab1baa73144e6678a1f0e8db996c173ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, FortranComplex32 *d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type><ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex32" kindref="compound">FortranComplex32</ref> *</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from a FORTRAN data array.</para>
+<para>Fortran stores complex numbers in a mulitplexed array structure (real(1), imag(1), real(2), imag(2), etc.). The constructors below provide a mechanism for building this object from various permutations of this. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nsamp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the number of elements in the C vector </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the pointer to the first compoment of the fortran vector. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="47" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="34" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aad42a1a78c2e4e9543e9f337e8f88377" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, FortranComplex64 *d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type><ref refid="structmspass_1_1algorithms_1_1deconvolution_1_1_fortran_complex64" kindref="compound">FortranComplex64</ref> *</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="48" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="44" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a637f13cedce15891268952b05261840c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, float *d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type>float *</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="49" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="54" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a92a32a3ed0f34034d86049e5e39154fa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, double *d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type>double *</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="50" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="64" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab71118ab0c7e815c674b4e325b849321" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="51" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="74" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a200af41c2462f3b756e60878aac820c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, std::vector&lt; T &gt; d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; T &gt;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from different length of vector, adds zoeros to it And construct a constant arrays </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="55" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="174" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1addb0a274cab1f5c6f67199af84c4a62e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(int nsamp, T d)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>int</type>
+          <declname>nsamp</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="56" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="201" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a94b18a419753d436298c1a76042c84a5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(std::vector&lt; double &gt; mag, std::vector&lt; double &gt; phase)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>std::vector&lt; double &gt;</type>
+          <declname>mag</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; double &gt;</type>
+          <declname>phase</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Construct from magnitude and phase arrays. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="59" column="5"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aea7f5647c53265ff857cd0407e75a9dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::ComplexArray</definition>
+        <argsstring>(const ComplexArray &amp;parent)</argsstring>
+        <name>ComplexArray</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="63" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="105" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a6364e53978a051b352048ec2a4f56941" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+        <definition>ComplexArray &amp; mspass::algorithms::deconvolution::ComplexArray::operator=</definition>
+        <argsstring>(const ComplexArray &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="64" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="115" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1abdf24ffa3277054d9687d6213cf23ce9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::ComplexArray::~ComplexArray</definition>
+        <argsstring>()</argsstring>
+        <name>~ComplexArray</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="65" column="5" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="130" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a036b9764b6eed283e718cf7a06d09b49" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>T *</type>
+        <definition>T * mspass::algorithms::deconvolution::ComplexArray::FortranData</definition>
+        <argsstring>()</argsstring>
+        <name>FortranData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return a pointer to a fortran array containing the data vector.</para>
+<para>The array linked to the returned pointer should be created with the new operator and the caller should be sure to use delete [] to free this memory when finished. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="77" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="166" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a0dbbc297b5ec089cd28b75ce60da33b2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+        </templateparamlist>
+        <type>std::vector&lt; std::complex&lt; T &gt; &gt;</type>
+        <definition>std::vector&lt; std::complex&lt; T &gt; &gt; mspass::algorithms::deconvolution::ComplexArray::CPPData</definition>
+        <argsstring>()</argsstring>
+        <name>CPPData</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="84" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="153" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a7e68ebced6f6f86de1458952a499cfd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Complex64</type>
+        <definition>Complex64 mspass::algorithms::deconvolution::ComplexArray::operator[]</definition>
+        <argsstring>(int sample)</argsstring>
+        <name>operator[]</name>
+        <param>
+          <type>int</type>
+          <declname>sample</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Index operator. Cannot make it work by getting the address from reference. Have to call the ptr() function to get the address. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sample</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the sample number to return. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>contents of vector at position sample. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="95" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="142" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::algorithms::deconvolution::ComplexArray::ptr</definition>
+        <argsstring>()</argsstring>
+        <name>ptr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="96" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="134" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1afbd1ff222381b2c82efd55da049d8b84" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double *</type>
+        <definition>double * mspass::algorithms::deconvolution::ComplexArray::ptr</definition>
+        <argsstring>(int sample)</argsstring>
+        <name>ptr</name>
+        <param>
+          <type>int</type>
+          <declname>sample</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="97" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="138" bodyend="141"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9bc4c1b16456cdb488f46de2d375618b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+        <definition>ComplexArray &amp; mspass::algorithms::deconvolution::ComplexArray::operator+=</definition>
+        <argsstring>(const ComplexArray &amp;other) noexcept(false)</argsstring>
+        <name>operator+=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="98" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="146" bodyend="163"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a6db18f5430088a26ebf9037da3056950" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+        <definition>ComplexArray &amp; mspass::algorithms::deconvolution::ComplexArray::operator-=</definition>
+        <argsstring>(const ComplexArray &amp;other) noexcept(false)</argsstring>
+        <name>operator-=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="99" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="164" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1adcf15a55b863afdea16e99df71de4004" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+        <definition>ComplexArray &amp; mspass::algorithms::deconvolution::ComplexArray::operator*=</definition>
+        <argsstring>(const ComplexArray &amp;other) noexcept(false)</argsstring>
+        <name>operator*=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="102" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="182" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aadb974af61628e30eb488e767de17caa" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+        <definition>ComplexArray &amp; mspass::algorithms::deconvolution::ComplexArray::operator/=</definition>
+        <argsstring>(const ComplexArray &amp;other) noexcept(false)</argsstring>
+        <name>operator/=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="104" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="203" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9e11d7091ac97ee8151cb3495dcf59e0" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
+        <definition>const ComplexArray mspass::algorithms::deconvolution::ComplexArray::operator+</definition>
+        <argsstring>(const ComplexArray &amp;other) const noexcept(false)</argsstring>
+        <name>operator+</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="105" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="241" bodyend="248"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab4edec0aaba815f6ab1339001c6c75bd" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
+        <definition>const ComplexArray mspass::algorithms::deconvolution::ComplexArray::operator-</definition>
+        <argsstring>(const ComplexArray &amp;other) const noexcept(false)</argsstring>
+        <name>operator-</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="108" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="249" bodyend="256"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a0c861a86501ade1ebce7a3aab27dafc7" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
+        <definition>const ComplexArray mspass::algorithms::deconvolution::ComplexArray::operator*</definition>
+        <argsstring>(const ComplexArray &amp;other) const noexcept(false)</argsstring>
+        <name>operator*</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="111" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="257" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a5909bcfc744a32f485e6cc47083e87cf" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
+        <definition>const ComplexArray mspass::algorithms::deconvolution::ComplexArray::operator/</definition>
+        <argsstring>(const ComplexArray &amp;other) const noexcept(false)</argsstring>
+        <name>operator/</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="112" column="24" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="265" bodyend="272"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a716eaf78570884c6c3da20468ac044eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::ComplexArray::conj</definition>
+        <argsstring>()</argsstring>
+        <name>conj</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>product of complex and real vectors</para>
+<para>product of complex and a number</para>
+<para>Change vector to complex conjugates. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="120" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="273" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a69cd97e86acfff0cfde18e4e259e1ac1" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>vector&lt; double &gt; mspass::algorithms::deconvolution::ComplexArray::abs</definition>
+        <argsstring>() const</argsstring>
+        <name>abs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="122" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="278" bodyend="285"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a3e956e714feaea6763204e3517421b9f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::ComplexArray::rms</definition>
+        <argsstring>() const</argsstring>
+        <name>rms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="124" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="286" bodyend="292"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a417cab137026bb382afb6638bf7541f7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::ComplexArray::norm2</definition>
+        <argsstring>() const</argsstring>
+        <name>norm2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="126" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="293" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aae6762ff2f575acb34f2722f8ff440b6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>vector&lt; double &gt; mspass::algorithms::deconvolution::ComplexArray::phase</definition>
+        <argsstring>() const</argsstring>
+        <name>phase</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="128" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="300" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::ComplexArray::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="130" column="9" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ComplexArray.cc" bodystart="308" bodyend="311"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" line="29" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/ComplexArray.h" bodystart="28" bodyend="150"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a69cd97e86acfff0cfde18e4e259e1ac1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>abs</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a3d86421b4c2e6c0efb76850f236ac2b5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab6b6f17b2bba5963d5a69afaeb357dc4" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab00c92fb9de6a9414a2af17d97bac348" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab1baa73144e6678a1f0e8db996c173ca" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aad42a1a78c2e4e9543e9f337e8f88377" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a637f13cedce15891268952b05261840c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a92a32a3ed0f34034d86049e5e39154fa" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab71118ab0c7e815c674b4e325b849321" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a200af41c2462f3b756e60878aac820c0" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1addb0a274cab1f5c6f67199af84c4a62e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a94b18a419753d436298c1a76042c84a5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aea7f5647c53265ff857cd0407e75a9dc" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ComplexArray</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a716eaf78570884c6c3da20468ac044eb" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>conj</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a0dbbc297b5ec089cd28b75ce60da33b2" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>CPPData</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a7815bd317367c76fddb1e6995993446e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a036b9764b6eed283e718cf7a06d09b49" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>FortranData</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a417cab137026bb382afb6638bf7541f7" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>norm2</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1afb61be3053b0bcf42100bafadc8cc1a1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>nsamp</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a0c861a86501ade1ebce7a3aab27dafc7" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator*</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1adcf15a55b863afdea16e99df71de4004" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator*=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9e11d7091ac97ee8151cb3495dcf59e0" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator+</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9bc4c1b16456cdb488f46de2d375618b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator+=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1ab4edec0aaba815f6ab1339001c6c75bd" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator-</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a6db18f5430088a26ebf9037da3056950" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator-=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a5909bcfc744a32f485e6cc47083e87cf" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator/</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aadb974af61628e30eb488e767de17caa" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator/=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a6364e53978a051b352048ec2a4f56941" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a7e68ebced6f6f86de1458952a499cfd6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>operator[]</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1aae6762ff2f575acb34f2722f8ff440b6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>phase</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a9200882ac321b82d6f1471f3c5ebc8e5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ptr</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1afbd1ff222381b2c82efd55da049d8b84" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>ptr</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a3e956e714feaea6763204e3517421b9f" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>rms</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1a4fb1f0df8241bf1aa07ad3012464250f" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>size</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_1abdf24ffa3277054d9687d6213cf23ce9" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::ComplexArray</scope><name>~ComplexArray</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

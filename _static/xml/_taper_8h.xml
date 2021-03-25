@@ -5,6 +5,7 @@
     <includes local="no">vector</includes>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
+    <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
     <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc</includedby>
     <incdepgraph>
       <node id="13">
@@ -290,6 +291,18 @@
         </childnode>
       </node>
     </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
+      <node id="1">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
+        <link refid="_taper_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
     <innerclass refid="classmspass_1_1seismic_1_1_basic_taper" prot="public">mspass::seismic::BasicTaper</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_linear_taper" prot="public">mspass::seismic::LinearTaper</innerclass>
     <innerclass refid="classmspass_1_1seismic_1_1_cosine_taper" prot="public">mspass::seismic::CosineTaper</innerclass>

@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -102,7 +109,7 @@ $(function() {
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(std::vector&lt;double&gt;&amp; d);</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(<a class="code" href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a>&amp; d);</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">apply</a>(<a class="code" href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a>&amp; d);</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  mspass::algorithms::deconvolution::ComplexArray <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#a54e766697f72f1ba38b95915805dd6d9">transfer_function</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> n);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">mspass::algorithms::deconvolution::ComplexArray</a> <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#a54e766697f72f1ba38b95915805dd6d9">transfer_function</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> n);</div>
 <div class="line"><a name="l00295"></a><span class="lineno"><a class="line" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">  295</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classmspass_1_1algorithms_1_1_butterworth.html#a94f20884465265de735d05946e1cea00">change_dt</a>(<span class="keyword">const</span> <span class="keywordtype">double</span> dtnew)</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  {</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    this-&gt;f3db_lo *= (dtnew/(this-&gt;dt));</div>
@@ -194,6 +201,7 @@ $(function() {
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.h:16</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_a54e766697f72f1ba38b95915805dd6d9"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#a54e766697f72f1ba38b95915805dd6d9">mspass::algorithms::Butterworth::transfer_function</a></div><div class="ttdeci">mspass::algorithms::deconvolution::ComplexArray transfer_function(const int n)</div><div class="ttdoc">Return the response of the filter in the frequency domain.</div><div class="ttdef"><b>Definition:</b> Butterworth.cc:436</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_ad8c696b150ed18bfb3c4060dd884bfe3"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#ad8c696b150ed18bfb3c4060dd884bfe3">mspass::algorithms::Butterworth::apply</a></div><div class="ttdeci">void apply(mspass::seismic::CoreTimeSeries &amp;d)</div><div class="ttdoc">pply the filter to a CoreTimeSeries object.</div><div class="ttdef"><b>Definition:</b> Butterworth.cc:254</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_complex_array_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array.html">mspass::algorithms::deconvolution::ComplexArray</a></div><div class="ttdef"><b>Definition:</b> ComplexArray.h:28</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_a7602075f3fe8f56e891331c98264d1a5"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#a7602075f3fe8f56e891331c98264d1a5">mspass::algorithms::Butterworth::operator=</a></div><div class="ttdeci">Butterworth &amp; operator=(const Butterworth &amp;parent)</div><div class="ttdef"><b>Definition:</b> Butterworth.cc:224</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1_butterworth_html_a2b528a200c2b56f9420a5f29fb706d3c"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_butterworth.html#a2b528a200c2b56f9420a5f29fb706d3c">mspass::algorithms::Butterworth::npoles_low</a></div><div class="ttdeci">int npoles_low() const</div><div class="ttdef"><b>Definition:</b> Butterworth.h:313</div></div>
 <!-- start footer part -->

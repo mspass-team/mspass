@@ -4,46 +4,52 @@
     <compoundname>Metadata.cc</compoundname>
     <includes local="no">iomanip</includes>
     <includes local="no">boost/core/demangle.hpp</includes>
-    <includes local="yes">misc/base64.h</includes>
+    <includes refid="base64_8h" local="yes">misc/base64.h</includes>
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="yes">mspass/utility/MsPASSError.h</includes>
     <incdepgraph>
-      <node id="9">
+      <node id="10">
         <label>list</label>
+      </node>
+      <node id="4">
+        <label>misc/base64.h</label>
+        <link refid="base64_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>iomanip</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="18">
+      <node id="5">
         <label>string</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>map</label>
       </node>
-      <node id="16">
+      <node id="17">
         <label>exception</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>fstream</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>boost/any.hpp</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="18" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>typeinfo</label>
       </node>
       <node id="1">
@@ -55,34 +61,29 @@
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="15" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="13">
         <label>sstream</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>pybind11/pybind11.h</label>
       </node>
       <node id="3">
         <label>boost/core/demangle.hpp</label>
       </node>
-      <node id="10">
+      <node id="11">
         <label>iostream</label>
       </node>
-      <node id="4">
-        <label>misc/base64.h</label>
-      </node>
-      <node id="8">
+      <node id="9">
         <label>set</label>
       </node>
-      <node id="5">
+      <node id="6">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
@@ -101,7 +102,9 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -179,11 +182,11 @@
 <codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
 <codeline lineno="67"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="68"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" kindref="member">Metadata::Metadata</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Metadata&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="68" refid="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" kindref="member">Metadata::Metadata</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="69"><highlight class="normal"><sp/><sp/>:<sp/>md(parent.md),changed_or_set(parent.changed_or_set)</highlight></codeline>
 <codeline lineno="70"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="71"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="72"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">Metadata::is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept</highlight></codeline>
+<codeline lineno="72" refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">Metadata::is_defined</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>noexcept</highlight></codeline>
 <codeline lineno="73"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/>map&lt;string,boost::any&gt;::const_iterator<sp/>mptr;</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/>mptr=md.find(key);</highlight></codeline>
@@ -196,14 +199,14 @@
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="83"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="84"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" kindref="member">Metadata::append_chain</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>val,</highlight></codeline>
+<codeline lineno="85" refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1aa288eb54e6fafb8af13f71e2f3dce4a2" kindref="member">Metadata::append_chain</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>val,</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>separator)</highlight></codeline>
 <codeline lineno="87"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_metadata_1a1e96e8682297fe8b21acf09b4d399cc6" kindref="member">is_defined</ref>(key))</highlight></codeline>
 <codeline lineno="89"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>typ=this-&gt;type(key);</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(typ.find(</highlight><highlight class="stringliteral">&quot;string&quot;</highlight><highlight class="normal">)==string::npos)</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>MsPASSError(</highlight><highlight class="stringliteral">&quot;Metadata::append_chain:<sp/><sp/>data<sp/>for<sp/>key=&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(</highlight><highlight class="stringliteral">&quot;Metadata::append_chain:<sp/><sp/>data<sp/>for<sp/>key=&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/>key<sp/>+<sp/></highlight><highlight class="stringliteral">&quot;<sp/>is<sp/>not<sp/>string<sp/>type<sp/>but<sp/>&quot;</highlight><highlight class="normal">+typ</highlight></codeline>
 <codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>+<sp/></highlight><highlight class="stringliteral">&quot;\nMust<sp/>be<sp/>string<sp/>type<sp/>to<sp/>define<sp/>a<sp/>valid<sp/>chain&quot;</highlight><highlight class="normal">,</highlight></codeline>
 <codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ErrorSeverity::Invalid);</highlight></codeline>
@@ -218,7 +221,7 @@
 <codeline lineno="104"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="105"><highlight class="normal"><sp/><sp/>changed_or_set.insert(key);</highlight></codeline>
 <codeline lineno="106"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="107"><highlight class="normal">Metadata&amp;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Metadata&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="107" refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa" kindref="member">Metadata::operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="108"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="109"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;parent))</highlight></codeline>
 <codeline lineno="110"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
@@ -228,7 +231,7 @@
 <codeline lineno="114"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="115"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="116"><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal">Metadata&amp;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" kindref="member">Metadata::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Metadata&amp;<sp/>rhs)<sp/>noexcept</highlight></codeline>
+<codeline lineno="117" refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" refkind="member"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa" kindref="member">Metadata::operator+=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>rhs)<sp/>noexcept</highlight></codeline>
 <codeline lineno="118"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="119"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(</highlight><highlight class="keyword">this</highlight><highlight class="normal">!=(&amp;rhs))</highlight></codeline>
 <codeline lineno="120"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
@@ -244,13 +247,13 @@
 <codeline lineno="130"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="132"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="133"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Metadata<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" kindref="member">Metadata::operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>Metadata&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="133" refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1afbd50c491ecc4d42cf2b4213b8bc3327" kindref="member">Metadata::operator+</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="134"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="135"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a4a87cd6a6f8fc5cdbee65cb85958cb2c" kindref="member">Metadata</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>result(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="136"><highlight class="normal"><sp/><sp/>result<sp/>+=<sp/>other;</highlight></codeline>
 <codeline lineno="137"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="138"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="139"><highlight class="normal">set&lt;string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" kindref="member">Metadata::keys</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
+<codeline lineno="139" refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" refkind="member"><highlight class="normal">set&lt;string&gt;<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a52e2040555616a39b900aa0831c3bd10" kindref="member">Metadata::keys</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
 <codeline lineno="140"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="141"><highlight class="normal"><sp/><sp/>set&lt;string&gt;<sp/>result;</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/>map&lt;string,boost::any&gt;::const_iterator<sp/>mptr;</highlight></codeline>
@@ -261,7 +264,7 @@
 <codeline lineno="147"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="148"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="149"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="150"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" kindref="member">Metadata::erase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)</highlight></codeline>
+<codeline lineno="150" refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a096d3ea32cc03c3f9ae9c69cd9ee28ba" kindref="member">Metadata::erase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>key)</highlight></codeline>
 <codeline lineno="151"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="152"><highlight class="normal"><sp/><sp/>map&lt;string,boost::any&gt;::iterator<sp/>iptr;</highlight></codeline>
 <codeline lineno="153"><highlight class="normal"><sp/><sp/>iptr=md.find(key);</highlight></codeline>
@@ -273,15 +276,15 @@
 <codeline lineno="159"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(sptr!=changed_or_set.end())</highlight></codeline>
 <codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>changed_or_set.erase(sptr);</highlight></codeline>
 <codeline lineno="161"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="162"><highlight class="normal">std::size_t<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">Metadata::size</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
+<codeline lineno="162" refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" refkind="member"><highlight class="normal">std::size_t<sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a153ca69299a4d70aa0c6e69e8c70a767" kindref="member">Metadata::size</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
 <codeline lineno="163"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md.size();</highlight></codeline>
 <codeline lineno="165"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="166"><highlight class="normal">std::map&lt;string,boost::any&gt;::const_iterator<sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" kindref="member">Metadata::begin</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
+<codeline lineno="166" refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" refkind="member"><highlight class="normal">std::map&lt;string,boost::any&gt;::const_iterator<sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1af9aea7916d2b11f9f1e94b7d84b8db23" kindref="member">Metadata::begin</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
 <codeline lineno="167"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="168"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md.begin();</highlight></codeline>
 <codeline lineno="169"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="170"><highlight class="normal">std::map&lt;string,boost::any&gt;::const_iterator<sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kindref="member">Metadata::end</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
+<codeline lineno="170" refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" refkind="member"><highlight class="normal">std::map&lt;string,boost::any&gt;::const_iterator<sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kindref="member">Metadata::end</ref>()<sp/>const<sp/>noexcept</highlight></codeline>
 <codeline lineno="171"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>md.end();</highlight></codeline>
 <codeline lineno="173"><highlight class="normal">}</highlight></codeline>
@@ -472,7 +475,7 @@
 <codeline lineno="358"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...){</highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;};</highlight></codeline>
 <codeline lineno="359"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="360"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>New<sp/>method<sp/>added<sp/>Apr<sp/>2020<sp/>to<sp/>change<sp/>key<sp/>assigned<sp/>to<sp/>a<sp/>value<sp/>-<sp/>used<sp/>for<sp/>aliass*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="361"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kindref="member">Metadata::change_key</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>oldkey,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>newkey)</highlight></codeline>
+<codeline lineno="361" refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kindref="member">Metadata::change_key</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>oldkey,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>newkey)</highlight></codeline>
 <codeline lineno="362"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="363"><highlight class="normal"><sp/><sp/>map&lt;string,boost::any&gt;::iterator<sp/>mdptr;</highlight></codeline>
 <codeline lineno="364"><highlight class="normal"><sp/><sp/>mdptr=md.find(oldkey);</highlight></codeline>

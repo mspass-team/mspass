@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -160,7 +167,33 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 
 <p>primary constructor. </p>
 <p>Defines linear taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Linear ramp between t0head and t1head and in opposite sense from t1tail to t0tail. Setting 0 value = 1 value should be used as a signal to disable. </p>
-
+<div class="fragment"><div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  t0head=t0h;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  t1head=t1h;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  t0tail=t0t;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  t1tail=t1t;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordflow">if</span>(t1head&gt;t0head)</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    head=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    head=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordflow">if</span>(t1tail&lt;t0tail)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    tail=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    tail=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span>(head&amp;&amp;tail)</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    all=<span class="keyword">true</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    all=<span class="keyword">false</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">if</span>(!(head || tail))</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    stringstream ss;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    ss &lt;&lt; <span class="stringliteral">&quot;LinearTaper constructor:  illegal input.  No valid taper parameters&quot;</span>&lt;&lt;endl</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;       &lt;&lt; <span class="stringliteral">&quot;Input defines front end ramp defined as 0 at &quot;</span>&lt;&lt;t0h&lt;&lt;<span class="stringliteral">&quot; rising to 1 at &quot;</span>&lt;&lt;t1h&lt;&lt;endl</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;       &lt;&lt; <span class="stringliteral">&quot;Tail end ramp defined with 1 at &quot;</span>&lt;&lt;t1t&lt;&lt;<span class="stringliteral">&quot; dropping to 0 at &quot;</span>&lt;&lt;t0t&lt;&lt;endl;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">MsPASSError</a>(ss.str(),ErrorSeverity::Invalid);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -168,6 +201,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>all</b></td></tr>
 <li>/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc</li>
 </ul>
 </div><!-- contents -->
+<div class="ttc" id="aclassmspass_1_1utility_1_1_ms_p_a_s_s_error_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_ms_p_a_s_s_error.html">mspass::utility::MsPASSError</a></div><div class="ttdoc">Base class for error object thrown by MsPASS library routines.</div><div class="ttdef"><b>Definition:</b> MsPASSError.h:39</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

@@ -1,0 +1,1170 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::deconvolution::CNR3CDecon</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::Base3CDecon</basecompoundref>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" prot="public" virt="non-virtual">mspass::algorithms::deconvolution::FFTDeconOperator</basecompoundref>
+    <includes refid="_c_n_r3_c_decon_8h" local="no">CNR3CDecon.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0344bdfb40de51c79ee504fae9b88226" prot="private" static="no" mutable="no">
+        <type>CNR3C_algorithms</type>
+        <definition>CNR3C_algorithms mspass::algorithms::deconvolution::CNR3CDecon::algorithm</definition>
+        <argsstring></argsstring>
+        <name>algorithm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="342" column="20" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="340" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aadfbc68538e5e07391f8674f3824a3dc" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::deconvolution::CNR3CDecon::taper_data</definition>
+        <argsstring></argsstring>
+        <name>taper_data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="343" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="343" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5c1fc0540ec7218db20d03bd4321ff91" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::operator_dt</definition>
+        <argsstring></argsstring>
+        <name>operator_dt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="344" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="344" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abe1ec221487a10dbcecbb5ce883ba1bc" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::CNR3CDecon::winlength</definition>
+        <argsstring></argsstring>
+        <name>winlength</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="347" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="347" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afb62c7e7c10b651ed6608368a5dae0e5" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::decon_bandwidth_cutoff</definition>
+        <argsstring></argsstring>
+        <name>decon_bandwidth_cutoff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="348" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="348" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4962d7e5926f6654a10c76797be79e54" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+        <definition>mspass::seismic::TimeWindow mspass::algorithms::deconvolution::CNR3CDecon::processing_window</definition>
+        <argsstring></argsstring>
+        <name>processing_window</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="351" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="351" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa198d9e6f9c588cdb510ea2e481f6693" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+        <definition>mspass::seismic::TimeWindow mspass::algorithms::deconvolution::CNR3CDecon::noise_window</definition>
+        <argsstring></argsstring>
+        <name>noise_window</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="352" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="352" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aba1aada37508ee50775754fef15f4737" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref></type>
+        <definition>MTPowerSpectrumEngine mspass::algorithms::deconvolution::CNR3CDecon::signalengine</definition>
+        <argsstring></argsstring>
+        <name>signalengine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Operator used to compute power spectra using multitaper. Need different ones for diffent contexts to handle mixed window sizes </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="355" column="25" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="355" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6e8430950b3e5d1e5e58322a0dcf553b" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref></type>
+        <definition>MTPowerSpectrumEngine mspass::algorithms::deconvolution::CNR3CDecon::waveletengine</definition>
+        <argsstring></argsstring>
+        <name>waveletengine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="355" column="37" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="355" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ae8a9a0bbf375afc94cf4d6e462c6382f" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref></type>
+        <definition>MTPowerSpectrumEngine mspass::algorithms::deconvolution::CNR3CDecon::dnoise_engine</definition>
+        <argsstring></argsstring>
+        <name>dnoise_engine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="356" column="25" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="356" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aee0fa10a1f955e78acacf3e77611b698" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine" kindref="compound">MTPowerSpectrumEngine</ref></type>
+        <definition>MTPowerSpectrumEngine mspass::algorithms::deconvolution::CNR3CDecon::wnoise_engine</definition>
+        <argsstring></argsstring>
+        <name>wnoise_engine</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="356" column="39" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="356" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ad72d17f7299c3ba04fec8fb7564529a5" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet" kindref="compound">ShapingWavelet</ref></type>
+        <definition>ShapingWavelet mspass::algorithms::deconvolution::CNR3CDecon::shapingwavelet</definition>
+        <argsstring></argsstring>
+        <name>shapingwavelet</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="357" column="18" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="357" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3af3ad03a0dddb66563d609b7e453b45" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::psnoise</definition>
+        <argsstring></argsstring>
+        <name>psnoise</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="362" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="362" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a049410ab05916d08ddaa055eee2edf53" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::psnoise_data</definition>
+        <argsstring></argsstring>
+        <name>psnoise_data</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="367" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="367" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a684a83abc7b7d8ce2c6ca7e60e02ac56" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::pssignal</definition>
+        <argsstring></argsstring>
+        <name>pssignal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="371" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="371" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a549ed717042bae9310c235c89586758d" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::pswavelet</definition>
+        <argsstring></argsstring>
+        <name>pswavelet</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="372" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="372" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1af19ae3644dea2033d3f1dc6eb9cacc0d" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
+        <definition>mspass::seismic::Seismogram mspass::algorithms::deconvolution::CNR3CDecon::decondata</definition>
+        <argsstring></argsstring>
+        <name>decondata</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="374" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="374" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a38b82a01245f9582870869f914ed975f" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>mspass::seismic::TimeSeries mspass::algorithms::deconvolution::CNR3CDecon::wavelet</definition>
+        <argsstring></argsstring>
+        <name>wavelet</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="376" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="376" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a030a5bd1f61e143839ef7e26c8df0394" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">mspass::seismic::BasicTaper</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;mspass::seismic::BasicTaper&gt; mspass::algorithms::deconvolution::CNR3CDecon::wavelet_taper</definition>
+        <argsstring></argsstring>
+        <name>wavelet_taper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="378" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="378" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a226e7f26d03f04b9ea828a7858b478b2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">mspass::seismic::BasicTaper</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;mspass::seismic::BasicTaper&gt; mspass::algorithms::deconvolution::CNR3CDecon::data_taper</definition>
+        <argsstring></argsstring>
+        <name>data_taper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="379" column="19" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="379" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a191a799f7f851d97b5f60259d615c2f9" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::damp</definition>
+        <argsstring></argsstring>
+        <name>damp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="386" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="386" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aeaa39050807e356a559d54e3b70788a3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::noise_floor</definition>
+        <argsstring></argsstring>
+        <name>noise_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="386" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="386" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6cbea949df15eb67e585bc1babe98906" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::snr_regularization_floor</definition>
+        <argsstring></argsstring>
+        <name>snr_regularization_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="393" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="393" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9ea00469a06eb5fc270b79b064dc38b2" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::snr_bandwidth</definition>
+        <argsstring></argsstring>
+        <name>snr_bandwidth</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="397" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="397" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8370c1882e72e62392693b54be862b6c" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array" kindref="compound">ComplexArray</ref></type>
+        <definition>ComplexArray mspass::algorithms::deconvolution::CNR3CDecon::ao_fft</definition>
+        <argsstring></argsstring>
+        <name>ao_fft</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="400" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="400" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a66617d53dc53ca9f2da0e1ed5ac90ed7" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
+        <definition>BandwidthData mspass::algorithms::deconvolution::CNR3CDecon::wavelet_bwd</definition>
+        <argsstring></argsstring>
+        <name>wavelet_bwd</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="401" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="401" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a28cc5623235ca7199a2f3729418dfefe" prot="private" static="no" mutable="no">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref></type>
+        <definition>BandwidthData mspass::algorithms::deconvolution::CNR3CDecon::signal_bwd</definition>
+        <argsstring></argsstring>
+        <name>signal_bwd</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="402" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="402" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aec94bcb17e43c0a161b7995aa400349e" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>std::vector&lt;double&gt; mspass::algorithms::deconvolution::CNR3CDecon::wavelet_snr</definition>
+        <argsstring></argsstring>
+        <name>wavelet_snr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="405" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="405" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa66f512fef9c3ea8c89c4c8cde6396e1" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::band_snr_floor</definition>
+        <argsstring></argsstring>
+        <name>band_snr_floor</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="407" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="407" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3419442344d96621becf37db933adef3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::signal_bandwidth_fraction[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>signal_bandwidth_fraction</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="409" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="409" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a602e558347840029e667af46ffd3a362" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::peak_snr[3]</definition>
+        <argsstring>[3]</argsstring>
+        <name>peak_snr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="410" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="410" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a581bb8a33b2c01766cd3a9600f847379" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::deconvolution::CNR3CDecon::regularization_bandwidth_fraction</definition>
+        <argsstring></argsstring>
+        <name>regularization_bandwidth_fraction</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="411" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="411" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::CNR3CDecon::CNR3CDecon</definition>
+        <argsstring>()</argsstring>
+        <name>CNR3CDecon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. Puts operator in an invalid state. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="148" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="29" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1acd414b6432d322bfb2c7a05a6f3cd725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::CNR3CDecon::CNR3CDecon</definition>
+        <argsstring>(const mspass::utility::AntelopePf &amp;pf)</argsstring>
+        <name>CNR3CDecon</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
+          <declname>pf</declname>
+        </param>
+        <briefdescription>
+<para>Construct from a tree of parameters loaded into an AntelopePf object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>There number of inputs to construct this operator are quite large. An AntelelopePf is one way to store this information and the format assumed by this constructor. Note this object could be constructed from a yaml or xml file, in principle, but for the present we use Antelope&apos;s pf file \ format. i.e. a typical program would read a pf file and to construct the object passed as pf. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="157" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="48" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a923e4dc68c1c50500a08e0d0c5907489" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::CNR3CDecon::CNR3CDecon</definition>
+        <argsstring>(const CNR3CDecon &amp;parent)</argsstring>
+        <name>CNR3CDecon</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard copy constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="159" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="217" bodyend="255"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0892388be3850c342df4792c662751f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::deconvolution::CNR3CDecon::~CNR3CDecon</definition>
+        <argsstring>()</argsstring>
+        <name>~CNR3CDecon</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Standard destructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="161" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="299" bodyend="303"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aaf66a37adf3ab2a38e9b4c4b08a82bb2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+        <definition>CNR3CDecon &amp; mspass::algorithms::deconvolution::CNR3CDecon::operator=</definition>
+        <argsstring>(const CNR3CDecon &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon" kindref="compound">CNR3CDecon</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="162" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="256" bodyend="298"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab14420b7e2766c58d2846cdc112fabad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::change_parameters</definition>
+        <argsstring>(const mspass::utility::BasicMetadata &amp;md)</argsstring>
+        <name>change_parameters</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_basic_metadata" kindref="compound">mspass::utility::BasicMetadata</ref> &amp;</type>
+          <declname>md</declname>
+        </param>
+        <briefdescription>
+<para>Change the setup of the operator on the fly. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Sometimes an operator needs to have it&apos;s properties adjusted on the fly. this method can be used to redefine its operational properties instead of creating a new instance with the constructor. Use this method with care as it requires the same set of parameters as the AntelopePf constructor. The data are actually passed through the base class for an AntelopePF but currently it is implicitly expected to be data compatible with the pf constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="173" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="58" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loaddata</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const int wcomp, const bool loadnoise=false)</argsstring>
+        <name>loaddata</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>wcomp</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>loadnoise</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Load data with one component used as wavelet estimate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Use this method for conventional receiver function data if one of components is to be used as the wavelet estimate (conventionally Z or L). Optionally they can also load preevent noise defined by the noise window parameters defined by Pf constructor.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the data to be loaded. If loadnoise is true it is assumed to be long enough to span the range of both the signal and noise windows defined in constuction. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>wcomp</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the component that is used as an estimate of the wavelet. In standard P receiver functions this would be the Z component but for S it would be the radial component </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>loadnoise</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>when true method also loads noise data from predefined window.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>Will</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>throw an MsPASSError for a number of potential problems that can arise. All such errors will have an invalid condition set. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="194" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="479" bodyend="498"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="149" endline="149">mspass::seismic::BasicTimeSeries::dead</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8f0b6ab1ffaf2b0f514341be81b21d7e" compoundref="_c_n_r3_c_decon_8cc" startline="576" endline="666">loadwavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aad3f642e58266d7840d2a1a8897f52c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loaddata</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const bool loadnoise=false)</argsstring>
+        <name>loaddata</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>loadnoise</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Load data and optionally load noise. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method must be called before running process to get a unique result. Input data are windowed by the processing window parameters and inserted into an internal buffer with sufficient padding to avoid fft circular convolution artifacts. Noise can optionally be loaded but use that approach ONLY if the time span of d contains both the processing and noise time windows. Use loadnoise if the input data do not match that model.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>d</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the input data (see note about time span above) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>loadnoise</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>when true the function will attempt to load data for the noise based regularization from the noise window defined for the operator. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>may be thrown for a number of potential error conditions. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="209" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="499" bodyend="572"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="149" endline="149">mspass::seismic::BasicTimeSeries::dead</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" compoundref="_c_n_r3_c_decon_8cc" startline="667" endline="674">loadnoise_data</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="183" endline="183">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="74" endline="77">mspass::seismic::BasicTimeSeries::sample_number</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1ae94bac250fe5928ced41babc322c2c79" compoundref="_core_seismogram_8cc" startline="1008" endline="1032">mspass::seismic::CoreSeismogram::set_npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a7724b7cfa40eebf0b15e0d2b39ae615e" compoundref="_core_seismogram_8cc" startline="988" endline="1007">mspass::seismic::CoreSeismogram::set_t0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" compoundref="_basic_time_series_8h" startline="63" endline="66">mspass::seismic::BasicTimeSeries::time</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="69" endline="72">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
+        <references refid="classmspass_1_1seismic_1_1_core_seismogram_1a9ac5c7c060d582b1a399fb066d06779f" compoundref="_core_seismogram_8h" startline="54">mspass::seismic::CoreSeismogram::u</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_data</definition>
+        <argsstring>(const mspass::seismic::Seismogram &amp;n)</argsstring>
+        <name>loadnoise_data</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Load noise data directly. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method can be used to load noise to be used to compute signal to noise related metrics. The spectrum of the noise is computed from a mutlitaper spectral estimator for the data passed as n. Best results will be obtain if the length of n is larger than the operator size defined by it&apos;s internal noise window (defined in constructor by noise_window_start and and parameters). Note for this constructor the actual time of the noise window passed is ignored, but the length it defines is used to define the length of the computed spectrum. It is better to have the input noise slightly larger than the operator length to be consistent with the expectations of the multitaper method. If the noise window is short the spectrum is computed but will be biased to lower amplitudes because of zero padding. That happens because the operator will not recompute Slepian tapers if the data are short. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="226" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="667" bodyend="674"/>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="149" endline="149">mspass::seismic::BasicTimeSeries::dead</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abd05e4335e689e7fa4ff9fec8dbf3c78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_data</definition>
+        <argsstring>(const mspass::seismic::PowerSpectrum &amp;n)</argsstring>
+        <name>loadnoise_data</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref> &amp;</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Load noise estimate directly as a PowerSpectrum object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. For instance, one might want to use a robust form of Welch&apos;s method to estimate preevent noise that would be immune to spikes and sporatic noise bursts. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="237" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="675" bodyend="680"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8f0b6ab1ffaf2b0f514341be81b21d7e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loadwavelet</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;w)</argsstring>
+        <name>loadwavelet</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>w</declname>
+        </param>
+        <briefdescription>
+<para>Load data defining the wavelet to use for deconvolution. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This algorithm assumes a deterministic model for deconvolution. That is, we have an estimate of the source wavelet. In conventional receiver functions this is the vertical or longitudinal component. In current array methods it is always some stack (not necessarily a simple average) of vertical or longitudinal data from an ensemble.</para>
+<para>It is VERY IMPORTANT to realize that loadwavelet initiates the calculation of the inverse for the deconvolution. That allows this same processing object to be efficiently used in array deconvolution and single station deconvolution. For single station estimates loadwavelet should be called on each seismogram. For array methods loadwavelet should be called once for the ensemble (common source gather) to which a wavelet is linked. The inverse is then applied to very signal in the ensemble with process.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the wavelet. Must be in relative time with 0 set to the estimated first break time. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="254" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="576" bodyend="666"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" compoundref="_m_t_power_spectrum_engine_8cc" startline="84" endline="127">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="149" endline="149">mspass::seismic::BasicTimeSeries::dead</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="183" endline="183">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1abe28ca2812a2ac21dd2196385ad106ab" compoundref="_basic_time_series_8h" startline="74" endline="77">mspass::seismic::BasicTimeSeries::sample_number</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="222" endline="247">mspass::seismic::CoreTimeSeries::set_npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="203" endline="221">mspass::seismic::CoreTimeSeries::set_t0</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" compoundref="_m_t_power_spectrum_engine_8h" startline="64" endline="67">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a438b4f6453a4ff2a46de53dfdf3599c2" compoundref="_basic_time_series_8h" startline="63" endline="66">mspass::seismic::BasicTimeSeries::time</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="69" endline="72">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_wavelet</definition>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;n)</argsstring>
+        <name>loadnoise_wavelet</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Load noise data for wavelet directly. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method can be used to load noise to be used for regularization from an arbitrary time window. The spectrum of the noise is computed from a mutlitaper spectral estimator for the data passed as n. Best results will be obtain if the length of n is larger than the operator size defined by it&apos;s internal noise window (defined in constructor by noise_window_start and and parameters). Note for this constructor the actual time of the noise window passed is ignored, but the length it defines is used to define the length of the computed spectrum. It is better to have the input noise slightly larger than the operator length to be consistent with the expectations of the multitaper method. If the noise window is short the spectrum is computed but will be biased to lower amplitudes because of zero padding. That happens because the operator will not recompute Slepian tapers if the data are short. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="271" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="682" bodyend="697"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1aa3c10c25ea2c6b82cf8bbe2991f16bfe" compoundref="_m_t_power_spectrum_engine_8cc" startline="84" endline="127">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1aa96e795f96b5050996d791f5b6f3867d" compoundref="_basic_time_series_8h" startline="149" endline="149">mspass::seismic::BasicTimeSeries::dead</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" compoundref="_basic_time_series_8h" startline="183" endline="183">mspass::seismic::BasicTimeSeries::npts</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a10d4b650fdedd815652c1e4e86a0e715" compoundref="_m_t_power_spectrum_engine_8h" startline="74" endline="77">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1a114db709279ea8ab275ba69fbdcbec13" compoundref="_m_t_power_spectrum_engine_8h" startline="64" endline="67">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_1accf94d6d1dff859884d9c0aa1719994a" compoundref="_m_t_power_spectrum_engine_8h" startline="69" endline="72">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::time_bandwidth_product</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a17af91b35a03c0a87a01e6ddb525e6ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::loadnoise_wavelet</definition>
+        <argsstring>(const mspass::seismic::PowerSpectrum &amp;n)</argsstring>
+        <name>loadnoise_wavelet</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref> &amp;</type>
+          <declname>n</declname>
+        </param>
+        <briefdescription>
+<para>Load noise estimate for wavelet signal directly as a PowerSpectrum object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The actual noise regularization is computed by this algorithm from an internally stored PowerSpectrum object. This method allows the power spectrum to be computed by some other method or using previously computed estimates rather than computing it through loadnoise. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="280" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="699" bodyend="704"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a048f73981dd0c6baf93fe4e6126672aa" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
+        <definition>Seismogram mspass::algorithms::deconvolution::CNR3CDecon::process</definition>
+        <argsstring>()</argsstring>
+        <name>process</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a27c19849be8b17f85d1d6807786da11c">process</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="284" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="892" bodyend="1015"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a37c49917252fd7159e85fd9b3b9be5c9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::deconvolution::CNR3CDecon::ideal_output</definition>
+        <argsstring>()</argsstring>
+        <name>ideal_output</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="292" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1016" bodyend="1022"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::deconvolution::CNR3CDecon::actual_output</definition>
+        <argsstring>()</argsstring>
+        <name>actual_output</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1aa7d5bfc6e1adfc1bd7af1606bebddf86">actual_output</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>\brif Return the actual output of the deconvolution operator.</para>
+<para>The actual output is defined as w^-1*w and is compable to resolution kernels in linear inverse theory. Although not required we would normally expect this function to be peaked at 0. Offsets from 0 would imply a bias. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="299" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1023" bodyend="1059"/>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ab044edb3fe5fe734cb577a4434f390a2" compoundref="_core_time_series_8h" startline="27">mspass::seismic::CoreTimeSeries::s</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1a97ff6732aa816b0c327c5bf667ffe841" compoundref="_core_time_series_8cc" startline="185" endline="202">mspass::seismic::CoreTimeSeries::set_dt</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a1ca7ba8bcd8337bd49d438664e74966d" compoundref="_basic_time_series_8h" startline="155" endline="155">mspass::seismic::BasicTimeSeries::set_live</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae538485ac0aed2f8691477dffce6cda8" compoundref="_core_time_series_8cc" startline="222" endline="247">mspass::seismic::CoreTimeSeries::set_npts</references>
+        <references refid="classmspass_1_1seismic_1_1_core_time_series_1ae90b28cff0bc1997aa65a1693d8562d0" compoundref="_core_time_series_8cc" startline="203" endline="221">mspass::seismic::CoreTimeSeries::set_t0</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1ac3f8c8200710fe0d3ef211c7c758e864" compoundref="_basic_time_series_8h" startline="243" endline="246">mspass::seismic::BasicTimeSeries::set_tref</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="74" endline="76">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1b2f893beb6c678f31d42ca579d539f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
+        <definition>TimeSeries mspass::algorithms::deconvolution::CNR3CDecon::inverse_wavelet</definition>
+        <argsstring>(double tshift)</argsstring>
+        <name>inverse_wavelet</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a8c73971b2670ad41a345a917abb5ef09">inverse_wavelet</reimplements>
+        <param>
+          <type>double</type>
+          <declname>tshift</declname>
+        </param>
+        <briefdescription>
+<para>Return a FIR represention of the inverse filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After any deconvolution is computed one can sometimes produce a finite impulse response (FIR) respresentation of the inverse filter. <linebreak/>
+ </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="305" column="31" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1060" bodyend="1083"/>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" compoundref="_f_f_t_decon_operator_8cc" startline="119" endline="153">mspass::algorithms::deconvolution::FFTDeconOperator::FourierInverse</references>
+        <references refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" compoundref="_basic_time_series_8h" startline="186" endline="186">mspass::seismic::BasicTimeSeries::t0</references>
+        <references refid="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_1aaec6f802d7aba4a36484ba50c9f9c9bf" compoundref="_shaping_wavelet_8h" startline="74" endline="76">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref></type>
+        <definition>Metadata mspass::algorithms::deconvolution::CNR3CDecon::QCMetrics</definition>
+        <argsstring>()</argsstring>
+        <name>QCMetrics</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a46a3cc2e931b6d5409421237cf06356d">QCMetrics</reimplements>
+        <briefdescription>
+<para>Return appropriate quality measures. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The QC values return use two concepts: maximum snr is the largest signal to noise ratio estimated across the band exceeded a specified snr floor for the operator. &quot;bandwidth fraction&quot; is the fraction of the total frequency band (ie. 0 to Nyquist) exceeding the operator snr floor.</para>
+<para>This function returns the following key-value pairs: waveletbf - bandwidth fraction for wavelet. maxsnr0,maxsnr1,maxsnr2 - maximum signal to noise ratio on each of the three components of the data being deconvolved. signalbf0,signalbf1,signalbf2 - bandwidth fraction for each of the three components of data deconvolved to produce the latest output. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="320" column="29" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1084" bodyend="1095"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::wavelet_noise_spectrum</definition>
+        <argsstring>()</argsstring>
+        <name>wavelet_noise_spectrum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the power spectrum estimate linked to the wavelet signal. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="322" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="322" bodyend="325"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::data_noise_spectrum</definition>
+        <argsstring>()</argsstring>
+        <name>data_noise_spectrum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the average 3C power spectrum for the latest loaded noise data. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="327" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="327" bodyend="330"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::wavelet_spectrum</definition>
+        <argsstring>()</argsstring>
+        <name>wavelet_spectrum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the power spectrum of the wavelet signal used for deconvolution. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="332" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="332" bodyend="335"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>mspass::seismic::PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::data_spectrum</definition>
+        <argsstring>()</argsstring>
+        <name>data_spectrum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Return the power spectrum of the signal loaded for deconvolution. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="337" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="337" bodyend="340"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afe15c9d8af37cdc2005d88519631d77f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::read_parameters</definition>
+        <argsstring>(const mspass::utility::AntelopePf &amp;pf)</argsstring>
+        <name>read_parameters</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1utility_1_1_antelope_pf" kindref="compound">mspass::utility::AntelopePf</ref> &amp;</type>
+          <declname>pf</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="412" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="65" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aaa59ca8fd775fdad5b0f5c1cd8930ac0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::deconvolution::CNR3CDecon::TestSeismogramInput</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d, const int comp, const bool loaddata)</argsstring>
+        <name>TestSeismogramInput</name>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <param>
+          <type>const int</type>
+          <declname>comp</declname>
+        </param>
+        <param>
+          <type>const bool</type>
+          <declname>loaddata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="413" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="307" bodyend="364"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a67a81fca4f10816e57016413911ec9ec" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::compute_gwl_inverse</definition>
+        <argsstring>()</argsstring>
+        <name>compute_gwl_inverse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="414" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="706" bodyend="776"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4ec45fef837aa37d34eec8c857acdbf9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::compute_gdamp_inverse</definition>
+        <argsstring>()</argsstring>
+        <name>compute_gdamp_inverse</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="415" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="778" bodyend="841"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9f2214194c6a5b22e91461e6265c1037" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_power_spectrum" kindref="compound">mspass::seismic::PowerSpectrum</ref></type>
+        <definition>PowerSpectrum mspass::algorithms::deconvolution::CNR3CDecon::ThreeCPower</definition>
+        <argsstring>(const mspass::seismic::Seismogram &amp;d)</argsstring>
+        <name>ThreeCPower</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="416" column="34" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1119" bodyend="1144"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1cb0999bee19494c6518ca076dc5c6bf" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::deconvolution::CNR3CDecon::update_shaping_wavelet</definition>
+        <argsstring>(const BandwidthData &amp;bwd)</argsstring>
+        <name>update_shaping_wavelet</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data" kindref="compound">BandwidthData</ref> &amp;</type>
+          <declname>bwd</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="417" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/CNR3CDecon.cc" bodystart="1096" bodyend="1117"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Colored Noise Regularized 3C Deconvolution opertor. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This algorithm is somewhat of a synthesis of the best features from the various frequency comain methods currently in use for receiver function estimation. Key features are:<orderedlist>
+<listitem><para>Data are tapered by a generic function with a range of options.</para>
+</listitem><listitem><para>The output is always a Seismogram, which in MsPASS means 3C data</para>
+</listitem><listitem><para>The inverse is regularized by a scaled 3C noise estimate.</para>
+</listitem><listitem><para>Perhaps most importantly the shaping wavelet is computed dynamically based on bandwidth estimated from the combination power spectrum estimates of the signal and noise for both the data being deconvolved and the wavelet used to compute the inverse. For array methods the two noise estimates can be drastically different.</para>
+</listitem></orderedlist>
+</para>
+<para>This object is what might be called a processing object. That is, it does not use the model of construction creating the thing it defines (Seismogram, for example, uses that paradigm). Instead the constructor defines the operator. Data are processed by first calling one of the loaddata and loadnoise methods. Once valid data is loaded call the process method to deconvolve the loaded data. Note this approach assumes the data, wavelet, and noise used for the processing are internally consistent. The user is warned there a limited safeties to validate any consistency because it would be hard to do so without causing more problems that it would solve. In MsPASS we expect to hide this a bit behind some python wrappers to create more safety mechanisms. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::CNR3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::Base3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon"/>
+      </node>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>mspass::algorithms::deconvolution::CNR3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::deconvolution::Base3CDecon</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon"/>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::deconvolution::ComplexArray</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_complex_array"/>
+      </node>
+      <node id="3">
+        <label>mspass::algorithms::deconvolution::FFTDeconOperator</label>
+        <link refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>winv</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="145" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="144" bodyend="418"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0b7f51d901d32ef5a08e8d0de69f666c" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>actual_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0344bdfb40de51c79ee504fae9b88226" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>algorithm</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8370c1882e72e62392693b54be862b6c" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>ao_fft</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa66f512fef9c3ea8c89c4c8cde6396e1" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>band_snr_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab14420b7e2766c58d2846cdc112fabad" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>change_parameters</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3d3f1776e68b20fff386d4bc19e51550" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>change_shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aeaceb977e9797e483bf3a8ba030743c6" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>change_size</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a0ce6831f67065f17fe7b30aa014eaaf3" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>changeparameter</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ac6c9860a5492d4a526172b9df3bbcffa" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>CNR3CDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1acd414b6432d322bfb2c7a05a6f3cd725" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>CNR3CDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a923e4dc68c1c50500a08e0d0c5907489" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>CNR3CDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4ec45fef837aa37d34eec8c857acdbf9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>compute_gdamp_inverse</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a67a81fca4f10816e57016413911ec9ec" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>compute_gwl_inverse</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a191a799f7f851d97b5f60259d615c2f9" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>damp</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3db168e04d8869485f1b9b9307a016e1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>data_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a15a1bb3390af0283e0a57949248f971c" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>data_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a226e7f26d03f04b9ea828a7858b478b2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>data_taper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afb62c7e7c10b651ed6608368a5dae0e5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>decon_bandwidth_cutoff</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1af19ae3644dea2033d3f1dc6eb9cacc0d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>decondata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1adf84c339f3b540543ee8c3487997908a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>df</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ae8a9a0bbf375afc94cf4d6e462c6382f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>dnoise_engine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1aa1a6a6bf04b24d0c76d45e73c3b421" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>FFTDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a6851bec74d3f288eaf1de36cf1d7953b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>FFTDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1af3df395f4ff5bae8b891bee33f107e46" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>FFTDeconOperator</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3473dc7f359332dbf5a685efe30a684b" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>FourierInverse</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1ad63458bb8ad8a04a66de1c140152fc96" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>get_shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1abf21bce1d1519ece5e9879d03e7f7e5a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>get_size</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a37c49917252fd7159e85fd9b3b9be5c9" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>ideal_output</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1b2f893beb6c678f31d42ca579d539f3" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>inverse_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a88d7fe1143e6459d7accf40e00f8cab2" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loaddata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aad3f642e58266d7840d2a1a8897f52c1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loaddata</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loadnoise_data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abd05e4335e689e7fa4ff9fec8dbf3c78" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loadnoise_data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3fc0dadf9ce17343244d45e30e14519e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loadnoise_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a17af91b35a03c0a87a01e6ddb525e6ef" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loadnoise_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a8f0b6ab1ffaf2b0f514341be81b21d7e" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>loadwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1aa8619effc38e9e0f3927c73eb9b838f0" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>nfft</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aeaa39050807e356a559d54e3b70788a3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>noise_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa198d9e6f9c588cdb510ea2e481f6693" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>noise_window</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aaf66a37adf3ab2a38e9b4c4b08a82bb2" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1ae1040f97ddf7bb7bd2c33ac9a7f99a79" prot="public" virt="non-virtual" ambiguityscope="mspass::algorithms::deconvolution::FFTDeconOperator::"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5c1fc0540ec7218db20d03bd4321ff91" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>operator_dt</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a6f399747b50f4f98f46b643f23af0ee1" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>operator_shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a494e951fb5fceffc545e411a8932d782" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>operator_size</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a602e558347840029e667af46ffd3a362" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>peak_snr</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a048f73981dd0c6baf93fe4e6126672aa" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>process</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4962d7e5926f6654a10c76797be79e54" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>processing_window</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3af3ad03a0dddb66563d609b7e453b45" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>psnoise</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a049410ab05916d08ddaa055eee2edf53" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>psnoise_data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a684a83abc7b7d8ce2c6ca7e60e02ac56" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>pssignal</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a549ed717042bae9310c235c89586758d" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>pswavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a250882407c9755fc4e3f822833b93ea0" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>QCMetrics</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afe15c9d8af37cdc2005d88519631d77f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>read_parameters</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a581bb8a33b2c01766cd3a9600f847379" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>regularization_bandwidth_fraction</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a7034bf16dcf7ea16563a7032ce19b08e" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>sample_shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ad72d17f7299c3ba04fec8fb7564529a5" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>shapingwavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a3419442344d96621becf37db933adef3" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>signal_bandwidth_fraction</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a28cc5623235ca7199a2f3729418dfefe" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>signal_bwd</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aba1aada37508ee50775754fef15f4737" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>signalengine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9ea00469a06eb5fc270b79b064dc38b2" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>snr_bandwidth</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6cbea949df15eb67e585bc1babe98906" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>snr_regularization_floor</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aadfbc68538e5e07391f8674f3824a3dc" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>taper_data</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aaa59ca8fd775fdad5b0f5c1cd8930ac0" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>TestSeismogramInput</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9f2214194c6a5b22e91461e6265c1037" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>ThreeCPower</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a1cb0999bee19494c6518ca076dc5c6bf" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>update_shaping_wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a38b82a01245f9582870869f914ed975f" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a66617d53dc53ca9f2da0e1ed5ac90ed7" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet_bwd</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ab4ec1e4c89908b92369acc64f8d95197" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet_noise_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aec94bcb17e43c0a161b7995aa400349e" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet_snr</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5615a2e7adc3f4a49e69362031aa5f83" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet_spectrum</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a030a5bd1f61e143839ef7e26c8df0394" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavelet_taper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6e8430950b3e5d1e5e58322a0dcf553b" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>waveletengine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a3480b78a08228fc2b2c79809b98335d5" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wavetable</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abe1ec221487a10dbcecbb5ce883ba1bc" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>winlength</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a66026b54b517bc3797a1992ca332bc64" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>winv</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aee0fa10a1f955e78acacf3e77611b698" prot="private" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>wnoise_engine</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a1121967f87437c76cfbb1d8a8fb592e8" prot="protected" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>workspace</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_base3_c_decon_1a07131ead382078d283cc93614ca14a0b" prot="public" virt="virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>~Base3CDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0892388be3850c342df4792c662751f5" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>~CNR3CDecon</name></member>
+      <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator_1a5c9a93bff093cc3f5fbb7991e2812c23" prot="public" virt="non-virtual"><scope>mspass::algorithms::deconvolution::CNR3CDecon</scope><name>~FFTDeconOperator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

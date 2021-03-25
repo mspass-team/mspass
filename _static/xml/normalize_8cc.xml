@@ -6,7 +6,7 @@
     <includes local="no">cfloat</includes>
     <includes refid="dmatrix_8h" local="no">mspass/utility/dmatrix.h</includes>
     <includes refid="_ms_p_a_s_s_error_8h" local="no">mspass/utility/MsPASSError.h</includes>
-    <includes local="yes">misc/blas.h</includes>
+    <includes refid="blas_8h" local="yes">misc/blas.h</includes>
     <incdepgraph>
       <node id="1">
         <label>/home/runner/work/mspass/mspass/cxx/src/lib/utility/normalize.cc</label>
@@ -24,6 +24,12 @@
       </node>
       <node id="9">
         <label>boost/serialization/vector.hpp</label>
+      </node>
+      <node id="14">
+        <label>misc/blas.h</label>
+        <link refid="blas_8h_source"/>
+        <childnode refid="15" relation="include">
+        </childnode>
       </node>
       <node id="12">
         <label>mspass/utility/MsPASSError.h</label>
@@ -80,8 +86,8 @@
       <node id="6">
         <label>iostream</label>
       </node>
-      <node id="14">
-        <label>misc/blas.h</label>
+      <node id="15">
+        <label>FC.h</label>
       </node>
     </incdepgraph>
     <innernamespace refid="namespacemspass">mspass</innernamespace>

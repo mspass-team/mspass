@@ -365,6 +365,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="350" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="161" bodyend="186"/>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a986da6a438099a371a0b0a9556f2c8b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -441,6 +442,10 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="399" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="187" bodyend="280"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" compoundref="_processing_history_8cc" startline="677" endline="685">clear</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">newid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -470,6 +475,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="418" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="285" bodyend="331"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a667e046c02eb06959c3632c9157161b6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -499,6 +507,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="427" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="334" bodyend="343"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1abf871538f6024bebc2b1512ba1e58ff7" compoundref="_processing_history_8cc" startline="285" endline="331">add_one_input</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a4f2cb1d5af0500a526fa8745aa52db36" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -527,6 +536,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="434" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="463" bodyend="507"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1afc16a9d2c81e0fce08669573ffa8d741" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -559,6 +571,8 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="453" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="509" bodyend="582"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a110c300dfa2a6f5236a7d254fa7bf663" compoundref="_processing_history_8cc" startline="712" endline="722">current_nodedata</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">newid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -776,6 +790,9 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="575" column="15" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="420" bodyend="460"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1adf60368ca5c699cc9186fa145d04376d" compoundref="_processing_history_8h" startline="609" endline="612">id</references>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
+        <references refid="classmspass_1_1utility_1_1_error_logger_1aa69873ba0aebf67e9ba24d01992c0bcf" compoundref="_error_logger_8cc" startline="70" endline="75">mspass::utility::ErrorLogger::log_error</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a42865512c68a26b85b394825a1629729" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -806,6 +823,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="585" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="657" bodyend="676"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" compoundref="_processing_history_8cc" startline="114" endline="119">is_empty</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1afe65cff0547c9b75ea3ce9a7aa6b20f7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
         <type>int</type>
@@ -879,6 +897,12 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="625" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="712" bodyend="722"/>
+        <references refid="classmspass_1_1utility_1_1_node_data_1aa51f302e3e070fd072255e1d1af9073f" compoundref="_processing_history_8h" startline="171">mspass::utility::NodeData::algid</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a040189091bc8458cc84b7a3781856643" compoundref="_processing_history_8h" startline="161">mspass::utility::NodeData::algorithm</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a972bd00dc85cae2e490833225f53e282" compoundref="_processing_history_8h" startline="152">mspass::utility::NodeData::stage</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a3dab2773c306f1d9977dccb455beec59" compoundref="_processing_history_8h" startline="146">mspass::utility::NodeData::status</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1aa7c6f56ceca095d0af31f456d75954a4" compoundref="_processing_history_8h" startline="150">mspass::utility::NodeData::type</references>
+        <references refid="classmspass_1_1utility_1_1_node_data_1a0f0df95910b9712e36d3a8389c0c9f38" compoundref="_processing_history_8h" startline="148">mspass::utility::NodeData::uuid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::string</type>
@@ -967,6 +991,7 @@
         <inbodydescription>
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/ProcessingHistory.h" line="657" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/utility/ProcessingHistory.cc" bodystart="708" bodyend="711"/>
+        <references refid="classmspass_1_1utility_1_1_processing_history_1a9a8bf8bc3632660c91fd9d82a79f8411" compoundref="_processing_history_8cc" startline="700" endline="707">newid</references>
       </memberdef>
       <memberdef kind="function" id="classmspass_1_1utility_1_1_processing_history_1aec695e46a390b9cf55f1919af803fb33" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
         <type>std::list&lt; <ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">mspass::utility::NodeData</ref> &gt;</type>

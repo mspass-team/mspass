@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <script src="striped_bg.js"></script>
 <link href="that_style.css" rel="stylesheet" type="text/css"/>
@@ -158,7 +165,8 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <p>Implementations of this method need to return a count of the number of processing steps that have been applied to put the data in the current state. This method could be made pure, but for convenience the base class always returns 0 since it does not implement the actual history mechanism. </p>
 
 <p>Reimplemented in <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a04eaa592369744d85f54da21b8de9776">mspass::utility::ProcessingHistory</a>.</p>
-
+<div class="fragment"><div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;{<span class="keywordflow">return</span> 0;};</div>
+</div><!-- fragment -->
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
