@@ -466,6 +466,7 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
             logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
 
 
+# TODO docstring
 @decorator
 def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):
     if global_history:

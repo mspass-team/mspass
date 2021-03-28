@@ -32,7 +32,7 @@ def spark_map(input):
     appName = 'mspass-test'
     master = 'local'
     conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext(conf=conf)
+    sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
     res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0'))
     return res.collect()

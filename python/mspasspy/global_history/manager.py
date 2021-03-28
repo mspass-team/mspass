@@ -9,16 +9,21 @@ from mspasspy.ccore.utility import MsPASSError
 from datetime import datetime
 from dill.source import getsource
 
-def mspass_spark_map(self, func, *args, global_history=None, **kwargs):
+# TODO docstring
+
+def mspass_spark_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
         # truncate to get the algorithm name and parameters
         alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
-        # get the algorithm name
-        alg_name = alg[:alg.index('(')].strip()
-        # get the parameters
-        parameters = alg[alg.index('(')+1:].strip()
+        
+        if not alg_name:
+            # get the algorithm name
+            alg_name = alg[:alg.index('(')].strip()
+        if not parameters:
+            # get the parameters
+            parameters = alg[alg.index('(')+1:].strip()
         
         # get the alg_id if exists, else create a new one
         alg_id = global_history.get_alg_id(alg_name, parameters)
@@ -27,15 +32,18 @@ def mspass_spark_map(self, func, *args, global_history=None, **kwargs):
         global_history.logging(alg_name, alg_id, parameters)
     return self.map(func, *args, **kwargs)
 
-def mspass_dask_map(self, func, *args, global_history=None, **kwargs):
+def mspass_dask_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
     if global_history:
-        alg_name = func.__name__
-        # extract parameters
-        args_str = ",".join(f"{value}" for value in args)
-        kwargs_str = ",".join(f"{key}={value}" for key, value in kwargs.items())
-        parameters = args_str
-        if kwargs_str:
-            parameters += "," + kwargs_str
+        if not alg_name:
+            alg_name = func.__name__
+
+        if not parameters:
+            # extract parameters
+            args_str = ",".join(f"{value}" for value in args)
+            kwargs_str = ",".join(f"{key}={value}" for key, value in kwargs.items())
+            parameters = args_str
+            if kwargs_str:
+                parameters += "," + kwargs_str
 
         # get the alg_id if exists, else create a new one
         alg_id = global_history.get_alg_id(alg_name, parameters)
@@ -44,16 +52,19 @@ def mspass_dask_map(self, func, *args, global_history=None, **kwargs):
         global_history.logging(alg_name, alg_id, parameters)
     return self.map(func, *args, **kwargs)
 
-def mspass_spark_reduce(self, func, *args, global_history=None, **kwargs):
+def mspass_spark_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
         # truncate to get the algorithm name and parameters
         alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
-        # get the algorithm name
-        alg_name = alg[:alg.index('(')].strip()
-        # get the parameters
-        parameters = alg[alg.index('(')+1:].strip()
+
+        if not alg_name:
+            # get the algorithm name
+            alg_name = alg[:alg.index('(')].strip()
+        if not parameters:
+            # get the parameters
+            parameters = alg[alg.index('(')+1:].strip()
         
         # get the alg_id if exists, else create a new one
         alg_id = global_history.get_alg_id(alg_name, parameters)
@@ -62,16 +73,19 @@ def mspass_spark_reduce(self, func, *args, global_history=None, **kwargs):
         global_history.logging(alg_name, alg_id, parameters)
     return self.reduce(func, *args, **kwargs)
 
-def mspass_dask_reduce(self, func, *args, global_history=None, **kwargs):
+def mspass_dask_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
         # truncate to get the algorithm name and parameters
         alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
-        # get the algorithm name
-        alg_name = alg[:alg.index('(')].strip()
-        # get the parameters
-        parameters = alg[alg.index('(')+1:].strip()
+
+        if not alg_name:
+            # get the algorithm name
+            alg_name = alg[:alg.index('(')].strip()
+        if not parameters:
+            # get the parameters
+            parameters = alg[alg.index('(')+1:].strip()
 
         # get the alg_id if exists, else create a new one
         alg_id = global_history.get_alg_id(alg_name, parameters)
@@ -92,6 +106,11 @@ class GlobalHistoryManager:
         if not self.collection:
             # use the `history` collection defined in database schema
             self.collection = 'history'
+
+        # create unique index -> (alg_name, parameters)
+        self.history_db[self.collection].create_index(
+            [("alg_name", pymongo.TEXT), ("parameters", pymongo.TEXT)],
+        )
 
         # modify pyspark/dask map to our defined map
         pyspark.RDD.mspass_map = mspass_spark_map
