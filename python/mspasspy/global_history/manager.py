@@ -9,9 +9,21 @@ from mspasspy.ccore.utility import MsPASSError
 from datetime import datetime
 from dill.source import getsource
 
-# TODO docstring
-
 def mspass_spark_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    """
+     This decorator method add more functionaliy on the standard spark map method and be a part of member functions
+     in the spark RDD library. Instead of performing the normal map function, if user provides global history manager,
+     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param alg_name: a user specified alg_name for the map operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the map operation
+    :type parameters: :class:`str`
+    :return: a spark `RDD` format of objects.
+    """
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
@@ -33,6 +45,20 @@ def mspass_spark_map(self, func, *args, global_history=None, alg_name=None, para
     return self.map(func, *args, **kwargs)
 
 def mspass_dask_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    """
+     This decorator method add more functionaliy on the standard dask map method and be a part of member functions
+     in the dask bag library. Instead of performing the normal map function, if user provides global history manager,
+     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param alg_name: a user specified alg_name for the map operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the map operation
+    :type parameters: :class:`str`
+    :return: a dask `bag` format of objects.
+    """
     if global_history:
         if not alg_name:
             alg_name = func.__name__
@@ -53,6 +79,20 @@ def mspass_dask_map(self, func, *args, global_history=None, alg_name=None, param
     return self.map(func, *args, **kwargs)
 
 def mspass_spark_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    """
+     This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
+     in the spark RDD library. Instead of performing the normal reduce function, if user provides global history manager,
+     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param alg_name: a user specified alg_name for the reduce operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the reduce operation
+    :type parameters: :class:`str`
+    :return: a spark `RDD` format of objects.
+    """
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
@@ -74,6 +114,20 @@ def mspass_spark_reduce(self, func, *args, global_history=None, alg_name=None, p
     return self.reduce(func, *args, **kwargs)
 
 def mspass_dask_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    """
+     This decorator method add more functionaliy on the standard dask reduce method and be a part of member functions
+     in the dask bag library. Instead of performing the normal reduce function, if user provides global history manager,
+     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+
+    :param func: target function
+    :param global_history: a user specified global history manager
+    :type global_history: :class:`GlobalHistoryManager`
+    :param alg_name: a user specified alg_name for the reduce operation
+    :type alg_name: :class:`str`
+    :param parameters: a user specified parameters for the reduce operation
+    :type parameters: :class:`str`
+    :return: a dask `bag` format of objects.
+    """
     if global_history:
         # get the whole lambda function
         alg_string = getsource(func)
@@ -95,6 +149,13 @@ def mspass_dask_reduce(self, func, *args, global_history=None, alg_name=None, pa
     return self.fold(func, *args, **kwargs)
 
 class GlobalHistoryManager:
+    """
+    A Global History Mananger handler.
+
+    This is a handler used in the mspass_client, normally user should not directly create
+    a Global History Manager by his own. Instead, user should get the Global History Manager
+    through mspass client's methods.
+    """
     def __init__(self, database_instance, job_name, collection=None):
         self.job_name = job_name
         # generate an bson UUID for this job, should be unique on the application level
@@ -121,6 +182,16 @@ class GlobalHistoryManager:
         daskbag.Bag.mspass_reduce = mspass_dask_reduce
 
     def logging(self, alg_name, alg_id, parameters):
+        """
+        Save the usage of the algorithm in the map/reduce operation
+
+        :param alg_name: the name of the algorithm
+        :type alg_name: :class:`str`
+        :param alg_id: the UUID of the combination of algorithm_name and parameters
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :param parameters: the parameters of the algorithm
+        :type parameters: :class:`str`
+        """
         # current timestamp when logging into database
         timestamp = datetime.utcnow().timestamp()
 
@@ -134,6 +205,16 @@ class GlobalHistoryManager:
         })
 
     def get_alg_id(self, alg_name, parameters):
+        """
+        Save the usage of the algorithm in the map/reduce operation
+
+        :param alg_name: the name of the algorithm
+        :type alg_name: :class:`str`
+        :param alg_id: the UUID of the combination of algorithm_name and parameters
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :param parameters: the parameters of the algorithm
+        :type parameters: :class:`str`
+        """
         # no alg_name and parameters combination in the database
         if not self.history_db[self.collection].count_documents({'alg_name': alg_name, 'parameters': parameters}):
             return None
@@ -142,6 +223,14 @@ class GlobalHistoryManager:
         return doc['alg_id']
 
     def get_alg_list(self, job_name, job_id=None):
+        """
+        Get a list of history records by job name(and job_id)
+
+        :param job_name: the name of the job
+        :type job_name: :class:`str`
+        :param job_id: the UUID of the job
+        :type job_id: :class:`bson.objectid.ObjectId`
+        """
         query = {'job_name': job_name}
         if job_id:
             query['job_id'] = job_id
@@ -152,6 +241,16 @@ class GlobalHistoryManager:
         return alg_list
 
     def set_alg_name_and_parameters(self, alg_id, alg_name, parameters):
+        """
+        Set the alg_name and parameters by a user specified alg_id
+
+        :param alg_id: the UUID of the combination of algorithm_name and parameters, used to find the records
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :param alg_name: the name of the algorithm user would like to set
+        :type alg_name: :class:`str`
+        :param parameters: the parameters of the algorithm user would like to set
+        :type parameters: :class:`str`
+        """
         doc = self.history_db[self.collection].find_one({'alg_id': alg_id})
         if not doc:
             raise MsPASSError('No such history record with alg_id = ' + alg_id, 'Fatal')

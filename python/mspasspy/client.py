@@ -8,11 +8,17 @@ from pyspark import SparkConf, SparkContext
 from mspasspy.ccore.utility import MsPASSError
 from dask.distributed import Client as DaskClient
 
-# TODO docstring
-
 class Client:
     """
     A client-side representation of MSPASS.
+
+    This is the only client users should use in MSPASS. The client manages all the other clients or instances.
+    It creates and manages a Database client.
+    It creates and manages a Global Hisotry Manager.
+    It creates and manages a scheduler(spark/dask)
+
+    For the address and port of each client/instances, we first check the user specified parameters, if not then
+    serach the environment varibales values, if not againm then use the default settings.
     """
     def __init__(self, database_host=None, scheduler=None, scheduler_host=None, job_name='mspass', database_name='mspass', schema=None, collection=None):
         # job_name should be a string
@@ -121,14 +127,31 @@ class Client:
 
     
     def get_database(self, database_name=None):
+        """
+        Get a database by database_name, if database_name is not specified, use the default one
+
+        :param database_name: the name of database
+        :type database_name: :class:`str`
+        :return: :class:`mspasspy.db.database.Database`
+        """
         if not database_name:
             return Database(self._db_client, self._default_database_name)
         return Database(self._db_client, database_name)
 
     def get_global_history_manager(self):
+        """
+        Get the global history manager with this client
+
+        :return: :class:`mspasspy.global_history.manager.GlobalHistoryManager`
+        """
         return self._global_history_manager
 
     def get_scheduler(self):
+        """
+        Get the scheduler(spark/dask) with this client
+
+        :return: :class:`pyspark.SparkContext`/:class:`dask.distributed.Client`
+        """
         if self._scheduler == 'spark':
             return self._spark_context
         else:
@@ -136,6 +159,14 @@ class Client:
 
 
     def set_database_client(self, database_host, database_port=None):
+        """
+        Set a database client by database_host(and database_port)
+
+        :param database_host: the host address of database client
+        :type database_host: :class:`str`
+        :param database_port: the port of database client
+        :type database_port: :class:`str`
+        """
         database_address = database_host
         # add port
         if database_port:
@@ -148,6 +179,16 @@ class Client:
             raise MsPASSError('Runntime error: cannot create a database client with: ' + database_address, 'Fatal')
 
     def set_global_history_manager(self, history_db, job_name, collection=None):
+        """
+        Set a global history manager by history_db, job_name(and collection)
+
+        :param history_db: the database will be set in the global history manager
+        :type history_db: :class:`mspasspy.db.database.Database`
+        :param job_name: the job name will be set in the global history manager
+        :type job_name: :class:`str`
+        :param collection: the collection name will be set in the history_db
+        :type collection: :class:`str`
+        """
         if not isinstance(history_db, Database):
             raise TypeError('history_db should be a mspasspy.db.Database but ' + str(type(history_db)) +  ' is found.')
         if not type(job_name) is str:
@@ -158,6 +199,16 @@ class Client:
         self._global_history_manager = GlobalHistoryManager(history_db, job_name, collection=collection)
 
     def set_scheduler(self, scheduler, scheduler_host, scheduler_port=None):
+        """
+        Set a scheduler by scheduler type, scheduler_host(and scheduler_port)
+
+        :param scheduler: the scheduler type, should be either dask or spark
+        :type scheduler: :class:`str`
+        :param scheduler_host: the host address of scheduler
+        :type scheduler_host: :class:`str`
+        :param scheduler_port: the port of scheduler
+        :type scheduler_port: :class:`str`
+        """
         if scheduler != 'dask' and scheduler != 'spark':
             raise MsPASSError('scheduler should be either dask or spark but ' + str(scheduler) +  ' is found.', 'Fatal')
         
