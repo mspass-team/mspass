@@ -466,9 +466,19 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
             logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
 
 
-# TODO docstring
 @decorator
 def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):
+    """
+    This decorator helps the global history manager to log down the usage of any mspasspy function if global history manager provided,
+    and then execute the func with the user inputs.
+
+    :param func: target func
+    :param args: extra arguments
+    :param global_history: global history manager object passed to save the usage of this function to database
+    :type global_history: :class:`mspasspy.global_history.manager.GlobalHistoryManager`
+    :param kwargs: extra kv arguments
+    :return: the output of func
+    """
     if global_history:
         if not isinstance(global_history, GlobalHistoryManager):
             raise TypeError("only an object with the type GlobalHistoryManager should be passes as an argument as global_history.")
