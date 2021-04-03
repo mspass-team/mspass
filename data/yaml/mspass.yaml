@@ -287,7 +287,7 @@ Database:
         concept: the name of the algorithm
         constraint: required
       alg_id:
-        type: ObjectID
+        type: string
         concept: ObjectId used to define a unique algorithm(alg_name + parameters)
         constraint: required
       parameters:

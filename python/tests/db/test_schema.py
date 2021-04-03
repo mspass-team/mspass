@@ -168,7 +168,7 @@ class TestSchema():
         assert self.mdschema.TimeSeries.type('time_standard') == type('1')
         assert self.mdschema.TimeSeries.type('time_standard') == type('1')
         assert self.mdschema.Seismogram.type('tmatrix') == type([1])
-        assert self.dbschema.history_object.type('nodedata') == bytes
+        assert self.dbschema.history_object.type('processing_history') == bytes
 
     def test_unique_name(self):
         assert self.dbschema.channel.unique_name('CMPAZ') == 'hang'

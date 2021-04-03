@@ -1401,6 +1401,13 @@ class Database(pymongo.database.Database):
                     wf_id_name = wf_collection + '_id'
                     filter_ = {'_id': elog_id}
                     elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+
+                # 5. need to save the wf_id back to history_object entry if this is an insert
+                if new_insertion and not mspass_object.is_empty():
+                    history_object_col = self[self.database_schema.default_name('history_object')]
+                    wf_id_name = wf_collection + '_id'
+                    filter_ = {'_id': history_object_id}
+                    history_object_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
             else:
                 # save the metadata in gravestone as an elog entry
                 mspass_object.elog.log_verbose(
@@ -1817,13 +1824,10 @@ class Database(pymongo.database.Database):
         history_col = self[collection]
         proc_history = ProcessingHistory(mspass_object)
         current_uuid = proc_history.id() # uuid in the current node
-        print('current_uuid: ', current_uuid)
         current_nodedata = proc_history.current_nodedata()
         # get the alg_id of current node
         alg_id = current_nodedata.algid
-        print('alg_id: ', alg_id)
         alg_name = current_nodedata.algorithm
-        print('alg_name: ', alg_name)
         history_binary = pickle.dumps(proc_history)
         # todo save jobname jobid when global history module is done
         try:
