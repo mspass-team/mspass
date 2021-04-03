@@ -300,5 +300,5 @@ class TestManager():
         assert doc
         assert doc['_id'] == spark_res[0].current_nodedata().uuid
         assert doc['wf_TimeSeries_id'] == spark_res[0]['_id']
-        assert doc['alg_id'] == alg_id
+        assert doc['alg_id'] == str(alg_id)
         assert doc['alg_name'] == 'filter'

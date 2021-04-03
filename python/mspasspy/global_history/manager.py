@@ -59,7 +59,7 @@ def mspass_spark_map(self, func, *args, global_history=None, preserve_history=Fa
         alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
-            alg_id = str(ObjectId())
+            alg_id = ObjectId()
 
     # save the global history
     if global_history:
@@ -67,7 +67,7 @@ def mspass_spark_map(self, func, *args, global_history=None, preserve_history=Fa
     
     # save the object history
     if preserve_history:
-        return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+        return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
     return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, **kwargs))
 
@@ -117,7 +117,7 @@ def mspass_dask_map(self, func, *args, global_history=None, preserve_history=Fal
         alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
-            alg_id = str(ObjectId())
+            alg_id = ObjectId()
 
     # save the global history
     if global_history:
@@ -125,7 +125,7 @@ def mspass_dask_map(self, func, *args, global_history=None, preserve_history=Fal
 
     # save the object history
     if preserve_history:
-        return self.map(func, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs)
+        return self.map(func, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs)
 
     return self.map(func, *args, preserve_history=preserve_history, **kwargs)
 
@@ -176,7 +176,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history
         alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
-            alg_id = str(ObjectId())
+            alg_id = ObjectId()
 
     # save the global history
     if global_history:
@@ -184,7 +184,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history
     
     # save the object history
     if preserve_history:
-        return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+        return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
     return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
 
@@ -235,7 +235,7 @@ def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=
         alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
-            alg_id = str(ObjectId())
+            alg_id = ObjectId()
 
     # save the global history
     if global_history:
@@ -243,7 +243,7 @@ def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=
     
     # save the object history
     if preserve_history:
-        return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+        return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
     return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
 
