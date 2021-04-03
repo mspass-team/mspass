@@ -23,7 +23,7 @@ from decorators import (mspass_func_wrapper,
                         mspass_reduce_func_wrapper,
                         seismogram_copy_helper,
                         timeseries_copy_helper,
-                        mspass_func_wrapper_global_history)
+                        )
 import logging_helper
 from helper import (get_live_seismogram,
                     get_live_timeseries,
@@ -72,7 +72,7 @@ def test_is_input_dead():
 
 
 @mspass_func_wrapper
-def dummy_func(data, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_func(data, *args, preserve_history=False, alg_id=None, dryrun=False, **kwargs):
     return "dummy"
 
 
@@ -84,14 +84,14 @@ def test_mspass_func_wrapper():
     with pytest.raises(ValueError) as err:
         seis = get_live_seismogram()
         dummy_func(seis, preserve_history=True)
-    assert str(err.value) == "dummy_func: preserve_history was true but instance not defined"
+    assert str(err.value) == "dummy_func: preserve_history was true but alg_id not defined"
 
     assert "OK" == dummy_func(seis, dryrun=True)
 
     assert "dummy" == dummy_func(seis)
 
     assert seis.number_of_stages() == 0
-    dummy_func(seis, preserve_history=True, instance='0')
+    dummy_func(seis, preserve_history=True, alg_id='0')
     assert seis.number_of_stages() == 1
 
 
@@ -199,7 +199,7 @@ def test_seismogram_ensemble_as_stream():
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def dummy_func_2(data, *args, preserve_history=False, instance=None, dryrun=False, inplace_return=True, **kwargs):
+def dummy_func_2(data, *args, preserve_history=False, alg_id=None, dryrun=False, inplace_return=True, **kwargs):
     if isinstance(data, obspy.Trace):
         data.data = np.array([0, 1, 2])
     elif isinstance(data, obspy.Stream):
@@ -216,18 +216,18 @@ def test_all_decorators():
     with pytest.raises(ValueError) as err:
         seis = get_live_seismogram()
         dummy_func_2(seis, preserve_history=True)
-    assert str(err.value) == "dummy_func_2: preserve_history was true but instance not defined"
+    assert str(err.value) == "dummy_func_2: preserve_history was true but alg_id not defined"
 
     assert "OK" == dummy_func_2(seis, dryrun=True)
 
     assert seis.number_of_stages() == 0
-    dummy_func_2(seis, preserve_history=True, instance='0')
+    dummy_func_2(seis, preserve_history=True, alg_id='0')
     assert seis.number_of_stages() == 1
 
     # test timeseries_as_trace
     ts = get_live_timeseries()
     cp = np.array(ts.data)
-    dummy_func_2(ts, preserve_history=True, instance='0')
+    dummy_func_2(ts, preserve_history=True, alg_id='0')
     assert len(cp) != len(ts.data)
     np.isclose([0, 1, 2], ts.data).all()
     assert ts.number_of_stages() == 1
@@ -235,7 +235,7 @@ def test_all_decorators():
     # test seismogram_as_stream
     seis1 = get_live_seismogram()
     cp1 = np.array(seis1.data[0])
-    dummy_func_2(seis1, preserve_history=True, instance='0')
+    dummy_func_2(seis1, preserve_history=True, alg_id='0')
     assert cp1[0] != seis1.data[0, 0]
     assert seis1.data[0, 0] == -1
     assert seis1.number_of_stages() == 1
@@ -243,7 +243,7 @@ def test_all_decorators():
     # test timeseries_ensemble_as_stream
     tse = get_live_timeseries_ensemble(2)
     cp = TimeSeriesEnsemble(tse)
-    dummy_func_2(tse, preserve_history=True, instance='0')
+    dummy_func_2(tse, preserve_history=True, alg_id='0')
     assert tse.member[0].data[0] == -1
     assert tse.member[0].data[0] != cp.member[0].data[0]
     assert tse.member[0].number_of_stages() == 1
@@ -251,18 +251,18 @@ def test_all_decorators():
     # test seismogram_ensemble_as_stream
     seis_e = get_live_seismogram_ensemble(2)
     cp = SeismogramEnsemble(seis_e)
-    dummy_func_2(seis_e, preserve_history=True, instance='0')
+    dummy_func_2(seis_e, preserve_history=True, alg_id='0')
     assert seis_e.member[0].data[0,0] == -1
     assert seis_e.member[0].data[0,0] != cp.member[0].data[0,0]
     assert seis_e.member[0].number_of_stages() == 1
 
     # test inplace return
     seis1 = get_live_seismogram()
-    ret = dummy_func_2(seis1, preserve_history=True, instance='0')
+    ret = dummy_func_2(seis1, preserve_history=True, alg_id='0')
     assert seis1 == ret
 
 @mspass_func_wrapper_multi
-def dummy_func_multi(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_func_multi(data1, data2, *args, preserve_history=False, alg_id=None, dryrun=False, **kwargs):
     return None
 
 def test_mspass_func_wrapper_multi():
@@ -274,34 +274,34 @@ def test_mspass_func_wrapper_multi():
         seis1 = get_live_seismogram()
         seis2 = get_live_seismogram()
         dummy_func_multi(seis1, seis2, preserve_history=True)
-    assert str(err.value) == "dummy_func_multi: preserve_history was true but instance not defined"
+    assert str(err.value) == "dummy_func_multi: preserve_history was true but alg_id not defined"
 
     assert "OK" == dummy_func_multi(seis1, seis2, dryrun=True)
 
     assert seis1.number_of_stages() == 0
     assert seis2.number_of_stages() == 0
-    dummy_func_multi(seis1, seis2, preserve_history=True, instance='0')
+    dummy_func_multi(seis1, seis2, preserve_history=True, alg_id='0')
     assert seis1.number_of_stages() == 1
     assert seis2.number_of_stages() == 1
 
     seis_e = get_live_seismogram_ensemble(3)
     for i in range(3):
         assert seis_e.member[i].number_of_stages() == 0
-    dummy_func_multi(seis1, seis_e, preserve_history=True, instance='0')
+    dummy_func_multi(seis1, seis_e, preserve_history=True, alg_id='0')
     assert seis1.number_of_stages() == 2
     for i in range(3):
         assert seis_e.member[i].number_of_stages() == 1
 
 @mspass_reduce_func_wrapper
-def dummy_reduce_func(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_reduce_func(data1, data2, *args, preserve_history=False, alg_id=None, dryrun=False, **kwargs):
     data1.data[0] = -1
 
 @mspass_reduce_func_wrapper
-def dummy_reduce_func_runtime(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_reduce_func_runtime(data1, data2, *args, preserve_history=False, alg_id=None, dryrun=False, **kwargs):
     raise RuntimeError("test")
 
 @mspass_reduce_func_wrapper
-def dummy_reduce_func_mspasserror(data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def dummy_reduce_func_mspasserror(data1, data2, *args, preserve_history=False, alg_id=None, dryrun=False, **kwargs):
     raise MsPASSError("test", ErrorSeverity.Fatal)
 
 def test_mspass_reduce_func_wrapper():
@@ -311,30 +311,30 @@ def test_mspass_reduce_func_wrapper():
     logging_helper.info(ts2, 'dummy_func', '1')
     logging_helper.info(ts2, 'dummy_func_2', '2')
     assert len(ts1.get_nodes()) == 0
-    dummy_reduce_func(ts1, ts2, preserve_history=True, instance='3')
+    dummy_reduce_func(ts1, ts2, preserve_history=True, alg_id='3')
     assert ts1.data[0] == -1
     assert len(ts1.get_nodes()) == 3
 
     with pytest.raises(TypeError) as err:
-        dummy_reduce_func([0], [1], preserve_history=True, instance='3')
+        dummy_reduce_func([0], [1], preserve_history=True, alg_id='3')
     assert str(err.value) == "only mspass objects are supported in reduce wrapped methods"
 
     with pytest.raises(TypeError) as err:
-        dummy_reduce_func(ts1, get_live_seismogram(), preserve_history=True, instance='3')
+        dummy_reduce_func(ts1, get_live_seismogram(), preserve_history=True, alg_id='3')
     assert str(err.value) == "data2 has a different type as data1"
 
     with pytest.raises(ValueError) as err:
         seis1 = get_live_seismogram()
         seis2 = get_live_seismogram()
         dummy_reduce_func(seis1, seis2, preserve_history=True)
-    assert str(err.value) == "dummy_reduce_func: preserve_history was true but instance not defined"
+    assert str(err.value) == "dummy_reduce_func: preserve_history was true but alg_id not defined"
 
     assert "OK" == dummy_reduce_func(seis1, seis2, dryrun=True)
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
     assert len(ts1.elog.get_error_log()) == 0
-    dummy_reduce_func_runtime(ts1, ts2, preserve_history=True, instance='3')
+    dummy_reduce_func_runtime(ts1, ts2, preserve_history=True, alg_id='3')
     assert len(ts1.elog.get_error_log()) == 1
     assert len(ts2.elog.get_error_log()) == 1
 
@@ -342,7 +342,7 @@ def test_mspass_reduce_func_wrapper():
     ts2 = get_live_timeseries()
     assert len(ts1.elog.get_error_log()) == 0
     with pytest.raises(MsPASSError) as err:
-        dummy_reduce_func_mspasserror(ts1, ts2, preserve_history=True, instance='3')
+        dummy_reduce_func_mspasserror(ts1, ts2, preserve_history=True, alg_id='3')
     assert str(err.value) == "test"
 
 def test_copy_helpers():
@@ -360,27 +360,27 @@ def test_copy_helpers():
     seismogram_copy_helper(seis1, seis2)
     assert seis1.dt == 1 / 255
 
-@mspass_func_wrapper_global_history
-def dummy_global_history_func(array, *args, mode='promiscuous', global_history=None, **kwargs):
-    array.append('test')
+# @mspass_func_wrapper_global_history
+# def dummy_global_history_func(array, *args, mode='promiscuous', global_history=None, **kwargs):
+#     array.append('test')
 
-def test_mspass_func_wrapper_global_history():
-    array = []
-    client = Client('localhost')
-    db = Database(client, 'test_decorator')
-    db['history'].delete_many({})
+# def test_mspass_func_wrapper_global_history():
+#     array = []
+#     client = Client('localhost')
+#     db = Database(client, 'test_decorator')
+#     db['history'].delete_many({})
 
-    manager = GlobalHistoryManager(db, 'test_decorator_job', collection='history')
-    dummy_global_history_func(array, mode='promiscuous', global_history=manager)
+#     manager = GlobalHistoryManager(db, 'test_decorator_job', collection='history')
+#     dummy_global_history_func(array, mode='promiscuous', global_history=manager)
 
-    assert array[0] == 'test'
-    # check record in the manager
-    assert db['history'].count_documents({'job_name': 'test_decorator_job'}) == 1
-    res = db['history'].find_one({'job_name': 'test_decorator_job'})
-    assert res['job_id'] == manager.job_id
-    assert res['job_name'] == manager.job_name
-    assert res['alg_name'] == 'dummy_global_history_func'
-    assert res['parameters'] == '[],mode=promiscuous'
+#     assert array[0] == 'test'
+#     # check record in the manager
+#     assert db['history'].count_documents({'job_name': 'test_decorator_job'}) == 1
+#     res = db['history'].find_one({'job_name': 'test_decorator_job'})
+#     assert res['job_id'] == manager.job_id
+#     assert res['job_name'] == manager.job_name
+#     assert res['alg_name'] == 'dummy_global_history_func'
+#     assert res['parameters'] == '[],mode=promiscuous'
 
 if __name__ == "__main__":
     test_copy_helpers()

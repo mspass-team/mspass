@@ -267,6 +267,38 @@ Database:
         aliases: [MAG, source_magnitude]
         constraint: normal
 
+  global_history:
+    default: global_history
+    schema:
+      _id:
+        type: ObjectID
+        concept: ObjectId used to define a global history object
+        constraint: required
+      job_id:
+        type: ObjectID
+        concept: ObjectId  used to define a job
+        constraint: required
+      job_name:
+        type: string
+        concept: the name of the job
+        constraint: required
+      alg_name:
+        type: string
+        concept: the name of the algorithm
+        constraint: required
+      alg_id:
+        type: ObjectID
+        concept: ObjectId used to define a unique algorithm(alg_name + parameters)
+        constraint: required
+      parameters:
+        type: string
+        concept: the parameters of the algorithm
+        constraint: required
+      time:
+        type: double
+        concept: timestamp when save the global history record
+        constraint: required
+
   # According to https://docs.mongodb.com/manual/core/document/#the-id-field
   # UUID should be saved as BSON's BinData type. We should do the conversion 
   # implicitly. Will need to explore the bson API:
@@ -275,11 +307,25 @@ Database:
     schema:
       _id:
         type: string
-        concept: UUID used to define an unique entry in history collection.
+        concept: UUID used to define an unique entry in history object collection.
         constraint: required
-      nodedata:
+      processing_history:
         type: bytes
         concept: serialized content of ProcessingHistory.
+        constraint: required
+      wf_Seismogram_id:
+        reference: wf_Seismogram
+        constraint: xref_key
+      wf_TimeSeries_id:
+        reference: wf_TimeSeries
+        constraint: xref_key
+      alg_id:
+        type: string
+        concept: ObjectId used to define a unique algorithm(alg_name + parameters)
+        constraint: xref_key
+      alg_name:
+        type: string
+        concept: the name of the algorithm
         constraint: required
 
   elog:

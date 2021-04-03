@@ -4,6 +4,7 @@ import os
 import dask.bag as daskbag
 from pyspark import SparkConf, SparkContext
 from dask.distributed import Client as DaskClient
+from mspasspy.db.client import Client as DBClient
 
 import gridfs
 import numpy as np
@@ -25,7 +26,6 @@ from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
-
 
 class TestMsPASSClient():
 
@@ -65,12 +65,12 @@ class TestMsPASSClient():
         # test global_history_manager
         assert isinstance(self.client._global_history_manager, GlobalHistoryManager)
         assert self.client._global_history_manager.job_name == 'mspass'
-        assert self.client._global_history_manager.collection == 'history'
+        assert self.client._global_history_manager.collection == 'global_history'
         assert self.client._global_history_manager.history_db.name == 'mspass'
 
         # test dask scheduler
         assert isinstance(self.client._dask_client, DaskClient)
-        assert not hasattr(self.client._dask_client, '_spark_conf')
+        assert not hasattr(self.client._dask_client, '_spark_context')
 
     def test_db_client(self, monkeypatch):
         monkeypatch.setenv('MONGODB_PORT', '12345')
@@ -81,6 +81,11 @@ class TestMsPASSClient():
         monkeypatch.setenv('MSPASS_DB_ADDRESS', '168.0.0.1')
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a database client with: 168.0.0.1:12345'):
             client = Client()
+
+        client = Client(database_host='localhost:27017')
+        host, port = client._db_client.address
+        assert host == 'localhost'
+        assert port == 27017
 
     def test_dask_scheduler(self, monkeypatch):
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a dask client with: 168.0.0.1:8786'):
@@ -101,6 +106,13 @@ class TestMsPASSClient():
         monkeypatch.setenv('SPARK_MASTER_PORT', '12345')
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a spark configuration with: spark://168.0.0.1:12345'):
             client = Client()
+
+    def test_get_database_client(self):
+        db_client = self.client.get_database_client()
+        assert isinstance(db_client, DBClient)
+        host, port = db_client.address
+        assert host == 'localhost'
+        assert port == 27017
 
     def test_get_database(self):
         db1 = self.client.get_database()
@@ -123,9 +135,13 @@ class TestMsPASSClient():
         assert host == 'localhost'
         assert port == 27017
 
+        client = Client()
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a database client with: 168.0.0.1:12345'):
-            client = Client()
             client.set_database_client('168.0.0.1', database_port='12345')
+        # test restore
+        host, port = client._db_client.address
+        assert host == 'localhost'
+        assert port == 27017
 
     def test_set_global_history_manager(self):
         with pytest.raises(TypeError, match="history_db should be a mspasspy.db.Database but <class 'list'> is found."):
@@ -145,11 +161,13 @@ class TestMsPASSClient():
         with pytest.raises(MsPASSError, match='scheduler should be either dask or spark but test is found.'):
             self.client.set_scheduler('test', 'test')
 
+        temp_dask_client = self.client._dask_client
+        with pytest.raises(MsPASSError, match='Runntime error: cannot create a dask client with: localhost:8786'):
+            self.client.set_scheduler('dask', 'localhost', scheduler_port='8786')
+        assert isinstance(self.client._dask_client, DaskClient)
+        assert self.client._dask_client == temp_dask_client
+
         self.client.set_scheduler('spark', '127.0.0.3', scheduler_port='7077')
         assert self.client._scheduler == 'spark'
         assert self.client._spark_master_url == 'spark://127.0.0.3:7077'
         assert isinstance(self.client._spark_context, SparkContext)
-
-        with pytest.raises(MsPASSError, match='Runntime error: cannot create a dask client with: localhost:8786'):
-            client = Client(scheduler='spark')
-            client.set_scheduler('dask', 'localhost', scheduler_port='8786')

@@ -185,6 +185,9 @@ class TestDatabase():
         history_object_id = self.db._save_history(ts)
         res = self.db['history_object'].find_one({'_id': history_object_id})
         assert res
+        assert 'wf_TimeSeries_id' not in res
+        assert res['alg_name'] == 'dummy_func_2'
+        assert res['alg_id'] == '2'
 
         ts_2 = TimeSeries()
         self.db._load_history(ts_2, history_object_id)
@@ -197,6 +200,9 @@ class TestDatabase():
         assert not res
         res = self.db['history_object'].find_one({'_id': new_history_object_id})
         assert res
+        assert 'wf_TimeSeries_id' not in res
+        assert res['alg_name'] == 'dummy_func_3'
+        assert res['alg_id'] == '3'
 
         ts_2 = TimeSeries()
         self.db._load_history(ts_2, new_history_object_id)

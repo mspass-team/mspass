@@ -46,14 +46,19 @@ class Client:
 
         # create a database client
         # priority: parameter -> env -> default
+        database_host_has_port = False
         if database_host:
             database_address = database_host
+            # check if database_host contains port number already
+            if ':' in database_address:
+                database_host_has_port = True
+
         elif MSPASS_DB_ADDRESS:
             database_address = MSPASS_DB_ADDRESS
         else:
             database_address = 'localhost'
         # add port
-        if MONGODB_PORT:
+        if not database_host_has_port and MONGODB_PORT:
             database_address += ':' + MONGODB_PORT
 
         try:
@@ -84,15 +89,29 @@ class Client:
 
         # scheduler configuration
         if self._scheduler == 'spark':
+            scheduler_host_has_port = False
             if scheduler_host:
-                self._spark_master_url = 'spark://' + scheduler_host
+                self._spark_master_url = scheduler_host
+                # add spark:// prefix if not exist
+                if 'spark://' not in scheduler_host:
+                    self._spark_master_url = 'spark://' + self._spark_master_url
+                # check if spark host address contains port number already
+                if self._spark_master_url.count(':') == 2:
+                    scheduler_host_has_port = True
+                
             elif MSPASS_SCHEDULER_ADDRESS:
-                self._spark_master_url = 'spark://' + MSPASS_SCHEDULER_ADDRESS
+                self._spark_master_url = MSPASS_SCHEDULER_ADDRESS
+                # add spark:// prefix if not exist
+                if 'spark://' not in MSPASS_SCHEDULER_ADDRESS:
+                    self._spark_master_url = 'spark://' + self._spark_master_url
             else:
                 self._spark_master_url = 'local'
 
-            # add port
-            if (scheduler_host or MSPASS_SCHEDULER_ADDRESS) and SPARK_MASTER_PORT:
+            # add port number
+            # 1. not the default 'local'
+            # 2. scheduler_host and does not contain port number
+            # 3. SPARK_MASTER_PORT exists
+            if (scheduler_host or MSPASS_SCHEDULER_ADDRESS) and not scheduler_host_has_port and SPARK_MASTER_PORT:
                 self._spark_master_url += ':' + SPARK_MASTER_PORT
             
             # sanity check
@@ -107,14 +126,18 @@ class Client:
             if not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
                 self._dask_client = DaskClient()
             else:
+                scheduler_host_has_port = False
                 # set host
                 if scheduler_host:
                     self._dask_client_address = scheduler_host
+                    # check if scheduler_host contains port number already
+                    if ':' in scheduler_host:
+                        scheduler_host_has_port = True
                 else:
                     self._dask_client_address = MSPASS_SCHEDULER_ADDRESS
                 
                 # add port
-                if DASK_SCHEDULER_PORT:
+                if not scheduler_host_has_port and DASK_SCHEDULER_PORT:
                     self._dask_client_address += ':' + DASK_SCHEDULER_PORT
                 else:
                     # use to port 8786 by default if not specified
@@ -125,6 +148,14 @@ class Client:
                 except Exception as err:
                     raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
 
+
+    def get_database_client(self):
+        """
+        Get the database client in the global history manager
+
+        :return: :class:`mspasspy.db.database.Database`
+        """
+        return self._db_client
     
     def get_database(self, database_name=None):
         """
@@ -167,15 +198,22 @@ class Client:
         :param database_port: the port of database client
         :type database_port: :class:`str`
         """
+        database_host_has_port = False
         database_address = database_host
+        # check if port is already in the database_host address
+        if ':' in database_host:
+            database_host_has_port = True
         # add port
-        if database_port:
+        if not database_host_has_port and database_port:
             database_address += ':' + database_port
         # sanity check
+        temp_db_client = self._db_client
         try:
             self._db_client = DBClient(database_address)
             self._db_client.server_info()
         except Exception as err:
+            # restore the _db_client
+            self._db_client = temp_db_client
             raise MsPASSError('Runntime error: cannot create a database client with: ' + database_address, 'Fatal')
 
     def set_global_history_manager(self, history_db, job_name, collection=None):
@@ -214,29 +252,56 @@ class Client:
         
         self._scheduler = scheduler
         if scheduler == 'spark':
-            self._spark_master_url = 'spark://' + scheduler_host
+            scheduler_host_has_port = False
+                
+            self._spark_master_url = scheduler_host
+            # add spark:// prefix if not exist
+            if 'spark://' not in scheduler_host:
+                self._spark_master_url = 'spark://' + self._spark_master_url
+            # check if spark host address contains port number already
+            if self._spark_master_url.count(':') == 2:
+                scheduler_host_has_port = True
+
             # add port
-            if scheduler_port:
+            if not scheduler_host_has_port and scheduler_port:
                 self._spark_master_url += ':' + scheduler_port
             
             # sanity check
+            temp_spark_context = None
+            if hasattr(self, '_spark_context'):
+                temp_spark_context = self._spark_context
             try:
                 spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
+                # restore the spark context if exists
+                if temp_spark_context:
+                    self._spark_context = temp_spark_context
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
 
         elif scheduler == 'dask':
+            scheduler_host_has_port = False
             self._dask_client_address = scheduler_host
+            # check if scheduler_host contains port number already
+            if ':' in scheduler_host:
+                scheduler_host_has_port = True
+
             # add port
-            if scheduler_port:
-                self._dask_client_address += ':' + scheduler_port
-            else:
-                # use to port 8786 by default if not specified
-                self._dask_client_address += ':8786'
+            if not scheduler_host_has_port:
+                if scheduler_port:
+                    self._dask_client_address += ':' + scheduler_port
+                else:
+                    # use to port 8786 by default if not specified
+                    self._dask_client_address += ':8786'
             
             # sanity check
+            temp_dask_client = None
+            if hasattr(self, '_dask_client'):
+                temp_dask_client = self._dask_client
             try:
                 self._dask_client = DaskClient(self._dask_client_address)
             except Exception as err:
+                # restore the dask client if exists
+                if temp_dask_client:
+                    self._dask_client = temp_dask_client
                 raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')

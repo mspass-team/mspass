@@ -2,6 +2,7 @@ import os
 import yaml
 import pymongo
 import pyspark
+import collections
 import dask.bag as daskbag
 
 from bson.objectid import ObjectId
@@ -9,7 +10,10 @@ from mspasspy.ccore.utility import MsPASSError
 from datetime import datetime
 from dill.source import getsource
 
-def mspass_spark_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+import mspasspy.algorithms.signals as signals
+
+def mspass_spark_map(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+                     alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard spark map method and be a part of member functions
      in the spark RDD library. Instead of performing the normal map function, if user provides global history manager,
@@ -18,33 +22,57 @@ def mspass_spark_map(self, func, *args, global_history=None, alg_name=None, para
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
+    :param preserve_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
     :type parameters: :class:`str`
     :return: a spark `RDD` format of objects.
     """
-    if global_history:
-        # get the whole lambda function
-        alg_string = getsource(func)
-        # truncate to get the algorithm name and parameters
-        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
-        
-        if not alg_name:
-            # get the algorithm name
-            alg_name = alg[:alg.index('(')].strip()
-        if not parameters:
-            # get the parameters
-            parameters = alg[alg.index('(')+1:].strip()
-        
-        # get the alg_id if exists, else create a new one
-        alg_id = global_history.get_alg_id(alg_name, parameters)
-        if not alg_id:
-            alg_id = ObjectId()
-        global_history.logging(alg_name, alg_id, parameters)
-    return self.map(func, *args, **kwargs)
+    if not parameters:
+        # extract list parameters
+        args_str = ",".join(f"{value}" for value in args)
 
-def mspass_dask_map(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+        # extract dict parameters
+        parameters_dict = collections.OrderedDict()
+        for key, value in kwargs.items():
+            parameters_dict[key] = value
+        parameters_dict['preserve_history'] = preserve_history
+        if alg_name:
+            parameters_dict['alg_name'] = alg_name
+        if alg_id:
+            parameters_dict['alg_id'] = alg_id
+        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+
+        if args_str:
+            parameters = args_str + "," + kwargs_str
+        else:
+            parameters = kwargs_str
+
+    if not alg_name:
+        # if not exists, use the name of the func
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
+        alg_id = global_history.get_alg_id(alg_name, parameters)
+        # else create a new one
+        if not alg_id:
+            alg_id = str(ObjectId())
+
+    # save the global history
+    if global_history:
+        global_history.logging(alg_name, alg_id, parameters)
+    
+    # save the object history
+    if preserve_history:
+        return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+    
+    return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, **kwargs))
+
+def mspass_dask_map(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+                    alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard dask map method and be a part of member functions
      in the dask bag library. Instead of performing the normal map function, if user provides global history manager,
@@ -53,32 +81,56 @@ def mspass_dask_map(self, func, *args, global_history=None, alg_name=None, param
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
+    :param preserve_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
     :type parameters: :class:`str`
     :return: a dask `bag` format of objects.
     """
-    if global_history:
-        if not alg_name:
-            alg_name = func.__name__
+    if not parameters:
+        # extract list parameters
+        args_str = ",".join(f"{value}" for value in args)
 
-        if not parameters:
-            # extract parameters
-            args_str = ",".join(f"{value}" for value in args)
-            kwargs_str = ",".join(f"{key}={value}" for key, value in kwargs.items())
-            parameters = args_str
-            if kwargs_str:
-                parameters += "," + kwargs_str
+        # extract dict parameters
+        parameters_dict = collections.OrderedDict()
+        for key, value in kwargs.items():
+            parameters_dict[key] = value
+        parameters_dict['preserve_history'] = preserve_history
+        if alg_name:
+            parameters_dict['alg_name'] = alg_name
+        if alg_id:
+            parameters_dict['alg_id'] = alg_id
+        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
 
-        # get the alg_id if exists, else create a new one
+        if args_str:
+            parameters = args_str + "," + kwargs_str
+        else:
+            parameters = kwargs_str
+
+    if not alg_name:
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
         alg_id = global_history.get_alg_id(alg_name, parameters)
+        # else create a new one
         if not alg_id:
-            alg_id = ObjectId()
-        global_history.logging(alg_name, alg_id, parameters)
-    return self.map(func, *args, **kwargs)
+            alg_id = str(ObjectId())
 
-def mspass_spark_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    # save the global history
+    if global_history:
+        global_history.logging(alg_name, alg_id, parameters)
+
+    # save the object history
+    if preserve_history:
+        return self.map(func, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs)
+
+    return self.map(func, *args, preserve_history=preserve_history, **kwargs)
+
+def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+                        alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
      in the spark RDD library. Instead of performing the normal reduce function, if user provides global history manager,
@@ -87,33 +139,57 @@ def mspass_spark_reduce(self, func, *args, global_history=None, alg_name=None, p
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
+    :param preserve_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
     :type parameters: :class:`str`
     :return: a spark `RDD` format of objects.
     """
-    if global_history:
-        # get the whole lambda function
-        alg_string = getsource(func)
-        # truncate to get the algorithm name and parameters
-        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
+    if not parameters:
+        # extract list parameters
+        args_str = ",".join(f"{value}" for value in args)
 
-        if not alg_name:
-            # get the algorithm name
-            alg_name = alg[:alg.index('(')].strip()
-        if not parameters:
-            # get the parameters
-            parameters = alg[alg.index('(')+1:].strip()
-        
-        # get the alg_id if exists, else create a new one
+        # extract dict parameters
+        parameters_dict = collections.OrderedDict()
+        for key, value in kwargs.items():
+            parameters_dict[key] = value
+        parameters_dict['preserve_history'] = preserve_history
+        if alg_name:
+            parameters_dict['alg_name'] = alg_name
+        if alg_id:
+            parameters_dict['alg_id'] = alg_id
+        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+
+        if args_str:
+            parameters = args_str + "," + kwargs_str
+        else:
+            parameters = kwargs_str
+    
+    if not alg_name:
+        # if not exists, use the name of the func
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
         alg_id = global_history.get_alg_id(alg_name, parameters)
+        # else create a new one
         if not alg_id:
-            alg_id = ObjectId()
-        global_history.logging(alg_name, alg_id, parameters)
-    return self.reduce(func, *args, **kwargs)
+            alg_id = str(ObjectId())
 
-def mspass_dask_reduce(self, func, *args, global_history=None, alg_name=None, parameters=None, **kwargs):
+    # save the global history
+    if global_history:
+        global_history.logging(alg_name, alg_id, parameters)
+    
+    # save the object history
+    if preserve_history:
+        return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+    
+    return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
+
+def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+                       alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard dask reduce method and be a part of member functions
      in the dask bag library. Instead of performing the normal reduce function, if user provides global history manager,
@@ -122,31 +198,55 @@ def mspass_dask_reduce(self, func, *args, global_history=None, alg_name=None, pa
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
+    :param preserve_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
     :type parameters: :class:`str`
     :return: a dask `bag` format of objects.
     """
-    if global_history:
-        # get the whole lambda function
-        alg_string = getsource(func)
-        # truncate to get the algorithm name and parameters
-        alg = alg_string[alg_string.index(':')+1 : alg_string.index(')')]
+    if not parameters:
+        # extract list parameters
+        args_str = ",".join(f"{value}" for value in args)
 
-        if not alg_name:
-            # get the algorithm name
-            alg_name = alg[:alg.index('(')].strip()
-        if not parameters:
-            # get the parameters
-            parameters = alg[alg.index('(')+1:].strip()
+        # extract dict parameters
+        parameters_dict = collections.OrderedDict()
+        for key, value in kwargs.items():
+            parameters_dict[key] = value
+        parameters_dict['preserve_history'] = preserve_history
+        if alg_name:
+            parameters_dict['alg_name'] = alg_name
+        if alg_id:
+            parameters_dict['alg_id'] = alg_id
+        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
 
-        # get the alg_id if exists, else create a new one
+        if args_str:
+            parameters = args_str + "," + kwargs_str
+        else:
+            parameters = kwargs_str
+
+    if not alg_name:
+        # if not exists, use the name of the func
+        alg_name = func.__name__
+
+    # get the alg_id if exists, else create a new one
+    if not alg_id:
+        # get the alg_id if exists
         alg_id = global_history.get_alg_id(alg_name, parameters)
+        # else create a new one
         if not alg_id:
-            alg_id = ObjectId()
+            alg_id = str(ObjectId())
+
+    # save the global history
+    if global_history:
         global_history.logging(alg_name, alg_id, parameters)
-    return self.fold(func, *args, **kwargs)
+    
+    # save the object history
+    if preserve_history:
+        return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=alg_id, **kwargs))
+    
+    return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
+
 
 class GlobalHistoryManager:
     """
@@ -166,7 +266,7 @@ class GlobalHistoryManager:
         self.collection = collection
         if not self.collection:
             # use the `history` collection defined in database schema
-            self.collection = 'history'
+            self.collection = self.history_db.database_schema.default_name('global_history')
 
         # create unique index -> (alg_name, parameters)
         self.history_db[self.collection].create_index(
