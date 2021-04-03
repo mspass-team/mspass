@@ -24,7 +24,7 @@ from helper import (get_live_seismogram,
 
 def dask_map(input):
     ddb = db.from_sequence(input)
-    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0')
+    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0', dryrun=False, inplace_return=True)
     return res.compute()
 
 
@@ -34,7 +34,7 @@ def spark_map(input):
     conf = SparkConf().setAppName(appName).setMaster(master)
     sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
-    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0'))
+    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0', dryrun=False, inplace_return=True))
     return res.collect()
 
 

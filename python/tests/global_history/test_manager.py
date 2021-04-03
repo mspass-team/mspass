@@ -37,12 +37,12 @@ def spark_map(input, manager, alg_name=None, parameters=None):
     conf = SparkConf().setAppName(appName).setMaster(master)
     sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
-    res = data.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, global_history=manager, alg_name=alg_name, parameters=parameters)
+    res = data.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, global_history=manager, alg_name=alg_name, parameters=parameters, inplace_return=True)
     return res.collect()
 
 def dask_map(input, manager, alg_name=None, parameters=None):
     ddb = daskbag.from_sequence(input)
-    res = ddb.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, global_history=manager, alg_name=alg_name, parameters=parameters)
+    res = ddb.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, global_history=manager, alg_name=alg_name, parameters=parameters, inplace_return=True)
     return res.compute()
 
 def dask_reduce(input, manager, alg_name=None, parameters=None):
@@ -91,6 +91,12 @@ class TestManager():
 
     def test_mspass_map(self):
         l = [get_live_timeseries() for i in range(5)]
+        # add net, sta, chan, loc to avoid metadata serialization problem
+        for i in range(5):
+            l[i]['chan'] = 'HHZ'
+            l[i]['loc'] = 'test_loc'
+            l[i]['net'] = 'test_net'
+            l[i]['sta'] = 'test_sta'
         # test mspass_map for spark
         spark_res = spark_map(l, self.manager)
 
@@ -100,7 +106,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         spark_alg_id = res['alg_id']
 
         # test mspass_map for dask
@@ -112,7 +118,7 @@ class TestManager():
         assert docs[0]['job_id'] == docs[1]['job_id'] == self.manager.job_id
         assert docs[0]['job_name'] == docs[1]['job_name'] == self.manager.job_name
         assert docs[0]['alg_name'] == docs[1]['alg_name'] == 'filter'
-        assert docs[0]['parameters'] == docs[1]['parameters'] == "bandpass,freqmin=1,freqmax=5,preserve_history=True"
+        assert docs[0]['parameters'] == docs[1]['parameters'] == "bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True"
         assert not docs[0]['time'] == docs[1]['time']
 
         # same alg + parameters combination -> same alg_id
@@ -122,14 +128,14 @@ class TestManager():
 
         # SPARK test user provided alg_name and parameter(exist)
         spark_alg_name = 'filter'
-        spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         spark_res = spark_map(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['global_history'].count_documents({'job_name': self.manager.job_name}) == 4
         assert manager_db['global_history'].count_documents({'alg_id': spark_alg_id}) == 4
 
         # SPARK test user provided alg_name and parameter(new)
         spark_alg_name = 'new_filter'
-        spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         spark_res = spark_map(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['global_history'].count_documents({'job_name': self.manager.job_name}) == 5
         assert manager_db['global_history'].count_documents({'alg_name': 'new_filter'}) == 1
@@ -137,20 +143,20 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         new_spark_alg_id = res['alg_id']
         assert manager_db['global_history'].count_documents({'alg_id': new_spark_alg_id}) == 1
 
         # DASK test user provided alg_name and parameter(exist)
         dask_alg_name = 'filter'
-        dask_alg_parameters = 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        dask_alg_parameters = 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         dask_res = dask_map(l, self.manager, alg_name=dask_alg_name, parameters=dask_alg_parameters)
         assert manager_db['global_history'].count_documents({'job_name': self.manager.job_name}) == 6
         assert manager_db['global_history'].count_documents({'alg_id': spark_alg_id}) == 5
 
         # DASK test user provided alg_name and parameter(new)
         dask_alg_name = 'new_filter_2'
-        dask_alg_parameters = 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        dask_alg_parameters = 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         dask_res = dask_map(l, self.manager, alg_name=dask_alg_name, parameters=dask_alg_parameters)
         assert manager_db['global_history'].count_documents({'job_name': self.manager.job_name}) == 7
         assert manager_db['global_history'].count_documents({'alg_name': 'new_filter_2'}) == 1
@@ -158,7 +164,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter_2'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,preserve_history=True'
+        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,inplace_return=True,preserve_history=True'
         new_dask_alg_id = res['alg_id']
         assert manager_db['global_history'].count_documents({'alg_id': new_dask_alg_id}) == 1
 
