@@ -259,7 +259,7 @@ def test_all_decorators():
     # test inplace return
     seis1 = get_live_seismogram()
     # upgrade of decorator -> should explicitly pass the positional arguments
-    ret = dummy_func_2(seis1, preserve_history=True, alg_id='0', inplace_return=True)
+    ret = dummy_func_2(seis1, preserve_history=True, alg_id='0')
     assert seis1 == ret
 
 @mspass_func_wrapper_multi
