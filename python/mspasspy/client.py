@@ -250,6 +250,7 @@ class Client:
         if scheduler != 'dask' and scheduler != 'spark':
             raise MsPASSError('scheduler should be either dask or spark but ' + str(scheduler) +  ' is found.', 'Fatal')
         
+        prev_scheduler = self._scheduler
         self._scheduler = scheduler
         if scheduler == 'spark':
             scheduler_host_has_port = False
@@ -277,6 +278,9 @@ class Client:
                 # restore the spark context if exists
                 if temp_spark_context:
                     self._spark_context = temp_spark_context
+                # restore the scheduler type
+                if self._scheduler == 'spark' and prev_scheduler == 'dask':
+                    self._scheduler = prev_scheduler
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
 
         elif scheduler == 'dask':
@@ -304,4 +308,7 @@ class Client:
                 # restore the dask client if exists
                 if temp_dask_client:
                     self._dask_client = temp_dask_client
+                # restore the scheduler type
+                if self._scheduler == 'dask' and prev_scheduler == 'spark':
+                    self._scheduler = prev_scheduler
                 raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
