@@ -12,7 +12,7 @@ from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
 
-def mspass_spark_map(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                      alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard spark map method and be a part of member functions
@@ -22,7 +22,7 @@ def mspass_spark_map(self, func, *args, global_history=None, preserve_history=Fa
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param preserve_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
@@ -37,7 +37,7 @@ def mspass_spark_map(self, func, *args, global_history=None, preserve_history=Fa
         parameters_dict = collections.OrderedDict()
         for key, value in kwargs.items():
             parameters_dict[key] = value
-        parameters_dict['preserve_history'] = preserve_history
+        parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
@@ -66,12 +66,12 @@ def mspass_spark_map(self, func, *args, global_history=None, preserve_history=Fa
         global_history.logging(alg_name, alg_id, parameters)
     
     # save the object history
-    if preserve_history:
-        return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+    if object_history:
+        return self.map(lambda wf: func(wf, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
-    return self.map(lambda wf: func(wf, *args, preserve_history=preserve_history, **kwargs))
+    return self.map(lambda wf: func(wf, *args, object_history=object_history, **kwargs))
 
-def mspass_dask_map(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+def mspass_dask_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                     alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard dask map method and be a part of member functions
@@ -81,7 +81,7 @@ def mspass_dask_map(self, func, *args, global_history=None, preserve_history=Fal
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param preserve_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
@@ -96,7 +96,7 @@ def mspass_dask_map(self, func, *args, global_history=None, preserve_history=Fal
         parameters_dict = collections.OrderedDict()
         for key, value in kwargs.items():
             parameters_dict[key] = value
-        parameters_dict['preserve_history'] = preserve_history
+        parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
@@ -124,12 +124,12 @@ def mspass_dask_map(self, func, *args, global_history=None, preserve_history=Fal
         global_history.logging(alg_name, alg_id, parameters)
 
     # save the object history
-    if preserve_history:
-        return self.map(func, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs)
+    if object_history:
+        return self.map(func, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs)
 
-    return self.map(func, *args, preserve_history=preserve_history, **kwargs)
+    return self.map(func, *args, object_history=object_history, **kwargs)
 
-def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+def mspass_spark_reduce(self, func, *args, global_history=None, object_history=False, alg_id=None,
                         alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
@@ -139,7 +139,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param preserve_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
@@ -154,7 +154,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history
         parameters_dict = collections.OrderedDict()
         for key, value in kwargs.items():
             parameters_dict[key] = value
-        parameters_dict['preserve_history'] = preserve_history
+        parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
@@ -183,12 +183,12 @@ def mspass_spark_reduce(self, func, *args, global_history=None, preserve_history
         global_history.logging(alg_name, alg_id, parameters)
     
     # save the object history
-    if preserve_history:
-        return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+    if object_history:
+        return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
-    return self.reduce(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
+    return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
 
-def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=False, alg_id=None,
+def mspass_dask_reduce(self, func, *args, global_history=None, object_history=False, alg_id=None,
                        alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard dask reduce method and be a part of member functions
@@ -198,7 +198,7 @@ def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param preserve_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the map when True
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
@@ -213,7 +213,7 @@ def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=
         parameters_dict = collections.OrderedDict()
         for key, value in kwargs.items():
             parameters_dict[key] = value
-        parameters_dict['preserve_history'] = preserve_history
+        parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
@@ -242,10 +242,10 @@ def mspass_dask_reduce(self, func, *args, global_history=None, preserve_history=
         global_history.logging(alg_name, alg_id, parameters)
     
     # save the object history
-    if preserve_history:
-        return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+    if object_history:
+        return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
     
-    return self.fold(lambda a, b: func(a, b, *args, preserve_history=preserve_history, **kwargs))
+    return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
 
 
 class GlobalHistoryManager:
@@ -266,7 +266,7 @@ class GlobalHistoryManager:
         self.collection = collection
         if not self.collection:
             # use the `history` collection defined in database schema
-            self.collection = self.history_db.database_schema.default_name('global_history')
+            self.collection = self.history_db.database_schema.default_name('history_global')
 
         # create unique index -> (alg_name, parameters)
         self.history_db[self.collection].create_index(

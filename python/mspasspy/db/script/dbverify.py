@@ -194,7 +194,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 from mspasspy.ccore.utility import MsPASSError
 from mspasspy.db.database import Database
-from mspasspy.db.client import Client as DBClient
+from mspasspy.db.client import DBClient
 
 def print_id_keyed_dict(d):
     """

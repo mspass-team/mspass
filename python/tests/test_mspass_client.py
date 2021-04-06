@@ -4,7 +4,7 @@ import os
 import dask.bag as daskbag
 from pyspark import SparkConf, SparkContext
 from dask.distributed import Client as DaskClient
-from mspasspy.db.client import Client as DBClient
+from mspasspy.db.client import DBClient
 
 import gridfs
 import numpy as np
@@ -65,7 +65,7 @@ class TestMsPASSClient():
         # test global_history_manager
         assert isinstance(self.client._global_history_manager, GlobalHistoryManager)
         assert self.client._global_history_manager.job_name == 'mspass'
-        assert self.client._global_history_manager.collection == 'global_history'
+        assert self.client._global_history_manager.collection == 'history_global'
         assert self.client._global_history_manager.history_db.name == 'mspass'
 
         # test dask scheduler

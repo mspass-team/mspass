@@ -1,7 +1,7 @@
 import os
 import pymongo
 
-from mspasspy.db.client import Client as DBClient
+from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 from pyspark import SparkConf, SparkContext

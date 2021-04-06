@@ -17,7 +17,7 @@ from datetime import datetime
 sys.path.append("python/tests")
 
 from mspasspy.util import logging_helper
-from mspasspy.db.client import Client
+from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 from mspasspy.db.script import dbclean
 from helper import (get_live_seismogram,
@@ -28,7 +28,7 @@ from helper import (get_live_seismogram,
 class TestDBClean():
 
     def setup_class(self):
-        client = Client('localhost')
+        client = DBClient('localhost')
         self.db = Database(client, 'test_dbclean')
 
         self.test_ts = get_live_timeseries()

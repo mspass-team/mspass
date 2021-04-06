@@ -31,7 +31,7 @@ def ensemble_error_post(d,alg,message, severity):
               type(d))
         print('Not treated as fatal but a bug fix is needed')
 def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=False,
-          preserve_history=False,instance=None,dryrun=False):
+          object_history=False,instance=None,dryrun=False):
     """
     Top level function interface to data scaling methods.
     
@@ -41,7 +41,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
     amplitude estimation metrics are available by selecting one of the 
     allowed values for the method parameter.   Ensembles can be scaled 
     at the individual seismogram level or as a whole (scale_by_section=True).
-    Object level history can be enabled by setting preserve_history true.  
+    Object level history can be enabled by setting object_history true.  
     See parameter descriptions for additional features for history preservation.
     
     Note all methods preserve the original amplitude by updating the 
@@ -82,10 +82,10 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
       True.   The algorithm used in that case has an option to use the mean 
       log amplitude for scaling the section instead of the default median
       amplitude.
-    :param preserve_history:
-    :param instance:  preserve_history and instance are intimately related 
+    :param object_history:
+    :param instance:  object_history and instance are intimately related 
       and control how object level history is handled.  Object level history 
-      is disabled by default for efficiency.  If preserve_history is set True 
+      is disabled by default for efficiency.  If object_history is set True 
       and the string passed as instance is defined (not None which is the default)
       each Seismogram or TimeSeries object will attempt to save the history 
       through a new_map operation.   If the history chain is empty this will
@@ -127,10 +127,10 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
         if(not isinstance(window,TimeWindow)):
             raise RuntimeError(algname
               +":  optional window parameter set but data passed is not a TimeWindow object")
-    if(preserve_history):
+    if(object_history):
         if(instance==None):
             raise RuntimeError(algname
-              + ":  preserve_history was set true but instance parameter was not defined")
+              + ":  object_history was set true but instance parameter was not defined")
     if(dryrun):
         return 'ok'
     # The pybind11 and C++ way of defining an enum class creates an 
@@ -156,7 +156,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
                 else:
                     amp=_scale(d,method_to_use,level)
                     ampvec.append(amp)
-                if(preserve_history):
+                if(object_history):
                     if(d.is_empty()):
                         d.elog.log_error(algname
                          +": cannot preserve history because container was empty\nMust at least contain an origin record")
@@ -170,7 +170,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
                 else:
                     amp=_scale(d,method_to_use,level)
                     ampvec.append(amp)
-                if(preserve_history):
+                if(object_history):
                     if(d.is_empty()):
                         d.elog.log_error(algname,
                          "cannot preserve history because container was empty\nMust at least contain an origin record",
@@ -187,7 +187,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
                     ampvec.append(amp)
                 else:
                     ampvec=_scale_ensemble_members(d,method_to_use,level)
-                if(preserve_history):
+                if(object_history):
                     n=len(d.member)
                     for i in range(n):
                     # Silently do nothing if the data are marked dead
@@ -235,7 +235,7 @@ def scale(d,method='peak',level=1.0,window=None,scale_by_section=False,use_mean=
         else:
           ensemble_error_post(d,algname,message,ErrorSeverity.Invalid) 
         
-def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
+def WindowData(d,twin,t0shift=None,object_history=False,instance=None):
     """
     Cut data defined by a TimeWindow object.
     
@@ -259,12 +259,12 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
       A typical example would be to set t0shift to an arrival time and let 
       the window define time relative to that arrival time.  Default is None
       which cause the function to assume twin is to be used directly.  
-    :param preserve_history: boolean to enable or disable saving object 
+    :param object_history: boolean to enable or disable saving object 
       level history.  Default is False.   Note if this feature is enabled
       and the input data history chain is empty the function will log an 
       error to the returned data and not update the history chain.
     :param instance: is instance key to pass to processing history chain.
-      If None (the default) and preserve_history is true the processing
+      If None (the default) and object_history is true the processing
       history chain will not be updated and a complaint error posted to 
       d.elog.   
      
@@ -283,7 +283,7 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
                 # history data to allow recording why data were killed
                 return d
             dcut=_WindowData(d,twcut)
-            if(preserve_history):
+            if(object_history):
                 if(instance==None):
                     dcut.elog.log_error("WindowData",
                       "Undefined instance argument - cannot save history data",
@@ -301,7 +301,7 @@ def WindowData(d,twin,t0shift=None,preserve_history=False,instance=None):
                 # As above return original if dead
                 return d
             dcut=_WindowData3C(d,twcut)
-            if(preserve_history):
+            if(object_history):
                 if(instance==None):
                     d.elog("WindowData",
                       "Undefined instance argument - cannot save history data",

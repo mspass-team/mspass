@@ -20,7 +20,7 @@ from datetime import datetime
 sys.path.append("python/tests")
 
 from mspasspy.db.database import Database, read_distributed_data
-from mspasspy.db.client import Client
+from mspasspy.db.client import DBClient
 from helper import (get_live_seismogram,
                     get_live_timeseries,
                     get_live_timeseries_ensemble,
@@ -31,7 +31,7 @@ from helper import (get_live_seismogram,
 class TestDatabase():
 
     def setup_class(self):
-        client = Client('localhost')
+        client = DBClient('localhost')
         self.db = Database(client, 'dbtest')
         self.db2 = Database(client, 'dbtest')
         self.metadata_def = MetadataSchema()
@@ -84,7 +84,7 @@ class TestDatabase():
     def test_init(self):
         db_schema = DatabaseSchema("mspass_lite.yaml")
         md_schema = MetadataSchema("mspass_lite.yaml")
-        client = Client('localhost')
+        client = DBClient('localhost')
         db = Database(client, 'dbtest', db_schema=db_schema, md_schema=md_schema)
         with pytest.raises(AttributeError, match='no attribute'):
             dummy = db.database_schema.site
@@ -1205,7 +1205,7 @@ class TestDatabase():
             os.remove('python/tests/data/test_db_output')
         except OSError:
             pass
-        client = Client('localhost')
+        client = DBClient('localhost')
         client.drop_database('dbtest')
 
     def test_load_source_site_channel_metadata(self):
@@ -1256,12 +1256,12 @@ class TestDatabase():
     
 
 def test_read_distributed_data(spark_context):
-    client = Client('localhost')
+    client = DBClient('localhost')
     client.drop_database('mspasspy_test_db')
 
     test_ts = get_live_timeseries()
 
-    client = Client('localhost')
+    client = DBClient('localhost')
     db = Database(client, 'mspasspy_test_db')
 
     site_id = ObjectId()
@@ -1299,17 +1299,17 @@ def test_read_distributed_data(spark_context):
         assert l
         assert np.isclose(l.data, test_ts.data).all()
 
-    client = Client('localhost')
+    client = DBClient('localhost')
     client.drop_database('mspasspy_test_db')
 
 
 def test_read_distributed_data_dask():
-    client = Client('localhost')
+    client = DBClient('localhost')
     client.drop_database('mspasspy_test_db')
 
     test_ts = get_live_timeseries()
 
-    client = Client('localhost')
+    client = DBClient('localhost')
     db = Database(client, 'mspasspy_test_db')
 
     site_id = ObjectId()
@@ -1347,7 +1347,7 @@ def test_read_distributed_data_dask():
         assert l
         assert np.isclose(l.data, test_ts.data).all()
 
-    client = Client('localhost')
+    client = DBClient('localhost')
     client.drop_database('mspasspy_test_db')
 
 if __name__ == '__main__':

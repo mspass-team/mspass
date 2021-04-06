@@ -24,7 +24,7 @@ from helper import (get_live_seismogram,
 
 def dask_map(input):
     ddb = db.from_sequence(input)
-    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0')
+    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
     return res.compute()
 
 
@@ -34,7 +34,7 @@ def spark_map(input):
     conf = SparkConf().setAppName(appName).setMaster(master)
     sc = SparkContext.getOrCreate(conf=conf)
     data = sc.parallelize(input)
-    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0'))
+    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
     return res.collect()
 
 
@@ -44,7 +44,7 @@ def test_map_spark_and_dask():
     dask_res = dask_map(l)
 
     ts_cp = TimeSeries(l[0])
-    res = signals.filter(ts_cp, "bandpass", freqmin=1, freqmax=5, preserve_history=True, alg_id='0')
+    res = signals.filter(ts_cp, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
     assert np.isclose(spark_res[0].data, ts_cp.data).all()
     assert np.isclose(dask_res[0].data, ts_cp.data).all()
 
@@ -98,7 +98,7 @@ def test_reduce_stack_exception():
 
 def dask_reduce(input):
     ddb = db.from_sequence(input)
-    res = ddb.fold(lambda a, b: stack(a, b, preserve_history=True, alg_id='3'))
+    res = ddb.fold(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
     return res.compute()
 
 
@@ -106,7 +106,7 @@ def spark_reduce(input, sc):
     data = sc.parallelize(input)
     # zero = get_live_timeseries()
     # zero.data = DoubleVector(np.zeros(255))
-    res = data.reduce(lambda a, b: stack(a, b, preserve_history=True, alg_id='3'))
+    res = data.reduce(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
     return res
 
 

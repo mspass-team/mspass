@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 
 
 @decorator
-def mspass_func_wrapper(func, data, *args, preserve_history=False, alg_name=None, alg_id=None, dryrun=False,
+def mspass_func_wrapper(func, data, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False,
                         inplace_return=False, **kwargs):
     """
     This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
@@ -24,9 +24,9 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, alg_name=None
     :param func: target function
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
      and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
@@ -49,14 +49,14 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, alg_name=None
     if not alg_name:
         alg_name = func.__name__
 
-    if preserve_history and alg_id is None:
-        raise ValueError(alg_name + ": preserve_history was true but alg_id not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
     if dryrun:
         return "OK"
 
     try:
         res = func(data, *args, **kwargs)
-        if preserve_history:
+        if object_history:
             logging_helper.info(data, alg_name, alg_id)
         if res is None and inplace_return:
             return data
@@ -76,7 +76,7 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, alg_name=None
 
 
 @decorator
-def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
+def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
     """
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
     this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
@@ -86,9 +86,9 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
      and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
@@ -111,14 +111,14 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
     if not alg_name:
         alg_name = func.__name__
 
-    if preserve_history and alg_id is None:
-        raise ValueError(alg_name + ": preserve_history was true but alg_id not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
     if dryrun:
         return "OK"
 
     try:
         res = func(data1, data2, *args, **kwargs)
-        if preserve_history:
+        if object_history:
             logging_helper.info(data1, alg_name, alg_id)
             logging_helper.info(data2, alg_name, alg_id)
         return res
@@ -410,7 +410,7 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
 
 
 @decorator
-def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
+def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
     and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
@@ -420,9 +420,9 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
      and alg_id are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_reduce operation. If the history chain is empty this will silently generate
      an error posted to error log on each object.
@@ -445,15 +445,15 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     else:
         raise TypeError("only mspass objects are supported in reduce wrapped methods")
 
-    if preserve_history and alg_id is None:
-        raise ValueError(alg_name + ": preserve_history was true but alg_id not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
 
     if dryrun:
         return "OK"
 
     try:
         res = func(data1, data2, *args, **kwargs)
-        if preserve_history:
+        if object_history:
             logging_helper.reduce(data1, data2, alg_name, alg_id)
         return res
     except RuntimeError as err:
