@@ -17,12 +17,16 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     """
      This decorator method add more functionaliy on the standard spark map method and be a part of member functions
      in the spark RDD library. Instead of performing the normal map function, if user provides global history manager,
-     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down
+     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this map function
+     will save the object level history.
 
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
     :param object_history: save the each object's history in the map when True
+    :param alg_id: a user specified alg_id for the map operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
@@ -76,12 +80,16 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     """
      This decorator method add more functionaliy on the standard dask map method and be a part of member functions
      in the dask bag library. Instead of performing the normal map function, if user provides global history manager,
-     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down
+     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this map function
+     will save the object level history.
 
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
     :param object_history: save the each object's history in the map when True
+    :param alg_id: a user specified alg_id for the map operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
     :param alg_name: a user specified alg_name for the map operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the map operation
@@ -134,12 +142,16 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     """
      This decorator method add more functionaliy on the standard spark reduce method and be a part of member functions
      in the spark RDD library. Instead of performing the normal reduce function, if user provides global history manager,
-     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down
+     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this reduce function
+     will save the object level history.
 
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param object_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the reduce when True
+    :param alg_id: a user specified alg_id for the reduce operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
@@ -193,12 +205,16 @@ def mspass_dask_reduce(self, func, *args, global_history=None, object_history=Fa
     """
      This decorator method add more functionaliy on the standard dask reduce method and be a part of member functions
      in the dask bag library. Instead of performing the normal reduce function, if user provides global history manager,
-     alg_name and parameters as input, the global history manager will log down the usage of the algorithm.
+     alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down
+     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this reduce function
+     will save the object level history.
 
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param object_history: save the each object's history in the map when True
+    :param object_history: save the each object's history in the reduce when True
+    :param alg_id: a user specified alg_id for the reduce operation
+    :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
     :param alg_name: a user specified alg_name for the reduce operation
     :type alg_name: :class:`str`
     :param parameters: a user specified parameters for the reduce operation
