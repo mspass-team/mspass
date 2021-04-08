@@ -81,7 +81,7 @@ ADD python /mspass/python
 RUN pip3 install /mspass -v
 
 # Install Jupyter notebook
-RUN pip3 --no-cache-dir install notebook==6.2.0
+RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
 
 # Tini operates as a process subreaper for jupyter.
 ENV TINI_VERSION v0.19.0
