@@ -1,7 +1,7 @@
 import pymongo
 from mspasspy.db.database import Database
 
-class Client(pymongo.MongoClient):
+class DBClient(pymongo.MongoClient):
     """
     A client-side representation of MongoDB.
 

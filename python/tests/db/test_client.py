@@ -1,16 +1,16 @@
 import pymongo
 import pytest
 
-from mspasspy.db.client import Client
+from mspasspy.db.client import DBClient
 
-class TestClient():
+class TestDBClient():
 
     def setup_class(self):
-        self.c1 = Client('mongodb://localhost/my_database')
-        self.c2 = Client('localhost')
+        self.c1 = DBClient('mongodb://localhost/my_database')
+        self.c2 = DBClient('localhost')
 
     def test_init(self):
-        assert self.c1._Client__default_database_name == 'my_database'
+        assert self.c1._DBClient__default_database_name == 'my_database'
 
     def test_getitem(self):
         assert self.c1['my_database'].name == 'my_database'

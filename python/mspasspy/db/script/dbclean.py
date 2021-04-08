@@ -12,7 +12,7 @@ import argparse
 import sys
 from bson import json_util
 from mspasspy.db.database import Database
-from mspasspy.db.client import Client as DBClient
+from mspasspy.db.client import DBClient
 
 def rename_list_to_dict(rlist):
     """

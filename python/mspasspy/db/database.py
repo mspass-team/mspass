@@ -31,7 +31,6 @@ from mspasspy.ccore.utility import (Metadata,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
-
 def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None, 
                           format='dask', spark_context=None, data_tag=None):
     """
@@ -1402,6 +1401,13 @@ class Database(pymongo.database.Database):
                     wf_id_name = wf_collection + '_id'
                     filter_ = {'_id': elog_id}
                     elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+
+                # 5. need to save the wf_id back to history_object entry if this is an insert
+                if new_insertion and not mspass_object.is_empty():
+                    history_object_col = self[self.database_schema.default_name('history_object')]
+                    wf_id_name = wf_collection + '_id'
+                    filter_ = {'_id': history_object_id}
+                    history_object_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
             else:
                 # save the metadata in gravestone as an elog entry
                 mspass_object.elog.log_verbose(
@@ -1799,21 +1805,44 @@ class Database(pymongo.database.Database):
         collection in the schema.
         :return: current history_object_id.
         """
+        if isinstance(mspass_object, TimeSeries):
+            update_metadata_def = self.metadata_schema.TimeSeries
+        elif isinstance(mspass_object, Seismogram):
+            update_metadata_def = self.metadata_schema.Seismogram
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+        # get the wf id name in the schema
+        wf_id_name = update_metadata_def.collection('_id') + '_id'
+
+        # get the wf id in the mspass object
+        oid = None
+        if '_id' in mspass_object:
+            oid = mspass_object['_id']
+
         if not collection:
             collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
         proc_history = ProcessingHistory(mspass_object)
         current_uuid = proc_history.id() # uuid in the current node
+        current_nodedata = proc_history.current_nodedata()
+        # get the alg_id of current node
+        alg_id = current_nodedata.algid
+        alg_name = current_nodedata.algorithm
         history_binary = pickle.dumps(proc_history)
         # todo save jobname jobid when global history module is done
         try:
+            # construct the insert dict for saving into database
+            insert_dict = {'_id': current_uuid,
+                            'processing_history': history_binary,
+                            'alg_id': alg_id,
+                            'alg_name':alg_name}
+            if oid:
+                insert_dict[wf_id_name] = oid
             if prev_history_object_id:
                 # overwrite history
                 history_col.delete_one({'_id': prev_history_object_id})
-                history_col.insert_one({'_id': current_uuid, 'nodedata': history_binary})
-            else:
-                # new insertion
-                history_col.insert_one({'_id': current_uuid, 'nodedata': history_binary})
+            # insert new one
+            history_col.insert_one(insert_dict)
         except pymongo.errors.DuplicateKeyError as e:
             raise MsPASSError("The history object to be saved has a duplicate uuid", "Fatal") from e
 
@@ -1832,7 +1861,7 @@ class Database(pymongo.database.Database):
         if not collection:
             collection = self.database_schema.default_name('history_object')
         res = self[collection].find_one({'_id': history_object_id})
-        mspass_object.load_history(pickle.loads(res['nodedata']))
+        mspass_object.load_history(pickle.loads(res['processing_history']))
 
     def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
