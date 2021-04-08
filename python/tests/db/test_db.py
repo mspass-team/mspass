@@ -178,8 +178,8 @@ class TestDatabase():
 
     def test_save_load_history(self):
         ts = get_live_timeseries()
-        logging_helper.info(ts, 'dummy_func', '1')
-        logging_helper.info(ts, 'dummy_func_2', '2')
+        logging_helper.info(ts, '1', 'dummy_func')
+        logging_helper.info(ts, '2', 'dummy_func_2')
         nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
         history_object_id = self.db._save_history(ts)
@@ -194,7 +194,7 @@ class TestDatabase():
         loaded_nodes = ts_2.get_nodes()
         assert str(nodes) == str(loaded_nodes)
 
-        logging_helper.info(ts, 'dummy_func_3', '3')
+        logging_helper.info(ts, '3', 'dummy_func_3')
         new_history_object_id = self.db._save_history(ts, history_object_id)
         res = self.db['history_object'].find_one({'_id': history_object_id})
         assert not res
@@ -215,7 +215,7 @@ class TestDatabase():
 
     def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         exclude = ['extra2']
         # test promiscuous, exclude_keys, clear aliases, empty value
         non_fatal_error_cnt = self.db.update_metadata(ts, mode='promiscuous', exclude_keys=exclude)
@@ -311,9 +311,9 @@ class TestDatabase():
         promiscuous_seis = copy.deepcopy(self.test_seis)
         cautious_seis = copy.deepcopy(self.test_seis)
         pedantic_seis = copy.deepcopy(self.test_seis)
-        logging_helper.info(promiscuous_seis, 'deepcopy', '1')
-        logging_helper.info(cautious_seis, 'deepcopy', '1')
-        logging_helper.info(pedantic_seis, 'deepcopy', '1')
+        logging_helper.info(promiscuous_seis, '1', 'deepcopy')
+        logging_helper.info(cautious_seis, '1', 'deepcopy')
+        logging_helper.info(pedantic_seis, '1', 'deepcopy')
 
         save_res_code = self.db.save_data(promiscuous_seis, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -406,7 +406,7 @@ class TestDatabase():
         # tests for TimeSeries
         # not testing promiscuous/cautious/pedantic save->read here because it's coveraged by the tests above
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'], data_tag='tag1')
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         # test mismatch data_tag
@@ -420,7 +420,7 @@ class TestDatabase():
         assert 'data_tag' in ts2 and ts2['data_tag'] == 'tag1'
         # dummy ts without data_tag
         dummy_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(dummy_ts, 'deepcopy', '1')
+        logging_helper.info(dummy_ts, '1', 'deepcopy')
         self.db.save_data(dummy_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert not self.db.read_data(dummy_ts['_id'], mode='promiscuous', normalize=['site', 'source', 'channel'], data_tag='tag1')
 
@@ -484,7 +484,7 @@ class TestDatabase():
 
         # save to a different collection
         promiscuous_seis = copy.deepcopy(self.test_seis)
-        logging_helper.info(promiscuous_seis, 'deepcopy', '1')
+        logging_helper.info(promiscuous_seis, '1', 'deepcopy')
         db_schema = copy.deepcopy(self.db2.database_schema)
         md_schema = copy.deepcopy(self.db2.metadata_schema)
         wf_test = copy.deepcopy(self.db2.database_schema.wf_Seismogram)
@@ -503,7 +503,7 @@ class TestDatabase():
         # self.db['wf_TimeSeries'].delete_many({})
 
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert save_res_code == 0
@@ -533,7 +533,7 @@ class TestDatabase():
 
         # file delete(not remove_unreferenced_files, clear_history, clear_elog)
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='file', dir='./python/tests/data/', dfile='test_db_output_1', exclude_keys=['extra2'])
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         
@@ -550,8 +550,8 @@ class TestDatabase():
         # file delete(remove_unreferenced_files, clear_history, clear_elog), with 2 wf doc using same file dir/dfile
         ts = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='file', dir='./python/tests/data/', dfile='test_db_output_1', exclude_keys=['extra2'])
         save_res_code2 = self.db.save_data(ts2, mode='promiscuous', storage_mode='file', dir='./python/tests/data/', dfile='test_db_output_1', exclude_keys=['extra2'])
         
@@ -591,8 +591,8 @@ class TestDatabase():
         ts1['starttime_shift'] = 1.0
         ts2 = copy.deepcopy(self.test_ts)
         ts2['starttime_shift'] = 1.0
-        logging_helper.info(ts1, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
+        logging_helper.info(ts1, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
         ts1['npts'] = '123'
         ts2['delta'] = '12'
         ts2['starttime'] = '123'
@@ -611,7 +611,7 @@ class TestDatabase():
 
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
 
         # invalid parameters
         with pytest.raises(MsPASSError, match="verbose_keys should be a list , but <class 'str'> is requested."):
@@ -645,7 +645,7 @@ class TestDatabase():
 
         # test check_xref and delete required xref_keys missing document
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         ts.erase('site_id')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
@@ -658,7 +658,7 @@ class TestDatabase():
 
         # test conversion success
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         # npts has type str, should convert to int
         ts['npts'] = "123"
         ts['starttime_shift'] = 1.0
@@ -676,7 +676,7 @@ class TestDatabase():
 
         # test conversion fail
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         # npts has type str, but unable to convert to int
         ts['npts'] = "xyz"
         ts['starttime_shift'] = 1.0
@@ -708,7 +708,7 @@ class TestDatabase():
 
         # test undefined key-value pair and delete_undefined
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -725,7 +725,7 @@ class TestDatabase():
 
         # test rename attributes
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -748,7 +748,7 @@ class TestDatabase():
         self.db['wf_TimeSeries'].delete_many({})
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         # xref_key doc not found
         ts['site_id'] = ObjectId()
@@ -775,10 +775,10 @@ class TestDatabase():
 
     def test_check_xref_key(self):
         bad_xref_key_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_xref_key_ts, 'deepcopy', '1')
+        logging_helper.info(bad_xref_key_ts, '1', 'deepcopy')
         bad_xref_key_ts['site_id'] = ObjectId()
         bad_wf_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_wf_ts, 'deepcopy', '1')
+        logging_helper.info(bad_wf_ts, '1', 'deepcopy')
 
         save_res_code = self.db.save_data(bad_xref_key_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -813,7 +813,7 @@ class TestDatabase():
 
     def test_check_undefined_keys(self):
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts.erase('npts')
 
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
@@ -831,7 +831,7 @@ class TestDatabase():
 
     def test_check_mismatch_key(self):
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
@@ -847,7 +847,7 @@ class TestDatabase():
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -862,7 +862,7 @@ class TestDatabase():
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
@@ -882,7 +882,7 @@ class TestDatabase():
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
         ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts, 'deepcopy', '1')
+        logging_helper.info(ts, '1', 'deepcopy')
         ts['npts'] = 'xyz'
         ts['delta'] = '123'
         ts['sampling_rate'] = '123'
@@ -899,19 +899,19 @@ class TestDatabase():
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
         missing_site_id_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(missing_site_id_ts, 'deepcopy', '1')
+        logging_helper.info(missing_site_id_ts, '1', 'deepcopy')
         missing_site_id_ts.erase('site_id')
 
         bad_site_id_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_site_id_ts, 'deepcopy', '1')
+        logging_helper.info(bad_site_id_ts, '1', 'deepcopy')
         bad_site_id_ts['site_id'] = ObjectId()
 
         bad_source_id_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_source_id_ts, 'deepcopy', '1')
+        logging_helper.info(bad_source_id_ts, '1', 'deepcopy')
         bad_source_id_ts['source_id'] = ObjectId()
 
         bad_channel_id_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_channel_id_ts, 'deepcopy', '1')
+        logging_helper.info(bad_channel_id_ts, '1', 'deepcopy')
         bad_channel_id_ts['channel_id'] = ObjectId()
 
         save_res_code = self.db.save_data(missing_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
@@ -962,8 +962,8 @@ class TestDatabase():
         self.db['wf_TimeSeries'].delete_many({})
         bad_type_docs_ts = copy.deepcopy(self.test_ts)
         undefined_key_docs_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(bad_type_docs_ts, 'deepcopy', '1')
-        logging_helper.info(undefined_key_docs_ts, 'deepcopy', '1')
+        logging_helper.info(bad_type_docs_ts, '1', 'deepcopy')
+        logging_helper.info(undefined_key_docs_ts, '1', 'deepcopy')
         bad_type_docs_ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(bad_type_docs_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
@@ -988,8 +988,8 @@ class TestDatabase():
         self.db['wf_TimeSeries'].delete_many({})
         wrong_types_ts = copy.deepcopy(self.test_ts)
         undef_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(wrong_types_ts, 'deepcopy', '1')
-        logging_helper.info(undef_ts, 'deepcopy', '1')
+        logging_helper.info(wrong_types_ts, '1', 'deepcopy')
+        logging_helper.info(undef_ts, '1', 'deepcopy')
         wrong_types_ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(wrong_types_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
@@ -1017,9 +1017,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
-        logging_helper.info(ts3, 'deepcopy', '1')
+        logging_helper.info(ts1, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
+        logging_helper.info(ts3, '1', 'deepcopy')
         self.db.save_data(ts1, storage_mode='gridfs')
         self.db.save_data(ts2, storage_mode='gridfs')
         self.db.save_data(ts3, storage_mode='gridfs')
@@ -1062,9 +1062,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, 'deepcopy', '1')
-        logging_helper.info(seis2, 'deepcopy', '1')
-        logging_helper.info(seis3, 'deepcopy', '1')
+        logging_helper.info(seis1, '1', 'deepcopy')
+        logging_helper.info(seis2, '1', 'deepcopy')
+        logging_helper.info(seis3, '1', 'deepcopy')
         self.db.save_data(seis1, storage_mode='gridfs')
         self.db.save_data(seis2, storage_mode='gridfs')
         self.db.save_data(seis3, storage_mode='gridfs')
@@ -1098,9 +1098,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
-        logging_helper.info(ts3, 'deepcopy', '1')
+        logging_helper.info(ts1, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
+        logging_helper.info(ts3, '1', 'deepcopy')
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -1126,9 +1126,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, 'deepcopy', '1')
-        logging_helper.info(seis2, 'deepcopy', '1')
-        logging_helper.info(seis3, 'deepcopy', '1')
+        logging_helper.info(seis1, '1', 'deepcopy')
+        logging_helper.info(seis2, '1', 'deepcopy')
+        logging_helper.info(seis3, '1', 'deepcopy')
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
@@ -1152,9 +1152,9 @@ class TestDatabase():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
-        logging_helper.info(ts3, 'deepcopy', '1')
+        logging_helper.info(ts1, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
+        logging_helper.info(ts3, '1', 'deepcopy')
         ts_ensemble = TimeSeriesEnsemble()
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
@@ -1171,9 +1171,9 @@ class TestDatabase():
         seis1 = copy.deepcopy(self.test_seis)
         seis2 = copy.deepcopy(self.test_seis)
         seis3 = copy.deepcopy(self.test_seis)
-        logging_helper.info(seis1, 'deepcopy', '1')
-        logging_helper.info(seis2, 'deepcopy', '1')
-        logging_helper.info(seis3, 'deepcopy', '1')
+        logging_helper.info(seis1, '1', 'deepcopy')
+        logging_helper.info(seis2, '1', 'deepcopy')
+        logging_helper.info(seis3, '1', 'deepcopy')
         seis_ensemble = SeismogramEnsemble()
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
@@ -1283,9 +1283,9 @@ def test_read_distributed_data(spark_context):
     ts1 = copy.deepcopy(test_ts)
     ts2 = copy.deepcopy(test_ts)
     ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, 'deepcopy', '1')
-    logging_helper.info(ts2, 'deepcopy', '1')
-    logging_helper.info(ts3, 'deepcopy', '1')
+    logging_helper.info(ts1, '1', 'deepcopy')
+    logging_helper.info(ts2, '1', 'deepcopy')
+    logging_helper.info(ts3, '1', 'deepcopy')
 
     ts_list = [ts1, ts2, ts3]
     ts_list_rdd = spark_context.parallelize(ts_list)
@@ -1331,9 +1331,9 @@ def test_read_distributed_data_dask():
     ts1 = copy.deepcopy(test_ts)
     ts2 = copy.deepcopy(test_ts)
     ts3 = copy.deepcopy(test_ts)
-    logging_helper.info(ts1, 'deepcopy', '1')
-    logging_helper.info(ts2, 'deepcopy', '1')
-    logging_helper.info(ts3, 'deepcopy', '1')
+    logging_helper.info(ts1, '1', 'deepcopy')
+    logging_helper.info(ts2, '1', 'deepcopy')
+    logging_helper.info(ts3, '1', 'deepcopy')
 
     ts_list = [ts1, ts2, ts3]
     ts_list_dbg = dask.bag.from_sequence(ts_list)

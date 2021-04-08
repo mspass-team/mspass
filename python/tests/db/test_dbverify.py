@@ -54,9 +54,9 @@ class TestDBVerify():
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
-        logging_helper.info(ts1, 'deepcopy', '1')
-        logging_helper.info(ts2, 'deepcopy', '1')
-        logging_helper.info(ts3, 'deepcopy', '1')
+        logging_helper.info(ts1, '1', 'deepcopy')
+        logging_helper.info(ts2, '1', 'deepcopy')
+        logging_helper.info(ts3, '1', 'deepcopy')
 
         # fix types
         ts1['npts'] = '123'

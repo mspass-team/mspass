@@ -67,7 +67,7 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
 
     # save the global history
     if global_history:
-        global_history.logging(alg_name, alg_id, parameters)
+        global_history.logging(alg_id, alg_name, parameters)
     
     # save the object history
     if object_history:
@@ -129,7 +129,7 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
 
     # save the global history
     if global_history:
-        global_history.logging(alg_name, alg_id, parameters)
+        global_history.logging(alg_id, alg_name, parameters)
 
     # save the object history
     if object_history:
@@ -192,7 +192,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
 
     # save the global history
     if global_history:
-        global_history.logging(alg_name, alg_id, parameters)
+        global_history.logging(alg_id, alg_name, parameters)
     
     # save the object history
     if object_history:
@@ -255,7 +255,7 @@ def mspass_dask_reduce(self, func, *args, global_history=None, object_history=Fa
 
     # save the global history
     if global_history:
-        global_history.logging(alg_name, alg_id, parameters)
+        global_history.logging(alg_id, alg_name, parameters)
     
     # save the object history
     if object_history:
@@ -297,14 +297,14 @@ class GlobalHistoryManager:
         pyspark.RDD.mspass_reduce = mspass_spark_reduce
         daskbag.Bag.mspass_reduce = mspass_dask_reduce
 
-    def logging(self, alg_name, alg_id, parameters):
+    def logging(self, alg_id, alg_name, parameters):
         """
         Save the usage of the algorithm in the map/reduce operation
 
-        :param alg_name: the name of the algorithm
-        :type alg_name: :class:`str`
         :param alg_id: the UUID of the combination of algorithm_name and parameters
         :type alg_id: :class:`bson.objectid.ObjectId`
+        :param alg_name: the name of the algorithm
+        :type alg_name: :class:`str`
         :param parameters: the parameters of the algorithm
         :type parameters: :class:`str`
         """

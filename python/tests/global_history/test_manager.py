@@ -78,7 +78,7 @@ class TestManager():
         alg_id = ObjectId()
         manager_db = Database(self.client, 'test_manager')
         manager_db['history_global'].delete_many({})
-        self.manager.logging('test_alg_name', alg_id, 'test_parameter')
+        self.manager.logging(alg_id, 'test_alg_name', 'test_parameter')
         res = manager_db['history_global'].find_one({'job_name': self.manager.job_name})
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name

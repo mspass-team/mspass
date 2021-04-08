@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 
 
 @decorator
-def mspass_func_wrapper(func, data, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False,
+def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False,
                         inplace_return=False, **kwargs):
     """
     This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
@@ -30,10 +30,10 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_name=None, 
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-    :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
@@ -57,7 +57,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_name=None, 
     try:
         res = func(data, *args, **kwargs)
         if object_history:
-            logging_helper.info(data, alg_name, alg_id)
+            logging_helper.info(data, alg_id, alg_name)
         if res is None and inplace_return:
             return data
         return res
@@ -76,7 +76,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_name=None, 
 
 
 @decorator
-def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
+def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
     """
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
     this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
@@ -92,10 +92,10 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-    :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
@@ -119,8 +119,8 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
     try:
         res = func(data1, data2, *args, **kwargs)
         if object_history:
-            logging_helper.info(data1, alg_name, alg_id)
-            logging_helper.info(data2, alg_name, alg_id)
+            logging_helper.info(data1, alg_id, alg_name)
+            logging_helper.info(data2, alg_id, alg_name)
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
@@ -410,7 +410,7 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
 
 
 @decorator
-def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, **kwargs):
+def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
     and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
@@ -426,10 +426,10 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_reduce operation. If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-    :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
@@ -454,7 +454,7 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
     try:
         res = func(data1, data2, *args, **kwargs)
         if object_history:
-            logging_helper.reduce(data1, data2, alg_name, alg_id)
+            logging_helper.reduce(data1, data2, alg_id, alg_name)
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
@@ -506,6 +506,6 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
 #         alg_id = global_history.get_alg_id(alg_name, parameters)
 #         if not alg_id:
 #             alg_id = ObjectId()
-#         global_history.logging(alg_name, alg_id, parameters)
+#         global_history.logging(alg_id, alg_name, parameters)
     
 #     return func(*args, **kwargs)

@@ -14,6 +14,8 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
      :class:`~mspasspy.util.decorators.mspass_reduce_func_wrapper`.
     :param alg_id: alg_id is a unique id to record the usage of this function while preserving the history.
      Used in the mspass_reduce_func_wrapper.
+    :param alg_name: alg_name is the name of the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_reduce_func_wrapper.
     :return: data1 (modified).
     """
