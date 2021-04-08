@@ -4,8 +4,6 @@ import obspy
 import numpy as np
 import dask
 import dask.bag as db
-import findspark
-from pyspark import SparkConf, SparkContext
 import numpy as np
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.utility import dmatrix
@@ -28,19 +26,15 @@ def dask_map(input):
     return res.compute()
 
 
-def spark_map(input):
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext.getOrCreate(conf=conf)
+def spark_map(input, sc):
     data = sc.parallelize(input)
     res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
     return res.collect()
 
 
-def test_map_spark_and_dask():
+def test_map_spark_and_dask(spark_context):
     l = [get_live_timeseries() for i in range(5)]
-    spark_res = spark_map(l)
+    spark_res = spark_map(l, spark_context)
     dask_res = dask_map(l)
 
     ts_cp = TimeSeries(l[0])
@@ -111,7 +105,6 @@ def spark_reduce(input, sc):
 
 
 def test_reduce_dask_spark(spark_context):
-    findspark.init()
     l = [get_live_timeseries() for i in range(5)]
     res = np.zeros(255)
     for i in range(5):

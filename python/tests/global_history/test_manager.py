@@ -2,7 +2,6 @@ import copy
 import os
 
 import dask.bag as daskbag
-from pyspark import SparkConf, SparkContext
 
 import gridfs
 import numpy as np
@@ -31,11 +30,8 @@ from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, S
 from mspasspy.reduce import stack
 from mspasspy.ccore.utility import Metadata
 
-def spark_map(input, manager, alg_name=None, parameters=None):
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext.getOrCreate(conf=conf)
+
+def spark_map(input, manager, sc, alg_name=None, parameters=None):
     data = sc.parallelize(input)
     res = data.mspass_map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, global_history=manager, alg_name=alg_name, parameters=parameters)
     return res.collect()
@@ -50,11 +46,7 @@ def dask_reduce(input, manager, alg_name=None, parameters=None):
     res = ddb.mspass_reduce(stack, object_history=True, alg_id='3', global_history=manager, alg_name=alg_name, parameters=parameters)
     return res.compute()
 
-def spark_reduce(input, manager, alg_name=None, parameters=None):
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext.getOrCreate(conf=conf)
+def spark_reduce(input, manager, sc, alg_name=None, parameters=None):
     data = sc.parallelize(input)
     res = data.mspass_reduce(stack, object_history=True, alg_id='2', global_history=manager, alg_name=alg_name, parameters=parameters)
     return res
@@ -89,7 +81,7 @@ class TestManager():
         # clean up
         manager_db['history_global'].delete_many({})
 
-    def test_mspass_map(self):
+    def test_mspass_map(self, spark_context):
         l = [get_live_timeseries() for i in range(5)]
         # add net, sta, chan, loc to avoid metadata serialization problem
         for i in range(5):
@@ -98,7 +90,7 @@ class TestManager():
             l[i]['net'] = 'test_net'
             l[i]['sta'] = 'test_sta'
         # test mspass_map for spark
-        spark_res = spark_map(l, self.manager)
+        spark_res = spark_map(l, self.manager, spark_context)
 
         manager_db = Database(self.client, 'test_manager')
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 1
@@ -129,14 +121,14 @@ class TestManager():
         # SPARK test user provided alg_name and parameter(exist)
         spark_alg_name = 'filter'
         spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,object_history=True'
-        spark_res = spark_map(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
+        spark_res = spark_map(l, self.manager, spark_context, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 4
         assert manager_db['history_global'].count_documents({'alg_id': spark_alg_id}) == 4
 
         # SPARK test user provided alg_name and parameter(new)
         spark_alg_name = 'new_filter'
         spark_alg_parameters = 'bandpass,freqmin=1,freqmax=5,object_history=True'
-        spark_res = spark_map(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
+        spark_res = spark_map(l, self.manager, spark_context, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 5
         assert manager_db['history_global'].count_documents({'alg_name': 'new_filter'}) == 1
         res = manager_db['history_global'].find_one({'alg_name': 'new_filter'})
@@ -168,13 +160,13 @@ class TestManager():
         new_dask_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_dask_alg_id}) == 1
 
-    def test_mspass_reduce(self):
+    def test_mspass_reduce(self, spark_context):
         manager_db = Database(self.client, 'test_manager')
         manager_db['history_global'].delete_many({})
         
         l = [get_live_timeseries() for i in range(5)]
         # test mspass_reduce for spark
-        spark_res = spark_reduce(l, self.manager)
+        spark_res = spark_reduce(l, self.manager, spark_context)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 1
         assert manager_db['history_global'].count_documents({'alg_name': 'stack'}) == 1
         res = manager_db['history_global'].find_one({'alg_name': 'stack'})
@@ -220,7 +212,7 @@ class TestManager():
         # SPARK test user provided alg_name and parameter(exist)
         spark_alg_name = 'stack'
         spark_alg_parameters = 'object_history=True,alg_id=2'
-        spark_res = spark_reduce(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
+        spark_res = spark_reduce(l, self.manager, spark_context, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 4
         assert manager_db['history_global'].count_documents({'alg_name': 'stack'}) == 4
         assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'}) == 2
@@ -228,7 +220,7 @@ class TestManager():
         # SPARK test user provided alg_name and parameter(new)
         spark_alg_name = 'new_stack'
         spark_alg_parameters = 'object_history=True,alg_id=2'
-        spark_res = spark_reduce(l, self.manager, alg_name=spark_alg_name, parameters=spark_alg_parameters)
+        spark_res = spark_reduce(l, self.manager, spark_context, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 5
         assert manager_db['history_global'].count_documents({'alg_name': 'new_stack'}) == 1
         res = manager_db['history_global'].find_one({'alg_name': 'new_stack'})
@@ -277,7 +269,7 @@ class TestManager():
         res = manager_db['history_global'].find_one({'alg_name': 'test_alg_name', 'parameters':'test_parameters'})
         assert res['alg_id'] == alg_id
 
-    def test_object_history(self):
+    def test_object_history(self, spark_context):
         manager_db = Database(self.client, 'test_manager')
         manager_db['history_global'].delete_many({})
         manager_db['history_object'].delete_many({})
@@ -288,7 +280,7 @@ class TestManager():
             l[i]['loc'] = 'test_loc'
             l[i]['net'] = 'test_net'
             l[i]['sta'] = 'test_sta'
-        spark_res = spark_map(l, self.manager)
+        spark_res = spark_map(l, self.manager, spark_context)
         assert manager_db['history_global'].count_documents({'alg_name': 'filter'}) == 1
         res = manager_db['history_global'].find_one({'alg_name': 'filter'})
         alg_id = res['alg_id']
