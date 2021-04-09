@@ -8,6 +8,7 @@ from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from mspasspy.ccore.utility import MsPASSError
 from dask.distributed import Client as DaskClient
+from dask.distributed import LocalCluster
 
 class Client:
     """
@@ -117,7 +118,7 @@ class Client:
             
             # sanity check
             try:
-                spark_conf = SparkConf().set('spark.driver.host','127.0.0.1').setAppName('mspass').setMaster(self._spark_master_url)
+                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
@@ -125,7 +126,7 @@ class Client:
         elif self._scheduler == 'dask':
             # if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client
             if not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
-                self._dask_client = DaskClient()
+                self._dask_client = DaskClient(LocalCluster(dashboard_address=':0'))
             else:
                 scheduler_host_has_port = False
                 # set host
@@ -149,6 +150,18 @@ class Client:
                 except Exception as err:
                     raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
 
+    def __del__(self):
+        # close spark context
+        if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
+            self._spark_context.stop()
+        
+        # close dask client
+        if hasattr(self, '_dask_client') and isinstance(self._dask_client, DaskClient):
+            self._dask_client.close()
+
+        # close database client
+        if hasattr(self, '_db_client') and isinstance(self._db_client, DBClient):
+            self._db_client.close()
 
     def get_database_client(self):
         """
@@ -212,6 +225,9 @@ class Client:
         try:
             self._db_client = DBClient(database_address)
             self._db_client.server_info()
+
+            # if success, close previous DBClient
+            temp_db_client.close()
         except Exception as err:
             # restore the _db_client
             self._db_client = temp_db_client
@@ -269,17 +285,27 @@ class Client:
                 self._spark_master_url += ':' + scheduler_port
             
             # sanity check
-            temp_spark_context = None
+            prev_spark_context = None
+            prev_spark_conf = None
             if hasattr(self, '_spark_context'):
-                temp_spark_context = self._spark_context
+                prev_spark_context = self._spark_context
+                prev_spark_conf = self._spark_context.getConf()
             try:
-                spark_conf = self._spark_context._conf.setMaster(self._spark_master_url)
-                spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
-                self._spark_context = spark_session.sparkContext
+                if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
+                    # update the confinguration
+                    spark_conf = self._spark_context._conf.setMaster(self._spark_master_url)
+                else:
+                    spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
+                # spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
+                # stop the previous spark context
+                if prev_spark_context:
+                    prev_spark_context.stop()
+                # create a new spark context -> might cause error so that execute exception code
+                self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
                 # restore the spark context if exists
-                if temp_spark_context:
-                    self._spark_context = temp_spark_context
+                if prev_spark_conf:
+                    self._spark_context = SparkContext.getOrCreate(conf=prev_spark_conf)
                 # restore the scheduler type
                 if self._scheduler == 'spark' and prev_scheduler == 'dask':
                     self._scheduler = prev_scheduler
@@ -306,6 +332,9 @@ class Client:
                 temp_dask_client = self._dask_client
             try:
                 self._dask_client = DaskClient(self._dask_client_address)
+                # close previous dask client
+                if temp_dask_client:
+                    temp_dask_client.close()
             except Exception as err:
                 # restore the dask client if exists
                 if temp_dask_client:
