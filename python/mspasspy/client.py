@@ -118,7 +118,7 @@ class Client:
             
             # sanity check
             try:
-                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
+                spark_conf = SparkConf().set('spark.driver.host','127.0.0.1').setAppName('mspass').setMaster(self._spark_master_url)
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
