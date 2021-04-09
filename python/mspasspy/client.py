@@ -8,7 +8,6 @@ from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 from mspasspy.ccore.utility import MsPASSError
 from dask.distributed import Client as DaskClient
-from dask.distributed import LocalCluster
 
 class Client:
     """
@@ -126,7 +125,7 @@ class Client:
         elif self._scheduler == 'dask':
             # if no defind scheduler_host and no MSPASS_SCHEDULER_ADDRESS, use local cluster to create a client
             if not scheduler_host and not MSPASS_SCHEDULER_ADDRESS:
-                self._dask_client = DaskClient(LocalCluster(dashboard_address=':0'))
+                self._dask_client = DaskClient()
             else:
                 scheduler_host_has_port = False
                 # set host

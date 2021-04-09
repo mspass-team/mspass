@@ -40,6 +40,12 @@ def spark_map(input):
 
 def test_map_spark_and_dask():
     l = [get_live_timeseries() for i in range(5)]
+    # add net, sta, chan, loc to avoid metadata serialization problem
+    for i in range(5):
+        l[i]['chan'] = 'HHZ'
+        l[i]['loc'] = 'test_loc'
+        l[i]['net'] = 'test_net'
+        l[i]['sta'] = 'test_sta'
     spark_res = spark_map(l)
     dask_res = dask_map(l)
 
