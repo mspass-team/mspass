@@ -5,6 +5,7 @@ from mspasspy.db.client import DBClient
 from mspasspy.db.database import Database
 from mspasspy.global_history.manager import GlobalHistoryManager
 from pyspark import SparkConf, SparkContext
+from pyspark.sql import SparkSession
 from mspasspy.ccore.utility import MsPASSError
 from dask.distributed import Client as DaskClient
 
@@ -116,7 +117,7 @@ class Client:
             
             # sanity check
             try:
-                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
+                spark_conf = SparkConf().set('spark.driver.host','127.0.0.1').setAppName('mspass').setMaster(self._spark_master_url)
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
@@ -272,8 +273,9 @@ class Client:
             if hasattr(self, '_spark_context'):
                 temp_spark_context = self._spark_context
             try:
-                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
-                self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
+                spark_conf = self._spark_context._conf.setMaster(self._spark_master_url)
+                spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
+                self._spark_context = spark_session.sparkContext
             except Exception as err:
                 # restore the spark context if exists
                 if temp_spark_context:
