@@ -206,8 +206,8 @@ class TestMsPASSClient():
         # test set spark, previous is spark
         test_client_2 = Client(scheduler='spark')
         temp_spark_context = test_client_2._spark_context
-        with pytest.raises(MsPASSError, match='Runntime error: cannot create a spark configuration with: spark://168.1.2.3:7077'):
-            test_client_2.set_scheduler('spark', '168.1.2.3', scheduler_port='7077')
+        with pytest.raises(MsPASSError, match='Runntime error: cannot create a spark configuration with: spark://123.4.5.6:7077'):
+            test_client_2.set_scheduler('spark', '123.4.5.6', scheduler_port='7077')
         # restore back
         assert test_client_2._scheduler == 'spark'
 

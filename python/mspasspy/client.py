@@ -117,8 +117,8 @@ class Client:
             
             # sanity check
             try:
-                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
-                self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
+                spark = SparkSession.builder.appName('mspass').master(self._spark_master_url).getOrCreate()
+                self._spark_context = spark.sparkContext
             except Exception as err:
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
 
@@ -300,7 +300,8 @@ class Client:
                 if prev_spark_context:
                     prev_spark_context.stop()
                 # create a new spark context -> might cause error so that execute exception code
-                self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
+                spark = SparkSession.builder.config(conf=spark_conf).getOrCreate()
+                self._spark_context = spark.sparkContext
             except Exception as err:
                 # restore the spark context by the previous spark configuration
                 if prev_spark_conf:
