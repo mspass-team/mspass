@@ -117,7 +117,7 @@ class Client:
             
             # sanity check
             try:
-                spark_conf = SparkConf().set('spark.driver.host','127.0.0.1').setAppName('mspass').setMaster(self._spark_master_url)
+                spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
@@ -150,6 +150,7 @@ class Client:
                     raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
 
     def __del__(self):
+        print('Client destroyed')
         # close spark context
         if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
             self._spark_context.stop()
@@ -295,14 +296,13 @@ class Client:
                     spark_conf = self._spark_context._conf.setMaster(self._spark_master_url)
                 else:
                     spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
-                # spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
                 # stop the previous spark context
                 if prev_spark_context:
                     prev_spark_context.stop()
                 # create a new spark context -> might cause error so that execute exception code
                 self._spark_context = SparkContext.getOrCreate(conf=spark_conf)
             except Exception as err:
-                # restore the spark context if exists
+                # restore the spark context by the previous spark configuration
                 if prev_spark_conf:
                     self._spark_context = SparkContext.getOrCreate(conf=prev_spark_conf)
                 # restore the scheduler type

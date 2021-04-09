@@ -42,6 +42,7 @@ jobs:
     - name: Test with pytest
       run: |
         export MSPASS_HOME=$(pwd)
+        export SPARK_LOCAL_IP=127.0.0.1
         pytest --cov=mspasspy python/tests/
         make test -C build/temp.*/
     - name: Upload coverage to Codecov
