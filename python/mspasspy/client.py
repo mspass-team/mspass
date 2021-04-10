@@ -153,6 +153,7 @@ class Client:
         # close spark context
         if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
             self._spark_context.stop()
+            SparkSession._instantiatedContext = None
         
         # close dask client
         if hasattr(self, '_dask_client') and isinstance(self._dask_client, DaskClient):
@@ -296,6 +297,7 @@ class Client:
                 else:
                     spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
                 # stop the previous spark context
+                # FIXME if the new context does not start, we shouldn't stop the previous here.
                 if prev_spark_context:
                     prev_spark_context.stop()
                 # create a new spark context -> might cause error so that execute exception code
