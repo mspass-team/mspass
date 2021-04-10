@@ -225,13 +225,12 @@ class Client:
         try:
             self._db_client = DBClient(database_address)
             self._db_client.server_info()
-
-            # if success, close previous DBClient
-            temp_db_client.close()
         except Exception as err:
             # restore the _db_client
             self._db_client = temp_db_client
             raise MsPASSError('Runntime error: cannot create a database client with: ' + database_address, 'Fatal')
+        # if success, close previous DBClient
+        temp_db_client.close()
 
     def set_global_history_manager(self, history_db, job_name, collection=None):
         """
@@ -311,6 +310,9 @@ class Client:
                 if self._scheduler == 'spark' and prev_scheduler == 'dask':
                     self._scheduler = prev_scheduler
                 raise MsPASSError('Runntime error: cannot create a spark configuration with: ' + self._spark_master_url, 'Fatal')
+            # close previous dask client if success
+            if hasattr(self, '_dask_client'):
+                del self._dask_client
 
         elif scheduler == 'dask':
             scheduler_host_has_port = False
@@ -334,10 +336,6 @@ class Client:
             try:
                 # create a new dask client
                 self._dask_client = DaskClient(self._dask_client_address)
-
-                # close previous dask client if success setting new dask client
-                if prev_dask_client:
-                    prev_dask_client.close()
             except Exception as err:
                 # restore the dask client if exists
                 if prev_dask_client:
@@ -346,3 +344,9 @@ class Client:
                 if self._scheduler == 'dask' and prev_scheduler == 'spark':
                     self._scheduler = prev_scheduler
                 raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
+            # close previous dask client if success setting new dask client
+            if prev_dask_client:
+                prev_dask_client.close()
+            # remove previous spark context if success setting new dask client
+            if hasattr(self, '_spark_context'):
+                del self._spark_context
