@@ -298,8 +298,8 @@ class Client:
                     spark_conf = SparkConf().setAppName('mspass').setMaster(self._spark_master_url)
                 # stop the previous spark context
                 # FIXME if the new context does not start, we shouldn't stop the previous here.
-                if prev_spark_context:
-                    prev_spark_context.stop()
+                #if prev_spark_context:
+                #    prev_spark_context.stop()
                 # create a new spark context -> might cause error so that execute exception code
                 spark = SparkSession.builder.config(conf=spark_conf).getOrCreate()
                 self._spark_context = spark.sparkContext
