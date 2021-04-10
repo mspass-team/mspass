@@ -9,7 +9,6 @@ import pytest
 import sys
 import re
 
-from pyspark import SparkConf, SparkContext
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory
 
@@ -1256,12 +1255,7 @@ class TestDatabase():
         assert ts['channel_endtime'] == 1.0
     
 
-def test_read_distributed_data():
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    spark_context = SparkContext.getOrCreate(conf=conf)
-
+def test_read_distributed_data(spark_context):
     client = DBClient('localhost')
     client.drop_database('mspasspy_test_db')
 

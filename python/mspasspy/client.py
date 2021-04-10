@@ -150,7 +150,6 @@ class Client:
                     raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
 
     def __del__(self):
-        print('Client destroyed')
         # close spark context
         if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
             self._spark_context.stop()
