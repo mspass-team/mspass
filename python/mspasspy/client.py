@@ -327,18 +327,20 @@ class Client:
                     self._dask_client_address += ':8786'
             
             # sanity check
-            temp_dask_client = None
+            prev_dask_client = None
             if hasattr(self, '_dask_client'):
-                temp_dask_client = self._dask_client
+                prev_dask_client = self._dask_client
             try:
+                # create a new dask client
                 self._dask_client = DaskClient(self._dask_client_address)
-                # close previous dask client
-                if temp_dask_client:
-                    temp_dask_client.close()
+
+                # close previous dask client if success setting new dask client
+                if prev_dask_client:
+                    prev_dask_client.close()
             except Exception as err:
                 # restore the dask client if exists
-                if temp_dask_client:
-                    self._dask_client = temp_dask_client
+                if prev_dask_client:
+                    self._dask_client = prev_dask_client
                 # restore the scheduler type
                 if self._scheduler == 'dask' and prev_scheduler == 'spark':
                     self._scheduler = prev_scheduler

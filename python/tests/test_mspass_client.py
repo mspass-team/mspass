@@ -191,7 +191,7 @@ class TestMsPASSClient():
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a dask client with: localhost:8786'):
             test_client.set_scheduler('dask', 'localhost', scheduler_port='8786')
         monkeypatch.undo()
-        assert self.client._scheduler == 'dask'
+        assert test_client._scheduler == 'dask'
         assert isinstance(test_client._dask_client, DaskClient)
         assert test_client._dask_client == temp_dask_client
 
@@ -199,7 +199,7 @@ class TestMsPASSClient():
         with pytest.raises(MsPASSError, match='Runntime error: cannot create a spark configuration with: spark://168.1.2.3:7077'):
             test_client.set_scheduler('spark', '168.1.2.3', scheduler_port='7077')
         # restore back
-        assert self.client._scheduler == 'dask'
+        assert test_client._scheduler == 'dask'
         assert not hasattr(test_client, '_spark_context')
         assert test_client._dask_client == temp_dask_client
 
