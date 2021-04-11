@@ -149,20 +149,6 @@ class Client:
                 except Exception as err:
                     raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
 
-    def __del__(self):
-        # close spark context
-        # if hasattr(self, '_spark_context') and isinstance(self._spark_context, SparkContext):
-        #     self._spark_context.stop()
-        #     SparkSession._instantiatedContext = None
-        
-        # close dask client
-        if hasattr(self, '_dask_client') and isinstance(self._dask_client, DaskClient):
-            self._dask_client.close()
-
-        # close database client
-        if hasattr(self, '_db_client') and isinstance(self._db_client, DBClient):
-            self._db_client.close()
-
     def get_database_client(self):
         """
         Get the database client in the global history manager
@@ -229,8 +215,6 @@ class Client:
             # restore the _db_client
             self._db_client = temp_db_client
             raise MsPASSError('Runntime error: cannot create a database client with: ' + database_address, 'Fatal')
-        # if success, close previous DBClient
-        temp_db_client.close()
 
     def set_global_history_manager(self, history_db, job_name, collection=None):
         """
@@ -344,9 +328,6 @@ class Client:
                 if self._scheduler == 'dask' and prev_scheduler == 'spark':
                     self._scheduler = prev_scheduler
                 raise MsPASSError('Runntime error: cannot create a dask client with: ' + self._dask_client_address, 'Fatal')
-            # close previous dask client if success setting new dask client
-            if prev_dask_client:
-                prev_dask_client.close()
             # remove previous spark context if success setting new dask client
             if hasattr(self, '_spark_context'):
                 del self._spark_context
