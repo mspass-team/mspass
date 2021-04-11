@@ -1553,7 +1553,7 @@ class Database(pymongo.database.Database):
 
         # get the wf collection name in the schema
         schema = self.metadata_schema
-        if object_type is 'TimeSeries':
+        if object_type == 'TimeSeries':
             detele_schema = schema.TimeSeries
         else:
             detele_schema = schema.Seismogram
