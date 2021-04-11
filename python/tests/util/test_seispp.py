@@ -1,9 +1,9 @@
 from mspasspy.db import Database
-from mspasspy.db import Client
+from mspasspy.db import DBClient
 from mspasspy.util.seispp import index_data
 
 def setup_function(function):
-    client = Client('localhost')
+    client = DBClient('localhost')
     function.db = Database(client, 'dbtest')
     function.data = "python/tests/data/sample"
 
