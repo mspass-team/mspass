@@ -49,9 +49,12 @@ class CMakeBuild(build_ext):
             if sys.maxsize > 2**32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
+        elif platform.system() == "Linux":
+            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
+            build_args += ['--', '-j$(nproc)']
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j8']
+            build_args += ['--', '-j2']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
