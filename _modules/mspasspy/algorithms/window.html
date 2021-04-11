@@ -222,7 +222,7 @@
               <span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
 <div class="viewcode-block" id="scale"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.scale">[docs]</a><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">scale_by_section</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">use_mean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-          <span class="n">preserve_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+          <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Top level function interface to data scaling methods.</span>
 <span class="sd">    </span>
@@ -232,7 +232,7 @@
 <span class="sd">    amplitude estimation metrics are available by selecting one of the </span>
 <span class="sd">    allowed values for the method parameter.   Ensembles can be scaled </span>
 <span class="sd">    at the individual seismogram level or as a whole (scale_by_section=True).</span>
-<span class="sd">    Object level history can be enabled by setting preserve_history true.  </span>
+<span class="sd">    Object level history can be enabled by setting object_history true.  </span>
 <span class="sd">    See parameter descriptions for additional features for history preservation.</span>
 <span class="sd">    </span>
 <span class="sd">    Note all methods preserve the original amplitude by updating the </span>
@@ -273,10 +273,10 @@
 <span class="sd">      True.   The algorithm used in that case has an option to use the mean </span>
 <span class="sd">      log amplitude for scaling the section instead of the default median</span>
 <span class="sd">      amplitude.</span>
-<span class="sd">    :param preserve_history:</span>
-<span class="sd">    :param instance:  preserve_history and instance are intimately related </span>
+<span class="sd">    :param object_history:</span>
+<span class="sd">    :param instance:  object_history and instance are intimately related </span>
 <span class="sd">      and control how object level history is handled.  Object level history </span>
-<span class="sd">      is disabled by default for efficiency.  If preserve_history is set True </span>
+<span class="sd">      is disabled by default for efficiency.  If object_history is set True </span>
 <span class="sd">      and the string passed as instance is defined (not None which is the default)</span>
 <span class="sd">      each Seismogram or TimeSeries object will attempt to save the history </span>
 <span class="sd">      through a new_map operation.   If the history chain is empty this will</span>
@@ -318,10 +318,10 @@
         <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">window</span><span class="p">,</span><span class="n">TimeWindow</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">algname</span>
               <span class="o">+</span><span class="s2">&quot;:  optional window parameter set but data passed is not a TimeWindow object&quot;</span><span class="p">)</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
         <span class="k">if</span><span class="p">(</span><span class="n">instance</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">algname</span>
-              <span class="o">+</span> <span class="s2">&quot;:  preserve_history was set true but instance parameter was not defined&quot;</span><span class="p">)</span>
+              <span class="o">+</span> <span class="s2">&quot;:  object_history was set true but instance parameter was not defined&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="n">dryrun</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;ok&#39;</span>
     <span class="c1"># The pybind11 and C++ way of defining an enum class creates an </span>
@@ -347,7 +347,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">amp</span><span class="o">=</span><span class="n">_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">method_to_use</span><span class="p">,</span><span class="n">level</span><span class="p">)</span>
                     <span class="n">ampvec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
-                <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                     <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()):</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span>
                          <span class="o">+</span><span class="s2">&quot;: cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">Must at least contain an origin record&quot;</span><span class="p">)</span>
@@ -361,7 +361,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">amp</span><span class="o">=</span><span class="n">_scale</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">method_to_use</span><span class="p">,</span><span class="n">level</span><span class="p">)</span>
                     <span class="n">ampvec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
-                <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                     <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()):</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span>
                          <span class="s2">&quot;cannot preserve history because container was empty</span><span class="se">\n</span><span class="s2">Must at least contain an origin record&quot;</span><span class="p">,</span>
@@ -378,7 +378,7 @@
                     <span class="n">ampvec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">amp</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">ampvec</span><span class="o">=</span><span class="n">_scale_ensemble_members</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">method_to_use</span><span class="p">,</span><span class="n">level</span><span class="p">)</span>
-                <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                     <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
                     <span class="c1"># Silently do nothing if the data are marked dead</span>
@@ -426,7 +426,7 @@
         <span class="k">else</span><span class="p">:</span>
           <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">algname</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span> </div>
         
-<div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twin</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">preserve_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twin</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cut data defined by a TimeWindow object.</span>
 <span class="sd">    </span>
@@ -450,12 +450,12 @@
 <span class="sd">      A typical example would be to set t0shift to an arrival time and let </span>
 <span class="sd">      the window define time relative to that arrival time.  Default is None</span>
 <span class="sd">      which cause the function to assume twin is to be used directly.  </span>
-<span class="sd">    :param preserve_history: boolean to enable or disable saving object </span>
+<span class="sd">    :param object_history: boolean to enable or disable saving object </span>
 <span class="sd">      level history.  Default is False.   Note if this feature is enabled</span>
 <span class="sd">      and the input data history chain is empty the function will log an </span>
 <span class="sd">      error to the returned data and not update the history chain.</span>
 <span class="sd">    :param instance: is instance key to pass to processing history chain.</span>
-<span class="sd">      If None (the default) and preserve_history is true the processing</span>
+<span class="sd">      If None (the default) and object_history is true the processing</span>
 <span class="sd">      history chain will not be updated and a complaint error posted to </span>
 <span class="sd">      d.elog.   </span>
 <span class="sd">     </span>
@@ -474,7 +474,7 @@
                 <span class="c1"># history data to allow recording why data were killed</span>
                 <span class="k">return</span> <span class="n">d</span>
             <span class="n">dcut</span><span class="o">=</span><span class="n">_WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twcut</span><span class="p">)</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                 <span class="k">if</span><span class="p">(</span><span class="n">instance</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
                     <span class="n">dcut</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>
@@ -492,7 +492,7 @@
                 <span class="c1"># As above return original if dead</span>
                 <span class="k">return</span> <span class="n">d</span>
             <span class="n">dcut</span><span class="o">=</span><span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twcut</span><span class="p">)</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">preserve_history</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                 <span class="k">if</span><span class="p">(</span><span class="n">instance</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
                     <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>

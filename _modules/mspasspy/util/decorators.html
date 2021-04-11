@@ -196,11 +196,14 @@
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">ErrorSeverity</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
+<span class="c1"># from mspasspy.global_history.manager import GlobalHistoryManager</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util</span> <span class="kn">import</span> <span class="n">logging_helper</span>
+<span class="kn">from</span> <span class="nn">dill.source</span> <span class="kn">import</span> <span class="n">getsource</span>
+<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 
 
 <div class="viewcode-block" id="mspass_func_wrapper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper">[docs]</a><span class="nd">@decorator</span>
-<span class="k">def</span> <span class="nf">mspass_func_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">preserve_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">mspass_func_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                         <span class="n">inplace_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target</span>
@@ -212,14 +215,16 @@
 <span class="sd">    :param func: target function</span>
 <span class="sd">    :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param args: extra arguments</span>
-<span class="sd">    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history</span>
-<span class="sd">     and instance are intimately related and control how object level history is handled.</span>
-<span class="sd">     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed</span>
-<span class="sd">     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">     and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
 <span class="sd">     save the history through a new_map operation.   If the history chain is empty this will silently generate</span>
 <span class="sd">     an error posted to error log on each object.</span>
-<span class="sd">    :param instance: instance is a unique id to record the usage of func while preserving the history.</span>
-<span class="sd">    :type instance: str</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
 <span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
 <span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
 <span class="sd">      but the function returns before attempting any calculations.</span>
@@ -231,36 +236,38 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;mspass_func_wrapper only accepts mspass object as data input&quot;</span><span class="p">)</span>
 
-    <span class="n">algname</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="c1"># if not defined</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
-    <span class="k">if</span> <span class="n">preserve_history</span> <span class="ow">and</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">algname</span> <span class="o">+</span> <span class="s2">&quot;: preserve_history was true but instance not defined&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">preserve_history</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">inplace_return</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">data</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="mspass_func_wrapper_multi"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi">[docs]</a><span class="nd">@decorator</span>
-<span class="k">def</span> <span class="nf">mspass_func_wrapper_multi</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">preserve_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">mspass_func_wrapper_multi</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is</span>
 <span class="sd">    this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented</span>
@@ -270,14 +277,16 @@
 <span class="sd">    :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param args: extra arguments</span>
-<span class="sd">    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history</span>
-<span class="sd">     and instance are intimately related and control how object level history is handled.</span>
-<span class="sd">     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed</span>
-<span class="sd">     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">     and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
 <span class="sd">     save the history through a new_map operation.   If the history chain is empty this will silently generate</span>
 <span class="sd">     an error posted to error log on each object.</span>
-<span class="sd">    :param instance: instance is a unique id to record the usage of func while preserving the history.</span>
-<span class="sd">    :type instance: str</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
 <span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
 <span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
 <span class="sd">      but the function returns before attempting any calculations.</span>
@@ -290,39 +299,40 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;mspass_func_wrapper_multi only accepts mspass object as data input&quot;</span><span class="p">)</span>
 
-    <span class="n">algname</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
-    <span class="k">if</span> <span class="n">preserve_history</span> <span class="ow">and</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">algname</span> <span class="o">+</span> <span class="s2">&quot;: preserve_history was true but instance not defined&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">preserve_history</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="is_input_dead"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.is_input_dead">[docs]</a><span class="k">def</span> <span class="nf">is_input_dead</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -591,8 +601,7 @@
 
 
 <div class="viewcode-block" id="mspass_reduce_func_wrapper"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_reduce_func_wrapper">[docs]</a><span class="nd">@decorator</span>
-<span class="k">def</span> <span class="nf">mspass_reduce_func_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">preserve_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">mspass_reduce_func_wrapper</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1</span>
 <span class="sd">    and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1</span>
@@ -602,21 +611,24 @@
 <span class="sd">    :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</span>
 <span class="sd">    :param args: extra arguments</span>
-<span class="sd">    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history</span>
-<span class="sd">     and instance are intimately related and control how object level history is handled.</span>
-<span class="sd">     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed</span>
-<span class="sd">     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
+<span class="sd">    :param object_history: True to preserve this processing history in the data object, False not to. object_history</span>
+<span class="sd">     and alg_id are intimately related and control how object level history is handled.</span>
+<span class="sd">     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed</span>
+<span class="sd">     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to</span>
 <span class="sd">     save the history through a new_reduce operation. If the history chain is empty this will silently generate</span>
 <span class="sd">     an error posted to error log on each object.</span>
-<span class="sd">    :param instance: instance is a unique id to record the usage of func while preserving the history.</span>
-<span class="sd">    :type instance: str</span>
+<span class="sd">    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">    :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">    :type alg_name: :class:`str`</span>
 <span class="sd">    :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.</span>
 <span class="sd">      This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions</span>
 <span class="sd">      but the function returns before attempting any calculations.</span>
 <span class="sd">    :param kwargs: extra kv arguments</span>
 <span class="sd">    :return: the output of func</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">algname</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
@@ -624,34 +636,70 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only mspass objects are supported in reduce wrapped methods&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">preserve_history</span> <span class="ow">and</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">algname</span> <span class="o">+</span> <span class="s2">&quot;: preserve_history was true but instance not defined&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">object_history</span> <span class="ow">and</span> <span class="n">alg_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s2">&quot;: object_history was true but alg_id not defined&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dryrun</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;OK&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">preserve_history</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">object_history</span><span class="p">:</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">res</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">!=</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span> <span class="ow">and</span> \
                 <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">!=</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Debug</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">)):</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">data2</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
-            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+            <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+
+
+<span class="c1"># @decorator</span>
+<span class="c1"># def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     This decorator helps the global history manager to log down the usage of any mspasspy function if global history manager provided,</span>
+<span class="c1">#     and then execute the func with the user inputs.</span>
+
+<span class="c1">#     :param func: target func</span>
+<span class="c1">#     :param args: extra arguments</span>
+<span class="c1">#     :param global_history: global history manager object passed to save the usage of this function to database</span>
+<span class="c1">#     :type global_history: :class:`mspasspy.global_history.manager.GlobalHistoryManager`</span>
+<span class="c1">#     :param kwargs: extra kv arguments</span>
+<span class="c1">#     :return: the output of func</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if global_history:</span>
+<span class="c1">#         if not isinstance(global_history, GlobalHistoryManager):</span>
+<span class="c1">#             raise TypeError(&quot;only an object with the type GlobalHistoryManager should be passes as an argument as global_history.&quot;)</span>
+
+<span class="c1">#         alg_name = func.__name__</span>
+<span class="c1">#         # get the whole map algorithm string</span>
+<span class="c1">#         alg_string = getsource(func)</span>
+<span class="c1">#         # extract parameters</span>
+<span class="c1">#         args_str = &quot;,&quot;.join(f&quot;{value}&quot; for value in args)</span>
+<span class="c1">#         kwargs_str = &quot;,&quot;.join(f&quot;{key}={value}&quot; for key, value in kwargs.items())</span>
+<span class="c1">#         parameters = args_str</span>
+<span class="c1">#         if kwargs_str:</span>
+<span class="c1">#             parameters += &quot;,&quot; + kwargs_str</span>
+        
+<span class="c1">#         # get the alg_id if exists, else create a new one</span>
+<span class="c1">#         alg_id = global_history.get_alg_id(alg_name, parameters)</span>
+<span class="c1">#         if not alg_id:</span>
+<span class="c1">#             alg_id = ObjectId()</span>
+<span class="c1">#         global_history.logging(alg_id, alg_name, parameters)</span>
+    
+<span class="c1">#     return func(*args, **kwargs)</span>
 </pre></div>
 
            </div>

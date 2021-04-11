@@ -222,7 +222,6 @@
                                     <span class="n">ProcessingHistory</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.schema</span> <span class="kn">import</span> <span class="n">DatabaseSchema</span><span class="p">,</span> <span class="n">MetadataSchema</span>
 
-
 <div class="viewcode-block" id="read_distributed_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.read_distributed_data">[docs]</a><span class="k">def</span> <span class="nf">read_distributed_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">cursor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                           <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;dask&#39;</span><span class="p">,</span> <span class="n">spark_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1593,6 +1592,13 @@
                     <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
                     <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">}</span>
                     <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
+
+                <span class="c1"># 5. need to save the wf_id back to history_object entry if this is an insert</span>
+                <span class="k">if</span> <span class="n">new_insertion</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+                    <span class="n">history_object_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)]</span>
+                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
+                    <span class="n">history_object_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># save the metadata in gravestone as an elog entry</span>
                 <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span>
@@ -1738,7 +1744,7 @@
 
         <span class="c1"># get the wf collection name in the schema</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
-        <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="s1">&#39;TimeSeries&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">object_type</span> <span class="o">==</span> <span class="s1">&#39;TimeSeries&#39;</span><span class="p">:</span>
             <span class="n">detele_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">detele_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
@@ -1990,21 +1996,44 @@
 <span class="sd">        collection in the schema.</span>
 <span class="sd">        :return: current history_object_id.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">update_metadata_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">TimeSeries</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">update_metadata_def</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">Seismogram</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
+        <span class="c1"># get the wf id name in the schema</span>
+        <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+
+        <span class="c1"># get the wf id in the mspass object</span>
+        <span class="n">oid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">oid</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span><span class="p">:</span>
             <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span>
         <span class="n">history_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span>
         <span class="n">proc_history</span> <span class="o">=</span> <span class="n">ProcessingHistory</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
         <span class="n">current_uuid</span> <span class="o">=</span> <span class="n">proc_history</span><span class="o">.</span><span class="n">id</span><span class="p">()</span> <span class="c1"># uuid in the current node</span>
+        <span class="n">current_nodedata</span> <span class="o">=</span> <span class="n">proc_history</span><span class="o">.</span><span class="n">current_nodedata</span><span class="p">()</span>
+        <span class="c1"># get the alg_id of current node</span>
+        <span class="n">alg_id</span> <span class="o">=</span> <span class="n">current_nodedata</span><span class="o">.</span><span class="n">algid</span>
+        <span class="n">alg_name</span> <span class="o">=</span> <span class="n">current_nodedata</span><span class="o">.</span><span class="n">algorithm</span>
         <span class="n">history_binary</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">proc_history</span><span class="p">)</span>
         <span class="c1"># todo save jobname jobid when global history module is done</span>
         <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># construct the insert dict for saving into database</span>
+            <span class="n">insert_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">current_uuid</span><span class="p">,</span>
+                            <span class="s1">&#39;processing_history&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">,</span>
+                            <span class="s1">&#39;alg_id&#39;</span><span class="p">:</span> <span class="n">alg_id</span><span class="p">,</span>
+                            <span class="s1">&#39;alg_name&#39;</span><span class="p">:</span><span class="n">alg_name</span><span class="p">}</span>
+            <span class="k">if</span> <span class="n">oid</span><span class="p">:</span>
+                <span class="n">insert_dict</span><span class="p">[</span><span class="n">wf_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">oid</span>
             <span class="k">if</span> <span class="n">prev_history_object_id</span><span class="p">:</span>
                 <span class="c1"># overwrite history</span>
                 <span class="n">history_col</span><span class="o">.</span><span class="n">delete_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">prev_history_object_id</span><span class="p">})</span>
-                <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">current_uuid</span><span class="p">,</span> <span class="s1">&#39;nodedata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># new insertion</span>
-                <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">current_uuid</span><span class="p">,</span> <span class="s1">&#39;nodedata&#39;</span><span class="p">:</span> <span class="n">history_binary</span><span class="p">})</span>
+            <span class="c1"># insert new one</span>
+            <span class="n">history_col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insert_dict</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">DuplicateKeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;The history object to be saved has a duplicate uuid&quot;</span><span class="p">,</span> <span class="s2">&quot;Fatal&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
@@ -2023,7 +2052,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span><span class="p">:</span>
             <span class="n">collection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">collection</span><span class="p">]</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">})</span>
-        <span class="n">mspass_object</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;nodedata&#39;</span><span class="p">]))</span>
+        <span class="n">mspass_object</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;processing_history&#39;</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="nf">_save_elog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

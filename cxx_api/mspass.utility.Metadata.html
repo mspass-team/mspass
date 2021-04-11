@@ -242,31 +242,28 @@
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a5255fc3ae6accb650f221c9065a92eff"></span><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span>std::ifstream &amp;<em>ifs</em>, <em class="property">const</em> std::string <em>form</em> = std::string(&quot;pf&quot;)<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8MetadataERNSt8ifstreamEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct from a file.</p>
 <p>This simple file based constructor assumes the file contains only a set lines with this format: key value type where type must be one of: real, integer, bool, or string. Note int is actually always promoted to a long. The optional format variable is there to allow alternative formats in the future.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ifs</span></code>: - ifstream from which to read data </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">format</span></code>: - optional format specification. Currently only default of “text” is accepted. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ifs</strong> – - ifstream from which to read data </p></li>
+<li><p><strong>format</strong> – - optional format specification. Currently only default of “text” is accepted. </p></li>
 </ul>
 </dd>
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code>: can be thrown for a variety of conditions. </p></li>
-</ul>
+<dt class="field-even">Throws</dt>
+<dd class="field-even"><p><strong>MsPASSError</strong> – can be thrown for a variety of conditions. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata">
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1afa617529be5501b6b059091118a1a51f"></span><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata" title="mspass::utility::Metadata::Metadata">Metadata</a> &amp;<em>mdold</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata8MetadataERK8Metadata" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Standard copy constructor.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mdold</span></code>: - parent object to be copied </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mdold</strong> – - parent object to be copied </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -278,13 +275,12 @@
 <dl class="cpp function">
 <dt id="_CPPv4N6mspass7utility8MetadataaSERK8Metadata">
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1aadbae283dfdb87a82832519a9955fdfa"></span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<code class="sig-name descname">operator=</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<em>mdold</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadataaSERK8Metadata" title="Permalink to this definition">¶</a><br /></dt>
-<dd><p>Standard assignment operator. <dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mdold</span></code>: - parent object to copy </p></li>
-</ul>
+<dd><p>Standard assignment operator. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mdold</strong> – - parent object to copy </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -292,13 +288,11 @@
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1afadcdb42814abc1448a78d1d9f3d44aa"></span><a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<code class="sig-name descname">operator+=</code><span class="sig-paren">(</span><em class="property">const</em> <a class="reference internal" href="#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<em>rhs</em><span class="sig-paren">)</span> <em class="property">noexcept</em><a class="headerlink" href="#_CPPv4N6mspass7utility8MetadatapLERK8Metadata" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Append additional metadata with replacement.</p>
 <p>A plus operator implies addition, but this overloading does something very different. A simple way to describe the effect is that on completion the left hand side <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object will contain a duplicate of the right hand side plus any attributes in the rhs that were not present on the lhs. Another way to clarify this is to describe the algorithm. We take each attribute on the right and search for it in the lhs. If it is not in the lhs it will be added. If it is there already, the rhs value will replace the old value on the lhs. This is most useful when an algorithm creates a new set of attributes that we want to use in downstream processing but retain all the other attributes.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code>: is the new metadata to be insert/replace on the lhs. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rhs</strong> – is the new metadata to be insert/replace on the lhs. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -311,51 +305,42 @@
 <dt id="_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE">
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1ad69a5786d997104df560775f4f688b02"></span><em class="property">inline</em> <em class="property">virtual</em> double <code class="sig-name descname">get_double</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata10get_doubleEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get a real number from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
-<p><dl class="simple">
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MetadataGetError</span></code>: if requested parameter is not found or there is a type mismatch. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><strong>MetadataGetError</strong> – if requested parameter is not found or there is a type mismatch. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: keyword associated with requested metadata member. </p></li>
-</ul>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>key</strong> – keyword associated with requested metadata member. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE">
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a78f3a01e1b1deccd84a0833bea4ef462"></span><em class="property">inline</em> <em class="property">virtual</em> int <code class="sig-name descname">get_int</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata7get_intEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get an integer from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
-<p><dl class="simple">
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MetadataGetError</span></code>: if requested parameter is not found or there is a type mismatch. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><strong>MetadataGetError</strong> – if requested parameter is not found or there is a type mismatch. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: keyword associated with requested metadata member. </p></li>
-</ul>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>key</strong> – keyword associated with requested metadata member. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt id="_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE">
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a7ace0c05ebb00b3c383cb8cccd225504"></span><em class="property">inline</em> long <code class="sig-name descname">get_long</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata8get_longEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get a long integer from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
-<p><dl class="simple">
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MetadataGetError</span></code>: if requested parameter is not found or there is a type mismatch. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><strong>MetadataGetError</strong> – if requested parameter is not found or there is a type mismatch. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: keyword associated with requested metadata member. </p></li>
-</ul>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>key</strong> – keyword associated with requested metadata member. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -363,17 +348,14 @@
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1aa56da98a52f03babd67bf9fb55c40f3a"></span><em class="property">inline</em> <em class="property">virtual</em> std::string <code class="sig-name descname">get_string</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata10get_stringEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get a string from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
 <p>Note the string in this case can be quite large. If the string was parsed from an Antelope Pf nested Tbl and Arrs can be extracted this way and parsed with pf routines.</p>
-<p><dl class="simple">
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MetadataGetError</span></code>: if requested parameter is not found or there is a type mismatch. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Throws</dt>
+<dd class="field-odd"><p><strong>MetadataGetError</strong> – if requested parameter is not found or there is a type mismatch. </p>
 </dd>
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: keyword associated with requested metadata member. </p></li>
-</ul>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><p><strong>key</strong> – keyword associated with requested metadata member. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -381,13 +363,11 @@
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a2631da9d437572ee0781ed9bd96a3ed3"></span><em class="property">inline</em> <em class="property">virtual</em> bool <code class="sig-name descname">get_bool</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em> <em class="property">override</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata8get_boolEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get a boolean parameter from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
 <p>This method never throws an exception assuming that if the requested parameter is not found it is false.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: keyword associated with requested metadata member. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – keyword associated with requested metadata member. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -395,17 +375,14 @@
 template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span class="target" id="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539"></span><a class="reference internal" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE" title="mspass::utility::Metadata::get::T">T</a> <code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4I0ENK6mspass7utility8Metadata3getE1TKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Generic get interface.</p>
 <p>This is a generic interface most useful for template procedures that need to get a <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> component. Since this object only can contain simple types the type requested must be simple. Currently supports only int, long, short, double, float, and string. C char* is intentionally not supported. Calls to anything but the supported types will throw an exception.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: is the name tag of desired component.</p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – is the name tag of desired component.</p>
 </dd>
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">-</span></code>: will throw a MetadataGetError (child of MsPASSError) for type mismatch or in an overflow or underflow condition. </p></li>
-</ul>
+<dt class="field-even">Throws</dt>
+<dd class="field-even"><p><strong>-</strong> – will throw a MetadataGetError (child of MsPASSError) for type mismatch or in an overflow or underflow condition. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -433,17 +410,14 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a991516933477580b6b59dd578819df06"></span><em class="property">inline</em> boost::any <code class="sig-name descname">get_any</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>key</em><span class="sig-paren">)</span> <em class="property">const</em><a class="headerlink" href="#_CPPv4NK6mspass7utility8Metadata7get_anyEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Get the boost::any container from the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object.</p>
 <p>This method is mostly for Python bindings so that a generic get method can work in Python.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: is the name tag of desired component.</p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – is the name tag of desired component.</p>
 </dd>
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">-</span></code>: MetadataGetError if requested parameter is not found. </p></li>
-</ul>
+<dt class="field-even">Throws</dt>
+<dd class="field-even"><p><strong>-</strong> – MetadataGetError if requested parameter is not found. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -452,19 +426,18 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 <dd><p>Create or append to a chained string.</p>
 <p>A chain conceptually is identical to a list of string data. We implement it in <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> because sometimes (e.g. MongoDB interaction and some constructs like the unix shell PATH variable) handling a full scale container like list&lt;std::string&gt; would be awkward. If more extensive capability like that is needed it would be better to add a class that inherits <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> and does so. AntelopePf more or less does this, for example, handling Tbl sections. In any case, this usage is more for one word strings separated by a common separator: e.g. path=/usr/local/bin:/bin uses : as the separator. /usr/local/bin and /bin are the chain.</p>
 <p>If the key related to the chain does not yet exist it is silently created. If it already exists and we append to it.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">key</span></code>: is the key that defines the string. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">val</span></code>: is the the new string to append to the chain </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">separator</span></code>: is the string used for a separator (default “:”)</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – is the key that defines the string. </p></li>
+<li><p><strong>val</strong> – is the the new string to append to the chain </p></li>
+<li><p><strong>separator</strong> – is the string used for a separator (default “:”)</p></li>
 </ul>
 </dd>
-<dt><strong>Exceptions</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">MsPASSError</span></code>: will be thrown if data is found in key and it is not of type string. </p></li>
-</ul>
+<dt class="field-even">Throws</dt>
+<dd class="field-even"><p><strong>MsPASSError</strong> – will be thrown if data is found in key and it is not of type string. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -523,14 +496,14 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 <span class="target" id="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8"></span>void <code class="sig-name descname">change_key</code><span class="sig-paren">(</span><em class="property">const</em> std::string <em>oldkey</em>, <em class="property">const</em> std::string <em>newkey</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7utility8Metadata10change_keyEKNSt6stringEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Change the keyword to access an attribute. </p>
 <p>Sometimes it is useful to change the key used to access a particular piece of data. Doing so, for example, is one way to implement an alias (alternative name) for something. The entry for the old key is copied to a entry accessible by the new key. The entry for old is then deleted. This avoids downstream inconsistencies a the cost of possible failures from the translation. This method always returns and will silently do nothing if old is not defined. If the new key is already defined, its content will be replaced by the old’s.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">oldkey</span></code>: is the key to search for to be changed </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">newkey</span></code>: is the new key to use for the replacement. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>oldkey</strong> – is the key to search for to be changed </p></li>
+<li><p><strong>newkey</strong> – is the new key to use for the replacement. </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

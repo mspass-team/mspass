@@ -558,7 +558,7 @@ or all of them are still alive.</p>
 
 <dl class="py function">
 <dt id="mspasspy.util.decorators.mspass_func_wrapper">
-<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">preserve_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
 function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
 error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
@@ -570,13 +570,14 @@ will be raised, others won’t be raised.</p>
 <li><p><strong>func</strong> – target function</p></li>
 <li><p><strong>data</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>preserve_history</strong> – True to preserve this processing history in the data object, False not to. preserve_history
-and instance are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
+and alg_id are intimately related and control how object level history is handled.
+Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>instance</strong> (<em>str</em>) – instance is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
 but the function returns before attempting any calculations.</p></li>
@@ -593,7 +594,7 @@ return the origin data (for example, in map-reduce), set inplace_return as true.
 
 <dl class="py function">
 <dt id="mspasspy.util.decorators.mspass_func_wrapper_multi">
-<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper_multi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">preserve_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper_multi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper_multi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper_multi" title="Permalink to this definition">¶</a></dt>
 <dd><p>This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
 this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
 here. The same processing history and error logs will be duplicated and stored in both of the input.</p>
@@ -604,13 +605,14 @@ here. The same processing history and error logs will be duplicated and stored i
 <li><p><strong>data1</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>data2</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>preserve_history</strong> – True to preserve this processing history in the data object, False not to. preserve_history
-and instance are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
+and alg_id are intimately related and control how object level history is handled.
+Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_map operation.   If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>instance</strong> (<em>str</em>) – instance is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
 but the function returns before attempting any calculations.</p></li>
@@ -625,7 +627,7 @@ but the function returns before attempting any calculations.</p></li>
 
 <dl class="py function">
 <dt id="mspasspy.util.decorators.mspass_reduce_func_wrapper">
-<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_reduce_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">preserve_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_reduce_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_reduce_func_wrapper" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_reduce_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_reduce_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_reduce_func_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
 and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
 and data2. Other functionalities are the same as mspass_func_wrapper.</p>
@@ -636,13 +638,14 @@ and data2. Other functionalities are the same as mspass_func_wrapper.</p>
 <li><p><strong>data1</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>data2</strong> – input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.</p></li>
 <li><p><strong>args</strong> – extra arguments</p></li>
-<li><p><strong>preserve_history</strong> – True to preserve this processing history in the data object, False not to. preserve_history
-and instance are intimately related and control how object level history is handled.
-Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+<li><p><strong>object_history</strong> – True to preserve this processing history in the data object, False not to. object_history
+and alg_id are intimately related and control how object level history is handled.
+Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
 save the history through a new_reduce operation. If the history chain is empty this will silently generate
 an error posted to error log on each object.</p></li>
-<li><p><strong>instance</strong> (<em>str</em>) – instance is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – alg_id is a unique id to record the usage of func while preserving the history.</p></li>
+<li><p><strong>alg_name</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – alg_name is the name the func we are gonna save while preserving the history.</p></li>
 <li><p><strong>dryrun</strong> – True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
 This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
 but the function returns before attempting any calculations.</p></li>
@@ -785,15 +788,15 @@ severity attribute.  For now this always set it Invalid)</p>
 
 <dl class="py function">
 <dt id="mspasspy.util.logging_helper.info">
-<code class="sig-prename descclassname">mspasspy.util.logging_helper.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">algname</span></em>, <em class="sig-param"><span class="n">instance</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.logging_helper.info" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.util.logging_helper.</code><code class="sig-name descname">info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">alg_id</span></em>, <em class="sig-param"><span class="n">alg_name</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.logging_helper.info" title="Permalink to this definition">¶</a></dt>
 <dd><p>This helper function is used to log operations in processing history of mspass object.
 Per best practice, every operations happen on the mspass object should be logged.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> – the mspass data object</p></li>
-<li><p><strong>algname</strong> – the name of the algorithm that used on the mspass object.</p></li>
-<li><p><strong>instance</strong> – an id designator to uniquely define an instance of algorithm.</p></li>
+<li><p><strong>alg_id</strong> – an id designator to uniquely define an instance of algorithm.</p></li>
+<li><p><strong>alg_name</strong> – the name of the algorithm that used on the mspass object.</p></li>
 <li><p><strong>target</strong> – if the mspass data object is an ensemble type, you may use target as index to
 log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble
 will be logged using the same information.</p></li>
@@ -807,7 +810,7 @@ will be logged using the same information.</p></li>
 
 <dl class="py function">
 <dt id="mspasspy.util.logging_helper.reduce">
-<code class="sig-prename descclassname">mspasspy.util.logging_helper.</code><code class="sig-name descname">reduce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="n">algname</span></em>, <em class="sig-param"><span class="n">instance</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#reduce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.logging_helper.reduce" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.util.logging_helper.</code><code class="sig-name descname">reduce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data1</span></em>, <em class="sig-param"><span class="n">data2</span></em>, <em class="sig-param"><span class="n">alg_id</span></em>, <em class="sig-param"><span class="n">alg_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/logging_helper.html#reduce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.logging_helper.reduce" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function replicates the processing history of data2 onto data1, which is a common use case
 in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,
 the processing history will still be replicated.</p>
@@ -816,8 +819,8 @@ the processing history will still be replicated.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data1</strong> – Mspass object</p></li>
 <li><p><strong>data2</strong> – Mspass object</p></li>
-<li><p><strong>algname</strong> – The name of the reduce algorithm that uses this helper function.</p></li>
-<li><p><strong>instance</strong> – The unique id of that user gives to the algorithm.</p></li>
+<li><p><strong>alg_id</strong> – The unique id of that user gives to the algorithm.</p></li>
+<li><p><strong>alg_name</strong> – The name of the reduce algorithm that uses this helper function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

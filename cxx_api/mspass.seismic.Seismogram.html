@@ -244,13 +244,11 @@
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1ad590dfa3a949494f55a93a567e785f51"></span><code class="sig-name descname">Seismogram</code><span class="sig-paren">(</span><em class="property">const</em> size_t <em>nsamples</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramEK6size_t" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Bare bones constructor allocates space and little else.</p>
 <p>Sometimes it is helpful to construct a skeleton that can be fleshed out manually. This constructor allocates a 3xnsamples array and sets the matrix to all zeros. It also sets the orientation information to cardinal and defines the data in relative time units. The data are marked dead because the assumption is the caller will fill out commonly needed basic Metadata, load some kind of sample data into the data matrix, and then call the set_live method when that process is completed. That kind of manipulation is most common in preparing simulation or test data where the common tags on real data do not exist and need to be defined manually for the simulatioon or test. The history section is initialized with the default constructor, which currently means it is empty. If a simulation or test requires a history origin the user must load it manaually.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">nsamples</span></code>: is the number of 3c vector samples to iniitalize the object with (creates a 3xnsamples matrix). </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nsamples</strong> – is the number of 3c vector samples to iniitalize the object with (creates a 3xnsamples matrix). </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -258,13 +256,11 @@
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1ac11cc7bd179af91d62637caffbc070b0"></span><code class="sig-name descname">Seismogram</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::CoreSeismogram &amp;<em>d</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic14CoreSeismogramE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Construct from lower level CoreSeismogram. </p>
 <p>In MsPASS CoreSeismogram has the primary functions that define the concept of a three-component seismogram. <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a> implements mspass specific features needed to mesh with the mspass processing system. This constructor clones onlyh the CoreSeismogram components and initializes the ProcessingHistory with the default constructor leaves the history in an empty state. Users should call methods in ProcessingHistory to initiate a valid history chain. Processing can continue if left in that state, but the history chain will have an undefined origin. Job information will also be lost if not initialized (see BasicProcessingHistory)</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">d</span></code>: is the data to be copied to create the new <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a> object </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – is the data to be copied to create the new <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a> object </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -272,14 +268,14 @@
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1ad9ee134debc951e675eb93f94b172e40"></span><code class="sig-name descname">Seismogram</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::CoreSeismogram &amp;<em>d</em>, <em class="property">const</em> std::string <em>alg</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic14CoreSeismogramEKNSt6stringE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Contruct from a core seismogram and initialize history as origin.</p>
 <p>This constructor is a variant of a similar one built only from a CoreSeismogram. This constuctor is intended to be used mainly on simulation data created by some mechanism (e.g. a python procedure). It is more rigid that the simple one arg constructor as it will create a top level history record. The record will mark the result as an origin with an id set as a uuid created by a random number generator (boost implementation). The jobname and jobid are frozen as “test”. Use a different constructor and/or reset job info if more flexibility is desired. Use of this constructor is recommended only for test python programs that do not need to interact with MongoDB.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">is</span></code>: core data to be cloned </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">alg</span></code>: is the algorithm name to set for the origin history record. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>is</strong> – core data to be cloned </p></li>
+<li><p><strong>alg</strong> – is the algorithm name to set for the origin history record. </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -287,14 +283,14 @@
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1ae4126ada587a52ed991ed25308a5c9cb"></span><code class="sig-name descname">Seismogram</code><span class="sig-paren">(</span><em class="property">const</em> mspass::seismic::BasicTimeSeries &amp;<em>bts</em>, <em class="property">const</em> mspass::utility::<a class="reference internal" href="mspass.utility.Metadata.html#_CPPv4N6mspass7utility8MetadataE" title="mspass::utility::Metadata">Metadata</a> &amp;<em>md</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram10SeismogramERKN6mspass7seismic15BasicTimeSeriesERKN6mspass7utility8MetadataE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Partial constructor from base classes. </p>
 <p>This is a partial constructor useful sometimes for building a <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a> object from scratch such as in a simultion. It clones the Metadata and uses attributes in BasicTimeSeries to build a framework that data can be added into. It initialzies the data array to npts stored in the BasicTimeSeries passed to the constructor.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bts</span></code>: is the BasicTimeSeries that overrides any md data. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">md</span></code>: is the Metadata cloned to make the partially constructed object. </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bts</strong> – is the BasicTimeSeries that overrides any md data. </p></li>
+<li><p><strong>md</strong> – is the Metadata cloned to make the partially constructed object. </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -310,15 +306,15 @@
 <dd><p>Constructor driven by a Metadata object.</p>
 <p>The flexibilityof Metadata makes it helpful at times to build a <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a> object driven by Metadata key:value pairs. This implementation always uses file io to read the actual data and clone the Metadata. ProcessingHistory is initialized to define the result as raw data. The id field is set from Metadata using the special (frozen) key “wf_id” that is assumed to hold the string representation of an ObjectID of the waveform read.</p>
 <p>Note all but the Metadata argument are defaulted, but setting the jobname and jobid is strongly recommended to avoid ambiguity - these define a unique run of a particular workflow.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">md</span></code>: is the Metadata that is used to drive the constructor. </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">jobname</span></code>: is the jobname (defaults to test, but should be changed) </p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">readername</span></code>: is the algorithm name assigned to the top level history record. Defaults to “load3C” </p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>md</strong> – is the Metadata that is used to drive the constructor. </p></li>
+<li><p><strong>jobname</strong> – is the jobname (defaults to test, but should be changed) </p></li>
+<li><p><strong>readername</strong> – is the algorithm name assigned to the top level history record. Defaults to “load3C” </p></li>
 </ul>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -338,13 +334,11 @@
 <span class="target" id="classmspass_1_1seismic_1_1_seismogram_1a6a08b90222beaf43809a3691f80b61c6"></span>void <code class="sig-name descname">load_history</code><span class="sig-paren">(</span><em class="property">const</em> mspass::utility::ProcessingHistory &amp;<em>h</em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6mspass7seismic10Seismogram12load_historyERKN6mspass7utility17ProcessingHistoryE" title="Permalink to this definition">¶</a><br /></dt>
 <dd><p>Load just the ProcessingHistory data from another data source. </p>
 <p>Some algorithms don’t handle processing history. In those situations it can prove helpful to manage ProcessingHistory separately and load the history data through this method.</p>
-<p><dl class="simple">
-<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code>: is the ProcessingHistory data to copy into this <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a>. </p></li>
-</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>h</strong> – is the ProcessingHistory data to copy into this <a class="reference internal" href="#classmspass_1_1seismic_1_1_seismogram"><span class="std std-ref">Seismogram</span></a>. </p>
 </dd>
 </dl>
-</p>
 </dd></dl>
 
 </div>

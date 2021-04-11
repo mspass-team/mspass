@@ -194,14 +194,14 @@
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
 
 
-<div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="info"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.info">[docs]</a><span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This helper function is used to log operations in processing history of mspass object.</span>
 <span class="sd">    Per best practice, every operations happen on the mspass object should be logged.</span>
 
 <span class="sd">    :param data: the mspass data object</span>
-<span class="sd">    :param algname: the name of the algorithm that used on the mspass object.</span>
-<span class="sd">    :param instance: an id designator to uniquely define an instance of algorithm.</span>
+<span class="sd">    :param alg_id: an id designator to uniquely define an instance of algorithm.</span>
+<span class="sd">    :param alg_name: the name of the algorithm that used on the mspass object.</span>
 <span class="sd">    :param target: if the mspass data object is an ensemble type, you may use target as index to</span>
 <span class="sd">     log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble</span>
 <span class="sd">     will be logged using the same information.</span>
@@ -213,9 +213,9 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span>
                              <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
                                                                         <span class="n">TimeSeries</span><span class="p">)</span> <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
                              <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
@@ -226,9 +226,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">))</span> <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">target</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
                 <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">empty_err_message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span>
                                            <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> \
                                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                                              <span class="n">TimeSeries</span><span class="p">)</span> <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
@@ -267,7 +267,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Not treated as fatal but a bug fix is needed&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">algname</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<div class="viewcode-block" id="reduce"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.logging_helper.reduce">[docs]</a><span class="k">def</span> <span class="nf">reduce</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function replicates the processing history of data2 onto data1, which is a common use case</span>
 <span class="sd">    in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,</span>
@@ -275,16 +275,16 @@
 
 <span class="sd">    :param data1: Mspass object</span>
 <span class="sd">    :param data2: Mspass object</span>
-<span class="sd">    :param algname: The name of the reduce algorithm that uses this helper function.</span>
-<span class="sd">    :param instance: The unique id of that user gives to the algorithm.</span>
+<span class="sd">    :param alg_id: The unique id of that user gives to the algorithm.</span>
+<span class="sd">    :param alg_name: The name of the reduce algorithm that uses this helper function.</span>
 <span class="sd">    :return: None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data2</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;logging_helper.reduce: data2 has a different type as data1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span>
-                             <span class="n">instance</span><span class="p">,</span>
+            <span class="n">data1</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                             <span class="n">alg_id</span><span class="p">,</span>
                              <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)</span>
                                 <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
                              <span class="n">data2</span><span class="p">)</span>
@@ -296,8 +296,8 @@
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;logging_helper.reduce: data1 and data2 have different sizes of member&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>  <span class="c1"># guarantee group member is not dead</span>
-                <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span>
-                                 <span class="n">instance</span><span class="p">,</span>
+                <span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                                 <span class="n">alg_id</span><span class="p">,</span>
                                  <span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">TimeSeries</span><span class="p">)</span>
                                     <span class="k">else</span> <span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
                                  <span class="n">data2</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
