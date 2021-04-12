@@ -238,15 +238,15 @@
 <dl class="py class">
 <dt id="mspasspy.db.client.DBClient">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.db.client.</code><code class="sig-name descname">DBClient</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.client.DBClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.mongo_client.MongoClient</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/mongo_client.html#pymongo.mongo_client.MongoClient" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.mongo_client.MongoClient</span></code></a></p>
 <p>A client-side representation of MongoDB.</p>
 <p>This is a wrapper around the <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> for convenience.</p>
 <dl class="py method">
 <dt id="mspasspy.db.client.DBClient.get_database">
 <code class="sig-name descname">get_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">codec_options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_preference</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">write_concern</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">read_concern</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/client.html#DBClient.get_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.client.DBClient.get_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a <code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code> with the given name and
+<dd><p>Get a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with the given name and
 options.</p>
-<p>Useful for creating a <code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code> with
+<p>Useful for creating a <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with
 different codec options, read preference, and/or write concern from
 this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">read_preference</span>
@@ -268,19 +268,19 @@ this <code class="xref py py-class docutils literal notranslate"><span class="pr
 (the default) the database named in the MongoDB connection URI is
 returned.</p></li>
 <li><p><cite>codec_options</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 <li><p><cite>read_preference</cite> (optional): The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
-<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v3.11.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
 for options.</p></li>
 <li><p><cite>write_concern</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 <li><p><cite>read_concern</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 </ul>
@@ -312,19 +312,19 @@ based only on the URI in a configuration file.</p>
 <li><p><cite>default</cite> (optional): the database name to use if no database name
 was provided in the URI.</p></li>
 <li><p><cite>codec_options</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/codec_options.html#bson.codec_options.CodecOptions" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CodecOptions</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">codec_options</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 <li><p><cite>read_preference</cite> (optional): The read preference to use. If
 <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_preference</span></code> of this
-<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is used. See <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_preferences.html#module-pymongo.read_preferences" title="(in PyMongo v3.11.3)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">read_preferences</span></code></a>
 for options.</p></li>
 <li><p><cite>write_concern</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/write_concern.html#pymongo.write_concern.WriteConcern" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">write_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 <li><p><cite>read_concern</cite> (optional): An instance of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/read_concern.html#pymongo.read_concern.ReadConcern" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadConcern</span></code></a>. If <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
 default) the <code class="xref py py-attr docutils literal notranslate"><span class="pre">read_concern</span></code> of this <code class="xref py py-class docutils literal notranslate"><span class="pre">MongoClient</span></code> is
 used.</p></li>
 </ul>
@@ -349,9 +349,9 @@ parameters.</p>
 <dl class="py class">
 <dt id="mspasspy.db.database.Database">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.db.database.</code><code class="sig-name descname">Database</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">db_schema</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">md_schema</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.database.Database</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.database.Database</span></code></a></p>
 <p>A MongoDB database handler.</p>
-<p>This is a wrapper around the <code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code> with
+<p>This is a wrapper around the <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/database.html#pymongo.database.Database" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Database</span></code></a> with
 methods added to handle MsPASS data.  The one and only constructor
 uses a database handle normally created with a variant of this pair
 of commands:</p>
@@ -368,7 +368,7 @@ wish to access with this handle.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – the value of the _id field in the document you want to clean</p></li>
+<li><p><strong>document_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the value of the _id field in the document you want to clean</p></li>
 <li><p><strong>collection</strong> – the name of collection saving the document. If not specified, use the default wf collection</p></li>
 <li><p><strong>rename_undefined</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Specify a <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> of <code class="docutils literal notranslate"><span class="pre">{original_key:new_key}</span></code> to rename the undefined keys in the document.</p></li>
 <li><p><strong>delete_undefined</strong> – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to delete undefined keys in the doc. <code class="docutils literal notranslate"><span class="pre">rename_undefined</span></code> will not work if this is <code class="docutils literal notranslate"><span class="pre">True</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
@@ -417,7 +417,7 @@ and files/gridfs data the mspass object contains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – the wf object id you want to delete.</p></li>
+<li><p><strong>object_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the wf object id you want to delete.</p></li>
 <li><p><strong>object_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the object type you want to delete, must be one of [‘TimeSeries’, ‘Seismogram’]</p></li>
 <li><p><strong>remove_unreferenced_files</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will try to remove the file that no wf data is referencing. Default to be <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 <li><p><strong>clear_history</strong> – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, we will clear the processing history of the associated wf object, default to be <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
@@ -641,7 +641,7 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>object_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>/dict) – “_id” of the mspasspy object or a dict that contains the “_id”.</p></li>
+<li><p><strong>object_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>/dict) – “_id” of the mspasspy object or a dict that contains the “_id”.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
 <li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
@@ -663,7 +663,7 @@ Default are attributes not normally need that are loaded from QuakeML.  Ignored 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>, where each belongs to a mspasspy object.</p></li>
+<li><p><strong>objectid_list</strong> – a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>, where each belongs to a mspasspy object.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
 <li><p><strong>load_history</strong> – <code class="docutils literal notranslate"><span class="pre">True</span></code> to load object-level history into the mspasspy object.</p></li>
@@ -929,7 +929,7 @@ and metadata attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>document_id</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code>) – the value of the _id field in the document you want to verify</p></li>
+<li><p><strong>document_id</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bson.objectid.ObjectId</span></code></a>) – the value of the _id field in the document you want to verify</p></li>
 <li><p><strong>collection</strong> – the name of collection saving the document. If not specified, use the default wf collection</p></li>
 <li><p><strong>tests</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the type of tests you want to verify, should be a subset of [‘xref’, ‘type’, ‘undefined’]</p></li>
 </ul>
@@ -958,7 +958,7 @@ name is not needed in this function.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>db</strong> (<a class="reference internal" href="#mspasspy.db.database.Database" title="mspasspy.db.database.Database"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.db.database.Database</span></code></a>.) – the database to read from.</p></li>
-<li><p><strong>cursor</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.CursorType</span></code>) – mongodb cursor where each corresponds to a stored mspasspy object.</p></li>
+<li><p><strong>cursor</strong> (<a class="reference external" href="https://pymongo.readthedocs.io/en/stable/api/pymongo/cursor.html#pymongo.cursor.CursorType" title="(in PyMongo v3.11.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pymongo.cursor.CursorType</span></code></a>) – mongodb cursor where each corresponds to a stored mspasspy object.</p></li>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>normalize</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – normalized collection you want to read into a mspass object</p></li>
 <li><p><strong>load_history</strong> – <cite>True</cite> to load object-level history into the mspasspy object.</p></li>
