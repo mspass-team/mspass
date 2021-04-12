@@ -179,7 +179,7 @@ saying all time series data have the following elements:
    to sample number).
 
 2. Data processing always requires the time series have a **finite length**.
-   Hence, our definition of a time series directly supports windowed 
+   Hence, our definition of a time series directly supports windowed
    data of a specific length.   The getter for this attribute
    is :code:`npts()` and the setter is :code:`set_npts(int)`.  This definition does not
    preclude an extension to modern continuous data sets that are too
@@ -548,9 +548,9 @@ Scalar versus 3C data
 
 .. code-block:: python
 
-   from mspasspy import Seismogram
-   d=Seismogram(100)  # Create an empty Seismogram with storage for 100 time steps initialized to all zeros
-   d.data(0,50)=1.0      # Create a delta function at time t0+dt*50 in component 0
+   from mspasspy.ccore.seismic import Seismogram
+   d = Seismogram(100)  # Create an empty Seismogram with storage for 100 time steps initialized to all zeros
+   d.data[0,50] = 1.0   # Create a delta function at time t0+dt*50 in component 0
 
 | Note as with scalar data we use the C (and python) convention for indexing starting at 0.  
   In the C++ API the matrix is defined with a lightweight
