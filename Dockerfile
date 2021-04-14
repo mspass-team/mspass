@@ -16,8 +16,6 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-RUN pip3 --no-cache-dir install pymongo
-
 # Prepare the environment
 ENV SPARK_VERSION 3.0.0
 
@@ -47,15 +45,11 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
     && rm -r ./pyspark
 
-# Install Dask through pip
-RUN pip3 --no-cache-dir install "dask[complete]"
-
-# Install obspy through pip
+# Install Python dependencies through pip
+ADD requirements.txt requirements.txt
 RUN pip3 --no-cache-dir install numpy \
-    && pip3 --no-cache-dir install obspy
-
-# Install pytest through pip
-RUN pip3 --no-cache-dir install pytest
+    && pip3 --no-cache-dir install -r requirements.txt \
+    && rm -f requirements.txt
 
 # Download & install pybind11
 ENV PYBIND11_VERSION 2.6.0
@@ -87,7 +81,7 @@ ADD python /mspass/python
 RUN pip3 install /mspass -v
 
 # Install Jupyter notebook
-RUN pip3 --no-cache-dir install notebook==6.2.0
+RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
 
 # Tini operates as a process subreaper for jupyter.
 ENV TINI_VERSION v0.19.0

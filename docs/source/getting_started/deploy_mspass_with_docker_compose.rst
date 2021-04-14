@@ -34,7 +34,7 @@ The following environment variables also need be set for the different roles to 
   ``worker`` and ``frontend`` rely on this to communicate with the ``scheduler``.
 - ``MSPASS_DB_ADDRESS``: This is the IP address or hostname of the ``db`` or ``dbmanager``. 
   ``frontend`` rely on this to access the database.
-- ``MSPASS_SHARD_LIST``: This is a space delimited string of format ``$HOSTNAME/$HOSTNAME:$MONGODB_PORT`` for all the ``shard``s. 
+- ``MSPASS_SHARD_LIST``: This is a space delimited string of format ``$HOSTNAME/$HOSTNAME:$MONGODB_PORT`` for all the ``shard``. 
   ``dbmanager`` rely on this to build the sharded database cluster.
 - ``MSPASS_SHARD_ID``: This is used to assign each ``shard`` a unique name such that it can write to its own ``data_shard_${MSPASS_SHARD_ID}`` directory under the */db* directory (in case the shards run on a shared filesystem). 
 - ``MSPASS_JUPYTER_PWD``: In the ``frontend``, user can optionally set a password for Jupyter Notebook access. 

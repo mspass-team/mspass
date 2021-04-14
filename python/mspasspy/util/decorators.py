@@ -5,11 +5,14 @@ from mspasspy.util.converter import (Stream2Seismogram,
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+# from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
+from dill.source import getsource
+from bson.objectid import ObjectId
 
 
 @decorator
-def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None, dryrun=False,
+def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False,
                         inplace_return=False, **kwargs):
     """
     This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
@@ -21,14 +24,16 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
     :param func: target function
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
-     and instance are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
+     and alg_id are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param instance: instance is a unique id to record the usage of func while preserving the history.
-    :type instance: str
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
@@ -40,36 +45,38 @@ def mspass_func_wrapper(func, data, *args, preserve_history=False, instance=None
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
         raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
 
-    algname = func.__name__
+    # if not defined
+    if not alg_name:
+        alg_name = func.__name__
 
-    if preserve_history and instance is None:
-        raise ValueError(algname + ": preserve_history was true but instance not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
     if dryrun:
         return "OK"
 
     try:
         res = func(data, *args, **kwargs)
-        if preserve_history:
-            logging_helper.info(data, algname, instance)
+        if object_history:
+            logging_helper.info(data, alg_id, alg_name)
         if res is None and inplace_return:
             return data
         return res
     except RuntimeError as err:
         if isinstance(data, (Seismogram, TimeSeries)):
-            data.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
+            data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data, algname, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
         if isinstance(data, (Seismogram, TimeSeries)):
-            data.elog.log_error(algname, ex.message, ex.severity)
+            data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(data, algname, ex.message, ex.severity)
+            logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
 
 
 @decorator
-def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False, **kwargs):
+def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
     """
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
     this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
@@ -79,14 +86,16 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
-     and instance are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
+     and alg_id are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param instance: instance is a unique id to record the usage of func while preserving the history.
-    :type instance: str
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
@@ -99,39 +108,40 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, preserve_history=False,
     if not isinstance(data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
         raise TypeError("mspass_func_wrapper_multi only accepts mspass object as data input")
 
-    algname = func.__name__
+    if not alg_name:
+        alg_name = func.__name__
 
-    if preserve_history and instance is None:
-        raise ValueError(algname + ": preserve_history was true but instance not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
     if dryrun:
         return "OK"
 
     try:
         res = func(data1, data2, *args, **kwargs)
-        if preserve_history:
-            logging_helper.info(data1, algname, instance)
-            logging_helper.info(data2, algname, instance)
+        if object_history:
+            logging_helper.info(data1, alg_id, alg_name)
+            logging_helper.info(data2, alg_id, alg_name)
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
+            data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data1, algname, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, alg_name, err, ErrorSeverity.Invalid)
         if isinstance(data2, (Seismogram, TimeSeries)):
-            data2.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
+            data2.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data2, algname, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, ex.message, ex.severity)
+            data1.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(data1, algname, ex.message, ex.severity)
+            logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
         if isinstance(data2, (Seismogram, TimeSeries)):
-            data2.elog.log_error(algname, ex.message, ex.severity)
+            data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
+            logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
 
 
 def is_input_dead(*args, **kwargs):
@@ -400,8 +410,7 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
 
 
 @decorator
-def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False, instance=None, dryrun=False,
-                               **kwargs):
+def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
     and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
@@ -411,21 +420,24 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     :param data1: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param data2: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param args: extra arguments
-    :param preserve_history: True to preserve this processing history in the data object, False not to. preserve_history
-     and instance are intimately related and control how object level history is handled.
-     Object level history is disabled by default for efficiency.  If preserve_history is set True and the string passed
-     as instance is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
+    :param object_history: True to preserve this processing history in the data object, False not to. object_history
+     and alg_id are intimately related and control how object level history is handled.
+     Object level history is disabled by default for efficiency.  If object_history is set True and the string passed
+     as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_reduce operation. If the history chain is empty this will silently generate
      an error posted to error log on each object.
-    :param instance: instance is a unique id to record the usage of func while preserving the history.
-    :type instance: str
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    algname = func.__name__
+    if not alg_name:
+        alg_name = func.__name__
 
     if isinstance(data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
         if type(data1) != type(data2):
@@ -433,31 +445,67 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, preserve_history=False
     else:
         raise TypeError("only mspass objects are supported in reduce wrapped methods")
 
-    if preserve_history and instance is None:
-        raise ValueError(algname + ": preserve_history was true but instance not defined")
+    if object_history and alg_id is None:
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
 
     if dryrun:
         return "OK"
 
     try:
         res = func(data1, data2, *args, **kwargs)
-        if preserve_history:
-            logging_helper.reduce(data1, data2, algname, instance)
+        if object_history:
+            logging_helper.reduce(data1, data2, alg_id, alg_name)
         return res
     except RuntimeError as err:
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
-            data2.elog.log_error(algname, str(err), ErrorSeverity.Invalid)
+            data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
+            data2.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(data1, algname, err, ErrorSeverity.Invalid)
-            logging_helper.ensemble_error(data2, algname, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
         if ex.severity != ErrorSeverity.Informational and \
                 ex.severity != ErrorSeverity.Debug:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
-            data1.elog.log_error(algname, ex.message, ex.severity)
-            data2.elog.log_error(algname, ex.message, ex.severity)
+            data1.elog.log_error(alg_name, ex.message, ex.severity)
+            data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(data1, algname, ex.message, ex.severity)
-            logging_helper.ensemble_error(data2, algname, ex.message, ex.severity)
+            logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
+
+
+# @decorator
+# def mspass_func_wrapper_global_history(func, *args, global_history=None, **kwargs):
+#     """
+#     This decorator helps the global history manager to log down the usage of any mspasspy function if global history manager provided,
+#     and then execute the func with the user inputs.
+
+#     :param func: target func
+#     :param args: extra arguments
+#     :param global_history: global history manager object passed to save the usage of this function to database
+#     :type global_history: :class:`mspasspy.global_history.manager.GlobalHistoryManager`
+#     :param kwargs: extra kv arguments
+#     :return: the output of func
+#     """
+#     if global_history:
+#         if not isinstance(global_history, GlobalHistoryManager):
+#             raise TypeError("only an object with the type GlobalHistoryManager should be passes as an argument as global_history.")
+
+#         alg_name = func.__name__
+#         # get the whole map algorithm string
+#         alg_string = getsource(func)
+#         # extract parameters
+#         args_str = ",".join(f"{value}" for value in args)
+#         kwargs_str = ",".join(f"{key}={value}" for key, value in kwargs.items())
+#         parameters = args_str
+#         if kwargs_str:
+#             parameters += "," + kwargs_str
+        
+#         # get the alg_id if exists, else create a new one
+#         alg_id = global_history.get_alg_id(alg_name, parameters)
+#         if not alg_id:
+#             alg_id = ObjectId()
+#         global_history.logging(alg_id, alg_name, parameters)
+    
+#     return func(*args, **kwargs)

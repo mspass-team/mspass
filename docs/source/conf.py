@@ -46,7 +46,10 @@ extensions = [
   'sphinx.ext.intersphinx',
 ]
 
-intersphinx_mapping = {'obspy': ('https://docs.obspy.org/', None)}
+intersphinx_mapping = {
+    'obspy': ('https://docs.obspy.org/', None),
+    'pymongo': ('https://pymongo.readthedocs.io/en/stable', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

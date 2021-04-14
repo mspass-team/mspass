@@ -4,8 +4,6 @@ import obspy
 import numpy as np
 import dask
 import dask.bag as db
-import findspark
-from pyspark import SparkConf, SparkContext
 import numpy as np
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.utility import dmatrix
@@ -24,27 +22,29 @@ from helper import (get_live_seismogram,
 
 def dask_map(input):
     ddb = db.from_sequence(input)
-    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0')
+    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
     return res.compute()
 
 
-def spark_map(input):
-    appName = 'mspass-test'
-    master = 'local'
-    conf = SparkConf().setAppName(appName).setMaster(master)
-    sc = SparkContext(conf=conf)
+def spark_map(input, sc):
     data = sc.parallelize(input)
-    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0'))
+    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
     return res.collect()
 
 
-def test_map_spark_and_dask():
+def test_map_spark_and_dask(spark_context):
     l = [get_live_timeseries() for i in range(5)]
-    spark_res = spark_map(l)
+    # add net, sta, chan, loc to avoid metadata serialization problem
+    for i in range(5):
+        l[i]['chan'] = 'HHZ'
+        l[i]['loc'] = 'test_loc'
+        l[i]['net'] = 'test_net'
+        l[i]['sta'] = 'test_sta'
+    spark_res = spark_map(l, spark_context)
     dask_res = dask_map(l)
 
     ts_cp = TimeSeries(l[0])
-    res = signals.filter(ts_cp, "bandpass", freqmin=1, freqmax=5, preserve_history=True, instance='0')
+    res = signals.filter(ts_cp, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
     assert np.isclose(spark_res[0].data, ts_cp.data).all()
     assert np.isclose(dask_res[0].data, ts_cp.data).all()
 
@@ -98,7 +98,7 @@ def test_reduce_stack_exception():
 
 def dask_reduce(input):
     ddb = db.from_sequence(input)
-    res = ddb.fold(lambda a, b: stack(a, b, preserve_history=True, instance='3'))
+    res = ddb.fold(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
     return res.compute()
 
 
@@ -106,12 +106,11 @@ def spark_reduce(input, sc):
     data = sc.parallelize(input)
     # zero = get_live_timeseries()
     # zero.data = DoubleVector(np.zeros(255))
-    res = data.reduce(lambda a, b: stack(a, b, preserve_history=True, instance='3'))
+    res = data.reduce(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
     return res
 
 
 def test_reduce_dask_spark(spark_context):
-    findspark.init()
     l = [get_live_timeseries() for i in range(5)]
     res = np.zeros(255)
     for i in range(5):
