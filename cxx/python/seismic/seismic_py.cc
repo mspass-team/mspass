@@ -363,7 +363,7 @@ PYBIND11_MODULE(seismic, m) {
        "Load ProcessingHistory from another data object that contains relevant history")
     .def(py::pickle(
       [](const Seismogram &self) {
-        string sbuf;
+        pybind11::object sbuf;
         sbuf=serialize_metadata(self);
         stringstream ssbts;
         ssbts << std::setprecision(17);
@@ -395,9 +395,8 @@ PYBIND11_MODULE(seismic, m) {
         }
       },
       [](py::tuple t) {
-        string sbuf=t[0].cast<std::string>();
-        Metadata md;
-        md=Metadata(restore_serialized_metadata(sbuf));
+        pybind11::object sbuf=t[0];
+        Metadata md=restore_serialized_metadata(sbuf);
         stringstream ssbts(t[1].cast<std::string>());
         boost::archive::text_iarchive arbts(ssbts);
         BasicTimeSeries bts;
@@ -484,7 +483,7 @@ PYBIND11_MODULE(seismic, m) {
         */
       .def(py::pickle(
         [](const TimeSeries &self) {
-          string sbuf;
+          pybind11::object sbuf;
           sbuf=serialize_metadata(self);
           stringstream ssbts;
           ssbts << std::setprecision(17);
@@ -499,9 +498,8 @@ PYBIND11_MODULE(seismic, m) {
           return py::make_tuple(sbuf,ssbts.str(),sscorets.str(),darr);
         },
         [](py::tuple t) {
-         string sbuf=t[0].cast<std::string>();
-         Metadata md;
-         md=Metadata(restore_serialized_metadata(sbuf));
+         pybind11::object sbuf=t[0];
+         Metadata md=restore_serialized_metadata(sbuf);
          stringstream ssbts(t[1].cast<std::string>());
          boost::archive::text_iarchive arbts(ssbts);
          BasicTimeSeries bts;

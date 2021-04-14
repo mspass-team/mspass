@@ -432,6 +432,26 @@ other attributes.
   */
   void change_key(const std::string oldkey, const std::string newkey);
   friend std::ostringstream& operator<<(std::ostringstream&, mspass::utility::Metadata&);
+  /*! Serialize Metadata to a python bytes object.
+
+  This function is needed to support pickle in the python interface.
+  It cast the C++ object to a Python dict and calls pickle against that
+  dict directly to generate a Python bytes object. This may not be the 
+  most elegant approach, but it should be bombproof.
+
+  \param md is the Metadata object to be serialized
+  \return pickle serialized data object.
+  */
+  friend pybind11::object serialize_metadata(const Metadata &md);
+  /*! Unpack serialized Metadata.
+  *
+  This function is the inverse of the serialize function.   It recreates a
+  Metadata object serialized previously with the serialize function.  
+
+  \param sd is the serialized data to be unpacked
+  \return Metadata derived from sd
+  */
+  friend Metadata restore_serialized_metadata(const pybind11::object &sd);
 protected:
   std::map<std::string,boost::any> md;
   /* The keys of any entry changed will be contained here.   */
@@ -528,45 +548,8 @@ from a data object).
 */
 int copy_selected_metadata(const Metadata& mdin, Metadata& mdout,
         const MetadataList& mdlist);
-/*! Serialize Metadata to a string.
 
-This function is needed to support pickle in the python interface.
-It is called in the pickle definitions in the wrapper for objects using
-Metadata to provide a way to serialize the contents of the Metadata
-object to a string.   The data that string contains is expected to
-restored with the inverse of this function called restore.
-
-Serialized output is readable with each entry on one line with
-this format:
-key type value
-where type is restricted to double, long, bool, and the long C++ name for
-an std::string.  Currently this:
-std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >
-
-Note any entry not of the four supported types will generate an error message
-posted to stderr.   That is an ugly approach, but an intentional design
-decision as this function should normally be called only pickling
-methods for data objects.   Could see no solution to save errors in
-that environment without throwing an exception and aborting the processing.
-
-\param md is the Metadata object to be serialized
-\return std::string of serialized data.
-*/
-std::string serialize_metadata(const Metadata& md);
-/*! Unpack serialized Metadata.
- *
-This function is the inverse of the serialize function.   It recreates a
-Metadata object serialized previous with the serialize function.  Note it
-only supports basic types currently supported by mspass:  long ints, double,
-boolean, and string.  Since the output is assumed to be form serialize we
-do not test for validity of the type assuming serialize didn't handle
-anything else.
-
-\param sd is the serialized data to be unpacked
-\return Metadata derived from sd
-*/
-Metadata restore_serialized_metadata(const std::string);
-
+Metadata restore_serialized_metadata(const pybind11::object &sd);
 } // end utility namespace
 }  //End of namespace MsPASS
 #endif

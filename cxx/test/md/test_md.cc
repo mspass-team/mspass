@@ -56,16 +56,16 @@ int main(int argc, char **argv)
 		ss << mdplain;
 		cout << "Succeeded - stringstream contents:"<<endl;
 		cout << ss.str()<<endl;
-		cout<< "Trying same with serialize_metadata function"<<endl;
-		string sbuf=serialize_metadata(mdplain);
-		cout<<"Serialized completed: content "<<endl
-			<<"(should be same as stringstream output above)"<<endl;
-		cout <<sbuf;
-		cout << "Trying to run inverse function restore_serialized_metadata "
-			<<"on sterialization output"<<endl;
-		Metadata mrestored=restore_serialized_metadata(sbuf);
-		cout<<"Result - should again be the same"<<endl;
-		print_metadata(mrestored);
+		// cout<< "Trying same with serialize_metadata function"<<endl;
+		// string sbuf=serialize_metadata(mdplain);
+		// cout<<"Serialized completed: content "<<endl
+		// 	<<"(should be same as stringstream output above)"<<endl;
+		// cout <<sbuf;
+		// cout << "Trying to run inverse function restore_serialized_metadata "
+		// 	<<"on sterialization output"<<endl;
+		// Metadata mrestored=restore_serialized_metadata(sbuf);
+		// cout<<"Result - should again be the same"<<endl;
+		// print_metadata(mrestored);
                 cout << "Same thing using operator >> to cout"<<endl;
 		print_metadata(mdplain);
 		cout << "Testing is_defined and clear methods"<<endl;

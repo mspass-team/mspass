@@ -254,6 +254,7 @@ PYBIND11_MODULE(utility, m) {
         else
           md->put_object(std::string(py::str(i.first)), py::reinterpret_borrow<py::object>(i.second));
       }
+      md->clear_modified();
       return md;
     }))
     .def("get_double",&Metadata::get_double,"Retrieve a real number by a specified key")
@@ -386,13 +387,13 @@ PYBIND11_MODULE(utility, m) {
     /* these are need to allow the class to be pickled*/
     .def(py::pickle(
       [](const Metadata &self) {
-        string sbuf;
+        pybind11::object sbuf;
         sbuf=serialize_metadata(self);
         return py::make_tuple(sbuf);
       },
       [](py::tuple t) {
-       string sbuf=t[0].cast<std::string>();
-       return Metadata(restore_serialized_metadata(sbuf));
+       pybind11::object sbuf=t[0];
+       return restore_serialized_metadata(sbuf);
      }
      ))
   ;

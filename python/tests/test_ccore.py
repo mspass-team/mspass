@@ -271,6 +271,9 @@ def test_Metadata():
             assert (md[i] == md_copy[i]).all()
         else:
             assert md[i] == md_copy[i]
+    md_copy2 = Metadata(dict(md))
+    assert not md_copy2.modified()
+    assert md.modified() == md_copy.modified()
 
     md = Metadata({
         "<class 'numpy.ndarray'>": np.array([3, 4]),
@@ -306,12 +309,22 @@ def test_Metadata():
     md += md_copy
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
 
-    # Error found with real data
-    #dic = {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000, 'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538, 'iphase': 'P', 'loc': '', 'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2', 'byteorder': '>', 'record_length': 4096, 'filesize': 726344704}, 'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000, 'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090, 'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538}
-    #md = Metadata(dic)
-    #md_copy = pickle.loads(pickle.dumps(md))
-    # for i in md:
-    #    assert md[i] == md_copy[i]
+    # Test with real data
+    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000, 
+        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538, 
+        'iphase': 'P', 'loc': '', 
+        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2', 
+            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704}, 
+        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000, 
+        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090, 
+        'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538
+        }
+    md = Metadata(dic)
+    md['mod'] = 'mod'
+    md_copy = pickle.loads(pickle.dumps(md))
+    for i in md:
+        assert md[i] == md_copy[i]
+    assert md.modified() == md_copy.modified()
 
 
 @pytest.fixture(params=[Seismogram, SeismogramEnsemble,
