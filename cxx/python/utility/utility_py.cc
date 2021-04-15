@@ -180,8 +180,8 @@ static PyObject *MsPASSError_get_severity(PyObject *selfPtr, void *closure)
 }
 
 static PyGetSetDef MsPASSError_getsetters[] = {
-  {"message", (getter)MsPASSError_get_message, NULL, NULL},
-  {"severity", (getter)MsPASSError_get_severity, NULL, NULL},
+  {const_cast<char*>("message"), (getter)MsPASSError_get_message, NULL, NULL},
+  {const_cast<char*>("severity"), (getter)MsPASSError_get_severity, NULL, NULL},
   {NULL}
 };
 
@@ -388,12 +388,12 @@ PYBIND11_MODULE(utility, m) {
     .def(py::pickle(
       [](const Metadata &self) {
         pybind11::object sbuf;
-        sbuf=serialize_metadata(self);
+        sbuf=serialize_metadata_py(self);
         return py::make_tuple(sbuf);
       },
       [](py::tuple t) {
        pybind11::object sbuf=t[0];
-       return restore_serialized_metadata(sbuf);
+       return restore_serialized_metadata_py(sbuf);
      }
      ))
   ;
