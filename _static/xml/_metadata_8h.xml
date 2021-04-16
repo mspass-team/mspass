@@ -644,61 +644,65 @@
 <codeline lineno="418"><highlight class="normal"><sp/><sp/>std::map&lt;std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">,boost::any&gt;::const_iterator<sp/><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kindref="member">end</ref>()<sp/>const<sp/>noexcept;</highlight></codeline>
 <codeline lineno="433"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kindref="member">change_key</ref>(const<sp/>std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>oldkey,<sp/>const<sp/>std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>newkey);</highlight></codeline>
 <codeline lineno="434"><highlight class="normal"><sp/><sp/>friend<sp/>std::ostringstream&amp;<sp/>operator&lt;&lt;(std::ostringstream&amp;,<sp/>mspass::utility::<ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;);</highlight></codeline>
-<codeline lineno="435"><highlight class="normal">protected:</highlight></codeline>
-<codeline lineno="436"><highlight class="normal"><sp/><sp/>std::map&lt;std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">,boost::any&gt;<sp/>md;</highlight></codeline>
-<codeline lineno="437"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>keys<sp/>of<sp/>any<sp/>entry<sp/>changed<sp/>will<sp/>be<sp/>contained<sp/>here.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="438"><highlight class="normal"><sp/><sp/>std::set&lt;std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;<sp/>changed_or_set;</highlight></codeline>
-<codeline lineno="439"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="440" refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" refkind="member"><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;<sp/>T<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>::<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>(const<sp/>std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="441"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="442"><highlight class="normal"><sp/><sp/>T<sp/>result;</highlight></codeline>
-<codeline lineno="443"><highlight class="normal"><sp/><sp/>std::map&lt;std::string,boost::any&gt;::const_iterator<sp/>iptr;</highlight></codeline>
-<codeline lineno="444"><highlight class="normal"><sp/><sp/>iptr=md.find(key);</highlight></codeline>
-<codeline lineno="445"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(iptr==md.end())</highlight></codeline>
-<codeline lineno="446"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref>(key,</highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(T).name());</highlight></codeline>
-<codeline lineno="448"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="449"><highlight class="normal"><sp/><sp/>boost::any<sp/>aval=iptr-&gt;second;</highlight></codeline>
-<codeline lineno="450"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="451"><highlight class="normal"><sp/><sp/><sp/><sp/>result=boost::any_cast&lt;T&gt;(aval);</highlight></codeline>
-<codeline lineno="452"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(boost::bad_any_cast&amp;<sp/>err)</highlight></codeline>
-<codeline lineno="453"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="454"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::type_info<sp/>&amp;ti<sp/>=<sp/>aval.type();</highlight></codeline>
-<codeline lineno="455"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref>(err.what(),key,</highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(T).name(),ti.name());</highlight></codeline>
-<codeline lineno="456"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="457"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
-<codeline lineno="458"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="468"><highlight class="normal">std::string<sp/>demangled_name(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>boost::any<sp/>val);</highlight></codeline>
-<codeline lineno="469"><highlight class="normal"></highlight><highlight class="comment">/*<sp/><sp/><sp/>Start<sp/>of<sp/>helper<sp/>procedures<sp/>for<sp/>Metadata.<sp/>*/</highlight></codeline>
-<codeline lineno="477"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>MDtype{</highlight></codeline>
-<codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/>Real,</highlight></codeline>
-<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/>Real32,</highlight></codeline>
-<codeline lineno="480"><highlight class="normal"><sp/><sp/><sp/><sp/>Double,</highlight></codeline>
-<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/>Real64,</highlight></codeline>
-<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/>Integer,</highlight></codeline>
-<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/>Int32,</highlight></codeline>
-<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/>Long,</highlight></codeline>
-<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/>Int64,</highlight></codeline>
-<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/>String,</highlight></codeline>
-<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/>Boolean,</highlight></codeline>
-<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/>Double_Array,</highlight></codeline>
-<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/>Invalid</highlight></codeline>
-<codeline lineno="490"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="494" refid="structmspass_1_1utility_1_1_metadata__typedef" refkind="compound"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structmspass_1_1utility_1_1_metadata__typedef" kindref="compound">Metadata_typedef</ref><sp/>{</highlight></codeline>
-<codeline lineno="495" refid="structmspass_1_1utility_1_1_metadata__typedef_1a7af59256cae2e29c493e0f93345432d2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef_1a7af59256cae2e29c493e0f93345432d2" kindref="member">tag</ref>;<sp/></highlight></codeline>
-<codeline lineno="496" refid="structmspass_1_1utility_1_1_metadata__typedef_1ab87b43a6303ebdeb634d784f87809918" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>MDtype<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef_1ab87b43a6303ebdeb634d784f87809918" kindref="member">mdt</ref>;<sp/></highlight></codeline>
-<codeline lineno="497"><highlight class="normal">}<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef" kindref="compound">Metadata_typedef</ref>;</highlight></codeline>
-<codeline lineno="498"><highlight class="normal"></highlight></codeline>
-<codeline lineno="504"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::list&lt;Metadata_typedef&gt;<sp/>MetadataList;</highlight></codeline>
-<codeline lineno="505"><highlight class="normal"></highlight></codeline>
-<codeline lineno="529"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>copy_selected_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>mdin,<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>mdout,</highlight></codeline>
-<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MetadataList&amp;<sp/>mdlist);</highlight></codeline>
-<codeline lineno="555"><highlight class="normal">std::string<sp/>serialize_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>md);</highlight></codeline>
-<codeline lineno="568"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>restore_serialized_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string);</highlight></codeline>
-<codeline lineno="569"><highlight class="normal"></highlight></codeline>
-<codeline lineno="570"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="571"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//End<sp/>of<sp/>namespace<sp/>MsPASS</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="572"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
+<codeline lineno="445"><highlight class="normal"><sp/><sp/>friend<sp/>pybind11::</highlight><highlight class="keywordtype">object</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b" kindref="member">serialize_metadata_py</ref>(const<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md);</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/>friend<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" kindref="member">restore_serialized_metadata_py</ref>(const<sp/>pybind11::</highlight><highlight class="keywordtype">object</highlight><highlight class="normal"><sp/>&amp;sd);</highlight></codeline>
+<codeline lineno="455"><highlight class="normal">protected:</highlight></codeline>
+<codeline lineno="456"><highlight class="normal"><sp/><sp/>std::map&lt;std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">,boost::any&gt;<sp/>md;</highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>The<sp/>keys<sp/>of<sp/>any<sp/>entry<sp/>changed<sp/>will<sp/>be<sp/>contained<sp/>here.<sp/><sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="458"><highlight class="normal"><sp/><sp/>std::set&lt;std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">&gt;<sp/>changed_or_set;</highlight></codeline>
+<codeline lineno="459"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="460" refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" refkind="member"><highlight class="normal">template<sp/>&lt;typename<sp/>T&gt;<sp/>T<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>::<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>(const<sp/>std::</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>key)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="461"><highlight class="keyword"></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"><sp/><sp/>T<sp/>result;</highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/>std::map&lt;std::string,boost::any&gt;::const_iterator<sp/>iptr;</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"><sp/><sp/>iptr=md.find(key);</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(iptr==md.end())</highlight></codeline>
+<codeline lineno="466"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref>(key,</highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(T).name());</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/>boost::any<sp/>aval=iptr-&gt;second;</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/><sp/><sp/>result=boost::any_cast&lt;T&gt;(aval);</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/>}</highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(boost::bad_any_cast&amp;<sp/>err)</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::type_info<sp/>&amp;ti<sp/>=<sp/>aval.type();</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata_get_error" kindref="compound">MetadataGetError</ref>(err.what(),key,</highlight><highlight class="keyword">typeid</highlight><highlight class="normal">(T).name(),ti.name());</highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="478"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="488"><highlight class="normal">std::string<sp/>demangled_name(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>boost::any<sp/>val);</highlight></codeline>
+<codeline lineno="489"><highlight class="normal"></highlight><highlight class="comment">/*<sp/><sp/><sp/>Start<sp/>of<sp/>helper<sp/>procedures<sp/>for<sp/>Metadata.<sp/>*/</highlight></codeline>
+<codeline lineno="497"><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>MDtype{</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/>Real,</highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/>Real32,</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/>Double,</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/>Real64,</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/>Integer,</highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/>Int32,</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/>Long,</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/><sp/><sp/>Int64,</highlight></codeline>
+<codeline lineno="506"><highlight class="normal"><sp/><sp/><sp/><sp/>String,</highlight></codeline>
+<codeline lineno="507"><highlight class="normal"><sp/><sp/><sp/><sp/>Boolean,</highlight></codeline>
+<codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/>Double_Array,</highlight></codeline>
+<codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/>Invalid</highlight></codeline>
+<codeline lineno="510"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="514" refid="structmspass_1_1utility_1_1_metadata__typedef" refkind="compound"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal"><ref refid="structmspass_1_1utility_1_1_metadata__typedef" kindref="compound">Metadata_typedef</ref><sp/>{</highlight></codeline>
+<codeline lineno="515" refid="structmspass_1_1utility_1_1_metadata__typedef_1a7af59256cae2e29c493e0f93345432d2" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef_1a7af59256cae2e29c493e0f93345432d2" kindref="member">tag</ref>;<sp/></highlight></codeline>
+<codeline lineno="516" refid="structmspass_1_1utility_1_1_metadata__typedef_1ab87b43a6303ebdeb634d784f87809918" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/>MDtype<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef_1ab87b43a6303ebdeb634d784f87809918" kindref="member">mdt</ref>;<sp/></highlight></codeline>
+<codeline lineno="517"><highlight class="normal">}<sp/><ref refid="structmspass_1_1utility_1_1_metadata__typedef" kindref="compound">Metadata_typedef</ref>;</highlight></codeline>
+<codeline lineno="518"><highlight class="normal"></highlight></codeline>
+<codeline lineno="524"><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::list&lt;Metadata_typedef&gt;<sp/>MetadataList;</highlight></codeline>
+<codeline lineno="525"><highlight class="normal"></highlight></codeline>
+<codeline lineno="549"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>copy_selected_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>mdin,<sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref>&amp;<sp/>mdout,</highlight></codeline>
+<codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>MetadataList&amp;<sp/>mdlist);</highlight></codeline>
+<codeline lineno="551"><highlight class="normal"></highlight></codeline>
+<codeline lineno="572"><highlight class="normal">std::string<sp/>serialize_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>&amp;md);</highlight></codeline>
+<codeline lineno="584"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/>restore_serialized_metadata(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string);</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"></highlight></codeline>
+<codeline lineno="586"><highlight class="normal"><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">Metadata</ref><sp/><ref refid="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" kindref="member">restore_serialized_metadata_py</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>pybind11::object<sp/>&amp;sd);</highlight></codeline>
+<codeline lineno="587"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>end<sp/>utility<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="588"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//End<sp/>of<sp/>namespace<sp/>MsPASS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="589"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/utility/Metadata.h"/>
   </compounddef>

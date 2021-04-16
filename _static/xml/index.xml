@@ -658,6 +658,8 @@
     <member refid="classmspass_1_1utility_1_1_metadata_1a7f1e227ec1acaab97343ecbf47bedac4" kind="function"><name>end</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a20c1da469f6e0a073b291a680425f9e8" kind="function"><name>change_key</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_1a41a011e48d3b2410df14a29d840d6a2d" kind="friend"><name>operator&lt;&lt;</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b" kind="friend"><name>serialize_metadata_py</name></member>
+    <member refid="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec" kind="friend"><name>restore_serialized_metadata_py</name></member>
   </compound>
   <compound refid="structmspass_1_1utility_1_1_metadata__typedef" kind="struct"><name>mspass::utility::Metadata_typedef</name>
     <member refid="structmspass_1_1utility_1_1_metadata__typedef_1a7af59256cae2e29c493e0f93345432d2" kind="variable"><name>tag</name></member>
@@ -1236,6 +1238,7 @@
     <member refid="_metadata_8h_1ad32da9ff66870e260f4ac5e87f59b02c" kind="function"><name>copy_selected_metadata</name></member>
     <member refid="_metadata_8h_1a86e1fa1432b069aa3fcb32c62346ce66" kind="function"><name>serialize_metadata</name></member>
     <member refid="_metadata_8h_1ab26fc2464a71846e3adee3d73ca605f6" kind="function"><name>restore_serialized_metadata</name></member>
+    <member refid="_metadata_8h_1a29ec8b4801ccc61039e7e2349b447f94" kind="function"><name>restore_serialized_metadata_py</name></member>
     <member refid="_ms_p_a_s_s_error_8h_1afe59e20920eb379ed246c80729d8fd0c" kind="function"><name>string2severity</name></member>
     <member refid="_ms_p_a_s_s_error_8h_1a3cf27049cc0b567095529d93ed20ff40" kind="function"><name>severity2string</name></member>
     <member refid="_ms_p_a_s_s_error_8h_1ac16fc2acdbf90eb66de746af81da73a1" kind="function"><name>error_says_data_bad</name></member>
@@ -1267,6 +1270,7 @@
     <member refid="dmatrix_8cc_1a1557b3521cdca55be0ed361f89ead996" kind="function"><name>operator*</name></member>
     <member refid="_error_logger_8cc_1a04b3debeaa90b3be0a3ca795dfaf6f41" kind="function"><name>operator&lt;&lt;</name></member>
     <member refid="_metadata_8cc_1ada920dc3b17305ba1e8263ea7834a210" kind="function"><name>operator&lt;&lt;</name></member>
+    <member refid="_metadata_8cc_1aec30549e9accb78ea40a5675aca3edf6" kind="function"><name>serialize_metadata_py</name></member>
     <member refid="metadata__helpers_8cc_1ab4ca057c0fae8833fd7b793cd3f418dc" kind="function"><name>get_mdlist</name></member>
     <member refid="_metadata_definitions_8cc_1a6a0d1f59bf7c8b58d6aa737a22c8320c" kind="function"><name>list_to_1str</name></member>
     <member refid="_metadata_definitions_8cc_1a5e3e3d2a60aa9b12b88c0fed0da8d3e1" kind="function"><name>str2mdt</name></member>

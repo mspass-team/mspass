@@ -507,6 +507,39 @@ template&lt;typename <code class="sig-name descname">T</code>&gt;<br /><span cla
 </dd></dl>
 
 </div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
+<dl class="cpp function">
+<dt>
+<span class="target" id="classmspass_1_1utility_1_1_metadata_1a492ba774f3adb7d1f45bdf41eaa4639b"></span><code class="sig-name descname">friend friend pybind11::object serialize_metadata_py (const Metadata &amp;md)</code></dt>
+<dd><p>Serialize <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> to a python bytes object.</p>
+<p>This function is needed to support pickle in the python interface. It cast the C++ object to a Python dict and calls pickle against that dict directly to generate a Python bytes object. This may not be the most elegant approach, but it should be bombproof.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>md</strong> – is the <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object to be serialized </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pickle serialized data object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt>
+<span class="target" id="classmspass_1_1utility_1_1_metadata_1a542596be1a0a6bae256936fc0828eeec"></span><code class="sig-name descname">friend friend Metadata restore_serialized_metadata_py (const pybind11::object &amp;sd)</code></dt>
+<dd><p>Unpack serialized <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a>.</p>
+<p>This function is the inverse of the serialize function. It recreates a <a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> object serialized previously with the serialize function. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sd</strong> – is the serialized data to be unpacked </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><a class="reference internal" href="#classmspass_1_1utility_1_1_metadata"><span class="std std-ref">Metadata</span></a> derived from sd </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </dd></dl>
 
 </div>

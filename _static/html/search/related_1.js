@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tr_685',['tr',['../classmspass_1_1utility_1_1dmatrix.html#ac8bd8f853d25a05e32f9e4c152d6af61',1,'mspass::utility::dmatrix']]]
+  ['restore_5fserialized_5fmetadata_5fpy_687',['restore_serialized_metadata_py',['../classmspass_1_1utility_1_1_metadata.html#a542596be1a0a6bae256936fc0828eeec',1,'mspass::utility::Metadata']]]
 ];
