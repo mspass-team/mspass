@@ -8,9 +8,9 @@ ExternalProject_Add(
   mseed
   SOURCE_DIR "@MSEED_DOWNLOAD_ROOT@/mseed-src"
   URL
-    https://github.com/iris-edu/libmseed/archive/refs/tags/v2.19.6.tar.gz
+    https://github.com/iris-edu/libmseed/archive/refs/tags/v3.0.8.tar.gz
   URL_HASH
-    SHA256=80b7f653589a30dcb4abcd53fe6bc1276f634262ee673815e12abdc1ff179d1d
+    SHA256=989e15e3dfe8469d86535a4654d280638f3ef4b21f75994f59ce5b68c0538496
   CONFIGURE_COMMAND ""
   BUILD_COMMAND make -j 8
   BUILD_IN_SOURCE 1
