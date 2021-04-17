@@ -73,10 +73,22 @@ if [ $# -eq 0 ]; then
     # Note that we have to create a one-member replica set here 
     # because certain pymongo API will use "retryWrites=true" 
     # and thus trigger an error.
-    mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
+    if [ "$SHARD_DB_PATH" = "tmp" ]; then
+      # backup from the dump bson file if exists using mongorestore
+      mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath /tmp/db --logpath /tmp/logs  --bind_ip_all &
+      if [ -d "${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup" ]; then
+        mongorestore --host=${HOSTNAME}:$MONGODB_PORT --dir=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplogReplay
+      fi
+    else
+      mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
+    fi
     sleep 5
     mongo --port $MONGODB_PORT --eval \
       "rs.initiate({_id: \"${HOSTNAME}\", version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }]})"
+    # if specify as tmp, we need to back up the shard database into our scratch file system using mongodump
+    if [ "$SHARD_DB_PATH" = "tmp" ]; then
+      mongodump --host=${HOSTNAME}:$MONGODB_PORT --out=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplog
+    fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "scheduler" ]; then
     eval $MSPASS_SCHEDULER_CMD
