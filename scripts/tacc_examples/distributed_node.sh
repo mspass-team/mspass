@@ -73,6 +73,7 @@ for i in ${!WORKER_LIST_ARR[@]}; do
     mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
 done
 
+sleep 5
 # start a dbmanager container in the primary node
 for i in ${!WORKER_LIST_ARR[@]}; do
     SHARD_LIST[$i]="${WORKER_LIST_ARR[$i]}/${WORKER_LIST_ARR[$i]}:27017"

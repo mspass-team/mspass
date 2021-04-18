@@ -62,7 +62,6 @@ if [ $# -eq 0 ]; then
     mongo --port $MONGODB_CONFIG_PORT --eval \
       "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
-    # try sleep longer
     sleep 5
     for i in ${MSPASS_SHARD_LIST[@]}; do 
       echo ${i}
