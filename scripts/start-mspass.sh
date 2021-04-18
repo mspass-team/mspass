@@ -63,12 +63,10 @@ if [ $# -eq 0 ]; then
       "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
     # try sleep longer
-    sleep 15
+    sleep 5
     for i in ${MSPASS_SHARD_LIST[@]}; do 
       echo ${i}
       mongo --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
-      # try sleep for a while
-      sleep 5
     done
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
