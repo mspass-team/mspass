@@ -21,5 +21,5 @@ macro(fetch_mseed _download_module_path _download_root)
         )
 
     set (MSEED_LIBRARIES ${PROJECT_BINARY_DIR}/mseed/libmseed.a)
-    set (MSEED_INCLUDE_DIR ${PROJECT_BINARY_DIR}/mseed/libmseed.h)
+    set (MSEED_INCLUDE_DIR ${PROJECT_BINARY_DIR}/mseed)
 endmacro()
