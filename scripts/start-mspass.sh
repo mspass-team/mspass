@@ -65,6 +65,8 @@ if [ $# -eq 0 ]; then
     sleep 5
     for i in ${MSPASS_SHARD_LIST[@]}; do 
       mongo --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
+      # can't addShard, try sleep for a while
+      sleep 5
     done
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
