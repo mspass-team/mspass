@@ -48,7 +48,6 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
     }
 
     strcpy(current_sid,msr->sid);
-    //fprintf(stdout,"file position=%ld\n",fpos);
     if(strcmp(current_sid,last_sid))
     {
       if(ms_sid2nslc(last_sid,net,sta,loc,chan))
@@ -59,9 +58,7 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
         start_foff=fpos;
         continue;
       }
-      //fprintf(stdout,"found new sid=%s\n",current_sid);
       nbytes=fpos-start_foff;
-      //fprintf(stdout,"foff=%ld nbyte=%ld\n",start_foff,nbytes);
       ind.net=net;
       ind.sta=sta;
       ind.loc=loc;
@@ -75,7 +72,7 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
       stime=msr->starttime;
     }
     strcpy(last_sid,current_sid);
-    msr3_print (msr, ppackets);
+    //msr3_print (msr, ppackets);
     ++count;
     lptime=msr->starttime;
   }
