@@ -2,7 +2,7 @@
 #define _MSEED_INDEX_H_
 #include <vector>
 #include <string>
-namespace mspass::import
+namespace mspass::io
 {
 
 class mseed_index

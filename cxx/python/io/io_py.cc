@@ -5,17 +5,20 @@
 #include <pybind11/operators.h>
 #include <pybind11/embed.h>
 
-#include "mspass/import/mseed_index.h"
+#include "mspass/io/mseed_index.h"
 
-PYBIND11_MAKE_OPAQUE(std::vector<mspass::import::mseed_index>);
+PYBIND11_MAKE_OPAQUE(std::vector<mspass::io::mseed_index>);
 namespace mspass {
 namespace mspasspy {
 
 namespace py=pybind11;
 using namespace std;
-using namespace mspass::import;
+using namespace mspass::io;
 
-PYBIND11_MODULE(import,m){
+PYBIND11_MODULE(io,m){
+  m.attr("__name__") = "mspasspy.ccore.io";
+  m.doc() = "A submodule for io namespace of ccore";
+
   py::bind_vector<std::vector<mseed_index>>(m,"MseedIndex");
   py::class_<mseed_index>(m,"mseed_index",
     "Index data for time ordered miniseed files")

@@ -1,9 +1,9 @@
 #include <iomanip>
 #include <sstream>
-#include "mspass/import/mseed_index.h"
-namespace mspass::import
+#include "mspass/io/mseed_index.h"
+namespace mspass::io
 {
-using namespace mspass::import;
+using namespace mspass::io;
 std::ostringstream& operator<< (std::ostringstream& ss,const mseed_index& ind)
 {
   ss << ind.net <<" "

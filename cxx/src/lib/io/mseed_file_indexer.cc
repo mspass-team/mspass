@@ -10,12 +10,12 @@
 #include <string>
 
 #include "libmseed.h"
-#include "mspass/import/mseed_index.h"
+#include "mspass/io/mseed_index.h"
 
 using namespace std;
-namespace mspass::import
+namespace mspass::io
 {
-using namespace mspass::import;
+using namespace mspass::io;
 
 vector<mseed_index> mseed_file_indexer(const string inputfile)
 {
@@ -108,4 +108,4 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
   ms3_readmsr (&msr, NULL, NULL, NULL, 0, 0);
   return indexdata;
 }
-} // End namespace mspass::import
+} // End namespace mspass::io
