@@ -41,8 +41,6 @@ cd $WORK_DIR
 
 # start a distributed scheduler container in the primary node
 SINGULARITYENV_MSPASS_ROLE=scheduler $SING_COM &
-# start a database container in the primary node
-SINGULARITYENV_MSPASS_ROLE=db $SING_COM &
 
 # get the all the hostnames of worker nodes
 WORKER_LIST=`scontrol show hostname ${SLURM_NODELIST} | \
@@ -79,7 +77,6 @@ for i in ${!WORKER_LIST_ARR[@]}; do
     SHARD_LIST[$i]="${WORKER_LIST_ARR[$i]}/${WORKER_LIST_ARR[$i]}:27017"
 done
 SINGULARITYENV_MSPASS_SHARD_LIST=$SHARD_LIST \
-SINGULARITYENV_SHARD_DB_PATH=$SHARD_DB_PATH \
 SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 
 # start a jupyter notebook frontend in the primary node
