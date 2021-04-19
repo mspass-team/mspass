@@ -58,16 +58,16 @@ if [ $# -eq 0 ]; then
     MONGODB_CONFIG_PORT=$(($MONGODB_PORT+1))
     [[ -d ${MONGO_DATA}_config ]] || mkdir -p ${MONGO_DATA}_config
     mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
-    sleep 5
+    sleep $SLEEP_TIME
     mongo --port $MONGODB_CONFIG_PORT --eval \
       "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
+
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
-    # sleep longer
-    sleep 15
+    sleep $SLEEP_TIME
     for i in ${MSPASS_SHARD_LIST[@]}; do 
       echo ${i}
       mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
-      sleep 5
+      sleep $SLEEP_TIME
     done
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
@@ -85,7 +85,7 @@ if [ $# -eq 0 ]; then
     else
       mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
     fi
-    sleep 5
+    sleep $SLEEP_TIME
     mongo --port $MONGODB_PORT --eval \
       "rs.initiate({_id: \"${HOSTNAME}\", version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }]})"
     # if specify as tmp, we need to back up the shard database into our scratch file system using mongodump
@@ -114,4 +114,3 @@ if [ $# -eq 0 ]; then
 else
   docker-entrypoint.sh $@
 fi
-

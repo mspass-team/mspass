@@ -63,10 +63,13 @@ IFS=$OLD_IFS
 # should be in either tmp or scratch, default is scratch
 SHARD_DB_PATH='scratch'
 
+SLEEP_TIME=15
+
 # start a shard container in each worker node
 for i in ${!WORKER_LIST_ARR[@]}; do
     SINGULARITYENV_MSPASS_SHARD_ID=$i \
     SINGULARITYENV_SHARD_DB_PATH=$SHARD_DB_PATH \
+    SINGULARITYENV_SLEEP_TIME=$SLEEP_TIME \
     SINGULARITYENV_MSPASS_ROLE=shard \
     mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
 done
@@ -74,9 +77,10 @@ done
 sleep 5
 # start a dbmanager container in the primary node
 for i in ${!WORKER_LIST_ARR[@]}; do
-    SHARD_LIST[$i]="${WORKER_LIST_ARR[$i]}/${WORKER_LIST_ARR[$i]}:27017"
+    SHARD_LIST[$i]="${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu/${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:27017"
 done
 SINGULARITYENV_MSPASS_SHARD_LIST=$SHARD_LIST \
+SINGULARITYENV_SLEEP_TIME=$SLEEP_TIME \
 SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 
 # start a jupyter notebook frontend in the primary node
