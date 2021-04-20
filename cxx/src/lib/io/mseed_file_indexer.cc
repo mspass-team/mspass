@@ -43,7 +43,9 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
   {
     if(count==0)
     {
-      start_foff=fpos;
+      /* this will yield an invalid value if the first block is messed up
+      but if the sid is clobbered, which it likely is, it might work*/
+      start_foff=0;
       stime=msr->starttime;
     }
 
