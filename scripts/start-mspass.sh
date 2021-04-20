@@ -55,16 +55,26 @@ if [ $# -eq 0 ]; then
     [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
     mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
   elif [ "$MSPASS_ROLE" = "dbmanager" ]; then
+    # config server configuration
     MONGODB_CONFIG_PORT=$(($MONGODB_PORT+1))
     [[ -d ${MONGO_DATA}_config ]] || mkdir -p ${MONGO_DATA}_config
     mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
     sleep $SLEEP_TIME
-    mongo --port $MONGODB_CONFIG_PORT --eval \
-      "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
+    rs_init_status=$(mongo --port $MONGODB_CONFIG_PORT --quiet --eval "rs.status().code")
+    if [ "${rs_init_status}" = "94" ]; then
+      echo "dbmanager config server replicaSet is initialized"
+      mongo --port $MONGODB_CONFIG_PORT --eval \
+        "rs.initiate({_id: \"configserver\", configsvr: true, version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }]})"
+    else
+      echo "dbmanager config server replicaSet is reconfig"
+      mongo --port $MONGODB_CONFIG_PORT --eval \
+        "rsconf=rs.conf();rsconf.members=[{ _id: 0, host : \"$HOSTNAME:$MONGODB_CONFIG_PORT\" }];rs.reconfig(rsconf, {force: true})"
+    fi
 
+    # mongos server configuration
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
     sleep $SLEEP_TIME
-    for i in ${MSPASS_SHARD_LIST[@]}; do 
+    for i in ${MSPASS_SHARD_LIST[@]}; do
       echo ${i}
       mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
       sleep $SLEEP_TIME
@@ -79,15 +89,26 @@ if [ $# -eq 0 ]; then
     if [ "$SHARD_DB_PATH" = "tmp" ]; then
       # backup from the dump bson file if exists using mongorestore
       mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath /tmp/db --logpath /tmp/logs  --bind_ip_all &
-      if [ -d "${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup" ]; then
+      # restore the backup if exists
+      if [[ -d "${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup" ]]; then
         mongorestore --host=${HOSTNAME}:$MONGODB_PORT --dir=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplogReplay
       fi
     else
-      mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
+      mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
     fi
     sleep $SLEEP_TIME
-    mongo --port $MONGODB_PORT --eval \
-      "rs.initiate({_id: \"${HOSTNAME}\", version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }]})"
+
+    # shard server configuration
+    rs_init_status=$(mongo --port $MONGODB_PORT --quiet --eval "rs.status().code")
+    if [ "${rs_init_status}" = "94" ]; then
+      echo "shard server replicaSet is initialized"
+      mongo --port $MONGODB_PORT --eval \
+        "rs.initiate({_id: \"rs${MSPASS_SHARD_ID}\", version: 1, members: [{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }]})"
+    else
+      echo "shard server replicaSet is reconfig"
+      mongo --port $MONGODB_PORT --eval "rsconf=rs.conf();rsconf.members=[{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }];rs.reconfig(rsconf, {force: true})"
+    fi
+    
     # if specify as tmp, we need to back up the shard database into our scratch file system using mongodump
     if [ "$SHARD_DB_PATH" = "tmp" ]; then
       mongodump --host=${HOSTNAME}:$MONGODB_PORT --out=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplog
