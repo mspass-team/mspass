@@ -9,13 +9,15 @@ import os
 import io
 from bson.objectid import ObjectId
 
-from obspy import (read,UTCDateTime)
-from mspasspy.ccore.utility import (MsPASSError,AtomicType)
+from obspy import (read, UTCDateTime)
+from mspasspy.ccore.utility import (MsPASSError, AtomicType)
 from mspasspy.ccore.io import _mseed_file_indexer
 # We need this because we use obspy's reader for importing
-# and always convert to mspass data objects 
+# and always convert to mspass data objects
 from mspasspy.util.converter import Trace2TimeSeries
 #from mspasspy.db.database import Database
+
+
 def convert_mseed_index(index_record):
     """
     Helper used to convert C++ struct/class mseed_index to a dict
@@ -26,19 +28,20 @@ def convert_mseed_index(index_record):
     :return: dict containing index data converted to dict.
 
     """
-    o=dict()
-    o['sta']=index_record.sta
-    o['net']=index_record.net 
-    o['chan']=index_record.chan 
-    if len(index_record.loc)>0:
-        o['loc']=index_record.loc 
-    o['starttime']=index_record.starttime
-    o['last_packet_time']=index_record.last_packet_time 
-    o['foff']=index_record.foff
-    o['nbytes']=index_record.nbytes
+    o = dict()
+    o['sta'] = index_record.sta
+    o['net'] = index_record.net
+    o['chan'] = index_record.chan
+    if len(index_record.loc) > 0:
+        o['loc'] = index_record.loc
+    o['starttime'] = index_record.starttime
+    o['last_packet_time'] = index_record.last_packet_time
+    o['foff'] = index_record.foff
+    o['nbytes'] = index_record.nbytes
     return o
 
-def index_mseed_file(db,dfile,dir=None,collection='wf_miniseed'):
+
+def index_mseed_file(db, dfile, dir=None, collection='wf_miniseed'):
     """
     This is the first stage import function for handling the import of
     miniseed data.  This function scans a data file defined by a directory
@@ -104,23 +107,25 @@ def index_mseed_file(db,dfile,dir=None,collection='wf_miniseed'):
       a long list of possible io issues.   Callers should use a 
       generic handler to avoid aborts in a large job.
     """
-    dbh=db[collection]
-    # If dir is not define assume current directory.  Otherwise 
+    dbh = db[collection]
+    # If dir is not define assume current directory.  Otherwise
     # use realpath to make sure the directory is the full path
     # We store the full path in mongodb
-    if dir==None:
-        odir=os.getcwd()
+    if dir == None:
+        odir = os.getcwd()
     else:
-        odir=os.path.realpath(dir)
-    fname=odir+"/"+dfile
-    ind=_mseed_file_indexer(fname)
+        odir = os.path.realpath(dir)
+    fname = odir+"/"+dfile
+    ind = _mseed_file_indexer(fname)
     for i in ind:
-        doc=convert_mseed_index(i)
-        doc['dir']=odir
-        doc['dfile']=dfile
+        doc = convert_mseed_index(i)
+        doc['dir'] = odir
+        doc['dfile'] = dfile
         dbh.insert_one(doc)
-        print('saved this doc',doc)
-def mseed_tags_match(doc,d):
+        print('saved this doc', doc)
+
+
+def mseed_tags_match(doc, d):
     """
     Miniseed data have the wired concept of using net:sta:chan:loc and 
     time tags as the unique definition of a block of data.  This function 
@@ -139,23 +144,25 @@ def mseed_tags_match(doc,d):
     if doc['net'] != d['net']:
         return False
     if doc['chan'] != d['chan']:
-        return False 
+        return False
     if 'loc' in doc:
         if doc['loc'] != d['loc']:
-            return False 
+            return False
         else:
             # land here if loc was not set in the db
             if d.is_defined('loc'):
                 if len(d['loc']) > 0:
                     return False
-            
+
     if doc['starttime'] != d['starttime']:
         return False
-    return True 
+    return True
 
-def dbread_miniseed(db,id_or_doc,collection='wf_miniseed',
-        do_not_load=['npts','delta','starttime','endtime','sampling_rate'],
-        load_history=False):
+
+def dbread_miniseed(db, id_or_doc, collection='wf_miniseed',
+                    do_not_load=['npts', 'delta', 'starttime',
+                                 'endtime', 'sampling_rate'],
+                    load_history=False):
     """
     This function should be used to read miniseed data previously indexed 
     and defined in a mongodb collection (default wf_miniseed).   The 
@@ -198,50 +205,50 @@ def dbread_miniseed(db,id_or_doc,collection='wf_miniseed',
       for the output with the ObjectId of the index record set as the data's
       origin.
     """
-    if isinstance(id_or_doc,dict):
-        doc=id_or_doc 
-        data_id=doc['_id']
-    elif isinstance(id_or_doc,ObjectId):
-        data_id=id_or_doc
-        dbh=db[collection]
-        doc=dbh.find_one({'_id' : id_or_doc})
+    if isinstance(id_or_doc, dict):
+        doc = id_or_doc
+        data_id = doc['_id']
+    elif isinstance(id_or_doc, ObjectId):
+        data_id = id_or_doc
+        dbh = db[collection]
+        doc = dbh.find_one({'_id': id_or_doc})
     else:
         raise MsPASSError('dbload_miniseed',
-                'id_or_doc (arg1) has illegal type - must be either an ObjectId or a dict loaded from MongoDB',
-                'invalid')
-    dir=doc['dir']
-    dfile=doc['dfile']
-    fname=dir+"/"+dfile
-    fh=open(fname,'rb')
-    foff=doc['foff']
+                          'id_or_doc (arg1) has illegal type - must be either an ObjectId or a dict loaded from MongoDB',
+                          'invalid')
+    dir = doc['dir']
+    dfile = doc['dfile']
+    fname = dir+"/"+dfile
+    fh = open(fname, 'rb')
+    foff = doc['foff']
     fh.seek(foff)
-    nbytes=doc['nbytes']
-    raw=fh.read(nbytes)
-    # This incantation is needed to convert the raw binary data that 
+    nbytes = doc['nbytes']
+    raw = fh.read(nbytes)
+    # This incantation is needed to convert the raw binary data that
     # is the miniseed data to a python "file-like object"
-    flh=io.BytesIO(raw)
-    st=read(flh)
-     
+    flh = io.BytesIO(raw)
+    st = read(flh)
+
     fh.close()
     # drop the buffer not to reduce memory use
     del raw
-    
-    # st is a "stream" but it only has one member here because we are 
+
+    # st is a "stream" but it only has one member here because we are
     # reading single net,sta,chan,loc grouping defined by the index
     # We only want the Trace object not the stream to convert
-    tr=st[0]
+    tr = st[0]
     # Now we convert this to a TimeSeries and load other Metadata
-    # Note the exclusion copy and the test verifying net,sta,chan, 
-    # loc, and startime all match 
-    ts=Trace2TimeSeries(tr)
-    if mseed_tags_match(doc,ts):
+    # Note the exclusion copy and the test verifying net,sta,chan,
+    # loc, and startime all match
+    ts = Trace2TimeSeries(tr)
+    if mseed_tags_match(doc, ts):
         for k in doc:
            if k in do_not_load:
               continue
-           ts[k]=doc[k]
+           ts[k] = doc[k]
     else:
        # Long informative message needed here
-       message='Mismatched miniseed tags between db and data file='+fname+"\n"
+       message = 'Mismatched miniseed tags between db and data file='+fname+"\n"
        message += 'db tag: '+doc['net']+':'+doc['sta']+':'
        if 'loc' in doc:
           message += doc['loc']
@@ -257,12 +264,8 @@ def dbread_miniseed(db,id_or_doc,collection='wf_miniseed',
        message += ':'
        message += str(UTCDateTime(ts['starttime']))
        message += '\n'
-       raise MsPASSError('dbread_miniseed',message,'Invalid')
+       raise MsPASSError('dbread_miniseed', message, 'Invalid')
     if load_history:
-        ts.set_as_origin('dbread_miniseed','SETME',str(data_id),AtomicType.TIMESERIES,True)
+        ts.set_as_origin('dbread_miniseed', 'SETME', str(
+            data_id), AtomicType.TIMESERIES, True)
     return ts
-    
-    
-    
-    
-    
