@@ -133,8 +133,8 @@ Database:
       <<: *wf_TimeSeries
       last_packet_time:
         type: double
-	concept:   Time tag on the last packet of a contiguous block of miniseed packets
-	constraint:  normal
+        concept: Time tag on the last packet of a contiguous block of miniseed packets
+        constraint: normal
       dir:
         type: string
         concept: Directory path to an external file (always used with dfile)
@@ -151,15 +151,15 @@ Database:
         aliases: [file.foff, wfdisc.foff, wfprocess.foff]
         constraint: required
       url:
-      # the current reader doesn't support reading from a url but 
-      # if iris web services were faster it would be useful so we stub it here
+        # the current reader doesn't support reading from a url but 
+        # if iris web services were faster it would be useful so we stub it here
         type: string
         concept: Url to external data file.
         constraint: optional
       nbytes:
         type: int
-	concept:  number of bytes in a group of time ordered miniseed packets
-	constaint:  required
+        concept: number of bytes in a group of time ordered miniseed packets
+        constaint: required
       net:
         reference: site
         constraint: normal
@@ -167,14 +167,10 @@ Database:
         reference: site
         constraint: normal
       loc:
-        type: string
-        concept: location code assigned to an instrument (loc component of SEED net:sta:chan)
-        aliases: [location, site.loc, channel.loc]
+        reference: channel
         constraint: normal
       chan:
-        type: string
-        concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
-        aliases: [channel, KCMPNM, channel.chan, wfdisc.chan]
+        reference: channel
         constraint: normal
   site:
     schema:
