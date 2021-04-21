@@ -240,7 +240,8 @@ class Database(pymongo.database.Database):
                     if not isinstance(md[k], read_metadata_schema.type(k)):
                         # try to convert the mismatch attribute
                         try:
-                            insert_dict[k] = read_metadata_schema.type(k)(md[k])
+                            # convert the attribute to the correct type
+                            md[k] = read_metadata_schema.type(k)(md[k])
                         except:
                             if self.database_schema[col].is_required(unique_key):
                                 fatal_keys.append(k)
