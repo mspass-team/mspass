@@ -43,10 +43,15 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
   {
     if(count==0)
     {
-      /* this will yield an invalid value if the first block is messed up
-      but if the sid is clobbered, which it likely is, it might work*/
-      start_foff=0;
+      /* We have to treat the first block specially because of the logic of
+      how this loop is constructed and the way the ms3 reader works.
+      A problem, however, is this may fail if there first block is not a
+      miniseed data block.   Probably should test this on a full seed file */
+      start_foff=fpos;
       stime=msr->starttime;
+      strcpy(last_sid,msr->sid);
+      ++count;
+      continue;
     }
 
     strcpy(current_sid,msr->sid);
@@ -55,7 +60,8 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
       if(ms_sid2nslc(last_sid,net,sta,loc,chan))
       {
         /* This needs to be replaced to use the libmseed log functions */
-        fprintf(stderr,"source id string=%s could not be decoded - skipping one or more packets\n",last_sid);
+        fprintf(stderr,"source id string=%s in packet number %d could not be decoded - skipping one or more packets\n",
+            last_sid,count);
         strcpy(last_sid,current_sid);
         start_foff=fpos;
         continue;
