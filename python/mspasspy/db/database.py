@@ -2,6 +2,7 @@
 Tools for connecting to MongoDB.
 """
 import os
+import io
 import copy
 import pathlib
 import pickle
@@ -16,27 +17,34 @@ from bson.objectid import ObjectId
 import numpy as np
 from obspy import Inventory
 from obspy import UTCDateTime
+# Aliased obspy's read to avoid future collisions with such a generic name
+from obspy import read as obspy_mseedreader
+
+from mspasspy.ccore.io import _mseed_file_indexer
+# We need this because we use obspy's reader for importing mseed
+# and always convert to mspass data objects 
+from mspasspy.util.converter import Trace2TimeSeries
 
 from mspasspy.ccore.seismic import (TimeSeries,
                                     Seismogram,
                                     _CoreSeismogram,
-                                    TimeReferenceType,
                                     DoubleVector,
                                     TimeSeriesEnsemble,
                                     SeismogramEnsemble)
 from mspasspy.ccore.utility import (Metadata,
                                     MsPASSError,
+                                    AtomicType,
                                     ErrorSeverity,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
-def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None, 
+def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
                           format='dask', spark_context=None, data_tag=None):
     """
      This method takes a mongodb cursor as input, constructs a mspasspy object for each document in a distributed
      manner, and return all of the mspasspy objects using the format required by the distributed computing framework
-     (dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection 
+     (dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection
      name is not needed in this function.
 
     :param db: the database to read from.
@@ -152,7 +160,7 @@ class Database(pymongo.database.Database):
         if object_type not in [TimeSeries, Seismogram]:
             raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
                 object_type, wf_collection), 'Fatal')
-        
+
         if mode not in ["promiscuous", "cautious", "pedantic"]:
             raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
 
@@ -161,10 +169,10 @@ class Database(pymongo.database.Database):
         if exclude_keys is None:
             exclude_keys = []
 
-        # This assumes the name of a metadata schema matches the data type it defines. 
+        # This assumes the name of a metadata schema matches the data type it defines.
         read_metadata_schema = self.metadata_schema[object_type.__name__]
 
-        # We temporarily swap the main collection defined by the metadata schema by 
+        # We temporarily swap the main collection defined by the metadata schema by
         # the wf_collection. This ensures the method works consistently for any
         # user-specified collection argument.
         metadata_schema_collection = read_metadata_schema.collection('_id')
@@ -183,7 +191,7 @@ class Database(pymongo.database.Database):
         object_doc = col.find_one({'_id': oid})
         if not object_doc:
             return None
-        
+
         if data_tag:
             if 'data_tag' not in object_doc or object_doc['data_tag'] != data_tag:
                 return None
@@ -283,7 +291,7 @@ class Database(pymongo.database.Database):
             mspass_object.kill()
             for msg in log_error_msg:
                 mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Invalid)
-        else: 
+        else:
             # 2.load data from different modes
             storage_mode = object_doc['storage_mode']
             if storage_mode == "file":
@@ -300,10 +308,10 @@ class Database(pymongo.database.Database):
                 history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
                 if history_obj_id_name in object_doc:
                     self._load_history(mspass_object, object_doc[history_obj_id_name])
-            
+
             mspass_object.live = True
             mspass_object.clear_modified()
-        
+
         return mspass_object
 
     def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dfile=None, dir=None, exclude_keys=None, collection=None, data_tag=None):
@@ -334,7 +342,7 @@ class Database(pymongo.database.Database):
         if mode not in ['promiscuous', 'cautious', 'pedantic']:
             raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
         # below we try to capture permission issue before writing anything to the database.
-        # However, in the case that a storage is almost full, exceptions can still be 
+        # However, in the case that a storage is almost full, exceptions can still be
         # thrown, which could mess up the database record.
         if storage_mode == 'file':
             if not dfile and not dir:
@@ -355,7 +363,7 @@ class Database(pymongo.database.Database):
                         'No write permission to the save file: {}'.format(fname))
             else:
                 # the following loop finds the top level of existing parents to fname
-                # and check for write permission to that directory. 
+                # and check for write permission to that directory.
                 for path_item in pathlib.PurePath(fname).parents:
                     if os.path.exists(path_item):
                         if not os.access(path_item, os.W_OK | os.X_OK):
@@ -391,18 +399,18 @@ class Database(pymongo.database.Database):
                     old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
                     gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
                     update_dict['gridfs_id'] = gridfs_id
-                #TODO will support url mode later 
+                #TODO will support url mode later
                 #elif storage_mode == "url":
                 #    pass
                 col.update_one(filter_, {'$set': update_dict})
-        
+
         else:
             # FIXME: we could have recorded the full stack here, but need to revise the logger object
             # to make it more powerful for Python logging.
             mspass_object.elog.log_verbose(
                 sys._getframe().f_code.co_name, "Skipped saving dead object")
             self._save_elog(mspass_object)
-        
+
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
@@ -433,7 +441,7 @@ class Database(pymongo.database.Database):
             check_xref = []
         if rename_undefined is None:
             rename_undefined = {}
-        
+
         print_messages = []
         fixed_cnt = {}
         # fix the queried documents in the collection
@@ -453,7 +461,7 @@ class Database(pymongo.database.Database):
                             fixed_cnt[k] = 1
                         else:
                             fixed_cnt[k] += v
-        
+
         return fixed_cnt
 
     # clean a single document in the given collection atomically
@@ -474,7 +482,7 @@ class Database(pymongo.database.Database):
         :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
         :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
         :type verbose_keys: :class:`list` of :class:`str`
- 
+
         :return: number of fixes applied to each key
         :rtype: :class:`dict`
         """
@@ -484,7 +492,7 @@ class Database(pymongo.database.Database):
             check_xref = []
         if rename_undefined is None:
             rename_undefined = {}
-        
+
         # validate parameters
         if type(verbose_keys) is not list:
             raise MsPASSError('verbose_keys should be a list , but {} is requested.'.format(str(type(verbose_keys))), 'Fatal')
@@ -505,7 +513,7 @@ class Database(pymongo.database.Database):
             if verbose:
                 print("collection {} document _id: {}, is not found".format(collection, document_id))
             return fixed_cnt
-        
+
         if verbose:
             # access each key
             log_id_dict = {}
@@ -539,7 +547,7 @@ class Database(pymongo.database.Database):
             for missing_attr in missing_required_attr_list:
                 error_msg += "{} ".format(missing_attr)
             error_msg += "are missing."
-            
+
             # delete this document
             if delete_missing_required:
                 col.delete_one({'_id': doc['_id']})
@@ -619,13 +627,13 @@ class Database(pymongo.database.Database):
             else:
                 # attribute values remain the same
                 update_dict[unique_k] = doc[k]
-        
-        
+
+
         # 4. update the fixed attributes in the document in the collection
         filter_ = {'_id': doc['_id']}
         # use replace_one here because there may be some aliases in the document
         col.replace_one(filter_, update_dict)
-        
+
         if verbose:
             for msg in print_messages:
                 print(msg)
@@ -641,7 +649,7 @@ class Database(pymongo.database.Database):
         :param collection: the name of collection saving the document. If not specified, use the default wf collection
         :param tests: the type of tests you want to verify, should be a subset of ['xref', 'type', 'undefined']
         :type tests: :class:`list` of :class:`str`
- 
+
         :return: a dictionary of {problematic keys : failed test}
         :rtype: :class:`dict`
         """
@@ -661,7 +669,7 @@ class Database(pymongo.database.Database):
         # if the document does not exist in the db collection, return
         if not doc:
             return problematic_keys
-        
+
         # run the tests
         for test in tests:
             if test == 'xref':
@@ -675,7 +683,7 @@ class Database(pymongo.database.Database):
                 undefined_keys = self._check_undefined_keys(doc, collection)
                 for key in undefined_keys:
                     problematic_keys[key] = test
-            
+
             elif test == 'type':
                 # check if there are type mismatch between keys in doc and keys in schema
                 for key in doc:
@@ -702,12 +710,12 @@ class Database(pymongo.database.Database):
         # if xref_key is not defind -> not checking
         if not self.database_schema[collection].is_defined(xref_key):
             return is_bad_xref_key, is_bad_wf
-        
+
         # if xref_key is not a xref_key -> not checking
         unique_xref_key = self.database_schema[collection].unique_name(xref_key)
         if not self.database_schema[collection].is_xref_key(unique_xref_key):
             return is_bad_xref_key, is_bad_wf
-            
+
         # if the xref_key is not in the doc -> bad_wf
         if xref_key not in doc and unique_xref_key not in doc:
             is_bad_wf = True
@@ -783,29 +791,29 @@ class Database(pymongo.database.Database):
 
     def _delete_attributes(self, collection, keylist, query=None, verbose=False):
         """
-        Deletes all occurrences of attributes linked to keys defined 
-        in a list of keywords passed as (required) keylist argument.  
-        If a key is not in a given document no action is taken. 
-        
+        Deletes all occurrences of attributes linked to keys defined
+        in a list of keywords passed as (required) keylist argument.
+        If a key is not in a given document no action is taken.
+
         :param collection:  MongoDB collection to be updated
-        :param keylist:  list of keys for elements of each document 
-        that are to be deleted.   key are not test against schema 
+        :param keylist:  list of keys for elements of each document
+        that are to be deleted.   key are not test against schema
         but all matches will be deleted.
-        :param query: optional query string passed to find database 
-        collection method.  Can be used to limit edits to documents 
+        :param query: optional query string passed to find database
+        collection method.  Can be used to limit edits to documents
         matching the query.  Default is the entire collection.
-        :param verbose:  when ``True`` edit will produce a line of printed 
-        output describing what was deleted.  Use this option only if 
+        :param verbose:  when ``True`` edit will produce a line of printed
+        output describing what was deleted.  Use this option only if
         you know from dbverify the number of changes to be made are small.
-        
-        :return:  dict keyed by the keys of all deleted entries.  The value 
+
+        :return:  dict keyed by the keys of all deleted entries.  The value
         of each entry is the number of documents the key was deleted from.
         :rtype: :class:`dict`
         """
         dbcol=self[collection]
         cursor=dbcol.find(query)
         counts=dict()
-        # preload counts to 0 so we get a return saying 0 when no changes 
+        # preload counts to 0 so we get a return saying 0 when no changes
         # are made
         for k in keylist:
             counts[k]=0
@@ -824,35 +832,35 @@ class Database(pymongo.database.Database):
             if n>0:
                 dbcol.update_one({'_id':id},{'$unset' : todel})
         return counts
-    
+
     def _rename_attributes(self, collection, rename_map, query=None, verbose=False):
         """
-        Renames specified keys for all or a subset of documents in a 
-        MongoDB collection.   The updates are driven by an input python 
+        Renames specified keys for all or a subset of documents in a
+        MongoDB collection.   The updates are driven by an input python
         dict passed as the rename_map argument. The keys of rename_map define
-        doc keys that should be changed.  The values of the key-value 
-        pairs in rename_map are the new keys assigned to each match.  
-        
-        
+        doc keys that should be changed.  The values of the key-value
+        pairs in rename_map are the new keys assigned to each match.
+
+
         :param collection:  MongoDB collection to be updated
         :param rename_map:  remap definition dict used as described above.
-        :param query: optional query string passed to find database 
-        collection method.  Can be used to limit edits to documents 
+        :param query: optional query string passed to find database
+        collection method.  Can be used to limit edits to documents
         matching the query.  Default is the entire collection.
-        :param verbose:  when true edit will produce a line of printed 
-        output describing what was deleted.  Use this option only if 
+        :param verbose:  when true edit will produce a line of printed
+        output describing what was deleted.  Use this option only if
         you know from dbverify the number of changes to be made are small.
         When false the function runs silently.
-        
-        :return:  dict keyed by the keys of all changed entries.  The value 
-        of each entry is the number of documents changed.  The keys are the 
-        original keys.  displays of result should old and new keys using 
+
+        :return:  dict keyed by the keys of all changed entries.  The value
+        of each entry is the number of documents changed.  The keys are the
+        original keys.  displays of result should old and new keys using
         the rename_map.
         """
         dbcol=self[collection]
         cursor=dbcol.find(query)
         counts=dict()
-        # preload counts to 0 so we get a return saying 0 when no changes 
+        # preload counts to 0 so we get a return saying 0 when no changes
         # are made
         for k in rename_map:
             counts[k]=0
@@ -876,30 +884,30 @@ class Database(pymongo.database.Database):
 
     def _fix_attribute_types(self, collection, query=None, verbose=False):
         """
-        This function attempts to fix type collisions in the schema defined 
-        for the specified database and collection.  It tries to fix any 
-        type mismatch that can be repaired by the python equivalent of a 
-        type cast (an obscure syntax that can be seen in the actual code).  
-        Known examples are it can cleanly convert something like an int to 
-        a float or vice-versa, but it cannot do something like convert an 
-        alpha string to a number. Note, however, that python does cleanly 
+        This function attempts to fix type collisions in the schema defined
+        for the specified database and collection.  It tries to fix any
+        type mismatch that can be repaired by the python equivalent of a
+        type cast (an obscure syntax that can be seen in the actual code).
+        Known examples are it can cleanly convert something like an int to
+        a float or vice-versa, but it cannot do something like convert an
+        alpha string to a number. Note, however, that python does cleanly
         convert simple number strings to number.  For example:  x=int('10')
         will yield an "int" class number of 10.  x=int('foo'), however, will
-        not work.   Impossible conversions will not abort the function but 
-        will generate an error message printed to stdout.  The function 
-        continues on so if there are a large number of such errors the 
-        output could become voluminous.  ALWAYS run dbverify before trying 
-        this function (directly or indirectly through the command line 
-        tool dbclean).   
-        
+        not work.   Impossible conversions will not abort the function but
+        will generate an error message printed to stdout.  The function
+        continues on so if there are a large number of such errors the
+        output could become voluminous.  ALWAYS run dbverify before trying
+        this function (directly or indirectly through the command line
+        tool dbclean).
+
         :param collection:  MongoDB collection to be updated
-        :param query: optional query string passed to find database 
-        collection method.  Can be used to limit edits to documents 
+        :param query: optional query string passed to find database
+        collection method.  Can be used to limit edits to documents
         matching the query.  Default is the entire collection.
-        :param verbose:  when true edit will produce one or more lines of 
+        :param verbose:  when true edit will produce one or more lines of
         printed output for each change it makes.  The default is false.
-        Needless verbose should be avoided unless you are certain the 
-        number of changes it will make are small.  
+        Needless verbose should be avoided unless you are certain the
+        number of changes it will make are small.
         """
         dbcol=self[collection]
         schema=self.database_schema
@@ -939,56 +947,56 @@ class Database(pymongo.database.Database):
                             col_schema.type(k))
                         print('This error was thrown and handled:  ')
                         print(err)
-            
+
             if n>0:
                 dbcol.update_one({'_id' : id},{'$set' : up_d})
-                
+
         return counts
 
     def _check_links(self, xref_key=None, collection="wf", wfquery=None, verbose=False, error_limit=1000):
         """
-        This function checks for missing cross-referencing ids in a 
+        This function checks for missing cross-referencing ids in a
         specified wf collection (i.e. wf_TimeSeries or wf_Seismogram)
         It scans the wf collection to detect two potential errors:
-        (1) documents with the normalization key completely missing 
-        and (2) documents where the key is present does not match any 
+        (1) documents with the normalization key completely missing
+        and (2) documents where the key is present does not match any
         document in normalization collection.   By default this
-        function operates silently assuming the caller will 
-        create a readable report from the return that defines 
-        the documents that had errors.  This function is used in the 
+        function operates silently assuming the caller will
+        create a readable report from the return that defines
+        the documents that had errors.  This function is used in the
         verify standalone program that acts as a front end to tests
-        in this module.  The function can be run in independently 
+        in this module.  The function can be run in independently
         so there is a verbose option to print errors as they are encountered.
-        
+
         :param xref_key: the normalized key you would like to check
         :param collection:  mspass waveform collection on which the normalization
-        check is to be performed.  default is wf_TimeSeries.  
+        check is to be performed.  default is wf_TimeSeries.
         Currently only accepted alternative is wf_Seismogram.
-        :param wfquery:  optional dict passed as a query to limit the 
-        documents scanned by the function.   Default will process the 
+        :param wfquery:  optional dict passed as a query to limit the
+        documents scanned by the function.   Default will process the
         entire wf collection.
-        :param verbose:  when True errors will be printed.  By default 
-        the function works silently and you should use the output to 
-        interact with any errors returned.  
+        :param verbose:  when True errors will be printed.  By default
+        the function works silently and you should use the output to
+        interact with any errors returned.
         :param error_limit: Is a sanity check on the number of errors logged.
         Errors of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded 
-        you have a big problem you need to fix before scanning again.  
-        The number should be large enough to catch all condition but 
-        not so huge it become cumbersome.  With no limit or a memory 
+        The idea is errors should be rare and if this number is exceeded
+        you have a big problem you need to fix before scanning again.
+        The number should be large enough to catch all condition but
+        not so huge it become cumbersome.  With no limit or a memory
         fault is even possible on a huge dataset.
         :return:  returns a tuple with two lists.  Both lists are ObjectIds
-        of the scanned wf collection that have errors.  component 0 
-        of the tuple contains ids of wf entries that have the normalization 
+        of the scanned wf collection that have errors.  component 0
+        of the tuple contains ids of wf entries that have the normalization
         id set but the id does not resolve with the normalization collection.
         component 1 contains the ids of documents in the wf collection that
         do not contain the normalization id key at all (a more common problem)
 
         """
-        # schema doesn't currently have a way to list normalized 
-        # collection names.  For now we just freeze the names 
+        # schema doesn't currently have a way to list normalized
+        # collection names.  For now we just freeze the names
         # and put them in this one place for maintainability
-        
+
         # undefined collection name in the schema
         try:
             wf_collection = self.database_schema.default_name(collection)
@@ -1028,7 +1036,7 @@ class Database(pymongo.database.Database):
                 normalize = self.database_schema.default_name(normalize)
             else:
                 raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key + ' should be in the form of xxx_id', 'Fatal')
-            
+
             dbnorm=self[normalize]
             dbwf=self[wf_collection]
             n=dbwf.count_documents(wfquery)
@@ -1040,7 +1048,7 @@ class Database(pymongo.database.Database):
                 print('Starting cross reference link check for ',wf_collection,
                     ' collection using id=',xref_key)
                 print('This should resolve links to ',normalize,' collection')
-            
+
             cursor=dbwf.find(wfquery)
             for doc in cursor:
                 wfid = doc['_id']
@@ -1063,47 +1071,47 @@ class Database(pymongo.database.Database):
                                             'Fatal')
                 if len(bad_id_list)>=error_limit or len(missing_id_list)>=error_limit:
                     break
-        
+
         return tuple([bad_id_list,missing_id_list])
 
     def _check_attribute_types(self, collection="wf_TimeSeries", query=None, verbose=False, error_limit=1000):
         """
-        This function checks the integrity of all attributes 
-        found in a specfied collection.  It is designed to detect two 
-        kinds of problems:  (1) type mismatches between what is stored 
-        in the database and what is defined for the schema, and (2) 
-        data with a key that is not recognized.  Both tests are necessary 
-        because unlike a relational database MongoDB is very promiscuous 
-        about type and exactly what goes into a document.  MongoDB pretty 
-        much allow type it knows about to be associated with any key 
-        you choose.   In MsPASS we need to enforce some type restrictions 
-        to prevent C++ wrapped algorithms from aborting with type mismatches. 
-        Hence, it is important to run this test on all collections needed 
-        by a workflow before starting a large job.  
-        
-        :param collection:  MongoDB collection that is to be scanned 
-        for errors.  Note with normalized data this function should be 
-        run on the appropriate wf collection and all normalization 
-        collections the wf collection needs to link to. 
-        :param query:  optional dict passed as a query to limit the 
-        documents scanned by the function.   Default will process the 
+        This function checks the integrity of all attributes
+        found in a specfied collection.  It is designed to detect two
+        kinds of problems:  (1) type mismatches between what is stored
+        in the database and what is defined for the schema, and (2)
+        data with a key that is not recognized.  Both tests are necessary
+        because unlike a relational database MongoDB is very promiscuous
+        about type and exactly what goes into a document.  MongoDB pretty
+        much allow type it knows about to be associated with any key
+        you choose.   In MsPASS we need to enforce some type restrictions
+        to prevent C++ wrapped algorithms from aborting with type mismatches.
+        Hence, it is important to run this test on all collections needed
+        by a workflow before starting a large job.
+
+        :param collection:  MongoDB collection that is to be scanned
+        for errors.  Note with normalized data this function should be
+        run on the appropriate wf collection and all normalization
+        collections the wf collection needs to link to.
+        :param query:  optional dict passed as a query to limit the
+        documents scanned by the function.   Default will process the
         entire collection requested.
         :param verbose:  when True errors will be printed.   The default is
-        False and the function will do it's work silently.   Verbose is 
-        most useful in an interactive python session where the function 
-        is called directly.  Most users will run this function 
-        as part of tests driven by the dbverify program. 
+        False and the function will do it's work silently.   Verbose is
+        most useful in an interactive python session where the function
+        is called directly.  Most users will run this function
+        as part of tests driven by the dbverify program.
         :param error_limit: Is a sanity check the number of errors logged
         The number of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded 
-        you have a big problem you need to fix before scanning again.  
-        The number should be large enough to catch all condition but 
-        not so huge it become cumbersome.  With no limit or a memory 
+        The idea is errors should be rare and if this number is exceeded
+        you have a big problem you need to fix before scanning again.
+        The number should be large enough to catch all condition but
+        not so huge it become cumbersome.  With no limit or a memory
         fault is even possible on a huge dataset.
-        :return:  returns a tuple with two python dict containers.  
+        :return:  returns a tuple with two python dict containers.
         The component 0 python dict contains details of type mismatch errors.
-        Component 1 contains details for data with undefined keys.  
-        Both python dict containers are keyed by the ObjectId of the 
+        Component 1 contains details for data with undefined keys.
+        Both python dict containers are keyed by the ObjectId of the
         document from which they were retrieved.  The values associated
         with each entry are like MongoDB subdocuments.  That is, the value
         return is itself a dict. The dict value contains key-value pairs
@@ -1112,7 +1120,7 @@ class Database(pymongo.database.Database):
         """
         if query is None:
             query = {}
-        # The following two can throw MsPASS errors but we let them 
+        # The following two can throw MsPASS errors but we let them
         # do so. Callers should have a handler for MsPASSError
         dbschema=self.database_schema
         # This holds the schema for the collection to be scanned
@@ -1153,66 +1161,66 @@ class Database(pymongo.database.Database):
                 break
 
         return tuple([bad_type_docs,undefined_key_docs])
-        
+
     def _check_required(self, collection='site', keys=['lat','lon','elev','starttime','endtime'], query=None, verbose=False, error_limit=100):
         """
-        This function applies a test to assure a list of attributes 
-        are defined and of the right type.   This function is needed 
+        This function applies a test to assure a list of attributes
+        are defined and of the right type.   This function is needed
         because certain attributes are essential in two different contexts.
-        First, for waveform data there are some attributes that are 
-        required to construct the data object (e.g. sample interal or 
-        sample rate, start time, etc.).  Secondly, workflows generally 
-        require certain Metadata and what is required depends upon the 
+        First, for waveform data there are some attributes that are
+        required to construct the data object (e.g. sample interal or
+        sample rate, start time, etc.).  Secondly, workflows generally
+        require certain Metadata and what is required depends upon the
         workflow.  For example, any work with sources normally requires
-        information about both station and instrument properties as well 
-        as source.  The opposite is noise correlation work where only 
-        station information is essential.  
+        information about both station and instrument properties as well
+        as source.  The opposite is noise correlation work where only
+        station information is essential.
 
-        :param collection:  MongoDB collection that is to be scanned 
-        for errors.  Note with normalized data this function should be 
-        run on the appropriate wf collection and all normalization 
-        collections the wf collection needs to link to. 
-        :param keys:  is a list of strings that are to be checked 
-        against the contents of the collection.  Note one of the first 
-        things the function does is test for the validity of the keys.  
-        If they are not defined in the schema the function will throw 
-        a MsPASSError exception. 
-        :param query:  optional dict passed as a query to limit the 
-        documents scanned by the function.   Default will process the 
+        :param collection:  MongoDB collection that is to be scanned
+        for errors.  Note with normalized data this function should be
+        run on the appropriate wf collection and all normalization
+        collections the wf collection needs to link to.
+        :param keys:  is a list of strings that are to be checked
+        against the contents of the collection.  Note one of the first
+        things the function does is test for the validity of the keys.
+        If they are not defined in the schema the function will throw
+        a MsPASSError exception.
+        :param query:  optional dict passed as a query to limit the
+        documents scanned by the function.   Default will process the
         entire collection requested.
         :param verbose:  when True errors will be printed.   The default is
-        False and the function will do it's work silently.   Verbose is 
-        most useful in an interactive python session where the function 
-        is called directly.  Most users will run this function 
-        as part of tests driven by the dbverify program. 
+        False and the function will do it's work silently.   Verbose is
+        most useful in an interactive python session where the function
+        is called directly.  Most users will run this function
+        as part of tests driven by the dbverify program.
         :param error_limit: Is a sanity check the number of errors logged
         The number of any type are limited to this number (default 1000).
-        The idea is errors should be rare and if this number is exceeded 
-        you have a big problem you need to fix before scanning again.  
-        The number should be large enough to catch all condition but 
-        not so huge it become cumbersome.  With no limit or a memory 
+        The idea is errors should be rare and if this number is exceeded
+        you have a big problem you need to fix before scanning again.
+        The number should be large enough to catch all condition but
+        not so huge it become cumbersome.  With no limit or a memory
         fault is even possible on a huge dataset.
-        :return:  tuple with two components. Both components contain a 
-        python dict container keyed by ObjectId of problem documents. 
+        :return:  tuple with two components. Both components contain a
+        python dict container keyed by ObjectId of problem documents.
         The values in the component 0 dict are themselves python dict
         containers that are like MongoDB subdocuments).  The key-value
         pairs in that dict are required data with a type mismatch with the schema.
-        The values in component 1 are python lists of keys that had 
-        no assigned value but were defined as required.   
+        The values in component 1 are python lists of keys that had
+        no assigned value but were defined as required.
         """
         if len(keys)==0:
             raise MsPASSError('check_required:  list of required keys is empty '
                             + '- nothing to test','Fatal')
         if query is None:
             query = {}
-        # The following two can throw MsPASS errors but we let them 
+        # The following two can throw MsPASS errors but we let them
         # do so. Callers should have a handler for MsPASSError
         dbschema=self.database_schema
         # This holds the schema for the collection to be scanned
         # dbschema is mostly an index to one of these
         col_schema=dbschema[collection]
         dbcol=self[collection]
-        # We first make sure the user didn't make a mistake in giving an 
+        # We first make sure the user didn't make a mistake in giving an
         # invalid key for the required list
         for k in keys:
             if not col_schema.is_defined(k):
@@ -1226,7 +1234,7 @@ class Database(pymongo.database.Database):
                             'Fatal')
         undef=dict()
         wrong_types=dict()
-        cursor=dbcol.find(query)        
+        cursor=dbcol.find(query)
         for doc in cursor:
             id=doc['_id']
             undef_this=list()
@@ -1358,7 +1366,7 @@ class Database(pymongo.database.Database):
                         else:
                             # otherwise, we could update this attribute in the metadata
                             insert_dict[k] = copied_metadata[k]
-                    
+
                     # pedantic mode: any type mismatch could end up killing the mspass object
                     elif mode == "pedantic":
                         if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
@@ -1385,7 +1393,7 @@ class Database(pymongo.database.Database):
                     old_elog_id = None if new_insertion or elog_id_name not in object_doc else object_doc[elog_id_name]
                     elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
                     insert_dict.update({elog_id_name: elog_id})
-                
+
                 # add user defined data_tag
                 if data_tag:
                     insert_dict['data_tag'] = data_tag
@@ -1413,14 +1421,14 @@ class Database(pymongo.database.Database):
                 mspass_object.elog.log_verbose(
                 sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
                 self._save_elog(mspass_object)
-        
+
         else:
             # FIXME: we could have recorded the full stack here, but need to revise the logger object
             # to make it more powerful for Python logging.
             mspass_object.elog.log_verbose(
                 sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
             self._save_elog(mspass_object)
-        
+
         if has_fatal_error:
             return -1
         return non_fatal_error_cnt
@@ -1530,7 +1538,7 @@ class Database(pymongo.database.Database):
         """
         if exclude_objects is None:
             exclude_objects = []
-        
+
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag)
@@ -1558,13 +1566,13 @@ class Database(pymongo.database.Database):
         else:
             detele_schema = schema.Seismogram
         wf_collection_name = detele_schema.collection('_id')
-        
+
         # user might pass a mspass object by mistake
         try:
             oid = object_id['_id']
         except:
             oid = object_id
-        
+
         # fetch the document by the given object id
         object_doc = self[wf_collection_name].find_one({'_id': oid})
         if not object_doc:
@@ -1596,7 +1604,7 @@ class Database(pymongo.database.Database):
             history_obj_id_name = history_collection + '_id'
             if history_obj_id_name in object_doc:
                 self[history_collection].delete_one({'_id': object_doc[history_obj_id_name]})
-        
+
         # clear elog
         if clear_elog:
             wf_id_name = wf_collection_name + '_id'
@@ -1614,18 +1622,18 @@ class Database(pymongo.database.Database):
         Master Private Method
 
         Reads metadata from a requested collection and loads standard attributes from collection to the data passed as mspass_object.
-        The method will only work if mspass_object has the collection_id attribute set to link it to a unique document in source.  
+        The method will only work if mspass_object has the collection_id attribute set to link it to a unique document in source.
 
         :param mspass_object:   data where the metadata is to be loaded
-        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`, 
-            :class:`mspasspy.ccore.seismic.Seismogram`, 
-            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or 
+        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
+            :class:`mspasspy.ccore.seismic.Seismogram`,
+            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :param exclude_keys: list of attributes that should not normally be loaded. Ignored if include_undefined is set ``True``.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param include_undefined:  when ``True`` all data in the matching document are loaded.
         :param collection: requested collection metadata should be loaded
-        :type collection: :class:`str` 
+        :type collection: :class:`str`
 
         :raises mspasspy.ccore.utility.MsPASSError: any detected errors will cause a MsPASSError to be thrown
         """
@@ -1637,7 +1645,7 @@ class Database(pymongo.database.Database):
 
         if collection == 'channel' and isinstance(mspass_object, (Seismogram, SeismogramEnsemble)):
             raise MsPASSError("channel data can not be loaded into Seismogram", ErrorSeverity.Invalid)
-        
+
         # 1. get the metadata schema based on the mspass object type
         if isinstance(mspass_object, TimeSeries):
             metadata_def = self.metadata_schema.TimeSeries
@@ -1661,7 +1669,7 @@ class Database(pymongo.database.Database):
         object_doc = self[collection].find_one({'_id': object_doc_id})
         if object_doc == None:
             raise MsPASSError("no match found in {} collection for source_id = {}".format(collection, object_doc_id), ErrorSeverity.Invalid)
-        
+
         # 4. use this document to update the mspass object
         key_dict = set()
         for k in wf_collection_metadata_schema.keys():
@@ -1681,22 +1689,22 @@ class Database(pymongo.database.Database):
     def load_source_metadata(self, mspass_object, exclude_keys=['serialized_event','magnitude_type'], include_undefined=False):
         """
         Reads metadata from source collection and loads standard attributes in source collection to the data passed as mspass_object.
-        The method will only work if mspass_object has the source_id attribute set to link it to a unique document in source.  
+        The method will only work if mspass_object has the source_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class
         or an ensemble (TimeSeriesEnsemble or SeismogramEnsemble).
         Ensembles will have the source data posted to the ensemble Metadata and not the members.
-        This should be the stock way to assemble the generalization of a shot gather. 
+        This should be the stock way to assemble the generalization of a shot gather.
 
         :param mspass_object:   data where the metadata is to be loaded
-        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`, 
-            :class:`mspasspy.ccore.seismic.Seismogram`, 
-            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or 
+        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
+            :class:`mspasspy.ccore.seismic.Seismogram`,
+            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :param exclude_keys: list of attributes that should not normally be loaded.
             Default are attributes not normally need that are loaded from QuakeML.  Ignored if include_undefined is set ``True``.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param include_undefined:  when ``True`` all data in the matching source document are loaded. 
+        :param include_undefined:  when ``True`` all data in the matching source document are loaded.
 
         :raises mspasspy.ccore.utility.MsPASSError: any detected errors will cause a MsPASSError to be thrown
         """
@@ -1705,27 +1713,27 @@ class Database(pymongo.database.Database):
         if isinstance(mspass_object, (TimeSeriesEnsemble, SeismogramEnsemble)):
             for member_object in mspass_object.member:
                 self._load_collection_metadata(member_object, exclude_keys, include_undefined, 'source')
-        
+
 
     def load_site_metadata(self,mspass_object, exclude_keys=None, include_undefined=False):
         """
         Reads metadata from site collection and loads standard attributes insite collection to the data passed as mspass_object.
-        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.  
+        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
         or SeismogramEnsemble).
         Ensembles will have the site data posted to the ensemble Metadata and not the members.
-        This should be the stock way to assemble the generalization of a common-receiver gather. 
+        This should be the stock way to assemble the generalization of a common-receiver gather.
 
         :param mspass_object:   data where the metadata is to be loaded
-        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`, 
-            :class:`mspasspy.ccore.seismic.Seismogram`, 
-            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or 
+        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
+            :class:`mspasspy.ccore.seismic.Seismogram`,
+            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :param exclude_keys: list of attributes that should not normally be loaded.
             Default is None.  Ignored if include_undefined is set ``True``.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param include_undefined:  when ``True`` all data in the matching site document are loaded. 
+        :param include_undefined:  when ``True`` all data in the matching site document are loaded.
 
         :raises mspasspy.ccore.utility.MsPASSError: any detected errors will cause a MsPASSError to be thrown
         """
@@ -1740,7 +1748,7 @@ class Database(pymongo.database.Database):
     def load_channel_metadata(self,mspass_object, exclude_keys=['serialized_channel_data'], include_undefined=False):
         """
         Reads metadata from channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
-        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.  
+        The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
         or SeismogramEnsemble).
@@ -1748,14 +1756,14 @@ class Database(pymongo.database.Database):
         This should be the stock way to assemble the generalization of a common-receiver gather of TimeSeries data for a common sensor component.
 
         :param mspass_object:   data where the metadata is to be loaded
-        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`, 
-            :class:`mspasspy.ccore.seismic.Seismogram`, 
-            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or 
+        :type mspass_object:  :class:`mspasspy.ccore.seismic.TimeSeries`,
+            :class:`mspasspy.ccore.seismic.Seismogram`,
+            :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
             :class:`mspasspy.ccore.seismic.SeismogramEnsemble`.
         :param exclude_keys: list of attributes that should not normally be loaded.
             Default excludes the serialized obspy class that is used to store response data.   Ignored if include_undefined is set ``True``.
-        :param include_undefined:  when ``True`` all data in the matching channel document are loaded 
-        
+        :param include_undefined:  when ``True`` all data in the matching channel document are loaded
+
         :raises mspasspy.ccore.utility.MsPASSError: any detected errors will cause a MsPASSError to be thrown
         """
         if isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -1792,7 +1800,7 @@ class Database(pymongo.database.Database):
         else:
             mspass_object['utc_convertible'] = True
             mspass_object['time_standard'] = 'UTC'
-            
+
     def _save_history(self, mspass_object, prev_history_object_id=None, collection=None):
         """
         Save the processing history of a mspasspy object.
@@ -1886,8 +1894,8 @@ class Database(pymongo.database.Database):
 
         if not collection:
             collection = self.database_schema.default_name('elog')
-        
-        #TODO: Need to discuss whether the _id should be linked in a dead elog entry. It 
+
+        #TODO: Need to discuss whether the _id should be linked in a dead elog entry. It
         # might be confusing to link the dead elog to an alive wf record.
         oid = None
         if '_id' in mspass_object:
@@ -2509,25 +2517,25 @@ class Database(pymongo.database.Database):
         associated with that key.  Note net, sta, and chan are required
         but loc is optional.
 
-        The optional loc code is handled specially.  The reason is 
+        The optional loc code is handled specially.  The reason is
         that it is common to have the loc code empty.  In seed data that
-        puts two ascii blank characters in the 2 byte packet header 
-        position for each miniseed blockette.  With pymongo that 
+        puts two ascii blank characters in the 2 byte packet header
+        position for each miniseed blockette.  With pymongo that
         can be handled one of three ways that we need to handle gracefully.
-        That is, one can either set a literal two blank character 
-        string, an empty string (""), or a MongoDB NULL.   To handle 
+        That is, one can either set a literal two blank character
+        string, an empty string (""), or a MongoDB NULL.   To handle
         that confusion this algorithm first queries for all matches
-        without loc defined.  If only one match is found that is 
+        without loc defined.  If only one match is found that is
         returned immediately.  If there are multiple matches we
-        search though the list of docs returned for a match to 
-        loc being conscious of the null string oddity.  
+        search though the list of docs returned for a match to
+        loc being conscious of the null string oddity.
 
         The (optional) time arg is used for a range match to find
         period between the site startime and endtime.  If not used
         the first occurence will be returned (usually ill adivsed)
-        Returns None if there is no match.  Although the time argument 
+        Returns None if there is no match.  Although the time argument
         is technically option it usually a bad idea to not include
-        a time stamp because most stations saved as seed data have 
+        a time stamp because most stations saved as seed data have
         time variable channel metadata.
 
         :param net:  network name to match
@@ -2547,7 +2555,7 @@ class Database(pymongo.database.Database):
         query['chan'] = chan
         if loc != None:
             query['loc'] = loc
-        
+
         if (time > 0.0):
             query['starttime'] = {"$lt": time}
             query['endtime'] = {"$gt": time}
@@ -2560,10 +2568,10 @@ class Database(pymongo.database.Database):
             # Note we only land here when the above yields multiple matches
             if loc == None:
                 # We could get here one of two ways.  There could
-                # be multiple loc codes and the user didn't specify 
+                # be multiple loc codes and the user didn't specify
                 # a choice or they wanted the empty string (2 cases).
-                # We also have to worry about the case where the 
-                # time was not specified but needed. 
+                # We also have to worry about the case where the
+                # time was not specified but needed.
                 # The complexity below tries to unravel all those possibities
                 testquery=query
                 testquery['loc']=None
@@ -2583,10 +2591,10 @@ class Database(pymongo.database.Database):
                             + "Specify at least time but a loc code if is not truly null",
                             "Fatal")
                 else:
-                    # we land here if a null match didn't work.  
-                    #Try one more recovery with setting loc to an emtpy 
+                    # we land here if a null match didn't work.
+                    #Try one more recovery with setting loc to an emtpy
                     # string
-                    testquery['loc']=""  
+                    testquery['loc']=""
                     matchsize=dbchannel.count_documents(testquery)
                     if matchsize == 1:
                         return dbchannel.find_one(testquery)
@@ -2605,25 +2613,25 @@ class Database(pymongo.database.Database):
 
     def get_response(self, net=None, sta=None, chan=None, loc=None, time=None):
         """
-        Returns an obspy Response object for seed channel defined by 
-        the standard keys net, sta, chan, and loc and a time stamp.  
+        Returns an obspy Response object for seed channel defined by
+        the standard keys net, sta, chan, and loc and a time stamp.
         Input time can be a UTCDateTime or an epoch time stored as a float.
-        
+
         :param db:  mspasspy Database handle containing a channel collection
           to be queried
         :param net: seed network code (required)
         :param sta: seed station code (required)
         :param chan:  seed channel code (required)
-        :param loc:  seed net code.  If None loc code will not be 
-          included in the query.  If loc is anything else it is passed 
-          as a literal.  Sometimes loc codes are not defined by in the 
-          seed data and are literal two ascii space characters.  If so 
-          MongoDB translates those to "".   Use loc="" for that case or 
-          provided the station doesn't mix null and other loc codes use None. 
-        :param time:  time stamp for which the response is requested.  
-          seed metadata has a time range for validity this field is 
-          required.   Can be passed as either a UTCDateTime object or 
-          a raw epoch time stored as a python float. 
+        :param loc:  seed net code.  If None loc code will not be
+          included in the query.  If loc is anything else it is passed
+          as a literal.  Sometimes loc codes are not defined by in the
+          seed data and are literal two ascii space characters.  If so
+          MongoDB translates those to "".   Use loc="" for that case or
+          provided the station doesn't mix null and other loc codes use None.
+        :param time:  time stamp for which the response is requested.
+          seed metadata has a time range for validity this field is
+          required.   Can be passed as either a UTCDateTime object or
+          a raw epoch time stored as a python float.
         """
         if sta == None or chan == None or net == None or time == None:
             raise MsPASSError('get_response:  missing one of required arguments:  '
@@ -2731,3 +2739,250 @@ class Database(pymongo.database.Database):
         dbsource = self.source
         x = dbsource.find_one({'source_id': source_id})
         return x
+    #  Methods for handling miniseed data
+    @staticmethod
+    def _convert_mseed_index(index_record):
+        """
+        Helper used to convert C++ struct/class mseed_index to a dict
+        to use for saving to mongod.  Note loc is only set if it is not
+        zero length - consistent with mspass approach
+
+        :param index_record:  mseed_index record to convert
+        :return: dict containing index data converted to dict.
+
+        """
+        o=dict()
+        o['sta']=index_record.sta
+        o['net']=index_record.net
+        o['chan']=index_record.chan
+        if len(index_record.loc)>0:
+            o['loc']=index_record.loc
+        o['starttime']=index_record.starttime
+        o['last_packet_time']=index_record.last_packet_time
+        o['foff']=index_record.foff
+        o['nbytes']=index_record.nbytes
+        return o
+
+    @staticmethod
+    def _mseed_tags_match(doc,d):
+        """
+        Miniseed data have the wired concept of using net:sta:chan:loc and
+        time tags as the unique definition of a block of data.  This function
+        is called by the reader to assure the right block of data is read
+        from database saved index.   That can avoid, for example, problems from
+        data being overwritten on disk by modified data.  It returns true
+        only if the net, sta, chan, loc, and starttime values match.
+        Note loc is treated specially because a null loc code is not stored in
+        the database index.
+        :param doc:  mongodb doc to be tested against sta
+        :param d:  mspass TimeSeries object with data to be tested
+        :return: boolean True if the tags all match, false if any do not match
+        """
+        if doc['sta'] != d['sta']:
+            return False
+        if doc['net'] != d['net']:
+            return False
+        if doc['chan'] != d['chan']:
+            return False
+        if 'loc' in doc:
+            if doc['loc'] != d['loc']:
+                return False
+            else:
+                # land here if loc was not set in the db
+                if d.is_defined('loc'):
+                    if len(d['loc']) > 0:
+                        return False
+
+        if doc['starttime'] != d['starttime']:
+            return False
+        return True
+
+    def index_mseed_file(self,dfile,dir=None,collection='wf_miniseed'):
+        """
+        This is the first stage import function for handling the import of
+        miniseed data.  This function scans a data file defined by a directory
+        (dir arg) and dfile (file name) argument.  I builds and index it
+        writes to mongodb in the collection defined by the collection
+        argument (wf_miniseed by default).   The index is bare bones
+        miniseed tags (net, sta, chan, and loc) with a starttime tag.
+        The index is appropriate ONLY if the data on the file are created
+        by concatenating data with packets sorted by net, sta, loc, chan, time
+        AND the data are contiguous in time.   The results will be unpredictable
+        if the miniseed packets do not fit that constraint.  The original
+        concept for this function came from the need to handle large files
+        produced by concanentation of miniseed single-channel files created
+        by obpsy's mass_downloader.   i.e. the basic model is the input
+        files are assumed to be something comparable to running the unix
+        cat command on a set of single-channel, contingous time sequence files.
+        There are other examples that do the same thing (e.g. antelope's
+        miniseed2days).
+    
+        We emphasize this function only builds an index - it does not
+        convert any data.   As a result a final warning is that the
+        metadata in the wf_miniseed collection lack some common
+        attributes one might expect. That is, number of samples,
+        sample rate, and endtime.   The number of samples and endtime are
+        not saved because we intentionally do nat fully crack the input
+        file for speed.  miniseed files can (actually usually) contain
+        compressed sample data and the number of samples are not recorded
+        in the packet headers.  Hence, the number of samples in the block
+        and the endtime cannot be computed without decompressing the data.
+        To provide some measurre of the time span of the data we define
+        an attribute "last_packet_time" that contains the unix epoch
+        time of the start of the last packet of the file.   How close that
+        is to endtime depends mainly on the sample interval.  If a range
+        query is needed use last_packet_time where you would otherwise use
+        endtime.
+    
+        Finally, note that cross referencing with the channel and/or
+        source collections should be a common step after building the
+        index with this function.  The reader found elsewhere in this
+        module will transfer linking ids (i.e. channel_id and/or source_id)
+        to TimeSeries objects when it reads the data from the files
+        indexed by this function.
+    
+        Note to parallelize this function put a list of files in a Spark
+        RDD or a Dask bag and parallelize the call the this function.
+        That can work because MongoDB is designed for parallel operations.
+    
+    
+        :param dfile:  file name of data to be indexed.  Asssumed to be
+          the leaf node of the path - i.e. it contains no directory information
+          but just the file name.
+        :param dir:  directory name.  This can be a relative path from the
+          current directory be be advised it will always be converted to an
+          fully qualified path.  If it is undefined (the default) the function
+          assumes the file is in the current working directory and will use
+          the result of the python getcwd command as the directory path
+          stored in the database.
+        :param collection:  is the mongodb collection name to write the
+          index data to.  The default is 'wf_miniseed'.  It should be rare
+          to use anything but the default.
+        :exception: This function can throw a range of error types for
+          a long list of possible io issues.   Callers should use a
+          generic handler to avoid aborts in a large job.
+        """
+        dbh=self[collection]
+        # If dir is not define assume current directory.  Otherwise
+        # use realpath to make sure the directory is the full path
+        # We store the full path in mongodb
+        if dir==None:
+            odir=os.getcwd()
+        else:
+            odir=os.path.realpath(dir)
+        fname=odir+"/"+dfile
+        ind=_mseed_file_indexer(fname)
+        for i in ind:
+            doc=self._convert_mseed_index(i)
+            doc['dir']=odir
+            doc['dfile']=dfile
+            dbh.insert_one(doc)
+            print('saved this doc',doc)
+    
+    def read_miniseed(self,id_or_doc,collection='wf_miniseed',
+            do_not_load=['npts','delta','starttime','endtime','sampling_rate'],
+            load_history=False):
+        """
+        This function should be used to read miniseed data previously indexed
+        and defined in a mongodb collection (default wf_miniseed).   The
+        documents in the collection can contain only the index data or
+        extended metadata created, for example, by linking the data against
+        the channel and/or source collection.   The reader assumes the
+        files originally indexed are present and visible in the same
+        location of the file system when the indexer was run on them.
+        The user is responsible assuring the paths to all files are valid.
+        For Antelope users the restriction is exactly like wfdisc in CSS3.0.
+    
+        The function cracks the data in the miniseed file for a single channel
+        of contiguous data defined by the document defined by arg1.  It
+        returns a mspass TimeSeries object representation of that data.
+        The metadata stored in the TimeSeries container is a copy of the
+        contents of the doc passed (or defined by the id passed) plus
+        computed attributes of the TimeSeries not defined in the wf_miniseed
+        collection (notable starttime, number of points, and stampling rate).
+    
+        The output of this function can be used to initialize the object level
+        history chain for a processing workflow.  If load_history is true the
+        result will be marked as  "RAW" origin with an id defined by the
+        object id of the wf_miniseed record from which it originated.
+    
+        :param id_or_doc:  as the name implies this arg can be either
+          a MongoDB doc (python dict in pymongo) set in something
+          like a cursor operation or the ObjectId of a document to be
+          retrieved from wf_miniseed (more useful in a parallel workflow
+          where the initial RDD or Bag is defined by a list of ObjectIds).
+        :param collection:  collection where the index is expected to be
+          found (default is 'wf_miniseed' and should be used unless you
+          are doing something unusual)
+        :param do_not_load:  is a list of attributes in the index collection
+          doc that should not be transferred to the output TimeSeries object.
+          The default excludes attributes that are part of the TimeSeries
+          objects internal attributes (notably npts, delta, startime, endtime,
+          and sampling_rate).
+        :param load_history:  when set True the history chain will be initialized
+          for the output with the ObjectId of the index record set as the data's
+          origin.
+        """
+        if isinstance(id_or_doc,dict):
+            doc=id_or_doc
+            data_id=doc['_id']
+        elif isinstance(id_or_doc,ObjectId):
+            data_id=id_or_doc
+            dbh=self[collection]
+            doc=dbh.find_one({'_id' : id_or_doc})
+        else:
+            raise MsPASSError('dbload_miniseed',
+                    'id_or_doc (arg1) has illegal type - must be either an ObjectId or a dict loaded from MongoDB',
+                    'invalid')
+        dir=doc['dir']
+        dfile=doc['dfile']
+        fname=dir+"/"+dfile
+        fh=open(fname,'rb')
+        foff=doc['foff']
+        fh.seek(foff)
+        nbytes=doc['nbytes']
+        raw=fh.read(nbytes)
+        # This incantation is needed to convert the raw binary data that
+        # is the miniseed data to a python "file-like object"
+        flh=io.BytesIO(raw)
+        st=obspy_mseedreader(flh)
+    
+        fh.close()
+        # drop the buffer not to reduce memory use
+        del raw
+    
+        # st is a "stream" but it only has one member here because we are
+        # reading single net,sta,chan,loc grouping defined by the index
+        # We only want the Trace object not the stream to convert
+        tr=st[0]
+        # Now we convert this to a TimeSeries and load other Metadata
+        # Note the exclusion copy and the test verifying net,sta,chan,
+        # loc, and startime all match
+        ts=Trace2TimeSeries(tr)
+        if self._mseed_tags_match(doc,ts):
+            for k in doc:
+               if k in do_not_load:
+                  continue
+               ts[k]=doc[k]
+        else:
+           # Long informative message needed here
+           message='Mismatched miniseed tags between db and data file='+fname+"\n"
+           message += 'db tag: '+doc['net']+':'+doc['sta']+':'
+           if 'loc' in doc:
+              message += doc['loc']
+           message += ':'
+           message += doc['chan']
+           message += str(UTCDateTime(doc['starttime']))
+           message += '\n'
+           message += 'data tag: '+ts['net']+':'+ts['sta']+':'
+           if ts.is_defined('loc'):
+              message += ts['loc']
+           message += ':'
+           message += ts['chan']
+           message += ':'
+           message += str(UTCDateTime(ts['starttime']))
+           message += '\n'
+           raise MsPASSError('dbread_miniseed',message,'Invalid')
+        if load_history:
+            ts.set_as_origin('dbread_miniseed','SETME',str(data_id),AtomicType.TIMESERIES,True)
+        return ts
