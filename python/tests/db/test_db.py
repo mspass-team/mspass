@@ -9,6 +9,7 @@ import pytest
 import sys
 import re
 
+from  mspasspy.util.converter import TimeSeries2Trace
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory
 
@@ -169,6 +170,17 @@ class TestDatabase():
         assert gfsh.exists(gridfs_id)
         self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
         assert not gfsh.exists(gridfs_id)
+
+    def test_read_mseed(self):
+        tmp_ts = get_live_timeseries()
+        dir = 'python/tests/data/'
+        dfile = 'test_mseed_output'
+        fname = os.path.join(dir, dfile)
+        tr = tmp_ts.toTrace()
+        tr.write(fname, format='MSEED')
+        tmp_ts_2 = TimeSeries()
+        self.db._read_data_from_mseed(tmp_ts_2, dir, dfile, 0, os.path.getsize(fname))
+        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
     def test_mspass_type_helper(self):
         schema = self.metadata_def.Seismogram
@@ -508,6 +520,18 @@ class TestDatabase():
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
         with pytest.raises(MsPASSError, match='is not defined'):
             self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
+
+    def test_index_mseed_file(self):
+        dir = 'python/tests/data/'
+        dfile = '3channels.mseed'
+        fname = os.path.join(dir, dfile)
+        self.db.index_mseed_file(fname, collection='wf_miniseed')
+        assert self.db['wf_miniseed'].count_documents({}) == 3
+
+        # FIXME: The following is broken right now. Need to at least keep dt and t0 
+        # in the wf_miniseed documents such that a data object can be correctly constructed.
+        # for doc in self.db['wf_miniseed'].find():
+        #     ts = self.db.read_data(doc, collection='wf_miniseed')
 
     def test_delete_wf(self):
         # clear all the wf collection documents
@@ -1214,6 +1238,7 @@ class TestDatabase():
     def teardown_class(self):
         try:
             os.remove('python/tests/data/test_db_output')
+            os.remove('python/tests/data/test_mseed_output')
         except OSError:
             pass
         client = DBClient('localhost')
