@@ -353,10 +353,21 @@ class TestDatabase():
         save_res_code = self.db.save_data(cautious_seis, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
         assert save_res_code == 0
         assert cautious_seis.live
+        # unable to convert to the correct type
         cautious_seis2 = self.db.read_data(cautious_seis['_id'], mode='cautious', normalize=['site', 'source'])
         assert cautious_seis2.elog.get_error_log()[-1].message == "cautious mode: Required attribute npts has type <class 'str'>, forbidden by definition and unable to convert"
         elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': cautious_seis2['_id'], 'gravestone': {'$exists': True}})
         assert 'data' not in cautious_seis2
+        # successfully convert to the correct type
+        cautious_seis = copy.deepcopy(self.test_seis)
+        logging_helper.info(cautious_seis, '1', 'deepcopy')
+        cautious_seis.put_string('npts', '255')
+        save_res_code = self.db.save_data(cautious_seis, mode='promiscuous', storage_mode='gridfs')
+        assert save_res_code == 0
+        assert cautious_seis.live
+        cautious_seis2 = self.db.read_data(cautious_seis['_id'], mode='cautious', normalize=['site', 'source'])
+        assert cautious_seis2.live
+        assert cautious_seis2['npts'] == 255
 
         # test pedantic read
         pedantic_seis.set_live()
