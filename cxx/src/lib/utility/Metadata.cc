@@ -284,6 +284,20 @@ ostringstream& operator<<(ostringstream& os, const Metadata& m)
     return os;
   }catch(...){throw;};
 }
+/* This function is implemented with pybind11 so it should only be called under python. */
+pybind11::object serialize_metadata_py(const Metadata &md)
+{
+  pybind11::gil_scoped_acquire acquire;
+  try{
+    pybind11::dict md_dict = pybind11::cast(md);
+    pybind11::set changed_or_set = pybind11::cast(md.changed_or_set);
+    pybind11::module pickle = pybind11::module::import("pickle");
+    pybind11::object dumps = pickle.attr("dumps");
+    pybind11::object md_dump = dumps(pybind11::make_tuple(md_dict, changed_or_set));
+    pybind11::gil_scoped_release release;
+    return md_dump;
+  }catch(...){pybind11::gil_scoped_release release;throw;};
+}
 
 /* New method added Apr 2020 to change key assigned to a value - used for aliass*/
 void Metadata::change_key(const string oldkey, const string newkey)

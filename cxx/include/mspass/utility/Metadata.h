@@ -431,6 +431,16 @@ other attributes.
   \param newkey is the new key to use for the replacement.
   */
   void change_key(const std::string oldkey, const std::string newkey);
+  /*! Serialize Metadata to a python bytes object.
+  This function is needed to support pickle in the python interface.
+  It cast the C++ object to a Python dict and calls pickle against that
+  dict directly to generate a Python bytes object. This may not be the
+  most elegant approach, but it should be bombproof.
+    \param md is the Metadata object to be serialized
+    \return pickle serialized data object.
+  */
+  friend pybind11::object serialize_metadata_py(const Metadata &md);
+  /*! Standard operator for overloading output to a stringstream */
   friend std::ostringstream& operator<<(std::ostringstream&,
      const mspass::utility::Metadata&);
 protected:
