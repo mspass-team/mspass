@@ -14,7 +14,7 @@ WORK_DIR=$SCRATCH/mspass/workdir
 MSPASS_CONTAINER=$WORK2/mspass/mspass_latest.sif
 
 # command that start the container
-SING_COM="singularity run --home $WORK_DIR $MSPASS_CONTAINER"
+SING_COM="singularity run $MSPASS_CONTAINER"
 
 ml unload xalt
 ml tacc-singularity
@@ -53,15 +53,15 @@ SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
 SINGULARITYENV_MSPASS_ROLE=worker \
 mpiexec.hydra -n $((SLURM_NNODES-1)) -ppn 1 -hosts $WORKER_LIST $SING_COM &
 
+# specify the location where user wants to store the data
+# should be in either tmp or scratch, default is scratch
+SHARD_MODE='tmp'
+
 # extract the hostname of each worker node
 OLD_IFS=$IFS
 IFS=","
 WORKER_LIST_ARR=($WORKER_LIST)
 IFS=$OLD_IFS
-
-# specify the location where user wants to store the data
-# should be in either tmp or scratch, default is scratch
-SHARD_DB_PATH='scratch'
 
 # control the interval between mongo instance and mongo shell execution
 SLEEP_TIME=15
@@ -69,23 +69,29 @@ SLEEP_TIME=15
 # start a shard container in each worker node
 for i in ${!WORKER_LIST_ARR[@]}; do
     SINGULARITYENV_MSPASS_SHARD_ID=$i \
-    SINGULARITYENV_SHARD_DB_PATH=$SHARD_DB_PATH \
-    SINGULARITYENV_SLEEP_TIME=$SLEEP_TIME \
+    SINGULARITYENV_MSPASS_SHARD_MODE=$SHARD_MODE \
+    SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
     SINGULARITYENV_MSPASS_ROLE=shard \
     mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
 done
 
 sleep 5
+username=`whoami`
 # start a dbmanager container in the primary node
 for i in ${!WORKER_LIST_ARR[@]}; do
     SHARD_LIST[$i]="rs$i/${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:27017"
+    SHARD_DB_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/db/data_shard_$i"
+    SHARD_LOGS_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/logs/mongo_log_shard_$i"
 done
 SINGULARITYENV_MSPASS_SHARD_LIST=${SHARD_LIST[@]} \
-SINGULARITYENV_SLEEP_TIME=$SLEEP_TIME \
+SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
 SINGULARITYENV_MONGODB_PORT=37017 \
 SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 
 # start a jupyter notebook frontend in the primary node
 SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
 SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
+SINGULARITYENV_MSPASS_SHARD_MODE=$SHARD_MODE \
+SINGULARITYENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
+SINGULARITYENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
 SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM

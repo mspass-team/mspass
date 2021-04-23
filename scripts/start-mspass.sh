@@ -2,14 +2,14 @@
 
 # If running with docker use /home, else use pwd to store all data and logs
 if grep docker /proc/1/cgroup -qa; then
-  _MY_HOME=/home
+  MSPASS_WORKDIR=/home
 else
-  _MY_HOME=${PWD%/}
+  MSPASS_WORKDIR=$SCRATCH/mspass/workdir
 fi
 
-MSPASS_DB_DIR=${_MY_HOME}/db
-MSPASS_LOG_DIR=${_MY_HOME}/logs
-MSPASS_WORKER_DIR=${_MY_HOME}/work
+MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
+MSPASS_LOG_DIR=${MSPASS_WORKDIR}/logs
+MSPASS_WORKER_DIR=${MSPASS_WORKDIR}/work
 # Note that only log is required for all roles. Other dirs will be created later when needed.
 [[ -d $MSPASS_LOG_DIR ]] || mkdir -p $MSPASS_LOG_DIR
 
@@ -21,7 +21,7 @@ export SPARK_LOG_DIR=${MSPASS_LOG_DIR}
 if [ $# -eq 0 ]; then
 
   function start_mspass_frontend {
-    NOTEBOOK_ARGS="--notebook-dir=${_MY_HOME} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
+    NOTEBOOK_ARGS="--notebook-dir=${MSPASS_WORKDIR} --port=${JUPYTER_PORT} --no-browser --ip=0.0.0.0 --allow-root"
     # if MSPASS_JUPYTER_PWD is not set, notebook will generate a default token
     if [[ ! -z ${MSPASS_JUPYTER_PWD+x} ]]; then
       # we rely on jupyter's python function to hash the password
@@ -39,6 +39,21 @@ if [ $# -eq 0 ]; then
     else # if [ "$MSPASS_SCHEDULER" = "dask" ]
       export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
       jupyter notebook ${NOTEBOOK_ARGS}
+    fi
+    # copy the shard data to scratch if the shards are deployed in /tmp
+    if [ "$MSPASS_SHARD_MODE" = "tmp" ]; then
+      echo "copy shard data to scratch"
+      # copy data
+      for i in ${MSPASS_SHARD_DB_PATH[@]}; do
+          scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_DB_DIR}
+          #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_DB_DIR}
+      done
+      # copy log
+      for i in ${MSPASS_SHARD_LOGS_PATH[@]}; do
+          scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
+          #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_LOG_DIR}
+      done
+      sleep 30
     fi
   }
 
@@ -59,7 +74,7 @@ if [ $# -eq 0 ]; then
     MONGODB_CONFIG_PORT=$(($MONGODB_PORT+1))
     [[ -d ${MONGO_DATA}_config ]] || mkdir -p ${MONGO_DATA}_config
     mongod --port $MONGODB_CONFIG_PORT --configsvr --replSet configserver --dbpath ${MONGO_DATA}_config --logpath ${MONGO_LOG}_config --bind_ip_all &
-    sleep $SLEEP_TIME
+    sleep ${MSPASS_SLEEP_TIME}
     rs_init_status=$(mongo --port $MONGODB_CONFIG_PORT --quiet --eval "rs.status().code")
     if [ "${rs_init_status}" = "94" ]; then
       echo "dbmanager config server replicaSet is initialized"
@@ -73,33 +88,35 @@ if [ $# -eq 0 ]; then
 
     # mongos server configuration
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
-    sleep $SLEEP_TIME
+    sleep ${MSPASS_SLEEP_TIME}
     for i in ${MSPASS_SHARD_LIST[@]}; do
       echo ${i}
       mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
-      sleep $SLEEP_TIME
+      sleep ${MSPASS_SLEEP_TIME}
     done
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "shard" ]; then
     [[ -n $MSPASS_SHARD_ID ]] || MSPASS_SHARD_ID=$MY_ID
-    [[ -d ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} ]] || mkdir -p ${MONGO_DATA}_shard_${MSPASS_SHARD_ID}
     # Note that we have to create a one-member replica set here 
     # because certain pymongo API will use "retryWrites=true" 
     # and thus trigger an error.
-    if [ "$SHARD_DB_PATH" = "tmp" ]; then
-      # backup from the dump bson file if exists using mongorestore
-      mongod --port $MONGODB_PORT --shardsvr --replSet ${HOSTNAME} --dbpath /tmp/db --logpath /tmp/logs  --bind_ip_all &
-      # restore the backup if exists
-      if [[ -d "${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup" ]]; then
-        mongorestore --host=${HOSTNAME}:$MONGODB_PORT --dir=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplogReplay
-      fi
+    if [ "$MSPASS_SHARD_MODE" = "tmp" ]; then
+      echo "store shard data in tmp"
+      # create db and log dirs if not exists
+      [[ -d /tmp/db/data_shard_${MSPASS_SHARD_ID} ]] || mkdir -p /tmp/db/data_shard_${MSPASS_SHARD_ID}
+      [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID}
+      # store the shard data in the /tmp folder in local machine
+      mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
     else
-      mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID}  --bind_ip_all &
+      echo "store shard data in scratch"
+      [[ -d ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} ]] || mkdir -p ${MONGO_DATA}_shard_${MSPASS_SHARD_ID}
+      mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} --logpath ${MONGO_LOG}_shard_${MSPASS_SHARD_ID} --bind_ip_all &
     fi
-    sleep $SLEEP_TIME
+    sleep ${MSPASS_SLEEP_TIME}
 
     # shard server configuration
     rs_init_status=$(mongo --port $MONGODB_PORT --quiet --eval "rs.status().code")
+    sleep ${MSPASS_SLEEP_TIME}
     if [ "${rs_init_status}" = "94" ]; then
       echo "shard server replicaSet is initialized"
       mongo --port $MONGODB_PORT --eval \
@@ -107,11 +124,6 @@ if [ $# -eq 0 ]; then
     else
       echo "shard server replicaSet is reconfig"
       mongo --port $MONGODB_PORT --eval "rsconf=rs.conf();rsconf.members=[{ _id: 0, host : \"$HOSTNAME:$MONGODB_PORT\" }];rs.reconfig(rsconf, {force: true})"
-    fi
-    
-    # if specify as tmp, we need to back up the shard database into our scratch file system using mongodump
-    if [ "$SHARD_DB_PATH" = "tmp" ]; then
-      mongodump --host=${HOSTNAME}:$MONGODB_PORT --out=${MONGO_DATA}_shard_${MSPASS_SHARD_ID}/backup --oplog
     fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "scheduler" ]; then
