@@ -337,14 +337,14 @@ class Database(pymongo.database.Database):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        if storage_mode not in ['file', 'gridfs']:
+        if storage_mode not in ['file', 'file_mseed', 'gridfs']:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
         if mode not in ['promiscuous', 'cautious', 'pedantic']:
             raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
         # below we try to capture permission issue before writing anything to the database.
         # However, in the case that a storage is almost full, exceptions can still be
         # thrown, which could mess up the database record.
-        if storage_mode == 'file':
+        if storage_mode in ['file', 'file_mseed']:
             if not dfile and not dir:
                 # Note the following uses the dir and dfile defined in the data object.
                 # It will ignore these two keys already in the collection in an update
@@ -395,6 +395,12 @@ class Database(pymongo.database.Database):
                     update_dict['dir'] = dir
                     update_dict['dfile'] = dfile
                     update_dict['foff'] = foff
+                elif storage_mode == "file_mseed":
+                    foff, nbytes = self._save_data_to_mseed(mspass_object, dir, dfile)
+                    update_dict['dir'] = dir
+                    update_dict['dfile'] = dfile
+                    update_dict['foff'] = foff
+                    update_dict['nbytes'] = nbytes
                 elif storage_mode == "gridfs":
                     old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
                     gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
@@ -1502,7 +1508,7 @@ class Database(pymongo.database.Database):
         if exclude_objects is None:
             exclude_objects = []
 
-        if storage_mode in ["file", "gridfs"]:
+        if storage_mode in ['file', 'file_mseed', 'gridfs']:
             j = 0
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
@@ -1588,7 +1594,7 @@ class Database(pymongo.database.Database):
             if gfsh.exists(object_doc['gridfs_id']):
                 gfsh.delete(object_doc['gridfs_id'])
 
-        elif storage_mode == "file" and remove_unreferenced_files:
+        elif storage_mode in ['file', 'file_mseed'] and remove_unreferenced_files:
             dir_name = object_doc['dir']
             dfile_name = object_doc['dfile']
             # find if there are any remaining matching documents with dir and dfile
@@ -2860,8 +2866,6 @@ class Database(pymongo.database.Database):
         :param foff: offset that marks the starting of the data in the file.
         :param nbytes: number of bytes to be read from the offset.
         """
-        if not isinstance(mspass_object, TimeSeries):
-            raise TypeError("only TimeSeries is supported in miniseed reader")
         fname = os.path.join(dir, dfile)
         with open(fname, mode='rb') as fh:
             fh.seek(foff)
@@ -2869,11 +2873,52 @@ class Database(pymongo.database.Database):
             # is the miniseed data to a python "file-like object"
             flh = io.BytesIO(fh.read(nbytes))
             st = obspy.read(flh)
-        # st is a "stream" but it only has one member here because we are
-        # reading single net,sta,chan,loc grouping defined by the index
-        # We only want the Trace object not the stream to convert
-        tr = st[0]
-        # Now we convert this to a TimeSeries and load other Metadata
-        # Note the exclusion copy and the test verifying net,sta,chan,
-        # loc, and startime all match
-        mspass_object.data = DoubleVector(tr.data)
+        if isinstance(mspass_object, TimeSeries):
+            # st is a "stream" but it only has one member here because we are
+            # reading single net,sta,chan,loc grouping defined by the index
+            # We only want the Trace object not the stream to convert
+            tr = st[0]
+            # Now we convert this to a TimeSeries and load other Metadata
+            # Note the exclusion copy and the test verifying net,sta,chan,
+            # loc, and startime all match
+            mspass_object.data = DoubleVector(tr.data)
+        elif isinstance(mspass_object, Seismogram):
+            sm = st.toSeismogram(cardinal=True)
+            mspass_object.data = sm.data
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+    @staticmethod
+    def _save_data_to_mseed(mspass_object, dir, dfile):
+        """
+        Saves sample data as a binary of miniseed format. Opens the file and ALWAYS appends data to the end of the file.
+
+        This method is subject to several issues to beware of before using them:
+        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without
+        stranding (potentially large quantities) of data in the middle of files or
+        corrupting a file with a careless insert, and (3) when the number of files
+        gets large managing them becomes difficult.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param dir: file directory.
+        :type dir: :class:`str`
+        :param dfile: file name.
+        :type dfile: :class:`str`
+        :return: Position of first data sample (foff).
+        """
+        fname = os.path.join(dir, dfile)
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        with open(fname, mode='a+b') as fh:
+            foff = fh.seek(0, 2)
+            f_byte = io.BytesIO()
+            if isinstance(mspass_object, TimeSeries):
+                mspass_object.toTrace().write(f_byte, format='MSEED')
+            elif isinstance(mspass_object, Seismogram):
+                mspass_object.toStream().write(f_byte, format='MSEED')
+            else:
+                raise TypeError("only TimeSeries and Seismogram are supported")
+            f_byte.seek(0)
+            content = f_byte.read()
+            fh.write(content)
+        return foff, len(content)

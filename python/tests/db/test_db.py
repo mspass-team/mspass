@@ -171,15 +171,20 @@ class TestDatabase():
         self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
         assert not gfsh.exists(gridfs_id)
 
-    def test_read_mseed(self):
-        tmp_ts = get_live_timeseries()
+    def test_save_read_mseed(self):
+        tmp_seis = get_live_seismogram()
         dir = 'python/tests/data/'
         dfile = 'test_mseed_output'
         fname = os.path.join(dir, dfile)
-        tr = tmp_ts.toTrace()
-        tr.write(fname, format='MSEED')
+        foff, nbytes = self.db._save_data_to_mseed(tmp_seis, dir, dfile)
+        tmp_seis_2 = Seismogram()
+        self.db._read_data_from_mseed(tmp_seis_2, dir, dfile, foff, nbytes)
+        assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
+
+        tmp_ts = get_live_timeseries()
+        foff, nbytes = self.db._save_data_to_mseed(tmp_ts, dir, dfile)
         tmp_ts_2 = TimeSeries()
-        self.db._read_data_from_mseed(tmp_ts_2, dir, dfile, 0, os.path.getsize(fname))
+        self.db._read_data_from_mseed(tmp_ts_2, dir, dfile, foff, nbytes)
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
     def test_mspass_type_helper(self):
@@ -489,6 +494,16 @@ class TestDatabase():
 
         res = self.db['wf_Seismogram'].find_one({'_id': promiscuous_seis['_id']})
         assert res['storage_mode'] == 'file'
+        assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
+
+        # file_mseed
+        self.db.save_data(promiscuous_seis, mode='promiscuous', storage_mode='file_mseed',
+                          dir='./python/tests/data/', dfile='test_db_output', exclude_keys=['extra2'])
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
+        promiscuous_seis2 = self.db.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'])
+
+        res = self.db['wf_Seismogram'].find_one({'_id': promiscuous_seis['_id']})
+        assert res['storage_mode'] == 'file_mseed'
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
 
         with pytest.raises(ValueError, match='dir or dfile is not specified in data object'):
