@@ -19,6 +19,7 @@ import obspy
 from obspy import Inventory
 from obspy import UTCDateTime
 
+import mspasspy.util.converter
 from mspasspy.ccore.io import _mseed_file_indexer
 
 from mspasspy.ccore.seismic import (TimeSeries,
