@@ -2849,7 +2849,7 @@ class Database(pymongo.database.Database):
         if dir == None:
             odir = os.getcwd()
         else:
-            odir = os.path.realpath(dir)
+            odir = os.path.abspath(dir)
         fname = os.path.join(odir, dfile)
         ind = _mseed_file_indexer(fname)
         for i in ind:
