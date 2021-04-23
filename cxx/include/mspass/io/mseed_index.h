@@ -14,7 +14,10 @@ public:
   std::string chan;
   size_t foff;
   size_t nbytes;
+  size_t npts;
+  double samprate;
   double starttime;
+  double endtime;
   double last_packet_time;
   /* These aren't really essential because the compiler should automatically
   generate them, but better to be explicit since the std::vector demands them*/
@@ -25,8 +28,11 @@ public:
     loc="";
     chan="";
     foff=0;
-    nbytes=0;
-    starttime=0.0;
+    nbytes = 0;
+    npts = 0;
+    samprate = 0.0;
+    starttime = 0.0;
+    endtime = 0.0;
     last_packet_time=0.0;
   };
   mseed_index(const mseed_index& parent) : net(parent.net),sta(parent.sta),
@@ -34,7 +40,10 @@ public:
   {
     foff=parent.foff;
     nbytes=parent.nbytes;
+    npts=parent.npts;
+    samprate=parent.samprate;
     starttime=parent.starttime;
+    endtime=parent.endtime;
     last_packet_time=parent.last_packet_time;
   };
   mseed_index& operator=(const mseed_index& parent)
@@ -46,8 +55,11 @@ public:
       loc=parent.loc;
       chan=parent.chan;
       foff=parent.foff;
+      npts=parent.npts;
       nbytes=parent.nbytes;
+      samprate=parent.samprate;
       starttime=parent.starttime;
+      endtime=parent.endtime;
       last_packet_time=parent.last_packet_time;
     }
     return *this;

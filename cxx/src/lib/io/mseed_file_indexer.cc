@@ -38,6 +38,8 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
   char net[16],sta[16],loc[16],chan[16];  //larger than needed but  safe
   mseed_index ind;
   nstime_t stime,lptime;
+  int64_t npts(0);
+  double last_packet_samprate;
   while ((retcode = ms3_readmsr (&msr, inputfile.c_str(), &fpos, NULL,
                                  flags, verbose)) == MS_NOERROR)
   {
@@ -51,6 +53,8 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
       stime=msr->starttime;
       strcpy(last_sid,msr->sid);
       ++count;
+      npts=msr->samplecnt;
+      last_packet_samprate=msr->samprate;
       continue;
     }
 
@@ -75,14 +79,20 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
       ind.nbytes=nbytes;
       ind.starttime=MS_NSTIME2EPOCH(static_cast<double>(stime));
       ind.last_packet_time=MS_NSTIME2EPOCH(static_cast<double>(lptime));
+      ind.samprate=last_packet_samprate;
+      ind.npts=npts;
+      ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
       indexdata.push_back(ind);
       start_foff=fpos;
       stime=msr->starttime;
+      npts=msr->samplecnt;
     }
     strcpy(last_sid,current_sid);
     //msr3_print (msr, ppackets);
     ++count;
+    npts+=msr->samplecnt;
     lptime=msr->starttime;
+    last_packet_samprate=msr->samprate;
   }
 
   if (retcode != MS_ENDOFFILE)
@@ -105,6 +115,9 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
       ind.nbytes=nbytes;
       ind.starttime=MS_NSTIME2EPOCH(static_cast<double>(stime));
       ind.last_packet_time=MS_NSTIME2EPOCH(static_cast<double>(lptime));
+      ind.samprate=last_packet_samprate;
+      ind.npts=npts;
+      ind.endtime=ind.starttime + (static_cast<double>(npts))/ind.samprate;
       indexdata.push_back(ind);
     }
   }

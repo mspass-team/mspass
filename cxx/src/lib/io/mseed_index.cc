@@ -17,7 +17,10 @@ std::ostringstream& operator<< (std::ostringstream& ss,const mseed_index& ind)
      << ind.nbytes<<" "
      << std::setprecision(20)
      << ind.starttime<<" "
-     << ind.last_packet_time;
+     << ind.last_packet_time<<" "
+     << ind.endtime<<" "
+     << ind.samprate<<" "
+     << ind.npts;
   return ss;
 };
 }

@@ -32,8 +32,14 @@ PYBIND11_MODULE(io,m){
        "offset in bytes to first packet of data block")
     .def_readwrite("nbytes",&mseed_index::nbytes,
       "number of bytes of data in this block of data")
+    .def_readwrite("npts",&mseed_index::npts,
+      "Computed number of samples from packet headers")
+    .def_readwrite("samprate",&mseed_index::samprate,
+      "Data sample rate (sps) for this block of data")
     .def_readwrite("starttime",&mseed_index::starttime,
       "Start time (epoch seconds) of this block of data")
+    .def_readwrite("endtime",&mseed_index::endtime,
+      "Time estimated for end of block computed from npts and samprate")
     .def_readwrite("last_packet_time",&mseed_index::last_packet_time,
       "Time tag of last packe of data in this block - less than endtime")
     ;  

@@ -543,10 +543,9 @@ class TestDatabase():
         self.db.index_mseed_file(fname, collection='wf_miniseed')
         assert self.db['wf_miniseed'].count_documents({}) == 3
 
-        # FIXME: The following is broken right now. Need to at least keep dt and t0 
-        # in the wf_miniseed documents such that a data object can be correctly constructed.
-        # for doc in self.db['wf_miniseed'].find():
-        #     ts = self.db.read_data(doc, collection='wf_miniseed')
+        for doc in self.db['wf_miniseed'].find():
+            ts = self.db.read_data(doc, collection='wf_miniseed')
+            assert ts.npts == len(ts.data)
 
     def test_delete_wf(self):
         # clear all the wf collection documents

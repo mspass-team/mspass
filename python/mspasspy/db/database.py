@@ -2764,10 +2764,16 @@ class Database(pymongo.database.Database):
         o['chan'] = index_record.chan
         if index_record.loc:
             o['loc'] = index_record.loc
+        o['sampling_rate'] = index_record.samprate
+        o['delta'] = 1.0/(index_record.samprate)
         o['starttime'] = index_record.starttime
         o['last_packet_time'] = index_record.last_packet_time
         o['foff'] = index_record.foff
         o['nbytes'] = index_record.nbytes
+        # FIXME: The following are commented out because some simple tests showed that 
+        #   the numbers are very different from the data being read by ObsPy's reader.
+        # o['endtime'] = index_record.endtime
+        # o['npts'] = index_record.npts
         return o
 
     def index_mseed_file(self, dfile, dir=None, collection='wf_miniseed'):
@@ -2847,6 +2853,7 @@ class Database(pymongo.database.Database):
         ind = _mseed_file_indexer(fname)
         for i in ind:
             doc = self._convert_mseed_index(i)
+            doc['storage_mode'] = 'file_mseed'
             doc['dir'] = odir
             doc['dfile'] = dfile
             dbh.insert_one(doc)
@@ -2881,9 +2888,11 @@ class Database(pymongo.database.Database):
             # Now we convert this to a TimeSeries and load other Metadata
             # Note the exclusion copy and the test verifying net,sta,chan,
             # loc, and startime all match
+            mspass_object.npts = len(tr.data)
             mspass_object.data = DoubleVector(tr.data)
         elif isinstance(mspass_object, Seismogram):
             sm = st.toSeismogram(cardinal=True)
+            mspass_object.npts = sm.data.columns()
             mspass_object.data = sm.data
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
