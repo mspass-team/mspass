@@ -453,6 +453,14 @@ other attributes.
     \return pickle serialized data object.
   */
   friend pybind11::object serialize_metadata_py(const Metadata &md);
+  /*! Unpack serialized Metadata.
+  *
+  This function is the inverse of the serialize function.   It recreates a
+  Metadata object serialized previously with the serialize function.  
+  \param sd is the serialized data to be unpacked
+  \return Metadata derived from sd
+  */
+  friend Metadata restore_serialized_metadata_py(const pybind11::object &sd);
   /*! Standard operator for overloading output to a stringstream */
   friend std::ostringstream& operator<<(std::ostringstream&,
      const mspass::utility::Metadata&);

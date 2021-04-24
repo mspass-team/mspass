@@ -298,7 +298,28 @@ pybind11::object serialize_metadata_py(const Metadata &md)
     return md_dump;
   }catch(...){pybind11::gil_scoped_release release;throw;};
 }
-
+/* This is the reverse of serialize_metadata also using pybind11. */
+Metadata restore_serialized_metadata_py(const pybind11::object &s)
+{
+  pybind11::gil_scoped_acquire acquire;
+  try
+  {
+    pybind11::module pickle = pybind11::module::import("pickle");
+    pybind11::object loads = pickle.attr("loads");
+    pybind11::tuple md_dump = loads(s);
+    pybind11::dict md_dict = md_dump[0];
+    pybind11::object md_py = pybind11::module_::import("mspasspy.ccore.utility").attr("Metadata")(md_dict);
+    Metadata md = md_py.cast<Metadata>();
+    md.changed_or_set = md_dump[1].cast<std::set<std::string>>();
+    pybind11::gil_scoped_release release;
+    return md;
+  }
+  catch (...)
+  {
+    pybind11::gil_scoped_release release;
+    throw;
+  };
+}
 /* New method added Apr 2020 to change key assigned to a value - used for aliass*/
 void Metadata::change_key(const string oldkey, const string newkey)
 {
