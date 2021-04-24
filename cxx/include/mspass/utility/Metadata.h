@@ -320,6 +320,19 @@ other attributes.
   {
       this->put<std::string>(key,val);
   };
+  /*! Put a C string literal.  Requires special handling because 
+  it is not copy constructable (see warning in boost docs:
+  https://theboostcpplibraries.com/boost.any 
+  */
+  void put(const char *key,const char *val)
+  {
+    std::string sval(val);
+    this->put<std::string>(key,val);
+  }
+  void put(std::string key,const char *val)
+  {
+    this->put(key.c_str(),val);
+  }
   void put_object(const std::string key, const pybind11::object val)
   {
       this->put<pybind11::object>(key,val);
@@ -431,27 +444,26 @@ other attributes.
   \param newkey is the new key to use for the replacement.
   */
   void change_key(const std::string oldkey, const std::string newkey);
-  friend std::ostringstream& operator<<(std::ostringstream&, mspass::utility::Metadata&);
   /*! Serialize Metadata to a python bytes object.
-
   This function is needed to support pickle in the python interface.
   It cast the C++ object to a Python dict and calls pickle against that
-  dict directly to generate a Python bytes object. This may not be the 
+  dict directly to generate a Python bytes object. This may not be the
   most elegant approach, but it should be bombproof.
-
-  \param md is the Metadata object to be serialized
-  \return pickle serialized data object.
+    \param md is the Metadata object to be serialized
+    \return pickle serialized data object.
   */
   friend pybind11::object serialize_metadata_py(const Metadata &md);
   /*! Unpack serialized Metadata.
   *
   This function is the inverse of the serialize function.   It recreates a
   Metadata object serialized previously with the serialize function.  
-
   \param sd is the serialized data to be unpacked
   \return Metadata derived from sd
   */
   friend Metadata restore_serialized_metadata_py(const pybind11::object &sd);
+  /*! Standard operator for overloading output to a stringstream */
+  friend std::ostringstream& operator<<(std::ostringstream&,
+     const mspass::utility::Metadata&);
 protected:
   std::map<std::string,boost::any> md;
   /* The keys of any entry changed will be contained here.   */

@@ -21,7 +21,7 @@ vector<mseed_index> mseed_file_indexer(const string inputfile)
 {
   MS3Record *msr = 0;
   uint32_t flags = MSF_SKIPNOTDATA ;
-  int8_t ppackets = 0;
+  // int8_t ppackets = 0;
   int8_t verbose = 0;
   int retcode;
   char last_sid[128],current_sid[128];
