@@ -8,6 +8,7 @@ import pathlib
 import pickle
 import struct
 import sys
+import urllib.request
 from array import array
 
 import dask.bag as daskbag
@@ -293,14 +294,15 @@ class Database(pymongo.database.Database):
             # 2.load data from different modes
             storage_mode = object_doc['storage_mode']
             if storage_mode == "file":
-                self._read_data_from_dfile(mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'])
-            elif storage_mode == "file_mseed":
-                self._read_data_from_mseed(
-                    mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'], object_doc['nbytes'])
+                if 'format' in object_doc:
+                    self._read_data_from_dfile(
+                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'], nbytes=object_doc['nbytes'], format=object_doc['format'])
+                else:
+                    self._read_data_from_dfile(mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'])
             elif storage_mode == "gridfs":
                 self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
             elif storage_mode == "url":
-                pass  # todo for future
+                self._read_data_from_url(mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
             else:
                 raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
@@ -315,7 +317,7 @@ class Database(pymongo.database.Database):
 
         return mspass_object
 
-    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dfile=None, dir=None, exclude_keys=None, collection=None, data_tag=None):
+    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dir=None, dfile=None, format=None, exclude_keys=None, collection=None, data_tag=None):
         """
         Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
 
@@ -326,10 +328,12 @@ class Database(pymongo.database.Database):
         :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
             the object in a binary file, which requires ``dfile`` and ``dir``.
         :type storage_mode: :class:`str`
-        :param dfile: file name if using "file" storage mode.
-        :type dfile: :class:`str`
         :param dir: file directory if using "file" storage mode.
         :type dir: :class:`str`
+        :param dfile: file name if using "file" storage mode.
+        :type dfile: :class:`str`
+        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
+        :type format: :class:`str`
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
@@ -338,14 +342,14 @@ class Database(pymongo.database.Database):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
-        if storage_mode not in ['file', 'file_mseed', 'gridfs']:
+        if storage_mode not in ['file', 'gridfs']:
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
         if mode not in ['promiscuous', 'cautious', 'pedantic']:
             raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
         # below we try to capture permission issue before writing anything to the database.
         # However, in the case that a storage is almost full, exceptions can still be
         # thrown, which could mess up the database record.
-        if storage_mode in ['file', 'file_mseed']:
+        if storage_mode == 'file':
             if not dfile and not dir:
                 # Note the following uses the dir and dfile defined in the data object.
                 # It will ignore these two keys already in the collection in an update
@@ -392,16 +396,13 @@ class Database(pymongo.database.Database):
                 update_dict = {'storage_mode': storage_mode}
 
                 if storage_mode == "file":
-                    foff = self._save_data_to_dfile(mspass_object, dir, dfile)
+                    foff, nbytes = self._save_data_to_dfile(mspass_object, dir, dfile, format=format)
                     update_dict['dir'] = dir
                     update_dict['dfile'] = dfile
                     update_dict['foff'] = foff
-                elif storage_mode == "file_mseed":
-                    foff, nbytes = self._save_data_to_mseed(mspass_object, dir, dfile)
-                    update_dict['dir'] = dir
-                    update_dict['dfile'] = dfile
-                    update_dict['foff'] = foff
-                    update_dict['nbytes'] = nbytes
+                    if format:
+                        update_dict['nbytes'] = nbytes
+                        update_dict['format'] = format
                 elif storage_mode == "gridfs":
                     old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
                     gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
@@ -1478,7 +1479,7 @@ class Database(pymongo.database.Database):
 
         return ensemble
 
-    def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dfile_list=None, dir_list=None,
+    def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dir_list=None, dfile_list=None,
                            exclude_keys=None, exclude_objects=None, collection=None, data_tag=None):
         """
         Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
@@ -1492,8 +1493,8 @@ class Database(pymongo.database.Database):
         :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
             the object in a binary file, which requires ``dfile`` and ``dir``.
         :type storage_mode: :class:`str`
-        :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is ``str`` type.
         :param dir_list: A :class:`list` of file directories if using "file" storage mode. File directory is ``str`` type.
+        :param dfile_list: A :class:`list` of file names if using "file" storage mode. File name is ``str`` type.
         :param exclude_keys: the metadata attributes you want to exclude from being stored.
         :type exclude_keys: a :class:`list` of :class:`str`
         :param exclude_objects: A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.
@@ -1509,12 +1510,12 @@ class Database(pymongo.database.Database):
         if exclude_objects is None:
             exclude_objects = []
 
-        if storage_mode in ['file', 'file_mseed', 'gridfs']:
+        if storage_mode in ['file', 'gridfs']:
             j = 0
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
-                    self.save_data(ensemble_object.member[i], mode, storage_mode, dfile_list[j],
-                                   dir_list[j], exclude_keys, collection, data_tag)
+                    self.save_data(ensemble_object.member[i], mode=mode, storage_mode=storage_mode, dir=dir_list[j],
+                                   dfile=dfile_list[j], exclude_keys=exclude_keys, collection=collection, data_tag=data_tag)
                     j += 1
         elif storage_mode == "url":
             pass
@@ -1595,7 +1596,7 @@ class Database(pymongo.database.Database):
             if gfsh.exists(object_doc['gridfs_id']):
                 gfsh.delete(object_doc['gridfs_id'])
 
-        elif storage_mode in ['file', 'file_mseed'] and remove_unreferenced_files:
+        elif storage_mode in ['file'] and remove_unreferenced_files:
             dir_name = object_doc['dir']
             dfile_name = object_doc['dfile']
             # find if there are any remaining matching documents with dir and dfile
@@ -1945,7 +1946,7 @@ class Database(pymongo.database.Database):
 
 
     @staticmethod
-    def _read_data_from_dfile(mspass_object, dir, dfile, foff):
+    def _read_data_from_dfile(mspass_object, dir, dfile, foff, nbytes=0, format=None):
         """
         Read the stored data from a file and loads it into a mspasspy object.
 
@@ -1956,30 +1957,51 @@ class Database(pymongo.database.Database):
         :param dfile: file name.
         :type dfile: :class:`str`
         :param foff: offset that marks the starting of the data in the file.
+        :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.
+        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
+        :type format: :class:`str`
         """
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
         fname = os.path.join(dir, dfile)
         with open(fname, mode='rb') as fh:
             fh.seek(foff)
-            float_array = array('d')
-            if isinstance(mspass_object, TimeSeries):
-                if not mspass_object.is_defined('npts'):
-                    raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(mspass_object.get('npts') * 8))
-                mspass_object.data = DoubleVector(float_array)
-            elif isinstance(mspass_object, Seismogram):
-                if not mspass_object.is_defined('npts'):
-                    raise KeyError("npts is not defined")
-                float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
-                print(len(float_array))
-                mspass_object.data = dmatrix(3, mspass_object.get('npts'))
-                for i in range(3):
-                    for j in range(mspass_object.get('npts')):
-                        mspass_object.data[i, j] = float_array[i * mspass_object.get('npts') + j]
+            if not format:
+                float_array = array('d')
+                if isinstance(mspass_object, TimeSeries):
+                    if not mspass_object.is_defined('npts'):
+                        raise KeyError("npts is not defined")
+                    float_array.frombytes(fh.read(mspass_object.get('npts') * 8))
+                    mspass_object.data = DoubleVector(float_array)
+                elif isinstance(mspass_object, Seismogram):
+                    if not mspass_object.is_defined('npts'):
+                        raise KeyError("npts is not defined")
+                    float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
+                    print(len(float_array))
+                    mspass_object.data = dmatrix(3, mspass_object.get('npts'))
+                    for i in range(3):
+                        for j in range(mspass_object.get('npts')):
+                            mspass_object.data[i, j] = float_array[i * mspass_object.get('npts') + j]
             else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
+                flh = io.BytesIO(fh.read(nbytes))
+                st = obspy.read(flh, format=format)
+                if isinstance(mspass_object, TimeSeries):
+                    # st is a "stream" but it only has one member here because we are
+                    # reading single net,sta,chan,loc grouping defined by the index
+                    # We only want the Trace object not the stream to convert
+                    tr = st[0]
+                    # Now we convert this to a TimeSeries and load other Metadata
+                    # Note the exclusion copy and the test verifying net,sta,chan,
+                    # loc, and startime all match
+                    mspass_object.npts = len(tr.data)
+                    mspass_object.data = DoubleVector(tr.data)
+                elif isinstance(mspass_object, Seismogram):
+                    sm = st.toSeismogram(cardinal=True)
+                    mspass_object.npts = sm.data.columns()
+                    mspass_object.data = sm.data
 
     @staticmethod
-    def _save_data_to_dfile(mspass_object, dir, dfile):
+    def _save_data_to_dfile(mspass_object, dir, dfile, format=None):
         """
         Saves sample data as a binary dump of the sample data. Save a mspasspy object as a pure binary dump of
         the sample data in native (Fortran) order. Opens the file and ALWAYS appends data to the end of the file.
@@ -1996,20 +2018,31 @@ class Database(pymongo.database.Database):
         :type dir: :class:`str`
         :param dfile: file name.
         :type dfile: :class:`str`
-        :return: Position of first data sample (foff).
+        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy reader. By default (``None``), the format will be the binary waveform.
+        :type format: :class:`str`
+        :return: Position of first data sample (foff) and the size of the saved chunk.
         """
+        if not isinstance(mspass_object, (TimeSeries, Seismogram)):
+            raise TypeError("only TimeSeries and Seismogram are supported")
         fname = os.path.join(dir, dfile)
         os.makedirs(os.path.dirname(fname), exist_ok=True)
         with open(fname, mode='a+b') as fh:
             foff = fh.seek(0, 2)
-            if isinstance(mspass_object, TimeSeries):
-                ub = bytes(np.array(mspass_object.data))  # fixme DoubleVector
-            elif isinstance(mspass_object, Seismogram):
-                ub = bytes(mspass_object.data)
+            if not format:
+                if isinstance(mspass_object, TimeSeries):
+                    ub = bytes(np.array(mspass_object.data))  # fixme DoubleVector
+                elif isinstance(mspass_object, Seismogram):
+                    ub = bytes(mspass_object.data)
             else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
+                f_byte = io.BytesIO()
+                if isinstance(mspass_object, TimeSeries):
+                    mspass_object.toTrace().write(f_byte, format=format)
+                elif isinstance(mspass_object, Seismogram):
+                    mspass_object.toStream().write(f_byte, format=format)
+                f_byte.seek(0)
+                ub = f_byte.read()
             fh.write(ub)
-        return foff
+        return foff, len(ub)
 
     def _save_data_to_gridfs(self, mspass_object, gridfs_id=None):
         """
@@ -2059,6 +2092,47 @@ class Database(pymongo.database.Database):
             for i in range(3):
                 for j in range(mspass_object['npts']):
                     mspass_object.data[i, j] = x[i * mspass_object['npts'] + j]
+        else:
+            raise TypeError("only TimeSeries and Seismogram are supported")
+
+    @staticmethod
+    def _read_data_from_url(mspass_object, url, format=None):
+        """
+        Read a file from url and loads it into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param url: the url that points to a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`.
+        :type url: :class:`str`
+        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy reader. If not specified, the ObsPy reader will try to detect the format automatically.
+        :type format: :class:`str`
+        """
+        try:
+            response = urllib.request.urlopen(url)
+            flh = io.BytesIO(response.read())
+        # Catch HTTP errors.
+        except Exception as e:
+            raise MsPASSError("Error while downloading: %s" %
+                              url, "Fatal") from e
+
+        st = obspy.read(flh, format=format)
+        if isinstance(mspass_object, TimeSeries):
+            # st is a "stream" but it only has one member here because we are
+            # reading single net,sta,chan,loc grouping defined by the index
+            # We only want the Trace object not the stream to convert
+            tr = st[0]
+            # Now we convert this to a TimeSeries and load other Metadata
+            # Note the exclusion copy and the test verifying net,sta,chan,
+            # loc, and startime all match
+            mspass_object.npts = len(tr.data)
+            mspass_object.data = DoubleVector(tr.data)
+        elif isinstance(mspass_object, Seismogram):
+            # Note that the following convertion could be problematic because
+            # it assumes there are three traces in the file, and they are in
+            # the order of E, N, Z.
+            sm = st.toSeismogram(cardinal=True)
+            mspass_object.npts = sm.data.columns()
+            mspass_object.data = sm.data
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
@@ -2854,81 +2928,9 @@ class Database(pymongo.database.Database):
         ind = _mseed_file_indexer(fname)
         for i in ind:
             doc = self._convert_mseed_index(i)
-            doc['storage_mode'] = 'file_mseed'
+            doc['storage_mode'] = 'file'
+            doc['format'] = 'mseed'
             doc['dir'] = odir
             doc['dfile'] = dfile
             dbh.insert_one(doc)
             print('Saved this doc: ', doc)
-
-    @staticmethod
-    def _read_data_from_mseed(mspass_object, dir, dfile, foff, nbytes):
-        """
-        Read the stored data from a miniseed file and loads it into a mspasspy object.
-
-        :param mspass_object: the target object.
-        :type mspass_object: :class:`mspasspy.ccore.seismic.TimeSeries`
-        :param dir: file directory.
-        :type dir: :class:`str`
-        :param dfile: file name.
-        :type dfile: :class:`str`
-        :param foff: offset that marks the starting of the data in the file.
-        :param nbytes: number of bytes to be read from the offset.
-        """
-        fname = os.path.join(dir, dfile)
-        with open(fname, mode='rb') as fh:
-            fh.seek(foff)
-            # This incantation is needed to convert the raw binary data that
-            # is the miniseed data to a python "file-like object"
-            flh = io.BytesIO(fh.read(nbytes))
-            st = obspy.read(flh)
-        if isinstance(mspass_object, TimeSeries):
-            # st is a "stream" but it only has one member here because we are
-            # reading single net,sta,chan,loc grouping defined by the index
-            # We only want the Trace object not the stream to convert
-            tr = st[0]
-            # Now we convert this to a TimeSeries and load other Metadata
-            # Note the exclusion copy and the test verifying net,sta,chan,
-            # loc, and startime all match
-            mspass_object.npts = len(tr.data)
-            mspass_object.data = DoubleVector(tr.data)
-        elif isinstance(mspass_object, Seismogram):
-            sm = st.toSeismogram(cardinal=True)
-            mspass_object.npts = sm.data.columns()
-            mspass_object.data = sm.data
-        else:
-            raise TypeError("only TimeSeries and Seismogram are supported")
-
-    @staticmethod
-    def _save_data_to_mseed(mspass_object, dir, dfile):
-        """
-        Saves sample data as a binary of miniseed format. Opens the file and ALWAYS appends data to the end of the file.
-
-        This method is subject to several issues to beware of before using them:
-        (1) they are subject to damage by other processes/program, (2) updates are nearly impossible without
-        stranding (potentially large quantities) of data in the middle of files or
-        corrupting a file with a careless insert, and (3) when the number of files
-        gets large managing them becomes difficult.
-
-        :param mspass_object: the target object.
-        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param dir: file directory.
-        :type dir: :class:`str`
-        :param dfile: file name.
-        :type dfile: :class:`str`
-        :return: Position of first data sample (foff).
-        """
-        fname = os.path.join(dir, dfile)
-        os.makedirs(os.path.dirname(fname), exist_ok=True)
-        with open(fname, mode='a+b') as fh:
-            foff = fh.seek(0, 2)
-            f_byte = io.BytesIO()
-            if isinstance(mspass_object, TimeSeries):
-                mspass_object.toTrace().write(f_byte, format='MSEED')
-            elif isinstance(mspass_object, Seismogram):
-                mspass_object.toStream().write(f_byte, format='MSEED')
-            else:
-                raise TypeError("only TimeSeries and Seismogram are supported")
-            f_byte.seek(0)
-            content = f_byte.read()
-            fh.write(content)
-        return foff, len(content)
