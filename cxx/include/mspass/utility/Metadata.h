@@ -320,6 +320,19 @@ other attributes.
   {
       this->put<std::string>(key,val);
   };
+  /*! Put a C string literal.  Requires special handling because 
+  it is not copy constructable (see warning in boost docs:
+  https://theboostcpplibraries.com/boost.any 
+  */
+  void put(const char *key,const char *val)
+  {
+    std::string sval(val);
+    this->put<std::string>(key,val);
+  }
+  void put(std::string key,const char *val)
+  {
+    this->put(key.c_str(),val);
+  }
   void put_object(const std::string key, const pybind11::object val)
   {
       this->put<pybind11::object>(key,val);
