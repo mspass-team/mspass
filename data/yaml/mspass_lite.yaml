@@ -53,6 +53,10 @@ Database:
           type: string
           concept: The storage mode of the saved data ('file', 'url' or 'gridfs')
           constraint: required
+        format:
+          type: string
+          concept: The file format of the saved data (e.g., 'MSEED', 'SAC', ...).
+          constraint: optional
         dir:
           type: string
           concept: Directory path to an external file (always used with dfile)

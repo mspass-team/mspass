@@ -9,6 +9,7 @@ import pytest
 import sys
 import re
 
+from  mspasspy.util.converter import TimeSeries2Trace
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory
 
@@ -127,17 +128,34 @@ class TestDatabase():
         tmp_seis = get_live_seismogram()
         dir = 'python/tests/data/'
         dfile = 'test_db_output'
-        foff = self.db._save_data_to_dfile(tmp_seis, dir, dfile)
+        foff, nbytes = self.db._save_data_to_dfile(tmp_seis, dir, dfile)
         tmp_seis_2 = Seismogram()
         tmp_seis_2.npts = 255
         self.db._read_data_from_dfile(tmp_seis_2, dir, dfile, foff)
         assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
 
         tmp_ts = get_live_timeseries()
-        foff = self.db._save_data_to_dfile(tmp_ts, dir, dfile)
+        foff, nbytes = self.db._save_data_to_dfile(tmp_ts, dir, dfile)
         tmp_ts_2 = TimeSeries()
         tmp_ts_2.npts = 255
         self.db._read_data_from_dfile(tmp_ts_2, dir, dfile, foff)
+        assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
+
+        # miniseed format
+        tmp_seis = get_live_seismogram()
+        dir = 'python/tests/data/'
+        dfile = 'test_mseed_output'
+        fname = os.path.join(dir, dfile)
+        foff, nbytes = self.db._save_data_to_dfile(tmp_seis, dir, dfile, format='mseed')
+        tmp_seis_2 = Seismogram()
+        self.db._read_data_from_dfile(
+            tmp_seis_2, dir, dfile, foff, nbytes, format='mseed')
+        assert all(a.any() == b.any() for a, b in zip(tmp_seis.data, tmp_seis_2.data))
+
+        tmp_ts = get_live_timeseries()
+        foff, nbytes = self.db._save_data_to_dfile(tmp_ts, dir, dfile, format='mseed')
+        tmp_ts_2 = TimeSeries()
+        self.db._read_data_from_dfile(tmp_ts_2, dir, dfile, foff, nbytes, format='mseed')
         assert all(a == b for a, b in zip(tmp_ts.data, tmp_ts_2.data))
 
     def test_save_and_read_gridfs(self):
@@ -169,6 +187,19 @@ class TestDatabase():
         assert gfsh.exists(gridfs_id)
         self.db._save_data_to_gridfs(tmp_ts, gridfs_id)
         assert not gfsh.exists(gridfs_id)
+
+    def test_read_data_from_url(self):
+        url = 'http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000'
+        tmp_ts = TimeSeries()
+        self.db._read_data_from_url(tmp_ts, url)
+        tmp_seis = Seismogram()
+        self.db._read_data_from_url(tmp_seis, url)
+        assert all(a == b for a, b in zip(tmp_ts.data, tmp_seis.data[0][:]))
+
+        # test invalid url
+        bad_url = 'http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=DUMMY&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000'
+        with pytest.raises(MsPASSError, match='Error while downloading'):
+            self.db._read_data_from_url(tmp_ts, bad_url)
 
     def test_mspass_type_helper(self):
         schema = self.metadata_def.Seismogram
@@ -479,12 +510,33 @@ class TestDatabase():
         assert res['storage_mode'] == 'file'
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
 
+        # file_mseed
+        self.db.save_data(promiscuous_seis, mode='promiscuous', storage_mode='file',
+                          dir='./python/tests/data/', dfile='test_db_output', format='mseed', exclude_keys=['extra2'])
+        self.db.database_schema.set_default('wf_Seismogram', 'wf')
+        promiscuous_seis2 = self.db.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'])
+
+        res = self.db['wf_Seismogram'].find_one({'_id': promiscuous_seis['_id']})
+        assert res['storage_mode'] == 'file'
+        assert res['format'] == 'mseed'
+        assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
+
         with pytest.raises(ValueError, match='dir or dfile is not specified in data object'):
             self.db.save_data(promiscuous_seis2, mode='promiscuous', storage_mode='file')
         promiscuous_seis2['dir'] = '/'
         promiscuous_seis2['dfile'] = 'test_db_output'
         with pytest.raises(PermissionError, match='No write permission to the save directory'):
             self.db.save_data(promiscuous_seis2, mode='promiscuous', storage_mode='file')
+
+        # url
+        res_url = dict(res)
+        res_url_id = ObjectId()
+        res_url['_id'] = res_url_id
+        res_url['storage_mode'] = 'url'
+        res_url['url'] = 'http://service.iris.edu/fdsnws/dataselect/1/query?net=IU&sta=ANMO&loc=00&cha=BH?&start=2010-02-27T06:30:00.000&end=2010-02-27T06:35:00.000'
+        self.db['wf_Seismogram'].insert_one(res_url)
+        url_seis = self.db.read_data(res_url_id, mode='promiscuous')
+        assert url_seis.data.columns() == 6000
         
         # save with a dead object
         promiscuous_seis.live = False
@@ -508,6 +560,17 @@ class TestDatabase():
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
         with pytest.raises(MsPASSError, match='is not defined'):
             self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
+
+    def test_index_mseed_file(self):
+        dir = 'python/tests/data/'
+        dfile = '3channels.mseed'
+        fname = os.path.join(dir, dfile)
+        self.db.index_mseed_file(fname, collection='wf_miniseed')
+        assert self.db['wf_miniseed'].count_documents({}) == 3
+
+        for doc in self.db['wf_miniseed'].find():
+            ts = self.db.read_data(doc, collection='wf_miniseed')
+            assert ts.npts == len(ts.data)
 
     def test_delete_wf(self):
         # clear all the wf collection documents
@@ -1214,6 +1277,7 @@ class TestDatabase():
     def teardown_class(self):
         try:
             os.remove('python/tests/data/test_db_output')
+            os.remove('python/tests/data/test_mseed_output')
         except OSError:
             pass
         client = DBClient('localhost')
