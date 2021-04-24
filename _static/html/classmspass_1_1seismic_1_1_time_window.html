@@ -96,8 +96,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a972e5e4f12ed675a4aab07af55aa2c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2e71108bfee25d06c62d3123b875ea50"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html#a2e71108bfee25d06c62d3123b875ea50">TimeWindow</a> (const double ts, const double te)</td></tr>
 <tr class="separator:a2e71108bfee25d06c62d3123b875ea50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa60d739dcbe3bbd2bfec0f7532d9a110"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html#aa60d739dcbe3bbd2bfec0f7532d9a110">shift</a> (const double tshift)</td></tr>
-<tr class="separator:aa60d739dcbe3bbd2bfec0f7532d9a110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d95cfd1a6a5d4da99a1df5b7d04d286"><td class="memItemLeft" align="right" valign="top"><a id="a7d95cfd1a6a5d4da99a1df5b7d04d286"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TimeWindow</b> (const <a class="el" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a> &amp;parent)</td></tr>
+<tr class="separator:a7d95cfd1a6a5d4da99a1df5b7d04d286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95d9f170cd5c8f3646f1f85652427ebb"><td class="memItemLeft" align="right" valign="top"><a id="a95d9f170cd5c8f3646f1f85652427ebb"></a>
+<a class="el" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a> &amp;parent)</td></tr>
+<tr class="separator:a95d9f170cd5c8f3646f1f85652427ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15bd441bbadd8af568a53c39e95fab99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html#a15bd441bbadd8af568a53c39e95fab99">shift</a> (const double tshift) const</td></tr>
+<tr class="separator:a15bd441bbadd8af568a53c39e95fab99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b10a14087aec213d708ae8eaeb3f62f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1seismic_1_1_time_window.html#a2b10a14087aec213d708ae8eaeb3f62f">length</a> ()</td></tr>
 <tr class="separator:a2b10a14087aec213d708ae8eaeb3f62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -212,16 +218,16 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns the window length </p>
-<div class="fragment"><div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">return</span>(<a class="code" href="classmspass_1_1seismic_1_1_time_window.html#ac771154520101057bcd0c544ac045b63">end</a>-<a class="code" href="classmspass_1_1seismic_1_1_time_window.html#a12245ae77c3684bc96975e51e81f3bb1">start</a>);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    };</div>
+<div class="fragment"><div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">return</span>(<a class="code" href="classmspass_1_1seismic_1_1_time_window.html#ac771154520101057bcd0c544ac045b63">end</a>-<a class="code" href="classmspass_1_1seismic_1_1_time_window.html#a12245ae77c3684bc96975e51e81f3bb1">start</a>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_time_window.html#ac771154520101057bcd0c544ac045b63">end</a>, and <a class="el" href="classmspass_1_1seismic_1_1_time_window.html#a12245ae77c3684bc96975e51e81f3bb1">start</a>.</p>
 
 </div>
 </div>
-<a id="aa60d739dcbe3bbd2bfec0f7532d9a110"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa60d739dcbe3bbd2bfec0f7532d9a110">&#9670;&nbsp;</a></span>shift()</h2>
+<a id="a15bd441bbadd8af568a53c39e95fab99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15bd441bbadd8af568a53c39e95fab99">&#9670;&nbsp;</a></span>shift()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +240,7 @@ Public Attributes</h2></td></tr>
           <td>(</td>
           <td class="paramtype">const double&#160;</td>
           <td class="paramname"><em>tshift</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
   </td>
@@ -244,12 +250,12 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Returns a new time window translated by tshift argument. </p>
-<div class="fragment"><div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        <a class="code" href="classmspass_1_1seismic_1_1_time_window.html#a972e5e4f12ed675a4aab07af55aa2c7a">TimeWindow</a> newwindow(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        newwindow.start+=tshift;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        newwindow.end += tshift;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;        <span class="keywordflow">return</span>(newwindow);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    }</div>
+<div class="fragment"><div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="classmspass_1_1seismic_1_1_time_window.html#a972e5e4f12ed675a4aab07af55aa2c7a">TimeWindow</a> newwindow(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    newwindow.start+=tshift;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    newwindow.end += tshift;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span>(newwindow);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1seismic_1_1_time_window.html#ac771154520101057bcd0c544ac045b63">end</a>, and <a class="el" href="classmspass_1_1seismic_1_1_time_window.html#a12245ae77c3684bc96975e51e81f3bb1">start</a>.</p>
 

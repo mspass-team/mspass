@@ -18,6 +18,7 @@
     <includes refid="_slowness_vector_8h" local="yes">mspass/seismic/SlownessVector.h</includes>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_time_window_8h" local="yes">mspass/seismic/TimeWindow.h</includes>
+    <includes refid="mseed__index_8h" local="yes">mspass/io/mseed_index.h</includes>
     <incdepgraph>
       <node id="3">
         <label>list</label>
@@ -76,6 +77,14 @@
       </node>
       <node id="42">
         <label>boost/uuid/uuid_io.hpp</label>
+      </node>
+      <node id="49">
+        <label>mspass/io/mseed_index.h</label>
+        <link refid="mseed__index_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
       </node>
       <node id="27">
         <label>mspass/utility/dmatrix.h</label>
@@ -318,6 +327,8 @@
         </childnode>
         <childnode refid="48" relation="include">
         </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
       </node>
       <node id="25">
         <label>boost/serialization/list.hpp</label>
@@ -410,7 +421,7 @@
 <codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">//#include<sp/>&quot;mspass/seismic/TimeSeriesWGaps.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/io/mseed_index.h&quot;</highlight><highlight class="normal"></highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h"/>
   </compounddef>

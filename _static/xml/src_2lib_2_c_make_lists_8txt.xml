@@ -10,11 +10,12 @@
 <codeline lineno="1"><highlight class="normal">add_subdirectory(utility)</highlight></codeline>
 <codeline lineno="2"><highlight class="normal">add_subdirectory(seismic)</highlight></codeline>
 <codeline lineno="3"><highlight class="normal">add_subdirectory(algorithms)</highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal">add_library(mspass<sp/>$&lt;TARGET_OBJECTS:seismic&gt;<sp/>$&lt;TARGET_OBJECTS:utility&gt;<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;)</highlight></codeline>
-<codeline lineno="6"><highlight class="normal">target_link_libraries(mspass<sp/>PRIVATE<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${YAML_CPP_LIBRARIES}<sp/>${PYTHON_LIBRARIES}<sp/>${GSL_LIBRARIES})</highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal">install<sp/>(TARGETS<sp/>mspass<sp/>DESTINATION<sp/>lib)</highlight></codeline>
+<codeline lineno="4"><highlight class="normal">add_subdirectory(io)</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal">add_library(mspass<sp/>$&lt;TARGET_OBJECTS:seismic&gt;<sp/>$&lt;TARGET_OBJECTS:utility&gt;<sp/>$&lt;TARGET_OBJECTS:alg_basics&gt;<sp/>$&lt;TARGET_OBJECTS:amplitudes&gt;<sp/>$&lt;TARGET_OBJECTS:deconvolution&gt;<sp/>$&lt;TARGET_OBJECTS:io&gt;)</highlight></codeline>
+<codeline lineno="7"><highlight class="normal">target_link_libraries(mspass<sp/>PRIVATE<sp/>${BLAS_LIBRARIES}<sp/>${LAPACK_LIBRARIES}<sp/>${YAML_CPP_LIBRARIES}<sp/>${PYTHON_LIBRARIES}<sp/>${GSL_LIBRARIES}<sp/>${MSEED_LIBRARIES})</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal">install<sp/>(TARGETS<sp/>mspass<sp/>DESTINATION<sp/>lib)</highlight></codeline>
     </programlisting>
     <location file="/home/runner/work/mspass/mspass/cxx/src/lib/CMakeLists.txt"/>
   </compounddef>

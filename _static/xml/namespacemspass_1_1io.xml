@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="namespacemspass_1_1io" kind="namespace" language="C++">
+    <compoundname>mspass::io</compoundname>
+    <innerclass refid="classmspass_1_1io_1_1mseed__index" prot="public">mspass::io::mseed_index</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="mseed__index_8h_1a909ad83e8520c56d12b0ab050c306993" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;</type>
+        <definition>std::vector&lt;mseed_index&gt; mspass::io::mseed_file_indexer</definition>
+        <argsstring>(const std::string inputfile)</argsstring>
+        <name>mseed_file_indexer</name>
+        <param>
+          <type>const std::string</type>
+          <declname>inputfile</declname>
+        </param>
+        <briefdescription>
+<para>Construct an index for a miniseed file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Miniseed is a packetized data format in which time series data are packaged into packets of a fixed size with a minimal header needed to uniquely define the contents. Because of that format it is possible and common practice to concatenate miniseed files with packets arranged in time sequence together. That is particularly essential for large data sets and on HPC file systems that have performance problems with many small files. This function was written to build an index for such files to provide a means for a reader to efficiently find a particular piece of data and decode the miniseed packets into TimeSeries objects. In mspass this function would, to most users, be treated as under the hood and of interest only if something breaks. <linebreak/>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>inputfile</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the miniseed file to be indexed. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>return</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is a vector of objects called <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> that contain the basic information defining an index for inputfile. See class description for more details. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="88" column="13" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" declline="88" declcolumn="13"/>
+      </memberdef>
+      <memberdef kind="function" id="mseed__file__indexer_8cc_1a6c32f54069f6311845c5db8acfc5a62e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>vector&lt; <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &gt;</type>
+        <definition>vector&lt;mseed_index&gt; mspass::io::mseed_file_indexer</definition>
+        <argsstring>(const string inputfile)</argsstring>
+        <name>mseed_file_indexer</name>
+        <param>
+          <type>const string</type>
+          <declname>inputfile</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" line="20" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_file_indexer.cc" bodystart="20" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::ostringstream &amp;</type>
+        <definition>std::ostringstream&amp; mspass::io::operator&lt;&lt;</definition>
+        <argsstring>(std::ostringstream &amp;ss, const mseed_index &amp;ind)</argsstring>
+        <name>operator&lt;&lt;</name>
+        <param>
+          <type>std::ostringstream &amp;</type>
+          <declname>ss</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1io_1_1mseed__index" kindref="compound">mseed_index</ref> &amp;</type>
+          <declname>ind</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" line="7" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/io/mseed_index.cc" bodystart="7" bodyend="25"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/io/mseed_index.h" line="6" column="1"/>
+  </compounddef>
+</doxygen>

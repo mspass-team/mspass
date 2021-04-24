@@ -430,8 +430,8 @@ and files/gridfs data the mspass object contains.</p>
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.get_response">
 <code class="sig-name descname">get_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sta</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chan</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.get_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.get_response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an obspy Response object for seed channel defined by 
-the standard keys net, sta, chan, and loc and a time stamp.  
+<dd><p>Returns an obspy Response object for seed channel defined by
+the standard keys net, sta, chan, and loc and a time stamp.
 Input time can be a UTCDateTime or an epoch time stored as a float.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -441,15 +441,15 @@ to be queried</p></li>
 <li><p><strong>net</strong> – seed network code (required)</p></li>
 <li><p><strong>sta</strong> – seed station code (required)</p></li>
 <li><p><strong>chan</strong> – seed channel code (required)</p></li>
-<li><p><strong>loc</strong> – seed net code.  If None loc code will not be 
-included in the query.  If loc is anything else it is passed 
-as a literal.  Sometimes loc codes are not defined by in the 
-seed data and are literal two ascii space characters.  If so 
-MongoDB translates those to “”.   Use loc=”” for that case or 
+<li><p><strong>loc</strong> – seed net code.  If None loc code will not be
+included in the query.  If loc is anything else it is passed
+as a literal.  Sometimes loc codes are not defined by in the
+seed data and are literal two ascii space characters.  If so
+MongoDB translates those to “”.   Use loc=”” for that case or
 provided the station doesn’t mix null and other loc codes use None.</p></li>
-<li><p><strong>time</strong> – time stamp for which the response is requested.  
-seed metadata has a time range for validity this field is 
-required.   Can be passed as either a UTCDateTime object or 
+<li><p><strong>time</strong> – time stamp for which the response is requested.
+seed metadata has a time range for validity this field is
+required.   Can be passed as either a UTCDateTime object or
 a raw epoch time stored as a python float.</p></li>
 </ul>
 </dd>
@@ -465,24 +465,24 @@ This method uses a restricted query to match the
 keys given and returns a dict of the document contents
 associated with that key.  Note net, sta, and chan are required
 but loc is optional.</p>
-<p>The optional loc code is handled specially.  The reason is 
+<p>The optional loc code is handled specially.  The reason is
 that it is common to have the loc code empty.  In seed data that
-puts two ascii blank characters in the 2 byte packet header 
-position for each miniseed blockette.  With pymongo that 
+puts two ascii blank characters in the 2 byte packet header
+position for each miniseed blockette.  With pymongo that
 can be handled one of three ways that we need to handle gracefully.
-That is, one can either set a literal two blank character 
-string, an empty string (“”), or a MongoDB NULL.   To handle 
+That is, one can either set a literal two blank character
+string, an empty string (“”), or a MongoDB NULL.   To handle
 that confusion this algorithm first queries for all matches
-without loc defined.  If only one match is found that is 
+without loc defined.  If only one match is found that is
 returned immediately.  If there are multiple matches we
-search though the list of docs returned for a match to 
+search though the list of docs returned for a match to
 loc being conscious of the null string oddity.</p>
 <p>The (optional) time arg is used for a range match to find
 period between the site startime and endtime.  If not used
 the first occurence will be returned (usually ill adivsed)
-Returns None if there is no match.  Although the time argument 
+Returns None if there is no match.  Although the time argument
 is technically option it usually a bad idea to not include
-a time stamp because most stations saved as seed data have 
+a time stamp because most stations saved as seed data have
 time variable channel metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -542,6 +542,76 @@ as the primary index.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mspasspy.db.database.Database.index_mseed_file">
+<code class="sig-name descname">index_mseed_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dfile</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">'wf_miniseed'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.index_mseed_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.index_mseed_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the first stage import function for handling the import of
+miniseed data.  This function scans a data file defined by a directory
+(dir arg) and dfile (file name) argument.  I builds and index it
+writes to mongodb in the collection defined by the collection
+argument (wf_miniseed by default).   The index is bare bones
+miniseed tags (net, sta, chan, and loc) with a starttime tag.
+The index is appropriate ONLY if the data on the file are created
+by concatenating data with packets sorted by net, sta, loc, chan, time
+AND the data are contiguous in time.   The results will be unpredictable
+if the miniseed packets do not fit that constraint.  The original
+concept for this function came from the need to handle large files
+produced by concanentation of miniseed single-channel files created
+by obpsy’s mass_downloader.   i.e. the basic model is the input
+files are assumed to be something comparable to running the unix
+cat command on a set of single-channel, contingous time sequence files.
+There are other examples that do the same thing (e.g. antelope’s
+miniseed2days).</p>
+<p>We emphasize this function only builds an index - it does not
+convert any data.   As a result a final warning is that the
+metadata in the wf_miniseed collection lack some common
+attributes one might expect. That is, number of samples,
+sample rate, and endtime.   The number of samples and endtime are
+not saved because we intentionally do nat fully crack the input
+file for speed.  miniseed files can (actually usually) contain
+compressed sample data and the number of samples are not recorded
+in the packet headers.  Hence, the number of samples in the block
+and the endtime cannot be computed without decompressing the data.
+To provide some measurre of the time span of the data we define
+an attribute “last_packet_time” that contains the unix epoch
+time of the start of the last packet of the file.   How close that
+is to endtime depends mainly on the sample interval.  If a range
+query is needed use last_packet_time where you would otherwise use
+endtime.</p>
+<p>Finally, note that cross referencing with the channel and/or
+source collections should be a common step after building the
+index with this function.  The reader found elsewhere in this
+module will transfer linking ids (i.e. channel_id and/or source_id)
+to TimeSeries objects when it reads the data from the files
+indexed by this function.</p>
+<p>Note to parallelize this function put a list of files in a Spark
+RDD or a Dask bag and parallelize the call the this function.
+That can work because MongoDB is designed for parallel operations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dfile</strong> – file name of data to be indexed.  Asssumed to be
+the leaf node of the path - i.e. it contains no directory information
+but just the file name.</p></li>
+<li><p><strong>dir</strong> – directory name.  This can be a relative path from the
+current directory be be advised it will always be converted to an
+fully qualified path.  If it is undefined (the default) the function
+assumes the file is in the current working directory and will use
+the result of the python getcwd command as the directory path
+stored in the database.</p></li>
+<li><p><strong>collection</strong> – is the mongodb collection name to write the
+index data to.  The default is ‘wf_miniseed’.  It should be rare
+to use anything but the default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Exception</dt>
+<dd class="field-even"><p>This function can throw a range of error types for
+a long list of possible io issues.   Callers should use a
+generic handler to avoid aborts in a large job.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mspasspy.db.database.Database.load_channel_metadata">
 <code class="sig-name descname">load_channel_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">['serialized_channel_data']</span></em>, <em class="sig-param"><span class="n">include_undefined</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.load_channel_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.load_channel_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads metadata from channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
@@ -553,9 +623,9 @@ This should be the stock way to assemble the generalization of a common-receiver
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or 
+<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.) – data where the metadata is to be loaded</p></li>
 <li><p><strong>exclude_keys</strong> – list of attributes that should not normally be loaded.
 Default excludes the serialized obspy class that is used to store response data.   Ignored if include_undefined is set <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -592,9 +662,9 @@ This should be the stock way to assemble the generalization of a common-receiver
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or 
+<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.) – data where the metadata is to be loaded</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of attributes that should not normally be loaded.
 Default is None.  Ignored if include_undefined is set <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -619,9 +689,9 @@ This should be the stock way to assemble the generalization of a shot gather.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>, 
-<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or 
+<li><p><strong>mspass_object</strong> (<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>,
+<a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeriesEnsemble</span></code></a> or
 <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.SeismogramEnsemble</span></code></a>.) – data where the metadata is to be loaded</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – list of attributes that should not normally be loaded.
 Default are attributes not normally need that are loaded from QuakeML.  Ignored if include_undefined is set <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
@@ -734,7 +804,7 @@ will be preformed if duplicates are a major issue.</p>
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.save_data">
-<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mspass_object</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -743,8 +813,9 @@ will be preformed if duplicates are a major issue.</p>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “gridfs” stores the object in the mongodb grid file system (recommended). “file” stores
 the object in a binary file, which requires <code class="docutils literal notranslate"><span class="pre">dfile</span></code> and <code class="docutils literal notranslate"><span class="pre">dir</span></code>.</p></li>
-<li><p><strong>dfile</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name if using “file” storage mode.</p></li>
 <li><p><strong>dir</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file directory if using “file” storage mode.</p></li>
+<li><p><strong>dfile</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – file name if using “file” storage mode.</p></li>
+<li><p><strong>format</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the format of the file. This can be one of the <a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats">supported formats</a> of ObsPy writer. By default (<code class="docutils literal notranslate"><span class="pre">None</span></code>), the format will be the binary waveform.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being stored.</p></li>
 <li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
 <li><p><strong>data_tag</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a user specified “data_tag” key to tag the saved wf document.</p></li>
@@ -755,7 +826,7 @@ the object in a binary file, which requires <code class="docutils literal notran
 
 <dl class="py method">
 <dt id="mspasspy.db.database.Database.save_ensemble_data">
-<code class="sig-name descname">save_ensemble_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ensemble_object</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dfile_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dir_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">save_ensemble_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ensemble_object</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'promiscuous'</span></em>, <em class="sig-param"><span class="n">storage_mode</span><span class="o">=</span><span class="default_value">'gridfs'</span></em>, <em class="sig-param"><span class="n">dir_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dfile_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">exclude_objects</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">data_tag</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/db/database.html#Database.save_ensemble_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.db.database.Database.save_ensemble_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
 database.</p>
 <dl class="field-list simple">
@@ -766,8 +837,8 @@ database.</p>
 <li><p><strong>mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – reading mode regarding schema checks, should be one of [‘promiscuous’,’cautious’,’pedantic’]</p></li>
 <li><p><strong>storage_mode</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – “gridfs” stores the object in the mongodb grid file system (recommended). “file” stores
 the object in a binary file, which requires <code class="docutils literal notranslate"><span class="pre">dfile</span></code> and <code class="docutils literal notranslate"><span class="pre">dir</span></code>.</p></li>
-<li><p><strong>dfile_list</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of file names if using “file” storage mode. File name is <code class="docutils literal notranslate"><span class="pre">str</span></code> type.</p></li>
 <li><p><strong>dir_list</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of file directories if using “file” storage mode. File directory is <code class="docutils literal notranslate"><span class="pre">str</span></code> type.</p></li>
+<li><p><strong>dfile_list</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of file names if using “file” storage mode. File name is <code class="docutils literal notranslate"><span class="pre">str</span></code> type.</p></li>
 <li><p><strong>exclude_keys</strong> (a <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – the metadata attributes you want to exclude from being stored.</p></li>
 <li><p><strong>exclude_objects</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – A list of indexes, where each specifies a object in the ensemble you want to exclude from being saved. Starting from 0.</p></li>
 <li><p><strong>collection</strong> – the collection name you want to use. If not specified, use the defined collection in the metadata schema.</p></li>
@@ -951,7 +1022,7 @@ and metadata attributes.</p>
 <dd><blockquote>
 <div><p>This method takes a mongodb cursor as input, constructs a mspasspy object for each document in a distributed
 manner, and return all of the mspasspy objects using the format required by the distributed computing framework
-(dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection 
+(dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection
 name is not needed in this function.</p>
 </div></blockquote>
 <dl class="field-list simple">

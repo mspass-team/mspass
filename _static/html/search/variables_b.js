@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nsamp_664',['nsamp',['../classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a',1,'mspass::seismic::BasicTimeSeries']]]
+  ['nsamp_666',['nsamp',['../classmspass_1_1seismic_1_1_basic_time_series.html#a0cb0afe9272567b8fd3394f79f46628a',1,'mspass::seismic::BasicTimeSeries']]]
 ];

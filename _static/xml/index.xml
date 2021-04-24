@@ -709,6 +709,23 @@
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1a127c004dbfe93ba17259ec320b34fdfd" kind="function"><name>MetadataGetError</name></member>
     <member refid="classmspass_1_1utility_1_1_metadata_get_error_1add785f65915c4f138850dbf86b0a9cd1" kind="function"><name>operator=</name></member>
   </compound>
+  <compound refid="classmspass_1_1io_1_1mseed__index" kind="class"><name>mspass::io::mseed_index</name>
+    <member refid="classmspass_1_1io_1_1mseed__index_1aeae52fb8509292312937fd60b12cb6d2" kind="variable"><name>net</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a645d459857a3b3c9afa1f6a5cf252a66" kind="variable"><name>sta</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1ad78f6f2dccb8fa652f7b0030055acbd4" kind="variable"><name>loc</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a056427385ac5dfbdd271d6cacbfbabb7" kind="variable"><name>chan</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a7ddc690e23ab045a1b21def90209fa1a" kind="variable"><name>foff</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a039994bbea83dc923a6e59ed2ea675fd" kind="variable"><name>nbytes</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a1e0b11b2170b54e3245aa36df0bb19f8" kind="variable"><name>npts</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a2f34fc7dca12e7af7f9bf459462af9b4" kind="variable"><name>samprate</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a9dc0248ef24184cb4b0cf7b40aaa2ec8" kind="variable"><name>starttime</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a0b33fceb0d51997d0b1b06736ee07b95" kind="variable"><name>endtime</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a7476ff41f76820f284911be7f0a130c0" kind="variable"><name>last_packet_time</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1ab6f6e43c49d3d918295349227e924485" kind="function"><name>mseed_index</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1a68a281efc69c17b216028c8ad0bd60ea" kind="function"><name>mseed_index</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1af441bc6a6380bf2a852956ccdc4181b3" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1io_1_1mseed__index_1ae6d7ee340b7009c88346cfc6b7589f15" kind="friend"><name>operator&lt;&lt;</name></member>
+  </compound>
   <compound refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kind="class"><name>mspass::utility::MsPASSError</name>
     <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1a47e9d74154f088f38fd7e5219abc81f5" kind="variable"><name>message</name></member>
     <member refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error_1af808615110822967a251108b20708f51" kind="variable"><name>badness</name></member>
@@ -1014,7 +1031,9 @@
     <member refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kind="variable"><name>end</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kind="function"><name>TimeWindow</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" kind="function"><name>TimeWindow</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1aa60d739dcbe3bbd2bfec0f7532d9a110" kind="function"><name>shift</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_window_1a7d95cfd1a6a5d4da99a1df5b7d04d286" kind="function"><name>TimeWindow</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_window_1a95d9f170cd5c8f3646f1f85652427ebb" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1seismic_1_1_time_window_1a15bd441bbadd8af568a53c39e95fab99" kind="function"><name>shift</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" kind="function"><name>length</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_window_cmp" kind="class"><name>mspass::seismic::TimeWindowCmp</name>
@@ -1149,6 +1168,11 @@
     <member refid="_general_iter_decon_8cc_1a785e5766431ee9c3c6fb4c46645ae45b" kind="function"><name>L2</name></member>
     <member refid="_general_iter_decon_8cc_1a4b9421e97b2607381a44d5eecd024bb4" kind="function"><name>amp3c</name></member>
     <member refid="_general_iter_decon_8cc_1aed90de11ea345da91efd8fbcc6dcce5f" kind="function"><name>trim</name></member>
+  </compound>
+  <compound refid="namespacemspass_1_1io" kind="namespace"><name>mspass::io</name>
+    <member refid="mseed__index_8h_1a909ad83e8520c56d12b0ab050c306993" kind="function"><name>mseed_file_indexer</name></member>
+    <member refid="mseed__file__indexer_8cc_1a6c32f54069f6311845c5db8acfc5a62e" kind="function"><name>mseed_file_indexer</name></member>
+    <member refid="mseed__index_8cc_1a50d9221df57b0d6ea5bad8fc3f5b2b1e" kind="function"><name>operator&lt;&lt;</name></member>
   </compound>
   <compound refid="namespacemspass_1_1seismic" kind="namespace"><name>mspass::seismic</name>
     <member refid="namespacemspass_1_1seismic_1a0b8373068c66c7453bd012fe5367dbd2" kind="enum"><name>TimeReferenceType</name></member>
@@ -1288,6 +1312,8 @@
   </compound>
   <compound refid="include_2mspass_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
+  <compound refid="include_2mspass_2io_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
+  </compound>
   <compound refid="include_2mspass_2seismic_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="include_2mspass_2utility_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
@@ -1301,6 +1327,9 @@
     <member refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt_1aeed155f496986432c2eee0c9572b25a3" kind="function"><name>include_directories</name></member>
   </compound>
   <compound refid="src_2lib_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
+  </compound>
+  <compound refid="src_2lib_2io_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
+    <member refid="src_2lib_2io_2_c_make_lists_8txt_1a5d7a83950988c52a38992b5a68dcac63" kind="function"><name>include_directories</name></member>
   </compound>
   <compound refid="src_2lib_2seismic_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2seismic_2_c_make_lists_8txt_1ae23dd037353b7ba1172f65b437694d0a" kind="function"><name>include_directories</name></member>
@@ -1359,6 +1388,8 @@
   <compound refid="_water_level_decon_8h" kind="file"><name>WaterLevelDecon.h</name>
   </compound>
   <compound refid="wavelet_8h" kind="file"><name>wavelet.h</name>
+  </compound>
+  <compound refid="mseed__index_8h" kind="file"><name>mseed_index.h</name>
   </compound>
   <compound refid="mspass_8h" kind="file"><name>mspass.h</name>
   </compound>
@@ -1472,6 +1503,10 @@
   </compound>
   <compound refid="tseries__helpers_8cc" kind="file"><name>tseries_helpers.cc</name>
   </compound>
+  <compound refid="mseed__file__indexer_8cc" kind="file"><name>mseed_file_indexer.cc</name>
+  </compound>
+  <compound refid="mseed__index_8cc" kind="file"><name>mseed_index.cc</name>
+  </compound>
   <compound refid="_basic_time_series_8cc" kind="file"><name>BasicTimeSeries.cc</name>
   </compound>
   <compound refid="_core_seismogram_8cc" kind="file"><name>CoreSeismogram.cc</name>
@@ -1529,6 +1564,10 @@
   </compound>
   <compound refid="dir_00901edb2c5fc9ff9a99effabe26e19f" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/include</name>
   </compound>
+  <compound refid="dir_84f43f48368a4002db3ddbf65eb8677b" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/src/lib/io</name>
+  </compound>
+  <compound refid="dir_d7cd2049af91de4c52a47fb0f7e8054e" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/include/mspass/io</name>
+  </compound>
   <compound refid="dir_bf7883322af55d9075b92331d5fc0d27" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/src/lib</name>
   </compound>
   <compound refid="dir_7d4f1cc518f86e95cebda27645763c1b" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/include/misc</name>
@@ -1541,8 +1580,8 @@
   </compound>
   <compound refid="dir_df021466bc7b7e3053d254cdbb2647a5" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/src</name>
   </compound>
-  <compound refid="dir_d0a55dab2bb3994b00b2698945671ed3" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/src/lib/utility</name>
-  </compound>
   <compound refid="dir_4d2216f3c516e405d387776c5430d625" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/include/mspass/utility</name>
+  </compound>
+  <compound refid="dir_d0a55dab2bb3994b00b2698945671ed3" kind="dir"><name>/home/runner/work/mspass/mspass/cxx/src/lib/utility</name>
   </compound>
 </doxygenindex>
