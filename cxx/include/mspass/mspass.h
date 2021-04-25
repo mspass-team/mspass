@@ -19,4 +19,4 @@
 #include "mspass/seismic/TimeSeries.h"
 //#include "mspass/seismic/TimeSeriesWGaps.h"
 #include "mspass/seismic/TimeWindow.h"
-
+#include "mspass/io/mseed_index.h"
