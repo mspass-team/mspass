@@ -89,9 +89,20 @@ if [ $# -eq 0 ]; then
     # mongos server configuration
     mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
     sleep ${MSPASS_SLEEP_TIME}
+    # add shard clusters
     for i in ${MSPASS_SHARD_LIST[@]}; do
       echo ${i}
       mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.addShard(\"${i}\")"
+      sleep ${MSPASS_SLEEP_TIME}
+    done
+    # enable database sharding
+    echo "enable database $MSPASS_SHARD_DATABASE sharding"
+    mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.enableSharding(\"${MSPASS_SHARD_DATABASE}\")"
+    sleep ${MSPASS_SLEEP_TIME}
+    # shard collection(using hashed)
+    for i in ${MSPASS_SHARD_COLLECTIONS[@]}; do
+      echo "shard collection $MSPASS_SHARD_DATABASE.${i%%:*} and shard key is ${i##*:}"
+      mongo --host $HOSTNAME --port $MONGODB_PORT --eval "sh.shardCollection(\"$MSPASS_SHARD_DATABASE.${i%%:*}\", {${i##*:}: \"hashed\"})"
       sleep ${MSPASS_SLEEP_TIME}
     done
     tail -f /dev/null

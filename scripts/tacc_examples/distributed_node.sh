@@ -55,7 +55,7 @@ mpiexec.hydra -n $((SLURM_NNODES-1)) -ppn 1 -hosts $WORKER_LIST $SING_COM &
 
 # specify the location where user wants to store the data
 # should be in either tmp or scratch, default is scratch
-SHARD_MODE='tmp'
+SHARD_MODE='scratch'
 
 # extract the hostname of each worker node
 OLD_IFS=$IFS
@@ -75,17 +75,23 @@ for i in ${!WORKER_LIST_ARR[@]}; do
     mpiexec.hydra -n 1 -ppn 1 -hosts ${WORKER_LIST_ARR[i]} $SING_COM &
 done
 
-sleep 5
-username=`whoami`
 # start a dbmanager container in the primary node
+username=`whoami`
 for i in ${!WORKER_LIST_ARR[@]}; do
     SHARD_LIST[$i]="rs$i/${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:27017"
     SHARD_DB_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/db/data_shard_$i"
     SHARD_LOGS_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/logs/mongo_log_shard_$i"
 done
+# define database that enable sharding
+SHARD_DATABASE="usarraytest"
+# define (collection:shard_key) pairs
+SHARD_COLLECTIONS=(
+    "arrival:_id"
+)
+SINGULARITYENV_MSPASS_SHARD_DATABASE=${SHARD_DATABASE} \
+SINGULARITYENV_MSPASS_SHARD_COLLECTIONS=${SHARD_COLLECTIONS[@]} \
 SINGULARITYENV_MSPASS_SHARD_LIST=${SHARD_LIST[@]} \
 SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
-SINGULARITYENV_MONGODB_PORT=37017 \
 SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 
 # start a jupyter notebook frontend in the primary node
