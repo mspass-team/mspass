@@ -40,21 +40,33 @@ if [ $# -eq 0 ]; then
       export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
       jupyter notebook ${NOTEBOOK_ARGS}
     fi
+    # ---------------------- clean up workflow -------------------------
+    # stop mongos routers
+    mongo --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
+    sleep 5
+    # stop each shard replica set
+    for i in ${MSPASS_SHARD_ADDRESS[@]}; do
+        ssh -o "StrictHostKeyChecking no" ${i} "kill -2 \$(pgrep mongo)"
+        sleep 5
+    done
+    # stop config servers
+    mongo --port $(($MONGODB_PORT+1)) admin --eval "db.shutdownServer({force:true})"
+
     # copy the shard data to scratch if the shards are deployed in /tmp
     if [ "$MSPASS_SHARD_MODE" = "tmp" ]; then
       echo "copy shard data to scratch"
       # copy data
       for i in ${MSPASS_SHARD_DB_PATH[@]}; do
-          scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_DB_DIR}
-          #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_DB_DIR}
+        scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_DB_DIR}
+        #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_DB_DIR}
       done
       # copy log
       for i in ${MSPASS_SHARD_LOGS_PATH[@]}; do
-          scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
-          #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_LOG_DIR}
+        scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
+        #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_LOG_DIR}
       done
-      sleep 30
     fi
+    sleep 30
   }
 
   MY_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)

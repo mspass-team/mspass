@@ -79,6 +79,7 @@ done
 username=`whoami`
 for i in ${!WORKER_LIST_ARR[@]}; do
     SHARD_LIST[$i]="rs$i/${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:27017"
+    SHARD_ADDRESS[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu"
     SHARD_DB_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/db/data_shard_$i"
     SHARD_LOGS_PATH[$i]="$username@${WORKER_LIST_ARR[$i]}.stampede2.tacc.utexas.edu:/tmp/logs/mongo_log_shard_$i"
 done
@@ -98,6 +99,7 @@ SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 SINGULARITYENV_MSPASS_SCHEDULER_ADDRESS=$NODE_HOSTNAME \
 SINGULARITYENV_MSPASS_DB_ADDRESS=$NODE_HOSTNAME \
 SINGULARITYENV_MSPASS_SHARD_MODE=$SHARD_MODE \
+SINGULARITYENV_MSPASS_SHARD_ADDRESS=${SHARD_ADDRESS[@]} \
 SINGULARITYENV_MSPASS_SHARD_DB_PATH=${SHARD_DB_PATH[@]} \
 SINGULARITYENV_MSPASS_SHARD_LOGS_PATH=${SHARD_LOGS_PATH[@]} \
 SINGULARITYENV_MSPASS_ROLE=frontend $SING_COM
