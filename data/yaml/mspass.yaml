@@ -393,7 +393,7 @@ Database:
       wf_TimeSeries_id:
         reference: wf_TimeSeries
         constraint: xref_key
-      gravestone:
+      tombstone:
         type: dict
         concept: a copy of the Metadata of a dead object.
         constraint: optional
