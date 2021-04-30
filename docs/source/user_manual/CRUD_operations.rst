@@ -10,7 +10,7 @@ teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is usful because it summarizes the four main things any database system
 must accomplish cleanly.  This section is organized into subsections on
 each of the topics defined by CRUD.  At the end of this section we
-summarize some common options in CRUD operations at the end of this section.
+summarize some common options in CRUD operations.
 
 The most common database operations are defined as methods in a class
 we give the obvious name Database.  Most MsPASS jobs need to the have following
@@ -18,9 +18,9 @@ incantation a the top of the python job script:
 
 .. code-block:: python
 
-    from mspasspy.db.client import Client
+    from mspasspy.db.client import DBClient
     from mspasspy.db.database import Database
-    dbclient = Client()
+    dbclient = DBClient()
     db = Database(dbclient, 'database_name')
 
 where the second argument on Database, :code:`'database_name'`,
@@ -75,8 +75,7 @@ description of each method.  We refer to the docstring pages for detailed
 
     By default :code:`save_data` stores all Metadata except those linked to
     normalized collections (:code:`source`, :code:`channel`, and :code:`site`) with no
-    safety checks.  We discuss the alternatives in a later section
-    so the reader can first get a broader perspective.
+    safety checks.  We discuss additional common options in a later section.
 
 2.  :code:`save_ensemble_data`  is similar to :code:`save_data` except the first argument
     is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
@@ -86,16 +85,22 @@ description of each method.  We refer to the docstring pages for detailed
     Ensembles are containers of atomic objects.  :code:`save_ensemble_data`
     is mostly a loop over the container saving the atomic objects it contains
     to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
-    (for Seismogram objects).
+    (for Seismogram objects).  The method has one feature that differs form
+    :code:`save_data`; Ensemble objects may and often do contain attributes
+    common to the entire group in a separate Metadata container linked to the
+    ensemble as a whole.  Prior to entering the loop for saving the atomic
+    members of the ensemble the contents of the Ensemble's Metadata container
+    are copied verbatim to each member.  If previous values existed in any
+    of the members they will be silently replaced by the ensemble groups version.
 
 3.  :code:`save_catalog` should be viewed mostly as a convenience method to build
     the :code:`source` collection from QUAKEML data downloaded from FDSN data
     centers via obspy's web services functions.   :code:`save_catalog` can be
     thought of as a converter that translates the contents of a QUAKEML
     file or string for storage as a set of MongoDB documents in the :code:`source`
-    collection.  We use obspy's :code:`Catalog` object as an intermediary to
+    collection.  We used obspy's :code:`Catalog` object as an intermediary to
     avoid the need to write our own QUAKEML parser.   As with save_data
-    the easiest way to the usage would be this example derived from
+    the easiest way to understand the usage would be this example derived from
     our *getting_started* tutorial.
 
     .. code-block:: python
@@ -174,21 +179,29 @@ description of each method.  We refer to the docstring pages for detailed
 Read
 ~~~~~~~
 
-Read operation is the inverse of save (create).  The core readers were
-design to simplify the process of reading the core data types of MsPASS:  TimeSeries
+The Read operation is the inverse of save (create).  The core readers were
+designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.
 
 1.  :code:`read_data` is the core method to read atomic data.  The method has
-    one required argument.  That argument can be either a MongoDB object
-    id or a MongoDB document retrieved from one of the "wf" collections.
-    The document version is actually only a convenience.  The actual
-    database operation always uses the unique ObjectID for the document used
-    to define the read operation.  (i.e. the first thing read_data does if
-    if finds arg 0 is a document is to extract the "_id" attribute and use
-    it to query MongoDB.  If arg 0 is an ObjectID the parsing of the doc is bypassed and
-    the query is performed immediately with id passed.)
+    one required argument.  That argument is an ObjectID for the document used
+    to define the read operation.  The ObjectID is guaranteed to provide a
+    unique key to one and only one document.  That approach is not particularly
+    user friendly, but provides a clean, simple API for processing.
+    The parallel reader (see below) uses this method internally to
+    parallelize read operations.  For serial jobs, even though the id is
+    an abstraction most serial processing can be reduced to a variant of this
+    simple block of code in python:
+
+    .. code-block:: python
+
+    query={...Some MongoDB query dict entry...}
+    cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+    for doc in cursor:
+      id=doc['_id']
+      d=db.read_data(id)  # Add option collection='wf_Seismogram' for 3C reads
 
     :code:`read_data` will use the waveform collection defined when the Database
     handle was constructed.  That is, a given Database handle should only
@@ -204,7 +217,7 @@ reader to the sphinx documentation for full usage.
     multiple elements illustrated in the figure below.   Although these
     objects can conceptually be thought of as a single entity the individual
     parts are handled differently because they define different concepts
-    and are subject to different read, write, and storage rules.   
+    and are subject to different read, write, and storage rules.
     :numref:`CRUD_operations_figure1` illustrates this fragmentation:
 
     .. _CRUD_operations_figure1:
@@ -226,8 +239,9 @@ reader to the sphinx documentation for full usage.
     log and the reasons they are part of MsPASS.
 
     By default :code:`read_data` reads Metadata in what we call "promiscuous" mode.
-    That means it takes in all metadata stored in the wf collection arg 0
-    defines with no type checking or filtering.  Alternatives are "cautious"
+    That means it takes in all metadata stored in the wf collection at which
+    it is is pointed and loads the results into the objects Metadata container
+    with no type checking or filtering.  Alternatives are "cautious"
     and "pedantic".   Both of the later enforce the type and name constraints defined
     by the schema.   The difference is that in "pedantic" mode any
     conflicts in data type stored versus what is expected will cause the
@@ -252,12 +266,10 @@ reader to the sphinx documentation for full usage.
 2.  A closely related function to :code:`read_data` is :code:`read_ensemble_data`.  Like
     :code:`save_ensemble_data` it is mostly a loop to assemble an ensemble of
     atomic data using a sequence of calls to :code:`read_data`.  The sequence of
-    what to read is defined by arg 0 that can be one of two things:  (a) a
+    what to read is defined by arg 0 that is assumed to be a
     python list of ObjectIds of documents in a wf collection that define
-    the ensemble, or (b) a MongoDB cursor object returned by a query that
-    defines the ensemble.  The second option should be clearer with this
-    example showing how to read a TimeSeriesEnsemble that is a generalized
-    shot gather.  This fragment assumes the symbol source_id was set above
+    the ensemble.  The example code below illustrates how this is done.
+    This code fragment assumes the symbol source_id was set earlier
     by some other mechanism.  e.g. it could be extracted from a loop over
     the :code:`source` collection (or query the source collection) aimed at
     processing all (or a subset) of the sources defined there.  Notice we
@@ -275,7 +287,8 @@ reader to the sphinx documentation for full usage.
                 "Exceeds the internal limit on the ensemble size=", TOBIG)
         else:
             cursor = db.wf_TimeSeries.find(query)
-            ens = db.read_ensemble_data(cursor)
+            idlist=cursor2idlist(cursor)  # convenience funcion defined in mspasspy.db.database
+            ens = db.read_ensemble_data(idlist)
 
 3.  A workflow that needs to read and process a large data sets in
     a parallel environment should use
@@ -333,7 +346,7 @@ As noted elsewhere Metadata loaded with data objects in MsPASS can come
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
 and (2) "normalized" data loaded through a cross reference ID from one of the
-three standardized collection in MsPASS (:code:`site`, :code:`channel`, and :code:`source`).
+standardized collection in MsPASS (currently :code:`site`, :code:`channel`, and :code:`source`).
 In a waveform processing job (i.e. python driver script) the metadata
 extracted from normalized collections should be treated as immutable.
 In fact, when schema validation tests are enabled for save operations
@@ -359,7 +372,7 @@ below.
 
 Delete
 ~~~~~~~~~
-A delete operation is much more complicated in MsPASS that what you would
+A delete operation is much more complicated in MsPASS than what you would
 find as a type example in any textbook an database theory.  In a
 relational environment delete normally means removing a single tuple.
 In MongoDB delete is more complicated because it is
@@ -393,24 +406,33 @@ method of the Database class:
 
 .. code-block:: python
 
-  def delete(self,id,remove_unreferenced_files=False,
-                      clear_history=True,clear_elog=True):)
+  def delete_data(self,id,remove_unreferenced_files=False,
+                      clear_history=True,clear_elog=False):)
 
-As with the read methods id can be either an ObjectID referencing a
-document in one of the relevant wf collection or a document that contains
-that ObjectID.  Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
+As with the read methods id is the ObjectID of the wf collection document
+that references the data to be deleted.
+Similarly, the idea of the :code:`clear_history` and :code:`clear_elog`
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
 will also be deleted.  If either are false debris can be left behind
-in the elog and history collections.
+in the elog and history collections.  On the other hand, setting either
+true will result in a loss of information that might be needed to address
+problems during processing.  Furthermore, both are only relevant to
+fully or partially processed data.   In general, we recommend the default
+for any cleanups applied within a workflow.  Set clear_elog true only in
+post processing cleanup after you are confident there are not serious
+errors that need to be traced.  Set clear_history True only if you have
+no interest in retaining the object level history.  The default is True
+because we view object level history preservation as a last step to
+provide a mechanism for others to reproduce your work.
 
 The main complexity in this method is behind the boolean argument with the name
 :code:`remove_unreferenced_files`.  First, recognize this argument is completely
 ignored if the waveform data being referenced is stored internally in
-MongoDB (the default) in the gridfs file system.  In that situation delete
+MongoDB (the default) in the gridfs file system.  In that situation delete_data
 will remove the sample data as well as the document in wf that id defines.
 The complexity enters if the data are stored as external files.  The
-simple delete method of Database is an expensive operation that should be
+atomic delete_data method of Database is an expensive operation that should be
 avoided within a workflow or on large datasets.  The reason is that
 each call for deleting an atomic object (defined by id) requires a
 second query to the wf collection involved to search for any other
@@ -421,6 +443,12 @@ are familiar with these attribute names.  We use the same names as the concept h
 is identical to the CSS3.0's use.)  Only when the secondary query finds
 no matching values for :code:`dir` and :code:`dfile` will the file be deleted.
 
+THIS SECTION IS OUT OF DATE BUT TEMPORARILY RETAINED WHILE DEVELOPERS
+DECIDE HOW THIS SHOULD BE REVISED.
+When the data are stored in external files instead of gridfs, there are
+a number of reasons why running delete_data within a workflow
+is intrinsically dangerous.   It is also an (excessively) time consuming operation
+because of the number of required queries.
 For large datasets stored in external files we provide a secondary cleanup
 mechanism through a special class we call the :code:`staged_file_manager`.
 The constructor for a :code:`staged_file_manager` requires the Database handle
@@ -462,7 +490,7 @@ chain of atoms, the atoms are our "Atomic" data objects (TimeSeries or
 Seismogram objects), and each atom can be broken into a set of subatomic
 particles.  The figure above illustrates the subatomic idea visually.
 We call these "subatomic particles"
-Metadata, sample data, error log, and (processing) history.  The subatomic
+Metadata, waveform data, error log, and (processing) history.  The subatomic
 particle have very different properties.
 
 1.  *Metadata* are generalized header data.  Our Metadata concept maps closely
@@ -474,7 +502,7 @@ particle have very different properties.
     and by analogy our Metadata container.
 2.  *waveform data* are the primary data MsPASS was designed to support.
     Waveform data is the largest volume of information, but is different in
-    that it has a more rigid structure;  TimeSeries wavformdata are universally
+    that it has a more rigid structure;  TimeSeries wavform data are universally
     stored as a vector, and Seismogram data are most rationally (although not
     universally) stored as a matrix.  All modern computer systems have
     very efficient means of moving contiguous blocks of data from storage to
@@ -485,8 +513,8 @@ particle have very different properties.
     That is why traditional formats like SAC and SEGY have a fixed header/data
     sections that define "the data".   To make MsPASS generic that paradigm
     had to be broken so it is important to recognize in MsPASS
-    waveform data are completely disaggreted from the other data components
-    we use for defining TimeSeries and Seismogram objects.
+    waveform data are completely disaggregated from the other data components
+    we use for defining our data objects.
 3.  *error log* data has yet another fundamentally different structure.
     First of all, our normal goal in any processing system is to minimize
     the number of data objects that have any error log entries at all.
@@ -520,17 +548,18 @@ that are handled differently:
 2.  A special form of read-only attributes are attributes loaded by
     readers from normalized collections.  Such attributes are never saved
     by atomic object writers and the normalized collection (i.e. source, site,
-    and channel) are always treated as strinctly read only.
+    and channel) are always treated as strictly read only.
 
 3.  Normalization requires a cross-referencing method.   In MsPASS we
     always uses the ObjectID of the document in the normalizing collection
-    and store that attribute with a key with a common structure:
+    and store that attribute using a key with a common structure:
     :code:`collection_id` where "collection" is a variable and "_id" is literal.
     (e.g. the linking key for the source collection is "source_id").
     We use that approach because in MongoDB an ObjectID is guaranteed to
     provide a unique index.   That allows the system be more generic.
-    Hence, unlike FSDS data centers that depend upon the SEED format in
-    MsPASS net, sta, chan, loc are baggage for joining the site or channel
+    Hence, unlike FDSN data centers that depend upon the SEED format in
+    MsPASS net, sta, chan, loc (the core miniseed keys)
+    are baggage for joining the site or channel
     collections to a set of waveform data.  We have functions for
     linking seed data with net, sta, chan, and loc keys to build links
     but the links are still defined by ObjectIDs.   An example of why this
@@ -572,7 +601,7 @@ order severity:
     At present the only unforgivable sin is changing a cross-referencing id.
     If a writer detects that cross-referencing ObjectID has been altered the
     data will be marked dead and the Metadata document will be written to
-    a special collection called "tombstone".
+    a special collection called "graveyard".
 
 4.  Unrecoverable (fatal) errors will abort a workflow.   At present that
     should only happen from system generated errors that throw an
@@ -593,12 +622,31 @@ linked to wf collections with another ObjectID with the standard naming
 convention for cross-reference keys.  That is, wf_TimeSeries_id and
 wf_Seismogram_id for TimeSeries and Seismogram data respectively.
 
-Data marked dead are handled specially.  For such data the sample will be
-throw away.  The Metadata will be written to a separate collection called
-"tombstone".  Error log data linked to dead data are written to the elog
-collection along with living data, but the cross-referencing id is
-tagged as "tombstone_id".  That provides a simple query mechanism to
-show only the most serious errors from a processing run.
+Data marked dead are handled specially.  For such data the sample data will be
+throw away.  The Metadata for dead data are saved in the elog collection
+document associated with the datum as a subdocument accessible with the
+key "tombstone".  That provides a simple query mechanism to
+show only the most serious errors from a processing run.   Specifically,
+this code fragment will print all error messages associated with
+dead data with a crude tag of seed net, sta, starttime before each
+list of elog messages:
+
+  .. code-block:: python
+
+    # This needs to be checked for correctness - done while off the grid
+    query = {'$def' : 'tombstone'}
+    cursor=db.elog.find(query)
+    for doc in cursor:
+      wfmd=doc['tombstone']
+      print('Error log contents for this Seismogram marked dead:',
+         wfmd['net'],wfmd['sta'],UTCDateTime(wfmd['startime'])
+      err=doc['logdata']
+      for e in err:
+        print(e.message)
+
+Note the above is minimal to be concise.  A good report would contain
+additional entries from the tombstone contents and additional components of
+the container defined the symbol "e".
 
 Saving history data is optional.  When enabled the history chain contents
 are dumped to this history collection, the history container is cleared, and
@@ -626,14 +674,14 @@ they are handled during construction.
     The set of which collections are to be loaded are controlled by optional
     parameters in each reader.  An important constraint is that for all
     normalized collections defined as required, if the cross-referencing
-    key is no defined a reader will ignore that datum.  :code:`read_data` silently
+    key is not defined a reader will ignore that datum.  :code:`read_data` silently
     signals that condition by returning a None.  :code:`read_ensemble_data` and
     :code:`read_distributed_data` normally silently skip such data.   That model
     is intentional because it allows initial loading of a large data set with
     unresolvable anomalies that prevent one or more of the cross-referencing
     ids from being defined.
 
-3.  The waveform data is read and loaded.  If that process fails the data
+3.  The waveform data is read and the data object is constructed.  If that process fails the data
     will be marked dead and an error log posted with the reason (e.g. a
     file not found message).
 
@@ -641,14 +689,14 @@ they are handled during construction.
     after any read.
 
 5.  If processing history is desired the :code:`load_history` option needs to be
-    set true.  On read the only action this creates is initialization of the
+    set true.  In a reader the only action this creates is initialization of the
     ProcessingHistory component of the data with a record providing a unique
     link back to the data just read.
 
 We reiterate that the overall behavior of all readers are controlled by the
 :code:`mode=` argument common to all.  The current options are: :code:`promiscuous`,
 :code:`cautious`, and :code:`pedantic`.   Detailed descriptions of what each mean are
-give above and in the sphynx documentation generated from docstrings.
+given above and in the sphynx documentation generated from docstrings.
 
 Update Concepts
 ---------------
@@ -671,5 +719,7 @@ save of the waveform data.
     computed from survey flag numbers or some other independent counter.
 
 Many database updates are standalone operations such as preprocessing to
-create entries for attributes like the source_id cross-reference to 
+create entries for attributes like the source_id cross-reference to
 define a link to the right source for each waveform.
+
+NEED A PARAGRAPH HERE ON UPDATES AFTER WE FINALIZED A FEW UNRESOLVED ISSUES.
