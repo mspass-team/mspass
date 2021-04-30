@@ -16,7 +16,7 @@ import gridfs
 import pymongo
 from bson.objectid import ObjectId
 import numpy as np
-import obspy 
+import obspy
 from obspy import Inventory
 from obspy import UTCDateTime
 
@@ -40,29 +40,66 @@ from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
                           format='dask', spark_context=None, data_tag=None):
     """
-     This method takes a mongodb cursor as input, constructs a mspasspy object for each document in a distributed
-     manner, and return all of the mspasspy objects using the format required by the distributed computing framework
-     (dask bag or spark RDD). Note that the cursor already has information of the collection, an explicit collection
-     name is not needed in this function.
+    This function should be used to read an entire dataset that is to be handled
+    by subsequent parallel operations.  The function can be thought of as
+    loading the entire data set into a parallel container (rdd for spark
+    implementations or bag for a dask implementatio).   It doesn't really do
+    that to be scalable but conceptually the container that is the output of
+    this method is a handle to the entire data set defined by the input
+    cursor.   The normal use of this function is to construct a query of
+    the desired waveform collection with the MongoDB find operation.
+    MongoDB find returns the cursor object that is the expected input.
+    All other arguments are options that change behavior as described below.
 
-    :param db: the database to read from.
+    :param db: the database from which the data are to be read.
     :type db: :class:`mspasspy.db.database.Database`.
-    :param cursor: mongodb cursor where each corresponds to a stored mspasspy object.
+    :param cursor: mongodb cursor defining what "the dataset" is.  It would
+      normally be the output of the find method with a workflow dependent
+      query.
     :type cursor: :class:`pymongo.cursor.CursorType`
-    :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+    :param mode: reading mode that controls how the function interacts with
+      the schema definition for the data type.   Must be one of
+      ['promiscuous','cautious','pedantic'].   See user's manual for a
+      detailed description of what the modes mean.  Default is 'promiscuous'
+      which turns off all schema checks and loads all attributes defined for
+      each object read.
     :type mode: :class:`str`
-    :param normalize: normalized collection you want to read into a mspass object
+    :param normalize: list of collections that are to used for data
+      normalization. (see User's manual and MongoDB documentation for
+      details on this concept)  Briefly normalization means common
+      metadata like source and receiver geometry are defined in separate
+      smaller collections that are linked through this mechanism
+      during reads. Default uses no normalization.
     :type normalize: a :class:`list` of :class:`str`
-    :param load_history: `True` to load object-level history into the mspasspy object.
-    :param exclude_keys: the metadata attributes you want to exclude from being read.
+    :param load_history: boolean (True or False) switch used to enable or
+      disable object level history mechanism.   When set True each datum
+      will be tagged with its origin id that defines the leaf nodes of a
+      history G-tree.  See the User's manual for additional details of this
+      feature.  Default is False.
+    :param exclude_keys: Sometimes it is helpful to remove one or more
+      attributes stored in the database from the data's Metadata (header)
+      so they will not cause problems in downstream processing.
     :type exclude_keys: a :class:`list` of :class:`str`
-    :param format: The parallel data format can be either "dask" or "spark". "dask" is the default.
+    :param format: Set the format of the parallel container to define the
+      dataset.   Must be either "spark" or "dask" or the job will abort
+      immediately with an exception
     :type format: :class:`str`
-    :param spark_context: user specified spark context.
+    :param spark_context: If using spark this argument is required.  Spark
+      defines the concept of a "context" that is a global control object that
+      manages schduling.  See online Spark documentation for details on
+      this concept.
     :type spark_context: :class:`pyspark.SparkContext`
-    :param data_tag: a user specified "data_tag" key to filter the read.
+    :param data_tag:  The definition of a dataset can become ambiguous
+      when partially processed data are saved within a workflow.   A common
+      example would be windowing long time blocks of data to shorter time
+      windows around a particular seismic phase and saving the windowed data.
+      The windowed data can be difficult to distinguish from the original
+      with standard queries.  For this reason we make extensive use of "tags"
+      for save and read operations to improve the efficiency and simplify
+      read operations.   Default turns this off by setting the tag null (None).
     :type data_tag: :class:`str`
-    :return: a spark `RDD` or dask `bag` format of mspasspy objects.
+    :return: container defining the parallel dataset.  A spark `RDD` if format
+      is "Spark" and a dask 'bag' if format is "dask"
     """
     collection = cursor.collection.name
     if format == 'spark':
@@ -73,20 +110,59 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
         return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     else:
         raise TypeError("Only spark and dask are supported")
+def cursor2idlist(cursor):
+    """
+    Convenience function mainly for ensemble reads.
 
+    The ensemble reader is driven by a list of ObjectIDs.   In many cases,
+    however, the ensemble is defined by a find operation with a specific
+    query that returns a MongoDB cursor object.  This small function
+    loops through the range of the cursor and returns a list of the
+    ObjectIds the cursor defines.
+
+    Note this function has no safeties. It assumes what it receives is a
+    MongoDB cursor object that is note pointing at an absurdly large
+    view.   (e.g. find({}) applied to large collection)
+    """
+    result=list()
+    for doc in cursor:
+        result.append(doc['_id'])
+    return result
 
 class Database(pymongo.database.Database):
     """
-    A MongoDB database handler.
+    MsPASS core database handle.  All MongoDB database operation in MsPASS
+    should utilize this object.  This object is a subclass of the
+    Database class of pymongo.  It extends the class in several ways
+    fundamental to the MsPASS framework:
 
-    This is a wrapper around the :class:`~pymongo.database.Database` with
-    methods added to handle MsPASS data.  The one and only constructor
-    uses a database handle normally created with a variant of this pair
-    of commands:
-        client=MongoClient()
-        db=client['database_name']
-    where database_name is variable and the name of the database you
-    wish to access with this handle.
+    1. It abstracts read and write operations for seismic data managed
+       by the framework.   Note reads and writes are for atomic objects.
+       Use the distributed read and write functions for parallel handling of
+       complete data sets.
+    2. It contains methods for managing the most common seismic Metadata
+       (namely source and receiver geometry and receiver response data).
+    3. It adds a schema that can (optionally) be used to enforce type
+       requirements and/or provide aliasing.
+    4. Manages error logging data.
+    5. Manages (optional) processing history data
+
+    The class currently has only one constructor normally called with
+    a variant of the following:
+      db=Database(dbclient,'mydatabase')
+    where dbclient is either a MongoDB database client instance or
+    (recommended) the MsPASS DBClient wrapper (a subclass of the
+    pymongo client).  The second argument is the database "name"
+    passed to the MongoDB server that defines your working database.
+    Optional parameters are:
+
+    :param db_schema: Set the name for the database schema to use with this
+      handle.  Default is the MsPASS schema. (See User's Manual for details)
+    :param md_schema:  Set the name for the Metadata schema.   Default is
+      the MsPASS definitions.  (see User's Manual for details)
+
+    As a subclass of pymongo Database the constructor accepts any
+    parameters defined for the base class (see pymongo documentation)
     """
 
     def __init__(self, *args, db_schema=None, md_schema=None, **kwargs):
@@ -117,37 +193,96 @@ class Database(pymongo.database.Database):
 
     def set_metadata_schema(self, schema):
         """
-        Set metadata_schema defined in the Database class.
+        Use this method to change the metadata schema defined for this
+        instance of a database handle.  This method sets the metadata
+        schema (interal namespace).  Use set_database_schema to change
+        the stored data schema.
 
-        :param schema: a instance of :class:`mspsspy.db.schema.MetadataSchema`
+        :param schema: an instance of :class:`mspsspy.db.schema.MetadataSchema.
+          WARNING this is not a name - is a MsPASS object consructed from a name.
         """
         self.metadata_schema = schema
 
     def set_database_schema(self, schema):
         """
-        Set database_schema defined in the Database class.
+        Use this method to change the database schema defined for this
+        instance of a database handle.  This method sets the database
+        schema (namespace for attributes saved in MongoDB).  Use metadata_schema
+        to change the in memory namespace.
 
-        :param schema: a instance of :class:`mspsspy.db.schema.DatabaseSchema`
+        :param schema: an instance of :class:`mspsspy.db.schema.DatabaseSchema.
+          WARNING this is not a name - is a MsPASS object consructed from  aname.
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None, collection='wf', data_tag=None):
+    def read_data(self, object_id, mode='promiscuous', normalize=None,
+        load_history=False, exclude_keys=None, collection='wf', data_tag=None):
         """
-        Reads and returns the mspasspy object stored in the database.
+        This is the core MsPASS reader for constructing Seismogram or TimeSeries
+        objects from data managed with MondoDB through MsPASS.   It is the
+        core reader for serial processing where a typical algorithm would be:
 
-        :param object_id: "_id" of the mspasspy object or a dict that contains the "_id".
-        :type object_id: :class:`bson.objectid.ObjectId`/dict
-        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+          query= { ... properly constructed MondoDB query or just '{}'}
+          cursor=db.collection.find(query)  # collection is wf_TimeSeries or wf_Seismogram
+          for doc in cursor:
+            id=doc['_id']
+            d=db.read_data(id)
+              ...   # additional processing here
+
+        The above loop will construct one Seismogram or TimeSeries (depending on
+        which collection is referenced) for handling within the for loop.
+        Use the read_distributed_data function to read a dataset for
+        parallel processing.  This function is designed to handle one atomic
+        object at a time.  It is, in fact, called in read_distributed_data
+        Optional parameters control read behavior and additional options
+        not always needed.  An important one for handling reads from a
+        a dataset saved partway through a workflow is data_tag.
+
+        :param object_id: MongoDB object id of the wf document to be constructed from
+          data defined in the database.  The object id is guaranteed unique and provides
+          a unique link to a unique document or nothing.   In the later case the
+          function will return a None.
+        :type cursor: :class:`pymongo.cursor.CursorType`
+        :param mode: reading mode that controls how the function interacts with
+          the schema definition for the data type.   Must be one of
+          ['promiscuous','cautious','pedantic'].   See user's manual for a
+          detailed description of what the modes mean.  Default is 'promiscuous'
+          which turns off all schema checks and loads all attributes defined for
+          each object read.
         :type mode: :class:`str`
-        :param normalize: normalized collection you want to read into a mspass object
+        :param normalize: list of collections that are to used for data
+          normalization. (see User's manual and MongoDB documentation for
+          details on this concept)  Briefly normalization means common
+          metadata like source and receiver geometry are defined in separate
+          smaller collections that are linked through this mechanism
+          during reads. Default uses no normalization.
         :type normalize: a :class:`list` of :class:`str`
-        :param load_history: `True` to load object-level history into the mspasspy object.
-        :param exclude_keys: the metadata attributes you want to exclude from being read.
+        :param load_history: boolean (True or False) switch used to enable or
+          disable object level history mechanism.   When set True each datum
+          will be tagged with its origin id that defines the leaf nodes of a
+          history G-tree.  See the User's manual for additional details of this
+          feature.  Default is False.
+        :param exclude_keys: Sometimes it is helpful to remove one or more
+          attributes stored in the database from the data's Metadata (header)
+          so they will not cause problems in downstream processing.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name in the database that the object is stored. If not specified, use the default wf collection in the schema.
-        :param data_tag: a user specified "data_tag" key to filter the read. If not match, the return will be ``None``.
+        :param collection:  Specify an alternate collection name to
+          use for reading the data.  The default sets the collection name
+          based on the data type and automatically loads the correct schema.
+          The collection listed must be defined in the schema and satisfy
+          the expectations of the reader.  This is an advanced option that
+          is indended only to simplify extensions to the reader.
+        :param data_tag:  The definition of a dataset can become ambiguous
+          when partially processed data are saved within a workflow.   A common
+          example would be windowing long time blocks of data to shorter time
+          windows around a particular seismic phase and saving the windowed data.
+          The windowed data can be difficult to distinguish from the original
+          with standard queries.  For this reason we make extensive use of "tags"
+          for save and read operations to improve the efficiency and simplify
+          read operations.   Default turns this off by setting the tag null (None).
         :type data_tag: :class:`str`
-        :return: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :return: either :class:`mspasspy.ccore.seismic.TimeSeries`
+          or :class:`mspasspy.ccore.seismic.Seismogram`
         """
         try:
             wf_collection = self.database_schema.default_name(collection)
@@ -319,25 +454,96 @@ class Database(pymongo.database.Database):
 
     def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dir=None, dfile=None, format=None, exclude_keys=None, collection=None, data_tag=None):
         """
-        Save the mspasspy object (metadata attributes, processing history, elogs and data) in the mongodb database.
+        Use this method to save an atomic data object (TimeSeries or Seismogram)
+        to be managed with MongoDB.  The Metadata are stored as documents in
+        a MongoDB collection.  The waveform data can be stored in a conventional
+        file system or in MongoDB's gridfs system.   At the time this docstring
+        was written testing was still in progress to establish the relative
+        performance of file system io versus gridfs, but our working hypothesis
+        is the answer of which is faster will be configuration dependent. In
+        either case the goal of this function is to make a save operation as
+        simple as possible.
+
+        Any errors messages held in the object being saved are always
+        written to documents in MongoDB is a special collection defined in
+        the schema.   Saving object level history is optional.
+
+        There are multiple options described below.  One worth emphasizing is
+        "data_tag".   Such a tag is essential for intermediate saves of
+        a dataset if there is no other unique way to distinguish the
+        data in is current state from data saved earlier.  For example,
+        consider a job that did nothing but read waveform segments spanning
+        a long time period (e.g. day files),cutting out a shorter time window,
+        and then saving windowed data.  Crafting an unambiguous query to
+        find only the windowed data in that situation could be challenging
+        or impossible.  Hence, we recommend a data tag always be used for
+        most saves.
 
         :param mspass_object: the object you want to save.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :param mode: This parameter defines how attributes defined with
+          key-value pairs in MongoDB documents are to be handled on reading.
+          By "to be handled" we mean how strongly to enforce name and type
+          specification in the schema for the type of object being constructed.
+          Options are ['promiscuous','cautious','pedantic'] with 'promiscuous'
+          being the default.  See the User's manual for more details on
+          the concepts and how to use this option.
         :type mode: :class:`str`
-        :param storage_mode: "gridfs" stores the object in the mongodb grid file system (recommended). "file" stores
-            the object in a binary file, which requires ``dfile`` and ``dir``.
+        :param storage_mode: Must be either "gridfs" or "file.  When set to
+          "gridfs" the waveform data are stored internally and managed by
+          MongoDB.  If set to "file" the data will be stored in a file system
+          with the dir and dfile arguments defining a file name.   The
+          default is "gridfs".
         :type storage_mode: :class:`str`
-        :param dir: file directory if using "file" storage mode.
+        :param dir: file directory for storage.  This argument is ignored if
+          storage_mode is set to "gridfs".  When storage_mode is "file" it
+          sets the directory in a file system where the data should be saved.
+          Note this can be an absolute or relative path.  If the path is
+          relative it will be expanded with the standard python library
+          path functions to a full path name for storage in the database
+          document with the attribute "dir".  As for any io we remind the
+          user that you much have write permission in this directory.
+          The writer will also fail if this directory does not already
+          exist.  i.e. we do not attempt to
         :type dir: :class:`str`
-        :param dfile: file name if using "file" storage mode.
+        :param dfile: file name for storage of waveform data.  As with dir
+          this parameter is ignored if storage_mode is "gridfs" and is
+          required only if storage_mode is "file".   Note that this file
+          name does not have to be unique.  The writer always calls positions
+          the write pointer to the end of the file referenced and sets the
+          attribute "foff" to that position. That allows automatic appends to
+          files without concerns about unique names.
         :type dfile: :class:`str`
-        :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
+        :param format: the format of the file. This can be one of the
+          `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.Stream.write.html#supported-formats>`__
+          of ObsPy writer. The default the python None which the method
+          assumes means to store the data in its raw binary form.  The default
+          should normally be used for efficiency.  Alternate formats are
+          primarily a simple export mechanism.  See the User's manual for
+          more details on data export.
         :type format: :class:`str`
-        :param exclude_keys: the metadata attributes you want to exclude from being stored.
+        :param exclude_keys: Metadata can often become contaminated with
+          attributes that are no longer needed or a mismatch with the data.
+          A type example is the bundle algorithm takes three TimeSeries
+          objects and produces a single Seismogram from them.  That process
+          can, and usually does, leave things like seed channel names and
+          orientation attributes (hang and vang) from one of the components
+          as extraneous baggage.   Use this of keys to prevent such attributes
+          from being written to the output documents.  Not if the data being
+          saved lack these keys nothing happens so it is safer, albeit slower,
+          to have the list be as large as necessary to eliminate any potential
+          debris.
         :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
-        :param data_tag: a user specified "data_tag" key to tag the saved wf document.
+        :param collection: The default for this parameter is the python
+          None.  The default should be used for all but data export functions.
+          The normal behavior is for this writer to use the object
+          data type to determine the schema is should use for any type or
+          name enforcement.  This parameter allows an alernate collection to
+          be used with or without some different name and type restrictions.
+          The most common use of anything other than the default is an
+          export to a diffrent format.
+        :param data_tag: a user specified "data_tag" key.  See above and
+          User's manual for guidance on how the use of this option.
         :type data_tag: :class:`str`
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
@@ -422,20 +628,57 @@ class Database(pymongo.database.Database):
         return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
-    def clean_collection(self, collection='wf', query=None, rename_undefined=None, delete_undefined=False, check_xref=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
+    def clean_collection(self, collection='wf', query=None,
+      rename_undefined=None, delete_undefined=False, required_xref_list=None,
+        delete_missing_xref=False, delete_missing_required=False,
+          verbose=False, verbose_keys=None):
         """
-        clean a collection in user's database by a user defined query
+        This method can be used to fix a subset of common database problems
+        created during processing that can cause problems if the user tries to
+        read back data saved with such blemishes.   The subset of problems
+        are defined as those that are identified by the "dbverify" command
+        line tool or it's Database equivalent (the verify method of this class).
+        This method is an alternative to the command line tool dbverify.  Use
+        this method for more surgical fixes that require a query to limit
+        the application of the fix.
 
         :param collection: the collection you would like to clean. If not specified, use the default wf collection
         :type collection: :class:`str`
-        :param query: the query dict that passed to MongoDB to find matched documents.
+        :param query: this is a python dict that is assumed to be a query
+         to MongoDB to limit suite of documents to which the requested cleanup
+         methods are applied.  The default will process the entire database
+         collection specified.
         :type query: :class:`dict`
-        :param rename_undefined: Specify a :class:`dict` of ``{original_key:new_key}`` to rename the undefined keys in the document.
+        :param rename_undefined: when set the options is assumed to contain
+          a python dict defining how to rename a set of attributes. Each member
+          of the dict is assumed to be of the form ``{original_key:new_key}``
+          Each document handled will change the key from "original_key" to
+          "new_key".
         :type rename_undefined: :class:`dict`
-        :param delete_undefined: Set to ``True`` to delete undefined keys in the doc. ``rename_undefined`` will not work if this is ``True``. Default is ``False``.
-        :param check_xref: a :class:`list` of xref keys to be checked.
-        :type check_xref: :class:`list`
-        :param delete_missing_xref: Set to ``True`` to delete this document if any keys specified in ``check_xref`` is missing. Default is ``False``.
+        :param delete_undefined: attributes undefined in the schema can
+          be problematic.  As a minimum they waste storage and memory if they
+          are baggage.  At worst they may cause a downstream process to abort
+          or mark some or all data dead.  On the other hand, undefined data may
+          contain important information you need that for some reason is
+          not defined in the schema.  In that case do not run this method to
+          clear these.  When set true all attributes matching the query will
+          have undefined attributes cleared.
+        :param required_xref_list: in MsPASS we use "normalization" of some common
+          attributes for efficiency.  The stock ones currently are "source", "site",
+          and "channel".  This list is a intimately linked to the
+          delete_missing_xref option.  When that is true this list is
+          enforced to clean debris.  Typical examples are ['site_id','source_id']
+          to require source and receiver geometry.
+        :type required_xref_list: :class:`list`
+        :param delete_missing_xref: Turn this option on to impose a brutal
+          fix for data with missing (required) cross referencing data.  This
+          clean operation, for example, might be necessary to clean up a
+          data set with some channels that defy all attempts to find valid
+          receiver metadata (stationxml stuff for passive data, survey data for
+          active source data).  This clean method is a blunt instrument that
+          should be used as a last resort.  When true the is list of xref
+          keys defined by required_xref_list are tested any document that lacks
+          of the keys will be deleted from the database.
         :param delete_missing_required: Set to ``True`` to delete this document if any required keys in the database schema is missing. Default is ``False``.
         :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
         :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
@@ -445,8 +688,8 @@ class Database(pymongo.database.Database):
             query = {}
         if verbose_keys is None:
             verbose_keys = []
-        if check_xref is None:
-            check_xref = []
+        if required_xref_list is None:
+            required_xref_list = []
         if rename_undefined is None:
             rename_undefined = {}
 
@@ -463,7 +706,7 @@ class Database(pymongo.database.Database):
             for doc in docs:
                 if '_id' in doc:
                     fixed_attr_cnt = self.clean(
-                        doc['_id'], collection, rename_undefined, delete_undefined, check_xref, delete_missing_xref, delete_missing_required, verbose, verbose_keys)
+                        doc['_id'], collection, rename_undefined, delete_undefined, required_xref_list, delete_missing_xref, delete_missing_required, verbose, verbose_keys)
                     for k, v in fixed_attr_cnt.items():
                         if k not in fixed_cnt:
                             fixed_cnt[k] = 1
@@ -473,9 +716,15 @@ class Database(pymongo.database.Database):
         return fixed_cnt
 
     # clean a single document in the given collection atomically
-    def clean(self, document_id, collection='wf', rename_undefined=None, delete_undefined=False, check_xref=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
+    def clean(self, document_id, collection='wf', rename_undefined=None, delete_undefined=False, required_xref_list=None, delete_missing_xref=False, delete_missing_required=False, verbose=False, verbose_keys=None):
         """
-        Clean a document in a collection, including deleting the document if required keys are absent or fix the types if there are mismatches.
+        This is the atomic level operation for cleaning a single database
+        document with one or more common fixes.  The clean_collection method
+        is mainly a loop that calls this method for each document it is asked to
+        handle.  Most users will likely not need or want to call this method
+        directly but use the clean_collection method instead.  See the docstring
+        for clean_collection for a less cyptic description of the options as
+        the options are identical.
 
         :param document_id: the value of the _id field in the document you want to clean
         :type document_id: :class:`bson.objectid.ObjectId`
@@ -483,9 +732,9 @@ class Database(pymongo.database.Database):
         :param rename_undefined: Specify a :class:`dict` of ``{original_key:new_key}`` to rename the undefined keys in the document.
         :type rename_undefined: :class:`dict`
         :param delete_undefined: Set to ``True`` to delete undefined keys in the doc. ``rename_undefined`` will not work if this is ``True``. Default is ``False``.
-        :param check_xref: a :class:`list` of xref keys to be checked.
-        :type check_xref: :class:`list`
-        :param delete_missing_xref: Set to ``True`` to delete this document if any keys specified in ``check_xref`` is missing. Default is ``False``.
+        :param required_xref_list: a :class:`list` of xref keys to be checked.
+        :type required_xref_list: :class:`list`
+        :param delete_missing_xref: Set to ``True`` to delete this document if any keys specified in ``required_xref_list`` is missing. Default is ``False``.
         :param delete_missing_required: Set to ``True`` to delete this document if any required keys in the database schema is missing. Default is ``False``.
         :param verbose: Set to ``True`` to print all the operations. Default is ``False``.
         :param verbose_keys: a list of keys you want to added to better identify problems when error happens. It's used in the print messages.
@@ -496,8 +745,8 @@ class Database(pymongo.database.Database):
         """
         if verbose_keys is None:
             verbose_keys = []
-        if check_xref is None:
-            check_xref = []
+        if required_xref_list is None:
+            required_xref_list = []
         if rename_undefined is None:
             rename_undefined = {}
 
@@ -506,8 +755,8 @@ class Database(pymongo.database.Database):
             raise MsPASSError('verbose_keys should be a list , but {} is requested.'.format(str(type(verbose_keys))), 'Fatal')
         if type(rename_undefined) is not dict:
             raise MsPASSError('rename_undefined should be a dict , but {} is requested.'.format(str(type(rename_undefined))), 'Fatal')
-        if type(check_xref) is not list:
-            raise MsPASSError('check_xref should be a list , but {} is requested.'.format(str(type(check_xref))), 'Fatal')
+        if type(required_xref_list) is not list:
+            raise MsPASSError('required_xref_list should be a list , but {} is requested.'.format(str(type(required_xref_list))), 'Fatal')
 
         if verbose:
             print_messages = []
@@ -566,10 +815,10 @@ class Database(pymongo.database.Database):
                 print_messages.append("{}{}".format(log_helper, error_msg))
 
 
-        # 2. check if the document has all xref keys in the check_xref list provided by user
+        # 2. check if the document has all xref keys in the required_xref_list list provided by user
         missing_xref_key_list = []
-        for xref_k in check_xref:
-            # xref_k in check_xref list should be defined in schema first
+        for xref_k in required_xref_list:
+            # xref_k in required_xref_list list should be defined in schema first
             if self.database_schema[collection].is_defined(xref_k):
                 unique_xref_k = self.database_schema[collection].unique_name(xref_k)
                 # xref_k should be a reference key as well
@@ -650,16 +899,33 @@ class Database(pymongo.database.Database):
 
     def verify(self, document_id, collection='wf', tests=['xref', 'type', 'undefined']):
         """
-        Verify a document in a collection, including checking links, checking required attributes and checking if attribute type matches schema.
+        This is an atomic-level operation to search for known issues in
+        Metadata stored in a database and needed to construct a valid
+        data set for starting a workflow.  By "atomic" we main the operation
+        is for a single document in MongoDB linked to an atomic data
+        object (currently that means TimeSeries or Seismogram objects).
+        The tests are the same as those available through the command
+        line tool dbverify.  See the man page for that tool and the
+        user's manual for more details about the tests this method
+        enables.
 
         :param document_id: the value of the _id field in the document you want to verify
-        :type document_id: :class:`bson.objectid.ObjectId`
-        :param collection: the name of collection saving the document. If not specified, use the default wf collection
-        :param tests: the type of tests you want to verify, should be a subset of ['xref', 'type', 'undefined']
+        :type document_id: :class:`bson.objectid.ObjectId` of document to be tested
+        :param collection: the name of collection to which document_id is
+         expected to provide a unique match.  If not specified, uses the default wf collection
+        :param tests: this should be a python list of test to apply by
+         name keywords.  Test nams allowed are 'xref', 'type',
+         and 'undefined'.   Default runs all tests.   Specify a subset of those
+         keywords to be more restrictive.
         :type tests: :class:`list` of :class:`str`
 
-        :return: a dictionary of {problematic keys : failed test}
+        :return: a python dict keyed by a problematic key.  The value in each
+          entry is the name of the failed test (i.e. 'xref', 'type', or 'undefined')
         :rtype: :class:`dict`
+        :excpetion: This method will throw a fatal error exception if the
+          id received does no match any document in the database.  That is
+          intentional as the method should normally appear in a loop over
+          ids found after query and the ids should then always be valid.
         """
         # check tests
         for test in tests:
@@ -674,9 +940,9 @@ class Database(pymongo.database.Database):
         col = self[collection]
         doc = col.find_one({'_id': document_id})
 
-        # if the document does not exist in the db collection, return
         if not doc:
-            return problematic_keys
+            raise MsPASSError("Database.verify:  objectid="+str(document_id)+" has no matching document in "+collection,
+                 "Fatal")
 
         # run the tests
         for test in tests:
@@ -1264,8 +1530,14 @@ class Database(pymongo.database.Database):
 
     def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False, data_tag=None):
         """
-        Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
-        and metadata attributes.
+        Stores attributes stored in the Metadata container of an object in
+        MongoDB wih optional schema enforcement.
+
+        The user should recognize that this method is a fairly low level
+        method used by internally in save_data and would rarely be of use
+        for other applications.   The main use would be to only update
+        or save the Metadata container and not create a new copy of the
+        waveform data.
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -1425,7 +1697,7 @@ class Database(pymongo.database.Database):
                     filter_ = {'_id': history_object_id}
                     history_object_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
             else:
-                # save the metadata in gravestone as an elog entry
+                # save the metadata in tombstone as an elog entry
                 mspass_object.elog.log_verbose(
                 sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
                 self._save_elog(mspass_object)
@@ -1441,11 +1713,36 @@ class Database(pymongo.database.Database):
             return -1
         return non_fatal_error_cnt
 
-    def read_ensemble_data(self, objectid_list, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None, collection='wf', data_tag=None):
+    def read_ensemble_data(self, objectid_list, ensemble_metadata={},
+      mode='promiscuous', normalize=None, load_history=False,
+       exclude_keys=None, collection='wf', data_tag=None):
         """
-        Reads and returns the mspasspy ensemble object stored in the database.
+        Reads an subset of a dataset with some logical grouping into an Ensemble container.
 
-        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`, where each belongs to a mspasspy object.
+        Ensembles are a core concept in MsPASS that are a generalization of
+        fixed "gather" types frozen into every seismic reflection processing
+        system we know of.  This reader is driven by a python list of
+        MongoDB object ids.  The method calls the atomic read_data
+        method for object_id to assemble the members of the ensemble.
+        All arguments except the objectid_list and ensemble_metadata are
+        passed directly to the read_data method in that loop.  The read_data
+        method and the User's manual have more information about how those
+        common arguments are used.
+
+        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
+          of the ids defining the ensemble members.
+        :param ensemble_metadata:  is a dict or dict like container containing
+          metadata to be stored in the ensemble's Metadata (common to the group)
+          container.  A common choice would be to post the query used to
+          define this ensemble, but there are not restictions.  The contents are
+          simply copied verbatim to the ensemble metadata container. The default
+          is an empty dict which translates to an empty ensemble metadata container.
+        :type ensemble_metadata: python dict or any container that is iterable
+          and supports the [key] key associative array syntax will work.
+          (Note this means both Metadata containers or mongodb docs both can
+          be used) The type of this arg is not tested so you may get a
+          mysterious exception if the data the arg defines does no meet the
+          two rules.
         :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
         :type mode: :class:`str`
         :param normalize: normalized collection you want to read into a mspass object
@@ -1470,6 +1767,9 @@ class Database(pymongo.database.Database):
             ensemble = TimeSeriesEnsemble(len(objectid_list))
         else:
             ensemble = SeismogramEnsemble(len(objectid_list))
+        # Here we post the ensemble metdata - see docstring notes on this feature
+        for k in ensemble_metadata:
+            ensemble[k]=ensemble_metadata[k]
 
         for i in objectid_list:
             data = self.read_data(
@@ -1482,8 +1782,26 @@ class Database(pymongo.database.Database):
     def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dir_list=None, dfile_list=None,
                            exclude_keys=None, exclude_objects=None, collection=None, data_tag=None):
         """
-        Save the mspasspy ensemble object (metadata attributes, processing history, elogs and data) in the mongodb
-        database.
+        Save an Ensemble container of a group of data objecs to MongoDB.
+
+        Ensembles are a core concept in MsPASS that are a generalization of
+        fixed "gather" types frozen into every seismic reflection processing
+        system we know of.   This is is a writer for data stored in such a
+        container.  It is little more than a loop over each "member" of the
+        ensemble calling the Database.save_data method for each member.
+        For that reason most of the arguments are passed downstream directly
+        to save_data.   See the save_data method and the User's manual for
+        more verbose descriptions of their behavior and expected use.
+
+        The only complexity in handling an ensemble is that our implementation
+        has a separate Metadata container associated with the overall group
+        that is assumed to be constant for every member of the ensemble.  For this
+        reason before entering the loop calling save_data on each member
+        the method calls the objects sync_metadata method that copies (overwrites if
+        previously defined) the ensemble attributes to each member.  That assure
+        atomic saves will not lose their association with a unique ensemble
+        indexing scheme.
+
 
         :param ensemble_object: the ensemble you want to save.
         :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
@@ -1509,6 +1827,9 @@ class Database(pymongo.database.Database):
             dir_list = [None for _ in range(len(ensemble_object.member))]
         if exclude_objects is None:
             exclude_objects = []
+        #sync_metadata is a ccore method of the Ensemble  template
+        ensemble_object.sync_metadata()
+
 
         if storage_mode in ['file', 'gridfs']:
             j = 0
@@ -1525,8 +1846,17 @@ class Database(pymongo.database.Database):
     def update_ensemble_metadata(self, ensemble_object, mode='promiscuous', exclude_keys=None, exclude_objects=None,
                                  collection=None, ignore_metadata_changed_test=False, data_tag=None):
         """
-        Update (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
+        Updates (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
         and metadata attributes.
+
+        This method is a companion to save_ensemble_data. The relationship is
+        comparable to that between the save_data and update_metadata methods.
+        In particular, this method is mostly for internal use to save the
+        contents of the Metadata container in each ensemble member.  Like
+        save_ensemble_data it is mainly a loop over ensemble members calling
+        update_metadata on each member.  Also like update_metadata it is
+        advanced usage to use this method directly.  Most users will apply
+        it under the hood as part of calls to save_ensemble_data.
 
         :param ensemble_object: the ensemble you want to update.
         :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
@@ -1551,10 +1881,26 @@ class Database(pymongo.database.Database):
             if i not in exclude_objects:
                 self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag)
 
-    def delete_data(self, object_id, object_type, remove_unreferenced_files=False, clear_history=True, clear_elog=True):
+    def delete_data(self, object_id, object_type, remove_unreferenced_files=False,
+       clear_history=True, clear_elog=False):
         """
-        Delete the wf document by passing mspass object's _id, including deleting the processing history, elogs
-        and files/gridfs data the mspass object contains.
+        Delete method for handling mspass data objects (TimeSeries and Seismograms).
+
+        Delete is one of the basic operations any database system should
+        support (the last letter of the acronymn CRUD is delete).  Deletion is
+        nontrivial with seismic data stored with the model used in MsPASS.
+        The reason is that the content of the objects are spread between
+        multiple collections and sometimes use storage in files completely
+        outside MongoDB.   This method, however, is designed to handle that
+        and when given the object id defining a document in one of the wf
+        collections, it will delete the wf document entry and manage the
+        waveform data.  If the data are stored in gridfs the deletion of
+        the waveform data will be immediate.  If the data are stored in
+        disk files the file will be deleted when there are no more references
+        in the wf collection for the exact combination of dir and dfile associated
+        an atomic deletion.  Error log and history data deletion linked to
+        a datum is optional.
+
 
         :param object_id: the wf object id you want to delete.
         :type object_id: :class:`bson.objectid.ObjectId`
@@ -1696,7 +2042,7 @@ class Database(pymongo.database.Database):
 
     def load_source_metadata(self, mspass_object, exclude_keys=['serialized_event','magnitude_type'], include_undefined=False):
         """
-        Reads metadata from source collection and loads standard attributes in source collection to the data passed as mspass_object.
+        Reads metadata from the source collection and loads standard attributes in source collection to the data passed as mspass_object.
         The method will only work if mspass_object has the source_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class
@@ -1725,7 +2071,7 @@ class Database(pymongo.database.Database):
 
     def load_site_metadata(self,mspass_object, exclude_keys=None, include_undefined=False):
         """
-        Reads metadata from site collection and loads standard attributes insite collection to the data passed as mspass_object.
+        Reads metadata from the site collection and loads standard attributes in site collection to the data passed as mspass_object.
         The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
@@ -1755,7 +2101,7 @@ class Database(pymongo.database.Database):
 
     def load_channel_metadata(self,mspass_object, exclude_keys=['serialized_channel_data'], include_undefined=False):
         """
-        Reads metadata from channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
+        Reads metadata from the channel collection and loads standard attributes in channel collection to the data passed as mspass_object.
         The method will only work if mspass_object has the site_id attribute set to link it to a unique document in source.
 
         Note the mspass_object can be either an atomic object (TimeSeries or Seismogram) with a Metadata container base class or an ensemble (TimeSeriesEnsemble
@@ -1923,7 +2269,7 @@ class Database(pymongo.database.Database):
                 docentry[wf_id_name] = oid
 
             if not mspass_object.live:
-                docentry['gravestone'] = dict(mspass_object)
+                docentry['tombstone'] = dict(mspass_object)
 
             if elog_id:
                 # append elog
@@ -1936,7 +2282,7 @@ class Database(pymongo.database.Database):
                     [elog_doc['logdata'].append(x) for x in logdata if x not in elog_doc['logdata']]
                     docentry['logdata'] = elog_doc['logdata']
                     self[collection].delete_one({'_id': elog_id})
-                # note that is should be impossible for the old elog to have gravestone entry
+                # note that is should be impossible for the old elog to have tombstone entry
                 # so we ignore the handling of that attribute here.
                 ret_elog_id = self[collection].insert_one(docentry).inserted_id
             else:
@@ -2264,8 +2610,8 @@ class Database(pymongo.database.Database):
         """
         Saves contents of all components of an obspy inventory
         object to documents in the site and channel collections.
-        The site collection is sufficient of Seismogram objects but
-        TimeSeries data will often want to be connected to the
+        The site collection is sufficient for Seismogram objects but
+        TimeSeries data will normally need to be connected to the
         channel collection.   The algorithm used will not add
         duplicates based on the following keys:
 
@@ -2293,7 +2639,7 @@ class Database(pymongo.database.Database):
                frequently than site metadata (e.g. with a sensor
                orientation or sensor swap)
 
-        Finally note the site collection contains full response data
+        The channel collection can contain full response data
         that can be obtained by extracting the data with the key
         "serialized_inventory" and running pickle loads on the returned
         string.
@@ -2303,7 +2649,7 @@ class Database(pymongo.database.Database):
         of stationxml data.  The problem is that stationxml, like SEED, has to
         support a lot of complexity faced by data centers that end users
         like those using this package do not need or want to know.   The
-        point is this method flattens the complexity and aims to reduce the
+        point is this method tries to untangle the complexity and aims to reduce the
         result to a set of documents in the site and channel collection
         that can be cross referenced to link the right metadata with all
         waveforms in a dataset.
@@ -2845,7 +3191,7 @@ class Database(pymongo.database.Database):
         o['last_packet_time'] = index_record.last_packet_time
         o['foff'] = index_record.foff
         o['nbytes'] = index_record.nbytes
-        # FIXME: The following are commented out because some simple tests showed that 
+        # FIXME: The following are commented out because some simple tests showed that
         #   the numbers are very different from the data being read by ObsPy's reader.
         # o['endtime'] = index_record.endtime
         # o['npts'] = index_record.npts
@@ -2870,7 +3216,7 @@ class Database(pymongo.database.Database):
         cat command on a set of single-channel, contingous time sequence files.
         There are other examples that do the same thing (e.g. antelope's
         miniseed2days).
-    
+
         We emphasize this function only builds an index - it does not
         convert any data.   As a result a final warning is that the
         metadata in the wf_miniseed collection lack some common
@@ -2887,19 +3233,19 @@ class Database(pymongo.database.Database):
         is to endtime depends mainly on the sample interval.  If a range
         query is needed use last_packet_time where you would otherwise use
         endtime.
-    
+
         Finally, note that cross referencing with the channel and/or
         source collections should be a common step after building the
         index with this function.  The reader found elsewhere in this
         module will transfer linking ids (i.e. channel_id and/or source_id)
         to TimeSeries objects when it reads the data from the files
         indexed by this function.
-    
+
         Note to parallelize this function put a list of files in a Spark
         RDD or a Dask bag and parallelize the call the this function.
         That can work because MongoDB is designed for parallel operations.
-    
-    
+
+
         :param dfile:  file name of data to be indexed.  Asssumed to be
           the leaf node of the path - i.e. it contains no directory information
           but just the file name.

@@ -3,9 +3,16 @@ from mspasspy.db.database import Database
 
 class DBClient(pymongo.MongoClient):
     """
-    A client-side representation of MongoDB.
+    A client-side top-level handle into MongoDB.
 
-    This is a wrapper around the :class:`~pymongo.MongoClient` for convenience.
+    MongoDB uses the client server model for transactions.   An instance
+    of this class must be created in any MsPASS job using the MongoDB
+    database to set up the communciation channels between the you
+    (the client) and an instance of the MongoDB server.
+    This class is a little more han a wrapper around the
+    :class:`~pymongo.MongoClient` created for convenience.
+    In most cases there is functionally little difference from
+    creating a MongoClient or the MsPASS DBClient (this class).
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
