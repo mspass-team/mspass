@@ -689,6 +689,16 @@ PYBIND11_MODULE(seismic, m) {
       .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
          "Apply taper to a Seismogram (3C) object")
     ;
+    py::class_<TopMute>(m,"TopMute",
+      "Defines a top mute operator (one sided taper")
+      .def(py::init<>())
+      .def(py::init<const double, const double, const std::string>())
+      .def(py::init<const TopMute&>())
+      .def("apply",py::overload_cast<TimeSeries&>(&TopMute::apply),
+        "Apply to a TimeSeries object")
+      .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),
+        "Apply to a Seismogram object")
+    ;
 }
 
 

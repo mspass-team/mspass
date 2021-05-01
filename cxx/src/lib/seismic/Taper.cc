@@ -415,4 +415,70 @@ int VectorTaper::apply( Seismogram& d)
     return -1;
 }
 
+/* Top mute implementation start here */
+TopMute::TopMute()
+{
+  taper=NULL;
+}
+TopMute::~TopMute()
+{
+}
+TopMute::TopMute(const double t0, const double t1, const std::string type)
+{
+  const string base_error("TopMute parameterized constructor:  ");
+  if(t1<=t0)
+  {
+    stringstream ss;
+    ss<<base_error<<"Zero time (t0) must be less than end of mute time (t1)"<<endl
+       << "Constructor was passed t0="<<t0<<" and t1="<<t1<<endl;
+    throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+  }
+  try{
+    if(type=="linear")
+    {
+      taper=std::make_shared<LinearTaper>(t0,t1,t0+999999.0,t1+999999.0);
+      taper->disable_tail();
+    }
+    else if(type=="cosine")
+    {
+      taper=std::make_shared<CosineTaper>(t0,t1,t0+999999.0,t1+999999.0);
+      taper->disable_tail();
+    }
+    else
+    {
+      stringstream ss;
+      ss << base_error<<"Unrecognized type argume="<<type<<endl
+         << "Current options are:  linear OR cosine"<<endl;
+      throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
+    }
+  }catch(...){throw;};
+}
+TopMute::TopMute(const TopMute& parent) : taper(parent.taper)
+{
+}
+TopMute& TopMute::operator=(const TopMute& parent)
+{
+  if(&parent != this)
+  {
+    this->taper = parent.taper;
+  }
+  return *this;
+}
+int TopMute::apply(mspass::seismic::TimeSeries& d)
+{
+  try{
+    int iret;
+    iret=this->taper->apply(d);
+    return iret;
+  }catch(...){throw;};
+}
+int TopMute::apply(mspass::seismic::Seismogram& d)
+{
+  try{
+    int iret;
+    iret=this->taper->apply(d);
+    return iret;
+  }catch(...){throw;};
+}
+
 }  // End namespace

@@ -1,5 +1,6 @@
 //#include <math.h>
 #include <vector>
+#include <memory>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 
@@ -17,6 +18,10 @@ public:
   virtual ~BasicTaper(){};
   virtual int apply(mspass::seismic::TimeSeries& d)=0;
   virtual int apply(mspass::seismic::Seismogram& d)=0;
+  void enable_head(){head=true;};
+  void disable_head(){head=false;all=false;};
+  void enable_tail(){tail=true;};
+  void disable_tail(){tail=false;all=false;};
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
@@ -92,5 +97,63 @@ public:
   };
 private:
   std::vector<double> taper;
+};
+/*! \brief Mute operator for "top" of signals defined first smaple forward.
+
+A top mute is very commonly used in a many forms of seismic processing.
+It is, for example, a very low level operation in traditional seismic
+reflection processing.  A top mute zeros the front (forward in time from first
+sample) of the signal and ramps up to a multiplier of 1 (does nothing)
+at some later time.  It can also be thought of as a taper with only the
+low side altered.  The implementation, in fact, uses the family of
+mspass taper operators internally the the high time range (tail) turned off.
+
+The main constructor uses a string keyword to select the type of tapering
+applied to define the mute.   Because of the relationship to mspass tapers
+there is also a constructor using the base class for Taper objects.  It
+allows custom implementations of taper beyond those associated with
+keywords in the definition passed to the main constructor.
+*/
+class TopMute
+{
+public:
+  /*! Default constructor.  Exists but the result is invalid */
+  TopMute();
+  /*! \brief Primary constructor driven by a named keyword.
+
+  This is the normal constructor most users will want to us.  It is
+  defined by a time range for the mute to ramp from 0 to 1 and a string
+  matching one of the supported types.  Note the mspass VectorTaper cannot
+  be used for this constructor because it requires more than 2 arguments
+  to be defined.
+
+  \param t0 is the end of the zeroed time range.  Date from the first sample
+     to this value will be zeroed.
+  \param t1 end ramp. Data with t>t1 will be unaltered.
+  \param type defines the type of taper desired. Current options are
+    'linear' and 'cosine'.  They enable the LinearTaper and CosineTaper
+    opeators respectively.
+
+  \exception This function will throw a MsPASSError if t1<=t0.
+  */
+  TopMute(const double t0, const double t1, const std::string type);
+  /*! Standard copy constructor. */
+  TopMute(const TopMute& parent);
+  /*! Destructor.  The destructor of this class is not null. */
+  ~TopMute();
+  /*! Standard assignment operator. */
+  TopMute& operator=(const TopMute& parent);
+  /*! Apply the operator to a TimeSeries object. */
+  int apply(mspass::seismic::TimeSeries& d);
+  /*! Apply the operator to a Seismogram object. */
+  int apply(mspass::seismic::Seismogram& d);
+private:
+  /* We use a shared_ptr to the base class.  That allows inheritance to
+  handle the actual form - a classic oop use of a base class. the shared_ptr
+  allows us to get around an abstract base problem.   May be other solutions
+  but this should be ok.  There may be a problem in parallel environment,
+  however, as not sure how this would be handled by spark or dask.   this is
+  in that pickable realm.*/
+  std::shared_ptr<BasicTaper> taper;
 };
 } // End namespace
