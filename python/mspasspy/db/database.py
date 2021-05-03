@@ -2933,4 +2933,3 @@ class Database(pymongo.database.Database):
             doc['dir'] = odir
             doc['dfile'] = dfile
             dbh.insert_one(doc)
-            print('Saved this doc: ', doc)
