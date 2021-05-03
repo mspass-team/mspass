@@ -98,6 +98,15 @@ FortranCInterface_HEADER (include/FC.h
   SYMBOLS ${FORTRAN_FUNCTIONS}
   )
 
+message (STATUS "Building mseed")
+include (cmake/mseed.cmake)
+fetch_mseed (
+  ${PROJECT_SOURCE_DIR}/cmake
+  ${PROJECT_BINARY_DIR}/mseed
+  )
+message (STATUS "MSEED_LIBRARIES   = ${MSEED_LIBRARIES}")
+message (STATUS "MSEED_INCLUDE_DIR = ${MSEED_INCLUDE_DIR}")
+
 find_package (PythonInterp 3)
 
 if (PYTHONINTERP_FOUND)

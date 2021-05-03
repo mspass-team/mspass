@@ -36,11 +36,16 @@ int main(int argc, char **argv)
                 mdplain.put<string>("string_val",sval);
                 bval=true;
                 mdplain.put<bool>("bool_val",bval);
+		// Earlier versions would cause problems with literals like 
+		// this that C++ cast a const char*  - not copy constructable
+		// and violates boost::any rules
+		mdplain.put("literal","literal_value_test");
                 cout << "Succeeded - trying matching get methods"<<endl;
                 cout << "long_val="<<mdplain.get<long>("long_val")<<endl;
                 cout << "double_val="<<mdplain.get<double>("double_val")<<endl;
                 cout << "string_val="<<mdplain.get<string>("string_val")<<endl;
                 cout << "bool_val="<<mdplain.get<bool>("bool_val")<<endl;
+		cout << "literal test value="<<mdplain.get<string>("literal")<<endl;
                 cout << "Trying copy constructor followed by change of key string_val to sval"<<endl;
                 Metadata mdctmp(mdplain);
                 mdctmp.change_key("string_val","sval");
@@ -56,16 +61,6 @@ int main(int argc, char **argv)
 		ss << mdplain;
 		cout << "Succeeded - stringstream contents:"<<endl;
 		cout << ss.str()<<endl;
-		cout<< "Trying same with serialize_metadata function"<<endl;
-		string sbuf=serialize_metadata(mdplain);
-		cout<<"Serialized completed: content "<<endl
-			<<"(should be same as stringstream output above)"<<endl;
-		cout <<sbuf;
-		cout << "Trying to run inverse function restore_serialized_metadata "
-			<<"on sterialization output"<<endl;
-		Metadata mrestored=restore_serialized_metadata(sbuf);
-		cout<<"Result - should again be the same"<<endl;
-		print_metadata(mrestored);
                 cout << "Same thing using operator >> to cout"<<endl;
 		print_metadata(mdplain);
 		cout << "Testing is_defined and clear methods"<<endl;

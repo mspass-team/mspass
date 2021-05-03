@@ -192,10 +192,10 @@ std::string Metadata::type(const string key) const
     catch(...){throw;};
 }
 /* friend operator */
-ostringstream& operator<<(ostringstream& os, Metadata& m)
+ostringstream& operator<<(ostringstream& os, const Metadata& m)
 {
   try{
-    map<string,boost::any>::iterator mdptr;
+    map<string,boost::any>::const_iterator mdptr;
     for(mdptr=m.md.begin();mdptr!=m.md.end();++mdptr)
     {
         /* Only handle simple types for now.  Issue an error message to
@@ -221,7 +221,8 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
         string sname("string");
         if(pretty_name.find("basic_string")==std::string::npos)
             sname=pretty_name;
-        os<<misc::base64_encode(mdptr->first.c_str(), mdptr->first.size())<<" "<<sname<<" ";
+        //os<<misc::base64_encode(mdptr->first.c_str(), mdptr->first.size())<<" "<<sname<<" ";
+        os << mdptr->first << " "<<sname<<" ";
         try{
             if(sname=="int")
             {
@@ -251,8 +252,11 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
             else if(sname=="string")
             {
                 sval=boost::any_cast<string>(a);
+                /*
                 string code = misc::base64_encode(sval.c_str(), sval.size());
                 os<<code<<endl;
+                */
+                os<<sval<<endl;
             }
             else if(sname=="pybind11::object")
             {
@@ -280,20 +284,6 @@ ostringstream& operator<<(ostringstream& os, Metadata& m)
     return os;
   }catch(...){throw;};
 }
-/* This function is very much like operator<< except it is more
- * restricted on allowed types and it add a type name to the output */
-std::string serialize_metadata(const Metadata& md)
-{
-  try {
-    ostringstream ss;
-    /* We do this to make sure we don't truncate precision */
-    ss << setprecision(17);
-    ss << const_cast<Metadata &>(md);
-    return std::string(ss.str());
-  }
-  catch (...){throw;};
-}
-
 /* This function is implemented with pybind11 so it should only be called under python. */
 pybind11::object serialize_metadata_py(const Metadata &md)
 {
@@ -308,81 +298,12 @@ pybind11::object serialize_metadata_py(const Metadata &md)
     return md_dump;
   }catch(...){pybind11::gil_scoped_release release;throw;};
 }
-/* This has a lot more complexity but assumes a series of lines
- * defined by ostringstream operator:  key, type, value
- * */
-Metadata restore_serialized_metadata(const std::string s)
-{
-  try {
-    stringstream ss(s);
-    Metadata md;
-    string key, typ;
-    double dval;
-    long int ival;
-    bool bval;
-    string sval;
-    do
-    {
-      ss >> key;
-      key = misc::base64_decode(key);
-      ss >> typ;
-      if (ss.eof())
-        break; // normal exit of this loop is here
-      if (typ == "double")
-      {
-        ss >> dval;
-        md.put(key, dval);
-      }
-      else if ((typ == "long") || (typ == "int"))
-      {
-        ss >> ival;
-        md.put(key, ival);
-      }
-      else if (typ == "bool")
-      {
-        ss >> bval;
-        md.put(key, bval);
-      }
-      /* this assumes output has been made pretty so this simple test works*/
-      else if (typ == "string")
-      {
-        ss >> sval;
-        sval = misc::base64_decode(sval);
-        md.put(key, sval);
-      }
-      else if (typ == "pybind11::object")
-      {
-        ss >> sval;
-        pybind11::str pyStr = pybind11::str(sval.c_str(), sval.size());
-        pybind11::gil_scoped_acquire acquire;
-        pybind11::module pickle = pybind11::module::import("pickle");
-        pybind11::module codecs = pybind11::module::import("codecs");
-        pybind11::object loads = pickle.attr("loads");
-        pybind11::object decode = codecs.attr("decode");
-        /* The following in Python will be pickle.loads(codecs.decode(pyStr.encode(), "base64"))
-          * The complexity is to ensure the bytes string to be valid UTF-8 */
-        pybind11::object poval = loads(decode(pyStr.attr("encode")(), "base64"));
-        md.put_object(key, poval);
-        pybind11::gil_scoped_release release;
-      }
-      else
-      {
-        cerr << "restore_serialized (WARNING):  unrecognized type for key=" << key
-             << " of " << typ << endl
-             << "Trying to save as string" << endl;
-        ss >> sval;
-        md.put(key, sval);
-      }
-    } while (!ss.eof());
-    return md;
-  }catch(...){throw;};
-}
-
 /* This is the reverse of serialize_metadata also using pybind11. */
 Metadata restore_serialized_metadata_py(const pybind11::object &s)
 {
   pybind11::gil_scoped_acquire acquire;
-  try{
+  try
+  {
     pybind11::module pickle = pybind11::module::import("pickle");
     pybind11::object loads = pickle.attr("loads");
     pybind11::tuple md_dump = loads(s);
@@ -392,7 +313,12 @@ Metadata restore_serialized_metadata_py(const pybind11::object &s)
     md.changed_or_set = md_dump[1].cast<std::set<std::string>>();
     pybind11::gil_scoped_release release;
     return md;
-  }catch(...){pybind11::gil_scoped_release release;throw;};
+  }
+  catch (...)
+  {
+    pybind11::gil_scoped_release release;
+    throw;
+  };
 }
 /* New method added Apr 2020 to change key assigned to a value - used for aliass*/
 void Metadata::change_key(const string oldkey, const string newkey)
