@@ -495,6 +495,18 @@ class TestDatabase():
         assert ts2['channel_endtime'] == res['endtime']
         assert ts2['loc'] == res['loc']
 
+        # test ignore_metadata_changed_test in save_data
+        ignore_changed_test_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ignore_changed_test_ts, '1', 'deepcopy')
+        ignore_changed_test_ts.clear_modified()
+        self.db.save_data(ignore_changed_test_ts, mode='promiscuous')
+        ignore_changed_test_ts2 = self.db['wf_TimeSeries'].find_one({'_id': ignore_changed_test_ts['_id']})
+        # attributes that are not in modified list could also be saved
+        assert ignore_changed_test_ts2['npts'] == 255
+        assert ignore_changed_test_ts2['sampling_rate'] == 20.0
+        assert ignore_changed_test_ts2['delta'] == 0.1
+        assert ignore_changed_test_ts2['calib'] == 0.1
+
         # test save data with different storage mode
         # gridfs
         res = self.db['wf_Seismogram'].find_one({'_id': promiscuous_seis['_id']})
