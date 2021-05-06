@@ -85,5 +85,6 @@ breathe_projects['MsPASS C++ API'] = './doxygen/xml'
 numfig = True
 
 # Create csv files for schema
+# FIXME the following script needs a rewrite
 mspass_home = os.path.abspath('../..')
 subprocess.call('cd mspass_schema; MSPASS_HOME=' + mspass_home + ' python3 build_metadata_tbls.py', shell=True)
