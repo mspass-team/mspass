@@ -66,7 +66,7 @@ jobs:
       run: |
         export MSPASS_HOME=$(pwd)
         sudo apt-get update && sudo apt-get install -yq doxygen pandoc
-        pip install -r docs/requirements.txt --force-reinstall
+        pip install -r docs/requirements.txt
         cd docs 
         ls
         make html
