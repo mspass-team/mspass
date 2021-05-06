@@ -385,7 +385,7 @@ class Database(pymongo.database.Database):
         update_res_code = -1
         if mspass_object.live:
             # 1. save metadata, with update mode
-            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, False, data_tag)
+            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag)
 
             if mspass_object.live:
                 # 2. save actual data in file/gridfs mode
