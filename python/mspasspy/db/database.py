@@ -110,24 +110,6 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
         return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     else:
         raise TypeError("Only spark and dask are supported")
-def cursor2idlist(cursor):
-    """
-    Convenience function mainly for ensemble reads.
-
-    The ensemble reader is driven by a list of ObjectIDs.   In many cases,
-    however, the ensemble is defined by a find operation with a specific
-    query that returns a MongoDB cursor object.  This small function
-    loops through the range of the cursor and returns a list of the
-    ObjectIds the cursor defines.
-
-    Note this function has no safeties. It assumes what it receives is a
-    MongoDB cursor object that is note pointing at an absurdly large
-    view.   (e.g. find({}) applied to large collection)
-    """
-    result=list()
-    for doc in cursor:
-        result.append(doc['_id'])
-    return result
 
 class Database(pymongo.database.Database):
     """
@@ -764,6 +746,7 @@ class Database(pymongo.database.Database):
 
         # if the document does not exist in the db collection, return
         collection = self.database_schema.default_name(collection)
+        object_type = self.database_schema[collection].data_type()
         col = self[collection]
         doc = col.find_one({'_id': document_id})
         if not doc:
@@ -807,7 +790,7 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_required:
-                col.delete_one({'_id': doc['_id']})
+                self.delete_data(doc['_id'], object_type.__name__, True, True, True)
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -844,7 +827,7 @@ class Database(pymongo.database.Database):
 
             # delete this document
             if delete_missing_xref:
-                col.delete_one({'_id': doc['_id']})
+                self.delete_data(doc['_id'], object_type.__name__, True, True, True)
                 if verbose:
                     print("{}{} the document is deleted.".format(log_helper, error_msg))
                 return fixed_cnt
@@ -951,18 +934,24 @@ class Database(pymongo.database.Database):
                 for key in doc:
                     is_bad_xref_key, is_bad_wf = self._check_xref_key(doc, collection, key)
                     if is_bad_xref_key:
-                        problematic_keys[key] = test
+                        if key not in problematic_keys:
+                            problematic_keys[key] = []
+                        problematic_keys[key].append(test)
 
             elif test == 'undefined':
                 undefined_keys = self._check_undefined_keys(doc, collection)
                 for key in undefined_keys:
-                    problematic_keys[key] = test
+                    if key not in problematic_keys:
+                        problematic_keys[key] = []
+                    problematic_keys[key].append(test)
 
             elif test == 'type':
                 # check if there are type mismatch between keys in doc and keys in schema
                 for key in doc:
                     if self._check_mismatch_key(doc, collection, key):
-                        problematic_keys[key] = test
+                        if key not in problematic_keys:
+                            problematic_keys[key] = []
+                        problematic_keys[key].append(test)
 
         return problematic_keys
 
@@ -1882,7 +1871,7 @@ class Database(pymongo.database.Database):
                 self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag)
 
     def delete_data(self, object_id, object_type, remove_unreferenced_files=False,
-       clear_history=True, clear_elog=False):
+       clear_history=True, clear_elog=True):
         """
         Delete method for handling mspass data objects (TimeSeries and Seismograms).
 
