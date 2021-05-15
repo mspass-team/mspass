@@ -16,38 +16,52 @@ public:
 /*!
 // Start time of the window.
 **/
-	double start;
+  double start;
 /*!
 // End time of the window.
 **/
-	double  end;  
+  double  end;  
 /*!
 // Default constructor.
 **/
-	TimeWindow(){start=0.0;end=1.0e99;};
+  TimeWindow(){start=0.0;end=1.0e99;};
 /*!
 // Parameterized constructor.
 //\param ts - start time
 //\param te - end time 
 **/
-	TimeWindow(const double ts,const double te){start=ts;end=te;};
+  TimeWindow(const double ts,const double te){start=ts;end=te;};
+  TimeWindow(const TimeWindow& parent)
+  {
+    start=parent.start;
+    end=parent.end;
+  }
+  TimeWindow& operator=(const TimeWindow& parent)
+  {
+    if(&parent!=this)
+    {
+      start=parent.start;
+      end=parent.end;
+    }
+    return *this;
+  }
 /*!
 // Returns a new time window translated by tshift argument.
 **/
-	TimeWindow shift(const double tshift) 
-	{
-		TimeWindow newwindow(*this);
-		newwindow.start+=tshift;
-		newwindow.end += tshift;
-		return(newwindow);
-	}
+  TimeWindow shift(const double tshift) const
+  {
+    TimeWindow newwindow(*this);
+    newwindow.start+=tshift;
+    newwindow.end += tshift;
+    return(newwindow);
+  }
 /*!
 // Returns the window length
 **/
-	double length()
-	{
-		return(end-start);
-	};
+  double length()
+  {
+    return(end-start);
+  };
 };
 
 /* This strange looking function is a C++ function object.
@@ -70,8 +84,8 @@ public:
 class TimeWindowCmp
 {
 public:
-	bool operator()(const TimeWindow ti1,const TimeWindow ti2) const
-	{return(ti1.end<ti2.start);};
+  bool operator()(const TimeWindow ti1,const TimeWindow ti2) const
+  {return(ti1.end<ti2.start);};
 };
 }  // end mspass::seismic namespace declaration
 #endif
