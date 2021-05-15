@@ -29,7 +29,7 @@ basic
     :show-inheritance:
 
 amplitudes
-~~~~~
+~~~~~~~~~~
 
 .. automodule:: mspasspy.ccore.algorithms.amplitudes
     :members:
@@ -37,7 +37,7 @@ amplitudes
     :show-inheritance:
 
 deconvolution
-~~~~~
+~~~~~~~~~~~~~
 
 .. automodule:: mspasspy.ccore.algorithms.deconvolution
     :members:
