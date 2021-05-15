@@ -37,8 +37,6 @@
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -116,10 +114,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../user_manual/adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Tutorial</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial/metadata_pf.html">Use of Metadata, MetadataDefinitions, and AntelopePf</a></li>
-</ul>
 <p class="caption"><span class="caption-text">Reference Manual</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Python API</a><ul class="current">
@@ -129,8 +123,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-mspasspy.ccore.seismic">seismic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#algorithms">algorithms</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.ccore.algorithms.basic">basic</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#amplitudes">amplitudes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#deconvolution">deconvolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.ccore.algorithms.amplitudes">amplitudes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mspasspy.ccore.algorithms.deconvolution">deconvolution</a></li>
 </ul>
 </li>
 </ul>
@@ -2005,9 +1999,9 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="amplitudes">
-<h3>amplitudes<a class="headerlink" href="#amplitudes" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-mspasspy.ccore.algorithms.amplitudes"></span><p>A submodule for amplitudes namespace of ccore.algorithms</p>
+<div class="section" id="module-mspasspy.ccore.algorithms.amplitudes">
+<span id="amplitudes"></span><h3>amplitudes<a class="headerlink" href="#module-mspasspy.ccore.algorithms.amplitudes" title="Permalink to this headline">¶</a></h3>
+<p>A submodule for amplitudes namespace of ccore.algorithms</p>
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.amplitudes.MADAmplitude">
 <code class="sig-prename descclassname">mspasspy.ccore.algorithms.amplitudes.</code><code class="sig-name descname">MADAmplitude</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.amplitudes.MADAmplitude" title="Permalink to this definition">¶</a></dt>
@@ -2101,9 +2095,9 @@ those safeties the code would throw an error if net or loc were null.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="deconvolution">
-<h3>deconvolution<a class="headerlink" href="#deconvolution" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-mspasspy.ccore.algorithms.deconvolution"></span><p>A submodule for deconvolution namespace of ccore.algorithms</p>
+<div class="section" id="module-mspasspy.ccore.algorithms.deconvolution">
+<span id="deconvolution"></span><h3>deconvolution<a class="headerlink" href="#module-mspasspy.ccore.algorithms.deconvolution" title="Permalink to this headline">¶</a></h3>
+<p>A submodule for deconvolution namespace of ccore.algorithms</p>
 <dl class="py class">
 <dt id="mspasspy.ccore.algorithms.deconvolution.CNR3CDecon">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.deconvolution.</code><code class="sig-name descname">CNR3CDecon</code><a class="headerlink" href="#mspasspy.ccore.algorithms.deconvolution.CNR3CDecon" title="Permalink to this definition">¶</a></dt>
