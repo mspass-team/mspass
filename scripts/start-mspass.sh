@@ -116,6 +116,7 @@ if [ $# -eq 0 ]; then
 
       # start a mongos router server
       mongos --port $MONGODB_PORT --configdb configserver/$HOSTNAME:$MONGODB_CONFIG_PORT --logpath ${MONGO_LOG}_router --bind_ip_all &
+      sleep ${MSPASS_SLEEP_TIME}
     else
       # create a config dir
       mkdir -p ${MONGO_DATA}_config
@@ -158,8 +159,30 @@ if [ $# -eq 0 ]; then
       # create db and log dirs if not exists
       [[ -d /tmp/db/data_shard_${MSPASS_SHARD_ID} ]] || mkdir -p /tmp/db/data_shard_${MSPASS_SHARD_ID}
       [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID}
-      # store the shard data in the /tmp folder in local machine
-      mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
+      # copy all the shard data to the local tmp folder
+      scp -r -o StrictHostKeyChecking=no ${MSPASS_DB_DIR}/data_shard_${MSPASS_SHARD_ID} /tmp/db
+      # reconfig the shard replica set
+      if [ -d ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} ]; then
+        # restore the shard replica set
+        mongod --port $MONGODB_PORT --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
+        sleep ${MSPASS_SLEEP_TIME}
+        # drop local database
+        echo "drop local database for shard server $HOSTNAME"
+        mongo --port $MONGODB_PORT local --eval "db.dropDatabase()"
+        sleep ${MSPASS_SLEEP_TIME}
+        # update shard metadata in each shard's identity document
+        echo "update config server host names for shard server $HOSTNAME"
+        mongo --port $MONGODB_PORT admin --eval "db.system.version.updateOne({\"_id\": \"shardIdentity\"}, {\$set: {\"configsvrConnectionString\": \"${MSPASS_CONFIG_SERVER_ADDR}\"}})"
+        sleep ${MSPASS_SLEEP_TIME}
+        # restart the mongod as a new single-node replica set
+        echo "restart the shard server $HOSTNAME as a replica set"
+        mongo --port $MONGODB_PORT admin --eval "db.shutdownServer()"
+        sleep ${MSPASS_SLEEP_TIME}
+        mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
+      else
+        # store the shard data in the /tmp folder in local machine
+        mongod --port $MONGODB_PORT --shardsvr --replSet "rs${MSPASS_SHARD_ID}" --dbpath /tmp/db/data_shard_${MSPASS_SHARD_ID} --logpath /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID} --bind_ip_all &
+      fi
     else
       echo "store shard data in scratch for shard server $HOSTNAME"
       if [ -d ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} ]; then

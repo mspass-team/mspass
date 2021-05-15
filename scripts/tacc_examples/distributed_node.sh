@@ -90,6 +90,7 @@ SINGULARITYENV_MSPASS_ROLE=dbmanager $SING_COM &
 sleep 30
 
 # start a shard container in each worker node
+# mipexec could be cleaner while ssh would induce more complexity
 for i in ${!WORKER_LIST_ARR[@]}; do
     SINGULARITYENV_MSPASS_SHARD_ID=$i \
     SINGULARITYENV_MSPASS_SHARD_MODE=$SHARD_MODE \
