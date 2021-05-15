@@ -48,13 +48,6 @@ package.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Tutorial
-
-   tutorial/metadata_pf
-
-
-.. toctree::
-   :maxdepth: 1
    :caption: Reference Manual
 
    python_api/index
