@@ -60,7 +60,8 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters)
+        if global_history:
+            alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
@@ -69,6 +70,15 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
     
+    # read_data method
+    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+        return self.map(lambda wf: func(wf, *args, **kwargs))
+    
+    # save_data method
+    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
+        return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
+
     # save the object history
     if object_history:
         return self.map(lambda wf: func(wf, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
@@ -130,6 +140,15 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     # save the global history
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
+
+    # read_data method
+    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+        return self.map(lambda wf: func(wf, *args, **kwargs))
+    
+    # save_data method
+    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
+        return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:

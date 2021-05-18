@@ -28,7 +28,7 @@ from mspasspy.global_history.manager import GlobalHistoryManager
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
 from mspasspy.reduce import stack
-from mspasspy.ccore.utility import Metadata
+from mspasspy.ccore.utility import Metadata, AtomicType
 
 
 def spark_map(input, manager, sc, alg_name=None, parameters=None):
@@ -56,6 +56,7 @@ class TestManager():
 
     def setup_class(self):
         self.client = DBClient('localhost')
+        self.client.drop_database('test_manager')
         db = Database(self.client, 'test_manager')
         db['history_global'].drop_indexes()
 
@@ -89,6 +90,7 @@ class TestManager():
             l[i]['loc'] = 'test_loc'
             l[i]['net'] = 'test_net'
             l[i]['sta'] = 'test_sta'
+            l[i].set_as_origin('test', '0', str(i), AtomicType.TIMESERIES)
         # test mspass_map for spark
         spark_res = spark_map(l, self.manager, spark_context)
 
@@ -159,6 +161,51 @@ class TestManager():
         assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
         new_dask_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_dask_alg_id}) == 1
+
+        # test spark mspass_map for save_data
+        data = spark_context.parallelize(l)
+        data_map = data.mspass_map(manager_db.save_data, global_history=self.manager)
+        save_list = data_map.collect()
+        assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 8
+        assert manager_db['history_global'].count_documents({'alg_name': 'save_data'}) == 1
+        
+        # test spark mspass_map for read_data
+        save_l = [res[1] for res in save_list]
+        data = spark_context.parallelize(save_l)
+        data_map = data.mspass_map(manager_db.read_data, global_history=self.manager)
+        read_list = data_map.collect()
+        assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 9
+        assert manager_db['history_global'].count_documents({'alg_name': 'read_data'}) == 1
+
+        manager_db['history_object'].delete_many({})
+        # test dask mspass_map for save_data
+        data = daskbag.from_sequence(l)
+        data_map = data.mspass_map(manager_db.save_data, global_history=self.manager)
+        save_list = data_map.compute()
+        for x in data:
+            print(x)
+        assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 10
+        assert manager_db['history_global'].count_documents({'alg_name': 'save_data'}) == 2
+        res = manager_db['history_global'].find({'alg_name': 'save_data'})
+        assert res[0]['job_id'] == res[1]['job_id'] == self.manager.job_id
+        assert res[0]['job_name'] == res[1]['job_name'] == self.manager.job_name
+        assert res[0]['alg_name'] == res[1]['alg_name'] == 'save_data'
+        assert res[0]['parameters'] == res[1]['parameters'] == 'object_history=False'
+        assert res[0]['alg_id'] == res[1]['alg_id']
+        
+        # test dask mspass_map for read_data
+        save_l = [res[1] for res in save_list]
+        data = daskbag.from_sequence(save_l)
+        data_map = data.mspass_map(manager_db.read_data, global_history=self.manager)
+        read_list = data_map.compute()
+        assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 11
+        assert manager_db['history_global'].count_documents({'alg_name': 'read_data'}) == 2
+        res = manager_db['history_global'].find({'alg_name': 'read_data'})
+        assert res[0]['job_id'] == res[1]['job_id'] == self.manager.job_id
+        assert res[0]['job_name'] == res[1]['job_name'] == self.manager.job_name
+        assert res[0]['alg_name'] == res[1]['alg_name'] == 'read_data'
+        assert res[0]['parameters'] == res[1]['parameters'] == 'object_history=False'
+        assert res[0]['alg_id'] == res[1]['alg_id']
 
     def test_mspass_reduce(self, spark_context):
         manager_db = Database(self.client, 'test_manager')
