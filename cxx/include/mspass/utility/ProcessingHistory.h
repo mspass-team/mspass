@@ -452,7 +452,7 @@ public:
   */
   void accumulate(const std::string alg,const std::string algid,
     const AtomicType typ,const ProcessingHistory& newinput);
-  /* \brief Clean up inconsistent uuids that can be produced by reduce.
+  /*! \brief Clean up inconsistent uuids that can be produced by reduce.
 
   In a spark reduce operation it is possible to create multiple uuid keys
   for inputs to the same algorithm instance.  That happpens because
