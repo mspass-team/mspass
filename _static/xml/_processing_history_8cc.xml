@@ -740,7 +740,7 @@
 <codeline lineno="581"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
 <codeline lineno="582"><highlight class="normal">}</highlight></codeline>
 <codeline lineno="583"><highlight class="normal"></highlight></codeline>
-<codeline lineno="584"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>ProcessingHistory::clean_accumulate_uuids()</highlight></codeline>
+<codeline lineno="584" refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_processing_history_1afbcd32c36bbabff34fb51e382da69d83" kindref="member">ProcessingHistory::clean_accumulate_uuids</ref>()</highlight></codeline>
 <codeline lineno="585"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="586"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>Return<sp/>undefined<sp/>immediately<sp/>if<sp/>the<sp/>history<sp/>chain<sp/>is<sp/>empty<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="587"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(this-&gt;<ref refid="classmspass_1_1utility_1_1_processing_history_1a8e42309bb4dfb0c0ea38496a3235f069" kindref="member">is_empty</ref>())<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>string(</highlight><highlight class="stringliteral">&quot;UNDEFINED&quot;</highlight><highlight class="normal">);</highlight></codeline>
@@ -764,9 +764,9 @@
 <codeline lineno="605"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref><sp/>nd(nptr-&gt;second);</highlight></codeline>
 <codeline lineno="606"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>this<sp/>depends<sp/>upon<sp/>the<sp/>distinction<sp/>between<sp/>set<sp/>and<sp/>multiset.<sp/><sp/>i.e.<sp/>an<sp/>insert</highlight></codeline>
 <codeline lineno="607"><highlight class="comment"><sp/><sp/><sp/><sp/>of<sp/>a<sp/>duplicate<sp/>does<sp/>nothing*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((alg==nd.algorithm)<sp/>&amp;&amp;<sp/>(algidtest==nd.algid))</highlight></codeline>
+<codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">((alg==nd.<ref refid="classmspass_1_1utility_1_1_node_data_1a040189091bc8458cc84b7a3781856643" kindref="member">algorithm</ref>)<sp/>&amp;&amp;<sp/>(algidtest==nd.<ref refid="classmspass_1_1utility_1_1_node_data_1aa51f302e3e070fd072255e1d1af9073f" kindref="member">algid</ref>))</highlight></codeline>
 <codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>matching_ids.insert(nd.uuid);</highlight></codeline>
+<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>matching_ids.insert(nd.<ref refid="classmspass_1_1utility_1_1_node_data_1a0f0df95910b9712e36d3a8389c0c9f38" kindref="member">uuid</ref>);</highlight></codeline>
 <codeline lineno="611"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>need_to_erase.push_back(nptr);</highlight></codeline>
 <codeline lineno="612"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="613"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
@@ -799,7 +799,7 @@
 <codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>nu=this-&gt;nodes.upper_bound(*sptr);</highlight></codeline>
 <codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal">(</highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>nptr=nl;nptr!=nu;++nptr)</highlight></codeline>
 <codeline lineno="642"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>NodeData<sp/>nd;</highlight></codeline>
+<codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1utility_1_1_node_data" kindref="compound">NodeData</ref><sp/>nd;</highlight></codeline>
 <codeline lineno="644"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nd=(nptr-&gt;second);</highlight></codeline>
 <codeline lineno="645"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>need_to_erase.push_back(nptr);</highlight></codeline>
 <codeline lineno="646"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nodes.insert(pair&lt;string,NodeData&gt;(master_uuid,nd));</highlight></codeline>

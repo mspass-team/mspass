@@ -141,8 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afc16a9d2c81e0fce08669573ffa8d741"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#afc16a9d2c81e0fce08669573ffa8d741">accumulate</a> (const std::string alg, const std::string algid, const AtomicType typ, const <a class="el" href="classmspass_1_1utility_1_1_processing_history.html">ProcessingHistory</a> &amp;newinput)</td></tr>
 <tr class="memdesc:afc16a9d2c81e0fce08669573ffa8d741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to use with a spark reduce algorithm.  <a href="classmspass_1_1utility_1_1_processing_history.html#afc16a9d2c81e0fce08669573ffa8d741">More...</a><br /></td></tr>
 <tr class="separator:afc16a9d2c81e0fce08669573ffa8d741"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbcd32c36bbabff34fb51e382da69d83"><td class="memItemLeft" align="right" valign="top"><a id="afbcd32c36bbabff34fb51e382da69d83"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>clean_accumulate_uuids</b> ()</td></tr>
+<tr class="memitem:afbcd32c36bbabff34fb51e382da69d83"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#afbcd32c36bbabff34fb51e382da69d83">clean_accumulate_uuids</a> ()</td></tr>
+<tr class="memdesc:afbcd32c36bbabff34fb51e382da69d83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clean up inconsistent uuids that can be produced by reduce.  <a href="classmspass_1_1utility_1_1_processing_history.html#afbcd32c36bbabff34fb51e382da69d83">More...</a><br /></td></tr>
 <tr class="separator:afbcd32c36bbabff34fb51e382da69d83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75af2861c06a905968cc9c727b8cc877"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a75af2861c06a905968cc9c727b8cc877">new_map</a> (const std::string alg, const std::string algid, const AtomicType typ, const ProcessingStatus newstatus=ProcessingStatus::VOLATILE)</td></tr>
 <tr class="memdesc:a75af2861c06a905968cc9c727b8cc877"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define this algorithm as a one-to-one map of same type data.  <a href="classmspass_1_1utility_1_1_processing_history.html#a75af2861c06a905968cc9c727b8cc877">More...</a><br /></td></tr>
@@ -549,6 +549,102 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>jnm</b></td></
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#adf60368ca5c699cc9186fa145d04376d">id()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error()</a>.</p>
+
+</div>
+</div>
+<a id="afbcd32c36bbabff34fb51e382da69d83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbcd32c36bbabff34fb51e382da69d83">&#9670;&nbsp;</a></span>clean_accumulate_uuids()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string mspass::utility::ProcessingHistory::clean_accumulate_uuids </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clean up inconsistent uuids that can be produced by reduce. </p>
+<p>In a spark reduce operation it is possible to create multiple uuid keys for inputs to the same algorithm instance. That happpens because the mechanism used by <a class="el" href="classmspass_1_1utility_1_1_processing_history.html" title="Lightweight class to preserve procesing chain of atomic objects.">ProcessingHistory</a> to define the process history tree is not associative. When a reduce gets sprayed across multiple nodes multiple initializations can occur that make artifical inconsitent uuids. This method should normally be called after a reduce operator if history is being preserved or the history chain may be foobarred - no invalid just mess up with extra branches in the processing tree.</p>
+<p>A VERY IMPORTANT limitation of the algorithm used by this method is that the combination of algorithm and algid in "this" MUST be unique for a given job run when a reduce is called. i.e. if an earlier workflow had used alg and algid but with a different jobid and jobname the distintion cannot be detected with this algorithm. This means our global history handling must guarantee algid is unique for each run.</p>
+<dl class="section return"><dt>Returns</dt><dd>unique uuid for alg,algid match set in the history chain. Note if there are no duplicates it simply returns the only one it finds. If there are duplicates it returns the lexically smallest (first in alphabetic order) uuid. Most importantly if there is no match or if history is empty it returns the string UNDEFINED. </dd></dl>
+<div class="fragment"><div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;{</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  <span class="comment">/* Return undefined immediately if the history chain is empty */</span></div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="keywordflow">if</span>(this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty</a>()) <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  NodeData ndthis=this-&gt;<a class="code" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata</a>();</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="keywordtype">string</span> alg(ndthis.algorithm);</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;  <span class="keywordtype">string</span> algidtest(ndthis.algid);</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  <span class="comment">/* The algorithm here finds all entries for which algorithm is alg and</span></div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;<span class="comment">  algid matches aldid.  We build a list of uuids (keys) linked to that unique</span></div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;<span class="comment">  algorithm.  We then use the id in ndthis as the master*/</span></div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;  set&lt;string&gt; matching_ids;</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  matching_ids.insert(ndthis.uuid);</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;  <span class="comment">/* this approach of pushing iterators to this list that match seemed to</span></div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;<span class="comment">  be the only way I could make this work correctly.   Not sure why, but</span></div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;<span class="comment">  the added cost over handling this correctly in the loops is small. */</span></div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  std::list&lt;multimap&lt;string,NodeData&gt;::iterator&gt; need_to_erase;</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <span class="keywordflow">for</span>(<span class="keyword">auto</span> nptr=this-&gt;nodes.begin();nptr!=this-&gt;nodes.end();++nptr)</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  {</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;    <span class="comment">/* this copy operation is somewhat inefficient, but the cost is small</span></div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;<span class="comment">    compared to how obscure the code will look if we directly manipulate the</span></div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;<span class="comment">    second value */</span></div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    NodeData nd(nptr-&gt;second);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;    <span class="comment">/* this depends upon the distinction between set and multiset.  i.e. an insert</span></div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;<span class="comment">    of a duplicate does nothing*/</span></div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="keywordflow">if</span>((alg==nd.algorithm) &amp;&amp; (algidtest==nd.algid))</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;    {</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;      matching_ids.insert(nd.uuid);</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;      need_to_erase.push_back(nptr);</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;    }</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;  }</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;  <span class="comment">// handle no match situation gracefully</span></div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  <span class="keywordflow">if</span>(matching_ids.empty())</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;    <span class="keywordflow">return</span> string(<span class="stringliteral">&quot;UNDEFINED&quot;</span>);</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;  <span class="comment">/* Nothing more to do but return the uuid if there is only one*/</span></div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;  <span class="keywordflow">if</span>(matching_ids.size()==1)</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;    <span class="keywordflow">return</span> *(matching_ids.begin());</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  {</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;    <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;    {</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;      nodes.erase(*sptr);</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;    }</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;    need_to_erase.clear();</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;  }</div>
+<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;  <span class="comment">/* Here is the complicated case.  We use the uuid from ndthis as the master</span></div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;<span class="comment">  and change all the others.   This operation works ONLY because in a multimap</span></div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;<span class="comment">  erase only invalidates the iterator it points to and others remain valid.</span></div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;<span class="comment">  */</span></div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  <span class="keywordtype">string</span> master_uuid=ndthis.uuid;</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;  <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=matching_ids.begin();sptr!=matching_ids.end();++sptr)</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  {</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    <span class="comment">/* Note this test is necessary to stip the master_uuid - no else needed*/</span></div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;    <span class="keywordflow">if</span>((*sptr)!=master_uuid)</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;    {</div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;      multimap&lt;string,NodeData&gt;::iterator nl,nu;</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;      nl=this-&gt;nodes.lower_bound(*sptr);</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;      nu=this-&gt;nodes.upper_bound(*sptr);</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;      <span class="keywordflow">for</span>(<span class="keyword">auto</span> nptr=nl;nptr!=nu;++nptr)</div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160;      {</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;        NodeData nd;</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;        nd=(nptr-&gt;second);</div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;        need_to_erase.push_back(nptr);</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;        nodes.insert(pair&lt;string,NodeData&gt;(master_uuid,nd));</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;      }</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    }</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;  }</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;  <span class="keywordflow">for</span>(<span class="keyword">auto</span> sptr=need_to_erase.begin();sptr!=need_to_erase.end();++sptr)</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;  {</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;    nodes.erase(*sptr);</div>
+<div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;  }</div>
+<div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160; </div>
+<div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;  <span class="keywordflow">return</span> master_uuid;</div>
+<div class="line"><a name="l00656"></a><span class="lineno">  656</span>&#160;}</div>
+</div><!-- fragment -->
+<p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_node_data.html#aa51f302e3e070fd072255e1d1af9073f">mspass::utility::NodeData::algid</a>, <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a040189091bc8458cc84b7a3781856643">mspass::utility::NodeData::algorithm</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a110c300dfa2a6f5236a7d254fa7bf663">current_nodedata()</a>, <a class="el" href="classmspass_1_1utility_1_1_processing_history.html#a8e42309bb4dfb0c0ea38496a3235f069">is_empty()</a>, and <a class="el" href="classmspass_1_1utility_1_1_node_data.html#a0f0df95910b9712e36d3a8389c0c9f38">mspass::utility::NodeData::uuid</a>.</p>
 
 </div>
 </div>
