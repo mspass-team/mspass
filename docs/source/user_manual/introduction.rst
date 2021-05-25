@@ -6,7 +6,7 @@ Introduction
 MsPASS Features
 ~~~~~~~~~~~~~~~~
 
-MsPASS is an acronym that comes from Massively Parallel Analysis System for Seismologists.
+MsPASS is an acronym that stands for Massively Parallel Analysis System for Seismologists.
 We begin with some key features of MsPASS.
 
 -   As the name suggests MsPASS is a domain-specific package for seismologists.
@@ -17,7 +17,7 @@ We begin with some key features of MsPASS.
 
 -   Few seismologists have strong expertise in modern information technology.
     Furthermore, installing a software package can prove challenging today
-    on a desktop on which you may have special privileges.  On large hypocenter
+    on a desktop on which you may have special privileges.  On large high performance (HPC)
     systems installation is usually impossible without a long string of
     meetings and correspondence with system managers.  For this reason MsPASS uses
     modern container technology to simplify installation.  That allows you
@@ -70,14 +70,14 @@ We begin with some key features of MsPASS.
     module hierarchy under mspasspy.ccore.
 
 -   Errors are a universal issue in large scale data processing.   As the
-    size of a data set increases it is becomes a increasingly difficult to
+    size of a data set increases it is becomes an increasingly difficult to
     guarantee all the data are "clean".  By that, we mean one or more
     algorithms may treat "the problem" as an unrecoverable error.  Handling
     errors in a large scale processing environment is problematic for a long
     list of reasons.  We solve this in MsPASS by having error logs be an
     intrinsic part of the data.   In addition,
     following a well established approach
-    used is seismic reflection systems since the 1960s MsPASS provides a
+    used is seismic reflection systems since the 1960s, MsPASS provides a
     integrated "kill" mechanism that allows data to be carried along
     but ignored.  That model maps well to massively parallel scheduling
     because dead data are treated like live data but they just process faster.
