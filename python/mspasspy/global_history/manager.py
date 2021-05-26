@@ -72,12 +72,18 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     
     # read_data method
     if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
-        return self.map(lambda wf: func(wf, *args, **kwargs))
+        if global_history:
+            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        else:
+            return self.map(lambda wf: func(wf, *args, **kwargs))
     
     # save_data method
     if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
-        return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
+        if global_history:
+            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+        else:
+            return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:
@@ -143,12 +149,18 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
 
     # read_data method
     if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
-        return self.map(lambda wf: func(wf, *args, **kwargs))
+        if global_history:
+            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        else:
+            return self.map(lambda wf: func(wf, *args, **kwargs))
     
     # save_data method
     if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
-        return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
+        if global_history:
+            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+        else:
+            return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:

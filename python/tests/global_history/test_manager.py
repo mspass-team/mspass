@@ -59,6 +59,9 @@ class TestManager():
         self.client.drop_database('test_manager')
         db = Database(self.client, 'test_manager')
         db['history_global'].drop_indexes()
+        # clean up the database locally
+        for col_name in db.list_collection_names():
+            db[col_name].delete_many({})
 
         self.manager = GlobalHistoryManager(db, 'test_job', collection='history_global')
 
@@ -162,12 +165,29 @@ class TestManager():
         new_dask_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_dask_alg_id}) == 1
 
+        manager_db['history_object'].delete_many({})
         # test spark mspass_map for save_data
         data = spark_context.parallelize(l)
         data_map = data.mspass_map(manager_db.save_data, global_history=self.manager)
         save_list = data_map.collect()
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 8
         assert manager_db['history_global'].count_documents({'alg_name': 'save_data'}) == 1
+        # check object history after save_data
+        manager_db['history_object'].count_documents({}) == 5
+        manager_db['wf_TimeSeries'].count_documents({}) == 5
+        history_object_docs = manager_db['history_object'].find({})
+        idx = 0
+        doc_alg_id = None
+        doc_ids = []
+        for doc in history_object_docs:
+            if not doc_alg_id:
+                doc_alg_id = doc['alg_id']
+            else:
+                assert doc_alg_id == doc['alg_id']
+            doc_ids.append(doc['_id'])
+            assert doc['alg_name'] == 'save_data'
+            idx += 1
+        assert sorted(doc_ids) == ['0','1','2','3','4']
         
         # test spark mspass_map for read_data
         save_l = [res[1] for res in save_list]
@@ -178,12 +198,11 @@ class TestManager():
         assert manager_db['history_global'].count_documents({'alg_name': 'read_data'}) == 1
 
         manager_db['history_object'].delete_many({})
+        manager_db['wf_TimeSeries'].delete_many({})
         # test dask mspass_map for save_data
         data = daskbag.from_sequence(l)
         data_map = data.mspass_map(manager_db.save_data, global_history=self.manager)
         save_list = data_map.compute()
-        for x in data:
-            print(x)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 10
         assert manager_db['history_global'].count_documents({'alg_name': 'save_data'}) == 2
         res = manager_db['history_global'].find({'alg_name': 'save_data'})
@@ -192,6 +211,22 @@ class TestManager():
         assert res[0]['alg_name'] == res[1]['alg_name'] == 'save_data'
         assert res[0]['parameters'] == res[1]['parameters'] == 'object_history=False'
         assert res[0]['alg_id'] == res[1]['alg_id']
+        # check object history after save_data
+        manager_db['history_object'].count_documents({}) == 5
+        manager_db['wf_TimeSeries'].count_documents({}) == 5
+        history_object_docs = manager_db['history_object'].find({})
+        idx = 0
+        doc_alg_id = None
+        doc_ids = []
+        for doc in history_object_docs:
+            if not doc_alg_id:
+                doc_alg_id = doc['alg_id']
+            else:
+                assert doc_alg_id == doc['alg_id']
+            doc_ids.append(doc['_id'])
+            assert doc['alg_name'] == 'save_data'
+            idx += 1
+        assert sorted(doc_ids) == ['0','1','2','3','4']
         
         # test dask mspass_map for read_data
         save_l = [res[1] for res in save_list]
@@ -331,7 +366,14 @@ class TestManager():
         assert manager_db['history_global'].count_documents({'alg_name': 'filter'}) == 1
         res = manager_db['history_global'].find_one({'alg_name': 'filter'})
         alg_id = res['alg_id']
-        save_res_code = manager_db.save_data(spark_res[0])
+        # check status of the mspass objects
+        for ts in spark_res:
+            assert ts.number_of_stages() == 1
+            assert ts.current_nodedata().algorithm == 'filter'
+            assert ts.current_nodedata().algid == str(alg_id)
+            assert ts.is_volatile()
+
+        save_res_code = manager_db.save_data(spark_res[0], alg_name='filter', alg_id=str(alg_id))
         # hardcode net, sta, net, loc to avoid serialization problem here, they are readonly metadata keys -> non fatal keys = 4
         assert save_res_code == 4
         assert manager_db['history_object'].count_documents({'alg_name': 'filter'}) == 1

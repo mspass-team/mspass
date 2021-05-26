@@ -197,8 +197,8 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, mode='promiscuous', normalize=None,
-        load_history=False, exclude_keys=None, collection='wf', data_tag=None):
+    def read_data(self, object_id, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
+                collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
         objects from data managed with MondoDB through MsPASS.   It is the
@@ -427,14 +427,15 @@ class Database(pymongo.database.Database):
             if load_history:
                 history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
                 if history_obj_id_name in object_doc:
-                    self._load_history(mspass_object, object_doc[history_obj_id_name])
+                    self._load_history(mspass_object, object_doc[history_obj_id_name], alg_name, alg_id, define_as_raw)
 
             mspass_object.live = True
             mspass_object.clear_modified()
 
         return mspass_object
 
-    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dir=None, dfile=None, format=None, exclude_keys=None, collection=None, data_tag=None):
+    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dir=None, dfile=None, format=None,
+                exclude_keys=None, collection=None, data_tag=None, alg_name='save_data', alg_id='0'):
         """
         Use this method to save an atomic data object (TimeSeries or Seismogram)
         to be managed with MongoDB.  The Metadata are stored as documents in
@@ -573,7 +574,7 @@ class Database(pymongo.database.Database):
         update_res_code = -1
         if mspass_object.live:
             # 1. save metadata, with update mode
-            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag)
+            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag, alg_name, alg_id)
 
             if mspass_object.live:
                 # 2. save actual data in file/gridfs mode
@@ -1517,7 +1518,8 @@ class Database(pymongo.database.Database):
                 break
         return tuple([wrong_types,undef])
 
-    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False, data_tag=None):
+    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
+                        data_tag=None, alg_name='update_data', alg_id='0'):
         """
         Stores attributes stored in the Metadata container of an object in
         MongoDB wih optional schema enforcement.
@@ -1652,14 +1654,14 @@ class Database(pymongo.database.Database):
                 # 2. save/update history
                 if not mspass_object.is_empty():
                     history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-                    old_history_object_id = None if new_insertion or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
-                    history_object_id = self._save_history(mspass_object, old_history_object_id)
+                    # old_history_object_id = None if new_insertion or not object_doc or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
+                    history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                     insert_dict.update({history_obj_id_name: history_object_id})
 
                 # 3. save/update error logs
                 if mspass_object.elog.size() != 0:
                     elog_id_name = self.database_schema.default_name('elog') + '_id'
-                    old_elog_id = None if new_insertion or elog_id_name not in object_doc else object_doc[elog_id_name]
+                    old_elog_id = None if new_insertion or not object_doc or elog_id_name not in object_doc else object_doc[elog_id_name]
                     elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
                     insert_dict.update({elog_id_name: elog_id})
 
@@ -2144,7 +2146,7 @@ class Database(pymongo.database.Database):
             mspass_object['utc_convertible'] = True
             mspass_object['time_standard'] = 'UTC'
 
-    def _save_history(self, mspass_object, prev_history_object_id=None, collection=None):
+    def _save_history(self, mspass_object, alg_name=None, alg_id=None, collection=None):
         """
         Save the processing history of a mspasspy object.
 
@@ -2158,8 +2160,10 @@ class Database(pymongo.database.Database):
         """
         if isinstance(mspass_object, TimeSeries):
             update_metadata_def = self.metadata_schema.TimeSeries
+            atomic_type = AtomicType.TIMESERIES
         elif isinstance(mspass_object, Seismogram):
             update_metadata_def = self.metadata_schema.Seismogram
+            atomic_type = AtomicType.SEISMOGRAM
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
         # get the wf id name in the schema
@@ -2175,11 +2179,19 @@ class Database(pymongo.database.Database):
         history_col = self[collection]
         proc_history = ProcessingHistory(mspass_object)
         current_uuid = proc_history.id() # uuid in the current node
+        # we can't save a uuid equals to SAVED_ID_KEY('NODEDATA_AT_SAVE')
+        if current_uuid == 'NODEDATA_AT_SAVE':
+            raise MsPASSError("Cannot save the history object with uuid equals to NODEDATA_AT_SAVE", "Fatal")
         current_nodedata = proc_history.current_nodedata()
-        # get the alg_id of current node
-        alg_id = current_nodedata.algid
-        alg_name = current_nodedata.algorithm
+        # get the alg_name and alg_id of current node
+        if not alg_id:
+            alg_id = current_nodedata.algid
+        if not alg_name:
+            alg_name = current_nodedata.algorithm
+        
         history_binary = pickle.dumps(proc_history)
+        # prepare the processing hisotry data before saving
+        proc_history.map_as_saved(alg_name, alg_id, atomic_type)
         # todo save jobname jobid when global history module is done
         try:
             # construct the insert dict for saving into database
@@ -2189,17 +2201,19 @@ class Database(pymongo.database.Database):
                             'alg_name':alg_name}
             if oid:
                 insert_dict[wf_id_name] = oid
-            if prev_history_object_id:
-                # overwrite history
-                history_col.delete_one({'_id': prev_history_object_id})
             # insert new one
             history_col.insert_one(insert_dict)
         except pymongo.errors.DuplicateKeyError as e:
             raise MsPASSError("The history object to be saved has a duplicate uuid", "Fatal") from e
 
+        # clear the history chain of the mspass object
+        mspass_object.clear_history()
+        # set_as_origin with uuid set to the newly generated id
+        mspass_object.set_as_origin(alg_name, alg_id, current_uuid, atomic_type)
+
         return current_uuid
 
-    def _load_history(self, mspass_object, history_object_id, collection=None):
+    def _load_history(self, mspass_object, history_object_id, alg_name=None, alg_id=None, define_as_raw=False, collection=None, load_binary=False):
         """
         Load (in place) the processing history into a mspasspy object.
 
@@ -2209,10 +2223,24 @@ class Database(pymongo.database.Database):
         :param collection: the collection that you want to load the processing history. If not specified, use the defined
         collection in the schema.
         """
+        # get the atomic type of the mspass object
+        if isinstance(mspass_object, TimeSeries):
+            atomic_type = AtomicType.TIMESERIES
+        else:
+            atomic_type = AtomicType.SEISMOGRAM
         if not collection:
             collection = self.database_schema.default_name('history_object')
+        # load history if set True
         res = self[collection].find_one({'_id': history_object_id})
-        mspass_object.load_history(pickle.loads(res['processing_history']))
+        if load_binary:
+            mspass_object.load_history(pickle.loads(res['processing_history']))
+        else:
+            # set the associated history_object_id as the uuid of the origin
+            if not alg_name:
+                alg_name = '0'
+            if not alg_id:
+                alg_id = '0'
+            mspass_object.set_as_origin(alg_name, alg_id, history_object_id, atomic_type, define_as_raw)
 
     def _save_elog(self, mspass_object, elog_id=None, collection=None):
         """
