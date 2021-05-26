@@ -131,14 +131,18 @@
     <member refid="classmspass_1_1utility_1_1_basic_processing_history_1aa9795e245b241b3cf2ad87e91af071c9" kind="function"><name>operator=</name></member>
     <member refid="classmspass_1_1utility_1_1_basic_processing_history_1a915d8583a75022528a2b3463f71b3a1f" kind="function"><name>serialize</name></member>
   </compound>
-  <compound refid="classmspass_1_1seismic_1_1_basic_taper" kind="class"><name>mspass::seismic::BasicTaper</name>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1a36f9dbbf66e8547de7cf6997bed11be8" kind="variable"><name>head</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1a5783363f30e2d47865b11ae786cd9831" kind="variable"><name>tail</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1a38ddfc8c3b66a89e6aecc133a8e0d537" kind="variable"><name>all</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1ab36bf059d7eb7131ae98046d08babac2" kind="function"><name>BasicTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1a62524df07e514e22f528e7de0cb62722" kind="function"><name>~BasicTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1aef05e262a5e92205d3b74fb0c8594245" kind="function"><name>apply</name></member>
-    <member refid="classmspass_1_1seismic_1_1_basic_taper_1ad820138c245ba0510380cc5b4723124b" kind="function"><name>apply</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1_basic_taper" kind="class"><name>mspass::algorithms::BasicTaper</name>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" kind="variable"><name>head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" kind="variable"><name>tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" kind="variable"><name>all</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" kind="function"><name>BasicTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" kind="function"><name>~BasicTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" kind="function"><name>enable_head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" kind="function"><name>disable_head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" kind="function"><name>enable_tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" kind="function"><name>disable_tail</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_basic_time_series" kind="class"><name>mspass::seismic::BasicTimeSeries</name>
     <member refid="classmspass_1_1seismic_1_1_basic_time_series_1a7b2e9b878959d376790f09194edc51d9" kind="variable"><name>mlive</name></member>
@@ -220,8 +224,8 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a5c1fc0540ec7218db20d03bd4321ff91" kind="variable"><name>operator_dt</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1abe1ec221487a10dbcecbb5ce883ba1bc" kind="variable"><name>winlength</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1afb62c7e7c10b651ed6608368a5dae0e5" kind="variable"><name>decon_bandwidth_cutoff</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a4962d7e5926f6654a10c76797be79e54" kind="variable"><name>processing_window</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aa198d9e6f9c588cdb510ea2e481f6693" kind="variable"><name>noise_window</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a0d4b561d37ecbdcb5ae5217d396ddc68" kind="variable"><name>processing_window</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aef36d000c56c4b4cc0345f22d78b9c36" kind="variable"><name>noise_window</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aba1aada37508ee50775754fef15f4737" kind="variable"><name>signalengine</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6e8430950b3e5d1e5e58322a0dcf553b" kind="variable"><name>waveletengine</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1ae8a9a0bbf375afc94cf4d6e462c6382f" kind="variable"><name>dnoise_engine</name></member>
@@ -233,8 +237,8 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a549ed717042bae9310c235c89586758d" kind="variable"><name>pswavelet</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1af19ae3644dea2033d3f1dc6eb9cacc0d" kind="variable"><name>decondata</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a38b82a01245f9582870869f914ed975f" kind="variable"><name>wavelet</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a030a5bd1f61e143839ef7e26c8df0394" kind="variable"><name>wavelet_taper</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a226e7f26d03f04b9ea828a7858b478b2" kind="variable"><name>data_taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a46de2d4bd95ac88d604274789f7e91f4" kind="variable"><name>wavelet_taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a714a8e7202e11137d11a28bcb9833fb4" kind="variable"><name>data_taper</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a191a799f7f851d97b5f60259d615c2f9" kind="variable"><name>damp</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1aeaa39050807e356a559d54e3b70788a3" kind="variable"><name>noise_floor</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a6cbea949df15eb67e585bc1babe98906" kind="variable"><name>snr_regularization_floor</name></member>
@@ -369,15 +373,15 @@
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a81c02e7cc6863d2c4002cb869620a1d6" kind="function"><name>operator-</name></member>
     <member refid="classmspass_1_1seismic_1_1_core_time_series_1a8e379678ec0883c59d37612cf5f4f0a5" kind="function"><name>operator[]</name></member>
   </compound>
-  <compound refid="classmspass_1_1seismic_1_1_cosine_taper" kind="class"><name>mspass::seismic::CosineTaper</name>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a89d936435c66bf7b853514b19d961760" kind="variable"><name>t0head</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a9c7eb345d3ddca46842e4f0bf67a98e6" kind="variable"><name>t1head</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1aca222ddba903a8cbf392c8b54a8378e1" kind="variable"><name>t1tail</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a2c927ea079cab34fd4a2169a119b4862" kind="variable"><name>t0tail</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a4286aa185b337cc20b158f2e8edfe9cb" kind="function"><name>CosineTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a031af07364de5377d5efaa34e6277546" kind="function"><name>CosineTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1a2bd5b3a37045c6ac4b5ad72d136b88b6" kind="function"><name>apply</name></member>
-    <member refid="classmspass_1_1seismic_1_1_cosine_taper_1acf77d59638d58274141adc0d2981c6b6" kind="function"><name>apply</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1_cosine_taper" kind="class"><name>mspass::algorithms::CosineTaper</name>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a9b8f05f7674ac1eca965515599a1dab3" kind="variable"><name>t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aca0074d0ca7e43b0621de2d60e591cb2" kind="variable"><name>t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ad42d35bb34d70d5da5df28df6f87734d" kind="variable"><name>t1tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6ed266a8cb568d5f9e91be367311f336" kind="variable"><name>t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6a4cd9bdda4106fb6acc4161e905a471" kind="function"><name>CosineTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aceee67065300605d8dcd3bb16b4b26a4" kind="function"><name>CosineTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd" kind="function"><name>apply</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_data_gap" kind="class"><name>mspass::seismic::DataGap</name>
     <member refid="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" kind="variable"><name>gaps</name></member>
@@ -518,9 +522,9 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1acf824ff20c3574d0d3443d7f41df42d6" kind="variable"><name>nnwin</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a86dee25851eacf55702fe09a6f09d8aa" kind="variable"><name>nfft</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a863c8f31fb2e82e4ee1dc1280c2e674b" kind="variable"><name>time_shift</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a33663e864e54cb51cc294b8f9fea79b9" kind="variable"><name>dwin</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abd6f835a7534c7098dcbf01611b7f54f" kind="variable"><name>nwin</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a40ffbb745724e47e4743a2f9dd556287" kind="variable"><name>fftwin</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a2fb8a2fc0d5b5c73039cde539483ba03" kind="variable"><name>dwin</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a31af0bcf116e7a2ec6f25e7d94f21931" kind="variable"><name>nwin</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae81f4f4291f041588c1b43feca333a3c" kind="variable"><name>fftwin</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a5071c4dbe58304b77c42c7e748a7a2d1" kind="variable"><name>noise_component</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a7f1d2810b61fd0a1605900613f6647e3" kind="variable"><name>spikes</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1abcac76ab7c47ac643c61204ebb501ed8" kind="variable"><name>lag_weights</name></member>
@@ -555,9 +559,9 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a716eeb950de422de7aceb5514accd9f5" kind="function"><name>GeneralIterDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a592222a71497eaad44f75ace74e7fad6" kind="function"><name>GeneralIterDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ae8231338852f209b1008e2af52b25857" kind="function"><name>changeparameter</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a89ab691446f7b78698ba6c47e9d65504" kind="function"><name>load</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a651bd46edc48ae50c3947b28cd7f004f" kind="function"><name>loadnoise</name></member>
-    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af4e88706961b6d643c752de488aca42d" kind="function"><name>load</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a50a16a47e52706b7dfef38f6dee72836" kind="function"><name>load</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a37baca49bbe0988e1239b8a620f99b22" kind="function"><name>loadnoise</name></member>
+    <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a2894752499825e57d515990ceca787f8" kind="function"><name>load</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad4eb398a16d8584d6515beaef8e97487" kind="function"><name>process</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a06f9463eec260097e51371485f69c7c0" kind="function"><name>~GeneralIterDecon</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1ad930347fa623a399fa40c8d147162030" kind="function"><name>getresult</name></member>
@@ -594,15 +598,15 @@
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a7fd337210b8d0e4be0a0401e86f0e4a1" kind="function"><name>read_metadata</name></member>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_least_square_decon_1a5dc1cfb9428145d136d63cdc8eab077d" kind="function"><name>apply</name></member>
   </compound>
-  <compound refid="classmspass_1_1seismic_1_1_linear_taper" kind="class"><name>mspass::seismic::LinearTaper</name>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a682b20d742a34cf53f96e6c0c5789130" kind="variable"><name>t0head</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a7672ecee3eff5594beca7b0f90a46fae" kind="variable"><name>t1head</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a3028b670d373ace162c49e7db77c730e" kind="variable"><name>t1tail</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a2cc2ce017d2ddc109f46fedd9cdcb8f4" kind="variable"><name>t0tail</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a442180ff660f0071dce2d2e0efced58a" kind="function"><name>LinearTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1a4d4da04e02721633af56564aa8a6576c" kind="function"><name>LinearTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1adce61f34eed91b32a7d8f93aebf940e5" kind="function"><name>apply</name></member>
-    <member refid="classmspass_1_1seismic_1_1_linear_taper_1aeb82c4aa67755869014a2e0cc41a2968" kind="function"><name>apply</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1_linear_taper" kind="class"><name>mspass::algorithms::LinearTaper</name>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a452d8621b00f87d946db68a29eba66f8" kind="variable"><name>t0head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1ad1ddd6999cbdc806f345cc5fbcbfd93b" kind="variable"><name>t1head</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a465cc7f980ec9fe975f0769009292df2" kind="variable"><name>t1tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1aed3f3983763e27179a9a6e223f35cb85" kind="variable"><name>t0tail</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a44264430db4aa773bc797520063333b9" kind="function"><name>LinearTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a349267509cb638cabc85a8b3e6608746" kind="function"><name>LinearTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56" kind="function"><name>apply</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_log_data" kind="class"><name>mspass::utility::LogData</name>
     <member refid="classmspass_1_1utility_1_1_log_data_1a51d8dbbff398cccfa3e853fd55690cb0" kind="variable"><name>job_id</name></member>
@@ -1028,19 +1032,31 @@
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a42f1e02964fb1b689e40bc6e4e3d2ac3" kind="function"><name>shift</name></member>
     <member refid="classmspass_1_1seismic_1_1_time_series_w_gaps_1a1bc9a6c4ae0b21b8acabd0c3ee240761" kind="function"><name>zero_gaps</name></member>
   </compound>
-  <compound refid="classmspass_1_1seismic_1_1_time_window" kind="class"><name>mspass::seismic::TimeWindow</name>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kind="variable"><name>start</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kind="variable"><name>end</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kind="function"><name>TimeWindow</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" kind="function"><name>TimeWindow</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a7d95cfd1a6a5d4da99a1df5b7d04d286" kind="function"><name>TimeWindow</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a95d9f170cd5c8f3646f1f85652427ebb" kind="function"><name>operator=</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a15bd441bbadd8af568a53c39e95fab99" kind="function"><name>shift</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" kind="function"><name>length</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1_time_window" kind="class"><name>mspass::algorithms::TimeWindow</name>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kind="variable"><name>start</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kind="variable"><name>end</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" kind="function"><name>TimeWindow</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1ad22bf0bb2cf5bceaa0da5c3c04f16996" kind="function"><name>TimeWindow</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1ad465d08db8d7c4d173106bd6ab2b4ee6" kind="function"><name>TimeWindow</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1aa1009acd1f7b7412173178ed6de87604" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" kind="function"><name>shift</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" kind="function"><name>length</name></member>
   </compound>
   <compound refid="classmspass_1_1seismic_1_1_time_window_cmp" kind="class"><name>mspass::seismic::TimeWindowCmp</name>
     <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" kind="function"><name>operator()</name></member>
-    <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" kind="function"><name>operator()</name></member>
+  </compound>
+  <compound refid="classmspass_1_1algorithms_1_1_time_window_cmp" kind="class"><name>mspass::algorithms::TimeWindowCmp</name>
+    <member refid="classmspass_1_1algorithms_1_1_time_window_cmp_1af53d9c42a7e611e473fa1d344c32519b" kind="function"><name>operator()</name></member>
+  </compound>
+  <compound refid="classmspass_1_1algorithms_1_1_top_mute" kind="class"><name>mspass::algorithms::TopMute</name>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1aecea2d8a3d79cb361e89c52b34136baa" kind="variable"><name>taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kind="function"><name>TopMute</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a284ed62302cd142afa8aca61c7fe571b" kind="function"><name>TopMute</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a1abf4a2d778c70605ce11b75d1c80ddb" kind="function"><name>TopMute</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a2876093ac8e1862b706848170ff5060b" kind="function"><name>~TopMute</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kind="function"><name>operator=</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_top_mute_1aa67fde0a3990c0822f27ab24b8a9ea90" kind="function"><name>apply</name></member>
   </compound>
   <compound refid="classmspass_1_1utility_1_1_vector_statistics" kind="class"><name>mspass::utility::VectorStatistics</name>
     <member refid="classmspass_1_1utility_1_1_vector_statistics_1ac1859153950bb8de386012c41a090cc6" kind="variable"><name>d</name></member>
@@ -1058,14 +1074,14 @@
     <member refid="classmspass_1_1utility_1_1_vector_statistics_1adc1896ab0a7ba080ec4c0740e0506c36" kind="function"><name>range</name></member>
     <member refid="classmspass_1_1utility_1_1_vector_statistics_1a6d1e26b40cf27a90b97871b5302a55b1" kind="function"><name>quantile</name></member>
   </compound>
-  <compound refid="classmspass_1_1seismic_1_1_vector_taper" kind="class"><name>mspass::seismic::VectorTaper</name>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1a1d8604bb527d922128ab7d7c1dea9782" kind="variable"><name>taper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1ad09d55a0516388b4e5b5a7791ef17c1d" kind="function"><name>VectorTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1a8a37e9f987ce3ad9bde2acaec60a1a0d" kind="function"><name>VectorTaper</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1a84d04779ee7b1a6ca26a36fcc92a0eb3" kind="function"><name>apply</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1a496da0e40dcd8f46d39021f3d584a891" kind="function"><name>apply</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1adb966dc3a26db5f4ce0c4686333b3f9d" kind="function"><name>disable</name></member>
-    <member refid="classmspass_1_1seismic_1_1_vector_taper_1aff9f52767d776810a5be6c02250a86d3" kind="function"><name>enable</name></member>
+  <compound refid="classmspass_1_1algorithms_1_1_vector_taper" kind="class"><name>mspass::algorithms::VectorTaper</name>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab5697654ab4cf98d3163f857626ed458" kind="variable"><name>taper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1abeddf364803709f1ba8c5ac6df4e3fe0" kind="function"><name>VectorTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1ab1eed64ca482959a7b370bee80edb33b" kind="function"><name>VectorTaper</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103" kind="function"><name>apply</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1aee8397b62578221b5165497286941863" kind="function"><name>disable</name></member>
+    <member refid="classmspass_1_1algorithms_1_1_vector_taper_1a942c9e116af34bf2e55a69f4fccc3f85" kind="function"><name>enable</name></member>
   </compound>
   <compound refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon" kind="class"><name>mspass::algorithms::deconvolution::WaterLevelDecon</name>
     <member refid="classmspass_1_1algorithms_1_1deconvolution_1_1_water_level_decon_1a98979fbd572f986132b75f7ce66e3780" kind="variable"><name>wlv</name></member>
@@ -1092,11 +1108,11 @@
   </compound>
   <compound refid="namespacemspass_1_1algorithms" kind="namespace"><name>mspass::algorithms</name>
     <member refid="algorithms_8h_1ae367c50f064c9ecfb2f81c8727cf9871" kind="function"><name>agc</name></member>
-    <member refid="algorithms_8h_1abf60265509588e936ec28743209765ae" kind="function"><name>WindowData3C</name></member>
-    <member refid="algorithms_8h_1a46c0597193ca17ed189004b0c8404f31" kind="function"><name>WindowData</name></member>
-    <member refid="algorithms_8h_1aea85321dad99e16a7d79c51f8e27cf08" kind="function"><name>ArrivalTimeReference</name></member>
+    <member refid="algorithms_8h_1aa215f45ceedca3272350906f41a02d21" kind="function"><name>WindowData3C</name></member>
+    <member refid="algorithms_8h_1a13a1140230c63d16c000bd23b400ee37" kind="function"><name>WindowData</name></member>
+    <member refid="algorithms_8h_1af8a67b73e9e7380165e52ac6d084de74" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="algorithms_8h_1a19d44e8cfc241d0d36787df6decc7832" kind="function"><name>ExtractComponent</name></member>
-    <member refid="algorithms_8h_1a9ac94cc21d2059d2e7853e31f697de0c" kind="function"><name>ArrivalTimeReference</name></member>
+    <member refid="algorithms_8h_1aeec9c9f728fd909f3c438b78124a22fc" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" kind="function"><name>ExtractComponent</name></member>
     <member refid="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" kind="function"><name>sparse_convolve</name></member>
     <member refid="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" kind="function"><name>BundleSEEDGroup</name></member>
@@ -1110,6 +1126,8 @@
     <member refid="seismogram__helpers_8cc_1aa5fee528b7b72e0ad47786869fdb3630" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="seismogram__helpers_8cc_1a5989a2f816a058b5a8b94a67dea74ac3" kind="function"><name>HorizontalRotation</name></member>
+    <member refid="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" kind="function"><name>headcos</name></member>
+    <member refid="_taper_8cc_1ad0d3aa1bb569186de00c2c67afba6a3b" kind="function"><name>tailcos</name></member>
     <member refid="tseries__helpers_8cc_1acfbeb2b441c657883388adfa3afa3577" kind="function"><name>ArrivalTimeReference</name></member>
     <member refid="tseries__helpers_8cc_1a1fefa3293b0058518db2146461c6dca0" kind="function"><name>ArrivalTimeReference</name></member>
   </compound>
@@ -1154,7 +1172,7 @@
     <member refid="dpss_8h_1a9706aa4329c753e1a740ffb08c8dce11" kind="function"><name>polarize_dpss</name></member>
     <member refid="dpss_8h_1ad7409fb03bf57e49205d02a9ecc0bb7b" kind="function"><name>dpss_calc</name></member>
     <member refid="_f_f_t_decon_operator_8h_1a7387cf95055be2e4f58b847c8f66e428" kind="function"><name>circular_shift</name></member>
-    <member refid="_f_f_t_decon_operator_8h_1a550407cacfd1759a44401f45d94a3b8f" kind="function"><name>ComputeFFTLength</name></member>
+    <member refid="_f_f_t_decon_operator_8h_1af1ca5b487863c7d362a1326a3debef68" kind="function"><name>ComputeFFTLength</name></member>
     <member refid="_f_f_t_decon_operator_8h_1a260a6a670781bcec14d0f02668fde607" kind="function"><name>ComputeFFTLength</name></member>
     <member refid="_f_f_t_decon_operator_8h_1a229a74c492351850a66acbdf499cb647" kind="function"><name>nextPowerOf2</name></member>
     <member refid="wavelet_8h_1a6e8b614cf929acba50d2f39e0d497cdc" kind="function"><name>rickerwavelet</name></member>
@@ -1208,8 +1226,6 @@
     <member refid="namespacemspass_1_1seismic_1ab8e65fa46b1de2e84418ed22a20cf522" kind="function"><name>SEISMICMD_sta</name></member>
     <member refid="namespacemspass_1_1seismic_1ae39181fd7e5305ad63c7d50bcb082d47" kind="function"><name>SEISMICMD_chan</name></member>
     <member refid="namespacemspass_1_1seismic_1a9bb3e908c48498c194aad416262578f4" kind="function"><name>SEISMICMD_loc</name></member>
-    <member refid="namespacemspass_1_1seismic_1ac593dcd952e8270c874be5c630039d3c" kind="function"><name>headcos</name></member>
-    <member refid="namespacemspass_1_1seismic_1aca4e4a41dbb0cd855873ae1296a2a416" kind="function"><name>tailcos</name></member>
   </compound>
   <compound refid="namespacemspass_1_1utility" kind="namespace"><name>mspass::utility</name>
     <member refid="_metadata_8h_1a8e3dcdd4343f59850c331c8b1309c4e3" kind="enum"><name>MDtype</name></member>
@@ -1323,7 +1339,7 @@
   <compound refid="src_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
   </compound>
   <compound refid="src_2lib_2algorithms_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
-    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a32db37f7fd8b82e4e31ed8df60a950a9" kind="function"><name>FILE</name></member>
+    <member refid="src_2lib_2algorithms_2_c_make_lists_8txt_1a41e5c2bed43acfb679d93536a89fe050" kind="function"><name>FILE</name></member>
   </compound>
   <compound refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt" kind="file"><name>CMakeLists.txt</name>
     <member refid="src_2lib_2algorithms_2deconvolution_2_c_make_lists_8txt_1aeed155f496986432c2eee0c9572b25a3" kind="function"><name>include_directories</name></member>
@@ -1391,6 +1407,10 @@
   </compound>
   <compound refid="wavelet_8h" kind="file"><name>wavelet.h</name>
   </compound>
+  <compound refid="_taper_8h" kind="file"><name>Taper.h</name>
+  </compound>
+  <compound refid="_time_window_8h" kind="file"><name>TimeWindow.h</name>
+  </compound>
   <compound refid="mseed__index_8h" kind="file"><name>mseed_index.h</name>
   </compound>
   <compound refid="mspass_8h" kind="file"><name>mspass.h</name>
@@ -1415,13 +1435,9 @@
   </compound>
   <compound refid="_slowness_vector_8h" kind="file"><name>SlownessVector.h</name>
   </compound>
-  <compound refid="_taper_8h" kind="file"><name>Taper.h</name>
-  </compound>
   <compound refid="_time_series_8h" kind="file"><name>TimeSeries.h</name>
   </compound>
   <compound refid="_time_series_w_gaps_8h" kind="file"><name>TimeSeriesWGaps.h</name>
-  </compound>
-  <compound refid="_time_window_8h" kind="file"><name>TimeWindow.h</name>
   </compound>
   <compound refid="_antelope_pf_8h" kind="file"><name>AntelopePf.h</name>
   </compound>
@@ -1503,6 +1519,8 @@
   </compound>
   <compound refid="sparse__convolve_8cc" kind="file"><name>sparse_convolve.cc</name>
   </compound>
+  <compound refid="_taper_8cc" kind="file"><name>Taper.cc</name>
+  </compound>
   <compound refid="tseries__helpers_8cc" kind="file"><name>tseries_helpers.cc</name>
   </compound>
   <compound refid="mseed__file__indexer_8cc" kind="file"><name>mseed_file_indexer.cc</name>
@@ -1520,8 +1538,6 @@
   <compound refid="_seismogram_8cc" kind="file"><name>Seismogram.cc</name>
   </compound>
   <compound refid="_slowness_vector_8cc" kind="file"><name>SlownessVector.cc</name>
-  </compound>
-  <compound refid="_taper_8cc" kind="file"><name>Taper.cc</name>
   </compound>
   <compound refid="_time_series_8cc" kind="file"><name>TimeSeries.cc</name>
   </compound>

@@ -248,8 +248,8 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  algorithm=CNR3C_algorithms::undefined;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  operator_dt=1.0;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  winlength=0;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  processing_window=<a class="code" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a>(0.0,1.0);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  noise_window=<a class="code" href="classmspass_1_1seismic_1_1_time_window.html">TimeWindow</a>(0.0,1.0);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  processing_window=<a class="code" href="classmspass_1_1algorithms_1_1_time_window.html">TimeWindow</a>(0.0,1.0);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  noise_window=<a class="code" href="classmspass_1_1algorithms_1_1_time_window.html">TimeWindow</a>(0.0,1.0);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  damp=0.0;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  noise_floor=0.0001;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  snr_regularization_floor=1.5;</div>
@@ -490,9 +490,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the average 3C power spectrum for the latest loaded noise data. </p>
-<div class="fragment"><div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  {</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">return</span> psnoise_data;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  {</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">return</span> psnoise_data;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -519,9 +519,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum of the signal loaded for deconvolution. </p>
-<div class="fragment"><div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  {</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">return</span> pssignal;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  {</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="keywordflow">return</span> pssignal;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1078,9 +1078,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum estimate linked to the wavelet signal. </p>
-<div class="fragment"><div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  {</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keywordflow">return</span> psnoise;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">return</span> psnoise;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1107,9 +1107,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 </table>
 </div><div class="memdoc">
 <p>Return the power spectrum of the wavelet signal used for deconvolution. </p>
-<div class="fragment"><div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  {</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">return</span> pswavelet;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  {</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">return</span> pswavelet;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  };</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1121,8 +1121,9 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="ttc" id="aclassmspass_1_1utility_1_1_antelope_pf_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_antelope_pf.html">mspass::utility::AntelopePf</a></div><div class="ttdoc">C++ object version of a parameter file.</div><div class="ttdef"><b>Definition:</b> AntelopePf.h:61</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ae538485ac0aed2f8691477dffce6cda8"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ae538485ac0aed2f8691477dffce6cda8">mspass::seismic::CoreTimeSeries::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.cc:222</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a347b349bb4e1f0e65978dfcd45ae3472"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a347b349bb4e1f0e65978dfcd45ae3472">mspass::seismic::BasicTimeSeries::npts</a></div><div class="ttdeci">size_t npts() const</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:183</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1_time_window_html"><div class="ttname"><a href="classmspass_1_1algorithms_1_1_time_window.html">mspass::algorithms::TimeWindow</a></div><div class="ttdoc">Defines a time window.</div><div class="ttdef"><b>Definition:</b> TimeWindow.h:13</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a8f0b6ab1ffaf2b0f514341be81b21d7e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a8f0b6ab1ffaf2b0f514341be81b21d7e">mspass::algorithms::deconvolution::CNR3CDecon::loadwavelet</a></div><div class="ttdeci">void loadwavelet(const mspass::seismic::TimeSeries &amp;w)</div><div class="ttdoc">Load data defining the wavelet to use for deconvolution.</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.cc:576</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a></div><div class="ttdoc">Vector (three-component) seismogram data object.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.h:40</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html">mspass::seismic::CoreSeismogram</a></div><div class="ttdoc">Vector (three-component) seismogram data object.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.h:39</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_abe28ca2812a2ac21dd2196385ad106ab"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#abe28ca2812a2ac21dd2196385ad106ab">mspass::seismic::BasicTimeSeries::sample_number</a></div><div class="ttdeci">int sample_number(double t) const</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:74</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_seismogram_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_seismogram.html">mspass::seismic::Seismogram</a></div><div class="ttdoc">Implemntation of Seismogram for MsPASS.</div><div class="ttdef"><b>Definition:</b> Seismogram.h:13</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_metadata_html"><div class="ttname"><a href="classmspass_1_1utility_1_1_metadata.html">mspass::utility::Metadata</a></div><div class="ttdef"><b>Definition:</b> Metadata.h:75</div></div>
@@ -1132,7 +1133,6 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_a472074f3074d59f794d18017b010ab81"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#a472074f3074d59f794d18017b010ab81">mspass::seismic::BasicTimeSeries::t0</a></div><div class="ttdeci">double t0() const</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:186</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_aa3c10c25ea2c6b82cf8bbe2991f16bfe"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#aa3c10c25ea2c6b82cf8bbe2991f16bfe">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::apply</a></div><div class="ttdeci">mspass::seismic::PowerSpectrum apply(const mspass::seismic::TimeSeries &amp;d)</div><div class="ttdef"><b>Definition:</b> MTPowerSpectrumEngine.cc:84</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a10d4b650fdedd815652c1e4e86a0e715"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a10d4b650fdedd815652c1e4e86a0e715">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::number_tapers</a></div><div class="ttdeci">int number_tapers() const</div><div class="ttdef"><b>Definition:</b> MTPowerSpectrumEngine.h:74</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_time_window_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_time_window.html">mspass::seismic::TimeWindow</a></div><div class="ttdoc">Defines a time window.</div><div class="ttdef"><b>Definition:</b> TimeWindow.h:13</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine_html_a114db709279ea8ab275ba69fbdcbec13"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_m_t_power_spectrum_engine.html#a114db709279ea8ab275ba69fbdcbec13">mspass::algorithms::deconvolution::MTPowerSpectrumEngine::taper_length</a></div><div class="ttdeci">int taper_length() const</div><div class="ttdef"><b>Definition:</b> MTPowerSpectrumEngine.h:64</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_html_a88d7fe1143e6459d7accf40e00f8cab2"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon.html#a88d7fe1143e6459d7accf40e00f8cab2">mspass::algorithms::deconvolution::CNR3CDecon::loaddata</a></div><div class="ttdeci">void loaddata(mspass::seismic::Seismogram &amp;d, const int wcomp, const bool loadnoise=false)</div><div class="ttdoc">Load data with one component used as wavelet estimate.</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.cc:479</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a7724b7cfa40eebf0b15e0d2b39ae615e"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a7724b7cfa40eebf0b15e0d2b39ae615e">mspass::seismic::CoreSeismogram::set_t0</a></div><div class="ttdeci">void set_t0(const double t0in)</div><div class="ttdoc">Set the data start time.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:988</div></div>
@@ -1143,7 +1143,7 @@ gsl_fft_complex_workspace *&#160;</td><td class="memItemRight" valign="bottom"><
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html">mspass::seismic::CoreTimeSeries</a></div><div class="ttdoc">Scalar time series data object.</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.h:16</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_time_series_html_ab044edb3fe5fe734cb577a4434f390a2"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_time_series.html#ab044edb3fe5fe734cb577a4434f390a2">mspass::seismic::CoreTimeSeries::s</a></div><div class="ttdeci">std::vector&lt; double &gt; s</div><div class="ttdef"><b>Definition:</b> CoreTimeSeries.h:27</div></div>
 <div class="ttc" id="aclassmspass_1_1utility_1_1_error_logger_html_aa69873ba0aebf67e9ba24d01992c0bcf"><div class="ttname"><a href="classmspass_1_1utility_1_1_error_logger.html#aa69873ba0aebf67e9ba24d01992c0bcf">mspass::utility::ErrorLogger::log_error</a></div><div class="ttdeci">int log_error(const mspass::utility::MsPASSError &amp;merr)</div><div class="ttdef"><b>Definition:</b> ErrorLogger.cc:70</div></div>
-<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.h:54</div></div>
+<div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_a9ac5c7c060d582b1a399fb066d06779f"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#a9ac5c7c060d582b1a399fb066d06779f">mspass::seismic::CoreSeismogram::u</a></div><div class="ttdeci">mspass::utility::dmatrix u</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.h:53</div></div>
 <div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet_html_aaec6f802d7aba4a36484ba50c9f9c9bf"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_shaping_wavelet.html#aaec6f802d7aba4a36484ba50c9f9c9bf">mspass::algorithms::deconvolution::ShapingWavelet::wavelet</a></div><div class="ttdeci">ComplexArray * wavelet()</div><div class="ttdef"><b>Definition:</b> ShapingWavelet.h:74</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_core_seismogram_html_ae94bac250fe5928ced41babc322c2c79"><div class="ttname"><a href="classmspass_1_1seismic_1_1_core_seismogram.html#ae94bac250fe5928ced41babc322c2c79">mspass::seismic::CoreSeismogram::set_npts</a></div><div class="ttdeci">void set_npts(const size_t npts)</div><div class="ttdoc">Set the number of samples attribute for data.</div><div class="ttdef"><b>Definition:</b> CoreSeismogram.cc:1008</div></div>
 <div class="ttc" id="aclassmspass_1_1seismic_1_1_basic_time_series_html_aa96e795f96b5050996d791f5b6f3867d"><div class="ttname"><a href="classmspass_1_1seismic_1_1_basic_time_series.html#aa96e795f96b5050996d791f5b6f3867d">mspass::seismic::BasicTimeSeries::dead</a></div><div class="ttdeci">bool dead() const</div><div class="ttdef"><b>Definition:</b> BasicTimeSeries.h:149</div></div>

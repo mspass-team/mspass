@@ -6,12 +6,12 @@
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_time_series_w_gaps" prot="public" virt="non-virtual">mspass::seismic::TimeSeriesWGaps</derivedcompoundref>
       <sectiondef kind="protected-attrib">
       <memberdef kind="variable" id="classmspass_1_1seismic_1_1_data_gap_1ab83ccd2842b4d16b437cae78f41a1502" prot="protected" static="no" mutable="no">
-        <type>std::set&lt; <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref>, <ref refid="classmspass_1_1seismic_1_1_time_window_cmp" kindref="compound">TimeWindowCmp</ref> &gt;</type>
+        <type>std::set&lt; TimeWindow, <ref refid="classmspass_1_1seismic_1_1_time_window_cmp" kindref="compound">TimeWindowCmp</ref> &gt;</type>
         <definition>std::set&lt;TimeWindow,TimeWindowCmp&gt; mspass::seismic::DataGap::gaps</definition>
         <argsstring></argsstring>
         <name>gaps</name>
         <briefdescription>
-<para>Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> which allows a simple, fast way to define a time range with invalid data. </para>
+<para>Holds data gap definitions. We use an STL set object to define data gaps for any time series object derived from this base class. The set is keyed by a TimeWindow which allows a simple, fast way to define a time range with invalid data. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -81,7 +81,7 @@
         <argsstring>(const TimeWindow twin)</argsstring>
         <name>is_gap</name>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type>const TimeWindow</type>
           <declname>twin</declname>
         </param>
         <briefdescription>
@@ -94,7 +94,7 @@
 <parametername>twin</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>time window of data to test defined by a <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> object </para>
+<para>time window of data to test defined by a TimeWindow object </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -127,7 +127,7 @@
         <argsstring>(const TimeWindow tw)</argsstring>
         <name>add_gap</name>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type>const TimeWindow</type>
           <declname>tw</declname>
         </param>
         <briefdescription>

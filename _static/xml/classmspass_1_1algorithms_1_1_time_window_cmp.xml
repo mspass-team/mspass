@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1_time_window_cmp" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::TimeWindowCmp</compoundname>
+    <includes refid="_time_window_8h" local="no">TimeWindow.h</includes>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_cmp_1af53d9c42a7e611e473fa1d344c32519b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::TimeWindowCmp::operator()</definition>
+        <argsstring>(const TimeWindow ti1, const TimeWindow ti2) const</argsstring>
+        <name>operator()</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>ti1</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <declname>ti2</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="87" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="87" bodyend="88"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Function object used for weak comparison to order <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> objects. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="85" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="84" bodyend="89"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_cmp_1af53d9c42a7e611e473fa1d344c32519b" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindowCmp</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

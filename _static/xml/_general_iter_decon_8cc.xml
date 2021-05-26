@@ -185,8 +185,14 @@
         </childnode>
       </node>
       <node id="34">
+        <label>mspass/algorithms/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
+      </node>
+      <node id="33">
         <label>mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
+        <childnode refid="34" relation="include">
+        </childnode>
         <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="47" relation="include">
@@ -202,10 +208,6 @@
       </node>
       <node id="24">
         <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="33">
-        <label>mspass/seismic/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
       </node>
       <node id="49">
         <label>mspass/algorithms/deconvolution/WaterLevelDecon.h</label>
@@ -300,7 +302,7 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="33" relation="include">
         </childnode>
         <childnode refid="49" relation="include">
         </childnode>
@@ -329,8 +331,6 @@
         <childnode refid="31" relation="include">
         </childnode>
         <childnode refid="32" relation="include">
-        </childnode>
-        <childnode refid="33" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -394,17 +394,17 @@
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
         <childnode refid="50" relation="include">
         </childnode>
         <childnode refid="57" relation="include">
         </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
         <childnode refid="27" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
         </childnode>
@@ -464,11 +464,11 @@
         </childnode>
         <childnode refid="56" relation="include">
         </childnode>
-        <childnode refid="33" relation="include">
-        </childnode>
         <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
         </childnode>
         <childnode refid="53" relation="include">
         </childnode>
@@ -580,13 +580,13 @@
 <codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ts,te;</highlight></codeline>
 <codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ts=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;full_data_window_start&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>te=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;full_data_window_end&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dwin=<ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dwin=<ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ts=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;deconvolution_data_window_start&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>te=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;deconvolution_data_window_end&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fftwin=<ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>fftwin=<ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
 <codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ts=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;noise_window_start&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>te=mdgiter.<ref refid="classmspass_1_1utility_1_1_metadata_1af2b1cac0f295d9ab5fb240b8b5e12539" kindref="member">get</ref>&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">&gt;(</highlight><highlight class="stringliteral">&quot;noise_window_end&quot;</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nwin=<ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nwin=<ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref>(ts,te);</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>need<sp/>to<sp/>make<sp/>sure<sp/>the<sp/>noise<sp/>and<sp/>decon<sp/>windows<sp/>are<sp/>inside<sp/>the<sp/>full_data_window*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(fftwin.start&lt;dwin.start<sp/>||<sp/>fftwin.end&gt;dwin.end)</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -802,7 +802,7 @@
 <codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
 <codeline lineno="294"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="295"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>dwin_in)</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>dwin_in)</highlight></codeline>
 <codeline lineno="296"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="298"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dwin=dwin_in;</highlight></codeline>
@@ -817,7 +817,7 @@
 <codeline lineno="307"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="309"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="310"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::loadnoise(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>nwin_in)</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::loadnoise(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>nwin_in)</highlight></codeline>
 <codeline lineno="311"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nwin=nwin_in;</highlight></codeline>
@@ -832,8 +832,8 @@
 <codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
 <codeline lineno="324"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="325" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1af4e88706961b6d643c752de488aca42d" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,</highlight></codeline>
-<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>dwin,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>nwin)</highlight></codeline>
+<codeline lineno="325" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon_1a2894752499825e57d515990ceca787f8" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>GeneralIterDecon::load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref>&amp;<sp/>draw,</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>dwin,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>nwin)</highlight></codeline>
 <codeline lineno="327"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">try</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="329"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>iretn,<sp/>iret;</highlight></codeline>
@@ -959,7 +959,7 @@
 <codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>d;<sp/><sp/></highlight><highlight class="comment">//<sp/>In<sp/>this<sp/>situation<sp/>just<sp/>return<sp/>the<sp/>original</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="474"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>winsize=(</highlight><highlight class="keyword">static_cast&lt;</highlight><highlight class="keywordtype">double</highlight><highlight class="keyword">&gt;</highlight><highlight class="normal">(half_width))*d.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>();</highlight></codeline>
-<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>cutwin(-winsize,winsize);</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>cutwin(-winsize,winsize);</highlight></codeline>
 <codeline lineno="476"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(WindowData(d,cutwin));</highlight></codeline>
 <codeline lineno="477"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">catch</highlight><highlight class="normal">(...)<sp/>{</highlight></codeline>
 <codeline lineno="478"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal">;</highlight></codeline>
@@ -1073,9 +1073,9 @@
 <codeline lineno="586"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r=sparse_convolve(winv,d_all);</highlight></codeline>
 <codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Replace<sp/>n<sp/>by<sp/>convolution<sp/>with<sp/>inverse<sp/>wavelet<sp/>to<sp/>get<sp/>the<sp/>levels<sp/>correct<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="588"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n=sparse_convolve(winv,n);</highlight></codeline>
-<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>trimwin;</highlight></codeline>
-<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trimwin.<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>=n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" kindref="member">t0</ref>()+(n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>())*((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)(winv.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>()));</highlight></codeline>
-<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trimwin.<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>=n.<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime</ref>()-(n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>())*((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)(winv.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>()));</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>trimwin;</highlight></codeline>
+<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trimwin.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>=n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a472074f3074d59f794d18017b010ab81" kindref="member">t0</ref>()+(n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>())*((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)(winv.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>()));</highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>trimwin.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>=n.<ref refid="classmspass_1_1seismic_1_1_core_seismogram_1ae043fa67b9d889965ae473da583a1eb4" kindref="member">endtime</ref>()-(n.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1af31c96c0e2173d7581e1c3a3f8bcfde8" kindref="member">dt</ref>())*((</highlight><highlight class="keywordtype">double</highlight><highlight class="normal">)(winv.<ref refid="classmspass_1_1seismic_1_1_basic_time_series_1a347b349bb4e1f0e65978dfcd45ae3472" kindref="member">npts</ref>()));</highlight></codeline>
 <codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n=WindowData3C(n,trimwin);</highlight></codeline>
 <codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//double<sp/>nfloor;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="594"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//nfloor=compute_resid_linf_floor();</highlight><highlight class="normal"></highlight></codeline>

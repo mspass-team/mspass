@@ -1275,34 +1275,6 @@ is usually not necessay.</p>
 <span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.ccore.seismic" title="Permalink to this headline">¶</a></h2>
 <p>A submodule for seismic namespace of ccore</p>
 <dl class="py class">
-<dt id="mspasspy.ccore.seismic.BasicTaper">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">BasicTaper</code><a class="headerlink" href="#mspasspy.ccore.seismic.BasicTaper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
-<p>Base class for family of taper algorithms</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="mspasspy.ccore.seismic.CosineTaper">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">CosineTaper</code><a class="headerlink" href="#mspasspy.ccore.seismic.CosineTaper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.BasicTaper" title="mspasspy.ccore.seismic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.BasicTaper</span></code></a></p>
-<p>Define a taper using a half period cosine function</p>
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.CosineTaper.apply">
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.CosineTaper.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>apply(self: mspasspy.ccore.seismic.CosineTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a scalar TimeSeries object</p>
-<ol class="arabic simple" start="2">
-<li><p>apply(self: mspasspy.ccore.seismic.CosineTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a Seismogram (3C) object</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="mspasspy.ccore.seismic.DoubleVector">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">DoubleVector</code><a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
@@ -1362,27 +1334,6 @@ is usually not necessay.</p>
 <dt id="mspasspy.ccore.seismic.DoubleVector.remove">
 <code class="sig-name descname">remove</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.DoubleVector" title="mspasspy.ccore.seismic.DoubleVector">mspasspy.ccore.seismic.DoubleVector</a></span></em>, <em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector.remove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove the first item from the list whose value is x. It is an error if there is no such item.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="mspasspy.ccore.seismic.LinearTaper">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">LinearTaper</code><a class="headerlink" href="#mspasspy.ccore.seismic.LinearTaper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.BasicTaper" title="mspasspy.ccore.seismic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.BasicTaper</span></code></a></p>
-<p>Define a ramp taper function</p>
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.LinearTaper.apply">
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.LinearTaper.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>apply(self: mspasspy.ccore.seismic.LinearTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a scalar TimeSeries object</p>
-<ol class="arabic simple" start="2">
-<li><p>apply(self: mspasspy.ccore.seismic.LinearTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a Seismogram (3C) object</p>
 </dd></dl>
 
 </dd></dl>
@@ -1795,58 +1746,6 @@ stored in the ensemble’s metadata.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="mspasspy.ccore.seismic.TimeWindow">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">TimeWindow</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeWindow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
-<p>Simple description of a time window</p>
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeWindow.end">
-<em class="property">property </em><code class="sig-name descname">end</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeWindow.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>End time of the window</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeWindow.length">
-<code class="sig-name descname">length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeWindow" title="mspasspy.ccore.seismic.TimeWindow">mspasspy.ccore.seismic.TimeWindow</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.seismic.TimeWindow.length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the size of the window in seconds</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeWindow.shift">
-<code class="sig-name descname">shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeWindow" title="mspasspy.ccore.seismic.TimeWindow">mspasspy.ccore.seismic.TimeWindow</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.seismic.TimeWindow" title="mspasspy.ccore.seismic.TimeWindow">mspasspy.ccore.seismic.TimeWindow</a><a class="headerlink" href="#mspasspy.ccore.seismic.TimeWindow.shift" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shift the reference time by a specified number of seconds</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeWindow.start">
-<em class="property">property </em><code class="sig-name descname">start</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeWindow.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the window</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="mspasspy.ccore.seismic.VectorTaper">
-<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">VectorTaper</code><a class="headerlink" href="#mspasspy.ccore.seismic.VectorTaper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.BasicTaper" title="mspasspy.ccore.seismic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.BasicTaper</span></code></a></p>
-<p>Define generic taper function with a parallel vector of weights</p>
-<dl class="py method">
-<dt id="mspasspy.ccore.seismic.VectorTaper.apply">
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.VectorTaper.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>apply(self: mspasspy.ccore.seismic.VectorTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a scalar TimeSeries object</p>
-<ol class="arabic simple" start="2">
-<li><p>apply(self: mspasspy.ccore.seismic.VectorTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
-</ol>
-<p>Apply taper to a Seismogram (3C) object</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 <div class="section" id="algorithms">
 <h2>algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h2>
@@ -1858,13 +1757,20 @@ stored in the ensemble’s metadata.</p>
 <code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">ArrivalTimeReference</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.ArrivalTimeReference" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overloaded function.</p>
 <ol class="arabic simple">
-<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.Seismogram, key: str, window: mspasspy.ccore.seismic.TimeWindow) -&gt; mspasspy.ccore.seismic.Seismogram</p></li>
+<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.Seismogram, key: str, window: mspass::algorithms::TimeWindow) -&gt; mspasspy.ccore.seismic.Seismogram</p></li>
 </ol>
 <p>Shifts data so t=0 is a specified arrival time</p>
 <ol class="arabic simple" start="2">
-<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.SeismogramEnsemble, key: str, window: mspasspy.ccore.seismic.TimeWindow) -&gt; mspasspy.ccore.seismic.SeismogramEnsemble</p></li>
+<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.SeismogramEnsemble, key: str, window: mspass::algorithms::TimeWindow) -&gt; mspasspy.ccore.seismic.SeismogramEnsemble</p></li>
 </ol>
 <p>Shifts data so t=0 is a specified arrival time</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.basic.BasicTaper">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">BasicTaper</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Base class for family of taper algorithms</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1952,6 +1858,27 @@ stored in the ensemble’s metadata.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">CosineTaper</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<p>Define a taper using a half period cosine function</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.CosineTaper.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.CosineTaper.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.CosineTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a scalar TimeSeries object</p>
+<ol class="arabic simple" start="2">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.CosineTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a Seismogram (3C) object</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.basic.EnsembleComponent">
 <code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">EnsembleComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em>, <em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.EnsembleComponent" title="Permalink to this definition">¶</a></dt>
@@ -1962,6 +1889,79 @@ stored in the ensemble’s metadata.</p>
 <dt id="mspasspy.ccore.algorithms.basic.ExtractComponent">
 <code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">ExtractComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tcs</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram">mspasspy.ccore.seismic.Seismogram</a></span></em>, <em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries">mspasspy.ccore.seismic.TimeSeries</a><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.ExtractComponent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract component as a TimeSeries object</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">LinearTaper</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<p>Define a ramp taper function</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.LinearTaper.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.LinearTaper.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.LinearTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a scalar TimeSeries object</p>
+<ol class="arabic simple" start="2">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.LinearTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a Seismogram (3C) object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.basic.TimeWindow">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">TimeWindow</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
+<p>Simple description of a time window</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.TimeWindow.end">
+<em class="property">property </em><code class="sig-name descname">end</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End time of the window</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.TimeWindow.length">
+<code class="sig-name descname">length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow">mspasspy.ccore.algorithms.basic.TimeWindow</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the size of the window in seconds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.TimeWindow.shift">
+<code class="sig-name descname">shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow">mspasspy.ccore.algorithms.basic.TimeWindow</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.TimeWindow" title="mspasspy.ccore.algorithms.basic.TimeWindow">mspasspy.ccore.algorithms.basic.TimeWindow</a><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow.shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the reference time by a specified number of seconds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.TimeWindow.start">
+<em class="property">property </em><code class="sig-name descname">start</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.TimeWindow.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start time of the window</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.ccore.algorithms.basic.VectorTaper">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">VectorTaper</code><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.VectorTaper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.algorithms.basic.BasicTaper" title="mspasspy.ccore.algorithms.basic.BasicTaper"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.algorithms.basic.BasicTaper</span></code></a></p>
+<p>Define generic taper function with a parallel vector of weights</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.algorithms.basic.VectorTaper.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.VectorTaper.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.VectorTaper, arg0: mspasspy.ccore.seismic.TimeSeries) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a scalar TimeSeries object</p>
+<ol class="arabic simple" start="2">
+<li><p>apply(self: mspasspy.ccore.algorithms.basic.VectorTaper, arg0: mspasspy.ccore.seismic.Seismogram) -&gt; int</p></li>
+</ol>
+<p>Apply taper to a Seismogram (3C) object</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">

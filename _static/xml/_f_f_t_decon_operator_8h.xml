@@ -5,9 +5,9 @@
     <includes local="no">string</includes>
     <includes local="no">gsl/gsl_errno.h</includes>
     <includes local="no">gsl/gsl_fft_complex.h</includes>
-    <includes refid="_time_window_8h" local="yes">mspass/seismic/TimeWindow.h</includes>
     <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
+    <includes refid="_time_window_8h" local="yes">mspass/algorithms/TimeWindow.h</includes>
     <includes refid="_complex_array_8h" local="yes">mspass/algorithms/deconvolution/ComplexArray.h</includes>
     <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
     <includedby refid="_general_iter_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</includedby>
@@ -19,87 +19,87 @@
     <includedby refid="_f_f_t_decon_operator_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/FFTDeconOperator.cc</includedby>
     <includedby refid="_shaping_wavelet_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ShapingWavelet.cc</includedby>
     <incdepgraph>
-      <node id="10">
+      <node id="9">
         <label>list</label>
       </node>
-      <node id="21">
+      <node id="20">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
+        <childnode refid="21" relation="include">
+        </childnode>
         <childnode refid="22" relation="include">
         </childnode>
         <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
         </childnode>
       </node>
       <node id="4">
         <label>gsl/gsl_fft_complex.h</label>
       </node>
-      <node id="23">
+      <node id="22">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="16">
+      <node id="15">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="16" relation="include">
         </childnode>
       </node>
       <node id="2">
         <label>string</label>
       </node>
-      <node id="19">
+      <node id="18">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
+        <childnode refid="19" relation="include">
+        </childnode>
         <childnode refid="20" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="7">
         <label>map</label>
       </node>
-      <node id="17">
+      <node id="16">
         <label>exception</label>
       </node>
-      <node id="12">
+      <node id="11">
         <label>fstream</label>
       </node>
-      <node id="14">
-        <label>boost/any.hpp</label>
-      </node>
       <node id="24">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="5">
-        <label>mspass/seismic/TimeWindow.h</label>
+        <label>mspass/algorithms/TimeWindow.h</label>
         <link refid="_time_window_8h_source"/>
       </node>
-      <node id="18">
+      <node id="13">
+        <label>boost/any.hpp</label>
+      </node>
+      <node id="23">
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="17">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="6">
         <label>typeinfo</label>
       </node>
-      <node id="20">
+      <node id="19">
         <label>vector</label>
       </node>
-      <node id="13">
+      <node id="12">
         <label>sstream</label>
       </node>
-      <node id="15">
+      <node id="14">
         <label>pybind11/pybind11.h</label>
       </node>
-      <node id="22">
+      <node id="21">
         <label>math.h</label>
       </node>
-      <node id="11">
+      <node id="10">
         <label>iostream</label>
       </node>
       <node id="25">
@@ -107,16 +107,16 @@
         <link refid="_complex_array_8h_source"/>
         <childnode refid="26" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="8">
         <label>set</label>
       </node>
       <node id="26">
@@ -136,16 +136,18 @@
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="6" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="24" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="5">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
@@ -164,9 +166,7 @@
         </childnode>
         <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -226,9 +226,9 @@
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gsl/gsl_errno.h&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gsl/gsl_fft_complex.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/CoreTimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/CoreTimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ComplexArray.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution{</highlight></codeline>
 <codeline lineno="18" refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_f_f_t_decon_operator" kindref="compound">FFTDeconOperator</ref></highlight></codeline>
@@ -271,7 +271,7 @@
 <codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">/*<sp/>This<sp/>helper<sp/>is<sp/>best<sp/>referenced<sp/>here<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight></codeline>
 <codeline lineno="76"><highlight class="normal">std::vector&lt;double&gt;<sp/><sp/>circular_shift(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;&amp;<sp/>d,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i0);</highlight></codeline>
-<codeline lineno="82"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ComputeFFTLength(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>w,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt);</highlight></codeline>
+<codeline lineno="82"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ComputeFFTLength(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>w,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>dt);</highlight></codeline>
 <codeline lineno="90"><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>ComputeFFTLength(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref>&amp;<sp/>md);</highlight></codeline>
 <codeline lineno="95"><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"><sp/>{</highlight></codeline>
 <codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>nextPowerOf2(</highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>n);</highlight></codeline>

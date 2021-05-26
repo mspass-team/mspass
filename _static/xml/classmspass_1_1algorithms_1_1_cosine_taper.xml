@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1_cosine_taper" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::CosineTaper</compoundname>
+    <basecompoundref refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public" virt="non-virtual">mspass::algorithms::BasicTaper</basecompoundref>
+    <includes refid="_taper_8h" local="no">Taper.h</includes>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_cosine_taper_1a9b8f05f7674ac1eca965515599a1dab3" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::CosineTaper::t0head</definition>
+        <argsstring></argsstring>
+        <name>t0head</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="82" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_cosine_taper_1aca0074d0ca7e43b0621de2d60e591cb2" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::CosineTaper::t1head</definition>
+        <argsstring></argsstring>
+        <name>t1head</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="82" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_cosine_taper_1ad42d35bb34d70d5da5df28df6f87734d" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::CosineTaper::t1tail</definition>
+        <argsstring></argsstring>
+        <name>t1tail</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="82" column="22" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_cosine_taper_1a6ed266a8cb568d5f9e91be367311f336" prot="private" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::CosineTaper::t0tail</definition>
+        <argsstring></argsstring>
+        <name>t0tail</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="82" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_cosine_taper_1a6a4cd9bdda4106fb6acc4161e905a471" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::CosineTaper::CosineTaper</definition>
+        <argsstring>()</argsstring>
+        <name>CosineTaper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="69" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="198" bodyend="203"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_cosine_taper_1aceee67065300605d8dcd3bb16b4b26a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::CosineTaper::CosineTaper</definition>
+        <argsstring>(const double t0head, const double t1head, const double t1tail, const double t0tail)</argsstring>
+        <name>CosineTaper</name>
+        <param>
+          <type>const double</type>
+          <declname>t0head</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t1head</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t1tail</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>t0tail</declname>
+        </param>
+        <briefdescription>
+<para>primary constructor. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Defines half-cycle sine taper for front and/or back end of a time range. Zero times before t0head and after t0tail. Taper between t0head and t1head and in opposite sense from t1tail to t0tail. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="76" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="204" bodyend="225"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::CosineTaper::apply</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d)</argsstring>
+        <name>apply</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="79" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="226" bodyend="288"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>int</type>
+        <definition>int mspass::algorithms::CosineTaper::apply</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d)</argsstring>
+        <name>apply</name>
+        <reimplements refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a">apply</reimplements>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="80" column="7" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="289" bodyend="354"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Taper front and/or end of a time seris with a half cosine function. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>A sine taper is a common, simple approach to taper data. When applied at the front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0. On the right it defines the same function for the range 0 to pi. The period of the left and right operator can be different. Turn off left or right by giving illegal start and end points and the operator will silently be only one sided. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::CosineTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_cosine_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="1">
+        <label>mspass::algorithms::CosineTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_cosine_taper"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="67" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="66" bodyend="83"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4" prot="public" virt="virtual"><scope>mspass::algorithms::CosineTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd" prot="public" virt="virtual"><scope>mspass::algorithms::CosineTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>BasicTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6a4cd9bdda4106fb6acc4161e905a471" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>CosineTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aceee67065300605d8dcd3bb16b4b26a4" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>CosineTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>disable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>disable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>enable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" prot="public" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>enable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a9b8f05f7674ac1eca965515599a1dab3" prot="private" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>t0head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1a6ed266a8cb568d5f9e91be367311f336" prot="private" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>t0tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1aca0074d0ca7e43b0621de2d60e591cb2" prot="private" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>t1head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_cosine_taper_1ad42d35bb34d70d5da5df28df6f87734d" prot="private" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>t1tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" prot="protected" virt="non-virtual"><scope>mspass::algorithms::CosineTaper</scope><name>tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" prot="public" virt="virtual"><scope>mspass::algorithms::CosineTaper</scope><name>~BasicTaper</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

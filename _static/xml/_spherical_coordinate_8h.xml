@@ -12,7 +12,13 @@
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
         <link refid="_butterworth_8h_source"/>
       </node>
-      <node id="11">
+      <node id="10">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h</label>
+        <link refid="_taper_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
         <link refid="_seismogram_w_gaps_8h_source"/>
       </node>
@@ -38,7 +44,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
         <childnode refid="5" relation="include">
@@ -73,19 +79,13 @@
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
         <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="12">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
-        <link refid="_taper_8h_source"/>
-        <childnode refid="8" relation="include">
         </childnode>
       </node>
     </invincdepgraph>

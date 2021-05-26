@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1_basic_taper" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>mspass::algorithms::BasicTaper</compoundname>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public" virt="non-virtual">mspass::algorithms::CosineTaper</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public" virt="non-virtual">mspass::algorithms::LinearTaper</derivedcompoundref>
+    <derivedcompoundref refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public" virt="non-virtual">mspass::algorithms::VectorTaper</derivedcompoundref>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::BasicTaper::head</definition>
+        <argsstring></argsstring>
+        <name>head</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="31" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::BasicTaper::tail</definition>
+        <argsstring></argsstring>
+        <name>tail</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="31" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool mspass::algorithms::BasicTaper::all</definition>
+        <argsstring></argsstring>
+        <name>all</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="31" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::BasicTaper::BasicTaper</definition>
+        <argsstring>()</argsstring>
+        <name>BasicTaper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="14" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="14" bodyend="19"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type></type>
+        <definition>virtual mspass::algorithms::BasicTaper::~BasicTaper</definition>
+        <argsstring>()</argsstring>
+        <name>~BasicTaper</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="20" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="20" bodyend="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>int</type>
+        <definition>virtual int mspass::algorithms::BasicTaper::apply</definition>
+        <argsstring>(mspass::seismic::TimeSeries &amp;d)=0</argsstring>
+        <name>apply</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a1d1f9b13b7b5d052d98771c8ac8cfafb">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1ac9c6bbea89be35e99f72d987d52510d4">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1a0513879267986e1c1c52e35b3519687b">apply</reimplementedby>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="21" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>int</type>
+        <definition>virtual int mspass::algorithms::BasicTaper::apply</definition>
+        <argsstring>(mspass::seismic::Seismogram &amp;d)=0</argsstring>
+        <name>apply</name>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_linear_taper_1a08de73ccb968eee24da501b3df0a8e56">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_cosine_taper_1ae1b1e4c7c196878c5e17f04c1a3adddd">apply</reimplementedby>
+        <reimplementedby refid="classmspass_1_1algorithms_1_1_vector_taper_1a3f0bc37e59814ec60992825f145c0103">apply</reimplementedby>
+        <param>
+          <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
+          <declname>d</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="22" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::BasicTaper::enable_head</definition>
+        <argsstring>()</argsstring>
+        <name>enable_head</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="23" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="23" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::BasicTaper::disable_head</definition>
+        <argsstring>()</argsstring>
+        <name>disable_head</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="24" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="24" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::BasicTaper::enable_tail</definition>
+        <argsstring>()</argsstring>
+        <name>enable_tail</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="25" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="25" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void mspass::algorithms::BasicTaper::disable_tail</definition>
+        <argsstring>()</argsstring>
+        <name>disable_tail</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="26" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="26" bodyend="26"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>mspass::algorithms::BasicTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_basic_taper"/>
+      </node>
+      <node id="4">
+        <label>mspass::algorithms::VectorTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_vector_taper"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>mspass::algorithms::LinearTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_linear_taper"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>mspass::algorithms::CosineTaper</label>
+        <link refid="classmspass_1_1algorithms_1_1_cosine_taper"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" line="12" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h" bodystart="11" bodyend="32"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a35513607e1c2e9b0d714364bd8c41ea2" prot="protected" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>all</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ab4399e7277aec39a56b017d156838d8b" prot="public" virt="pure-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1af7be5cccae05c468002776a4fceaf77a" prot="public" virt="pure-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>apply</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4227e073cf362b77e163faea881bb84" prot="public" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>BasicTaper</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac4cc68faa949932e653804bfc5db42ce" prot="public" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>disable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1aade23966f66e7d1b741e6e8ee2dbde90" prot="public" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>disable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1aafe6a155d954150e1105bbf9b9bd66" prot="public" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>enable_head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a04b2cdddaa30789f37be9c6346a3689b" prot="public" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>enable_tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ae0f21cc36bd494b761ba5ff57eae5af1" prot="protected" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>head</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1a1ed584a194b90ec12eb3d4ad5cee3486" prot="protected" virt="non-virtual"><scope>mspass::algorithms::BasicTaper</scope><name>tail</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_basic_taper_1ac68777236f5c051c487a18ff652420ba" prot="public" virt="virtual"><scope>mspass::algorithms::BasicTaper</scope><name>~BasicTaper</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -2,8 +2,15 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="namespacemspass_1_1algorithms" kind="namespace" language="C++">
     <compoundname>mspass::algorithms</compoundname>
+    <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
     <innerclass refid="classmspass_1_1algorithms_1_1_butterworth" prot="public">mspass::algorithms::Butterworth</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
     <innerclass refid="structmspass_1_1algorithms_1_1greater__seedorder" prot="public">mspass::algorithms::greater_seedorder</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_time_window" prot="public">mspass::algorithms::TimeWindow</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_time_window_cmp" prot="public">mspass::algorithms::TimeWindowCmp</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1amplitudes">mspass::algorithms::amplitudes</innernamespace>
     <innernamespace refid="namespacemspass_1_1algorithms_1_1deconvolution">mspass::algorithms::deconvolution</innernamespace>
       <sectiondef kind="func">
@@ -26,19 +33,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" line="22" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="34" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" line="22" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="35" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1abf60265509588e936ec28743209765ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1aa215f45ceedca3272350906f41a02d21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
         <definition>Seismogram mspass::algorithms::WindowData3C</definition>
-        <argsstring>(const mspass::seismic::Seismogram &amp;parent, const mspass::seismic::TimeWindow &amp;tw)</argsstring>
+        <argsstring>(const mspass::seismic::Seismogram &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData3C</name>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref> &amp;</type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -78,19 +85,19 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="25" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="25" bodyend="62" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="50" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="26" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="26" bodyend="63" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="51" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1a46c0597193ca17ed189004b0c8404f31" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1a13a1140230c63d16c000bd23b400ee37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
         <definition>TimeSeries mspass::algorithms::WindowData</definition>
-        <argsstring>(const mspass::seismic::TimeSeries &amp;parent, const mspass::seismic::TimeWindow &amp;tw)</argsstring>
+        <argsstring>(const mspass::seismic::TimeSeries &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
         <name>WindowData</name>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &amp;</type>
           <declname>parent</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref> &amp;</type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref> &amp;</type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -130,12 +137,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="78" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="78" bodyend="112" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="67" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="79" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="79" bodyend="113" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="68" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1aea85321dad99e16a7d79c51f8e27cf08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1af8a67b73e9e7380165e52ac6d084de74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
         <definition>std::shared_ptr&lt;mspass::seismic::Seismogram&gt; mspass::algorithms::ArrivalTimeReference</definition>
-        <argsstring>(mspass::seismic::Seismogram &amp;din, std::string key, mspass::seismic::TimeWindow tw)</argsstring>
+        <argsstring>(mspass::seismic::Seismogram &amp;din, std::string key, mspass::algorithms::TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
         <param>
           <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
@@ -146,7 +153,7 @@
           <declname>key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -184,7 +191,7 @@
 <parametername>tw</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a TimeWindow object that defines the window of data to extract around the desired arrival time. </para>
+<para>is a <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> object that defines the window of data to extract around the desired arrival time. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -192,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="91" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="91" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="92" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="92" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a19d44e8cfc241d0d36787df6decc7832" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -244,12 +251,12 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="189" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="189" bodyend="256" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="114" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="115" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1a9ac94cc21d2059d2e7853e31f697de0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1aeec9c9f728fd909f3c438b78124a22fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &gt;</type>
         <definition>std::shared_ptr&lt;mspass::seismic::ThreeComponentEnsemble&gt; mspass::algorithms::ArrivalTimeReference</definition>
-        <argsstring>(mspass::seismic::ThreeComponentEnsemble &amp;din, std::string key, mspass::seismic::TimeWindow tw)</argsstring>
+        <argsstring>(mspass::seismic::ThreeComponentEnsemble &amp;din, std::string key, mspass::algorithms::TimeWindow tw)</argsstring>
         <name>ArrivalTimeReference</name>
         <param>
           <type><ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &amp;</type>
@@ -260,7 +267,7 @@
           <declname>key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -298,7 +305,7 @@
 <parametername>tw</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>is a TimeWindow object that defines the window of data to extract around the desired arrival time. </para>
+<para>is a <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> object that defines the window of data to extract around the desired arrival time. </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -306,7 +313,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="130" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="130" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="131" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="131" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
@@ -358,7 +365,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="257" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="257" bodyend="277" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="152" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="258" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="258" bodyend="278" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="153" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
@@ -398,7 +405,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="169" declcolumn="33"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="170" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
@@ -475,7 +482,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="234" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="234" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="235" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="235" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aaf4c3abc82571d4db7955c34f18201e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
@@ -515,7 +522,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="586" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="274" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="586" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="275" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aaf01620b65615245bf4d06581f6badc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -546,7 +553,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="589" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="589" bodyend="594" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="300" declcolumn="6"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="589" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="589" bodyend="594" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="301" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
@@ -667,7 +674,7 @@
           <declname>arrival_time_key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -676,7 +683,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="47" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="47" bodyend="136"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="48" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="48" bodyend="137"/>
       </memberdef>
       <memberdef kind="function" id="seismogram__helpers_8cc_1aa87c23638933c414c340a20893d81a27" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref> &gt; &gt;</type>
@@ -692,7 +699,7 @@
           <declname>arrival_time_key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -701,7 +708,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="141" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="141" bodyend="168"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="142" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="142" bodyend="169"/>
       </memberdef>
       <memberdef kind="function" id="seismogram__helpers_8cc_1a5989a2f816a058b5a8b94a67dea74ac3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -722,7 +729,57 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="171" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="171" bodyend="187"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="172" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="172" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="_taper_8cc_1ab043d6b598f13edb61af41804bf6e9ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::headcos</definition>
+        <argsstring>(double t0, double t1, double t)</argsstring>
+        <name>headcos</name>
+        <param>
+          <type>double</type>
+          <declname>t0</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" line="179" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="179" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="_taper_8cc_1ad0d3aa1bb569186de00c2c67afba6a3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::tailcos</definition>
+        <argsstring>(double t0, double t1, double t)</argsstring>
+        <name>tailcos</name>
+        <param>
+          <type>double</type>
+          <declname>t0</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t1</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" line="189" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc" bodystart="189" bodyend="197"/>
       </memberdef>
       <memberdef kind="function" id="tseries__helpers_8cc_1acfbeb2b441c657883388adfa3afa3577" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">TimeSeries</ref> &gt;</type>
@@ -738,7 +795,7 @@
           <declname>arrival_time_key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -763,7 +820,7 @@
           <declname>arrival_time_key</declname>
         </param>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
           <declname>tw</declname>
         </param>
         <briefdescription>
@@ -779,6 +836,6 @@
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="10" column="28"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="11" column="28"/>
   </compounddef>
 </doxygen>

@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
+  <compounddef id="classmspass_1_1algorithms_1_1_time_window" kind="class" language="C++" prot="public">
+    <compoundname>mspass::algorithms::TimeWindow</compoundname>
+    <includes refid="_time_window_8h" local="no">TimeWindow.h</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::TimeWindow::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Start time of the window. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="19" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double mspass::algorithms::TimeWindow::end</definition>
+        <argsstring></argsstring>
+        <name>end</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>End time of the window. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="23" column="11" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
+        <argsstring>()</argsstring>
+        <name>TimeWindow</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Default constructor. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="27" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="27" bodyend="27"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">start</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1ad22bf0bb2cf5bceaa0da5c3c04f16996" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
+        <argsstring>(const double ts, const double te)</argsstring>
+        <name>TimeWindow</name>
+        <param>
+          <type>const double</type>
+          <declname>ts</declname>
+        </param>
+        <param>
+          <type>const double</type>
+          <declname>te</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Parameterized constructor. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ts</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- start time </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>te</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>- end time </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="33" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="33" bodyend="33"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">start</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1ad465d08db8d7c4d173106bd6ab2b4ee6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>mspass::algorithms::TimeWindow::TimeWindow</definition>
+        <argsstring>(const TimeWindow &amp;parent)</argsstring>
+        <name>TimeWindow</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="34" column="3" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="34" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1aa1009acd1f7b7412173178ed6de87604" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
+        <definition>TimeWindow&amp; mspass::algorithms::TimeWindow::operator=</definition>
+        <argsstring>(const TimeWindow &amp;parent)</argsstring>
+        <name>operator=</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="39" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="39" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+        <definition>TimeWindow mspass::algorithms::TimeWindow::shift</definition>
+        <argsstring>(const double tshift) const</argsstring>
+        <name>shift</name>
+        <param>
+          <type>const double</type>
+          <declname>tshift</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns a new time window translated by tshift argument. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="51" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="51" bodyend="57"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">start</references>
+      </memberdef>
+      <memberdef kind="function" id="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>double</type>
+        <definition>double mspass::algorithms::TimeWindow::length</definition>
+        <argsstring>()</argsstring>
+        <name>length</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns the window length </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="61" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="61" bodyend="64"/>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" compoundref="_time_window_8h" startline="23">end</references>
+        <references refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" compoundref="_time_window_8h" startline="19">start</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Defines a time window. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Time windows are a common concept in time series analysis and seismology in particular. The object definition here has no concept of a time standard. It simply defines an interval in terms of a pair of real numbers. <linebreak/>
+ </para>
+    </detaileddescription>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" line="14" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h" bodystart="13" bodyend="65"/>
+    <listofallmembers>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>end</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>length</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1aa1009acd1f7b7412173178ed6de87604" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>operator=</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>shift</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>start</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>TimeWindow</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1ad22bf0bb2cf5bceaa0da5c3c04f16996" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>TimeWindow</name></member>
+      <member refid="classmspass_1_1algorithms_1_1_time_window_1ad465d08db8d7c4d173106bd6ab2b4ee6" prot="public" virt="non-virtual"><scope>mspass::algorithms::TimeWindow</scope><name>TimeWindow</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -10,11 +10,11 @@
         <argsstring>(const TimeWindow ti1, const TimeWindow ti2) const</argsstring>
         <name>operator()</name>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type>const TimeWindow</type>
           <declname>ti1</declname>
         </param>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
+          <type>const TimeWindow</type>
           <declname>ti2</declname>
         </param>
         <briefdescription>
@@ -25,39 +25,17 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="18" column="14" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="18" bodyend="19"/>
       </memberdef>
-      <memberdef kind="function" id="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
-        <type>bool</type>
-        <definition>bool mspass::seismic::TimeWindowCmp::operator()</definition>
-        <argsstring>(const TimeWindow ti1, const TimeWindow ti2) const</argsstring>
-        <name>operator()</name>
-        <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
-          <declname>ti1</declname>
-        </param>
-        <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></type>
-          <declname>ti2</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" line="87" column="8" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h" bodystart="87" bodyend="88"/>
-      </memberdef>
       </sectiondef>
     <briefdescription>
-<para>Function object used for weak comparison to order <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects. </para>
+<para>Function object used for weak comparison to order TimeWindow objects. </para>
     </briefdescription>
     <detaileddescription>
-<para><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref> objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para>
+<para>TimeWindow objects are used, among other things, to define real or processed induced data gaps. The set container requires a weak ordering function like to correctly determine if a time is inside a particular time window. <simplesect kind="author"><para>Gary L. Pavlis </para>
 </simplesect>
 </para>
     </detaileddescription>
     <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" line="16" column="1" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h" bodystart="15" bodyend="20"/>
     <listofallmembers>
-      <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindowCmp</scope><name>operator()</name></member>
       <member refid="classmspass_1_1seismic_1_1_time_window_cmp_1a43e94f3187b592b7ad076676f2d3b413" prot="public" virt="non-virtual"><scope>mspass::seismic::TimeWindowCmp</scope><name>operator()</name></member>
     </listofallmembers>
   </compounddef>

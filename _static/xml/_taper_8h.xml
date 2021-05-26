@@ -3,77 +3,78 @@
   <compounddef id="_taper_8h" kind="file" language="C++">
     <compoundname>Taper.h</compoundname>
     <includes local="no">vector</includes>
+    <includes local="no">memory</includes>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
     <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
-    <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/seismic/Taper.cc</includedby>
+    <includedby refid="_taper_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/Taper.cc</includedby>
     <incdepgraph>
-      <node id="13">
+      <node id="14">
         <label>list</label>
       </node>
-      <node id="5">
+      <node id="6">
         <label>mspass/seismic/BasicTimeSeries.h</label>
         <link refid="_basic_time_series_8h_source"/>
-        <childnode refid="6" relation="include">
-        </childnode>
         <childnode refid="7" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
-      <node id="24">
+      <node id="25">
         <label>boost/serialization/map.hpp</label>
       </node>
       <node id="38">
         <label>boost/serialization/vector.hpp</label>
       </node>
-      <node id="7">
+      <node id="8">
         <label>boost/archive/text_iarchive.hpp</label>
       </node>
-      <node id="30">
+      <node id="31">
         <label>mspass/utility/ErrorLogger.h</label>
         <link refid="_error_logger_8h_source"/>
-        <childnode refid="31" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="32" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
-        </childnode>
-        <childnode refid="25" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="33" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
       <node id="40">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="19">
+      <node id="20">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="28">
+      <node id="29">
         <label>boost/uuid/uuid_io.hpp</label>
       </node>
       <node id="37">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
-        <childnode refid="16" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
@@ -83,21 +84,19 @@
         </childnode>
         <childnode refid="40" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
-      <node id="23">
+      <node id="24">
         <label>mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
-        <childnode refid="22" relation="include">
+        <childnode refid="23" relation="include">
         </childnode>
-        <childnode refid="13" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="24" relation="include">
+        <childnode refid="12" relation="include">
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
@@ -109,166 +108,162 @@
         </childnode>
         <childnode refid="29" relation="include">
         </childnode>
-        <childnode refid="7" relation="include">
+        <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
         </childnode>
       </node>
-      <node id="22">
+      <node id="23">
         <label>string</label>
       </node>
-      <node id="4">
+      <node id="5">
         <label>mspass/seismic/CoreTimeSeries.h</label>
         <link refid="_core_time_series_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
+        <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="10" relation="include">
         </childnode>
-      </node>
-      <node id="11">
-        <label>map</label>
-      </node>
-      <node id="20">
-        <label>exception</label>
-      </node>
-      <node id="15">
-        <label>fstream</label>
-      </node>
-      <node id="42">
-        <label>mspass/seismic/SlownessVector.h</label>
-        <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="39">
-        <label>boost/archive/binary_oarchive.hpp</label>
-      </node>
-      <node id="17">
-        <label>boost/any.hpp</label>
-      </node>
-      <node id="8">
-        <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="43">
-        <label>mspass/seismic/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
-      </node>
-      <node id="41">
-        <label>mspass/utility/SphericalCoordinate.h</label>
-        <link refid="_spherical_coordinate_8h_source"/>
-      </node>
-      <node id="21">
-        <label>mspass/utility/BasicMetadata.h</label>
-        <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="22" relation="include">
-        </childnode>
-      </node>
-      <node id="3">
-        <label>mspass/seismic/TimeSeries.h</label>
-        <link refid="_time_series_8h_source"/>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>typeinfo</label>
-      </node>
-      <node id="31">
-        <label>unistd.h</label>
-      </node>
-      <node id="2">
-        <label>vector</label>
-      </node>
-      <node id="27">
-        <label>boost/uuid/uuid_generators.hpp</label>
-      </node>
-      <node id="16">
-        <label>sstream</label>
-      </node>
-      <node id="18">
-        <label>pybind11/pybind11.h</label>
-      </node>
-      <node id="35">
-        <label>mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="36" relation="include">
-        </childnode>
-        <childnode refid="2" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="37" relation="include">
-        </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="41" relation="include">
-        </childnode>
-        <childnode refid="42" relation="include">
-        </childnode>
-        <childnode refid="43" relation="include">
-        </childnode>
-      </node>
-      <node id="6">
-        <label>math.h</label>
-      </node>
-      <node id="14">
-        <label>iostream</label>
-      </node>
-      <node id="29">
-        <label>boost/uuid/uuid_serialize.hpp</label>
-      </node>
-      <node id="33">
-        <label>boost/serialization/list.hpp</label>
-      </node>
-      <node id="26">
-        <label>boost/uuid/uuid.hpp</label>
       </node>
       <node id="12">
-        <label>set</label>
-      </node>
-      <node id="25">
-        <label>boost/serialization/serialization.hpp</label>
-      </node>
-      <node id="34">
-        <label>mspass/seismic/Seismogram.h</label>
-        <link refid="_seismogram_8h_source"/>
-        <childnode refid="35" relation="include">
-        </childnode>
-        <childnode refid="23" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-      </node>
-      <node id="32">
-        <label>boost/archive/basic_archive.hpp</label>
-      </node>
-      <node id="36">
-        <label>memory</label>
+        <label>map</label>
       </node>
       <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h</label>
         <link refid="_taper_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="34" relation="include">
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
         </childnode>
       </node>
+      <node id="21">
+        <label>exception</label>
+      </node>
+      <node id="16">
+        <label>fstream</label>
+      </node>
+      <node id="42">
+        <label>mspass/seismic/SlownessVector.h</label>
+        <link refid="_slowness_vector_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>boost/archive/binary_oarchive.hpp</label>
+      </node>
+      <node id="18">
+        <label>boost/any.hpp</label>
+      </node>
       <node id="9">
-        <label>mspass/utility/Metadata.h</label>
-        <link refid="_metadata_8h_source"/>
+        <label>boost/archive/text_oarchive.hpp</label>
+      </node>
+      <node id="41">
+        <label>mspass/utility/SphericalCoordinate.h</label>
+        <link refid="_spherical_coordinate_8h_source"/>
+      </node>
+      <node id="22">
+        <label>mspass/utility/BasicMetadata.h</label>
+        <link refid="_basic_metadata_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>mspass/seismic/TimeSeries.h</label>
+        <link refid="_time_series_8h_source"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>typeinfo</label>
+      </node>
+      <node id="32">
+        <label>unistd.h</label>
+      </node>
+      <node id="2">
+        <label>vector</label>
+      </node>
+      <node id="28">
+        <label>boost/uuid/uuid_generators.hpp</label>
+      </node>
+      <node id="17">
+        <label>sstream</label>
+      </node>
+      <node id="19">
+        <label>pybind11/pybind11.h</label>
+      </node>
+      <node id="36">
+        <label>mspass/seismic/CoreSeismogram.h</label>
+        <link refid="_core_seismogram_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>math.h</label>
+      </node>
+      <node id="15">
+        <label>iostream</label>
+      </node>
+      <node id="30">
+        <label>boost/uuid/uuid_serialize.hpp</label>
+      </node>
+      <node id="34">
+        <label>boost/serialization/list.hpp</label>
+      </node>
+      <node id="27">
+        <label>boost/uuid/uuid.hpp</label>
+      </node>
+      <node id="13">
+        <label>set</label>
+      </node>
+      <node id="26">
+        <label>boost/serialization/serialization.hpp</label>
+      </node>
+      <node id="35">
+        <label>mspass/seismic/Seismogram.h</label>
+        <link refid="_seismogram_8h_source"/>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>boost/archive/basic_archive.hpp</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="10">
+        <label>mspass/utility/Metadata.h</label>
+        <link refid="_metadata_8h_source"/>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
@@ -287,98 +282,128 @@
         </childnode>
         <childnode refid="19" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
         </childnode>
       </node>
     </incdepgraph>
     <invincdepgraph>
-      <node id="2">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
-        <link refid="_c_n_r3_c_decon_8h_source"/>
-      </node>
       <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h</label>
         <link refid="_taper_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
+        <link refid="_c_n_r3_c_decon_8h_source"/>
+      </node>
     </invincdepgraph>
-    <innerclass refid="classmspass_1_1seismic_1_1_basic_taper" prot="public">mspass::seismic::BasicTaper</innerclass>
-    <innerclass refid="classmspass_1_1seismic_1_1_linear_taper" prot="public">mspass::seismic::LinearTaper</innerclass>
-    <innerclass refid="classmspass_1_1seismic_1_1_cosine_taper" prot="public">mspass::seismic::CosineTaper</innerclass>
-    <innerclass refid="classmspass_1_1seismic_1_1_vector_taper" prot="public">mspass::seismic::VectorTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_basic_taper" prot="public">mspass::algorithms::BasicTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_linear_taper" prot="public">mspass::algorithms::LinearTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_cosine_taper" prot="public">mspass::algorithms::CosineTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_vector_taper" prot="public">mspass::algorithms::VectorTaper</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_top_mute" prot="public">mspass::algorithms::TopMute</innerclass>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
-    <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
     <programlisting>
-<codeline lineno="1"><highlight class="comment">//#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref>{</highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight></codeline>
-<codeline lineno="8" refid="classmspass_1_1seismic_1_1_basic_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
-<codeline lineno="9"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="11"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref>()</highlight></codeline>
-<codeline lineno="12"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/>head<sp/>=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>tail<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>all<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="16"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="17"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref>(){};</highlight></codeline>
-<codeline lineno="18"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d)=0;</highlight></codeline>
-<codeline lineno="19"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d)=0;</highlight></codeline>
-<codeline lineno="20"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>taper<sp/>can<sp/>be<sp/>head,<sp/>tail,<sp/>or<sp/>all.<sp/><sp/>For<sp/>efficiency<sp/>it<sp/>is<sp/>required</highlight></codeline>
-<codeline lineno="22"><highlight class="comment"><sp/><sp/>implementations<sp/>set<sp/>these<sp/>three<sp/>booleans.<sp/><sp/><sp/>head<sp/>or<sp/>tail<sp/>may<sp/>be<sp/>true.</highlight></codeline>
-<codeline lineno="23"><highlight class="comment"><sp/><sp/>all<sp/>means<sp/>a<sp/>single<sp/>function<sp/>is<sp/>needed<sp/>to<sp/>defne<sp/>the<sp/>taper.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>head,tail,all;</highlight></codeline>
-<codeline lineno="25"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="32" refid="classmspass_1_1seismic_1_1_linear_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_linear_taper" kindref="compound">LinearTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
-<codeline lineno="33"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_linear_taper" kindref="compound">LinearTaper</ref>();</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_linear_taper" kindref="compound">LinearTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
-<codeline lineno="45"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>need<sp/>to<sp/>post<sp/>to<sp/>history<sp/>using<sp/>new<sp/>feature*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="47"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,t1head,t1tail,t0tail;</highlight></codeline>
-<codeline lineno="50"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="59" refid="classmspass_1_1seismic_1_1_cosine_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_cosine_taper" kindref="compound">CosineTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
-<codeline lineno="60"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="62"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_cosine_taper" kindref="compound">CosineTaper</ref>();</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_cosine_taper" kindref="compound">CosineTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,</highlight></codeline>
-<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
-<codeline lineno="71"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>need<sp/>to<sp/>post<sp/>to<sp/>history<sp/>using<sp/>new<sp/>feature*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="73"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="74"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="75"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,t1head,t1tail,t0tail;</highlight></codeline>
-<codeline lineno="76"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="82" refid="classmspass_1_1seismic_1_1_vector_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_vector_taper" kindref="compound">VectorTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
-<codeline lineno="83"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="84"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="85"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_vector_taper" kindref="compound">VectorTaper</ref>();</highlight></codeline>
-<codeline lineno="86"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_vector_taper" kindref="compound">VectorTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>taperdata);</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>disable(){all=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;};</highlight></codeline>
-<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>enable(){</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(taper.size()&gt;0)<sp/>all=</highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
-<codeline lineno="92"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="94"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>taper;</highlight></codeline>
-<codeline lineno="95"><highlight class="normal">};</highlight></codeline>
-<codeline lineno="96"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_TAPER_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_TAPER_H_</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">//#include<sp/>&lt;math.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight></codeline>
+<codeline lineno="11" refid="classmspass_1_1algorithms_1_1_basic_taper" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
+<codeline lineno="12"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref>()</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>head<sp/>=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>tail<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/>all<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>~<ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref>(){};</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d)=0;</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d)=0;</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>enable_head(){head=</highlight><highlight class="keyword">true</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>disable_head(){head=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;all=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>enable_tail(){tail=</highlight><highlight class="keyword">true</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>disable_tail(){tail=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;all=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>A<sp/>taper<sp/>can<sp/>be<sp/>head,<sp/>tail,<sp/>or<sp/>all.<sp/><sp/>For<sp/>efficiency<sp/>it<sp/>is<sp/>required</highlight></codeline>
+<codeline lineno="29"><highlight class="comment"><sp/><sp/>implementations<sp/>set<sp/>these<sp/>three<sp/>booleans.<sp/><sp/><sp/>head<sp/>or<sp/>tail<sp/>may<sp/>be<sp/>true.</highlight></codeline>
+<codeline lineno="30"><highlight class="comment"><sp/><sp/>all<sp/>means<sp/>a<sp/>single<sp/>function<sp/>is<sp/>needed<sp/>to<sp/>defne<sp/>the<sp/>taper.<sp/><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>head,tail,all;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="39" refid="classmspass_1_1algorithms_1_1_linear_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
+<codeline lineno="40"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref>();</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_linear_taper" kindref="compound">LinearTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>need<sp/>to<sp/>post<sp/>to<sp/>history<sp/>using<sp/>new<sp/>feature*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,t1head,t1tail,t0tail;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="66" refid="classmspass_1_1algorithms_1_1_cosine_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
+<codeline lineno="67"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref>();</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_cosine_taper" kindref="compound">CosineTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1head,</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1tail,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0tail);</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>these<sp/>need<sp/>to<sp/>post<sp/>to<sp/>history<sp/>using<sp/>new<sp/>feature*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0head,t1head,t1tail,t0tail;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="89" refid="classmspass_1_1algorithms_1_1_vector_taper" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_basic_taper" kindref="compound">BasicTaper</ref></highlight></codeline>
+<codeline lineno="90"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref>();</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_vector_taper" kindref="compound">VectorTaper</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>taperdata);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>apply(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>disable(){all=</highlight><highlight class="keyword">false</highlight><highlight class="normal">;};</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>enable(){</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(taper.size()&gt;0)<sp/>all=</highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>std::vector&lt;double&gt;<sp/>taper;</highlight></codeline>
+<codeline lineno="102"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="119" refid="classmspass_1_1algorithms_1_1_top_mute" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref></highlight></codeline>
+<codeline lineno="120"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>();</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t0,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>t1,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>type);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ac096036720ef3eeeb06510b222caca01" kindref="member">TopMute</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1a2876093ac8e1862b706848170ff5060b" kindref="member">~TopMute</ref>();</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref>&amp;<sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1a1e540792dcf890d85dcf762cfde24ee9" kindref="member">operator=</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute" kindref="compound">TopMute</ref>&amp;<sp/>parent);</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_top_mute_1ad573529bb5a0e2eed0a1f8c704b81fd6" kindref="member">apply</ref>(<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref>&amp;<sp/>d);</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">/*<sp/>We<sp/>use<sp/>a<sp/>shared_ptr<sp/>to<sp/>the<sp/>base<sp/>class.<sp/><sp/>That<sp/>allows<sp/>inheritance<sp/>to</highlight></codeline>
+<codeline lineno="154"><highlight class="comment"><sp/><sp/>handle<sp/>the<sp/>actual<sp/>form<sp/>-<sp/>a<sp/>classic<sp/>oop<sp/>use<sp/>of<sp/>a<sp/>base<sp/>class.<sp/>the<sp/>shared_ptr</highlight></codeline>
+<codeline lineno="155"><highlight class="comment"><sp/><sp/>allows<sp/>us<sp/>to<sp/>get<sp/>around<sp/>an<sp/>abstract<sp/>base<sp/>problem.<sp/><sp/><sp/>May<sp/>be<sp/>other<sp/>solutions</highlight></codeline>
+<codeline lineno="156"><highlight class="comment"><sp/><sp/>but<sp/>this<sp/>should<sp/>be<sp/>ok.<sp/><sp/>There<sp/>may<sp/>be<sp/>a<sp/>problem<sp/>in<sp/>parallel<sp/>environment,</highlight></codeline>
+<codeline lineno="157"><highlight class="comment"><sp/><sp/>however,<sp/>as<sp/>not<sp/>sure<sp/>how<sp/>this<sp/>would<sp/>be<sp/>handled<sp/>by<sp/>spark<sp/>or<sp/>dask.<sp/><sp/><sp/>this<sp/>is</highlight></codeline>
+<codeline lineno="158"><highlight class="comment"><sp/><sp/>in<sp/>that<sp/>pickable<sp/>realm.*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;BasicTaper&gt;<sp/>taper;</highlight></codeline>
+<codeline lineno="160"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="161"><highlight class="normal">}<sp/></highlight><highlight class="comment">//<sp/>End<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/>//<sp/>End<sp/>guard</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Taper.h"/>
   </compounddef>
 </doxygen>

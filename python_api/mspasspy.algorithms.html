@@ -662,44 +662,95 @@ by the parameters sampling_rate, starttime and npts.</p></li>
 </div>
 <div class="section" id="module-mspasspy.algorithms.window">
 <span id="window"></span><h2>window<a class="headerlink" href="#module-mspasspy.algorithms.window" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="mspasspy.algorithms.window.TopMute">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">TopMute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t0</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">t1</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'cosine'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#TopMute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.TopMute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A top mute is a form of taper applied to the “front” of a signal.
+Front in standard jargon means that with the time axis running from
+left to right (normal unless your native language is Arabic) the time
+period on the left side of a plot.   Data tagged at times less than what we
+call the zero time here are always zeroed.  The mute defines a ramp function
+running from the zero time to the “one” time.  In the ramp zone the
+ramp function multiplies the sample data so it is a form of “taper” as
+used in Fourier analysis.  This class should normally only be used on data with the time
+reference type set Relative.  It can be applied to UTC time standard data but
+with such data one of these objects would often need to be created for
+each atomic data object, which would be horribly inefficient.  In most
+cases conversion to relative time is an essential step before using
+this algorithm.</p>
+<p>This implementation uses an “apply” method for processing data.
+That means for a parallel construct instead of the symbol for a function
+you use the apply method as a function call.  (e.g. if tm is an is an
+instance of this class and “d” is a TimeSeries or Seismogram object to be
+muted the function call that applies the mute would be ts.apply(d))</p>
+<dl class="py method">
+<dt id="mspasspy.algorithms.window.TopMute.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#TopMute.apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.TopMute.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use thie method to apply the defined top mute to one of the MsPASS
+atomic data objects. The method does a sanity check on the input
+data range.  If the starttime of the data is greater than t0 for
+the mute the datum is killed and an error posted to elog.  The
+reason is in that situation the data would be completely zeroed
+anyway and it is better to define it dead and leave an error message
+than to completely null data.
+:param d:  input atomic MsPASS data object (TimeSeries or Seismogram)
+:object_history:  It set true the function will add define this</p>
+<blockquote>
+<div><p>step as an map operation to preserve object level history.
+(default is False)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance</strong> – string defining the “instance” of this algorithm.
+This parameter is needed only if object_history is set True.  It
+is used to define which instance of this algrithm is being applied.
+(In the C++ api this is what is called the algorithm id).  I can
+come from the global history manager or be set manually.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="mspasspy.algorithms.window.WindowData">
 <code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">WindowData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">twin</span></em>, <em class="sig-param"><span class="n">t0shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cut data defined by a TimeWindow object.</p>
-<p>Cutting a smaller waveform segment from a larger waveform segment 
-is a very common seismic data processing task.   The function is 
-a python wrapper to adapt C++ code that accomplishes that task 
+<p>Cutting a smaller waveform segment from a larger waveform segment
+is a very common seismic data processing task.   The function is
+a python wrapper to adapt C++ code that accomplishes that task
 to the MsPASS framework.</p>
-<p>Note this function uses one model for being bombproof with a map 
+<p>Note this function uses one model for being bombproof with a map
 operation.  Any exception that makes the result invalid will cause
-an error message to be posted to the elog attribute of the input 
-datum AND the function returns a None.   Callers should test for 
+an error message to be posted to the elog attribute of the input
+datum AND the function returns a None.   Callers should test for
 validity of output before trying to use the result or something else
 will almost certainly abort the job downstream.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> – is the input data.  d must be either a TimeSeries or Seismogram 
+<li><p><strong>d</strong> – is the input data.  d must be either a TimeSeries or Seismogram
 object or the function will log an error to d and return a None.</p></li>
 <li><p><strong>twin</strong> – is a TimeWindow defining window to be cut</p></li>
-<li><p><strong>t0shift</strong> – is an optional time shift to apply to the time window. 
-This parameter is convenient to avoid conversions to relative time. 
-A typical example would be to set t0shift to an arrival time and let 
+<li><p><strong>t0shift</strong> – is an optional time shift to apply to the time window.
+This parameter is convenient to avoid conversions to relative time.
+A typical example would be to set t0shift to an arrival time and let
 the window define time relative to that arrival time.  Default is None
 which cause the function to assume twin is to be used directly.</p></li>
-<li><p><strong>object_history</strong> – boolean to enable or disable saving object 
+<li><p><strong>object_history</strong> – boolean to enable or disable saving object
 level history.  Default is False.   Note if this feature is enabled
-and the input data history chain is empty the function will log an 
+and the input data history chain is empty the function will log an
 error to the returned data and not update the history chain.</p></li>
 <li><p><strong>instance</strong> – is instance key to pass to processing history chain.
 If None (the default) and object_history is true the processing
-history chain will not be updated and a complaint error posted to 
+history chain will not be updated and a complaint error posted to
 d.elog.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>copy of d with sample range reduced to twin range.  Returns 
-an empty version of the parent data type (default constructor) if 
+<dd class="field-even"><p>copy of d with sample range reduced to twin range.  Returns
+an empty version of the parent data type (default constructor) if
 the input is marked dead</p>
 </dd>
 </dl>
@@ -708,14 +759,14 @@ the input is marked dead</p>
 <dl class="py function">
 <dt id="mspasspy.algorithms.window.ensemble_error_post">
 <code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">ensemble_error_post</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">alg</span></em>, <em class="sig-param"><span class="n">message</span></em>, <em class="sig-param"><span class="n">severity</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#ensemble_error_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.ensemble_error_post" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a small helper function useful for error handlers in except 
-blocks for ensemble objects.  If a function is called on an ensemble 
-object that throws an exception this function will post the message 
-posted to all ensemble members.  It silently does nothing if the 
-ensemble is empty. 
+<dd><p>This is a small helper function useful for error handlers in except
+blocks for ensemble objects.  If a function is called on an ensemble
+object that throws an exception this function will post the message
+posted to all ensemble members.  It silently does nothing if the
+ensemble is empty.
 :param d: is the ensemble data to be handled.  It print and error message</p>
 <blockquote>
-<div><p>and returns doing nothing if d is not one of the known ensemble 
+<div><p>and returns doing nothing if d is not one of the known ensemble
 objects.</p>
 </div></blockquote>
 <dl class="field-list simple">
@@ -735,80 +786,80 @@ objects.</p>
 <dd><p>Top level function interface to data scaling methods.</p>
 <p>This function can be used to scale seismic data contained in any of
 the four seismic data objects defined in mspass:  TimeSeries, Seismogram,
-TimeSeriesEnsemble, and SeismogramEnsemble.   An extensive set of 
-amplitude estimation metrics are available by selecting one of the 
-allowed values for the method parameter.   Ensembles can be scaled 
+TimeSeriesEnsemble, and SeismogramEnsemble.   An extensive set of
+amplitude estimation metrics are available by selecting one of the
+allowed values for the method parameter.   Ensembles can be scaled
 at the individual seismogram level or as a whole (scale_by_section=True).
-Object level history can be enabled by setting object_history true.  
+Object level history can be enabled by setting object_history true.
 See parameter descriptions for additional features for history preservation.</p>
-<p>Note all methods preserve the original amplitude by updating the 
-Metadata parameter calib to include the scaling.  i.e. as always the 
-amplitude of the data in physical units can be restored by multiplying 
+<p>Note all methods preserve the original amplitude by updating the
+Metadata parameter calib to include the scaling.  i.e. as always the
+amplitude of the data in physical units can be restored by multiplying
 the data samples by calib.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – is input data object.  If not one of the four mspass seismic
 data types noted above the function will throw a RuntimeError exception.</p></li>
-<li><p><strong>method</strong> – string defining the gain method to use.  Currently supported 
-method values are:  peak, RMS (rms accepted), perc, and MAD 
-(also accepts mad or Mad).  Peak uses the largest amplitude for 
-scaling.  For 3C data that means vector amplitude while for scalar data 
-it is the largest absolute value. rms is the standard rms measure, 
-although for 3C data is is rms vector amplitudes so scaling is by the 
-number of vectors not the total number of samples (3 times number of 
-vectors).  perc uses a sorted percentage clip level metric as used in 
-seismic unix.  mad is a variant where the value returned is the 
+<li><p><strong>method</strong> – string defining the gain method to use.  Currently supported
+method values are:  peak, RMS (rms accepted), perc, and MAD
+(also accepts mad or Mad).  Peak uses the largest amplitude for
+scaling.  For 3C data that means vector amplitude while for scalar data
+it is the largest absolute value. rms is the standard rms measure,
+although for 3C data is is rms vector amplitudes so scaling is by the
+number of vectors not the total number of samples (3 times number of
+vectors).  perc uses a sorted percentage clip level metric as used in
+seismic unix.  mad is a variant where the value returned is the
 median absolute deviation (mad) that is actual the same as perc=1/2.
 Default is peak.</p></li>
 <li><p><strong>level</strong> – For all but perc this defines the scale to which the data
-are scaled.  For perc it is used to set the percent clip level.  
-A RuntimeError exception is thrown if method is perc and level is larger 
+are scaled.  For perc it is used to set the percent clip level.
+A RuntimeError exception is thrown if method is perc and level is larger
 that one. Default is 1.0</p></li>
-<li><p><strong>window</strong> – is an optional TimeWindow applied to compute amplitude 
-for scaling.  When not a null (python None) a windowing algorithm will 
-be applied before computing the amplitude metric and the amplitude 
-computed in that window will be used for scaling.   Default is None 
-meaning this option is turned off and the entire waveform segment is 
+<li><p><strong>window</strong> – is an optional TimeWindow applied to compute amplitude
+for scaling.  When not a null (python None) a windowing algorithm will
+be applied before computing the amplitude metric and the amplitude
+computed in that window will be used for scaling.   Default is None
+meaning this option is turned off and the entire waveform segment is
 scanned for the amplitude estimation.</p></li>
-<li><p><strong>scale_by_section</strong> – is a boolean that controls the scaling 
-behavior on ensembles only (It is silently ignored for atomic 
-TimeSeries and Seismogram data).  When true a single gain factor is 
-applied to all members of an ensemble.  When false each member is 
-gained individually as if this function were applied in a loop to 
+<li><p><strong>scale_by_section</strong> – is a boolean that controls the scaling
+behavior on ensembles only (It is silently ignored for atomic
+TimeSeries and Seismogram data).  When true a single gain factor is
+applied to all members of an ensemble.  When false each member is
+gained individually as if this function were applied in a loop to
 each member.</p></li>
-<li><p><strong>use_mean</strong> – boolean used only for ensembles and when scale_by_section is 
-True.   The algorithm used in that case has an option to use the mean 
+<li><p><strong>use_mean</strong> – boolean used only for ensembles and when scale_by_section is
+True.   The algorithm used in that case has an option to use the mean
 log amplitude for scaling the section instead of the default median
 amplitude.</p></li>
 <li><p><strong>object_history</strong> – </p></li>
-<li><p><strong>instance</strong> – object_history and instance are intimately related 
-and control how object level history is handled.  Object level history 
-is disabled by default for efficiency.  If object_history is set True 
+<li><p><strong>instance</strong> – object_history and instance are intimately related
+and control how object level history is handled.  Object level history
+is disabled by default for efficiency.  If object_history is set True
 and the string passed as instance is defined (not None which is the default)
-each Seismogram or TimeSeries object will attempt to save the history 
+each Seismogram or TimeSeries object will attempt to save the history
 through a new_map operation.   If the history chain is empty this will
 silently generate an error posted to error log on each object.</p></li>
-<li><p><strong>dryrun</strong> – is a boolean used for preprocessing to validate 
+<li><p><strong>dryrun</strong> – is a boolean used for preprocessing to validate
 arguments.  When true the algorithm is not run, but the function
-only checks the argument list for invalid combinations.  This is 
-useful for prerun checks of a large job to validate a workflow.  
-Errors generate exceptions but the function returns before 
+only checks the argument list for invalid combinations.  This is
+useful for prerun checks of a large job to validate a workflow.
+Errors generate exceptions but the function returns before
 attemping any calculations.  Default is false</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>amplitude(s) in a python array.   Array has only one element 
+<dd class="field-even"><p>amplitude(s) in a python array.   Array has only one element
 for all returns except ensembles when scale_by_section is False.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>For atomic objects returns the computed amplitude for the 
-data received through d and sets that value as array element 0.  
-For ensembles returns a pybind11 wrapped 
-std::vector of amplitudes for the ensemble members when scale_by_section 
+<dd class="field-odd"><p>For atomic objects returns the computed amplitude for the
+data received through d and sets that value as array element 0.
+For ensembles returns a pybind11 wrapped
+std::vector of amplitudes for the ensemble members when scale_by_section
 is false (member by member scaling) but only a single number in element 0
-for section scaling.   An empty return is possible without an exception 
-being thrown if a single atomic data type is marked dead or if the 
+for section scaling.   An empty return is possible without an exception
+being thrown if a single atomic data type is marked dead or if the
 ensemble received has no data.</p>
 </dd>
 </dl>

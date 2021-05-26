@@ -2,133 +2,58 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.17">
   <compounddef id="_time_window_8h" kind="file" language="C++">
     <compoundname>TimeWindow.h</compoundname>
+    <includedby refid="algorithms_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</includedby>
+    <includedby refid="_c_n_r3_c_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</includedby>
     <includedby refid="_f_f_t_decon_operator_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h</includedby>
     <includedby refid="_general_iter_decon_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</includedby>
-    <includedby refid="mspass_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</includedby>
-    <includedby refid="_core_seismogram_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</includedby>
-    <includedby refid="_data_gap_8h" local="yes">/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</includedby>
+    <includedby refid="seismogram__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc</includedby>
+    <includedby refid="slice__and__dice_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc</includedby>
     <includedby refid="tseries__helpers_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/tseries_helpers.cc</includedby>
     <invincdepgraph>
-      <node id="5">
+      <node id="6">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/LeastSquareDecon.h</label>
         <link refid="_least_square_decon_8h_source"/>
       </node>
-      <node id="14">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/Butterworth.h</label>
-        <link refid="_butterworth_8h_source"/>
-      </node>
-      <node id="16">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/SeismogramWGaps.h</label>
-        <link refid="_seismogram_w_gaps_8h_source"/>
-      </node>
-      <node id="12">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
-        <link refid="algorithms_8h_source"/>
-      </node>
       <node id="1">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h</label>
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h</label>
         <link refid="_time_window_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
         <childnode refid="4" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="10" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="2">
+        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h</label>
+        <link refid="algorithms_8h_source"/>
+      </node>
+      <node id="9">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/WaterLevelDecon.h</label>
         <link refid="_water_level_decon_8h_source"/>
       </node>
-      <node id="6">
+      <node id="7">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperSpecDivDecon.h</label>
         <link refid="_multi_taper_spec_div_decon_8h_source"/>
       </node>
-      <node id="13">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/amplitudes.h</label>
-        <link refid="amplitudes_8h_source"/>
-      </node>
-      <node id="19">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeSeriesWGaps.h</label>
-        <link refid="_time_series_w_gaps_8h_source"/>
-      </node>
-      <node id="10">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/CoreSeismogram.h</label>
-        <link refid="_core_seismogram_8h_source"/>
-        <childnode refid="11" relation="include">
-        </childnode>
-      </node>
-      <node id="15">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Ensemble.h</label>
-        <link refid="_ensemble_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-      </node>
-      <node id="7">
+      <node id="8">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/MultiTaperXcorDecon.h</label>
         <link refid="_multi_taper_xcor_decon_8h_source"/>
       </node>
-      <node id="9">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/mspass.h</label>
-        <link refid="mspass_8h_source"/>
-      </node>
-      <node id="4">
+      <node id="5">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/GeneralIterDecon.h</label>
         <link refid="_general_iter_decon_8h_source"/>
-      </node>
-      <node id="18">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/DataGap.h</label>
-        <link refid="_data_gap_8h_source"/>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="19" relation="include">
-        </childnode>
       </node>
       <node id="3">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h</label>
         <link refid="_c_n_r3_c_decon_8h_source"/>
       </node>
-      <node id="11">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Seismogram.h</label>
-        <link refid="_seismogram_8h_source"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
-        </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="16" relation="include">
-        </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/Taper.h</label>
-        <link refid="_taper_8h_source"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="2">
+      <node id="4">
         <label>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
         <link refid="_f_f_t_decon_operator_8h_source"/>
         <childnode refid="3" relation="include">
-        </childnode>
-        <childnode refid="4" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
@@ -138,12 +63,14 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
       </node>
     </invincdepgraph>
-    <innerclass refid="classmspass_1_1seismic_1_1_time_window" prot="public">mspass::seismic::TimeWindow</innerclass>
-    <innerclass refid="classmspass_1_1seismic_1_1_time_window_cmp" prot="public">mspass::seismic::TimeWindowCmp</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_time_window" prot="public">mspass::algorithms::TimeWindow</innerclass>
+    <innerclass refid="classmspass_1_1algorithms_1_1_time_window_cmp" prot="public">mspass::algorithms::TimeWindowCmp</innerclass>
     <innernamespace refid="namespacemspass">mspass</innernamespace>
-    <innernamespace refid="namespacemspass_1_1seismic">mspass::seismic</innernamespace>
+    <innernamespace refid="namespacemspass_1_1algorithms">mspass::algorithms</innernamespace>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
@@ -151,39 +78,39 @@
     <programlisting>
 <codeline lineno="1"><highlight class="preprocessor">#ifndef<sp/>_TIMEWINDOW_H_</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>_TIMEWINDOW_H_</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespacemspass_1_1seismic" kindref="compound">mspass::seismic</ref></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms</highlight></codeline>
 <codeline lineno="4"><highlight class="normal">{</highlight></codeline>
-<codeline lineno="13" refid="classmspass_1_1seismic_1_1_time_window" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref></highlight></codeline>
+<codeline lineno="13" refid="classmspass_1_1algorithms_1_1_time_window" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref></highlight></codeline>
 <codeline lineno="14"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="15"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="19" refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>;</highlight></codeline>
-<codeline lineno="23" refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>;<sp/><sp/></highlight></codeline>
-<codeline lineno="27" refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kindref="member">TimeWindow</ref>(){<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>=0.0;<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>=1.0e99;};</highlight></codeline>
-<codeline lineno="33" refid="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a2e71108bfee25d06c62d3123b875ea50" kindref="member">TimeWindow</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ts,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>te){<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>=ts;<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>=te;};</highlight></codeline>
-<codeline lineno="34"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kindref="member">TimeWindow</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="19" refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>;</highlight></codeline>
+<codeline lineno="23" refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>;<sp/><sp/></highlight></codeline>
+<codeline lineno="27" refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" kindref="member">TimeWindow</ref>(){<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>=0.0;<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>=1.0e99;};</highlight></codeline>
+<codeline lineno="33" refid="classmspass_1_1algorithms_1_1_time_window_1ad22bf0bb2cf5bceaa0da5c3c04f16996" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1ad22bf0bb2cf5bceaa0da5c3c04f16996" kindref="member">TimeWindow</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>ts,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>te){<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>=ts;<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>=te;};</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" kindref="member">TimeWindow</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="35"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>=parent.<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>;</highlight></codeline>
-<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>=parent.<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>=parent.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>=parent.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>;</highlight></codeline>
 <codeline lineno="38"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="39"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kindref="member">TimeWindow</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a972e5e4f12ed675a4aab07af55aa2c7a" kindref="member">TimeWindow</ref>&amp;<sp/>parent)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" kindref="member">TimeWindow</ref>&amp;<sp/>operator=(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a47add95b4b08cb15b8bad29453a93358" kindref="member">TimeWindow</ref>&amp;<sp/>parent)</highlight></codeline>
 <codeline lineno="40"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
 <codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(&amp;parent!=</highlight><highlight class="keyword">this</highlight><highlight class="normal">)</highlight></codeline>
 <codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>=parent.start;</highlight></codeline>
-<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>=parent.end;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>=parent.start;</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>=parent.end;</highlight></codeline>
 <codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
 <codeline lineno="47"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="51" refid="classmspass_1_1seismic_1_1_time_window_1a15bd441bbadd8af568a53c39e95fab99" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a15bd441bbadd8af568a53c39e95fab99" kindref="member">shift</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tshift)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="51" refid="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1abcfead755182b85b06a7c66b8e5e4925" kindref="member">shift</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>tshift)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
 <codeline lineno="52"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight></codeline>
-<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>newwindow(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>newwindow.<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>+=tshift;</highlight></codeline>
-<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>newwindow.<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref><sp/>+=<sp/>tshift;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>newwindow(*</highlight><highlight class="keyword">this</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>newwindow.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>+=tshift;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/>newwindow.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref><sp/>+=<sp/>tshift;</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(newwindow);</highlight></codeline>
 <codeline lineno="57"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
-<codeline lineno="61" refid="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_time_window_1a2b10a14087aec213d708ae8eaeb3f62f" kindref="member">length</ref>()</highlight></codeline>
+<codeline lineno="61" refid="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window_1a76f72268273c2b16fb85dee2e60921d7" kindref="member">length</ref>()</highlight></codeline>
 <codeline lineno="62"><highlight class="normal"><sp/><sp/>{</highlight></codeline>
-<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(<ref refid="classmspass_1_1seismic_1_1_time_window_1ac771154520101057bcd0c544ac045b63" kindref="member">end</ref>-<ref refid="classmspass_1_1seismic_1_1_time_window_1a12245ae77c3684bc96975e51e81f3bb1" kindref="member">start</ref>);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>-<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>);</highlight></codeline>
 <codeline lineno="64"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
 <codeline lineno="65"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="66"><highlight class="normal"></highlight></codeline>
@@ -196,15 +123,15 @@
 <codeline lineno="73"><highlight class="comment">//<sp/>time<sp/>windows<sp/>will<sp/>cause<sp/>ambiguity<sp/>in<sp/>indexing<sp/>times<sp/>by<sp/>this</highlight></codeline>
 <codeline lineno="74"><highlight class="comment">//<sp/>method.</highlight></codeline>
 <codeline lineno="75"><highlight class="comment">*/</highlight></codeline>
-<codeline lineno="84"><highlight class="keyword">class<sp/></highlight><highlight class="normal">TimeWindowCmp</highlight></codeline>
+<codeline lineno="84" refid="classmspass_1_1algorithms_1_1_time_window_cmp" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classmspass_1_1algorithms_1_1_time_window_cmp" kindref="compound">TimeWindowCmp</ref></highlight></codeline>
 <codeline lineno="85"><highlight class="normal">{</highlight></codeline>
 <codeline lineno="86"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
-<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator()(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TimeWindow<sp/>ti1,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>TimeWindow<sp/>ti2)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
-<codeline lineno="88"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(ti1.end&lt;ti2.start);};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator()(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>ti1,</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">TimeWindow</ref><sp/>ti2)</highlight><highlight class="keyword"><sp/>const</highlight></codeline>
+<codeline lineno="88"><highlight class="keyword"><sp/><sp/></highlight><highlight class="normal">{</highlight><highlight class="keywordflow">return</highlight><highlight class="normal">(ti1.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a916901f8d5d1dbb2bf38300bf28a2ec3" kindref="member">end</ref>&lt;ti2.<ref refid="classmspass_1_1algorithms_1_1_time_window_1a2277a3ea634dfe6ba5bc71296d93e76a" kindref="member">start</ref>);};</highlight></codeline>
 <codeline lineno="89"><highlight class="normal">};</highlight></codeline>
 <codeline lineno="90"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>end<sp/>mspass::seismic<sp/>namespace<sp/>declaration</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight></codeline>
     </programlisting>
-    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/seismic/TimeWindow.h"/>
+    <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/TimeWindow.h"/>
   </compounddef>
 </doxygen>

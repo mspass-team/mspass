@@ -148,13 +148,19 @@
         </childnode>
       </node>
       <node id="47">
+        <label>mspass/algorithms/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
+      </node>
+      <node id="46">
         <label>mspass/algorithms/algorithms.h</label>
         <link refid="algorithms_8h_source"/>
+        <childnode refid="47" relation="include">
+        </childnode>
         <childnode refid="36" relation="include">
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
       </node>
       <node id="41">
@@ -165,10 +171,6 @@
       </node>
       <node id="14">
         <label>boost/archive/text_oarchive.hpp</label>
-      </node>
-      <node id="45">
-        <label>mspass/seismic/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
       </node>
       <node id="43">
         <label>mspass/utility/SphericalCoordinate.h</label>
@@ -195,9 +197,9 @@
         </childnode>
         <childnode refid="36" relation="include">
         </childnode>
-        <childnode refid="46" relation="include">
+        <childnode refid="45" relation="include">
         </childnode>
-        <childnode refid="47" relation="include">
+        <childnode refid="46" relation="include">
         </childnode>
       </node>
       <node id="8">
@@ -247,13 +249,11 @@
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
-        <childnode refid="45" relation="include">
-        </childnode>
       </node>
       <node id="12">
         <label>math.h</label>
       </node>
-      <node id="46">
+      <node id="45">
         <label>mspass/seismic/Ensemble.h</label>
         <link refid="_ensemble_8h_source"/>
         <childnode refid="10" relation="include">

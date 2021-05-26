@@ -17,7 +17,7 @@
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
     <includes refid="_slowness_vector_8h" local="yes">mspass/seismic/SlownessVector.h</includes>
     <includes refid="_time_series_8h" local="yes">mspass/seismic/TimeSeries.h</includes>
-    <includes refid="_time_window_8h" local="yes">mspass/seismic/TimeWindow.h</includes>
+    <includes local="yes">mspass/seismic/TimeWindow.h</includes>
     <includes refid="mseed__index_8h" local="yes">mspass/io/mseed_index.h</includes>
     <incdepgraph>
       <node id="3">
@@ -201,10 +201,6 @@
       <node id="23">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="48">
-        <label>mspass/seismic/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
-      </node>
       <node id="26">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
@@ -270,8 +266,6 @@
         </childnode>
         <childnode refid="47" relation="include">
         </childnode>
-        <childnode refid="48" relation="include">
-        </childnode>
       </node>
       <node id="34">
         <label>math.h</label>
@@ -285,6 +279,9 @@
         </childnode>
         <childnode refid="44" relation="include">
         </childnode>
+      </node>
+      <node id="48">
+        <label>mspass/seismic/TimeWindow.h</label>
       </node>
       <node id="9">
         <label>iostream</label>

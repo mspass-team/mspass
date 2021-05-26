@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="112" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="112" bodyend="116"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" line="113" column="28" bodyfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/CNR3CDecon.h" bodystart="113" bodyend="117"/>
       </memberdef>
       <memberdef kind="enum" id="_general_iter_decon_8h_1a3b28eff30fc23e0873f859a5145b9309" prot="public" static="no" strong="no">
         <type></type>
@@ -385,13 +385,13 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" line="76" column="14" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/FFTDeconOperator.h" declline="76" declcolumn="14"/>
       </memberdef>
-      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1a550407cacfd1759a44401f45d94a3b8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="_f_f_t_decon_operator_8h_1af1ca5b487863c7d362a1326a3debef68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>
         <definition>int mspass::algorithms::deconvolution::ComputeFFTLength</definition>
-        <argsstring>(const mspass::seismic::TimeWindow w, const double dt)</argsstring>
+        <argsstring>(const mspass::algorithms::TimeWindow w, const double dt)</argsstring>
         <name>ComputeFFTLength</name>
         <param>
-          <type>const <ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref></type>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref></type>
           <declname>w</declname>
         </param>
         <param>

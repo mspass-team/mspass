@@ -138,15 +138,15 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>f_range</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return bandwidth in dB. </p>
-<div class="fragment"><div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">if</span>(f_range&lt;=0.0)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keywordtype">double</span> ratio=<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>/<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> 20.0*log10(ratio);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">if</span>(f_range&lt;=0.0)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordtype">double</span> ratio=<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>/<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <span class="keywordflow">return</span> 20.0*log10(ratio);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>.</p>
 
@@ -175,12 +175,12 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>f_range</b></td></t
 </table>
 </div><div class="memdoc">
 <p>Return a metric of the estimated bandwidth divided by total frequency range </p>
-<div class="fragment"><div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">if</span>(f_range&lt;=0.0)</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordflow">return</span> (<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>-<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>)/f_range;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  };</div>
+<div class="fragment"><div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">if</span>(f_range&lt;=0.0)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> (<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>-<a class="code" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>)/f_range;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  };</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">high_edge_f</a>, and <a class="el" href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">low_edge_f</a>.</p>
 
@@ -251,8 +251,8 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>f_range</b></td></t
 <li>/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/deconvolution/<a class="el" href="_c_n_r3_c_decon_8h_source.html">CNR3CDecon.h</a></li>
 </ul>
 </div><!-- contents -->
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_html_ab780d7146b0efac2f47da6af132ebff4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">mspass::algorithms::deconvolution::BandwidthData::high_edge_f</a></div><div class="ttdeci">double high_edge_f</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.h:29</div></div>
-<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_html_aaf8f740f1202728b005fd5d251894b1e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">mspass::algorithms::deconvolution::BandwidthData::low_edge_f</a></div><div class="ttdeci">double low_edge_f</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.h:27</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_html_ab780d7146b0efac2f47da6af132ebff4"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#ab780d7146b0efac2f47da6af132ebff4">mspass::algorithms::deconvolution::BandwidthData::high_edge_f</a></div><div class="ttdeci">double high_edge_f</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.h:30</div></div>
+<div class="ttc" id="aclassmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data_html_aaf8f740f1202728b005fd5d251894b1e"><div class="ttname"><a href="classmspass_1_1algorithms_1_1deconvolution_1_1_bandwidth_data.html#aaf8f740f1202728b005fd5d251894b1e">mspass::algorithms::deconvolution::BandwidthData::low_edge_f</a></div><div class="ttdeci">double low_edge_f</div><div class="ttdef"><b>Definition:</b> CNR3CDecon.h:28</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

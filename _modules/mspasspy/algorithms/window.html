@@ -188,25 +188,25 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="n">MsPASSError</span><span class="p">,</span> <span class="n">AtomicType</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="p">,</span> <span class="n">ProcessingStatus</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">,</span> <span class="n">TimeWindow</span>
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">_WindowData</span><span class="p">,</span> <span class="n">_WindowData3C</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="n">Seismogram</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">_TopMute</span><span class="p">,</span> <span class="n">_WindowData</span><span class="p">,</span> <span class="n">_WindowData3C</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.amplitudes</span> <span class="kn">import</span> <span class="n">_scale</span><span class="p">,</span> <span class="n">_scale_ensemble</span> <span class="p">,</span><span class="n">_scale_ensemble_members</span><span class="p">,</span> <span class="n">ScalingMethod</span>
 
 <div class="viewcode-block" id="ensemble_error_post"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.ensemble_error_post">[docs]</a><span class="k">def</span> <span class="nf">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">alg</span><span class="p">,</span><span class="n">message</span><span class="p">,</span> <span class="n">severity</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This is a small helper function useful for error handlers in except </span>
-<span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble </span>
-<span class="sd">    object that throws an exception this function will post the message </span>
-<span class="sd">    posted to all ensemble members.  It silently does nothing if the </span>
-<span class="sd">    ensemble is empty. </span>
+<span class="sd">    This is a small helper function useful for error handlers in except</span>
+<span class="sd">    blocks for ensemble objects.  If a function is called on an ensemble</span>
+<span class="sd">    object that throws an exception this function will post the message</span>
+<span class="sd">    posted to all ensemble members.  It silently does nothing if the</span>
+<span class="sd">    ensemble is empty.</span>
 <span class="sd">    :param d: is the ensemble data to be handled.  It print and error message</span>
-<span class="sd">      and returns doing nothing if d is not one of the known ensemble </span>
+<span class="sd">      and returns doing nothing if d is not one of the known ensemble</span>
 <span class="sd">      objects.</span>
 <span class="sd">    :param alg: is the algorithm name posted to elog on each member</span>
 <span class="sd">    :param message: is the string posted to all members</span>
 <span class="sd">    :param severity: is the error severity level</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span> 
+    <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
            <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
         <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span>
         <span class="k">if</span><span class="p">(</span><span class="n">n</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>
@@ -221,83 +221,83 @@
           <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Top level function interface to data scaling methods.</span>
-<span class="sd">    </span>
+
 <span class="sd">    This function can be used to scale seismic data contained in any of</span>
 <span class="sd">    the four seismic data objects defined in mspass:  TimeSeries, Seismogram,</span>
-<span class="sd">    TimeSeriesEnsemble, and SeismogramEnsemble.   An extensive set of </span>
-<span class="sd">    amplitude estimation metrics are available by selecting one of the </span>
-<span class="sd">    allowed values for the method parameter.   Ensembles can be scaled </span>
+<span class="sd">    TimeSeriesEnsemble, and SeismogramEnsemble.   An extensive set of</span>
+<span class="sd">    amplitude estimation metrics are available by selecting one of the</span>
+<span class="sd">    allowed values for the method parameter.   Ensembles can be scaled</span>
 <span class="sd">    at the individual seismogram level or as a whole (scale_by_section=True).</span>
-<span class="sd">    Object level history can be enabled by setting object_history true.  </span>
+<span class="sd">    Object level history can be enabled by setting object_history true.</span>
 <span class="sd">    See parameter descriptions for additional features for history preservation.</span>
-<span class="sd">    </span>
-<span class="sd">    Note all methods preserve the original amplitude by updating the </span>
-<span class="sd">    Metadata parameter calib to include the scaling.  i.e. as always the </span>
-<span class="sd">    amplitude of the data in physical units can be restored by multiplying </span>
-<span class="sd">    the data samples by calib. </span>
-<span class="sd">    </span>
+
+<span class="sd">    Note all methods preserve the original amplitude by updating the</span>
+<span class="sd">    Metadata parameter calib to include the scaling.  i.e. as always the</span>
+<span class="sd">    amplitude of the data in physical units can be restored by multiplying</span>
+<span class="sd">    the data samples by calib.</span>
+
 <span class="sd">    :param d:  is input data object.  If not one of the four mspass seismic</span>
 <span class="sd">      data types noted above the function will throw a RuntimeError exception.</span>
-<span class="sd">    :param method: string defining the gain method to use.  Currently supported </span>
-<span class="sd">      method values are:  peak, RMS (rms accepted), perc, and MAD </span>
-<span class="sd">      (also accepts mad or Mad).  Peak uses the largest amplitude for </span>
-<span class="sd">      scaling.  For 3C data that means vector amplitude while for scalar data </span>
-<span class="sd">      it is the largest absolute value. rms is the standard rms measure, </span>
-<span class="sd">      although for 3C data is is rms vector amplitudes so scaling is by the </span>
-<span class="sd">      number of vectors not the total number of samples (3 times number of </span>
-<span class="sd">      vectors).  perc uses a sorted percentage clip level metric as used in </span>
-<span class="sd">      seismic unix.  mad is a variant where the value returned is the </span>
+<span class="sd">    :param method: string defining the gain method to use.  Currently supported</span>
+<span class="sd">      method values are:  peak, RMS (rms accepted), perc, and MAD</span>
+<span class="sd">      (also accepts mad or Mad).  Peak uses the largest amplitude for</span>
+<span class="sd">      scaling.  For 3C data that means vector amplitude while for scalar data</span>
+<span class="sd">      it is the largest absolute value. rms is the standard rms measure,</span>
+<span class="sd">      although for 3C data is is rms vector amplitudes so scaling is by the</span>
+<span class="sd">      number of vectors not the total number of samples (3 times number of</span>
+<span class="sd">      vectors).  perc uses a sorted percentage clip level metric as used in</span>
+<span class="sd">      seismic unix.  mad is a variant where the value returned is the</span>
 <span class="sd">      median absolute deviation (mad) that is actual the same as perc=1/2.</span>
 <span class="sd">      Default is peak.</span>
 <span class="sd">    :param level:   For all but perc this defines the scale to which the data</span>
-<span class="sd">      are scaled.  For perc it is used to set the percent clip level.  </span>
-<span class="sd">      A RuntimeError exception is thrown if method is perc and level is larger </span>
+<span class="sd">      are scaled.  For perc it is used to set the percent clip level.</span>
+<span class="sd">      A RuntimeError exception is thrown if method is perc and level is larger</span>
 <span class="sd">      that one. Default is 1.0</span>
-<span class="sd">    :param window: is an optional TimeWindow applied to compute amplitude </span>
-<span class="sd">      for scaling.  When not a null (python None) a windowing algorithm will </span>
-<span class="sd">      be applied before computing the amplitude metric and the amplitude </span>
-<span class="sd">      computed in that window will be used for scaling.   Default is None </span>
-<span class="sd">      meaning this option is turned off and the entire waveform segment is </span>
+<span class="sd">    :param window: is an optional TimeWindow applied to compute amplitude</span>
+<span class="sd">      for scaling.  When not a null (python None) a windowing algorithm will</span>
+<span class="sd">      be applied before computing the amplitude metric and the amplitude</span>
+<span class="sd">      computed in that window will be used for scaling.   Default is None</span>
+<span class="sd">      meaning this option is turned off and the entire waveform segment is</span>
 <span class="sd">      scanned for the amplitude estimation.</span>
-<span class="sd">    :param scale_by_section:  is a boolean that controls the scaling </span>
-<span class="sd">      behavior on ensembles only (It is silently ignored for atomic </span>
-<span class="sd">      TimeSeries and Seismogram data).  When true a single gain factor is </span>
-<span class="sd">      applied to all members of an ensemble.  When false each member is </span>
-<span class="sd">      gained individually as if this function were applied in a loop to </span>
+<span class="sd">    :param scale_by_section:  is a boolean that controls the scaling</span>
+<span class="sd">      behavior on ensembles only (It is silently ignored for atomic</span>
+<span class="sd">      TimeSeries and Seismogram data).  When true a single gain factor is</span>
+<span class="sd">      applied to all members of an ensemble.  When false each member is</span>
+<span class="sd">      gained individually as if this function were applied in a loop to</span>
 <span class="sd">      each member.</span>
-<span class="sd">    :param use_mean:  boolean used only for ensembles and when scale_by_section is </span>
-<span class="sd">      True.   The algorithm used in that case has an option to use the mean </span>
+<span class="sd">    :param use_mean:  boolean used only for ensembles and when scale_by_section is</span>
+<span class="sd">      True.   The algorithm used in that case has an option to use the mean</span>
 <span class="sd">      log amplitude for scaling the section instead of the default median</span>
 <span class="sd">      amplitude.</span>
 <span class="sd">    :param object_history:</span>
-<span class="sd">    :param instance:  object_history and instance are intimately related </span>
-<span class="sd">      and control how object level history is handled.  Object level history </span>
-<span class="sd">      is disabled by default for efficiency.  If object_history is set True </span>
+<span class="sd">    :param instance:  object_history and instance are intimately related</span>
+<span class="sd">      and control how object level history is handled.  Object level history</span>
+<span class="sd">      is disabled by default for efficiency.  If object_history is set True</span>
 <span class="sd">      and the string passed as instance is defined (not None which is the default)</span>
-<span class="sd">      each Seismogram or TimeSeries object will attempt to save the history </span>
+<span class="sd">      each Seismogram or TimeSeries object will attempt to save the history</span>
 <span class="sd">      through a new_map operation.   If the history chain is empty this will</span>
-<span class="sd">      silently generate an error posted to error log on each object. </span>
-<span class="sd">    :param dryrun: is a boolean used for preprocessing to validate </span>
+<span class="sd">      silently generate an error posted to error log on each object.</span>
+<span class="sd">    :param dryrun: is a boolean used for preprocessing to validate</span>
 <span class="sd">      arguments.  When true the algorithm is not run, but the function</span>
-<span class="sd">      only checks the argument list for invalid combinations.  This is </span>
-<span class="sd">      useful for prerun checks of a large job to validate a workflow.  </span>
-<span class="sd">      Errors generate exceptions but the function returns before </span>
+<span class="sd">      only checks the argument list for invalid combinations.  This is</span>
+<span class="sd">      useful for prerun checks of a large job to validate a workflow.</span>
+<span class="sd">      Errors generate exceptions but the function returns before</span>
 <span class="sd">      attemping any calculations.  Default is false</span>
-<span class="sd">     </span>
-<span class="sd">    :return: amplitude(s) in a python array.   Array has only one element </span>
+
+<span class="sd">    :return: amplitude(s) in a python array.   Array has only one element</span>
 <span class="sd">      for all returns except ensembles when scale_by_section is False.</span>
-<span class="sd">    :rtype: For atomic objects returns the computed amplitude for the </span>
-<span class="sd">      data received through d and sets that value as array element 0.  </span>
-<span class="sd">      For ensembles returns a pybind11 wrapped </span>
-<span class="sd">      std::vector of amplitudes for the ensemble members when scale_by_section </span>
+<span class="sd">    :rtype: For atomic objects returns the computed amplitude for the</span>
+<span class="sd">      data received through d and sets that value as array element 0.</span>
+<span class="sd">      For ensembles returns a pybind11 wrapped</span>
+<span class="sd">      std::vector of amplitudes for the ensemble members when scale_by_section</span>
 <span class="sd">      is false (member by member scaling) but only a single number in element 0</span>
-<span class="sd">      for section scaling.   An empty return is possible without an exception </span>
-<span class="sd">      being thrown if a single atomic data type is marked dead or if the </span>
-<span class="sd">      ensemble received has no data.  </span>
-<span class="sd">    </span>
+<span class="sd">      for section scaling.   An empty return is possible without an exception</span>
+<span class="sd">      being thrown if a single atomic data type is marked dead or if the</span>
+<span class="sd">      ensemble received has no data.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">algname</span><span class="o">=</span><span class="s2">&quot;scale&quot;</span>
-    <span class="c1"># First validate arguments </span>
+    <span class="c1"># First validate arguments</span>
     <span class="k">if</span><span class="p">(</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;peak&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;RMS&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;rms&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;perc&#39;</span>
              <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;MAD&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;mad&#39;</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">algname</span><span class="o">+</span><span class="s2">&quot;:  method parameter passed = &quot;</span><span class="p">,</span><span class="n">method</span><span class="p">,</span><span class="s2">&quot; is not valid&quot;</span>
@@ -320,8 +320,8 @@
               <span class="o">+</span> <span class="s2">&quot;:  object_history was set true but instance parameter was not defined&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="n">dryrun</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;ok&#39;</span>
-    <span class="c1"># The pybind11 and C++ way of defining an enum class creates an </span>
-    <span class="c1"># obnoxiously ugly syntax. We insulate the user from this oddity </span>
+    <span class="c1"># The pybind11 and C++ way of defining an enum class creates an</span>
+    <span class="c1"># obnoxiously ugly syntax. We insulate the user from this oddity</span>
     <span class="c1"># by using a string arg to define this enum passed to _scale</span>
     <span class="n">method_to_use</span><span class="o">=</span><span class="n">ScalingMethod</span><span class="o">.</span><span class="n">Peak</span>
     <span class="k">if</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="s1">&#39;rms&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;RMS&#39;</span><span class="p">):</span>
@@ -330,8 +330,8 @@
         <span class="n">method_to_use</span><span class="o">=</span><span class="n">ScalingMethod</span><span class="o">.</span><span class="n">perc</span>
     <span class="k">elif</span><span class="p">(</span><span class="n">method</span><span class="o">==</span><span class="s1">&#39;MAD&#39;</span> <span class="ow">or</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;mad&#39;</span><span class="p">):</span>
         <span class="n">method_to_use</span><span class="o">=</span><span class="n">ScalingMethod</span><span class="o">.</span><span class="n">MAD</span>
-    <span class="c1"># else not needed due to tests above </span>
-    <span class="c1"># Note the large block from here on may need an error handler to </span>
+    <span class="c1"># else not needed due to tests above</span>
+    <span class="c1"># Note the large block from here on may need an error handler to</span>
     <span class="c1"># avoid global aborts.   Maybe only the caller needs a handler</span>
     <span class="n">ampvec</span><span class="o">=</span><span class="p">[]</span>   <span class="c1"># needed to allow ampvec to be the return</span>
     <span class="k">try</span><span class="p">:</span>
@@ -365,7 +365,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
                               <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
-            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span> 
+            <span class="k">elif</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">)):</span>
                 <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">member</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">0</span><span class="p">):</span>  <span class="c1"># Silently return nothing if the ensemble is empy</span>
                     <span class="k">return</span> <span class="n">ampvec</span>
@@ -394,20 +394,20 @@
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;scale:  input data is not a supported mspass seismic data type&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scale function:  Windowed scaling option not yet supported&quot;</span><span class="p">)</span>
-        <span class="c1"># A python shortcoming is it is far from obvious from indents that </span>
+        <span class="c1"># A python shortcoming is it is far from obvious from indents that</span>
         <span class="c1"># all nonerror states land here and return this value</span>
         <span class="k">return</span> <span class="n">ampvec</span>
     <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="k">if</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)</span> 
+        <span class="k">if</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)</span>
                     <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)</span> <span class="p">):</span>
-            <span class="c1"># This shows an api problem.  MsPaSSErrors are cast to </span>
+            <span class="c1"># This shows an api problem.  MsPaSSErrors are cast to</span>
             <span class="c1"># RuntimeErrors and lose access to the ErrorSeverity attribute</span>
-            <span class="c1"># We need to implement a custom exception for MsPASSError </span>
+            <span class="c1"># We need to implement a custom exception for MsPASSError</span>
             <span class="c1"># as described in pybind11 documentation. This line</span>
             <span class="c1"># should be fixed when that is done</span>
             <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="c1"># avoid further isinstance at the expense of a maintenance issue.</span>
-        <span class="c1"># if we add any other supported data objects we could have a </span>
+        <span class="c1"># if we add any other supported data objects we could have a</span>
         <span class="c1"># problem here.  This assumes what lands here is an ensemble</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">algname</span><span class="p">,</span><span class="n">err</span><span class="p">)</span>
@@ -420,43 +420,43 @@
         <span class="k">if</span><span class="p">(</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)</span> <span class="p">):</span>
           <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">algname</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-          <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">algname</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span> </div>
-        
+          <span class="n">ensemble_error_post</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">algname</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="WindowData"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.WindowData">[docs]</a><span class="k">def</span> <span class="nf">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twin</span><span class="p">,</span><span class="n">t0shift</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cut data defined by a TimeWindow object.</span>
-<span class="sd">    </span>
-<span class="sd">    Cutting a smaller waveform segment from a larger waveform segment </span>
-<span class="sd">    is a very common seismic data processing task.   The function is </span>
-<span class="sd">    a python wrapper to adapt C++ code that accomplishes that task </span>
-<span class="sd">    to the MsPASS framework. </span>
-<span class="sd">    </span>
-<span class="sd">    Note this function uses one model for being bombproof with a map </span>
+
+<span class="sd">    Cutting a smaller waveform segment from a larger waveform segment</span>
+<span class="sd">    is a very common seismic data processing task.   The function is</span>
+<span class="sd">    a python wrapper to adapt C++ code that accomplishes that task</span>
+<span class="sd">    to the MsPASS framework.</span>
+
+<span class="sd">    Note this function uses one model for being bombproof with a map</span>
 <span class="sd">    operation.  Any exception that makes the result invalid will cause</span>
-<span class="sd">    an error message to be posted to the elog attribute of the input </span>
-<span class="sd">    datum AND the function returns a None.   Callers should test for </span>
+<span class="sd">    an error message to be posted to the elog attribute of the input</span>
+<span class="sd">    datum AND the function returns a None.   Callers should test for</span>
 <span class="sd">    validity of output before trying to use the result or something else</span>
-<span class="sd">    will almost certainly abort the job downstream. </span>
-<span class="sd">    </span>
-<span class="sd">    :param d: is the input data.  d must be either a TimeSeries or Seismogram </span>
+<span class="sd">    will almost certainly abort the job downstream.</span>
+
+<span class="sd">    :param d: is the input data.  d must be either a TimeSeries or Seismogram</span>
 <span class="sd">      object or the function will log an error to d and return a None.</span>
 <span class="sd">    :param twin: is a TimeWindow defining window to be cut</span>
-<span class="sd">    :param t0shift: is an optional time shift to apply to the time window. </span>
-<span class="sd">      This parameter is convenient to avoid conversions to relative time. </span>
-<span class="sd">      A typical example would be to set t0shift to an arrival time and let </span>
+<span class="sd">    :param t0shift: is an optional time shift to apply to the time window.</span>
+<span class="sd">      This parameter is convenient to avoid conversions to relative time.</span>
+<span class="sd">      A typical example would be to set t0shift to an arrival time and let</span>
 <span class="sd">      the window define time relative to that arrival time.  Default is None</span>
-<span class="sd">      which cause the function to assume twin is to be used directly.  </span>
-<span class="sd">    :param object_history: boolean to enable or disable saving object </span>
+<span class="sd">      which cause the function to assume twin is to be used directly.</span>
+<span class="sd">    :param object_history: boolean to enable or disable saving object</span>
 <span class="sd">      level history.  Default is False.   Note if this feature is enabled</span>
-<span class="sd">      and the input data history chain is empty the function will log an </span>
+<span class="sd">      and the input data history chain is empty the function will log an</span>
 <span class="sd">      error to the returned data and not update the history chain.</span>
 <span class="sd">    :param instance: is instance key to pass to processing history chain.</span>
 <span class="sd">      If None (the default) and object_history is true the processing</span>
-<span class="sd">      history chain will not be updated and a complaint error posted to </span>
-<span class="sd">      d.elog.   </span>
-<span class="sd">     </span>
-<span class="sd">    :return: copy of d with sample range reduced to twin range.  Returns </span>
-<span class="sd">      an empty version of the parent data type (default constructor) if </span>
+<span class="sd">      history chain will not be updated and a complaint error posted to</span>
+<span class="sd">      d.elog.</span>
+
+<span class="sd">    :return: copy of d with sample range reduced to twin range.  Returns</span>
+<span class="sd">      an empty version of the parent data type (default constructor) if</span>
 <span class="sd">      the input is marked dead</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">twcut</span><span class="o">=</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">twin</span><span class="p">)</span>
@@ -465,7 +465,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)):</span>
             <span class="k">if</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">()):</span>
-                <span class="c1"># Functions like this should return a copy of the original </span>
+                <span class="c1"># Functions like this should return a copy of the original</span>
                 <span class="c1"># if it was marked dead - this allows preservation of</span>
                 <span class="c1"># history data to allow recording why data were killed</span>
                 <span class="k">return</span> <span class="n">d</span>
@@ -490,7 +490,7 @@
             <span class="n">dcut</span><span class="o">=</span><span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">twcut</span><span class="p">)</span>
             <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
                 <span class="k">if</span><span class="p">(</span><span class="n">instance</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
-                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
+                    <span class="n">dcut</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span>
                       <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>
                       <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                 <span class="k">elif</span><span class="p">(</span><span class="n">dcut</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()):</span>
@@ -507,6 +507,93 @@
         <span class="n">d</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;WindowData&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">),</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
+<div class="viewcode-block" id="TopMute"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute">[docs]</a><span class="k">class</span> <span class="nc">TopMute</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A top mute is a form of taper applied to the &quot;front&quot; of a signal.</span>
+<span class="sd">    Front in standard jargon means that with the time axis running from</span>
+<span class="sd">    left to right (normal unless your native language is Arabic) the time</span>
+<span class="sd">    period on the left side of a plot.   Data tagged at times less than what we</span>
+<span class="sd">    call the zero time here are always zeroed.  The mute defines a ramp function</span>
+<span class="sd">    running from the zero time to the &quot;one&quot; time.  In the ramp zone the</span>
+<span class="sd">    ramp function multiplies the sample data so it is a form of &quot;taper&quot; as</span>
+<span class="sd">    used in Fourier analysis.  This class should normally only be used on data with the time</span>
+<span class="sd">    reference type set Relative.  It can be applied to UTC time standard data but</span>
+<span class="sd">    with such data one of these objects would often need to be created for</span>
+<span class="sd">    each atomic data object, which would be horribly inefficient.  In most</span>
+<span class="sd">    cases conversion to relative time is an essential step before using</span>
+<span class="sd">    this algorithm.</span>
+
+
+<span class="sd">    This implementation uses an &quot;apply&quot; method for processing data.</span>
+<span class="sd">    That means for a parallel construct instead of the symbol for a function</span>
+<span class="sd">    you use the apply method as a function call.  (e.g. if tm is an is an</span>
+<span class="sd">    instance of this class and &quot;d&quot; is a TimeSeries or Seismogram object to be</span>
+<span class="sd">    muted the function call that applies the mute would be ts.apply(d))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="n">t1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;cosine&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a TopMute object for application to MsPASS data objects.</span>
+
+<span class="sd">        The constructor is a pythonic front end to the C++ version of this</span>
+<span class="sd">        class (it the same name in C++ but the binding code maps the C++</span>
+<span class="sd">        name to _TopMute).  The args are the same but this wrapper allows</span>
+<span class="sd">        keywords and removes positional requirements as usual in python.</span>
+
+<span class="sd">        :param t0:  time of end of zeroing period of top Mute</span>
+<span class="sd">        :param t1:  time of end of taper zone when the multiplier goes to 1</span>
+<span class="sd">        :param type: form of ramp (currently must be either &quot;linear&quot; or &quot;cosine&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This call will throw a MsPASSError exception if the parameters</span>
+        <span class="c1"># are mangled but we let that happen in this context assuming a</span>
+        <span class="c1"># constructor like this is created outside any procesisng loop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">=</span><span class="n">_TopMute</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span><span class="n">t1</span><span class="p">,</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="o">=</span><span class="n">t0</span>
+<div class="viewcode-block" id="TopMute.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.window.TopMute.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">instance</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use thie method to apply the defined top mute to one of the MsPASS</span>
+<span class="sd">        atomic data objects. The method does a sanity check on the input</span>
+<span class="sd">        data range.  If the starttime of the data is greater than t0 for</span>
+<span class="sd">        the mute the datum is killed and an error posted to elog.  The</span>
+<span class="sd">        reason is in that situation the data would be completely zeroed</span>
+<span class="sd">        anyway and it is better to define it dead and leave an error message</span>
+<span class="sd">        than to completely null data.</span>
+<span class="sd">        :param d:  input atomic MsPASS data object (TimeSeries or Seismogram)</span>
+<span class="sd">        :object_history:  It set true the function will add define this</span>
+<span class="sd">          step as an map operation to preserve object level history.</span>
+<span class="sd">          (default is False)</span>
+<span class="sd">        :param instance:   string defining the &quot;instance&quot; of this algorithm.</span>
+<span class="sd">          This parameter is needed only if object_history is set True.  It</span>
+<span class="sd">          is used to define which instance of this algrithm is being applied.</span>
+<span class="sd">          (In the C++ api this is what is called the algorithm id).  I can</span>
+<span class="sd">          come from the global history manager or be set manually.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">TimeSeries</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object&quot;</span><span class="p">,</span>
+                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">t0</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="p">:</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span><span class="s2">&quot;Data start time is later than time of mute zero zone</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Datum killed as this would produce a null signal&quot;</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">object_history</span><span class="p">):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">instance</span><span class="o">==</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;Undefined instance argument - cannot save history data&quot;</span><span class="p">,</span>
+                      <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="k">elif</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()):</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="p">(</span><span class="s2">&quot;TopMute.apply&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;Error log is empty.  Cannot be extended without a top level entry&quot;</span><span class="p">,</span>
+                     <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">Seismogram</span><span class="p">):</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="s2">&quot;TopMute&quot;</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">AtomicType</span><span class="o">.</span><span class="n">SEISMOGRAM</span><span class="p">,</span>
+                              <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="s2">&quot;TopMute&quot;</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">AtomicType</span><span class="o">.</span><span class="n">TIMESERIES</span><span class="p">,</span>
+                              <span class="n">ProcessingStatus</span><span class="o">.</span><span class="n">VOLATILE</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

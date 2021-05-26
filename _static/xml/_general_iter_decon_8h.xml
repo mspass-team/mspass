@@ -4,18 +4,18 @@
     <compoundname>GeneralIterDecon.h</compoundname>
     <includes local="no">vector</includes>
     <includes refid="_complex_array_8h" local="yes">mspass/algorithms/deconvolution/ComplexArray.h</includes>
-    <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_scalar_decon_8h" local="yes">mspass/algorithms/deconvolution/ScalarDecon.h</includes>
     <includes refid="_f_f_t_decon_operator_8h" local="yes">mspass/algorithms/deconvolution/FFTDeconOperator.h</includes>
+    <includes refid="_time_window_8h" local="yes">mspass/algorithms/TimeWindow.h</includes>
     <includes refid="dmatrix_8h" local="yes">mspass/utility/dmatrix.h</includes>
+    <includes refid="_metadata_8h" local="yes">mspass/utility/Metadata.h</includes>
     <includes refid="_antelope_pf_8h" local="yes">mspass/utility/AntelopePf.h</includes>
-    <includes refid="_time_window_8h" local="yes">mspass/seismic/TimeWindow.h</includes>
     <includes refid="_core_time_series_8h" local="yes">mspass/seismic/CoreTimeSeries.h</includes>
     <includes refid="_seismogram_8h" local="yes">mspass/seismic/Seismogram.h</includes>
     <includedby refid="_general_iter_decon_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/GeneralIterDecon.cc</includedby>
     <includedby refid="_three_c_spike_8cc" local="yes">/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/deconvolution/ThreeCSpike.cc</includedby>
     <incdepgraph>
-      <node id="12">
+      <node id="13">
         <label>list</label>
       </node>
       <node id="25">
@@ -45,7 +45,7 @@
         <link refid="_error_logger_8h_source"/>
         <childnode refid="49" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="50" relation="include">
         </childnode>
@@ -57,7 +57,7 @@
         </childnode>
         <childnode refid="51" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
         <childnode refid="48" relation="include">
         </childnode>
@@ -65,7 +65,7 @@
       <node id="23">
         <label>mspass/algorithms/deconvolution/ShapingWavelet.h</label>
         <link refid="_shaping_wavelet_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
@@ -75,12 +75,12 @@
       <node id="34">
         <label>boost/archive/binary_iarchive.hpp</label>
       </node>
-      <node id="17">
+      <node id="18">
         <label>mspass/utility/MsPASSError.h</label>
         <link refid="_ms_p_a_s_s_error_8h_source"/>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="18" relation="include">
+        <childnode refid="19" relation="include">
         </childnode>
       </node>
       <node id="46">
@@ -89,11 +89,11 @@
       <node id="31">
         <label>mspass/utility/dmatrix.h</label>
         <link refid="dmatrix_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="5" relation="include">
         </childnode>
-        <childnode refid="14" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
@@ -103,19 +103,19 @@
         </childnode>
         <childnode refid="34" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
+        <childnode refid="18" relation="include">
         </childnode>
       </node>
       <node id="41">
         <label>mspass/utility/ProcessingHistory.h</label>
         <link refid="_processing_history_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="42" relation="include">
         </childnode>
@@ -136,7 +136,7 @@
         <childnode refid="48" relation="include">
         </childnode>
       </node>
-      <node id="20">
+      <node id="21">
         <label>string</label>
       </node>
       <node id="24">
@@ -146,48 +146,48 @@
         </childnode>
         <childnode refid="25" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="11">
         <label>map</label>
       </node>
-      <node id="18">
+      <node id="19">
         <label>exception</label>
       </node>
-      <node id="13">
+      <node id="14">
         <label>fstream</label>
       </node>
       <node id="40">
         <label>mspass/seismic/SlownessVector.h</label>
         <link refid="_slowness_vector_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
+      </node>
+      <node id="30">
+        <label>mspass/algorithms/TimeWindow.h</label>
+        <link refid="_time_window_8h_source"/>
       </node>
       <node id="33">
         <label>boost/archive/binary_oarchive.hpp</label>
       </node>
-      <node id="15">
+      <node id="16">
         <label>boost/any.hpp</label>
       </node>
       <node id="28">
         <label>boost/archive/text_oarchive.hpp</label>
       </node>
-      <node id="30">
-        <label>mspass/seismic/TimeWindow.h</label>
-        <link refid="_time_window_8h_source"/>
-      </node>
       <node id="39">
         <label>mspass/utility/SphericalCoordinate.h</label>
         <link refid="_spherical_coordinate_8h_source"/>
       </node>
-      <node id="19">
+      <node id="20">
         <label>mspass/utility/BasicMetadata.h</label>
         <link refid="_basic_metadata_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>typeinfo</label>
       </node>
       <node id="49">
@@ -196,12 +196,12 @@
       <node id="2">
         <label>vector</label>
       </node>
-      <node id="21">
+      <node id="8">
         <label>mspass/algorithms/deconvolution/ScalarDecon.h</label>
         <link refid="_scalar_decon_8h_source"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="22" relation="include">
         </childnode>
@@ -213,16 +213,16 @@
       <node id="45">
         <label>boost/uuid/uuid_generators.hpp</label>
       </node>
-      <node id="14">
+      <node id="15">
         <label>sstream</label>
       </node>
       <node id="22">
         <label>mspass/algorithms/deconvolution/BasicDeconOperator.h</label>
         <link refid="_basic_decon_operator_8h_source"/>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
-      <node id="16">
+      <node id="17">
         <label>pybind11/pybind11.h</label>
       </node>
       <node id="37">
@@ -232,7 +232,7 @@
         </childnode>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
@@ -243,8 +243,6 @@
         <childnode refid="39" relation="include">
         </childnode>
         <childnode refid="40" relation="include">
-        </childnode>
-        <childnode refid="30" relation="include">
         </childnode>
       </node>
       <node id="26">
@@ -282,15 +280,15 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="21" relation="include">
-        </childnode>
         <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="31" relation="include">
         </childnode>
-        <childnode refid="35" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
+        <childnode refid="35" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
         </childnode>
@@ -300,17 +298,17 @@
       <node id="35">
         <label>mspass/utility/AntelopePf.h</label>
         <link refid="_antelope_pf_8h_source"/>
-        <childnode refid="12" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
       </node>
       <node id="44">
         <label>boost/uuid/uuid.hpp</label>
       </node>
-      <node id="11">
+      <node id="12">
         <label>set</label>
       </node>
       <node id="43">
@@ -341,35 +339,33 @@
       <node id="29">
         <label>mspass/algorithms/deconvolution/FFTDeconOperator.h</label>
         <link refid="_f_f_t_decon_operator_8h_source"/>
-        <childnode refid="20" relation="include">
+        <childnode refid="21" relation="include">
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
         <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="30" relation="include">
-        </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>mspass/utility/Metadata.h</label>
         <link refid="_metadata_8h_source"/>
-        <childnode refid="9" relation="include">
-        </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
         <childnode refid="12" relation="include">
         </childnode>
-        <childnode refid="5" relation="include">
-        </childnode>
         <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
         </childnode>
         <childnode refid="14" relation="include">
         </childnode>
@@ -379,7 +375,9 @@
         </childnode>
         <childnode refid="17" relation="include">
         </childnode>
-        <childnode refid="19" relation="include">
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
         </childnode>
       </node>
     </incdepgraph>
@@ -397,12 +395,12 @@
 <codeline lineno="2"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>__SIIMPLE_GENERAL_ITER_DECON__</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="3"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="4"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ComplexArray.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ScalarDecon.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/FFTDeconOperator.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/ScalarDecon.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/deconvolution/FFTDeconOperator.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/algorithms/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/dmatrix.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/AntelopePf.h&quot;</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/TimeWindow.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/Metadata.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/utility/AntelopePf.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/CoreTimeSeries.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;mspass/seismic/Seismogram.h&quot;</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="13"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">mspass::algorithms::deconvolution{</highlight></codeline>
@@ -435,9 +433,9 @@
 <codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>changeparameter(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_metadata" kindref="compound">mspass::utility::Metadata</ref><sp/>&amp;md)<sp/>{</highlight></codeline>
 <codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;preprocessor-&gt;changeparameter(md);</highlight></codeline>
 <codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/>};</highlight></codeline>
-<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>dwin);</highlight></codeline>
-<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>loadnoise(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>nwin);</highlight></codeline>
-<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref>&amp;<sp/>d,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>dwin,<sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>nwin);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref><sp/>&amp;d,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>dwin);</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>loadnoise(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref><sp/>&amp;d,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>nwin);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>load(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref><sp/>&amp;d,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>dwin,<sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>nwin);</highlight></codeline>
 <codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>process();</highlight></codeline>
 <codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>~<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_general_iter_decon" kindref="compound">GeneralIterDecon</ref>();</highlight></codeline>
 <codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref><sp/>getresult();</highlight></codeline>
@@ -476,7 +474,7 @@
 <codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>time_shift;</highlight></codeline>
 <codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*<sp/>Save<sp/>the<sp/>TimeWindow<sp/>objects<sp/>hat<sp/>define<sp/>the<sp/>extent<sp/>of<sp/>d_all,<sp/>d_decon,</highlight></codeline>
 <codeline lineno="127"><highlight class="comment"><sp/><sp/><sp/><sp/>and<sp/>n.<sp/><sp/><sp/>Some<sp/>things<sp/>need<sp/>at<sp/>least<sp/>some<sp/>of<sp/>these<sp/>downstream<sp/>*/</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_time_window" kindref="compound">mspass::seismic::TimeWindow</ref><sp/>dwin,nwin,fftwin;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref><sp/>dwin,<sp/>nwin,<sp/>fftwin;</highlight></codeline>
 <codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>noise_component;</highlight></codeline>
 <codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>std::list&lt;ThreeCSpike&gt;<sp/>spikes;</highlight></codeline>
 <codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/>std::vector&lt;double&gt;<sp/>lag_weights;</highlight></codeline>
