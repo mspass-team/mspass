@@ -701,13 +701,14 @@ given above and in the sphynx documentation generated from docstrings.
 Update Concepts
 ---------------
 As noted above an update is an operation that can be made only to
-Metadata saving the image to the related wf collection.  We know of
-two common needs for a pure Metadata update without an associated
-save of the waveform data.
+Metadata.  In MsPASS Metadata map directly into MongoDB's document concept
+of name-value pairs, while the waveform data are stored in some version of
+a file. We know of two common application for a pure Metadata update
+without an associated save of the waveform data.
 
 1.  A processing step that computes something that can be conveniently
-    stored as Metadata.  Examples are automated phase pickers and
-    amplitude measurements.
+    stored as Metadata.  Examples are automated phase pickers,
+    amplitude measurements and assorted QC metrics.
 
 2.  Pure Metadata operations.  e.g. most reflection processing systems
     have some form of generic metadata calculator of various levels of
@@ -717,9 +718,42 @@ save of the waveform data.
     database update to preserve the calculation.   An example is an
     active source experiment where receiver coordinates can often be
     computed from survey flag numbers or some other independent counter.
+    In MsPASS Metadata calculations are particularly easy and thus likely
+    because python is used as the job control language.   (Classical seismic
+    reflection systems and programs like SAC use a custom interpreter.)
 
-Many database updates are standalone operations such as preprocessing to
-create entries for attributes like the source_id cross-reference to
-define a link to the right source for each waveform.
+Updates to data that only involve Metadata changes should obey this rule:
 
-NEED A PARAGRAPH HERE ON UPDATES AFTER WE FINALIZED A FEW UNRESOLVED ISSUES.
+* **Update Rule 3:**  Updates for Seismogram and TimeSeries object Metadata should be done
+  through the :code:`update_metadata` method of :code:`Database`.  Updates to
+  other collections should use the pymongo API.
+
+As noted elsewhere numerous online and printed documentation exists for MongoDB
+that you should refer to when working directly with database collections.
+As the rule states when you need to save the results of a pure Metadata change
+within a workflow (e.g. posting a phase pick) use the :code:`update_metadata`
+method of :code:`Database`.   That method has two standard arguments already
+discussed above:   (1) :code:`mode`, and (2) :code:`collection`.
+Three others are important for controlling the behavior of updates:
+
+1. **ignore_metadata_changed_test** is a boolean that is False by default.
+   We know of no example where setting this argument True in a update would
+   be advised (it exists as an option only to streamline create operations that
+   are run through the same method.).  The Metadata container does bookkeeping
+   that marks which, if any, key-value pairs in the container have been
+   altered since the data was loaded (constructed).  The :code:`update_metadata`
+   normally uses that feature to reduce the size of the update transaction by
+   only submitting updates for key-value pairs marked changed.   Setting this
+   argument True would most likely be harmless, but would also add inefficiency.
+2. **exclude_keys** is an optional list of keys for the  Metadata container that the method
+   should not try to update.   Use of this option is rare.   An example where it
+   might be useful is if some function altered a Metadata value that is known
+   to be incorrect.
+3. **data_tag** was discussed above for save/create operations.  When the
+   entire contents of a TimeSeries or Seismogram object are being saved the
+   tag serves as a mark for saves to distinguish those data from the
+   starting data or other intermediate saves.  In a pure update, however, the
+   meaning is different.  The data_tag argument is used any data updated
+   will have the associated tag in the database changed to the string
+   specified in the call to :code:`update_metadata`.  The default is to
+   do nothing to any existing tag (i.e. the tag is not updated).
