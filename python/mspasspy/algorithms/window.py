@@ -1,8 +1,8 @@
 import numpy as np
 
 from mspasspy.ccore.utility import MsPASSError, AtomicType, ErrorSeverity, ProcessingStatus
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, TimeWindow,_TopMute
-from mspasspy.ccore.algorithms.basic import _WindowData, _WindowData3C
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.algorithms.basic import TimeWindow, _TopMute, _WindowData, _WindowData3C
 from mspasspy.ccore.algorithms.amplitudes import _scale, _scale_ensemble ,_scale_ensemble_members, ScalingMethod
 
 def ensemble_error_post(d,alg,message, severity):

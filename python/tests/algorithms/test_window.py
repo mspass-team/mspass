@@ -15,14 +15,14 @@ from mspasspy.ccore.seismic import (TimeReferenceType,
                                     TimeSeries,
                                     Seismogram,
                                     TimeSeriesEnsemble, 
-                                    SeismogramEnsemble,
-                                    TimeWindow)
+                                    SeismogramEnsemble)
 from mspasspy.ccore.algorithms.amplitudes import (MADAmplitude,
                                                   RMSAmplitude,
                                                   PeakAmplitude,
                                                   PerfAmplitude,
                                                   ScalingMethod,
                                                   _scale)
+from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import scale
 from mspasspy.algorithms.window import WindowData
 

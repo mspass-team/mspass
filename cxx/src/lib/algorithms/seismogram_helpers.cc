@@ -1,4 +1,5 @@
 #include <math.h>
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/utility/SphericalCoordinate.h"
 #include "mspass/seismic/Seismogram.h"

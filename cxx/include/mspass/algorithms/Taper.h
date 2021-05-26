@@ -1,10 +1,12 @@
+#ifndef _TAPER_H_
+#define _TAPER_H_
 //#include <math.h>
 #include <vector>
 #include <memory>
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 
-namespace mspass::seismic{
+namespace mspass::algorithms{
 
 class BasicTaper
 {
@@ -157,3 +159,4 @@ private:
   std::shared_ptr<BasicTaper> taper;
 };
 } // End namespace
+#endif // End guard

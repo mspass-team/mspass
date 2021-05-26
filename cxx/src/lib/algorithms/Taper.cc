@@ -1,10 +1,9 @@
-#include "mspass/seismic/Taper.h"
-#include "mspass/seismic/TimeSeries.h"
-#include "mspass/seismic/Seismogram.h"
-namespace mspass::seismic
+#include "mspass/algorithms/Taper.h"
+namespace mspass::algorithms
 {
 using namespace std;
 using namespace mspass::utility;
+using namespace mspass::seismic;
 
 LinearTaper::LinearTaper()
 {
