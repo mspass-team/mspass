@@ -2,12 +2,12 @@
 #define __SIIMPLE_GENERAL_ITER_DECON__
 #include <vector>
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
-#include "mspass/utility/Metadata.h"
 #include "mspass/algorithms/deconvolution/ScalarDecon.h"
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/utility/dmatrix.h"
+#include "mspass/utility/Metadata.h"
 #include "mspass/utility/AntelopePf.h"
-#include "mspass/seismic/TimeWindow.h"
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::algorithms::deconvolution{
@@ -79,14 +79,14 @@ public:
     void changeparameter(const mspass::utility::Metadata &md) {
         this->preprocessor->changeparameter(md);
     };
-    int load(const mspass::seismic::CoreSeismogram& d, mspass::seismic::TimeWindow dwin);
-    int loadnoise(const mspass::seismic::CoreSeismogram& d, mspass::seismic::TimeWindow nwin);
+    int load(const mspass::seismic::CoreSeismogram &d, mspass::algorithms::TimeWindow dwin);
+    int loadnoise(const mspass::seismic::CoreSeismogram &d, mspass::algorithms::TimeWindow nwin);
     /*! \brief Load all needed data and process.
 
     This method is little more than a call to loadnoise followed
     immediately by a call to load that is assumed to initiate the
     computation. */
-    int load(const mspass::seismic::CoreSeismogram& d, mspass::seismic::TimeWindow dwin, mspass::seismic::TimeWindow nwin);
+    int load(const mspass::seismic::CoreSeismogram &d, mspass::algorithms::TimeWindow dwin, mspass::algorithms::TimeWindow nwin);
     void process();
     ~GeneralIterDecon();
     mspass::seismic::CoreSeismogram getresult();
@@ -125,7 +125,7 @@ private:
     int time_shift;
     /* Save the TimeWindow objects hat define the extent of d_all, d_decon,
     and n.   Some things need at least some of these downstream */
-    mspass::seismic::TimeWindow dwin,nwin,fftwin;
+    mspass::algorithms::TimeWindow dwin, nwin, fftwin;
     /*! For preprocessor algorithms that are scalare we specify which channel
     is used to define the noise for regularization */
     int noise_component;

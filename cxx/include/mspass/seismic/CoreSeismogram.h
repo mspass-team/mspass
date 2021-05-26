@@ -8,7 +8,6 @@
 #include "mspass/seismic/CoreTimeSeries.h"
 #include "mspass/utility/SphericalCoordinate.h"
 #include "mspass/seismic/SlownessVector.h"
-#include "mspass/seismic/TimeWindow.h"
 //#include "mspass/seismic/Ensemble.h"
 namespace mspass::seismic{
 

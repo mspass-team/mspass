@@ -15,16 +15,17 @@ from mspasspy.ccore.seismic import (TimeReferenceType,
                                     TimeSeries,
                                     Seismogram,
                                     TimeSeriesEnsemble, 
-                                    SeismogramEnsemble,
-                                    TimeWindow)
+                                    SeismogramEnsemble)
+from mspasspy.ccore.utility import MsPASSError
 from mspasspy.ccore.algorithms.amplitudes import (MADAmplitude,
                                                   RMSAmplitude,
                                                   PeakAmplitude,
                                                   PerfAmplitude,
                                                   ScalingMethod,
                                                   _scale)
+from mspasspy.ccore.algorithms.basic import TimeWindow
 from mspasspy.algorithms.window import scale
-from mspasspy.algorithms.window import WindowData
+from mspasspy.algorithms.window import WindowData, TopMute
 
 
 # Build a simple _CoreTimeSeries and _CoreSeismogram with 
@@ -225,3 +226,54 @@ def test_windowdata():
     print('Error message posted')
     print(d.elog.get_error_log())
     assert(d.elog.size() == 1)
+
+def test_TopMute():
+    ts = TimeSeries(100)
+    seis = Seismogram(100)
+    #Fill data arrays with all ones to show form of mute
+    for i in range(100):
+        ts.data[i] = 1.0
+    seis.data[:, :] = 1.0
+    ts.dt = 0.1
+    ts.t0 = 0.0
+    seis.dt = 0.1
+    seis.t0 = 0.0
+    ts.live = True
+    seis.live = True
+
+    ts2 = TimeSeries(ts)
+    seis2 = Seismogram(seis)
+    lmute = TopMute(2.0, 4.0, 'linear')
+    lmute.apply(ts2)
+    lmute.apply(seis2)
+    ini_index = ts2.sample_number(2.0)
+    las_index = ts2.sample_number(4.0)
+    mid_index = int((ini_index + las_index)/2)
+    assert np.isclose(ts2.data[mid_index], 0.5)
+    assert np.isclose(seis2.data[:, mid_index], 0.5).all()
+    assert np.isclose(ts2.data[ini_index], 0.)
+    assert np.isclose(seis2.data[:, ini_index], 0.).all()
+    assert np.isclose(ts2.data[las_index], 1)
+    assert np.isclose(seis2.data[:, las_index], 1).all()
+
+    ts2 = TimeSeries(ts)
+    seis2 = Seismogram(seis)
+    cmute = TopMute(2.0, 4.0, 'cosine')
+    cmute.apply(ts2)
+    cmute.apply(seis2)
+    ini_index = ts2.sample_number(2.0)
+    las_index = ts2.sample_number(4.0)
+    mid_index = int((ini_index + las_index)/2)
+    assert np.isclose(ts2.data[mid_index], 0.5)
+    assert np.isclose(seis2.data[:, mid_index], 0.5).all()
+    assert np.isclose(ts2.data[ini_index], 0.)
+    assert np.isclose(seis2.data[:, ini_index], 0.).all()
+    assert np.isclose(ts2.data[las_index], 1)
+    assert np.isclose(seis2.data[:, las_index], 1).all()
+    
+    failmute = TopMute(-0.1, 4.0, 'cosine')
+    failmute.apply(ts2)
+    assert not ts2.live
+
+    with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
+        failmute.apply([1,2,3])
