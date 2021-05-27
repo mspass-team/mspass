@@ -1,6 +1,6 @@
 #ifndef _TIMEWINDOW_H_
 #define _TIMEWINDOW_H_
-namespace mspass::seismic
+namespace mspass::algorithms
 {
 /*!
 \brief Defines a time window.

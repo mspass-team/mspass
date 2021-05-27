@@ -5,7 +5,8 @@ FILE(GLOB sources_alg_basics
       slice_and_dice.cc 
       sparse_convolve.cc 
       tseries_helpers.cc
-      Butterworth.cc)
+      Butterworth.cc
+      Taper.cc)
 FILE(GLOB sources_amplitudes 
       amplitudes.cc)
 
