@@ -601,7 +601,17 @@ PYBIND11_MODULE(seismic, m) {
     .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
-    .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Ensemble containers error log")
+    .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
+  ;
+  py::class_<LoggingEnsemble<TimeSeries>, Ensemble<TimeSeries> >(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+    .def(py::init<>())
+    .def(py::init<const Ensemble<TimeSeries>&>())
+    .def(py::init<const LoggingEnsemble<TimeSeries>&>())
+    .def("kill",&LoggingEnsemble<TimeSeries>::kill,"Mark the entire ensemble dead")
+    .def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
+    .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
   ;
 
   /* This following would be the normal way to expose this class to python, but it generates and
