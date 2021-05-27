@@ -113,6 +113,90 @@ public:
     }
   };
 };
+
+
+/*! \brief Template class that extends Ensemble to include an error log and live tests.
+
+This class extends the Ensemble class defined in MsPASS for bundling
+collections of data that can be pushed to an std::vector container.  The
+class is actually very generic, but mspass defines it for TimeSeries and
+Seismogram objects.   This class is a necessary extension for an algorithm
+that take ensembles in and emits a different ensemble.  In that situation
+we need a way to indicate the entire ensemble is invalid and not be to used
+and post error messages that give an explanation of why the output is invalid.
+This class provides that mechanism by adding a mspass::utility::ErrorLogger
+and a (private) boolean defining if the ensemble has valid data.  That makes
+the API to a LoggingEnsemble a hybrid with the atomic Seismogram and
+TimeSeries objects (adds the dna of ErrorLogger and live/dead concept).
+
+A secondary fundamental reason this class can be needed is to parallelize
+algorithms that emit an ensemble (regardless of inputs).  The live/dead
+tests and error logger make the handlers consistent with the atomic objects
+of mspass.
+*/
+template <typename T> class LoggingEnsemble : public Ensemble<T>
+{
+public:
+  /*! Standard mspass container for holding error logs. */
+  mspass::utility::ErrorLogger elog;
+  /*! Default constructor.   Initializes all pieces with default constructor
+  and marks the ensemble dead.*/
+  LoggingEnsemble(): Ensemble<T>(), elog()
+  {
+    ensemble_is_live=false;
+  };
+  /*! Standard copy constructor.   */
+  LoggingEnsemble(const LoggingEnsemble<T>& parent)
+          : Ensemble<T>(parent),elog(parent.elog)
+  {
+    ensemble_is_live=parent.ensemble_is_live;
+  };
+  /*! Clone from a base class Ensemble.  Initializes error null and sets live. */
+  LoggingEnsemble(const Ensemble<T>& parent)
+          : Ensemble<T>(parent),elog()
+ {
+   ensemble_is_live=true;
+ };
+  /*! Markt the entire ensemble bad. */
+  void kill(){ensemble_is_live=false;};
+  /*! Getter to test if the ensemble has any valid data. */
+  bool live(){return ensemble_is_live;};
+  /*! Complement to live method - returns true if there are no valid data members. */
+  bool dead(){return !ensemble_is_live;};
+  /*! Check to see if ensemble has any live data.
+
+  In processing once can occasionally (not rare but not common either)
+  end up with enemble full of data marked dead.  This is a convenience
+  method to check all members.  If it finds any live member it will immediately
+  return true (ok).  If after a search of the entire ensemble no live members
+  are found it will return false AND then mark the entire ensemble bad. */
+  bool validate();
+  /*! Standard assignment operator. */
+  LoggingEnsemble<T>& operator=(const LoggingEnsemble<T>& parent)
+  {
+    if(&parent != this)
+    {
+      Ensemble<T> *baseptr
+                =dynamic_cast<Ensemble<T>>(this);
+      baseptr->operator=(parent);
+      elog=parent.elog;
+      ensemble_is_live=parent.ensemble_is_live;
+    }
+    return *this;
+  };
+private:
+  bool ensemble_is_live;
+};
+
+template <typename T> bool LoggingEnsemble<T>::validate()
+{
+  for(auto dptr=this->member.begin();dptr!=this->member.end();++dptr)
+  {
+    if(dptr->live()) return true;
+  }
+  return false;
+}
+
 /*! Useful alias for Ensemble<TimeSeries> */
 typedef Ensemble<TimeSeries> TimeSeriesEnsemble;
 /*! Useful alias for Ensemble<Seismogram> */

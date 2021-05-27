@@ -123,10 +123,10 @@ PYBIND11_MODULE(seismic, m) {
 
   /* Define the keywords here*/
   py::object scope = py::module_::import("__main__").attr("__dict__");
-  /* The following hack on __name__ is needed to avoid contaminating 
+  /* The following hack on __name__ is needed to avoid contaminating
      user's namespace of __main__. This way _KeywordDict is defined
      under mspasspy.ccore.seismic instead of __main__. */
-  /* TODO: Note that we could also disable editing by overriding 
+  /* TODO: Note that we could also disable editing by overriding
      methods such as __setattr__ and __setitem__, but it is not
      essential for now. */
   py::exec(R"(
@@ -529,7 +529,7 @@ PYBIND11_MODULE(seismic, m) {
      Note also the objects are stored in and std::vector container with the name member.  It appears
      the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
      will be handled. */
-  py::class_<Ensemble<TimeSeries>,Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+  py::class_<Ensemble<TimeSeries>,Metadata>(m,"CoreTimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
@@ -580,7 +580,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
   ;
-  py::class_<Ensemble<Seismogram>,Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+  py::class_<Ensemble<Seismogram>,Metadata>(m,"CoreSeismogramEnsemble","Gather of vector(3c) time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
@@ -626,6 +626,16 @@ PYBIND11_MODULE(seismic, m) {
     })
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
+  ;
+  py::class_<LoggingEnsemble<Seismogram>, Ensemble<Seismogram> >(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+    .def(py::init<>())
+    .def(py::init<const Ensemble<Seismogram>&>())
+    .def(py::init<const LoggingEnsemble<Seismogram>&>())
+    .def("kill",&LoggingEnsemble<Seismogram>::kill,"Mark the entire ensemble dead")
+    .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
+    .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Ensemble containers error log")
   ;
 
   /* This following would be the normal way to expose this class to python, but it generates and
