@@ -198,7 +198,7 @@ class Database(pymongo.database.Database):
         self.database_schema = schema
 
     def read_data(self, object_id, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
-                collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False):
+                collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False, retrieve_history_record=False):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
         objects from data managed with MondoDB through MsPASS.   It is the
@@ -427,7 +427,7 @@ class Database(pymongo.database.Database):
             if load_history:
                 history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
                 if history_obj_id_name in object_doc:
-                    self._load_history(mspass_object, object_doc[history_obj_id_name], alg_name, alg_id, define_as_raw)
+                    self._load_history(mspass_object, object_doc[history_obj_id_name], alg_name, alg_id, define_as_raw, retrieve_history_record)
 
             mspass_object.live = True
             mspass_object.clear_modified()
@@ -1654,7 +1654,6 @@ class Database(pymongo.database.Database):
                 # 2. save/update history
                 if not mspass_object.is_empty():
                     history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-                    # old_history_object_id = None if new_insertion or not object_doc or history_obj_id_name not in object_doc else object_doc[history_obj_id_name]
                     history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                     insert_dict.update({history_obj_id_name: history_object_id})
 
@@ -2177,11 +2176,9 @@ class Database(pymongo.database.Database):
         if not collection:
             collection = self.database_schema.default_name('history_object')
         history_col = self[collection]
+
         proc_history = ProcessingHistory(mspass_object)
         current_uuid = proc_history.id() # uuid in the current node
-        # we can't save a uuid equals to SAVED_ID_KEY('NODEDATA_AT_SAVE')
-        if current_uuid == 'NODEDATA_AT_SAVE':
-            raise MsPASSError("Cannot save the history object with uuid equals to NODEDATA_AT_SAVE", "Fatal")
         current_nodedata = proc_history.current_nodedata()
         # get the alg_name and alg_id of current node
         if not alg_id:
@@ -2190,8 +2187,6 @@ class Database(pymongo.database.Database):
             alg_name = current_nodedata.algorithm
         
         history_binary = pickle.dumps(proc_history)
-        # prepare the processing hisotry data before saving
-        proc_history.map_as_saved(alg_name, alg_id, atomic_type)
         # todo save jobname jobid when global history module is done
         try:
             # construct the insert dict for saving into database
@@ -2213,7 +2208,7 @@ class Database(pymongo.database.Database):
 
         return current_uuid
 
-    def _load_history(self, mspass_object, history_object_id, alg_name=None, alg_id=None, define_as_raw=False, collection=None, load_binary=False):
+    def _load_history(self, mspass_object, history_object_id, alg_name=None, alg_id=None, define_as_raw=False, collection=None, retrieve_history_record=False):
         """
         Load (in place) the processing history into a mspasspy object.
 
@@ -2232,7 +2227,8 @@ class Database(pymongo.database.Database):
             collection = self.database_schema.default_name('history_object')
         # load history if set True
         res = self[collection].find_one({'_id': history_object_id})
-        if load_binary:
+        # retrieve_history_record
+        if retrieve_history_record:
             mspass_object.load_history(pickle.loads(res['processing_history']))
         else:
             # set the associated history_object_id as the uuid of the origin

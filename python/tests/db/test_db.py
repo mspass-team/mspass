@@ -212,7 +212,6 @@ class TestDatabase():
         ts['_id'] = 'test_id'
         logging_helper.info(ts, '1', 'dummy_func')
         logging_helper.info(ts, '2', 'dummy_func_2')
-        nodes = ts.get_nodes()
         assert ts.number_of_stages() == 2
         history_object_id = self.db._save_history(ts)
         res = self.db['history_object'].find_one({'_id': history_object_id})
@@ -231,6 +230,7 @@ class TestDatabase():
 
         # add operation dummy_func_3 and save with alg_name and alg_id set explicitly
         logging_helper.info(ts, '3', 'dummy_func_3')
+        nodes = ts.get_nodes()
         assert ts.number_of_stages() == 1
         new_history_object_id = self.db._save_history(ts, 'test_func', 'test_id')
         res = self.db['history_object'].find_one({'_id': new_history_object_id})
@@ -256,9 +256,9 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match="The history object to be saved has a duplicate uuid"):
             self.db._save_history(ts_2)
 
-        # with load_binary set to True
+        # with retrieve_history_record set to True, should be the same nodes with the latest save
         ts_3 = TimeSeries()
-        self.db._load_history(ts_3, history_object_id, load_binary=True)
+        self.db._load_history(ts_3, new_history_object_id, retrieve_history_record=True)
         load_nodes = ts_3.get_nodes()
         assert str(nodes) == str(load_nodes)
 
