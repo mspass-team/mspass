@@ -145,6 +145,35 @@ public:
   {
     ensemble_is_live=false;
   };
+
+  /* The next two constructors are used to provide a parallel qpi to
+  CoreEnsemble - there might be another way to do this in the C++ code or
+  in pybind11 wrappers but this works*/
+  /*! Reserve slots but otherwise create and empty ensemble marked dead.
+
+  This constructor is a minor variant from the default constructor that
+  calls reserve to set aside n slotes for the data.   Use this one when
+  you know the size of the ensemble you want to create.  Note after the
+  ensemble, like the default constructor, is marked initially as dead.
+  The user must call the set_live method of this ensemble after loading
+  data or downstream processors may drop the data. */
+  LoggingEnsemble(const size_t n) : Ensemble<T>(n),elog()
+  {
+    ensemble_is_live=false;
+  }
+  /*! Construct a framework for the ensemble with metadata.
+
+  This constructor loads the metadata received into the ensmeble area
+  and reserves n slots to be added.   Be warned it marks the ensemble dead.
+  Once valid data are loaded the user should call the set_live method for
+  the ensemble to prevent the data from being ignored downstream.*/
+  LoggingEnsemble(const mspass::utility::Metadata& md,const size_t n)
+    : Ensemble<T>(md,n),elog()
+  {
+    /* Might be advised to set this true, but since an object created by
+    this method has only slots but no data validate would return false.*/
+    ensemble_is_live=false;
+  }
   /*! Standard copy constructor.   */
   LoggingEnsemble(const LoggingEnsemble<T>& parent)
           : Ensemble<T>(parent),elog(parent.elog)
@@ -163,6 +192,22 @@ public:
   bool live(){return ensemble_is_live;};
   /*! Complement to live method - returns true if there are no valid data members. */
   bool dead(){return !ensemble_is_live;};
+  /*! Force, with care, the ensemble to be marked live.
+
+  This extension of CoreEnsemble adds a boolean that is used to test if
+  an entire ensemble should be treated as dead or alive.  It first runs the
+  validate method.  If validate is false it refuses to set the state
+  live and returns false.  If validate returns true it will return true.
+   */
+  bool set_live(){
+    if(this->validate())
+    {
+      ensemble_is_live=true;
+      return true;
+    }
+    else
+      return false;
+  };
   /*! Check to see if ensemble has any live data.
 
   In processing once can occasionally (not rare but not common either)

@@ -595,22 +595,28 @@ PYBIND11_MODULE(seismic, m) {
   ;
   py::class_<LoggingEnsemble<Seismogram>, Ensemble<Seismogram> >(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
     .def(py::init<>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<Seismogram>&>())
     .def(py::init<const LoggingEnsemble<Seismogram>&>())
     .def("kill",&LoggingEnsemble<Seismogram>::kill,"Mark the entire ensemble dead")
     .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
     .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
     .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
   ;
   py::class_<LoggingEnsemble<TimeSeries>, Ensemble<TimeSeries> >(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
     .def(py::init<const Ensemble<TimeSeries>&>())
     .def(py::init<const LoggingEnsemble<TimeSeries>&>())
     .def("kill",&LoggingEnsemble<TimeSeries>::kill,"Mark the entire ensemble dead")
     .def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
     .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
     .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")
     .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
   ;
 
