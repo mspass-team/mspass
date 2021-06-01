@@ -60,7 +60,8 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     # get the alg_id if exists, else create a new one
     if not alg_id:
         # get the alg_id if exists
-        alg_id = global_history.get_alg_id(alg_name, parameters)
+        if global_history:
+            alg_id = global_history.get_alg_id(alg_name, parameters)
         # else create a new one
         if not alg_id:
             alg_id = ObjectId()
@@ -69,6 +70,21 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
     
+    # read_data method
+    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+        if global_history:
+            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        else:
+            return self.map(lambda wf: func(wf, *args, **kwargs))
+    
+    # save_data method
+    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
+        if global_history:
+            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+        else:
+            return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
+
     # save the object history
     if object_history:
         return self.map(lambda wf: func(wf, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
@@ -130,6 +146,21 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     # save the global history
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
+
+    # read_data method
+    if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
+        if global_history:
+            return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
+        else:
+            return self.map(lambda wf: func(wf, *args, **kwargs))
+    
+    # save_data method
+    if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
+        # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
+        if global_history:
+            return self.map(lambda wf: (func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs), wf))
+        else:
+            return self.map(lambda wf: (func(wf, *args, **kwargs), wf))
 
     # save the object history
     if object_history:
@@ -200,24 +231,24 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     
     return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
 
-def mspass_dask_reduce(self, func, *args, global_history=None, object_history=False, alg_id=None,
+def mspass_dask_fold(self, func, *args, global_history=None, object_history=False, alg_id=None,
                        alg_name=None, parameters=None, **kwargs):
     """
-     This decorator method add more functionaliy on the standard dask reduce method and be a part of member functions
-     in the dask bag library. Instead of performing the normal reduce function, if user provides global history manager,
+     This decorator method add more functionaliy on the standard dask fold method and be a part of member functions
+     in the dask bag library. Instead of performing the normal fold function, if user provides global history manager,
      alg_id(optional), alg_name(optional) and parameters(optional) as input, the global history manager will log down
-     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this reduce function
+     the usage of the algorithm. Also, if user set object_history to be True, then each mspass object in this fold function
      will save the object level history.
 
     :param func: target function
     :param global_history: a user specified global history manager
     :type global_history: :class:`GlobalHistoryManager`
-    :param object_history: save the each object's history in the reduce when True
-    :param alg_id: a user specified alg_id for the reduce operation
+    :param object_history: save the each object's history in the fold when True
+    :param alg_id: a user specified alg_id for the fold operation
     :type alg_id: :class:`str`/:class:`bson.objectid.ObjectId`
-    :param alg_name: a user specified alg_name for the reduce operation
+    :param alg_name: a user specified alg_name for the fold operation
     :type alg_name: :class:`str`
-    :param parameters: a user specified parameters for the reduce operation
+    :param parameters: a user specified parameters for the fold operation
     :type parameters: :class:`str`
     :return: a dask `bag` format of objects.
     """
@@ -295,7 +326,7 @@ class GlobalHistoryManager:
 
         #modify pyspark/dask reduce to our defined reduce
         pyspark.RDD.mspass_reduce = mspass_spark_reduce
-        daskbag.Bag.mspass_reduce = mspass_dask_reduce
+        daskbag.Bag.mspass_reduce = mspass_dask_fold
 
     def logging(self, alg_id, alg_name, parameters):
         """

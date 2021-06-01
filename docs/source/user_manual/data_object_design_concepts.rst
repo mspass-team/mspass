@@ -271,7 +271,7 @@ Handling Time
 
 | For an expanded discussion on this topic go here (need a link to time_standard_constraints.rst).
 
-Metadata and MetadataDefinitions
+Metadata Concepts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | All data objects used by the MsPASS C++ library inherit a Metadata
@@ -313,9 +313,9 @@ Metadata and MetadataDefinitions
   implemented in a lower level language like C/C++ or FORTRAN and exposed to
   python through wrappers is subject to crashing from type collisions.
   The fundamental problem is that python is relatively cavalier about type
-  while both C/C++ are "strongly typed".  MongoDB storage of attributes
+  while both C/C++ and FORTRAN are "strongly typed".  MongoDB storage of attributes
   can be treated as dogmatic or agnostic about type depending on what
-  language API used.  In MsPASS all database operations are currently done
+  language API is used.  In MsPASS all database operations are currently done
   through python, so Metadata or python dict data can be saved and restored
   seamlessly with little concern about enforcing the type of an attribute.
   Problems arise when data loaded as Metadata from MongoDB are passed to
@@ -405,7 +405,7 @@ Metadata and MetadataDefinitions
   algorithms implemented in compiled languages and use generic object
   attributes with care.
 
-| An important footnote to this section is that a :code:`mspass::Metadata` object
+| An important footnote to this section is that a :code:`mspass::utility::Metadata` object
   can be constructed directly from a python dict.   That is used, for example,
   in MongoDB database readers because a MongoDB "document" is returned as a
   python dict in MongoDB's python API.
@@ -624,8 +624,10 @@ block could also be written:
    for x in d.member:
      somefunction(x)   
 
-ProcessingHistory and Core versus Top-level Data Objects
+ProcessingHistory and Error Logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Core versus Top-level Data Objects
+------------------------------------
 
 | The class hierarchy diagrams above illustrate the relationship of what
   we call CoreTimeSeries and CoreSeismogram objects to those we
@@ -637,47 +639,57 @@ ProcessingHistory and Core versus Top-level Data Objects
 
 | The primary distinction between CoreTimeSeries and CoreSeismogram and their
   higher level representation as TimeSeries and Seismogram is the addition
-  of a class heirarchy designed to store a record of the chain of proocessing
-  steps applied to each object   Both the higher level objects add the
-  class called **ProcessingHistory** as parents.
-  ProcessingHistory implements two concepts that add functionality to the Core
-  objects:
+  of two additional classes that implement two different fundamental, but
+  auxiliar concepts:  (1) processing history and (2) error logging.
+  The motivation for these two concepts was discussed above.  Here we
+  focus on the data structure they impose.   Other sections expand on
+  the details of both classes.
 
-#. ProcessingHistory, as the name implies, can (optionally) store the
+|  Both :code:`TimeSeries` and :code:`Seismogram` objects extend their
+   "core" parents by adding two classes:
+
+#. :code:`ProcessingHistory`, as the name implies, can (optionally) store the
    a complete record of the chain of processing steps applied to a
    data object to put it in it's current state.   The complete history has
-   two completely different components described in more detail below:
+   two completely different components described in more detail elsewhere
+   in this User's Manual:
    (a) global job information designed to allow extracting the full
    instance of the job stream under which a given data object was produced,
    and (b) a chain of parent waveforms and algorithms that modified them
    to get the data in the current state.  Maintaining processing history
    is a complicated process that can lead to memory bloat in complex processing
-   if not managed carefully.  For this reason this feature can be easily
-   disabled, but it is highly recommended unless there is a proven problem.
+   if not managed carefully.  For this reason this feature is off by default.
+   Our design objective was to treat object level history as a final
+   step to create a reproducible final product.  That would be most
+   appropriate for published data to provide a mechanism for others to
+   reproduce your work, archival data to allow you or others in your
+   group to start up where you left off, or just for a temporary
+   archive to preserve what you did.
 
-#. Processing History contains an error logging object.   The purpose of the
+#. :code:`ErrorLogger` is an error logging object.   The purpose of the
    error logger is to maintain a log of any errors or informative messages
    created during the processing of the data.  All processing modules
    in MsPASS are designed with global error handlers so that they should never
    abort, but in worst case post a log message that tags a fatal
    error.   (Note if any properly structured mspass enabled
    processing function throws an exception and aborts it has
-   encountered a bug that needs to b reportd to the authors.)
+   encountered a bug that needs to b reported to the authors.)
    In our design we considered making the ErrorLogger a base class
    for Seismogram and TimeSeries, but it does not satisfy the basic rule of
-   making a concept a base class if the child "is a" ErrorLogger.  It could
-   have been made an attribute in each of TimeSeries and Seismogram definitions,
-   but we concluded the concept of an ErrorLogger matched that idea that
-   ProcessingHistory "has an" ErrorLogger. More details on the
-   ErrorLogger feature are given below.
+   making a concept a base class if the child "is a" ErrorLogger.
+   It does, however, perfectly satisfy the idea that the object "has an"
+   ErrorLogger.  Both :code:`TimeSeries` and :code:`Seismogram` use the
+   symbol :code:`elog` as the name for the ErrorLogger object
+   (e.g. If *d* is a :code:`Seismogram` object, *d.elog*, would refer to
+   the error logger component of *d*.)''
 
 Object Level History Design Concepts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 As summarized above the concept we wanted to capture in the history mechanism
 was a means to preserve the chain of processing events that were applied to
 get a piece of data in a current state.  Our design assumes the
-history can be described by an inverted tree structure.  That is most workflows would
+history can be described by an inverted tree structure.  That is, most workflows would
 merge many pieces of data (a reduce operation in map-reduce) to produce
 a given output.  The process chain could then be viewed as tree growth with time
 running backward.  The leaves are the data sources.  Each growth season is one
@@ -748,6 +760,13 @@ following foundational data is required:
    definition of "parameters" is broader than just a set of numbers.  It means
    any data that is not one of the atomic types (currently TimeSeries and Seismogram
    objects) is considered a parameter.
+#. A more subtle feature of the schedules supported in MsPASS for
+   parallel processing is that data objects need to be serializable.
+   For python programmers that is synonymous with "pickleable".
+   The most common G-tree algorithms we know of use linked lists of pointers
+   to store the information we use describe object-level history.
+   A different mechanism is needed that is an implementation detail
+   described in the detailed section on :code:`ProcessingHistory`.
 
 | The above is admittedly a long list of functional requirements.  Our
   ProcessingHistory object achieves those requirements with two important
@@ -762,12 +781,12 @@ following foundational data is required:
   subject. **Needs a link to a related document on ProcessingHistory API**
 
 Error Logging Concepts
-^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
-| When processing large volumes of data errors are inevitable and
+| When processing large volumes of data, errors are inevitable and
   handling them cleanly is an essential part of any processing
-  framework.   This is particularly challenging with a system like Spark
-  where a data set gets fragmented and handled by (potentially) many
+  framework.   This is particularly challenging with a system like Spark or Dask
+  where a data set gets fragmented and handled by many
   processors.   A poorly designed error handling system could abort an
   entire workflow if one function on one piece of data threw some kinds
   of "fatal" errors.  
@@ -811,7 +830,7 @@ Error Logging Concepts
   exception of type MsPASSError (the primary exception class for MsPASSS).  
   This example catches that exception with the expected type and passes it
   directly to the ErrorLogger (:code:`d.elog`).  This form is correct because it
-  is know that that is the only class exception the function will throw.
+  is documented that that is the only class exception the function will throw.
   For more ambiguous cases we refer to multiple books and online sources
   for best practices in python programming.  The key point is in more
   ambiguous cases the construct should catch the standard base
@@ -819,12 +838,13 @@ Error Logging Concepts
   methods contain additional parameters to tag the messages.  :code:`alg` is an
   algorithm name and :code:`d.job_id()` retrieves the :code:`job_id`.  Both are
   global attributes handled through the global history management
-  system described below.
+  system described in more detail in a separate section of this manual.
 | All the above would be useless baggage except the MongoDB database writers
   (Create and Update in CRUD) automatically save any elog entries in a
   separate database collection called elog.   The saved messages can be
   linked back to the data with which they are associated through the
-  ObjectID of the data in the wf collection. 
+  ObjectID of the data in the wf collection.  Details of that association
+  are given in other sections of this manual.
 
 .. |TimeSeries Inheritance| image:: /../_static/html/classmspass_1_1seismic_1_1_time_series.png
 
