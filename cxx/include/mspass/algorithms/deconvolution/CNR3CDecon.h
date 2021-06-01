@@ -6,8 +6,9 @@
 #include "mspass/algorithms/deconvolution/FFTDeconOperator.h"
 #include "mspass/algorithms/deconvolution/ShapingWavelet.h"
 #include "mspass/algorithms/deconvolution/MTPowerSpectrumEngine.h"
+#include "mspass/algorithms/Taper.h"
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/seismic/PowerSpectrum.h"
-#include "mspass/seismic/Taper.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::algorithms::deconvolution{
@@ -348,8 +349,8 @@ private:
   double decon_bandwidth_cutoff;
   /* Defines relative time time window - ignored if length of input is
   consistent with number of samples expected in this window */
-  mspass::seismic::TimeWindow processing_window;
-  mspass::seismic::TimeWindow noise_window;
+  mspass::algorithms::TimeWindow processing_window;
+  mspass::algorithms::TimeWindow noise_window;
   /*! Operator used to compute power spectra using multitaper.
   Need different ones for diffent contexts to handle mixed window sizes */
   MTPowerSpectrumEngine signalengine,waveletengine;
@@ -375,8 +376,8 @@ private:
   /* Cached wavelet for deconvolution - result of loadwavelet*/
   mspass::seismic::TimeSeries wavelet;
   /* As the name suggest we allow different tapers for data and wavelet */
-  std::shared_ptr<mspass::seismic::BasicTaper> wavelet_taper;
-  std::shared_ptr<mspass::seismic::BasicTaper> data_taper;
+  std::shared_ptr<mspass::algorithms::BasicTaper> wavelet_taper;
+  std::shared_ptr<mspass::algorithms::BasicTaper> data_taper;
   /* For the colored noise damping algorithm the damper is frequency dependent.
      The same issue in water level that requires a floor on the water level
      applies to damping.   We use noise_floor to create a lower bound on
