@@ -3,9 +3,9 @@
 #include <string>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft_complex.h>
-#include "mspass/seismic/TimeWindow.h"
 #include "mspass/utility/Metadata.h"
 #include "mspass/seismic/CoreTimeSeries.h"
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/algorithms/deconvolution/ComplexArray.h"
 namespace mspass::algorithms::deconvolution{
 /*! \brief Object to hold components needed in all fft based decon algorithms.
@@ -79,7 +79,7 @@ std::vector<double>  circular_shift(const std::vector<double>& d,const int i0);
 All deconvlution methods using an fft need to define nfft based on the
 length of the working time series.   This procedure returns the size from
 an input window and sample interval. */
-int ComputeFFTLength(const mspass::seismic::TimeWindow w, const double dt);
+int ComputeFFTLength(const mspass::algorithms::TimeWindow w, const double dt);
 /*! Derive fft length using parameters in a metadata object.
 
 This procedure is basically a higher level version of the function of

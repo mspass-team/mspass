@@ -4,6 +4,7 @@
    algorithms that are to be part of mspass.
    *
    */
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Ensemble.h"
@@ -48,7 +49,7 @@ handling time.
 \param tw defines the data range to be extracted from parent.
 */
 mspass::seismic::Seismogram WindowData3C(const mspass::seismic::Seismogram& parent,
-  const mspass::seismic::TimeWindow& tw);
+  const mspass::algorithms::TimeWindow& tw);
 /*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
 It is common to need to extract a smaller segment of data from a larger
@@ -65,7 +66,7 @@ handling time.
 \param tw defines the data range to be extracted from parent.
 */
 mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent,
-  const mspass::seismic::TimeWindow& tw);
+  const mspass::algorithms::TimeWindow& tw);
 /* This set of procedures are ancessors of seismogram_helpers.   They
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.
@@ -89,7 +90,7 @@ mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent
     the desired arrival time.
 **/
 std::shared_ptr<mspass::seismic::Seismogram> ArrivalTimeReference(mspass::seismic::Seismogram& din,
-	std::string key, mspass::seismic::TimeWindow tw);
+	std::string key, mspass::algorithms::TimeWindow tw);
 /*! \brief Extract one component from a Seismogram and create a TimeSeries object from it.
 
  Copies all Metadata from parent Seismogram to build a TimeSeries
@@ -128,7 +129,7 @@ mspass::seismic::TimeSeries ExtractComponent(const mspass::seismic::Seismogram& 
     the desired arrival time.
 **/
 std::shared_ptr<mspass::seismic::ThreeComponentEnsemble> ArrivalTimeReference
-  (mspass::seismic::ThreeComponentEnsemble& din, std::string key, mspass::seismic::TimeWindow tw);
+  (mspass::seismic::ThreeComponentEnsemble& din, std::string key, mspass::algorithms::TimeWindow tw);
 /*! \brief Extract one component from a 3C ensemble.
  *
  This function creates an ensemble of TimeSeries objects that are

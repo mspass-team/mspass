@@ -1,4 +1,5 @@
 #include <sstream>
+#include "mspass/algorithms/TimeWindow.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 namespace mspass::algorithms
