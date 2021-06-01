@@ -350,7 +350,9 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span> <span class="s">&#39;3&#39;</span>
 
 <span class="nt">services</span><span class="p">:</span>
 
@@ -378,6 +380,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">MSPASS_ROLE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">shard</span>
       <span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
       <span class="nt">MONGODB_PORT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">27017</span>
+      <span class="nt">SHARD_DB_PATH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">scratch</span>
   
   <span class="nt">mspass-shard-1</span><span class="p">:</span>
     <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
@@ -388,6 +391,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">MSPASS_ROLE</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">shard</span>
       <span class="nt">MSPASS_SHARD_ID</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1</span>
       <span class="nt">MONGODB_PORT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">27017</span>
+      <span class="nt">SHARD_DB_PATH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">scratch</span>
 
   <span class="nt">mspass-scheduler</span><span class="p">:</span>
     <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
