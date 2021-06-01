@@ -235,13 +235,13 @@ teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is usful because it summarizes the four main things any database system
 must accomplish cleanly.  This section is organized into subsections on
 each of the topics defined by CRUD.  At the end of this section we
-summarize some common options in CRUD operations at the end of this section.</p>
+summarize some common options in CRUD operations.</p>
 <p>The most common database operations are defined as methods in a class
 we give the obvious name Database.  Most MsPASS jobs need to the have following
 incantation a the top of the python job script:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mspasspy.db.client</span> <span class="kn">import</span> <span class="n">DBClient</span>
 <span class="kn">from</span> <span class="nn">mspasspy.db.database</span> <span class="kn">import</span> <span class="n">Database</span>
-<span class="n">dbclient</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="n">dbclient</span> <span class="o">=</span> <span class="n">DBClient</span><span class="p">()</span>
 <span class="n">db</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">dbclient</span><span class="p">,</span> <span class="s1">&#39;database_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -291,8 +291,7 @@ described in the docstring.  Here is an example usage:</p>
 </div>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> stores all Metadata except those linked to
 normalized collections (<code class="code docutils literal notranslate"><span class="pre">source</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and <code class="code docutils literal notranslate"><span class="pre">site</span></code>) with no
-safety checks.  We discuss the alternatives in a later section
-so the reader can first get a broader perspective.</p>
+safety checks.  We discuss additional common options in a later section.</p>
 </li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>  is similar to <code class="code docutils literal notranslate"><span class="pre">save_data</span></code> except the first argument
 is an Ensemble object.  There are currently two of them:  (1) TimeSeriesEnsemble
@@ -302,15 +301,21 @@ The <code class="code docutils literal notranslate"><span class="pre">save_ensem
 Ensembles are containers of atomic objects.  <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code>
 is mostly a loop over the container saving the atomic objects it contains
 to the wf_TimeSeries (for TimeSeriesEnsembles) or wf_Seismogram
-(for Seismogram objects).</p></li>
+(for Seismogram objects).  The method has one feature that differs form
+<code class="code docutils literal notranslate"><span class="pre">save_data</span></code>; Ensemble objects may and often do contain attributes
+common to the entire group in a separate Metadata container linked to the
+ensemble as a whole.  Prior to entering the loop for saving the atomic
+members of the ensemble the contents of the Ensemble’s Metadata container
+are copied verbatim to each member.  If previous values existed in any
+of the members they will be silently replaced by the ensemble groups version.</p></li>
 <li><p><code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> should be viewed mostly as a convenience method to build
 the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection from QUAKEML data downloaded from FDSN data
 centers via obspy’s web services functions.   <code class="code docutils literal notranslate"><span class="pre">save_catalog</span></code> can be
 thought of as a converter that translates the contents of a QUAKEML
 file or string for storage as a set of MongoDB documents in the <code class="code docutils literal notranslate"><span class="pre">source</span></code>
-collection.  We use obspy’s <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> object as an intermediary to
+collection.  We used obspy’s <code class="code docutils literal notranslate"><span class="pre">Catalog</span></code> object as an intermediary to
 avoid the need to write our own QUAKEML parser.   As with save_data
-the easiest way to the usage would be this example derived from
+the easiest way to understand the usage would be this example derived from
 our <em>getting_started</em> tutorial.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="s2">&quot;IRIS&quot;</span><span class="p">)</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">UTCDateTime</span><span class="p">(</span><span class="s1">&#39;2011-03-11T05:46:24.0&#39;</span><span class="p">)</span>
@@ -385,21 +390,31 @@ below we describe how to retrieve response data from <code class="code docutils 
 </div>
 <div class="section" id="read">
 <h2>Read<a class="headerlink" href="#read" title="Permalink to this headline">¶</a></h2>
-<p>Read operation is the inverse of save (create).  The core readers were
-design to simplify the process of reading the core data types of MsPASS:  TimeSeries
+<p>The Read operation is the inverse of save (create).  The core readers were
+designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
 As with the save operators we discuss here the key methods, but refer the
 reader to the sphinx documentation for full usage.</p>
 <ol class="arabic">
 <li><p><code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is the core method to read atomic data.  The method has
-one required argument.  That argument can be either a MongoDB object
-id or a MongoDB document retrieved from one of the “wf” collections.
-The document version is actually only a convenience.  The actual
-database operation always uses the unique ObjectID for the document used
-to define the read operation.  (i.e. the first thing read_data does if
-if finds arg 0 is a document is to extract the “_id” attribute and use
-it to query MongoDB.  If arg 0 is an ObjectID the parsing of the doc is bypassed and
-the query is performed immediately with id passed.)</p>
+one required argument.  That argument is an ObjectID for the document used
+to define the read operation.  The ObjectID is guaranteed to provide a
+unique key to one and only one document.  That approach is not particularly
+user friendly, but provides a clean, simple API for processing.
+The parallel reader (see below) uses this method internally to
+parallelize read operations.  For serial jobs, even though the id is
+an abstraction most serial processing can be reduced to a variant of this
+simple block of code in python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>query={…Some MongoDB query dict entry…}
+cursor=db.wf_TimeSeries.find(query) # Changed to wf_Seismogram for 3D data
+for doc in cursor:</p>
+<blockquote>
+<div><p>id=doc[‘_id’]
+d=db.read_data(id)  # Add option collection=’wf_Seismogram’ for 3C reads</p>
+</div></blockquote>
 <p><code class="code docutils literal notranslate"><span class="pre">read_data</span></code> will use the waveform collection defined when the Database
 handle was constructed.  That is, a given Database handle should only
 be used for the same type of atomic object (TimeSeries or Seismogram).
@@ -429,8 +444,9 @@ how we use it can be found <a class="reference internal" href="data_object_desig
 That section also gives details about ProcessingHistory and the error
 log and the reasons they are part of MsPASS.</p>
 <p>By default <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> reads Metadata in what we call “promiscuous” mode.
-That means it takes in all metadata stored in the wf collection arg 0
-defines with no type checking or filtering.  Alternatives are “cautious”
+That means it takes in all metadata stored in the wf collection at which
+it is is pointed and loads the results into the objects Metadata container
+with no type checking or filtering.  Alternatives are “cautious”
 and “pedantic”.   Both of the later enforce the type and name constraints defined
 by the schema.   The difference is that in “pedantic” mode any
 conflicts in data type stored versus what is expected will cause the
@@ -456,12 +472,10 @@ type mismatch could produce invalid data required by another package.</p></li>
 <li><p>A closely related function to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> is <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code>.  Like
 <code class="code docutils literal notranslate"><span class="pre">save_ensemble_data</span></code> it is mostly a loop to assemble an ensemble of
 atomic data using a sequence of calls to <code class="code docutils literal notranslate"><span class="pre">read_data</span></code>.  The sequence of
-what to read is defined by arg 0 that can be one of two things:  (a) a
+what to read is defined by arg 0 that is assumed to be a
 python list of ObjectIds of documents in a wf collection that define
-the ensemble, or (b) a MongoDB cursor object returned by a query that
-defines the ensemble.  The second option should be clearer with this
-example showing how to read a TimeSeriesEnsemble that is a generalized
-shot gather.  This fragment assumes the symbol source_id was set above
+the ensemble.  The example code below illustrates how this is done.
+This code fragment assumes the symbol source_id was set earlier
 by some other mechanism.  e.g. it could be extracted from a loop over
 the <code class="code docutils literal notranslate"><span class="pre">source</span></code> collection (or query the source collection) aimed at
 processing all (or a subset) of the sources defined there.  Notice we
@@ -476,7 +490,8 @@ to impose constraints on the query. That is always good practice.</p>
         <span class="s2">&quot;Exceeds the internal limit on the ensemble size=&quot;</span><span class="p">,</span> <span class="n">TOBIG</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">wf_TimeSeries</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-    <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>
+    <span class="n">idlist</span><span class="o">=</span><span class="n">cursor2idlist</span><span class="p">(</span><span class="n">cursor</span><span class="p">)</span>  <span class="c1"># convenience funcion defined in mspasspy.db.database</span>
+    <span class="n">ens</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">read_ensemble_data</span><span class="p">(</span><span class="n">idlist</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>
@@ -533,7 +548,7 @@ emphasize that constraint because you as the owner of the dataset could
 from one of two places:  (1) attributes loaded directly with the atomic data from
 the unique document in a wf collection with which that data is associated,
 and (2) “normalized” data loaded through a cross reference ID from one of the
-three standardized collection in MsPASS (<code class="code docutils literal notranslate"><span class="pre">site</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and <code class="code docutils literal notranslate"><span class="pre">source</span></code>).
+standardized collection in MsPASS (currently <code class="code docutils literal notranslate"><span class="pre">site</span></code>, <code class="code docutils literal notranslate"><span class="pre">channel</span></code>, and <code class="code docutils literal notranslate"><span class="pre">source</span></code>).
 In a waveform processing job (i.e. python driver script) the metadata
 extracted from normalized collections should be treated as immutable.
 In fact, when schema validation tests are enabled for save operations
@@ -558,7 +573,7 @@ below.</p>
 </div>
 <div class="section" id="delete">
 <h2>Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
-<p>A delete operation is much more complicated in MsPASS that what you would
+<p>A delete operation is much more complicated in MsPASS than what you would
 find as a type example in any textbook an database theory.  In a
 relational environment delete normally means removing a single tuple.
 In MongoDB delete is more complicated because it is
@@ -588,24 +603,33 @@ with caution.</p></li>
 needs some clarification to understand how we handle deletes.
 A good starting point is to look at the signature of the simple delete
 method of the Database class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">):)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">,</span><span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">clear_elog</span><span class="o">=</span><span class="kc">False</span><span class="p">):)</span>
 </pre></div>
 </div>
-<p>As with the read methods id can be either an ObjectID referencing a
-document in one of the relevant wf collection or a document that contains
-that ObjectID.  Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
+<p>As with the read methods id is the ObjectID of the wf collection document
+that references the data to be deleted.
+Similarly, the idea of the <code class="code docutils literal notranslate"><span class="pre">clear_history</span></code> and <code class="code docutils literal notranslate"><span class="pre">clear_elog</span></code>
 may be apparent from the name.  When true all documents linked to the
 waveform data being deleted in the history and elog collections (respectively)
 will also be deleted.  If either are false debris can be left behind
-in the elog and history collections.</p>
+in the elog and history collections.  On the other hand, setting either
+true will result in a loss of information that might be needed to address
+problems during processing.  Furthermore, both are only relevant to
+fully or partially processed data.   In general, we recommend the default
+for any cleanups applied within a workflow.  Set clear_elog true only in
+post processing cleanup after you are confident there are not serious
+errors that need to be traced.  Set clear_history True only if you have
+no interest in retaining the object level history.  The default is True
+because we view object level history preservation as a last step to
+provide a mechanism for others to reproduce your work.</p>
 <p>The main complexity in this method is behind the boolean argument with the name
 <code class="code docutils literal notranslate"><span class="pre">remove_unreferenced_files</span></code>.  First, recognize this argument is completely
 ignored if the waveform data being referenced is stored internally in
-MongoDB (the default) in the gridfs file system.  In that situation delete
+MongoDB (the default) in the gridfs file system.  In that situation delete_data
 will remove the sample data as well as the document in wf that id defines.
 The complexity enters if the data are stored as external files.  The
-simple delete method of Database is an expensive operation that should be
+atomic delete_data method of Database is an expensive operation that should be
 avoided within a workflow or on large datasets.  The reason is that
 each call for deleting an atomic object (defined by id) requires a
 second query to the wf collection involved to search for any other
@@ -615,7 +639,13 @@ name of the file at leaf node of the file system tree.  (CSS3.0 users
 are familiar with these attribute names.  We use the same names as the concept here
 is identical to the CSS3.0’s use.)  Only when the secondary query finds
 no matching values for <code class="code docutils literal notranslate"><span class="pre">dir</span></code> and <code class="code docutils literal notranslate"><span class="pre">dfile</span></code> will the file be deleted.</p>
-<p>For large datasets stored in external files we provide a secondary cleanup
+<p>THIS SECTION IS OUT OF DATE BUT TEMPORARILY RETAINED WHILE DEVELOPERS
+DECIDE HOW THIS SHOULD BE REVISED.
+When the data are stored in external files instead of gridfs, there are
+a number of reasons why running delete_data within a workflow
+is intrinsically dangerous.   It is also an (excessively) time consuming operation
+because of the number of required queries.
+For large datasets stored in external files we provide a secondary cleanup
 mechanism through a special class we call the <code class="code docutils literal notranslate"><span class="pre">staged_file_manager</span></code>.
 The constructor for a <code class="code docutils literal notranslate"><span class="pre">staged_file_manager</span></code> requires the Database handle
 that it should use to manage file data.  The delete method for
@@ -653,7 +683,7 @@ chain of atoms, the atoms are our “Atomic” data objects (TimeSeries or
 Seismogram objects), and each atom can be broken into a set of subatomic
 particles.  The figure above illustrates the subatomic idea visually.
 We call these “subatomic particles”
-Metadata, sample data, error log, and (processing) history.  The subatomic
+Metadata, waveform data, error log, and (processing) history.  The subatomic
 particle have very different properties.</p>
 <ol class="arabic simple">
 <li><p><em>Metadata</em> are generalized header data.  Our Metadata concept maps closely
@@ -665,7 +695,7 @@ MsPASS is that a MongoDB document maps almost exactly into a python dict
 and by analogy our Metadata container.</p></li>
 <li><p><em>waveform data</em> are the primary data MsPASS was designed to support.
 Waveform data is the largest volume of information, but is different in
-that it has a more rigid structure;  TimeSeries wavformdata are universally
+that it has a more rigid structure;  TimeSeries wavform data are universally
 stored as a vector, and Seismogram data are most rationally (although not
 universally) stored as a matrix.  All modern computer systems have
 very efficient means of moving contiguous blocks of data from storage to
@@ -676,8 +706,8 @@ data section to exploit the efficiency of reading contiguous memory blocks.
 That is why traditional formats like SAC and SEGY have a fixed header/data
 sections that define “the data”.   To make MsPASS generic that paradigm
 had to be broken so it is important to recognize in MsPASS
-waveform data are completely disaggreted from the other data components
-we use for defining TimeSeries and Seismogram objects.</p></li>
+waveform data are completely disaggregated from the other data components
+we use for defining our data objects.</p></li>
 <li><p><em>error log</em> data has yet another fundamentally different structure.
 First of all, our normal goal in any processing system is to minimize
 the number of data objects that have any error log entries at all.
@@ -710,16 +740,17 @@ workflow.</p></li>
 <li><p>A special form of read-only attributes are attributes loaded by
 readers from normalized collections.  Such attributes are never saved
 by atomic object writers and the normalized collection (i.e. source, site,
-and channel) are always treated as strinctly read only.</p></li>
+and channel) are always treated as strictly read only.</p></li>
 <li><p>Normalization requires a cross-referencing method.   In MsPASS we
 always uses the ObjectID of the document in the normalizing collection
-and store that attribute with a key with a common structure:
+and store that attribute using a key with a common structure:
 <code class="code docutils literal notranslate"><span class="pre">collection_id</span></code> where “collection” is a variable and “_id” is literal.
 (e.g. the linking key for the source collection is “source_id”).
 We use that approach because in MongoDB an ObjectID is guaranteed to
 provide a unique index.   That allows the system be more generic.
-Hence, unlike FSDS data centers that depend upon the SEED format in
-MsPASS net, sta, chan, loc are baggage for joining the site or channel
+Hence, unlike FDSN data centers that depend upon the SEED format in
+MsPASS net, sta, chan, loc (the core miniseed keys)
+are baggage for joining the site or channel
 collections to a set of waveform data.  We have functions for
 linking seed data with net, sta, chan, and loc keys to build links
 but the links are still defined by ObjectIDs.   An example of why this
@@ -759,7 +790,7 @@ an altered key and a more serious error is logged.</p></li>
 At present the only unforgivable sin is changing a cross-referencing id.
 If a writer detects that cross-referencing ObjectID has been altered the
 data will be marked dead and the Metadata document will be written to
-a special collection called “tombstone”.</p></li>
+a special collection called “graveyard”.</p></li>
 </ol>
 <ol class="arabic simple" start="4">
 <li><p>Unrecoverable (fatal) errors will abort a workflow.   At present that
@@ -779,12 +810,31 @@ as we acquire more timing data.</p>
 linked to wf collections with another ObjectID with the standard naming
 convention for cross-reference keys.  That is, wf_TimeSeries_id and
 wf_Seismogram_id for TimeSeries and Seismogram data respectively.</p>
-<p>Data marked dead are handled specially.  For such data the sample will be
-throw away.  The Metadata will be written to a separate collection called
-“tombstone”.  Error log data linked to dead data are written to the elog
-collection along with living data, but the cross-referencing id is
-tagged as “tombstone_id”.  That provides a simple query mechanism to
-show only the most serious errors from a processing run.</p>
+<p>Data marked dead are handled specially.  For such data the sample data will be
+throw away.  The Metadata for dead data are saved in the elog collection
+document associated with the datum as a subdocument accessible with the
+key “tombstone”.  That provides a simple query mechanism to
+show only the most serious errors from a processing run.   Specifically,
+this code fragment will print all error messages associated with
+dead data with a crude tag of seed net, sta, starttime before each
+list of elog messages:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This needs to be checked for correctness - done while off the grid</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$def&#39;</span> <span class="p">:</span> <span class="s1">&#39;tombstone&#39;</span><span class="p">}</span>
+<span class="n">cursor</span><span class="o">=</span><span class="n">db</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">cursor</span><span class="p">:</span>
+  <span class="n">wfmd</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;tombstone&#39;</span><span class="p">]</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Error log contents for this Seismogram marked dead:&#39;</span><span class="p">,</span>
+     <span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">],</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;sta&#39;</span><span class="p">],</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">wfmd</span><span class="p">[</span><span class="s1">&#39;startime&#39;</span><span class="p">])</span>
+  <span class="n">err</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;logdata&#39;</span><span class="p">]</span>
+  <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">err</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note the above is minimal to be concise.  A good report would contain
+additional entries from the tombstone contents and additional components of
+the container defined the symbol “e”.</p>
 <p>Saving history data is optional.  When enabled the history chain contents
 are dumped to this history collection, the history container is cleared, and
 then initialized with a reference to the saved entry and the data
@@ -810,37 +860,38 @@ keys (currently source_id, site_id, and/or channel_id but more may be added).
 The set of which collections are to be loaded are controlled by optional
 parameters in each reader.  An important constraint is that for all
 normalized collections defined as required, if the cross-referencing
-key is no defined a reader will ignore that datum.  <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> silently
+key is not defined a reader will ignore that datum.  <code class="code docutils literal notranslate"><span class="pre">read_data</span></code> silently
 signals that condition by returning a None.  <code class="code docutils literal notranslate"><span class="pre">read_ensemble_data</span></code> and
 <code class="code docutils literal notranslate"><span class="pre">read_distributed_data</span></code> normally silently skip such data.   That model
 is intentional because it allows initial loading of a large data set with
 unresolvable anomalies that prevent one or more of the cross-referencing
 ids from being defined.</p></li>
-<li><p>The waveform data is read and loaded.  If that process fails the data
+<li><p>The waveform data is read and the data object is constructed.  If that process fails the data
 will be marked dead and an error log posted with the reason (e.g. a
 file not found message).</p></li>
 <li><p>If the sample date read is successful the error log will normally be empty
 after any read.</p></li>
 <li><p>If processing history is desired the <code class="code docutils literal notranslate"><span class="pre">load_history</span></code> option needs to be
-set true.  On read the only action this creates is initialization of the
+set true.  In a reader the only action this creates is initialization of the
 ProcessingHistory component of the data with a record providing a unique
 link back to the data just read.</p></li>
 </ol>
 <p>We reiterate that the overall behavior of all readers are controlled by the
 <code class="code docutils literal notranslate"><span class="pre">mode=</span></code> argument common to all.  The current options are: <code class="code docutils literal notranslate"><span class="pre">promiscuous</span></code>,
 <code class="code docutils literal notranslate"><span class="pre">cautious</span></code>, and <code class="code docutils literal notranslate"><span class="pre">pedantic</span></code>.   Detailed descriptions of what each mean are
-give above and in the sphynx documentation generated from docstrings.</p>
+given above and in the sphynx documentation generated from docstrings.</p>
 </div>
 <div class="section" id="update-concepts">
 <h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Permalink to this headline">¶</a></h3>
 <p>As noted above an update is an operation that can be made only to
-Metadata saving the image to the related wf collection.  We know of
-two common needs for a pure Metadata update without an associated
-save of the waveform data.</p>
+Metadata.  In MsPASS Metadata map directly into MongoDB’s document concept
+of name-value pairs, while the waveform data are stored in some version of
+a file. We know of two common application for a pure Metadata update
+without an associated save of the waveform data.</p>
 <ol class="arabic simple">
 <li><p>A processing step that computes something that can be conveniently
-stored as Metadata.  Examples are automated phase pickers and
-amplitude measurements.</p></li>
+stored as Metadata.  Examples are automated phase pickers,
+amplitude measurements and assorted QC metrics.</p></li>
 <li><p>Pure Metadata operations.  e.g. most reflection processing systems
 have some form of generic metadata calculator of various levels of
 sophistication.  The most flexible can take multiple Metadata (header)
@@ -848,11 +899,47 @@ values and use them to compute a set a different value.   Such
 operations do not alter the waveform data but may require a
 database update to preserve the calculation.   An example is an
 active source experiment where receiver coordinates can often be
-computed from survey flag numbers or some other independent counter.</p></li>
+computed from survey flag numbers or some other independent counter.
+In MsPASS Metadata calculations are particularly easy and thus likely
+because python is used as the job control language.   (Classical seismic
+reflection systems and programs like SAC use a custom interpreter.)</p></li>
 </ol>
-<p>Many database updates are standalone operations such as preprocessing to
-create entries for attributes like the source_id cross-reference to
-define a link to the right source for each waveform.</p>
+<p>Updates to data that only involve Metadata changes should obey this rule:</p>
+<ul class="simple">
+<li><p><strong>Update Rule 3:</strong>  Updates for Seismogram and TimeSeries object Metadata should be done
+through the <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code> method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>.  Updates to
+other collections should use the pymongo API.</p></li>
+</ul>
+<p>As noted elsewhere numerous online and printed documentation exists for MongoDB
+that you should refer to when working directly with database collections.
+As the rule states when you need to save the results of a pure Metadata change
+within a workflow (e.g. posting a phase pick) use the <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>
+method of <code class="code docutils literal notranslate"><span class="pre">Database</span></code>.   That method has two standard arguments already
+discussed above:   (1) <code class="code docutils literal notranslate"><span class="pre">mode</span></code>, and (2) <code class="code docutils literal notranslate"><span class="pre">collection</span></code>.
+Three others are important for controlling the behavior of updates:</p>
+<ol class="arabic simple">
+<li><p><strong>ignore_metadata_changed_test</strong> is a boolean that is False by default.
+We know of no example where setting this argument True in a update would
+be advised (it exists as an option only to streamline create operations that
+are run through the same method.).  The Metadata container does bookkeeping
+that marks which, if any, key-value pairs in the container have been
+altered since the data was loaded (constructed).  The <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>
+normally uses that feature to reduce the size of the update transaction by
+only submitting updates for key-value pairs marked changed.   Setting this
+argument True would most likely be harmless, but would also add inefficiency.</p></li>
+<li><p><strong>exclude_keys</strong> is an optional list of keys for the  Metadata container that the method
+should not try to update.   Use of this option is rare.   An example where it
+might be useful is if some function altered a Metadata value that is known
+to be incorrect.</p></li>
+<li><p><strong>data_tag</strong> was discussed above for save/create operations.  When the
+entire contents of a TimeSeries or Seismogram object are being saved the
+tag serves as a mark for saves to distinguish those data from the
+starting data or other intermediate saves.  In a pure update, however, the
+meaning is different.  The data_tag argument is used any data updated
+will have the associated tag in the database changed to the string
+specified in the call to <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>.  The default is to
+do nothing to any existing tag (i.e. the tag is not updated).</p></li>
+</ol>
 </div>
 </div>
 </div>

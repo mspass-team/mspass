@@ -221,7 +221,7 @@
 <span id="user-manual-introduction"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="mspass-features">
 <h2>MsPASS Features<a class="headerlink" href="#mspass-features" title="Permalink to this headline">¶</a></h2>
-<p>MsPASS is an acronym that comes from Massively Parallel Analysis System for Seismologists.
+<p>MsPASS is an acronym that stands for Massively Parallel Analysis System for Seismologists.
 We begin with some key features of MsPASS.</p>
 <ul class="simple">
 <li><p>As the name suggests MsPASS is a domain-specific package for seismologists.
@@ -231,7 +231,7 @@ needs to work with data that match the data models described in this
 manual.</p></li>
 <li><p>Few seismologists have strong expertise in modern information technology.
 Furthermore, installing a software package can prove challenging today
-on a desktop on which you may have special privileges.  On large hypocenter
+on a desktop on which you may have special privileges.  On large high performance (HPC)
 systems installation is usually impossible without a long string of
 meetings and correspondence with system managers.  For this reason MsPASS uses
 modern container technology to simplify installation.  That allows you
@@ -278,14 +278,14 @@ does this as well by implementing core functions in C. We follow this
 model.  Python functions and classes implemented in C/C++ the MsPASS
 module hierarchy under mspasspy.ccore.</p></li>
 <li><p>Errors are a universal issue in large scale data processing.   As the
-size of a data set increases it is becomes a increasingly difficult to
+size of a data set increases it is becomes an increasingly difficult to
 guarantee all the data are “clean”.  By that, we mean one or more
 algorithms may treat “the problem” as an unrecoverable error.  Handling
 errors in a large scale processing environment is problematic for a long
 list of reasons.  We solve this in MsPASS by having error logs be an
 intrinsic part of the data.   In addition,
 following a well established approach
-used is seismic reflection systems since the 1960s MsPASS provides a
+used is seismic reflection systems since the 1960s, MsPASS provides a
 integrated “kill” mechanism that allows data to be carried along
 but ignored.  That model maps well to massively parallel scheduling
 because dead data are treated like live data but they just process faster.

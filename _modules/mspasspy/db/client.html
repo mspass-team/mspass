@@ -190,9 +190,16 @@
 
 <div class="viewcode-block" id="DBClient"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.client.DBClient">[docs]</a><span class="k">class</span> <span class="nc">DBClient</span><span class="p">(</span><span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A client-side representation of MongoDB.</span>
+<span class="sd">    A client-side top-level handle into MongoDB.</span>
 
-<span class="sd">    This is a wrapper around the :class:`~pymongo.MongoClient` for convenience.</span>
+<span class="sd">    MongoDB uses the client server model for transactions.   An instance</span>
+<span class="sd">    of this class must be created in any MsPASS job using the MongoDB</span>
+<span class="sd">    database to set up the communciation channels between the you</span>
+<span class="sd">    (the client) and an instance of the MongoDB server.</span>
+<span class="sd">    This class is a little more han a wrapper around the</span>
+<span class="sd">    :class:`~pymongo.MongoClient` created for convenience.</span>
+<span class="sd">    In most cases there is functionally little difference from</span>
+<span class="sd">    creating a MongoClient or the MsPASS DBClient (this class).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
