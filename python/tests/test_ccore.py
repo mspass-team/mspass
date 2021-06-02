@@ -703,10 +703,25 @@ def test_Ensemble(Ensemble):
     assert es.live()
     # validate checks for for any live members - this tests that feature
     assert es.validate()
-    for d in es.member:
+    # need this temporary copy for the next test_
+    escopy=deepcopy(es)
+    for d in escopy.member:
         d.kill()
-    assert not es.validate()
-
+    assert not escopy.validate()
+    # Reuse escopy for pickle test
+    escopy=pickle.loads(pickle.dumps(es))
+    assert escopy.is_defined('bool')
+    assert escopy['bool'] == True
+    assert escopy.is_defined('double')
+    assert escopy.is_defined('long')
+    assert escopy['double'] == 3.14
+    assert escopy['long'] == 7
+    assert escopy.live()
+    assert escopy.elog.size() == 2
+    assert escopy.member[0].is_defined('bool')
+    assert escopy.member[0]['bool'] == True
+    assert not escopy.member[0].is_defined('double')
+    assert not escopy.member[0].is_defined('long')
 
 
 def test_operators():
