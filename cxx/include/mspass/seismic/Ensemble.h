@@ -174,6 +174,17 @@ public:
     this method has only slots but no data validate would return false.*/
     ensemble_is_live=false;
   }
+  /*! Construct from all pieces.
+
+  This constructor was added for the python interface.  It is a helpful
+  construct for the pickle interface.  It is unlikely to be of interest
+  in a C++ application. Calls reserve only for member vector but but does
+  not insert data - detail of the pickle implementation*/
+  LoggingEnsemble(const mspass::utility::Metadata& md,
+    const mspass::utility::ErrorLogger& elogin, const size_t ndata)
+      : Ensemble<T>(md,ndata),elog(elogin)
+  {
+  };
   /*! Standard copy constructor.   */
   LoggingEnsemble(const LoggingEnsemble<T>& parent)
           : Ensemble<T>(parent),elog(parent.elog)
@@ -189,9 +200,9 @@ public:
   /*! Markt the entire ensemble bad. */
   void kill(){ensemble_is_live=false;};
   /*! Getter to test if the ensemble has any valid data. */
-  bool live(){return ensemble_is_live;};
+  bool live() const {return ensemble_is_live;};
   /*! Complement to live method - returns true if there are no valid data members. */
-  bool dead(){return !ensemble_is_live;};
+  bool dead() const {return !ensemble_is_live;};
   /*! Force, with care, the ensemble to be marked live.
 
   This extension of CoreEnsemble adds a boolean that is used to test if

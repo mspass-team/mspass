@@ -605,6 +605,67 @@ PYBIND11_MODULE(seismic, m) {
     .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
     .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
     .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
+    .def(py::pickle(
+      [](const LoggingEnsemble<Seismogram> &self) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf;
+          sbuf=serialize_metadata_py(self);
+          stringstream sselog;
+          boost::archive::text_oarchive arelog(sselog);
+          arelog << self.elog;
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object dumps = pickle.attr("dumps");
+          size_t nmembers=self.member.size();
+          py::list dlist;
+          for(auto i=0;i<nmembers;++i)
+          {
+            pybind11::object dbuf;
+            dbuf=dumps(self.member[i]);
+            dlist.append(dbuf);
+          }
+          bool is_live=self.live();
+          pybind11::gil_scoped_release release;
+          return make_tuple(sbuf,arelog,is_live,nmembers,dlist);
+        }catch(...){pybind11::gil_scoped_release release;throw;};
+      },
+      [](py::tuple t) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf=t[0];
+          Metadata md=restore_serialized_metadata_py(sbuf);
+          ErrorLogger elog;
+          stringstream sselog(t[1].cast<std::string>());
+          boost::archive::text_iarchive arelog(sselog);;
+          arelog>>elog;
+          pybind11::object otmp;
+          otmp=t[3];
+          size_t nmembers=otmp.cast<size_t>();
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object loads = pickle.attr("loads");
+          py::list dlist=t[4];
+          LoggingEnsemble<Seismogram> result(md,elog,nmembers);
+          for(auto i=0;i<nmembers;++i)
+          {
+            py::object dobj=loads(dlist[i]);
+            result.member.push_back(reinterpret_cast<Seismogram&>(dobj));
+          }
+          otmp=t[2];
+          bool is_live=otmp.cast<bool>();
+          if(is_live)
+            result.set_live();
+          else
+            /* this kill is not really necessary with the current implmentation
+            The constructor we use here set ensmeble dead by default.  For
+            a tiny cost we make this more robust by forcing a kill here */
+            result.kill();
+          return result;
+        }catch(...){
+          pybind11::gil_scoped_release release;
+          throw;
+        };
+      } )
+    )
   ;
   py::class_<LoggingEnsemble<TimeSeries>, Ensemble<TimeSeries> >(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
