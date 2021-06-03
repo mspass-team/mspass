@@ -741,8 +741,7 @@ class Database(pymongo.database.Database):
         if type(required_xref_list) is not list:
             raise MsPASSError('required_xref_list should be a list , but {} is requested.'.format(str(type(required_xref_list))), 'Fatal')
 
-        if verbose:
-            print_messages = []
+        print_messages = []
         fixed_cnt = {}
 
         # if the document does not exist in the db collection, return
@@ -755,16 +754,15 @@ class Database(pymongo.database.Database):
                 print("collection {} document _id: {}, is not found".format(collection, document_id))
             return fixed_cnt
 
-        if verbose:
-            # access each key
-            log_id_dict = {}
-            # get all the values of the verbose_keys
-            for k in doc:
-                if k in verbose_keys:
-                    log_id_dict[k] = doc[k]
-            log_helper = "collection {} document _id: {}, ".format(collection, doc['_id'])
-            for k, v in log_id_dict.items():
-                log_helper += "{}: {}, ".format(k, v)
+        # access each key
+        log_id_dict = {}
+        # get all the values of the verbose_keys
+        for k in doc:
+            if k in verbose_keys:
+                log_id_dict[k] = doc[k]
+        log_helper = "collection {} document _id: {}, ".format(collection, doc['_id'])
+        for k, v in log_id_dict.items():
+            log_helper += "{}: {}, ".format(k, v)
 
 
         # 1. check if the document has all the required fields
@@ -856,15 +854,13 @@ class Database(pymongo.database.Database):
             if not isinstance(doc[k], self.database_schema[collection].type(unique_k)):
                 try:
                     update_dict[unique_k] = self.database_schema[collection].type(unique_k)(doc[k])
-                    if verbose:
-                        print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
+                    print_messages.append("{}attribute {} conversion from {} to {} is done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
                     if k in fixed_cnt:
                         fixed_cnt[k] += 1
                     else:
                         fixed_cnt[k] = 1
                 except:
-                    if verbose:
-                        print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
+                    print_messages.append("{}attribute {} conversion from {} to {} cannot be done.".format(log_helper, unique_k, doc[k], self.database_schema[collection].type(unique_k)))
             else:
                 # attribute values remain the same
                 update_dict[unique_k] = doc[k]
