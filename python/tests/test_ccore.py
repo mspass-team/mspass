@@ -704,7 +704,10 @@ def test_Ensemble(Ensemble):
     # validate checks for for any live members - this tests that feature
     assert es.validate()
     # need this temporary copy for the next test_
-    escopy=deepcopy(es)
+    if isinstance(es,TimeSeriesEnsemble):
+        escopy=TimeSeriesEnsemble(es)
+    else:
+        escopy=SeismogramEnsemble(es)
     for d in escopy.member:
         d.kill()
     assert not escopy.validate()
@@ -720,9 +723,12 @@ def test_Ensemble(Ensemble):
     assert escopy.elog.size() == 2
     assert escopy.member[0].is_defined('bool')
     assert escopy.member[0]['bool'] == True
-    assert not escopy.member[0].is_defined('double')
-    assert not escopy.member[0].is_defined('long')
-
+    assert escopy.member[0].is_defined('double')
+    assert escopy.member[0].is_defined('long')
+    assert es.member[1].is_defined('double')
+    assert es.member[1].is_defined('long')
+    assert es.member[1]['double'] == 3.14
+    assert es.member[1]['long'] == 7
 
 def test_operators():
     d = _CoreTimeSeries(10)
