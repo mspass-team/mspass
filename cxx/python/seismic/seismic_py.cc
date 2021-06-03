@@ -626,7 +626,7 @@ PYBIND11_MODULE(seismic, m) {
           }
           bool is_live=self.live();
           pybind11::gil_scoped_release release;
-          return make_tuple(sbuf,arelog,is_live,nmembers,dlist);
+          return py::make_tuple(sbuf,sselog.str(),is_live,nmembers,dlist);
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
@@ -659,6 +659,7 @@ PYBIND11_MODULE(seismic, m) {
             The constructor we use here set ensmeble dead by default.  For
             a tiny cost we make this more robust by forcing a kill here */
             result.kill();
+          pybind11::gil_scoped_release release;
           return result;
         }catch(...){
           pybind11::gil_scoped_release release;
@@ -706,7 +707,7 @@ PYBIND11_MODULE(seismic, m) {
           }
           bool is_live=self.live();
           pybind11::gil_scoped_release release;
-          return make_tuple(sbuf,arelog,is_live,nmembers,dlist);
+          return make_tuple(sbuf,sselog.str(),is_live,nmembers,dlist);
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
@@ -723,12 +724,18 @@ PYBIND11_MODULE(seismic, m) {
           size_t nmembers=otmp.cast<size_t>();
           pybind11::module pickle = pybind11::module::import("pickle");
           pybind11::object loads = pickle.attr("loads");
+          /* This algorithm is a horrible memory pig because it has to
+          hold both a copy of the monster list of strings of pickled
+          data members and the reconstituted C++ data objects (ensemble
+          members).  Need to see if we can find a way to handle that
+          in a more memory efficient way. */
           py::list dlist=t[4];
           LoggingEnsemble<TimeSeries> result(md,elog,nmembers);
           for(auto i=0;i<nmembers;++i)
           {
             py::object dobj=loads(dlist[i]);
-            result.member.push_back(reinterpret_cast<TimeSeries&>(dobj));
+            TimeSeries dtmp=dobj.cast<TimeSeries>();
+            result.member.push_back(dtmp);
           }
           otmp=t[2];
           bool is_live=otmp.cast<bool>();
@@ -739,6 +746,7 @@ PYBIND11_MODULE(seismic, m) {
             The constructor we use here set ensmeble dead by default.  For
             a tiny cost we make this more robust by forcing a kill here */
             result.kill();
+          pybind11::gil_scoped_release release;
           return result;
         }catch(...){
           pybind11::gil_scoped_release release;
