@@ -3,8 +3,10 @@
 # If running with docker use /home, else use pwd to store all data and logs
 if grep docker /proc/1/cgroup -qa; then
   MSPASS_WORKDIR=/home
+elif [[ -z ${MSPASS_WORK_DIR} ]]; then
+  MSPASS_WORKDIR=$MSPASS_WORK_DIR
 else
-  MSPASS_WORKDIR=$SCRATCH/mspass/workdir
+  MSPASS_WORKDIR=`pwd`
 fi
 
 MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
@@ -40,6 +42,25 @@ if [ $# -eq 0 ]; then
       export DASK_SCHEDULER_ADDRESS=${MSPASS_SCHEDULER_ADDRESS}:${DASK_SCHEDULER_PORT}
       jupyter notebook ${NOTEBOOK_ARGS}
     fi
+  }
+
+  function clean_up_single_node {
+    # ---------------------- clean up workflow -------------------------
+    # stop mongodb
+    mongo --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
+    sleep 5
+    # copy shard data to scratch
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
+      echo "standalone: copy shard data to scratch"
+      # copy data
+      scp -r /tmp/db/data ${MSPASS_DB_DIR}
+      # copy log
+      scp -r /tmp/logs/mongo_log ${MSPASS_LOG_DIR}
+    fi
+    sleep 30
+  }
+
+  function clean_up_multiple_nodes {
     # ---------------------- clean up workflow -------------------------
     # stop mongos routers
     mongo --port $MONGODB_PORT admin --eval "db.shutdownServer({force:true})"
@@ -53,17 +74,15 @@ if [ $# -eq 0 ]; then
     mongo --port $(($MONGODB_PORT+1)) admin --eval "db.shutdownServer({force:true})"
 
     # copy the shard data to scratch if the shards are deployed in /tmp
-    if [ "$MSPASS_SHARD_MODE" = "tmp" ]; then
-      echo "copy shard data to scratch"
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
+      echo "distributed: copy shard data to scratch"
       # copy data
       for i in ${MSPASS_SHARD_DB_PATH[@]}; do
         scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_DB_DIR}
-        #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_DB_DIR}
       done
       # copy log
       for i in ${MSPASS_SHARD_LOGS_PATH[@]}; do
         scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
-        #rsync -e "ssh -o StrictHostKeyChecking=no" -avtr ${i} ${MSPASS_LOG_DIR}
       done
     fi
     sleep 30
@@ -75,12 +94,25 @@ if [ $# -eq 0 ]; then
     MSPASS_WORKER_CMD='$SPARK_HOME/sbin/start-slave.sh spark://$MSPASS_SCHEDULER_ADDRESS:$SPARK_MASTER_PORT'
   else # if [ "$MSPASS_SCHEDULER" = "dask" ]
     MSPASS_SCHEDULER_CMD='dask-scheduler --port $DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-scheduler_log_${MY_ID} 2>&1 & sleep 5'
-    MSPASS_WORKER_CMD='dask-worker --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
+    MSPASS_WORKER_CMD='dask-worker ${MSPASS_WORKER_ARG} --local-directory $MSPASS_WORKER_DIR tcp://$MSPASS_SCHEDULER_ADDRESS:$DASK_SCHEDULER_PORT > ${MSPASS_LOG_DIR}/dask-worker_log_${MY_ID} 2>&1 &'
   fi
 
   if [ "$MSPASS_ROLE" = "db" ]; then
-    [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
-    mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
+      # create db and log dirs if not exists
+      [[ -d /tmp/db ]] || mkdir -p /tmp/db
+      [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log
+      # copy all data on scratch to the local tmp folder
+      if [[ -d ${MSPASS_DB_DIR}/data ]]; then
+        cp -r ${MSPASS_DB_DIR}/data /tmp/db
+      else
+        mkdir -p /tmp/db/data
+      fi
+      mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all
+    else
+      [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
+      mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
+    fi
   elif [ "$MSPASS_ROLE" = "dbmanager" ]; then
     # config server configuration
     MONGODB_CONFIG_PORT=$(($MONGODB_PORT+1))
@@ -154,13 +186,17 @@ if [ $# -eq 0 ]; then
     # Note that we have to create a one-member replica set here 
     # because certain pymongo API will use "retryWrites=true" 
     # and thus trigger an error.
-    if [ "$MSPASS_SHARD_MODE" = "tmp" ]; then
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
       echo "store shard data in tmp for shard server $HOSTNAME"
       # create db and log dirs if not exists
-      [[ -d /tmp/db/data_shard_${MSPASS_SHARD_ID} ]] || mkdir -p /tmp/db/data_shard_${MSPASS_SHARD_ID}
+      [[ -d /tmp/db ]] || mkdir -p /tmp/db
       [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log_shard_${MSPASS_SHARD_ID}
       # copy all the shard data to the local tmp folder
-      scp -r -o StrictHostKeyChecking=no ${MSPASS_DB_DIR}/data_shard_${MSPASS_SHARD_ID} /tmp/db
+      if [[ -d ${MSPASS_DB_DIR}/data_shard_${MSPASS_SHARD_ID} ]]; then
+        scp -r -o StrictHostKeyChecking=no ${MSPASS_DB_DIR}/data_shard_${MSPASS_SHARD_ID} /tmp/db
+      else
+        mkdir -p /tmp/db/data_shard_${MSPASS_SHARD_ID}
+      fi
       # reconfig the shard replica set
       if [ -d ${MONGO_DATA}_shard_${MSPASS_SHARD_ID} ]; then
         # restore the shard replica set
@@ -224,14 +260,18 @@ if [ $# -eq 0 ]; then
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "frontend" ]; then
     start_mspass_frontend
+    if [ "$MSPASS_DB_MODE" = "shard" ]; then
+      clean_up_multiple_nodes
+    else
+      clean_up_single_node
+    fi
   else # if [ "$MSPASS_ROLE" = "all" ]
     MSPASS_DB_ADDRESS=$HOSTNAME
     MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
     eval $MSPASS_SCHEDULER_CMD
     eval $MSPASS_WORKER_CMD
-    [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
-    mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all &
     start_mspass_frontend
+    clean_up_single_node
   fi
 else
   docker-entrypoint.sh $@
