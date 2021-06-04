@@ -38,7 +38,7 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 
 def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
-                          format='dask', spark_context=None, data_tag=None):
+                          format='dask', npartitions=None, spark_context=None, data_tag=None):
     """
     This function should be used to read an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
@@ -89,6 +89,10 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
       manages schduling.  See online Spark documentation for details on
       this concept.
     :type spark_context: :class:`pyspark.SparkContext`
+    :param npartitions: The number of desired partitions for Dask or the number 
+      of slices for Spark. By default Dask will use 100 and Spark will determine
+      it automatically based on the cluster.
+    :type npartitions: :class:`int`
     :param data_tag:  The definition of a dataset can become ambiguous
       when partially processed data are saved within a workflow.   A common
       example would be windowing long time blocks of data to shorter time
@@ -103,10 +107,10 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
     """
     collection = cursor.collection.name
     if format == 'spark':
-        list_ = spark_context.parallelize(cursor)
+        list_ = spark_context.parallelize(cursor, numSlices=npartitions)
         return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     elif format == 'dask':
-        list_ = daskbag.from_sequence(cursor)
+        list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
         return list_.map(lambda cur: db.read_data(cur, mode, normalize, load_history, exclude_keys, collection, data_tag))
     else:
         raise TypeError("Only spark and dask are supported")

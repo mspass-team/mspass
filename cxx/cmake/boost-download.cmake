@@ -8,7 +8,7 @@ ExternalProject_Add(
   boost
   SOURCE_DIR "@BOOST_DOWNLOAD_ROOT@/boost-src"
   URL
-    https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.gz
+    https://boostorg.jfrog.io/artifactory/main/release/1.71.0/source/boost_1_71_0.tar.gz
   URL_HASH
     SHA256=96b34f7468f26a141f6020efb813f1a2f3dfb9797ecf76a7d7cbd843cc95f5bd
   UPDATE_COMMAND wget https://svn.boost.org/trac10/raw-attachment/ticket/11120/python_jam.patch && patch tools/build/src/tools/python.jam python_jam.patch
