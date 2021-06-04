@@ -729,6 +729,11 @@ def test_Ensemble(Ensemble):
     assert es.member[1].is_defined('long')
     assert es.member[1]['double'] == 3.14
     assert es.member[1]['long'] == 7
+    if isinstance(es, TimeSeriesEnsemble):
+        assert es.member[1].data == escopy.member[1].data
+    else:
+        assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
+    
 
 def test_operators():
     d = _CoreTimeSeries(10)
