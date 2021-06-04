@@ -616,17 +616,10 @@ PYBIND11_MODULE(seismic, m) {
           arelog << self.elog;
           pybind11::module pickle = pybind11::module::import("pickle");
           pybind11::object dumps = pickle.attr("dumps");
-          size_t nmembers=self.member.size();
-          py::list dlist;
-          for(auto i=0;i<nmembers;++i)
-          {
-            pybind11::object dbuf;
-            dbuf=dumps(self.member[i]);
-            dlist.append(dbuf);
-          }
+          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
           bool is_live=self.live();
           pybind11::gil_scoped_release release;
-          return make_tuple(sbuf,sselog.str(),is_live,nmembers,dlist);
+          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
@@ -638,26 +631,19 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog(t[1].cast<std::string>());
           boost::archive::text_iarchive arelog(sselog);;
           arelog>>elog;
-          pybind11::object otmp;
-          otmp=t[3];
-          size_t nmembers=otmp.cast<size_t>();
           pybind11::module pickle = pybind11::module::import("pickle");
           pybind11::object loads = pickle.attr("loads");
           /* This algorithm is a horrible memory pig because it has to
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. */
-          py::list dlist=t[4];
-          LoggingEnsemble<Seismogram> result(md,elog,nmembers);
-          for(auto i=0;i<nmembers;++i)
-          {
-            py::object dobj=loads(dlist[i]);
-            Seismogram dtmp=dobj.cast<Seismogram>();
-            result.member.push_back(dtmp);
-          }
-          otmp=t[2];
-          bool is_live=otmp.cast<bool>();
+          in a more memory efficient way. 
+          wangyinz: The new implementation below should be better. */
+          py::list dlist = loads(t[3]);
+          LoggingEnsemble<Seismogram> result(md, elog, 0);
+          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("SeismogramVector")(dlist);
+          result.member = member_py.cast<vector<Seismogram>>();
+          bool is_live = t[2].cast<bool>();
           if(is_live)
             result.set_live();
           else
@@ -703,17 +689,10 @@ PYBIND11_MODULE(seismic, m) {
           arelog << self.elog;
           pybind11::module pickle = pybind11::module::import("pickle");
           pybind11::object dumps = pickle.attr("dumps");
-          size_t nmembers=self.member.size();
-          py::list dlist;
-          for(auto i=0;i<nmembers;++i)
-          {
-            pybind11::object dbuf;
-            dbuf=dumps(self.member[i]);
-            dlist.append(dbuf);
-          }
-          bool is_live=self.live();
+          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
+          bool is_live = self.live();
           pybind11::gil_scoped_release release;
-          return make_tuple(sbuf,sselog.str(),is_live,nmembers,dlist);
+          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
         }catch(...){pybind11::gil_scoped_release release;throw;};
       },
       [](py::tuple t) {
@@ -725,26 +704,19 @@ PYBIND11_MODULE(seismic, m) {
           stringstream sselog(t[1].cast<std::string>());
           boost::archive::text_iarchive arelog(sselog);;
           arelog>>elog;
-          pybind11::object otmp;
-          otmp=t[3];
-          size_t nmembers=otmp.cast<size_t>();
           pybind11::module pickle = pybind11::module::import("pickle");
           pybind11::object loads = pickle.attr("loads");
           /* This algorithm is a horrible memory pig because it has to
           hold both a copy of the monster list of strings of pickled
           data members and the reconstituted C++ data objects (ensemble
           members).  Need to see if we can find a way to handle that
-          in a more memory efficient way. */
-          py::list dlist=t[4];
-          LoggingEnsemble<TimeSeries> result(md,elog,nmembers);
-          for(auto i=0;i<nmembers;++i)
-          {
-            py::object dobj=loads(dlist[i]);
-            TimeSeries dtmp=dobj.cast<TimeSeries>();
-            result.member.push_back(dtmp);
-          }
-          otmp=t[2];
-          bool is_live=otmp.cast<bool>();
+          in a more memory efficient way. 
+          wangyinz: The new implementation below should be better. */
+          py::list dlist = loads(t[3]);
+          LoggingEnsemble<TimeSeries> result(md, elog, 0);
+          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("TimeSeriesVector")(dlist);
+          result.member = member_py.cast<vector<TimeSeries>>();
+          bool is_live = t[2].cast<bool>();
           if(is_live)
             result.set_live();
           else
