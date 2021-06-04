@@ -26,6 +26,7 @@ services:
       MSPASS_ROLE: shard
       MSPASS_SHARD_ID: 0
       MONGODB_PORT: 27017
+      SHARD_DB_PATH: scratch
   
   mspass-shard-1:
     hostname: mspass-shard-1
@@ -36,6 +37,7 @@ services:
       MSPASS_ROLE: shard
       MSPASS_SHARD_ID: 1
       MONGODB_PORT: 27017
+      SHARD_DB_PATH: scratch
 
   mspass-scheduler:
     image: wangyinz/mspass
