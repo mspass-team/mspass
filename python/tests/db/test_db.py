@@ -889,6 +889,15 @@ class TestDatabase():
         out, err = capfd.readouterr()
         assert not out
 
+        # test not verbose
+        fixes_cnt = self.db.clean(ts['_id'], rename_undefined={'rename_extra': 'rename_extra_2'})
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert res
+        assert 'rename_extra' not in res
+        assert 'rename_extra_2' in res
+        assert res['rename_extra_2'] == val
+        assert len(fixes_cnt) == 0
+
     def test_verify(self):
         # clear all documents
         self.db['wf_TimeSeries'].delete_many({})
