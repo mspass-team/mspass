@@ -13,6 +13,7 @@ RUN apt-get update \
        git cmake gfortran gdb \
        liblapack-dev libboost-dev libboost-serialization-dev libyaml-dev \
        zip unzip \
+       curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
@@ -44,6 +45,13 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && sed -i 's/localhost/127.0.0.1/' ./pyspark/accumulators.py \
     && zip /usr/local/spark/python/lib/pyspark.zip pyspark/accumulators.py \
     && rm -r ./pyspark
+
+# Download & install rsds
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Build rsds
+RUN RUSTFLAGS="-C target-cpu=native" cargo build --release
+# Install modified version of Dask
+RUN pip3 --no-cache-dir install git+https://github.com/Kobzol/distributed@simplified-encoding
 
 # Install Python dependencies through pip
 ADD requirements.txt requirements.txt
