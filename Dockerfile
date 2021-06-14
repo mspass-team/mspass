@@ -47,8 +47,11 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
     && rm -r ./pyspark
 
 # Download & install rsds
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# Build rsds
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
+# Add .cargo/bin to PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN git clone https://github.com/It4innovations/rsds.git /usr/local/rsds
+WORKDIR /usr/local/rsds
 RUN RUSTFLAGS="-C target-cpu=native" cargo build --release
 # Install modified version of Dask
 RUN pip3 --no-cache-dir install git+https://github.com/Kobzol/distributed@simplified-encoding
