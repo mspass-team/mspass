@@ -34,6 +34,7 @@ from mspasspy.ccore.seismic import TimeSeriesEnsemble
 from mspasspy.ccore.utility import (MsPASSError,
                                     ErrorSeverity)
 
+
 def bundle_seed_data(ensemble):
     """
     This function can be used to take an (unordered) input ensemble of
@@ -63,16 +64,18 @@ def bundle_seed_data(ensemble):
     :exception:  Can throw a MsPASSError for a number of conditions.  
     Caller should be enclosed in a handler if run on a large data set. 
     """
-    if not isinstance(ensemble,TimeSeriesEnsemble):
+    if not isinstance(ensemble, TimeSeriesEnsemble):
         raise MsPASSError("bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble",
-                          ErrorSeverity.Invalid) 
+                          ErrorSeverity.Invalid)
     try:
-        d3c=_bundle_seed_data(ensemble)
+        d3c = _bundle_seed_data(ensemble)
     except Exception as err:
         raise MsPASSError('_bundle_seed_data threw an exception - see more messages below',
                           ErrorSeverity.Invalid) from err
     return d3c
-def BundleSEEDGroup(d,i0=0,iend=2):
+
+
+def BundleSEEDGroup(d, i0=0, iend=2):
     """
     Combine a grouped set of TimeSeries into one Seismogram.
 
@@ -145,6 +148,5 @@ def BundleSEEDGroup(d,i0=0,iend=2):
     d[i0] to d[iend].  Default is 2 for a single Seismogram without 
     duplicates.   
     """
-    d3c=_BundleSEEDGroup(d.member,i0,iend)
+    d3c = _BundleSEEDGroup(d.member, i0, iend)
     return d3c
-    

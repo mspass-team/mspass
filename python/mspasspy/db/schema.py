@@ -10,47 +10,58 @@ import bson.objectid
 import mspasspy.ccore.seismic
 from mspasspy.ccore.utility import MsPASSError
 
+
 class SchemaBase:
     def __init__(self, schema_file=None):
         self._attr_dict = {}
         if schema_file is None:
             if 'MSPASS_HOME' in os.environ:
-                schema_file = os.path.abspath(os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
+                schema_file = os.path.abspath(
+                    os.environ['MSPASS_HOME']) + '/data/yaml/mspass.yaml'
             else:
-                schema_file = os.path.abspath(os.path.dirname(__file__) + '/../data/yaml/mspass.yaml')
+                schema_file = os.path.abspath(os.path.dirname(
+                    __file__) + '/../data/yaml/mspass.yaml')
         elif not os.path.isfile(schema_file):
             if 'MSPASS_HOME' in os.environ:
-                schema_file = os.path.join(os.path.abspath(os.environ['MSPASS_HOME']), 'data/yaml', schema_file)
+                schema_file = os.path.join(os.path.abspath(
+                    os.environ['MSPASS_HOME']), 'data/yaml', schema_file)
             else:
-                schema_file = os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/yaml', schema_file))
+                schema_file = os.path.abspath(os.path.join(
+                    os.path.dirname(__file__), '../data/yaml', schema_file))
         try:
             with open(schema_file, 'r') as stream:
-                    schema_dic = yaml.safe_load(stream)
+                schema_dic = yaml.safe_load(stream)
         except yaml.YAMLError as e:
-            raise MsPASSError('Cannot parse schema definition file: ' + schema_file, 'Fatal') from e
+            raise MsPASSError(
+                'Cannot parse schema definition file: ' + schema_file, 'Fatal') from e
         except EnvironmentError as e:
-            raise MsPASSError('Cannot open schema definition file: ' + schema_file, 'Fatal') from e
+            raise MsPASSError(
+                'Cannot open schema definition file: ' + schema_file, 'Fatal') from e
 
         try:
             _check_format(schema_dic)
         except schema.SchemaError as e:
-            raise MsPASSError('The schema definition is not valid', 'Fatal') from e
+            raise MsPASSError(
+                'The schema definition is not valid', 'Fatal') from e
         self._raw = schema_dic
 
     def __getitem__(self, key):
         try:
             return getattr(self, key)
         except AttributeError as ae:
-            raise MsPASSError('The schema of ' + key + ' is not defined', 'Invalid') from ae
+            raise MsPASSError('The schema of ' + key +
+                              ' is not defined', 'Invalid') from ae
 
     def __delitem__(self, key):
         try:
             return delattr(self, key)
         except AttributeError as ae:
-            raise MsPASSError('The schema of ' + key + ' is not defined', 'Invalid') from ae
+            raise MsPASSError('The schema of ' + key +
+                              ' is not defined', 'Invalid') from ae
 
     def __contains__(self, key):
         return key in self._attr_dict
+
 
 class SchemaDefinitionBase:
     _main_dic = {}
@@ -151,8 +162,9 @@ class SchemaDefinitionBase:
                 self.add_alias(unique_k, a)
                 md.change_key(unique_k, a)
         else:
-            raise MsPASSError('The alias argument of type {} is not recognized, it should be either a {} path or a {}'.format(type(alias), str, dict), 'Fatal')
-                
+            raise MsPASSError('The alias argument of type {} is not recognized, it should be either a {} path or a {}'.format(
+                type(alias), str, dict), 'Fatal')
+
     def clear_aliases(self, md):
         """
         Restore any aliases to unique names.
@@ -171,7 +183,7 @@ class SchemaDefinitionBase:
                 if self.unique_name(key) not in md:
                     md.change_key(key, self.unique_name(key))
                 else:
-                    del md[key]  
+                    del md[key]
 
     def concept(self, key):
         """
@@ -361,6 +373,7 @@ class SchemaDefinitionBase:
         """
         return self._main_dic[key]['constraint'] == 'optional'
 
+
 class DatabaseSchema(SchemaBase):
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
@@ -371,7 +384,7 @@ class DatabaseSchema(SchemaBase):
             self._attr_dict[collection] = schemadef
             if 'default' in self._raw['Database'][collection]:
                 self._default_dic[self._raw['Database']
-                [collection]['default']] = collection
+                                  [collection]['default']] = collection
 
     def __setitem__(self, key, value):
         if not isinstance(value, DBSchemaDefinition):
@@ -423,7 +436,7 @@ class DatabaseSchema(SchemaBase):
             return name
         raise MsPASSError(name + ' has no default defined', 'Invalid')
 
-    def set_default(self, collection: str, default: str=None):
+    def set_default(self, collection: str, default: str = None):
         """
         Set a collection as the default.
 
@@ -438,7 +451,8 @@ class DatabaseSchema(SchemaBase):
         :type default: str, optional
         """
         if not hasattr(self, collection):
-            raise MsPASSError(collection + ' is not a defined collection', 'Invalid')
+            raise MsPASSError(
+                collection + ' is not a defined collection', 'Invalid')
         if default is None:
             self._default_dic[collection.split("_", 1)[0]] = collection
         else:
@@ -455,6 +469,7 @@ class DatabaseSchema(SchemaBase):
         """
         if default in self._default_dic:
             self._default_dic.pop(default)
+
 
 class DBSchemaDefinition(SchemaDefinitionBase):
     def __init__(self, schema_dic, collection_str):
@@ -479,18 +494,20 @@ class DBSchemaDefinition(SchemaDefinitionBase):
                 # The order of below operation matters. The behavior is that we only
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
-                compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
+                compiled_attr = dict(
+                    list(foreign_attr.items()) + list(attr.items()))
                 self._main_dic[key] = compiled_attr
 
             if 'aliases' in attr:
-                self._alias_dic.update({item: key for item in attr['aliases'] if item != key})
+                self._alias_dic.update(
+                    {item: key for item in attr['aliases'] if item != key})
 
             if 'constraint' in attr:
                 if attr['constraint'] == 'required':
                     self._required_keys.append(key)
                 elif attr['constraint'] == 'xref_key':
                     self._xref_keys.append(key)
-        
+
         if 'data_type' in schema_dic[collection_str]:
             self._data_type = schema_dic[collection_str]['data_type']
 
@@ -539,14 +556,17 @@ class DBSchemaDefinition(SchemaDefinitionBase):
             return mspasspy.ccore.seismic.Seismogram
         return None
 
+
 class MetadataSchema(SchemaBase):
     def __init__(self, schema_file=None):
         super().__init__(schema_file)
         dbschema = DatabaseSchema(schema_file)
         for collection in self._raw['Metadata']:
-            schemadef = MDSchemaDefinition(self._raw['Metadata'], collection, dbschema)
+            schemadef = MDSchemaDefinition(
+                self._raw['Metadata'], collection, dbschema)
             setattr(self, collection, schemadef)
             self._attr_dict[collection] = schemadef
+
     def __setitem__(self, key, value):
         if not isinstance(value, MDSchemaDefinition):
             raise MsPASSError('value is not a MDSchemaDefinition', 'Invalid')
@@ -569,11 +589,12 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                     s_key = key.replace(col_name + '_', '')
                 # get the default name in case one is used in the dbschema
                 col_name = dbschema.default_name(col_name)
-                foreign_attr = getattr(dbschema,col_name)._main_dic[s_key]
+                foreign_attr = getattr(dbschema, col_name)._main_dic[s_key]
                 # The order of below operation matters. The behavior is that we only
                 # extend attr with items from foreign_attr that are not defined in attr.
                 # This garantees that the foreign_attr won't overwrite attr's exisiting keys.
-                compiled_attr = dict(list(foreign_attr.items()) + list(attr.items()))
+                compiled_attr = dict(
+                    list(foreign_attr.items()) + list(attr.items()))
                 self._main_dic[key] = compiled_attr
             # have to use "self._main_dic[key]" instead of attr here because the dict is updated above
             if 'aliases' in self._main_dic[key]:
@@ -638,7 +659,7 @@ class MDSchemaDefinition(SchemaDefinitionBase):
             if key.startswith(col_name):
                 s_key = key.replace(col_name + '_', '')
             col_name = dbschema.default_name(col_name)
-            foreign_attr = getattr(dbschema,col_name)._main_dic[s_key]
+            foreign_attr = getattr(dbschema, col_name)._main_dic[s_key]
             self._main_dic[key] = foreign_attr
             if not readonly:
                 self.set_writeable(key)
@@ -646,8 +667,10 @@ class MDSchemaDefinition(SchemaDefinitionBase):
                 if 'aliases' not in self._main_dic[key]:
                     self._main_dic[key]['aliases'] = aliases
                 else:
-                    [self._main_dic[key]['aliases'].append(x) for x in aliases if x not in self._main_dic[key]['aliases']]
-                    self._alias_dic.update({item: key for item in self._main_dic[key]['aliases'] if item != key})
+                    [self._main_dic[key]['aliases'].append(
+                        x) for x in aliases if x not in self._main_dic[key]['aliases']]
+                    self._alias_dic.update(
+                        {item: key for item in self._main_dic[key]['aliases'] if item != key})
         self._main_dic[key]['collection'] = collection
 
     def swap_collection(self, original_collection, new_collection, dbschema=None):
@@ -733,6 +756,8 @@ class MDSchemaDefinition(SchemaDefinitionBase):
 
 
 '''below is all about _check_format utility function '''
+
+
 def _is_basic_type(s):
     """
     Helper function used to check if the value of the type attribute is valid
@@ -744,9 +769,10 @@ def _is_basic_type(s):
     :rtype: bool
     """
     s = s.strip().casefold()
-    if s in ["objectid","int","integer","float","double","bool","boolean","str","string","list","dict","bytes","byte","object"]:
+    if s in ["objectid", "int", "integer", "float", "double", "bool", "boolean", "str", "string", "list", "dict", "bytes", "byte", "object"]:
         return True
     return False
+
 
 def _check_min_default_key(db_dict):
     """
@@ -763,20 +789,22 @@ def _check_min_default_key(db_dict):
         default_key_set.add(collection)
         if 'default' in db_dict[collection]:
             default_key_set.add(db_dict[collection]['default'])
-    
+
     if 'wf' not in default_key_set or 'elog' not in default_key_set or 'history_object' not in default_key_set:
-        raise schema.SchemaError("wf, elog and history_object must be all defined as default key in a collection or as a collection name itself")
+        raise schema.SchemaError(
+            "wf, elog and history_object must be all defined as default key in a collection or as a collection name itself")
     return True
+
 
 def _is_valid_schema(dic, schema_):
     """
     Helper function used to validate all collections in a schema dictionary
     :param dic: a schema dictionary
     :type dic: dict
-    
+
     :param schema_: the defined schema used to validate a database collection
     :type schema_: schema.Schema
-    
+
     :return: True if all collections pass the validation
     :rtype: bool
     """
@@ -796,12 +824,14 @@ def _is_valid_database_schema_definition(dic, collection_name_list):
 
     :return: True if all attributes pass the validation
     :rtype: bool
-    """    
+    """
     for attr in dic:
         if 'reference' in dic[attr]:
-            dic[attr] = _get_schema_definition_schema(collection_name_list, 'database', True).validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(
+                collection_name_list, 'database', True).validate(dic[attr])
         else:
-            dic[attr] = _get_schema_definition_schema(collection_name_list, 'database', False).validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(
+                collection_name_list, 'database', False).validate(dic[attr])
     return True
 
 
@@ -816,12 +846,14 @@ def _is_valid_metadata_schema_definition(dic, collection_name_list):
 
     :return: True if all attributes pass the validation
     :rtype: bool
-    """    
+    """
     for attr in dic:
         if 'collection' in dic[attr]:
-            dic[attr] = _get_schema_definition_schema(collection_name_list, 'metadata', True).validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(
+                collection_name_list, 'metadata', True).validate(dic[attr])
         else:
-            dic[attr] = _get_schema_definition_schema(collection_name_list, 'metadata', False).validate(dic[attr])
+            dic[attr] = _get_schema_definition_schema(
+                collection_name_list, 'metadata', False).validate(dic[attr])
     return True
 
 
@@ -876,8 +908,8 @@ def _get_schema_definition_schema(collection_name_list, name, ref):
     if name == 'database':
         if ref:
             return schema.Schema(dict(
-                list(common_db_schema.items()) + 
-                list(type_optional_schema.items()) + 
+                list(common_db_schema.items()) +
+                list(type_optional_schema.items()) +
                 list(constraint_schema.items())),
                 ignore_extra_keys=True)
         else:
@@ -900,6 +932,7 @@ def _get_schema_definition_schema(collection_name_list, name, ref):
                 list(constraint_default_schema.items())),
                 ignore_extra_keys=True)
 
+
 def _check_format(schema_dic):
     """
     check if a mspass.yaml file user provides is valid or not
@@ -912,22 +945,22 @@ def _check_format(schema_dic):
     # Make sure Database and Metadata exist
     schema.Schema({'Database': dict, 'Metadata': dict}).validate(schema_dic)
     collection_name_list = schema_dic['Database'].keys()
-    
+
     database_collection_schema = schema.Schema({
-        schema.Optional('default'):str,
-        schema.Optional('data_type'):str,
-        schema.Optional('base'):schema.And(str, lambda s: s in collection_name_list),
-        'schema':schema.And(dict, lambda dic: _is_valid_database_schema_definition(dic, collection_name_list))
+        schema.Optional('default'): str,
+        schema.Optional('data_type'): str,
+        schema.Optional('base'): schema.And(str, lambda s: s in collection_name_list),
+        'schema': schema.And(dict, lambda dic: _is_valid_database_schema_definition(dic, collection_name_list))
     }, ignore_extra_keys=True)
-    
+
     metadata_collection_schema = schema.Schema({
-        'schema':schema.And(dict, lambda dic: _is_valid_metadata_schema_definition(dic, collection_name_list))
+        'schema': schema.And(dict, lambda dic: _is_valid_metadata_schema_definition(dic, collection_name_list))
     }, ignore_extra_keys=True)
-    
+
     yaml_schema = schema.Schema({
         'Database': schema.And(dict, schema.And(lambda dic: _is_valid_schema(dic, database_collection_schema),
-                                               lambda dic: _check_min_default_key(dic))),
+                                                lambda dic: _check_min_default_key(dic))),
         'Metadata': schema.And(dict, lambda dic: _is_valid_schema(dic, metadata_collection_schema)),
     }, ignore_extra_keys=True)
-    
+
     yaml_schema.validate(schema_dic)
