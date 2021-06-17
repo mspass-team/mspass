@@ -8,12 +8,15 @@ def info(data, alg_id, alg_name, target=None):
     This helper function is used to log operations in processing history of mspass object.
     Per best practice, every operations happen on the mspass object should be logged.
 
-    :param data: the mspass data object
+    :param data: the mspass data object, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param alg_id: an id designator to uniquely define an instance of algorithm.
+    :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: the name of the algorithm that used on the mspass object.
+    :type alg_name: :class:`str`
     :param target: if the mspass data object is an ensemble type, you may use target as index to
      log on one specific object in the ensemble. If target is not specified, all the objects in the ensemble
      will be logged using the same information.
+    :type target: :class:`int`
     :return: None
     """
     empty_err_message = "cannot preserve history because container was empty\n" + \
@@ -59,14 +62,18 @@ def ensemble_error(d, alg, message, err_severity=ErrorSeverity.Invalid):
     posted to all ensemble members.  It silently does nothing if the 
     ensemble is empty. 
 
-    :param err_severity: severity of the error, default as ErrorSeverity.Invalid.
     :param d: is the ensemble data to be handled. It print and error message
       and returns doing nothing if d is not one of the known ensemble 
       objects.
+    :type d: :class:`~mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param alg: is the algorithm name posted to elog on each member
+    :type alg: :class:`str`
     :param message: is the string posted to all members
     (Note due to a current flaw in the api we don't have access to the 
     severity attribute.  For now this always set it Invalid)
+    :type message: :class:`str`
+    :param err_severity: severity of the error, default as ErrorSeverity.Invalid.
+    :type err_severity: :class:`~mspasspy.ccore.utility.ErrorSeverity`
     """
     if isinstance(d, (TimeSeriesEnsemble, SeismogramEnsemble)):
         n = len(d.member)
@@ -86,10 +93,12 @@ def reduce(data1, data2, alg_id, alg_name):
     in reduce stage. If data1 is dead, it will keep silent, i.e. no history will be replicated. If data2 is dead,
     the processing history will still be replicated.
 
-    :param data1: Mspass object
-    :param data2: Mspass object
+    :param data1: mspass object, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :param data2: mspass object, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
     :param alg_id: The unique id of that user gives to the algorithm.
+    :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: The name of the reduce algorithm that uses this helper function.
+    :type alg_name: :class:`str`
     :return: None
     """
     if isinstance(data1, (TimeSeries, Seismogram)):

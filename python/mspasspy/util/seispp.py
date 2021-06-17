@@ -27,8 +27,11 @@ def index_data(filebase, db, ext='d3C', verbose=False):
     :param filebase: is the base name of the dataset to be read and indexed.
         The function will look for filebase.yaml for the header data and
         filebase.ext (Arg 3 defaulting to d3C).  
+    :type filebase: :class:`str`
     :param db: is the MongoDB database handler
+    :type db: :class:`mspasspy.db.database.Database`
     :param ext: is the file extension for the sample data (default is 'd3C').
+    :type ext: :class:`str`
     """
     # This loads default mspass schema
     mdef = MetadataDefinitions()

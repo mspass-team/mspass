@@ -29,6 +29,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
+    :type object_history: :class:`bool`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -36,8 +37,10 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
+    :type dryrun: :class:`bool`
     :param inplace_return: when func is an in-place function that doesn't return anything, but you want to
      return the origin data (for example, in map-reduce), set inplace_return as true.
+    :type inplace_return: :class:`bool`
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
@@ -95,6 +98,7 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_map operation.   If the history chain is empty this will silently generate
      an error posted to error log on each object.
+    :type object_history: :class:`bool`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -102,6 +106,7 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
+    :type dryrun: :class:`bool`
     :param kwargs: extra kv arguments
     :return: the output of func
     """
@@ -165,6 +170,7 @@ def is_input_dead(*args, **kwargs):
     :param kwargs: any key-word parameters.
     :return: True if there is a dead mspass object in the parameters, False if no mspass objects in the input parameters
      or all of them are still alive.
+    :rtype: :class:`bool`
     """
     for arg in args:
         if isinstance(arg, TimeSeries) and arg.dead():
@@ -437,6 +443,7 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
      as alg_id is defined (not None which is the default) each Seismogram or TimeSeries object will attempt to
      save the history through a new_reduce operation. If the history chain is empty this will silently generate
      an error posted to error log on each object.
+    :type object_history: :class:`bool`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
@@ -444,6 +451,7 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
     :param dryrun: True for dry-run, the algorithm is not run, but the arguments used in this wrapper will be checked.
       This is useful for pre-run checks of a large job to validate a workflow. Errors generate exceptions
       but the function returns before attempting any calculations.
+    :type dryrun: :class:`bool`
     :param kwargs: extra kv arguments
     :return: the output of func
     """

@@ -26,6 +26,13 @@ class Undertaker(mspasspy.db.Database):
         """
         Clear the contents of an ensemble and optionally save the history and
         error log of the dead.  Return the cleaned ensmble.
+
+        :param d: ensemble data to be processed. The function will throw a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a SeismogramEnsemble.
+        :type d: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
+        :param save_history: optionally save the history of the mspass object
+        :type save_history: :class:`bool`
+        :return: the cleaned ensmble.
+        :rtype: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
         """
         if not (isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble)):
             raise MsPASSError('Undertaker.bury_the_dead',
@@ -57,6 +64,11 @@ class Undertaker(mspasspy.db.Database):
         """
         Like bury_the_dead but nothing is preserved of the dead.   Functionally equivalent to 
         bury_the_dead with save_history False, but with a more memorable name.
+
+        :param d: ensemble data to be processed. The function will throw a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a SeismogramEnsemble.
+        :type d: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
+        :return: the cleaned ensmble.
+        :rtype: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
         """
         dlive = self.bury_the_dead(d, False)
         return dlive
@@ -67,11 +79,13 @@ class Undertaker(mspasspy.db.Database):
 
         :param d:  must be either a TimeSeriesEnsemble or SeismogramEnsemble of
            data to be processed.
+        :type d: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
         :param bury:  if true the bury_the_dead method will be called on the
            ensemble of dead data before returning
+        :type bury: :class:`bool`
         :return: python list with two elements. 0 is ensemble with live data
            and 1 is ensemble with dead data.
-        :rtype:  python list with two components
+        :rtype: :class:`list`
         """
         if not (isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble)):
             raise MsPASSError('Undertaker.bring_out_your_dead',

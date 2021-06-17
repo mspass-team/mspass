@@ -3,6 +3,7 @@ Functions for converting to and from MsPASS data types.
 """
 import numpy as np
 import obspy.core
+import time
 
 from mspasspy.ccore.utility import (Metadata, MsPASSError)
 from mspasspy.ccore.seismic import (_CoreSeismogram,
@@ -151,20 +152,20 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
     mspass Seismogram object will be lost in this conversion as obspy
     does not implement that concept.  If you need to save the error log
     you will need to save the input of this function to MongoDB to preserve
-    the errorlog it may contain.
+    the error log it may contain.
 
     :param sg: is the Seismogram object to be converted
     :type sg: :class:`~mspasspy.ccore.Seismogram`
     :param chanmap:  3 element list of channel names to be assigned components
-    :type chanmap: list
+    :type chanmap: :class:`list`
     :param hang:  3 element list of horizontal angle attributes (azimuth in degrees)
       to be set in Stats array of output for each component.  (default is
       for cardinal directions)
-    :type hang: list
+    :type hang: :class:`list`
     :param vang:  3 element list of vertical angle (theta of spherical coordinates)
       to be set in Stats array of output for each component.  (default is
       for cardinal directions)
-    :type vang: list
+    :type vang: :class:`list`
     :return: obspy Stream object containing a list of 3 Trace objects in
        mspass component order. Presently the data are ALWAYS returned to
        cardinal directions (see above). It will be empty if sg was marked dead
@@ -232,10 +233,14 @@ def Trace2TimeSeries(trace, history=None):
     # The obspy trace object stats attribute only acts like a dictionary
     # we can't use it directly but this trick simplifies the copy to
     # mesh with py::dict for pybind11 - needed in TimeSeries constructor below
+    t0 = time.time()
     trace_stats_dict = dict(trace.stats)
+    t1 = time.time()
+    print('time for converting to dict: ', t1 - t0)
     # These tests are excessively paranoid since starttime and endtime
     # are required attributes in Trace, but better save in case
     # someone creates one outside obspy
+    t0 = time.time()
     if Keywords.starttime in trace.stats:
         t = trace_stats_dict[Keywords.starttime]
         trace_stats_dict[Keywords.starttime] = t.timestamp
@@ -247,10 +252,13 @@ def Trace2TimeSeries(trace, history=None):
     if 'endtime' in trace.stats:
         t = trace_stats_dict['endtime']
         trace_stats_dict['endtime'] = t.timestamp
+    t1 = time.time()
+    print('time for dealing with startime/endtime: ', t1 - t0)
     #
     # these define a map of aliases to apply when we convert to mspass
     # metadata from trace - we redefined these names but others could
     # surface as obspy evolves independently from mspass
+    t0 = time.time()
     mspass_aliases = dict()
     mspass_aliases['station'] = Keywords.sta
     mspass_aliases['network'] = Keywords.net
@@ -261,9 +269,19 @@ def Trace2TimeSeries(trace, history=None):
             val = trace_stats_dict.pop(k)
             alias_key = mspass_aliases[k]
             trace_stats_dict[alias_key] = val
+    t1 = time.time()
+    print('time for dealing with aliases: ', t1 - t0)
+        
+    t0 = time.time()
     dout = TimeSeries(trace_stats_dict, trace.data)
+    t1 = time.time()
+    print('time for creating a timeseries: ', t1 - t0)
+
     if history != None:
+        t0 = time.time()
         dout.load_history(history)
+        t1 = time.time()
+        print('time for loading history: ', t1 - t0)
     dout.set_live()
     # The following dead_mspass attribute is used by our decorator API
     # to determine whether an object was dead before the conversion.
@@ -295,6 +313,7 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
         handled by the C++ function this python script calls.  Be warned,
         however, that the C++ function can throw a MsPASSrror exception that
         should be handled separately.
+    :type st: :class:`obspy.core.stream.Stream`
     :param master: a Seismogram is an assembly of three channels composed created from
         three TimeSeries/Trace objects.   Each component may have different
         metadata (e.g. orientation data) and common metadata (e.g. station
@@ -302,20 +321,24 @@ def Stream2Seismogram(st, master=0, cardinal=False, azimuth='azimuth', dip='dip'
         which component has the definitive common metadata.   We use a simple
         algorithm and clone the data from one component defined by this index.
         Must be 0,1, or 2 or the function wil throw a RuntimeError.  Default is 0.
+    :type master: :class:`int`
     :param cardinal: boolean used to define one of two algorithms used to assemble the
         bundle.  When true the three input components are assumed to be in
         cardinal directions (x1=positive east, x2=positive north, and x3=positive up)
         AND in a fixed order of E,N,Z. Otherwise the Metadata fetched with
         the azimuth and dip keys are used for orientation.
+    :type cardinal: :class:`bool`
     :param azimuth: defines the Metadata key used to fetch the azimuth angle
        used to define the orientation of each component Trace object.
        Default is 'azimuth' used by obspy.   Note azimuth=hang in css3.0.
        Cannot be aliased - must be present in obspy Stats unless cardinal is true
+    :type azimuth: :class:`str`
     :param dip:  defines the Metadata key used to fetch the vertical angle orientation
         of each data component.  Vertical angle (vang in css3.0) is exactly
         the same as theta in spherical coordinates.  Default is obspy 'dip'
         key. Cannot be aliased - must be defined in obspy Stats unless
         cardinal is true
+    :type dip: :class:`str`
 
     :raise: Can throw either an AssertionError or MsPASSrror(currently defaulted to
     pybind11's default RuntimeError.  Error message can be obtained by
@@ -431,6 +454,11 @@ def _converter_get_ensemble_keys(ens):
     live member using the internal key CONVERTER_ENSEMBLE_KEYS.
     Normally should return a list of any ensemble keys.  If the
     special key is not found it returns an empty list.
+
+    :param ens: timeseries/seismogram ensemble
+    :type ens: :class:`~mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
+    :return: a list of keys from the first live member using the internal key CONVERTER_ENSEMBLE_KEYS.
+    :rtype: :class:`list`
     """
     for d in ens.member:
         if d.live:
@@ -443,6 +471,7 @@ def _converter_get_ensemble_keys(ens):
 def Stream2TimeSeriesEnsemble(stream):
     """
     Convert a stream to timeseries ensemble.
+
     :param stream: stream input
     :type stream: :class:`~obspy.core.stream.Stream`
     :return: converted timeseries ensemble
@@ -608,7 +637,7 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
     That could be common if the value request for copy was a python object.
 
     :param ens:  ensemble data to be processed.  The function will throw
-      a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a
+        a MsPASSError exception of ens is not either a TimeSeriesEnsemble or a
       SeismogramEnsemble.
     :type ens: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
     :param keys:  is expected to be a list of metadata keys (required to be
@@ -617,12 +646,12 @@ def post_ensemble_metadata(ens, keys=[], check_all_members=False, clean_members=
     :type keys: a :class:`list` of :class:`str`
     :param check_all_members:  switch controlling method used to extract
       metadata that is to be copied (see above for details). Default is False
-    :param check_all_members: :class:`bool`
+    :type check_all_members: :class:`bool`
     :param clean_members:  when true data copied to ensemble metadata
       will be removed from all members.  This option is only allowed
       if check_all_members is set True.  It will be silently ignored if
       check_all_members is False.
-    :param clean_members: :class:`bool`
+    :type clean_members: :class:`bool`
     """
     alg = 'post_ensemble_metadata'
 
