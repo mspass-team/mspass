@@ -26,19 +26,24 @@ def filter(data, type, *args, object_history=False, alg_name=None, alg_id=None, 
     history and error logs can be preserved.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :type data: one of :class:`mspasspy.ccore.seismic.TimeSeries`, :class:`mspasspy.ccore.seismic.Seismogram`,
+                :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
     :param type: type of filter, 'bandpass', 'bandstop', 'lowpass', 'highpass', 'lowpass_cheby_2', 'lowpass_fir',
      'remez_fir'. You can refer to
      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.filter.html>` for details.
-    :type type: str
+    :type type: :class:`str`
     :param args: extra arguments
     :param object_history: True to preserve the processing history. For details, refer to
      :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :type object_history: :class:`bool`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :type dryrun: :class:`bool`
     :param inplace_return: True to return data in mspass_func_wrapper.
+    :type inplace_return: :class:`bool`
     :param options: extra kv options
     :return: None
     """
@@ -57,18 +62,23 @@ def detrend(data, *args, object_history=False, alg_name=None, alg_id=None, dryru
     so the processing history and error logs can be preserved.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :type data: one of :class:`mspasspy.ccore.seismic.TimeSeries`, :class:`mspasspy.ccore.seismic.Seismogram`,
+                :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
     :param type: type of filter, 'simple', 'linear', 'constant', 'polynomial', 'spline'. You can refer to
      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.detrend.html>` for details.
-    :type type: str
+    :type type: :class:`str`
     :param args: extra arguments
     :param object_history: True to preserve the processing history. For details, refer to
      :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :type object_history: :class:`bool`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :type dryrun: :class:`bool`
     :param inplace_return: True to return data in mspass_func_wrapper.
+    :type inplace_return: :class:`bool`
     :param options: extra kv options
     :return: None
     """
@@ -87,30 +97,37 @@ def interpolate(data, sampling_rate, *args, object_history=False, alg_name=None,
     so the processing history and error logs can be preserved.
 
     :param data: input data, only mspasspy data objects are accepted, i.e. TimeSeries, Seismogram, Ensemble.
+    :type data: one of :class:`mspasspy.ccore.seismic.TimeSeries`, :class:`mspasspy.ccore.seismic.Seismogram`,
+                :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
     :param sampling_rate: The new sampling rate in Hz.
+    :type sampling_rate: :class:`double`
     :param args: extra arguments.
     :param object_history: True to preserve the processing history. For details, refer to
      :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :type object_history: :class:`bool`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :type dryrun: :class:`bool`
     :param inplace_return: True to return data in mspass_func_wrapper.
+    :type inplace_return: :class:`bool`
     :param method: One of "linear", "nearest", "zero", "slinear", "quadratic", "cubic", "lanczos",
      or "weighted_average_slopes". You can refer to
      `Obspy <https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.interpolate.html>` for details.
-    :type method: str
+    :type method: :class:`str`
     :param starttime: The start time (or timestamp) for the new interpolated stream.
      Will be set to current start time of the data if not given.
-    :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime` or int
+    :type starttime: :class:`~obspy.core.utcdatetime.UTCDateTime` or :class:`double`
     :param npts: The new number of samples. Will be set to the best fitting number to retain the current end time
      of the trace if not given.
-    :type npts: int
+    :type npts: :class:`int`
     :param time_shift: Shift the trace by adding time_shift to the starttime. The time shift is always given in seconds.
      A positive shift means the data is shifted towards the future, e.g. a positive time delta.
      Note that this parameter solely affects the metadata. The actual interpolation of the underlaying data is governed
      by the parameters sampling_rate, starttime and npts.
+    :type time_shift: :class:`double`
     :param kwargs: extra kv arguments
     :return: None.
     """
@@ -124,29 +141,33 @@ def correlate(a, b, shift, object_history=False, alg_name=None, alg_id=None, dry
               demean=True, normalize='naive', method='auto'):
     """
     Cross-correlation of two signals up to a specified maximal shift.
+
     :param a: first signal
+    :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :param b: second signal
+    :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :param shift: Number of samples to shift for cross correlation. The cross-correlation will consist of 2*shift+1 or
      2*shift samples. The sample with zero shift will be in the middle.
+    :type shift: :class:`int`
     :param object_history: True to preserve the processing history. For details, refer to
      :class:`~mspasspy.util.decorators.mspass_func_wrapper_multi`.
+    :type object_history: :class:`bool`
     :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
     :type alg_name: :class:`str`
     :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :type dryrun: :class:`bool`
     :param demean: Demean data beforehand.
+    :type demean: :class:`bool`
     :param normalize: Method for normalization of cross-correlation. One of 'naive' or None (True and False are
      supported for backwards compatibility). 'naive' normalizes by the overall standard deviation. None does not normalize.
+    :type normalize: :class:`str`
     :param method: Method to use to calculate the correlation. 'direct': The correlation is determined directly from
      sums, the definition of correlation. 'fft' The Fast Fourier Transform is used to perform the correlation more
      quickly. 'auto' Automatically chooses direct or Fourier method based on an estimate of which is faster.
      (Only available for SciPy versions >= 0.19. For older Scipy version method defaults to 'fft'.)
-    :type a: :class:`~mspasspy.ccore.seismic.TimeSeries`
-    :type b: :class:`~mspasspy.ccore.seismic.TimeSeries`
-    :type shift: int
-    :type demean: bool
-    :type method: str
+    :type method: :class:`str`
     :return: cross-correlation function.
     """
     return obspy.signal.cross_correlation.correlate(a, b, shift, demean, normalize, method)

@@ -91,13 +91,17 @@ class RFdeconProcessor:
 
         :param d: input data (contents expected depend upon 
         value of dtype parameter).
+        :type d: :class:`~mspasspy.ccore.seismic.Seismogram`
         :param dtype: string defining the form d is expected 
           to be (see details above)
+        :type dtype: :class:`str`
         :param component: component of Seismogram data to 
           load as data vector.  Ignored if dtype is raw_vector 
-          or TimeSeries.  
+          or TimeSeries.
+        :type component: :class:`int`
         :param window: boolean controlling internally 
           defined windowing.  (see details above)
+        :type window: :class:`bool`
 
         :return:  Nothing (not None nothing) is returned
         """
@@ -279,6 +283,7 @@ class RFdeconProcessor:
 
         :param md: is a mspass.Metadata object containing required parameters
         for the alternative algorithm.
+        :type md: :class:`~mspasspy.ccore.utility.Metadata`
         """
         self.processor.change_parameters(md)
 
@@ -337,19 +342,23 @@ def RFdecon(processor, d, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
 
     :param processor:  RFdeconProcessor object defining algorithm
      to be applied (see related documentation for details).
+    :type processor: :class:`mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor`
     :param d:  Seismogram input data.  See notes above about 
      time span of these data.
+    :type d: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param wavelet:   vector of doubles (numpy array or the 
      std::vector container internal to TimeSeries object) defining
      the wavelet to use to compute deconvolution operator.  
      Default is None which assumes processor was set up to use 
      a component of d as the wavelet estimate.
+    :type wavelet: :class:`~numpy.ndarray` or :class:`list`
     :param noisedata:  vector of doubles (numpy array or the 
      std::vector container internal to TimeSeries object) defining
      noise data to use for computing regularization.  Not all RF
      estimation algorithms use noise estimators so this parameter 
      is optional.   It can also be extracted from d depending on 
-     parameter file options. 
+     parameter file options.
+    :type noisedata: :class:`~numpy.ndarray` or :class:`list`
     :param wcomp:  When defined from Seismogram d the wavelet 
      estimate in conventional RFs is one of the components that 
      are most P wave dominated. That is always one of three 
@@ -359,20 +368,25 @@ def RFdecon(processor, d, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
      the above.   This parameter would be changed only if the 
      data has undergone some novel transformation not yet invented
      and the best wavelet estimate was on in 2 (3 with FORTRAN 
-     and matlab numbering).  
-     :param ncomp: component number to use to compute noise.  This is used 
+     and matlab numbering). 
+    :type wcomp: :class:`int` 
+    :param ncomp: component number to use to compute noise.  This is used 
      only if the algorithm in processor requires a noise estimate. 
      Normally it should be the same as wcomp and is by default (2).
-     :param save_history:  When true the ProcessingHistory mechanism 
+    :type ncomp: :class:`int`
+    :param save_history:  When true the ProcessingHistory mechanism 
      is enabled.
-     :param algid: Define the algorithm id for the ProcessingHistory chain.
+    :type save_history: :class:`bool`
+    :param algid: Define the algorithm id for the ProcessingHistory chain.
      This parameter is ignored unless save_history is true.   Default is 
      the string "0" but it should normally be set to some unique id 
      defined for that instance of this algorithm.  The algorithm is 
-     always set to RFdecon.  
+     always set to RFdecon.
+    :type algid: :class:`str`
 
     :return:  Seismogram object containing the RF estimates.  
-     The orientations are always the same as the input.   
+     The orientations are always the same as the input.
+    :rtype: :class:`~mspasspy.ccore.seismic.Seismogram`
     """
     try:
         if(wavelet != None):

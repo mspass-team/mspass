@@ -13,12 +13,17 @@ def ensemble_error_post(d, alg, message, severity):
     object that throws an exception this function will post the message
     posted to all ensemble members.  It silently does nothing if the
     ensemble is empty.
+
     :param d: is the ensemble data to be handled.  It print and error message
       and returns doing nothing if d is not one of the known ensemble
       objects.
+    :type d: either :class:`~mspasspy.ccore.seismic.TimeSeriesEnsemble` or :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :param alg: is the algorithm name posted to elog on each member
+    :type alg: :class:`str`
     :param message: is the string posted to all members
+    :type message: :class:`str`
     :param severity: is the error severity level
+    :type severity: :class:`~mspasspy.ccore.utility.ErrorSeverity`
     """
     if(isinstance(d, TimeSeriesEnsemble)
        or isinstance(d, SeismogramEnsemble)):
@@ -54,6 +59,8 @@ def scale(d, method='peak', level=1.0, window=None, scale_by_section=False, use_
 
     :param d:  is input data object.  If not one of the four mspass seismic
       data types noted above the function will throw a RuntimeError exception.
+    :type d: one of :class:`mspasspy.ccore.seismic.TimeSeries`, :class:`mspasspy.ccore.seismic.Seismogram`,
+                :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble`, :class:`mspasspy.ccore.seismic.SeismogramEnsemble`
     :param method: string defining the gain method to use.  Currently supported
       method values are:  peak, RMS (rms accepted), perc, and MAD
       (also accepts mad or Mad).  Peak uses the largest amplitude for
@@ -65,27 +72,33 @@ def scale(d, method='peak', level=1.0, window=None, scale_by_section=False, use_
       seismic unix.  mad is a variant where the value returned is the
       median absolute deviation (mad) that is actual the same as perc=1/2.
       Default is peak.
+    :type method: :class:`str`
     :param level:   For all but perc this defines the scale to which the data
       are scaled.  For perc it is used to set the percent clip level.
       A RuntimeError exception is thrown if method is perc and level is larger
       that one. Default is 1.0
+    :type level: :class:`double`
     :param window: is an optional TimeWindow applied to compute amplitude
       for scaling.  When not a null (python None) a windowing algorithm will
       be applied before computing the amplitude metric and the amplitude
       computed in that window will be used for scaling.   Default is None
       meaning this option is turned off and the entire waveform segment is
       scanned for the amplitude estimation.
+    :type window: :class:`mspasspy.ccore.algorithms.basic.TimeWindow`
     :param scale_by_section:  is a boolean that controls the scaling
       behavior on ensembles only (It is silently ignored for atomic
       TimeSeries and Seismogram data).  When true a single gain factor is
       applied to all members of an ensemble.  When false each member is
       gained individually as if this function were applied in a loop to
       each member.
+    :type scale_by_section: :class:`bool`
     :param use_mean:  boolean used only for ensembles and when scale_by_section is
       True.   The algorithm used in that case has an option to use the mean
       log amplitude for scaling the section instead of the default median
       amplitude.
+    :type use_mean: :class:`bool`
     :param object_history:
+    :type object_history: :class:`bool`
     :param instance:  object_history and instance are intimately related
       and control how object level history is handled.  Object level history
       is disabled by default for efficiency.  If object_history is set True
@@ -93,12 +106,14 @@ def scale(d, method='peak', level=1.0, window=None, scale_by_section=False, use_
       each Seismogram or TimeSeries object will attempt to save the history
       through a new_map operation.   If the history chain is empty this will
       silently generate an error posted to error log on each object.
+    :type instance: :class:`str`
     :param dryrun: is a boolean used for preprocessing to validate
       arguments.  When true the algorithm is not run, but the function
       only checks the argument list for invalid combinations.  This is
       useful for prerun checks of a large job to validate a workflow.
       Errors generate exceptions but the function returns before
       attemping any calculations.  Default is false
+    :type dryrun: :class:`bool`
 
     :return: amplitude(s) in a python array.   Array has only one element
       for all returns except ensembles when scale_by_section is False.
@@ -258,20 +273,25 @@ def WindowData(d, twin, t0shift=None, object_history=False, instance=None):
 
     :param d: is the input data.  d must be either a TimeSeries or Seismogram
       object or the function will log an error to d and return a None.
+    :type d: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
     :param twin: is a TimeWindow defining window to be cut
+    :type twin: :class:`mspasspy.ccore.algorithms.basic.TimeWindow`
     :param t0shift: is an optional time shift to apply to the time window.
       This parameter is convenient to avoid conversions to relative time.
       A typical example would be to set t0shift to an arrival time and let
       the window define time relative to that arrival time.  Default is None
       which cause the function to assume twin is to be used directly.
+    :type t0shift: :class:`double`
     :param object_history: boolean to enable or disable saving object
       level history.  Default is False.   Note if this feature is enabled
       and the input data history chain is empty the function will log an
       error to the returned data and not update the history chain.
+    :type object_history: :class:`bool`
     :param instance: is instance key to pass to processing history chain.
       If None (the default) and object_history is true the processing
       history chain will not be updated and a complaint error posted to
       d.elog.
+    :type instance: :class:`str`
 
     :return: copy of d with sample range reduced to twin range.  Returns
       an empty version of the parent data type (default constructor) if
@@ -360,8 +380,11 @@ class TopMute:
         keywords and removes positional requirements as usual in python.
 
         :param t0:  time of end of zeroing period of top Mute
+        :type t0: :class:`double`
         :param t1:  time of end of taper zone when the multiplier goes to 1
+        :type t1: :class:`double`
         :param type: form of ramp (currently must be either "linear" or "cosine")
+        :type type: :class:`str`
         """
         # This call will throw a MsPASSError exception if the parameters
         # are mangled but we let that happen in this context assuming a
@@ -378,15 +401,19 @@ class TopMute:
         reason is in that situation the data would be completely zeroed
         anyway and it is better to define it dead and leave an error message
         than to completely null data.
+
         :param d:  input atomic MsPASS data object (TimeSeries or Seismogram)
+        :type d: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
         :object_history:  It set true the function will add define this
           step as an map operation to preserve object level history.
           (default is False)
+        :type object_history: :class:`bool`
         :param instance:   string defining the "instance" of this algorithm.
           This parameter is needed only if object_history is set True.  It
           is used to define which instance of this algrithm is being applied.
           (In the C++ api this is what is called the algorithm id).  I can
           come from the global history manager or be set manually.
+        :type instance: :class:`str`
         """
         if not (isinstance(d, TimeSeries) or isinstance(d, Seismogram)):
             raise MsPASSError("TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object",

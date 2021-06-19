@@ -58,10 +58,10 @@ def bundle_seed_data(ensemble):
     in the related function Bundle3C.
 
     :param ensemble: is the input ensemble of TimeSeries to be processed.
-    :return:   ensemble of Seismogram objects made by bundling input data
-    :rtype:  SeismogramEnsemble
-
-    :exception:  Can throw a MsPASSError for a number of conditions.  
+    :type ensemble: :class:`~mspasspy.ccore.seismic.TimeSeriesEnsemble`
+    :return: ensemble of Seismogram objects made by bundling input data
+    :rtype: :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
+    :exception: Can throw a MsPASSError for a number of conditions.  
     Caller should be enclosed in a handler if run on a large data set. 
     """
     if not isinstance(ensemble, TimeSeriesEnsemble):
@@ -139,14 +139,17 @@ def BundleSEEDGroup(d, i0=0, iend=2):
     array like objects to use are the member attribute of a TimeSeriesEnsemble 
     or a python array constructed from a (sorted) collection of TimeSeries 
     objects.
+    :type d: :class:`~mspasspy.ccore.seismic.TimeSeriesEnsemble`
     :param i0:  starting array position for constructing output(s).   
     The default is 0 which would be the normal request for an full ensemble 
     or a single grouping assembled by some other mechanism.  A nonzero is
     useful to work through a larger container one Seismogram at a time.
+    :type i0: :class:`int`
     :param iend:  end array position.   The function will attempt to 
     assemble one or more Seismograms from TimeSeries in the range 
     d[i0] to d[iend].  Default is 2 for a single Seismogram without 
-    duplicates.   
+    duplicates. 
+    :type iend: :class:`int`
     """
     d3c = _BundleSEEDGroup(d.member, i0, iend)
     return d3c

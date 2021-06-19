@@ -26,7 +26,7 @@ def dict2Metadata(dic):
     :param dict: Python dict to convert
     :type dict: dict
     :return: Metadata object translated from d
-    :rtype: :class:`~mspasspy.ccore.Metadata`
+    :rtype: :class:`~mspasspy.ccore.utility.Metadata`
     """
     return Metadata(dic)
 
@@ -42,7 +42,7 @@ def Metadata2dict(md):
     is usually not necessay.
 
     :param md: Metadata object to convert.
-    :type md: :class:`~mspasspy.ccore.Metadata`
+    :type md: :class:`~mspasspy.ccore.utility.Metadata`
     :return: Python dict equivalent to md.
     :rtype: dict
     """
@@ -72,7 +72,7 @@ def TimeSeries2Trace(ts):
     python uses call by reference d may thus be altered.
 
     :param ts: is the TimeSeries object to be converted
-    :type ts: :class:`~mspasspy.ccore.TimeSeries`
+    :type ts: :class:`~mspasspy.ccore.seismic.TimeSeries`
     :return: an obspy Trace object from conversion of d.  An empty Trace
         object will be returned if d was marked dead
     :rtype: :class:`~obspy.core.trace.Trace`
@@ -155,7 +155,7 @@ def Seismogram2Stream(sg, chanmap=['E', 'N', 'Z'], hang=[90.0, 0.0, 0.0], vang=[
     the error log it may contain.
 
     :param sg: is the Seismogram object to be converted
-    :type sg: :class:`~mspasspy.ccore.Seismogram`
+    :type sg: :class:`~mspasspy.ccore.seismic.Seismogram`
     :param chanmap:  3 element list of channel names to be assigned components
     :type chanmap: :class:`list`
     :param hang:  3 element list of horizontal angle attributes (azimuth in degrees)
@@ -228,7 +228,7 @@ def Trace2TimeSeries(trace, history=None):
     :type trace: :class:`~obspy.core.trace.Trace`
     :param history:  mspass ProcessingHistory object to post to result.
     :return: TimeSeries object derived from obpsy input Trace object
-    :rtype: :class:`~mspasspy.ccore.TimeSeries`
+    :rtype: :class:`~mspasspy.ccore.seismic.TimeSeries`
     """
     # The obspy trace object stats attribute only acts like a dictionary
     # we can't use it directly but this trick simplifies the copy to
@@ -504,6 +504,7 @@ obspy.core.Stream.toTimeSeriesEnsemble = Stream2TimeSeriesEnsemble
 def SeismogramEnsemble2Stream(sge):
     """
     Convert a seismogram ensemble to stream
+
     :param sge: seismogram ensemble input
     :type sge: :class:`~mspasspy.ccore.seismic.SeismogramEnsemble`
     :return: stream
@@ -529,6 +530,7 @@ SeismogramEnsemble.toStream = SeismogramEnsemble2Stream
 def Stream2SeismogramEnsemble(stream):
     """
     Convert a stream to seismogram ensemble.
+    
     :param stream: stream input
     :type stream: :class:`~obspy.core.stream.Stream`
     :return: converted seismogram ensemble
