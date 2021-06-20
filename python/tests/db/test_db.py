@@ -368,6 +368,35 @@ class TestDatabase():
         dead_elog_doc_list = self.db['elog'].find({'wf_TimeSeries_id': ts['_id'], 'tombstone': {'$exists': True}})
         assert len(list(dead_elog_doc_list)) == 3
 
+        # test update TimeSeries with non exist id under promiscuous mode
+        promiscuous_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(promiscuous_ts, '1', 'deepcopy')
+        non_exist_id = ObjectId()
+        promiscuous_ts['_id'] = non_exist_id
+        non_fatal_error_cnt = self.db.update_metadata(promiscuous_ts, mode='promiscuous')
+        res = self.db['wf_TimeSeries'].find_one({'_id': promiscuous_ts['_id']})
+        assert res
+        assert '_id' in promiscuous_ts
+        assert not non_exist_id == promiscuous_ts['_id']
+        assert promiscuous_ts.live
+        assert non_fatal_error_cnt == 0
+
+        # test update TimeSeries with non exist id under cautious mode
+        cautious_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(cautious_ts, '1', 'deepcopy')
+        non_exist_id = ObjectId()
+        cautious_ts['_id'] = non_exist_id
+        with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under cautious mode.".format(non_exist_id)):
+            self.db.update_metadata(cautious_ts, mode='cautious')
+
+        # test update TimeSeries with non exist id under pedantic mode
+        pedantic_ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(pedantic_ts, '1', 'deepcopy')
+        non_exist_id = ObjectId()
+        pedantic_ts['_id'] = non_exist_id
+        with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under pedantic mode.".format(non_exist_id)):
+            self.db.update_metadata(pedantic_ts, mode='pedantic')
+
     def test_save_read_data(self):
         # new object
         # read data
@@ -409,7 +438,6 @@ class TestDatabase():
         assert save_res_code == -1
         assert not pedantic_seis.live
         
-        
         self.db.database_schema.set_default('wf_Seismogram', 'wf')
         promiscuous_seis2 = self.db.read_data(promiscuous_seis['_id'], mode='promiscuous', normalize=['site', 'source'])
         no_source_seis2 = self.db.read_data(promiscuous_seis['_id'], mode='promiscuous', normalize=['site'])
@@ -427,6 +455,16 @@ class TestDatabase():
         assert 'source_depth' not in no_source_seis2
         assert 'source_time' not in no_source_seis2
         assert 'source_magnitude' not in no_source_seis2
+
+        # test save with non exist id under promiscuous mode
+        non_exist_id = ObjectId()
+        promiscuous_seis['_id'] = non_exist_id
+        logging_helper.info(promiscuous_seis, '3', 'save_data')
+        save_res_code = self.db.save_data(promiscuous_seis, mode='promiscuous')
+        assert save_res_code == 0
+        assert promiscuous_seis.live
+        assert '_id' in promiscuous_seis
+        assert not promiscuous_seis['_id'] == non_exist_id
 
         # test cautious read
         cautious_seis.set_live()
@@ -451,6 +489,16 @@ class TestDatabase():
         assert cautious_seis2.live
         assert cautious_seis2['npts'] == 255
 
+        # test save with non exist id under cautious mode
+        non_exist_id = ObjectId()
+        cautious_seis['_id'] = non_exist_id
+        logging_helper.info(cautious_seis, '3', 'save_data')
+        save_res_code = self.db.save_data(cautious_seis, mode='cautious')
+        assert save_res_code == 0
+        assert cautious_seis.live
+        assert '_id' in cautious_seis
+        assert not cautious_seis['_id'] == non_exist_id
+
         # test pedantic read
         pedantic_seis.set_live()
         logging_helper.info(pedantic_seis, '2', 'save_data')
@@ -462,6 +510,21 @@ class TestDatabase():
         elog_doc = self.db['elog'].find_one({'wf_Seismogram_id': pedantic_seis['_id'], 'tombstone': {'$exists': True}})
         assert 'data' not in pedantic_seis2
 
+        # test save with non exist id under pedantic mode
+        non_exist_id = ObjectId()
+        pedantic_seis['_id'] = non_exist_id
+        logging_helper.info(pedantic_seis, '3', 'save_data')
+        save_res_code = self.db.save_data(pedantic_seis, mode='pedantic')
+        # save is unsuccessful because sampling_rate has type str
+        assert save_res_code == -1
+        # no attribute errors
+        pedantic_seis.put_double('sampling_rate', 1.0)
+        pedantic_seis.set_live()
+        save_res_code = self.db.save_data(pedantic_seis, mode='pedantic')
+        assert pedantic_seis.live
+        assert '_id' in pedantic_seis
+        assert not pedantic_seis['_id'] == non_exist_id
+
         # test read exclude parameter
         assert '_id' in promiscuous_seis2
         assert 'channel_id' in promiscuous_seis2
@@ -470,7 +533,8 @@ class TestDatabase():
         assert 'channel_id' not in exclude_promiscuous_seis2
         assert 'source_depth' not in exclude_promiscuous_seis2
 
-        wf_keys = ['_id', 'npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
+        # _id is changed before int test save with non exist id under promiscuous mode
+        wf_keys = ['npts', 'delta', 'sampling_rate', 'calib', 'starttime', 'dtype', 'site_id', 'channel_id',
                    'source_id', 'storage_mode', 'dir', 'dfile', 'foff', 'gridfs_id', 'url', 'elog_id',
                    'history_object_id', 'time_standard', 'tmatrix']
         for key in wf_keys:
