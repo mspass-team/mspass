@@ -1518,8 +1518,8 @@ class Database(pymongo.database.Database):
                 break
         return tuple([wrong_types,undef])
 
-    def update_data(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
-                        data_tag=None, alg_name='update_data', alg_id='0'):
+    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
+                        data_tag=None, alg_name='update_metadata', alg_id='0'):
         """
         Use this method to update an atomic data object (TimeSeries or Seismogram)
         to be managed with MongoDB.  The Metadata are stored as documents in
@@ -1544,7 +1544,7 @@ class Database(pymongo.database.Database):
         return self._update_metadata(mspass_object, mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag, alg_name, alg_id, False)
 
     def _update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
-                        data_tag=None, alg_name='update_data', alg_id='0', is_save_data=False):
+                        data_tag=None, alg_name='_update_metadata', alg_id='0', is_save_data=False):
         """
         Stores attributes stored in the Metadata container of an object in
         MongoDB wih optional schema enforcement.
