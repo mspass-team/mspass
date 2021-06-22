@@ -262,12 +262,12 @@ class TestDatabase():
         load_nodes = ts_3.get_nodes()
         assert str(nodes) == str(load_nodes)
 
-    def test_update_data(self):
+    def test_update_metadata(self):
         ts = copy.deepcopy(self.test_ts)
         logging_helper.info(ts, '1', 'deepcopy')
         exclude = ['extra2']
         # test promiscuous, exclude_keys, clear aliases, empty value
-        non_fatal_error_cnt = self.db.update_data(ts, mode='promiscuous', exclude_keys=exclude)
+        non_fatal_error_cnt = self.db.update_metadata(ts, mode='promiscuous', exclude_keys=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert res['starttime'] == ts['t0']
@@ -284,10 +284,10 @@ class TestDatabase():
         assert wf_doc
         assert history_object_doc
         assert history_object_doc['wf_TimeSeries_id'] == ts['_id']
-        assert history_object_doc['alg_name'] == 'update_data'
+        assert history_object_doc['alg_name'] == 'update_metadata'
         assert history_object_doc['alg_id'] == '0'
         assert ts.number_of_stages() == 0
-        assert ts.current_nodedata().algorithm == 'update_data'
+        assert ts.current_nodedata().algorithm == 'update_metadata'
         assert ts.current_nodedata().algid == '0'
         assert ts.id() == wf_doc['history_object_id']
         assert ts.is_origin()
@@ -303,8 +303,8 @@ class TestDatabase():
 
         # test read-only attribute
         ts['net'] = 'Asia'
-        logging_helper.info(ts, '2', 'update_data')
-        non_fatal_error_cnt = self.db.update_data(ts, mode='promiscuous', exclude_keys=exclude)
+        logging_helper.info(ts, '2', 'update_metadata')
+        non_fatal_error_cnt = self.db.update_metadata(ts, mode='promiscuous', exclude_keys=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert 'net' not in res
         assert 'READONLYERROR_net' in res
@@ -316,16 +316,16 @@ class TestDatabase():
         
         # test promiscuous
         ts['extra1'] = 'extra1+'
-        logging_helper.info(ts, '2', 'update_data')
-        non_fatal_error_cnt = self.db.update_data(ts, mode='promiscuous', exclude_keys=exclude)
+        logging_helper.info(ts, '2', 'update_metadata')
+        non_fatal_error_cnt = self.db.update_metadata(ts, mode='promiscuous', exclude_keys=exclude)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['extra1'] == 'extra1+'
 
         # test cautious
         old_npts = ts['npts']
         ts.put_string('npts', 'xyz')
-        logging_helper.info(ts, '2', 'update_data')
-        non_fatal_error_cnt = self.db.update_data(ts, mode='cautious')
+        logging_helper.info(ts, '2', 'update_metadata')
+        non_fatal_error_cnt = self.db.update_metadata(ts, mode='cautious')
         # required attribute update fail -> fatal error causes dead
         assert non_fatal_error_cnt == -1
         assert not ts.live
@@ -343,8 +343,8 @@ class TestDatabase():
         # sampling rate is optional constraint
         old_sampling_rate = ts['sampling_rate']
         ts.put_string('sampling_rate', 'xyz')
-        logging_helper.info(ts, '2', 'update_data')
-        non_fatal_error_cnt = self.db.update_data(ts, mode='pedantic')
+        logging_helper.info(ts, '2', 'update_metadata')
+        non_fatal_error_cnt = self.db.update_metadata(ts, mode='pedantic')
         # required attribute update fail -> fatal error causes dead
         assert non_fatal_error_cnt == -1
         assert not ts.live
@@ -362,8 +362,8 @@ class TestDatabase():
         # save with a dead object
         ts.live = False
         # Nothing should be saved here, otherwise it will cause error converting 'npts':'xyz'
-        logging_helper.info(ts, '2', 'update_data')
-        self.db.update_data(ts)
+        logging_helper.info(ts, '2', 'update_metadata')
+        self.db.update_metadata(ts)
         assert ts.elog.get_error_log()[-1].message == "Skipped updating the metadata of a dead object"
         dead_elog_doc_list = self.db['elog'].find({'wf_TimeSeries_id': ts['_id'], 'tombstone': {'$exists': True}})
         assert len(list(dead_elog_doc_list)) == 3
@@ -373,7 +373,7 @@ class TestDatabase():
         logging_helper.info(promiscuous_ts, '1', 'deepcopy')
         non_exist_id = ObjectId()
         promiscuous_ts['_id'] = non_exist_id
-        non_fatal_error_cnt = self.db.update_data(promiscuous_ts, mode='promiscuous')
+        non_fatal_error_cnt = self.db.update_metadata(promiscuous_ts, mode='promiscuous')
         res = self.db['wf_TimeSeries'].find_one({'_id': promiscuous_ts['_id']})
         assert res
         assert '_id' in promiscuous_ts
@@ -387,7 +387,7 @@ class TestDatabase():
         non_exist_id = ObjectId()
         cautious_ts['_id'] = non_exist_id
         with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under cautious mode.".format(non_exist_id)):
-            self.db.update_data(cautious_ts, mode='cautious')
+            self.db.update_metadata(cautious_ts, mode='cautious')
 
         # test update TimeSeries with non exist id under pedantic mode
         pedantic_ts = copy.deepcopy(self.test_ts)
@@ -395,7 +395,7 @@ class TestDatabase():
         non_exist_id = ObjectId()
         pedantic_ts['_id'] = non_exist_id
         with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under pedantic mode.".format(non_exist_id)):
-            self.db.update_data(pedantic_ts, mode='pedantic')
+            self.db.update_metadata(pedantic_ts, mode='pedantic')
 
     def test_save_read_data(self):
         # new object
