@@ -578,7 +578,7 @@ class Database(pymongo.database.Database):
         update_res_code = -1
         if mspass_object.live:
             # 1. save metadata, with update mode
-            update_res_code = self.update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag, alg_name, alg_id)
+            update_res_code = self._update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag, alg_name, alg_id, True)
 
             if mspass_object.live:
                 # 2. save actual data in file/gridfs mode
@@ -1519,7 +1519,32 @@ class Database(pymongo.database.Database):
         return tuple([wrong_types,undef])
 
     def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
-                        data_tag=None, alg_name='update_data', alg_id='0'):
+                        data_tag=None, alg_name='update_metadata', alg_id='0'):
+        """
+        Use this method to update an atomic data object (TimeSeries or Seismogram)
+        to be managed with MongoDB.  The Metadata are stored as documents in
+        a MongoDB collection. It basically call the internal _update_metadata method
+        which is used by save_data as well.
+
+        :param mspass_object: the object you want to update.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
+        :type mode: :class:`str`
+        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
+        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.
+        :param data_tag: a user specified "data_tag" key to tag the saved wf document.
+        :type data_tag: :class:`str`
+        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+        :type alg_name: :class:`str`
+        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        """
+        return self._update_metadata(mspass_object, mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag, alg_name, alg_id, False)
+
+    def _update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
+                        data_tag=None, alg_name='_update_metadata', alg_id='0', is_save_data=False):
         """
         Stores attributes stored in the Metadata container of an object in
         MongoDB wih optional schema enforcement.
@@ -1540,6 +1565,12 @@ class Database(pymongo.database.Database):
         :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.
         :param data_tag: a user specified "data_tag" key to tag the saved wf document.
         :type data_tag: :class:`str`
+        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+        :type alg_name: :class:`str`
+        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :param is_save_data: True if it is called by save_data method, otherwise it only updates metadata
+        :type is_save_data: :class:`bool`
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -1569,6 +1600,14 @@ class Database(pymongo.database.Database):
 
             if not new_insertion:
                 object_doc = col.find_one({'_id': mspass_object['_id']})
+                # can't find the corresponding record in collection, then we treat it as new insertion if it is called from save_data
+                # if update metadata only, only promiscuous mode is allowed and we treat it as new insertion as well
+                if not object_doc:
+                    # eliminate _id field if it is saved
+                    if not is_save_data and (mode == "cautious" or mode == "pedantic"):
+                        raise MsPASSError('Can not find the record with _id: {} in {} collection under {} mode.'.format(mspass_object['_id'], wf_collection, mode), 'Fatal')
+                    del mspass_object['_id']
+                    new_insertion = True
 
             # 1. create the dict of metadata to be saved in wf
             insert_dict = {}
@@ -1705,7 +1744,7 @@ class Database(pymongo.database.Database):
 
     def read_ensemble_data(self, objectid_list, ensemble_metadata={},
       mode='promiscuous', normalize=None, load_history=False,
-       exclude_keys=None, collection='wf', data_tag=None):
+       exclude_keys=None, collection='wf', data_tag=None, alg_name='read_ensemble_data', alg_id='0'):
         """
         Reads an subset of a dataset with some logical grouping into an Ensemble container.
 
@@ -1762,15 +1801,15 @@ class Database(pymongo.database.Database):
             ensemble[k]=ensemble_metadata[k]
 
         for i in objectid_list:
-            data = self.read_data(
-                i, mode, normalize, load_history, exclude_keys, wf_collection, data_tag)
+            data = self.read_data(i, mode=mode, normalize=normalize, load_history=load_history, exclude_keys=exclude_keys, collection=wf_collection,
+                                data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
             if data:
                 ensemble.member.append(data)
 
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dir_list=None, dfile_list=None,
-                           exclude_keys=None, exclude_objects=None, collection=None, data_tag=None):
+                           exclude_keys=None, exclude_objects=None, collection=None, data_tag=None, alg_name='save_ensemble_data', alg_id='0'):
         """
         Save an Ensemble container of a group of data objecs to MongoDB.
 
@@ -1826,7 +1865,7 @@ class Database(pymongo.database.Database):
             for i in range(len(ensemble_object.member)):
                 if i not in exclude_objects:
                     self.save_data(ensemble_object.member[i], mode=mode, storage_mode=storage_mode, dir=dir_list[j],
-                                   dfile=dfile_list[j], exclude_keys=exclude_keys, collection=collection, data_tag=data_tag)
+                                   dfile=dfile_list[j], exclude_keys=exclude_keys, collection=collection, data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
                     j += 1
         elif storage_mode == "url":
             pass
@@ -1834,7 +1873,7 @@ class Database(pymongo.database.Database):
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
     def update_ensemble_metadata(self, ensemble_object, mode='promiscuous', exclude_keys=None, exclude_objects=None,
-                                 collection=None, ignore_metadata_changed_test=False, data_tag=None):
+                                 collection=None, ignore_metadata_changed_test=False, data_tag=None, alg_name='update_ensemble_metadata', alg_id='0'):
         """
         Updates (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
         and metadata attributes.
@@ -1869,7 +1908,9 @@ class Database(pymongo.database.Database):
 
         for i in range(len(ensemble_object.member)):
             if i not in exclude_objects:
-                self.update_metadata(ensemble_object.member[i], mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag)
+                self._update_metadata(ensemble_object.member[i], mode=mode, exclude_keys=exclude_keys, collection=collection, 
+                                    ignore_metadata_changed_test=ignore_metadata_changed_test, data_tag=data_tag, alg_name=alg_name,
+                                    alg_id=alg_id, is_save_data=False)
 
     def delete_data(self, object_id, object_type, remove_unreferenced_files=False,
        clear_history=True, clear_elog=True):
