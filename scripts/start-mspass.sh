@@ -88,6 +88,24 @@ if [ $# -eq 0 ]; then
     sleep 30
   }
 
+  function start_db_scratch {
+    [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
+    mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all &
+  }
+
+  function start_db_tmp {
+    # create db and log dirs if not exists
+    [[ -d /tmp/db ]] || mkdir -p /tmp/db
+    [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log
+    # copy all data on scratch to the local tmp folder
+    if [[ -d ${MSPASS_DB_DIR}/data ]]; then
+      cp -r ${MSPASS_DB_DIR}/data /tmp/db
+    else
+      mkdir -p /tmp/db/data
+    fi
+    mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all &
+  }
+
   MY_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
   if [ "$MSPASS_SCHEDULER" = "spark" ]; then
     MSPASS_SCHEDULER_CMD='$SPARK_HOME/sbin/start-master.sh'
@@ -99,19 +117,9 @@ if [ $# -eq 0 ]; then
 
   if [ "$MSPASS_ROLE" = "db" ]; then
     if [ "$MSPASS_DB_PATH" = "tmp" ]; then
-      # create db and log dirs if not exists
-      [[ -d /tmp/db ]] || mkdir -p /tmp/db
-      [[ -d /tmp/logs ]] || mkdir -p /tmp/logs && touch /tmp/logs/mongo_log
-      # copy all data on scratch to the local tmp folder
-      if [[ -d ${MSPASS_DB_DIR}/data ]]; then
-        cp -r ${MSPASS_DB_DIR}/data /tmp/db
-      else
-        mkdir -p /tmp/db/data
-      fi
-      mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all
+      start_db_tmp
     else
-      [[ -d $MONGO_DATA ]] || mkdir -p $MONGO_DATA
-      mongod --port $MONGODB_PORT --dbpath $MONGO_DATA --logpath $MONGO_LOG --bind_ip_all
+      start_db_scratch
     fi
   elif [ "$MSPASS_ROLE" = "dbmanager" ]; then
     # config server configuration
@@ -270,6 +278,11 @@ if [ $# -eq 0 ]; then
     MSPASS_SCHEDULER_ADDRESS=$HOSTNAME
     eval $MSPASS_SCHEDULER_CMD
     eval $MSPASS_WORKER_CMD
+    if [ "$MSPASS_DB_PATH" = "tmp" ]; then
+      start_db_tmp
+    else
+      start_db_scratch
+    fi
     start_mspass_frontend
     clean_up_single_node
   fi
