@@ -15,12 +15,13 @@ Please make sure Docker is correctly installed and the Docker Engine is running 
 Download MsPASS Container
 -------------------------
 
-The MsPASS container image is built and hosted on Docker Hub `here <https://hub.docker.com/r/wangyinz/mspass>`__.
+The MsPASS container image is built and hosted on `Docker Hub <https://hub.docker.com/r/mspass/mspass>`__. 
+It is also available in the `GitHub Container Registry <https://github.com/mspass-team/mspass/pkgs/container/mspass>`__.
 Once you have docker setup properly, use the following command in a terminal to pull the MsPASS image from Docker Hub to your local machine:
 
 .. code-block:: 
 
-    docker pull wangyinz/mspass
+    docker pull mspass/mspass
 
 Be patient as this can take a few minutes depending on your internet speed. 
 Note you can run this command from anywhere. 
@@ -39,7 +40,7 @@ To run MsPASS in its default setting, use this command:
 
 .. code-block:: 
 
-    docker run -p 8888:8888 wangyinz/mspass
+    docker run -p 8888:8888 mspass/mspass
 
 The ``-p 8888:8888`` argument maps host's ``8888`` port to the container's ``8888`` port. 
 Note that ``8888`` is the default port for the Jupyter Notebook frontend. 
@@ -58,7 +59,7 @@ If you want to mount current directory on your system to the container, use this
 
 .. code-block:: 
 
-    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind wangyinz/mspass
+    docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
 
 The ``--mount`` option binds current directory on your system to */home* within the container. 
 */home* is the root directory of the notebook. 

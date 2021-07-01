@@ -357,7 +357,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
 <span class="nt">services</span><span class="p">:</span>
 
   <span class="nt">mspass-dbmanager</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh</span>
@@ -373,7 +373,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
   
   <span class="nt">mspass-shard-0</span><span class="p">:</span>
     <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">environment</span><span class="p">:</span>
@@ -384,7 +384,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
   
   <span class="nt">mspass-shard-1</span><span class="p">:</span>
     <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">environment</span><span class="p">:</span>
@@ -394,7 +394,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">SHARD_DB_PATH</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">scratch</span>
 
   <span class="nt">mspass-scheduler</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">ports</span><span class="p">:</span>
@@ -405,7 +405,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">DASK_SCHEDULER_PORT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8786</span>
   
   <span class="nt">mspass-worker</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh</span>
@@ -417,7 +417,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
   
   <span class="nt">mspass-frontend</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh</span>
@@ -521,7 +521,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
 <span class="nt">services</span><span class="p">:</span>
 
   <span class="nt">mspass-dbmanager</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh</span>
@@ -537,7 +537,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
   
   <span class="nt">mspass-shard-0</span><span class="p">:</span>
     <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-shard-0</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">environment</span><span class="p">:</span>
@@ -547,7 +547,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
   
   <span class="nt">mspass-shard-1</span><span class="p">:</span>
     <span class="nt">hostname</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-shard-1</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">environment</span><span class="p">:</span>
@@ -556,7 +556,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">MONGODB_PORT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">27017</span>
 
   <span class="nt">mspass-scheduler</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">ports</span><span class="p">:</span>
@@ -567,7 +567,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">SPARK_MASTER_PORT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">7077</span>
   
   <span class="nt">mspass-worker</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span>
@@ -579,7 +579,7 @@ Below, we provide two exemplary Docker Compose configurations that have distribu
       <span class="nt">MSPASS_SCHEDULER_ADDRESS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass-scheduler</span>
   
   <span class="nt">mspass-frontend</span><span class="p">:</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">wangyinz/mspass</span>
+    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mspass/mspass</span>
     <span class="nt">volumes</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="s">&quot;${PWD}:/home&quot;</span>
     <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:7077 -timeout 240s /usr/sbin/start-mspass.sh</span>

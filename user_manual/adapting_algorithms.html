@@ -359,18 +359,18 @@ the original code to MsPASS libraries.  In addition to name changes
 there are some major differences in the API for TimeSeries and Seismogram
 objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
 The current version of the implementations of these two algorithms can be
-found <a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+found <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
 <p>MsPASS uses the <cite>pybind11 package&lt;https://pybind11.readthedocs.io/en/stable/&gt;</cite>
 to bind C++ or C code for use by the python interpreter.  For the present
 all C/C++ code is bound to a single module we call mspasspy.ccore.
 The details of the build system used in MsPASS are best discussed in a
 separate document (Need a link here eventually).  This particular example
 required adding the above function prototype definitions to
-<a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">this include file</a>
-and the C++ function code <a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h">this include file</a>
+and the C++ function code <a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc">here</a>.</p>
 <p>Creating the python bindings for these two functions required inserting the
 following blocks in the binding code for the algorithms module found
-<a class="reference external" href="https://github.com/wangyinz/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
+<a class="reference external" href="https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc">here</a>:</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">m</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;_WindowData&quot;</span><span class="p">,</span><span class="o">&amp;</span><span class="n">mspass</span><span class="o">::</span><span class="n">WindowData</span><span class="p">,</span><span class="s">&quot;Reduce data to window inside original&quot;</span><span class="p">,</span>
   <span class="n">py</span><span class="o">::</span><span class="n">return_value_policy</span><span class="o">::</span><span class="n">copy</span><span class="p">,</span>
   <span class="n">py</span><span class="o">::</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;d&quot;</span><span class="p">),</span>

@@ -229,9 +229,10 @@ Please make sure Docker is correctly installed and the Docker Engine is running 
 </div>
 <div class="section" id="download-mspass-container">
 <h2>Download MsPASS Container<a class="headerlink" href="#download-mspass-container" title="Permalink to this headline">¶</a></h2>
-<p>The MsPASS container image is built and hosted on Docker Hub <a class="reference external" href="https://hub.docker.com/r/wangyinz/mspass">here</a>.
+<p>The MsPASS container image is built and hosted on <a class="reference external" href="https://hub.docker.com/r/mspass/mspass">Docker Hub</a>.
+It is also available in the <a class="reference external" href="https://github.com/mspass-team/mspass/pkgs/container/mspass">GitHub Container Registry</a>.
 Once you have docker setup properly, use the following command in a terminal to pull the MsPASS image from Docker Hub to your local machine:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">pull</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
 </pre></div>
 </div>
 <p>Be patient as this can take a few minutes depending on your internet speed.
@@ -245,7 +246,7 @@ Local files/data will be referred to with normal font text.</p>
 <div class="section" id="run-mspass-container-in-all-in-one-mode">
 <h2>Run MsPASS Container in All-in-one Mode<a class="headerlink" href="#run-mspass-container-in-all-in-one-mode" title="Permalink to this headline">¶</a></h2>
 <p>To run MsPASS in its default setting, use this command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="n">wangyinz</span><span class="o">/</span><span class="n">mspass</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">docker</span> <span class="n">run</span> <span class="o">-</span><span class="n">p</span> <span class="mi">8888</span><span class="p">:</span><span class="mi">8888</span> <span class="n">mspass</span><span class="o">/</span><span class="n">mspass</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">-p</span> <span class="pre">8888:8888</span></code> argument maps host’s <code class="docutils literal notranslate"><span class="pre">8888</span></code> port to the container’s <code class="docutils literal notranslate"><span class="pre">8888</span></code> port.
@@ -260,7 +261,7 @@ The root directory of the notebook contains three different directories: <em>db<
 Because no mounting arguments were given to the <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> command above, any files you created will stay in the container, and will be removed when the container is removed.
 To shut down and exit the container, you can either click the “Quit” button of the Notebook Dashboard or simply use Control-C.</p>
 <p>If you want to mount current directory on your system to the container, use this command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind wangyinz/mspass
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>docker run -p 8888:8888 --mount src=`pwd`,target=/home,type=bind mspass/mspass
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">--mount</span></code> option binds current directory on your system to <em>/home</em> within the container.
