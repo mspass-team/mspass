@@ -16,7 +16,6 @@ Download MsPASS Container
 -------------------------
 
 The MsPASS container image is built and hosted on Docker Hub `here <https://hub.docker.com/r/wangyinz/mspass>`__.
-You may want to create an account and sign in your Docker following `this <https://docs.docker.com/docker-id/>`__ instruction. 
 Once you have docker setup properly, use the following command in a terminal to pull the MsPASS image from Docker Hub to your local machine:
 
 .. code-block:: 
