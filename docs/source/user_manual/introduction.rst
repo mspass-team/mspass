@@ -106,12 +106,12 @@ Getting Started
 
 The first step to use MsPASS is to install a local copy that you can use
 for initial experimentation.
-`Click here <https://github.com/wangyinz/mspass/wiki/Using-MsPASS-with-Docker>`__
+`Click here <https://github.com/mspass-team/mspass/wiki/Using-MsPASS-with-Docker>`__
 for installation instructions.  (CHANGE ME - POINTS NOW TO WIKI PAGE BUT
 WE NEED A REAL INSTALLATION PAGE)
 
 We have an extensive set of tutorials based on jupyter notebooks
-found `here <https://github.com/wangyinz/mspass_tutorial>`__.
+found `here <https://github.com/mspass-team/mspass_tutorial>`__.
 For most people these are a good way to learn the package on their own.
 
 Organization of User Manual

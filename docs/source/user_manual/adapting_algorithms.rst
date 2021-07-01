@@ -151,7 +151,7 @@ the original code to MsPASS libraries.  In addition to name changes
 there are some major differences in the API for TimeSeries and Seismogram
 objects from their ancestors (TimeSeries and ThreeComponentSeismogram).
 The current version of the implementations of these two algorithms can be
-found `here <https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
+found `here <https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
 
 MsPASS uses the `pybind11 package<https://pybind11.readthedocs.io/en/stable/>`
 to bind C++ or C code for use by the python interpreter.  For the present
@@ -159,12 +159,12 @@ all C/C++ code is bound to a single module we call mspasspy.ccore.
 The details of the build system used in MsPASS are best discussed in a
 separate document (Need a link here eventually).  This particular example
 required adding the above function prototype definitions to
-`this include file <https://github.com/wangyinz/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h>`__
-and the C++ function code `here <https://github.com/wangyinz/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
+`this include file <https://github.com/mspass-team/mspass/blob/master/cxx/include/mspass/algorithms/algorithms.h>`__
+and the C++ function code `here <https://github.com/mspass-team/mspass/blob/master/cxx/src/lib/algorithms/slice_and_dice.cc>`__.
 
 Creating the python bindings for these two functions required inserting the
 following blocks in the binding code for the algorithms module found
-`here <https://github.com/wangyinz/mspass/blob/master/cxx/python/algorithms/basic_py.cc>`__:
+`here <https://github.com/mspass-team/mspass/blob/master/cxx/python/algorithms/basic_py.cc>`__:
 
 .. code-block:: c
 
