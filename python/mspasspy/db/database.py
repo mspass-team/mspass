@@ -1793,19 +1793,18 @@ class Database(pymongo.database.Database):
                 object_type, wf_collection), 'Fatal')
 
         # if objectid_list is a cursor, convert the cursor to a list
-        member_list = []
-        for i in objectid_list:
-            member_list.append(i)
+        if type(objectid_list) is pymongo.cursor.Cursor:
+            objectid_list = list(objectid_list)
 
         if object_type is TimeSeries:
-            ensemble = TimeSeriesEnsemble(len(member_list))
+            ensemble = TimeSeriesEnsemble(len(objectid_list))
         else:
-            ensemble = SeismogramEnsemble(len(member_list))
+            ensemble = SeismogramEnsemble(len(objectid_list))
         # Here we post the ensemble metdata - see docstring notes on this feature
         for k in ensemble_metadata:
             ensemble[k]=ensemble_metadata[k]
 
-        for i in member_list:
+        for i in objectid_list:
             data = self.read_data(i, mode=mode, normalize=normalize, load_history=load_history, exclude_keys=exclude_keys, collection=wf_collection,
                                 data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
             if data:
