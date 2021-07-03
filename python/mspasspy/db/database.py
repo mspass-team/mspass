@@ -1759,7 +1759,7 @@ class Database(pymongo.database.Database):
         common arguments are used.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
-          of the ids defining the ensemble members.
+          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`
         :param ensemble_metadata:  is a dict or dict like container containing
           metadata to be stored in the ensemble's Metadata (common to the group)
           container.  A common choice would be to post the query used to
@@ -1792,15 +1792,20 @@ class Database(pymongo.database.Database):
             raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
                 object_type, wf_collection), 'Fatal')
 
+        # if objectid_list is a cursor, convert the cursor to a list
+        member_list = []
+        for i in objectid_list:
+            member_list.append(i)
+
         if object_type is TimeSeries:
-            ensemble = TimeSeriesEnsemble(len(list(objectid_list)))
+            ensemble = TimeSeriesEnsemble(len(member_list))
         else:
-            ensemble = SeismogramEnsemble(len(list(objectid_list)))
+            ensemble = SeismogramEnsemble(len(member_list))
         # Here we post the ensemble metdata - see docstring notes on this feature
         for k in ensemble_metadata:
             ensemble[k]=ensemble_metadata[k]
 
-        for i in objectid_list:
+        for i in member_list:
             data = self.read_data(i, mode=mode, normalize=normalize, load_history=load_history, exclude_keys=exclude_keys, collection=wf_collection,
                                 data_tag=data_tag, alg_name=alg_name, alg_id=alg_id)
             if data:

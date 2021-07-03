@@ -1410,6 +1410,9 @@ class TestDatabase():
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
 
     def test_read_ensemble_data(self):
+        # clean wf collection
+        self.db['wf_TimeSeries'].delete_many({})
+
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
@@ -1422,9 +1425,23 @@ class TestDatabase():
         ts_ensemble.member.append(ts3)
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='gridfs')
+        # test with python list
         res = self.db.read_ensemble_data([ts_ensemble.member[0]['_id'], ts_ensemble.member[1]['_id'],
                                           ts_ensemble.member[2]['_id']], ensemble_metadata={'key1':'value1', 'key2':'value2'}, 
                                           mode='cautious', normalize=['source','site','channel'])
+        assert len(res.member) == 3
+        for i in range(3):
+            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
+        # test ensemble_metadata
+        ts_ensemble_metadata = Metadata(res)
+        assert 'key1' in ts_ensemble_metadata and ts_ensemble_metadata['key1'] == 'value1'
+        assert 'key2' in ts_ensemble_metadata and ts_ensemble_metadata['key2'] == 'value2'
+
+        # test with cursor
+        cursor = self.db['wf_TimeSeries'].find({})
+        res = self.db.read_ensemble_data(cursor, ensemble_metadata={'key1':'value1', 'key2':'value2'}, 
+                                          mode='cautious', normalize=['source','site','channel'])
+
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
