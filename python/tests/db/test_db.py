@@ -410,6 +410,15 @@ class TestDatabase():
         assert 'cardinal' in res and res['cardinal']
         assert 'orthogonal' in res and res['orthogonal']
         assert res['tmatrix'] == [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        # change tmatrix
+        logging_helper.info(test_seis, '2', 'update_metadata')
+        test_seis.tmatrix = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+        non_fatal_error_cnt = self.db.update_metadata(test_seis, mode='promiscuous')
+        res = self.db['wf_Seismogram'].find_one({'_id': test_seis['_id']})
+        assert promiscuous_ts.live
+        assert non_fatal_error_cnt == 0
+        assert res
+        assert res['tmatrix'] == [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
 
     def test_save_read_data(self):
         # new object
@@ -541,7 +550,7 @@ class TestDatabase():
 
         # test read exclude parameter
         assert '_id' in promiscuous_seis2
-        assert 'channel_id' in promiscuous_seis2
+        assert 'channel_id' not in promiscuous_seis2
         assert 'source_depth' in promiscuous_seis2
         assert '_id' not in exclude_promiscuous_seis2
         assert 'channel_id' not in exclude_promiscuous_seis2
@@ -556,7 +565,6 @@ class TestDatabase():
                 assert promiscuous_seis[key] == promiscuous_seis2[key]
         assert 'test' not in promiscuous_seis2
         assert 'extra2' not in promiscuous_seis2
-        assert promiscuous_seis['channel_id'] == promiscuous_seis2['channel_id']
 
         res = self.db['site'].find_one({'_id': promiscuous_seis['site_id']})
         assert promiscuous_seis2['site_lat'] == res['lat']
