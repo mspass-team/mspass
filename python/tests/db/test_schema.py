@@ -158,7 +158,7 @@ class TestSchema():
 
     def test_keys(self):
         for k in self.dbschema.wf_TimeSeries.keys():
-            if k != 'test':
+            if k != 'test' and k != 'channel_id':
                 assert k in self.dbschema.wf_Seismogram.keys()
 
     def test_type(self):
@@ -192,13 +192,13 @@ class TestSchema():
 
     def test_DBSchemaDefinition_required_keys(self):
         assert self.dbschema.wf_TimeSeries.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode']
-        assert self.dbschema.wf_Seismogram.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode','tmatrix']
+        assert self.dbschema.wf_Seismogram.required_keys() == ['_id','npts','delta','starttime','starttime_shift','utc_convertible','time_standard','storage_mode','tmatrix','cardinal','orthogonal']
         assert self.dbschema.site.required_keys() == ['_id','lat','lon','elev']
         assert self.dbschema.source.required_keys() == ['_id','lat','lon','depth','time']
 
     def test_DBSchemaDefinition_xref_keys(self):
-        assert self.dbschema.wf_TimeSeries.xref_keys() == ['site_id','channel_id','source_id','history_object_id','elog_id']
-        assert self.dbschema.wf_Seismogram.xref_keys() == ['site_id','channel_id','source_id','history_object_id','elog_id']
+        assert self.dbschema.wf_TimeSeries.xref_keys() == ['source_id', 'site_id', 'history_object_id', 'elog_id', 'channel_id']
+        assert self.dbschema.wf_Seismogram.xref_keys() == ['source_id', 'site_id', 'history_object_id', 'elog_id']
         assert self.dbschema.site.xref_keys() == []
         assert self.dbschema.source.xref_keys() == []
 
@@ -210,10 +210,10 @@ class TestSchema():
         self.mdschema.TimeSeries.set_collection('channel_id', 'dummy')
         assert self.mdschema.TimeSeries.collection('channel_id') == 'dummy'
 
-        assert self.mdschema.TimeSeries.type('channel_id') == ObjectId
-        self.mdschema.TimeSeries.set_collection('channel_id', 'wf_Seismogram', self.dbschema)
-        assert self.mdschema.TimeSeries.collection('channel_id') == 'wf_Seismogram'
-        assert self.mdschema.TimeSeries.type('channel_id') == list
+        assert self.mdschema.TimeSeries.type('site_id') == ObjectId
+        self.mdschema.TimeSeries.set_collection('site_id', 'wf_Seismogram', self.dbschema)
+        assert self.mdschema.TimeSeries.collection('site_id') == 'wf_Seismogram'
+        assert self.mdschema.TimeSeries.type('site_id') == ObjectId
         
         with pytest.raises(MsPASSError, match='not defined'):
             self.mdschema.TimeSeries.set_collection('test100','wf_Seismogram')

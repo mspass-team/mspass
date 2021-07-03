@@ -287,7 +287,7 @@ PYBIND11_MODULE(seismic, m) {
       self.transform(static_cast<double(*)[3]>(info.ptr));
     },"Applies an arbitrary transformation matrix to the data")
     .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
-    .def_property("transformation_matrix",
+    .def_property("tmatrix",
       [](const CoreSeismogram &self){
         dmatrix tm = self.get_transformation_matrix();
         auto v = static_cast<Publicdmatrix&>(tm).ary;
@@ -430,13 +430,8 @@ PYBIND11_MODULE(seismic, m) {
         to go back and forth from obspy trace objects. */
         bts.set_tref(TimeReferenceType::UTC);
         ProcessingHistory emptyph;
-        double *dptr;
-        vector<double> sbuf;
-        sbuf.reserve(npts);   // A standard efficiency trick for std::vector
-        /* Initialize dptr here for clarity instead of putting it inside the
-        initialization block of the for loop - clearer to me anyway */
-        dptr=(double*)(info.ptr);
-        for(size_t i=0;i<npts;++i,++dptr) sbuf.push_back(*dptr);
+        vector<double> sbuf(npts);
+        memcpy(&sbuf[0], info.ptr, npts*sizeof(double));
         auto v = new TimeSeries(bts,md,emptyph,sbuf);
         return v;
       }))

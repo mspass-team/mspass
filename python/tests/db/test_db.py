@@ -397,6 +397,20 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under pedantic mode.".format(non_exist_id)):
             self.db.update_metadata(pedantic_ts, mode='pedantic')
 
+        # test tmatrix attribute when update seismogram
+        test_seis = get_live_seismogram()
+        logging_helper.info(test_seis, '1', 'deepcopy')
+        non_fatal_error_cnt = self.db.update_metadata(test_seis, mode='promiscuous')
+        res = self.db['wf_Seismogram'].find_one({'_id': test_seis['_id']})
+        assert res
+        assert '_id' in test_seis
+        assert promiscuous_ts.live
+        assert non_fatal_error_cnt == 0
+        assert res['site_id'] == test_seis['site_id']
+        assert 'cardinal' in res and res['cardinal']
+        assert 'orthogonal' in res and res['orthogonal']
+        assert res['tmatrix'] == [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+
     def test_save_read_data(self):
         # new object
         # read data
