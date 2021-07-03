@@ -417,40 +417,40 @@ def test_CoreSeismogram():
     # test metadata constructor
     md['tmatrix'] = np.random.rand(3, 3)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    assert (cseis.tmatrix == md['tmatrix']).all()
     md['tmatrix'] = dmatrix(np.random.rand(3, 3))
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    assert (cseis.tmatrix == md['tmatrix']).all()
     md['tmatrix'] = np.random.rand(9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(1, 9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(9, 1)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
 
     md['tmatrix'] = np.random.rand(3, 3).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.transformation_matrix,
+    assert np.isclose(cseis.tmatrix,
                       np.array(md['tmatrix']).reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(9).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.transformation_matrix,
+    assert np.isclose(cseis.tmatrix,
                       np.array(md['tmatrix']).reshape(3, 3)).all()
 
-    # test whether the setter of transformation_matrix updates metadata correctly
+    # test whether the setter of tmatrix updates metadata correctly
     tm = np.random.rand(1, 9)
-    cseis.transformation_matrix = tm
-    assert (cseis.transformation_matrix == tm.reshape(3, 3)).all()
-    assert np.isclose(cseis.transformation_matrix, np.array(
+    cseis.tmatrix = tm
+    assert (cseis.tmatrix == tm.reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(
         cseis['tmatrix']).reshape(3, 3)).all()
     tm = np.random.rand(9).tolist()
-    cseis.transformation_matrix = tm
-    assert np.isclose(cseis.transformation_matrix,
+    cseis.tmatrix = tm
+    assert np.isclose(cseis.tmatrix,
                       np.array(tm).reshape(3, 3)).all()
-    assert np.isclose(cseis.transformation_matrix, np.array(
+    assert np.isclose(cseis.tmatrix, np.array(
         cseis['tmatrix']).reshape(3, 3)).all()
 
     # test exceptions
@@ -563,7 +563,7 @@ def test_Seismogram():
 
     nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
     seis.rotate(nu)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.40824829,  0.40824829, -0.81649658],
                                  [0.57735027,  0.57735027,  0.57735027]]))).all()
@@ -575,7 +575,7 @@ def test_Seismogram():
 
     nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
     seis.rotate(SphericalCoordinate(nu))
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.40824829,  0.40824829, -0.81649658],
                                  [0.57735027,  0.57735027,  0.57735027]]))).all()
@@ -588,7 +588,7 @@ def test_Seismogram():
     sc.phi = np.pi/4
     sc.theta = 0.0
     seis.rotate(sc)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.70710678,  0.70710678,  0.],
                                  [0.,  0.,  1.]]))).all()
@@ -623,7 +623,7 @@ def test_Seismogram():
 
     seis.rotate(np.pi/4)
     seis.transform(a)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[1.41421,  0., 1],
                                  [0.,  1.41421, 1],
                                  [-0.707107, -0.707107, 0]]))).all()
@@ -641,13 +641,13 @@ def test_Seismogram():
     uvec.ux = 0.17085  # cos(-20deg)/5.5
     uvec.uy = -0.062185  # sin(-20deg)/5.5
     seis.free_surface_transformation(uvec, 5.0, 3.5)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[-0.171012, -0.469846,  0],
                                  [0.115793, -0.0421458, 0.445447],
                                  [-0.597975,  0.217647,  0.228152]]))).all()
 
-    seis.transformation_matrix = a
-    assert (seis.transformation_matrix == a).all()
+    seis.tmatrix = a
+    assert (seis.tmatrix == a).all()
 
 
 @pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])

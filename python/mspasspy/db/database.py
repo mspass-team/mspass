@@ -1793,9 +1793,9 @@ class Database(pymongo.database.Database):
                 object_type, wf_collection), 'Fatal')
 
         if object_type is TimeSeries:
-            ensemble = TimeSeriesEnsemble(len(objectid_list))
+            ensemble = TimeSeriesEnsemble(len(list(objectid_list)))
         else:
-            ensemble = SeismogramEnsemble(len(objectid_list))
+            ensemble = SeismogramEnsemble(len(list(objectid_list)))
         # Here we post the ensemble metdata - see docstring notes on this feature
         for k in ensemble_metadata:
             ensemble[k]=ensemble_metadata[k]
@@ -2185,6 +2185,13 @@ class Database(pymongo.database.Database):
         else:
             mspass_object['utc_convertible'] = True
             mspass_object['time_standard'] = 'UTC'
+        # If it is a seismogram, we need to update the tmatrix in the metadata to be consistent with the internal tmatrix
+        if isinstance(mspass_object, Seismogram):
+            t_matrix = mspass_object.tmatrix
+            mspass_object.tmatrix = t_matrix
+            # also update the cardinal and orthogonal attributes
+            mspass_object['cardinal'] = mspass_object.cardinal()
+            mspass_object['orthogonal'] = mspass_object.orthogonal()
 
     def _save_history(self, mspass_object, alg_name=None, alg_id=None, collection=None):
         """
