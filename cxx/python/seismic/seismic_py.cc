@@ -286,6 +286,8 @@ PYBIND11_MODULE(seismic, m) {
         throw py::value_error("transform expects a 3x3 matrix");
       self.transform(static_cast<double(*)[3]>(info.ptr));
     },"Applies an arbitrary transformation matrix to the data")
+    .def("cardinal ",&CoreSeismogram::cardinal,"Returns true if components are cardinal")
+    .def("orthogonal ",&CoreSeismogram::orthogonal,"Returns true if components are orthogonal")
     .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
     .def_property("tmatrix",
       [](const CoreSeismogram &self){
