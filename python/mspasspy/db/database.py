@@ -1759,7 +1759,7 @@ class Database(pymongo.database.Database):
         common arguments are used.
 
         :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,
-          of the ids defining the ensemble members.
+          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`
         :param ensemble_metadata:  is a dict or dict like container containing
           metadata to be stored in the ensemble's Metadata (common to the group)
           container.  A common choice would be to post the query used to
@@ -1791,6 +1791,10 @@ class Database(pymongo.database.Database):
         if object_type not in [TimeSeries, Seismogram]:
             raise MsPASSError('only TimeSeries and Seismogram are supported, but {} is requested. Please check the data_type of {} collection.'.format(
                 object_type, wf_collection), 'Fatal')
+
+        # if objectid_list is a cursor, convert the cursor to a list
+        if isinstance(objectid_list, pymongo.cursor.Cursor):
+            objectid_list = list(objectid_list)
 
         if object_type is TimeSeries:
             ensemble = TimeSeriesEnsemble(len(objectid_list))
@@ -2185,6 +2189,13 @@ class Database(pymongo.database.Database):
         else:
             mspass_object['utc_convertible'] = True
             mspass_object['time_standard'] = 'UTC'
+        # If it is a seismogram, we need to update the tmatrix in the metadata to be consistent with the internal tmatrix
+        if isinstance(mspass_object, Seismogram):
+            t_matrix = mspass_object.tmatrix
+            mspass_object.tmatrix = t_matrix
+            # also update the cardinal and orthogonal attributes
+            mspass_object['cardinal'] = mspass_object.cardinal()
+            mspass_object['orthogonal'] = mspass_object.orthogonal()
 
     def _save_history(self, mspass_object, alg_name=None, alg_id=None, collection=None):
         """

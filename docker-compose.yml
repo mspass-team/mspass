@@ -3,7 +3,7 @@ version: '3'
 services:
 
   mspass-dbmanager:
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     command: dockerize -wait tcp://mspass-shard-0:27017 -wait tcp://mspass-shard-1:27017 -timeout 240s /usr/sbin/start-mspass.sh
@@ -19,7 +19,7 @@ services:
   
   mspass-shard-0:
     hostname: mspass-shard-0
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     environment:
@@ -30,7 +30,7 @@ services:
   
   mspass-shard-1:
     hostname: mspass-shard-1
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     environment:
@@ -40,7 +40,7 @@ services:
       SHARD_DB_PATH: scratch
 
   mspass-scheduler:
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     ports:
@@ -51,7 +51,7 @@ services:
       DASK_SCHEDULER_PORT: 8786
   
   mspass-worker:
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     command: dockerize -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
@@ -63,7 +63,7 @@ services:
       MSPASS_SCHEDULER_ADDRESS: mspass-scheduler
   
   mspass-frontend:
-    image: wangyinz/mspass
+    image: mspass/mspass
     volumes:
       - "${PWD}:/home"
     command: dockerize -wait tcp://mspass-dbmanager:27017 -wait tcp://mspass-scheduler:8786 -timeout 240s /usr/sbin/start-mspass.sh
