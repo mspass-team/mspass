@@ -1946,7 +1946,7 @@
 <span class="sd">        common arguments are used.</span>
 
 <span class="sd">        :param objectid_list: a :class:`list` of :class:`bson.objectid.ObjectId`,</span>
-<span class="sd">          of the ids defining the ensemble members.</span>
+<span class="sd">          of the ids defining the ensemble members or a :class:`pymongo.cursor.Cursor`</span>
 <span class="sd">        :param ensemble_metadata:  is a dict or dict like container containing</span>
 <span class="sd">          metadata to be stored in the ensemble&#39;s Metadata (common to the group)</span>
 <span class="sd">          container.  A common choice would be to post the query used to</span>
@@ -1978,6 +1978,10 @@
         <span class="k">if</span> <span class="n">object_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;only TimeSeries and Seismogram are supported, but </span><span class="si">{}</span><span class="s1"> is requested. Please check the data_type of </span><span class="si">{}</span><span class="s1"> collection.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">object_type</span><span class="p">,</span> <span class="n">wf_collection</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
+
+        <span class="c1"># if objectid_list is a cursor, convert the cursor to a list</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">,</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">Cursor</span><span class="p">):</span>
+            <span class="n">objectid_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
             <span class="n">ensemble</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objectid_list</span><span class="p">))</span>
@@ -2372,6 +2376,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;utc_convertible&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;time_standard&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;UTC&#39;</span>
+        <span class="c1"># If it is a seismogram, we need to update the tmatrix in the metadata to be consistent with the internal tmatrix</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">):</span>
+            <span class="n">t_matrix</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">tmatrix</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">tmatrix</span> <span class="o">=</span> <span class="n">t_matrix</span>
+            <span class="c1"># also update the cardinal and orthogonal attributes</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;cardinal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">cardinal</span><span class="p">()</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;orthogonal&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">orthogonal</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_save_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
