@@ -21,7 +21,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 
 project = 'MsPASS'
-copyright = '2020, Ian Wang'
+copyright = '2020-2021, Ian Wang'
 author = 'Ian Wang'
 
 # The full version, including alpha/beta/rc tags
@@ -74,6 +74,15 @@ html_static_path = ['_static', 'doxygen']
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 html_show_sphinx = False
+
+html_context = {
+    "display_github": True,
+    "github_user": "mspass-team",
+    "github_repo": "mspass",
+    "github_version": "master",
+    "conf_py_path": "/docs/source/",
+    "theme_vcs_pageview_mode": "blob",
+}
 
 # Breathe Configuration
 breathe_default_project = 'MsPASS C++ API'
