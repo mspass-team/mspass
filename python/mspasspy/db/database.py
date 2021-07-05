@@ -1793,7 +1793,7 @@ class Database(pymongo.database.Database):
                 object_type, wf_collection), 'Fatal')
 
         # if objectid_list is a cursor, convert the cursor to a list
-        if type(objectid_list) is pymongo.cursor.Cursor:
+        if isinstance(objectid_list, pymongo.cursor.Cursor):
             objectid_list = list(objectid_list)
 
         if object_type is TimeSeries:
