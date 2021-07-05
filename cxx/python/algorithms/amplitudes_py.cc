@@ -54,8 +54,8 @@ PYBIND11_MODULE(amplitudes, m) {
     .value("ClipPerc",ScalingMethod::ClipPerc)
     .value("MAD",ScalingMethod::MAD)
   ;
-  /* We give the python names for these functions a trailing underscore as
-  a standard hit they are not to be used directly - should be hidden behing
+  /* We give the python names for these functions a leading underscore as
+  a standard hint they are not to be used directly - should be hidden behing
   python functions that simply the api and (more importantly) add an optional
   history preservation. */
   m.def("_scale",py::overload_cast<Seismogram&,const ScalingMethod,const double>(&scale<Seismogram>),
