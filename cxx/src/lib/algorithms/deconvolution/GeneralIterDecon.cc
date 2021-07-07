@@ -300,7 +300,7 @@ int GeneralIterDecon::load(const CoreSeismogram& draw, TimeWindow dwin_in)
         a bit larger than the range of desired lags as the iterative algorithm will
         not allow lags at the edges (defined by a construction parameter wavelet_pad)
         */
-        d_all=WindowData3C(draw,dwin);
+        d_all=WindowData(draw,dwin);
         ndwin=d_all.npts();
         return 0;
     } catch(...) {
@@ -311,7 +311,7 @@ int GeneralIterDecon::loadnoise(const CoreSeismogram& draw, TimeWindow nwin_in)
 {
     try {
         nwin=nwin_in;
-        n=WindowData3C(draw,nwin);
+        n=WindowData(draw,nwin);
         nnwin=n.npts();
         double ret=this->compute_resid_linf_floor();
         if(ret>0)
@@ -495,7 +495,7 @@ void GeneralIterDecon::process()
         /* d_decon will hold the preprocessor output.  We normally expect to
         derive it by windowing of t_all.  We assume WindowData will be
         successful - constructor should guarantee that. */
-        d_decon=WindowData3C(d_all,fftwin);
+        d_decon=WindowData(d_all,fftwin);
         dmatrix uwork(d_decon.u);
         uwork.zero();
         /* We assume loadnoise has been called previously to set put the
@@ -589,7 +589,7 @@ void GeneralIterDecon::process()
         TimeWindow trimwin;
         trimwin.start=n.t0()+(n.dt())*((double)(winv.npts()));
         trimwin.end=n.endtime()-(n.dt())*((double)(winv.npts()));
-        n=WindowData3C(n,trimwin);
+        n=WindowData(n,trimwin);
         //double nfloor;
         //nfloor=compute_resid_linf_floor();
         //DEBUG - for debug always print this.  Should be a verbose option
@@ -703,7 +703,7 @@ CoreSeismogram GeneralIterDecon::getresult()
         be allowed due to wavelet duration anyway, BUT for GID method the
         wavelet should be compact enough that should be a small factor.  Hence
         for now I omit that complexity until proven to be an issue. */
-        result=WindowData3C(result,dwin);
+        result=WindowData(result,dwin);
         result.u.zero();
 	/* The spike sequences uses the time reference of the data in the
  	private copy r.   This is the computed offset in samples to correct
