@@ -120,14 +120,15 @@ PYBIND11_MODULE(basic, m) {
     py::arg("d"),
     py::arg("twin") )
   ;
-
-  m.def("_WindowData",&WindowData,"Reduce data to window inside original",
+  m.def("_WindowData",py::overload_cast<const TimeSeries&,const TimeWindow&>(&WindowData),
+          "Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
 
-  m.def("_WindowData3C",&WindowData3C,"Reduce data to window inside original",
+  m.def("_WindowData3C",py::overload_cast<const Seismogram&,const TimeWindow&>(&WindowData),
+              "Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
