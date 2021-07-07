@@ -1,10 +1,13 @@
 #ifndef _AMPLITUDES_H_
 #define _AMPLITUDES_H_
+#include <sstream>
 #include "mspass/utility/MsPASSError.h"
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 #include "mspass/seismic/Ensemble.h"
 #include "mspass/utility/VectorStatistics.h"
+#include "mspass/algorithms/TimeWindow.h"
+#include "mspass/algorithms/algorithms.h"
 namespace mspass::algorithms::amplitudes{
 double PeakAmplitude(const mspass::seismic::CoreTimeSeries& d);
 double PeakAmplitude(const mspass::seismic::CoreSeismogram& d);
@@ -40,44 +43,81 @@ units.
 \param method sets the scaling metric defined through ScalingMethod eum class.
 \param level has two different contexts.   For PerfAmplitude it must be a
  a number n with 0<n<=1.0
+\param win defines a time window to use for computing the amplitude.
+ It the window exeeds the data range it will be reduced to the range of
+ the data.  Similarly, if the window is invalid (defined as end time less
+ than start time) the window will be adjusted to the full data range.
 \return computed amplitude
 */
 
 template <typename Tdata> double scale(Tdata& d,const ScalingMethod method,
-  const double level)
+  const double level, const mspass::algorithms::TimeWindow win)
 {
   if((method==ScalingMethod::ClipPerc) && (level<=0.0 || level>1.0))
     throw mspass::utility::MsPASSError("scale function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
        mspass::utility::ErrorSeverity::Suspect);
   try{
     double newcalib(1.0);
+    /* the else condition here should perhaps generate an elog message but
+    did not implement to allow this template to be used for CoreTimeSeries
+    and CoreSeismogram that do not have an elog attribute.*/
     if(d.is_defined(scale_factor_key))
     {
       newcalib=d.get_double(scale_factor_key);
     }
+    /* Handle time windowing. Log window mismatches but silently handle
+    cast where the window is invalid - used as a way to override any
+    time windowing */
+    mspass::algorithms::TimeWindow ampwindow;
+    if(win.start>win.end)
+    {
+      ampwindow.start=d.t0();
+      ampwindow.end=d.endtime();
+    }
+    else if( (fabs(win.start-d.t0())/d.dt()>0.5)
+       || (fabs(win.end-d.endtime())/d.dt() > 0.5) )
+    {
+      std::stringstream ss;
+      ss << "Window time range is inconsistent with input data range"<<std::endl
+         << "Input data starttime="<<d.t0()<<" and window start time="
+         << win.start <<" Difference="<<d.t0()-win.start<<std::endl
+         << "Input data endtime="<<d.endtime()<<" and window end time="
+         << win.end <<" Difference="<<d.endtime()-win.end<<std::endl
+         << "One or the other exceeds 1/sample interval="<<d.dt()<<std::endl
+         << "Window for amplitude calculation changed to data range";
+      d.elog.log_error("scale",ss.str(),mspass::utility::ErrorSeverity::Complaint);
+      ampwindow.start=d.t0();
+      ampwindow.end=d.endtime();
+    }
+    else
+    {
+      ampwindow=win;
+    }
+    Tdata windowed_data;
+    windowed_data=mspass::algorithms::WindowData(d,ampwindow);
     double amplitude,dscale;
     switch(method)
     {
       case ScalingMethod::Peak:
-        amplitude=PeakAmplitude(d);
+        amplitude=PeakAmplitude(windowed_data);
         dscale = level/amplitude;
         newcalib /= dscale;
         break;
       case ScalingMethod::ClipPerc:
-        amplitude=PerfAmplitude(d,level);
+        amplitude=PerfAmplitude(windowed_data,level);
         /* for this scaling we use level as perf and output level is frozen
         to be scaled to order unity*/
         dscale = 1.0/amplitude;
         newcalib /= dscale;
         break;
       case ScalingMethod::MAD:
-        amplitude=MADAmplitude(d);
+        amplitude=MADAmplitude(windowed_data);
         dscale = level/amplitude;
         newcalib /= dscale;
         break;
       case ScalingMethod::RMS:
       default:
-        amplitude=RMSAmplitude(d);
+        amplitude=RMSAmplitude(windowed_data);
         dscale = level/amplitude;
         newcalib /= dscale;
     };
@@ -100,11 +140,18 @@ the scale function for each.  The template is for member data type.
 \param method sets the scaling metric defined through ScalingMethod eum class.
 \param level has two different contexts.   For PerfAmplitude it must be a
  a number n with 0<n<=1.0
+\param win is a TimeWindow range that defines where the metric being used
+  to compute the a amplitudes of each member is to be computed.   A fixed
+  time window is used for the entire ensemble so this approach is best used
+  on data shifted to relative time on a particular seismic phase arrival time.
+  To use the entire data range for the scaling pass a window with an end time
+  less than the start time.  That is used by the function as a signal to
+  ignore the actual range and use the entire data range instead.
 
 \return vector of computed amplitudes
 */
 template <typename Tdata> std::vector<double> scale_ensemble_members(mspass::seismic::Ensemble<Tdata>& d,
-  const ScalingMethod& method, const double level)
+  const ScalingMethod& method, const double level, const mspass::algorithms::TimeWindow win)
 {
   if((method==ScalingMethod::ClipPerc) && (level<=0.0 || level>1.0))
     throw mspass::utility::MsPASSError("scale_ensemble_members function:  illegal perf level specified for clip percentage scale - must be between 0 and 1\nData unaltered - may cause downstream problems",
@@ -116,7 +163,7 @@ template <typename Tdata> std::vector<double> scale_ensemble_members(mspass::sei
     for(dptr=d.member.begin();dptr!=d.member.end();++dptr)
     {
       double thisamp;
-      thisamp=scale(*dptr,method,level);
+      thisamp=scale(*dptr,method,level,win);
       amps.push_back(thisamp);
     }
     return amps;
