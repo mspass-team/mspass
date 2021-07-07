@@ -1277,6 +1277,72 @@ is usually not necessay.</p>
 <span id="seismic"></span><h2>seismic<a class="headerlink" href="#module-mspasspy.ccore.seismic" title="Permalink to this headline">¶</a></h2>
 <p>A submodule for seismic namespace of ccore</p>
 <dl class="py class">
+<dt id="mspasspy.ccore.seismic.CoreSeismogramEnsemble">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">CoreSeismogramEnsemble</code><a class="headerlink" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<p>Gather of vector(3c) time series objects</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreSeismogramEnsemble.member">
+<em class="property">property </em><code class="sig-name descname">member</code><a class="headerlink" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble.member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector of Seismogram objects defining the ensemble</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreSeismogramEnsemble.sync_metadata">
+<code class="sig-name descname">sync_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble.sync_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>sync_metadata(self: mspasspy.ccore.seismic.CoreSeismogramEnsemble) -&gt; None</p></li>
+</ol>
+<p>Copy ensemble metadata to all members</p>
+<ol class="arabic simple" start="2">
+<li><p>sync_metadata(self: mspasspy.ccore.seismic.CoreSeismogramEnsemble, arg0: List[str]) -&gt; None</p></li>
+</ol>
+<p>Copy ensemble metadata to all members</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreSeismogramEnsemble.update_metadata">
+<code class="sig-name descname">update_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="mspasspy.ccore.seismic.CoreSeismogramEnsemble">mspasspy.ccore.seismic.CoreSeismogramEnsemble</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata">mspasspy.ccore.utility.Metadata</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble.update_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the ensemble header (metadata)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble">
+<em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">CoreTimeSeriesEnsemble</code><a class="headerlink" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<p>Gather of scalar time series objects</p>
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.member">
+<em class="property">property </em><code class="sig-name descname">member</code><a class="headerlink" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.member" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector of TimeSeries objects defining the ensemble</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.sync_metadata">
+<code class="sig-name descname">sync_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.sync_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overloaded function.</p>
+<ol class="arabic simple">
+<li><p>sync_metadata(self: mspasspy.ccore.seismic.CoreTimeSeriesEnsemble) -&gt; None</p></li>
+</ol>
+<p>Copy ensemble metadata to all members</p>
+<ol class="arabic simple" start="2">
+<li><p>sync_metadata(self: mspasspy.ccore.seismic.CoreTimeSeriesEnsemble, arg0: List[str]) -&gt; None</p></li>
+</ol>
+<p>Copy ensemble metadata to all members</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.update_metadata">
+<code class="sig-name descname">update_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble">mspasspy.ccore.seismic.CoreTimeSeriesEnsemble</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata">mspasspy.ccore.utility.Metadata</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble.update_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the ensemble header (metadata)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="mspasspy.ccore.seismic.DoubleVector">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">DoubleVector</code><a class="headerlink" href="#mspasspy.ccore.seismic.DoubleVector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pybind11_builtins.pybind11_object</span></code></p>
@@ -1450,26 +1516,36 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 <dl class="py class">
 <dt id="mspasspy.ccore.seismic.SeismogramEnsemble">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">SeismogramEnsemble</code><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="mspasspy.ccore.seismic.CoreSeismogramEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.CoreSeismogramEnsemble</span></code></a></p>
 <p>Gather of vector(3c) time series objects</p>
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.member">
-<em class="property">property </em><code class="sig-name descname">member</code><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.member" title="Permalink to this definition">¶</a></dt>
-<dd><p>Vector of Seismogram objects defining the ensemble</p>
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.dead">
+<code class="sig-name descname">dead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.dead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if the entire ensemble is marked dead</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.sync_metadata">
-<code class="sig-name descname">sync_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.sync_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>sync_metadata(self: mspasspy.ccore.seismic.SeismogramEnsemble) -&gt; None</p></li>
-</ol>
-<p>Copy ensemble metadata to all members</p>
-<ol class="arabic simple" start="2">
-<li><p>sync_metadata(self: mspasspy.ccore.seismic.SeismogramEnsemble, arg0: List[str]) -&gt; None</p></li>
-</ol>
-<p>Copy ensemble metadata to all members</p>
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.elog">
+<em class="property">property </em><code class="sig-name descname">elog</code><a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.elog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error log attached to the ensemble - not the same as member error logs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.kill">
+<code class="sig-name descname">kill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark the entire ensemble dead</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.live">
+<code class="sig-name descname">live</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.live" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if the ensemble is marked live</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.set_live">
+<code class="sig-name descname">set_live</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.set_live" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark ensemble live but use a validate test first</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1481,9 +1557,9 @@ cardinal directions (see above). It will be empty if sg was marked dead</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.update_metadata">
-<code class="sig-name descname">update_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata">mspasspy.ccore.utility.Metadata</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.update_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the ensemble header (metadata)</p>
+<dt id="mspasspy.ccore.seismic.SeismogramEnsemble.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.SeismogramEnsemble.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test to see if the ensemble has any live members - return true of it does</p>
 </dd></dl>
 
 </dd></dl>
@@ -1649,26 +1725,36 @@ object will be returned if d was marked dead</p>
 <dl class="py class">
 <dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.ccore.seismic.</code><code class="sig-name descname">TimeSeriesEnsemble</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.utility.Metadata</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.CoreTimeSeriesEnsemble</span></code></a></p>
 <p>Gather of scalar time series objects</p>
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.member">
-<em class="property">property </em><code class="sig-name descname">member</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.member" title="Permalink to this definition">¶</a></dt>
-<dd><p>Vector of TimeSeries objects defining the ensemble</p>
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.dead">
+<code class="sig-name descname">dead</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.dead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if the entire ensemble is marked dead</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.sync_metadata">
-<code class="sig-name descname">sync_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.sync_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overloaded function.</p>
-<ol class="arabic simple">
-<li><p>sync_metadata(self: mspasspy.ccore.seismic.TimeSeriesEnsemble) -&gt; None</p></li>
-</ol>
-<p>Copy ensemble metadata to all members</p>
-<ol class="arabic simple" start="2">
-<li><p>sync_metadata(self: mspasspy.ccore.seismic.TimeSeriesEnsemble, arg0: List[str]) -&gt; None</p></li>
-</ol>
-<p>Copy ensemble metadata to all members</p>
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.elog">
+<em class="property">property </em><code class="sig-name descname">elog</code><a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.elog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error log attached to the ensemble - not the same as member error logs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.kill">
+<code class="sig-name descname">kill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark the entire ensemble dead</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.live">
+<code class="sig-name descname">live</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.live" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true if the ensemble is marked live</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.set_live">
+<code class="sig-name descname">set_live</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.set_live" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mark ensemble live but use a validate test first</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1689,9 +1775,9 @@ stored in the ensemble’s metadata.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.update_metadata">
-<code class="sig-name descname">update_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em>, <em class="sig-param"><span class="n">arg0</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.utility.Metadata" title="mspasspy.ccore.utility.Metadata">mspasspy.ccore.utility.Metadata</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.update_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the ensemble header (metadata)</p>
+<dt id="mspasspy.ccore.seismic.TimeSeriesEnsemble.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test to see if the ensemble has any live members - return true of it does</p>
 </dd></dl>
 
 </dd></dl>
@@ -1763,7 +1849,7 @@ stored in the ensemble’s metadata.</p>
 </ol>
 <p>Shifts data so t=0 is a specified arrival time</p>
 <ol class="arabic simple" start="2">
-<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.SeismogramEnsemble, key: str, window: mspass::algorithms::TimeWindow) -&gt; mspasspy.ccore.seismic.SeismogramEnsemble</p></li>
+<li><p>ArrivalTimeReference(d: mspasspy.ccore.seismic.CoreSeismogramEnsemble, key: str, window: mspass::algorithms::TimeWindow) -&gt; mspasspy.ccore.seismic.CoreSeismogramEnsemble</p></li>
 </ol>
 <p>Shifts data so t=0 is a specified arrival time</p>
 </dd></dl>
@@ -1883,7 +1969,7 @@ stored in the ensemble’s metadata.</p>
 
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.basic.EnsembleComponent">
-<code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">EnsembleComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.SeismogramEnsemble" title="mspasspy.ccore.seismic.SeismogramEnsemble">mspasspy.ccore.seismic.SeismogramEnsemble</a></span></em>, <em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.EnsembleComponent" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">EnsembleComponent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreSeismogramEnsemble" title="mspasspy.ccore.seismic.CoreSeismogramEnsemble">mspasspy.ccore.seismic.CoreSeismogramEnsemble</a></span></em>, <em class="sig-param"><span class="n">component</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble">mspasspy.ccore.seismic.CoreTimeSeriesEnsemble</a><a class="headerlink" href="#mspasspy.ccore.algorithms.basic.EnsembleComponent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract one component from a 3C ensemble</p>
 </dd></dl>
 
@@ -1974,7 +2060,7 @@ stored in the ensemble’s metadata.</p>
 
 <dl class="py function">
 <dt id="mspasspy.ccore.algorithms.basic.seed_ensemble_sort">
-<code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">seed_ensemble_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.TimeSeriesEnsemble" title="mspasspy.ccore.seismic.TimeSeriesEnsemble">mspasspy.ccore.seismic.TimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.ccore.algorithms.basic.</code><code class="sig-name descname">seed_ensemble_sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mspasspy.ccore.seismic.CoreTimeSeriesEnsemble" title="mspasspy.ccore.seismic.CoreTimeSeriesEnsemble">mspasspy.ccore.seismic.CoreTimeSeriesEnsemble</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mspasspy.ccore.algorithms.basic.seed_ensemble_sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort a TimeSeriesEnsemble with a natural order with seed name codes.</p>
 <p>The seed standard tags every single miniseed record with four string keys
 that seed uses to uniquely define a single data channel.  In MsPASS the keys

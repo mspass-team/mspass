@@ -3,6 +3,7 @@
   <compounddef id="classmspass_1_1utility_1_1_metadata" kind="class" language="C++" prot="public">
     <compoundname>mspass::utility::Metadata</compoundname>
     <basecompoundref refid="classmspass_1_1utility_1_1_basic_metadata" prot="public" virt="non-virtual">mspass::utility::BasicMetadata</basecompoundref>
+    <derivedcompoundref refid="classmspass_1_1seismic_1_1_ensemble" prot="public" virt="non-virtual">mspass::seismic::Ensemble&lt; T &gt;</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_core_seismogram" prot="public" virt="non-virtual">mspass::seismic::CoreSeismogram</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_core_time_series" prot="public" virt="non-virtual">mspass::seismic::CoreTimeSeries</derivedcompoundref>
     <derivedcompoundref refid="classmspass_1_1seismic_1_1_ensemble" prot="public" virt="non-virtual">mspass::seismic::Ensemble&lt; Tdata &gt;</derivedcompoundref>
@@ -1159,19 +1160,25 @@ on the string key version of this same generic function.
     <detaileddescription>
     </detaileddescription>
     <inheritancegraph>
-      <node id="9">
+      <node id="11">
         <label>mspass::seismic::Ensemble&lt; Tdata &gt;</label>
         <link refid="classmspass_1_1seismic_1_1_ensemble"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="7">
+      <node id="9">
         <label>mspass::seismic::TimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_time_series"/>
-        <childnode refid="6" relation="public-inheritance">
+        <childnode refid="8" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="3">
+      <node id="4">
+        <label>mspass::seismic::LoggingEnsemble&lt; T &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_logging_ensemble"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
         <label>mspass::seismic::CoreSeismogram</label>
         <link refid="classmspass_1_1seismic_1_1_core_seismogram"/>
         <childnode refid="1" relation="public-inheritance">
@@ -1183,41 +1190,47 @@ on the string key version of this same generic function.
         <childnode refid="2" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="8">
+      <node id="10">
         <label>mspass::seismic::TimeSeriesWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_time_series_w_gaps"/>
-        <childnode refid="7" relation="public-inheritance">
+        <childnode refid="9" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="5">
+      <node id="7">
         <label>mspass::seismic::SeismogramWGaps</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram_w_gaps"/>
-        <childnode refid="4" relation="public-inheritance">
+        <childnode refid="6" relation="public-inheritance">
         </childnode>
       </node>
       <node id="2">
         <label>mspass::utility::BasicMetadata</label>
         <link refid="classmspass_1_1utility_1_1_basic_metadata"/>
       </node>
-      <node id="4">
+      <node id="6">
         <label>mspass::seismic::Seismogram</label>
         <link refid="classmspass_1_1seismic_1_1_seismogram"/>
-        <childnode refid="3" relation="public-inheritance">
+        <childnode refid="5" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="6">
+      <node id="8">
         <label>mspass::seismic::CoreTimeSeries</label>
         <link refid="classmspass_1_1seismic_1_1_core_time_series"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="10">
+      <node id="12">
         <label>mspass::seismic::PowerSpectrum</label>
         <link refid="classmspass_1_1seismic_1_1_power_spectrum"/>
         <childnode refid="1" relation="public-inheritance">
         </childnode>
       </node>
-      <node id="11">
+      <node id="3">
+        <label>mspass::seismic::Ensemble&lt; T &gt;</label>
+        <link refid="classmspass_1_1seismic_1_1_ensemble"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
         <label>mspass::utility::AntelopePf</label>
         <link refid="classmspass_1_1utility_1_1_antelope_pf"/>
         <childnode refid="1" relation="public-inheritance">
