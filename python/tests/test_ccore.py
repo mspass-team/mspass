@@ -29,7 +29,7 @@ from mspasspy.ccore.algorithms.basic import ExtractComponent
 
 def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
     """
-    Fills TimeSeries (or _CoreTimeSeries) data vector with 
+    Fills TimeSeries (or _CoreTimeSeries) data vector with
     a constant value of a specified length and start time.
     Used for testing arithmetic operators.
 
@@ -60,7 +60,7 @@ def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
 
 def make_constant_data_seis(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
     """
-    Fills Seismogram (or Seismogram) data vector with 
+    Fills Seismogram (or Seismogram) data vector with
     a constant value of a specified length and start time.
     Used for testing arithmetic operators.
 
@@ -310,13 +310,13 @@ def test_Metadata():
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
 
     # Test with real data
-    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000, 
-        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538, 
-        'iphase': 'P', 'loc': '', 
-        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2', 
-            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704}, 
-        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000, 
-        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090, 
+    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000,
+        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538,
+        'iphase': 'P', 'loc': '',
+        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2',
+            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704},
+        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000,
+        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090,
         'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538
         }
     md = Metadata(dic)
@@ -673,6 +673,7 @@ def test_Ensemble(Ensemble):
         es.member.append(d)
         es.member.append(d)
         es.member.append(d)
+    es.set_live()   # new method for LoggingEnsemble needed because default is dead
     es.sync_metadata(['double', 'long'])
     assert es.member[0].is_defined('bool')
     assert es.member[0]['bool'] == True
@@ -685,7 +686,54 @@ def test_Ensemble(Ensemble):
     assert es.member[1]['long'] == 7
     es.update_metadata(Metadata({'k': 'v'}))
     assert es['k'] == 'v'
-
+    # From here on we test features not in CoreEnsemble but only in
+    # LoggingEnsemble.   Note that we use pybind11 aliasing to
+    # define TimeSeriesEnsemble == LoggingEnsemble<TimeSeries> and
+    # SeismogramEnsemble == LoggingEnsemble<Seismogram>.
+    # Should be initially marked live
+    assert es.live()
+    es.elog.log_error("test_ensemble","test complaint",ErrorSeverity.Complaint)
+    es.elog.log_error("test_ensemble","test invalid",ErrorSeverity.Invalid)
+    assert es.elog.size() == 2
+    assert es.live()
+    es.kill()
+    assert es.dead()
+    # resurrect es
+    es.set_live()
+    assert es.live()
+    # validate checks for for any live members - this tests that feature
+    assert es.validate()
+    # need this temporary copy for the next test_
+    if isinstance(es,TimeSeriesEnsemble):
+        escopy=TimeSeriesEnsemble(es)
+    else:
+        escopy=SeismogramEnsemble(es)
+    for d in escopy.member:
+        d.kill()
+    assert not escopy.validate()
+    # Reuse escopy for pickle test
+    escopy=pickle.loads(pickle.dumps(es))
+    assert escopy.is_defined('bool')
+    assert escopy['bool'] == True
+    assert escopy.is_defined('double')
+    assert escopy.is_defined('long')
+    assert escopy['double'] == 3.14
+    assert escopy['long'] == 7
+    assert escopy.live()
+    assert escopy.elog.size() == 2
+    assert escopy.member[0].is_defined('bool')
+    assert escopy.member[0]['bool'] == True
+    assert escopy.member[0].is_defined('double')
+    assert escopy.member[0].is_defined('long')
+    assert es.member[1].is_defined('double')
+    assert es.member[1].is_defined('long')
+    assert es.member[1]['double'] == 3.14
+    assert es.member[1]['long'] == 7
+    if isinstance(es, TimeSeriesEnsemble):
+        assert es.member[1].data == escopy.member[1].data
+    else:
+        assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
+    
 
 def test_operators():
     d = _CoreTimeSeries(10)
