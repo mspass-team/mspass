@@ -44,7 +44,7 @@ def setbasics(d, n):
 
 def test_scale():
     dts=_CoreTimeSeries(9)
-    dir=setbasics(dts,9)
+    setbasics(dts,9)
     d3c=_CoreSeismogram(5)
     setbasics(d3c,5)
     dts.data[0]=3.0
@@ -95,11 +95,12 @@ def test_scale():
     print('Trying scaling functions for TimeSeries')
     # we need a deep copy here since scaling changes the data
     d2=TimeSeries(dts)
-    amp=_scale(d2,ScalingMethod.Peak,1.0)
+    win=TimeWindow(0.0,-1.0)   # This is an invalid TimeWindow used to trigger automatic conversion to full data range
+    amp=_scale(d2,ScalingMethod.Peak,1.0,win)
     print('Computed peak amplitude=',amp)
     print(d2.data)
     d2=TimeSeries(dts)
-    amp=_scale(d2,ScalingMethod.Peak,10.0)
+    amp=_scale(d2,ScalingMethod.Peak,10.0,win)
     print('Computed peak amplitude with peak set to 10=',amp)
     print(d2.data)
     assert(amp==100.0)
@@ -110,25 +111,27 @@ def test_scale():
     d2=TimeSeries(dts)
     d2.put('calib',6.0)
     print('test 2 with MAD metric and initial calib of 6')
-    amp=_scale(d2,ScalingMethod.MAD,1.0)
+    amp=_scale(d2,ScalingMethod.MAD,1.0,win)
     calib=d2.get_double('calib')
     print('New calib value set=',calib)
     assert(calib==18.0)
     print('Testing 3C scale functions')
     d=Seismogram(d3c)
-    amp=_scale(d,ScalingMethod.Peak,1.0)
+    amp=_scale(d,ScalingMethod.Peak,1.0,win)
     print('Peak amplitude returned by scale funtion=',amp)
     calib=d.get_double('calib')
     print('Calib value retrieved (assumed inital 1.0)=',calib)
     print('Testing python scale function wrapper - first on a TimeSeries with defaults')
     d2=TimeSeries(dts)
-    amp=scale(d2)
-    print('peak amplitude returned =',amp[0])
-    assert(amp[0]==100.0)
+    dscaled=scale(d2)
+    amp=dscaled['amplitude']
+    print('peak amplitude returned =',amp)
+    assert(amp==100.0)
     d=Seismogram(d3c)
-    amp=scale(d)
-    print('peak amplitude returned test Seismogram=',amp[0])
-    assert(amp[0]==200.0)
+    dscaled=scale(d)
+    amp=dscaled['amplitude']
+    print('peak amplitude returned test Seismogram=',amp)
+    assert(amp==200.0)
     print('starting tests of scale on ensembles')
     print('first test TimeSeriesEnemble with 5 scaled copies of same vector used earlier in this test')
     ens=TimeSeriesEnsemble()
@@ -143,11 +146,12 @@ def test_scale():
 
     # work on a copy because scaling alters data in place
     enscpy=TimeSeriesEnsemble(ens)
-    amps=scale(enscpy)
+    enscpy=scale(enscpy)
     print('returned amplitudes for members scaled individually')
     for i in range(5):
-        print(amps[i])
-        assert(amps[i]==100.0*scls[i])
+        amp=enscpy.member[i].get_double('amplitude')
+        print(amp)
+        assert(amp==100.0*scls[i])
     enscpy=TimeSeriesEnsemble(ens)
     amp=scale(enscpy,scale_by_section=True)
     print('average amplitude=',amp[0])
@@ -171,21 +175,22 @@ def test_scale():
         ens.member.append(d)
     print('Running comparable tests on SeismogramEnsemble')
     enscpy=SeismogramEnsemble(ens)
-    amps=scale(enscpy)
+    enscpy=scale(enscpy)
     print('returned amplitudes for members scaled individually')
     for i in range(5):
-        print(amps[i])
-        assert(round(amps[i])==round(200.0*scls[i]))
+        amp=enscpy.member[i].get_double('amplitude')
+        print(amp)
+        assert(round(amp)==round(200.0*scls[i]))
     print('Trying section scaling of same data')
     enscpy=SeismogramEnsemble(ens)
-    amp=scale(enscpy,scale_by_section=True)
-    print('average amplitude=',amp[0])
-    assert(round(amp[0])==800.0)
-    avgamp=amp[0]
+    enscpy=scale(enscpy,scale_by_section=True)
+    amp=enscpy['amplitude']
+    print('average amplitude=',amp)
+    assert(np.isclose(amp,800.0))
     for i in range(5):
         calib=enscpy.member[i].get_double("calib")
         print('member number ',i,' calib is ',calib)
-        assert(round(calib)==800.0)
+        assert(np.isclose(amp,800.0))
 def test_windowdata():
     npts=1000
     ts=TimeSeries()
@@ -217,12 +222,9 @@ def test_windowdata():
     t3c.kill()
     d=WindowData(t3c,win)
     assert(d.npts == 1000 and (not d.live))
-    d=WindowData(ts,win,object_history=True)
-    print('Error message posted')
-    print(d.elog.get_error_log())
-    assert(d.elog.size() == 1)
-    # this still throws an error but the message will be different
-    d=WindowData(ts,win,object_history=True,instance='0')
+    #old test:  d=WindowData(ts,win,object_history=True)
+    badwin=TimeWindow(-999.0,1000.0)   # larger than data range will generate an exception
+    d=WindowData(ts,badwin)
     print('Error message posted')
     print(d.elog.get_error_log())
     assert(d.elog.size() == 1)
@@ -277,3 +279,4 @@ def test_TopMute():
 
     with pytest.raises(MsPASSError, match="must be a TimeSeries or Seismogram"):
         failmute.apply([1,2,3])
+        
