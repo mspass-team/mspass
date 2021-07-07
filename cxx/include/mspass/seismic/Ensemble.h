@@ -113,6 +113,146 @@ public:
     }
   };
 };
+
+
+/*! \brief Template class that extends Ensemble to include an error log and live tests.
+
+This class extends the Ensemble class defined in MsPASS for bundling
+collections of data that can be pushed to an std::vector container.  The
+class is actually very generic, but mspass defines it for TimeSeries and
+Seismogram objects.   This class is a necessary extension for an algorithm
+that take ensembles in and emits a different ensemble.  In that situation
+we need a way to indicate the entire ensemble is invalid and not be to used
+and post error messages that give an explanation of why the output is invalid.
+This class provides that mechanism by adding a mspass::utility::ErrorLogger
+and a (private) boolean defining if the ensemble has valid data.  That makes
+the API to a LoggingEnsemble a hybrid with the atomic Seismogram and
+TimeSeries objects (adds the dna of ErrorLogger and live/dead concept).
+
+A secondary fundamental reason this class can be needed is to parallelize
+algorithms that emit an ensemble (regardless of inputs).  The live/dead
+tests and error logger make the handlers consistent with the atomic objects
+of mspass.
+*/
+template <typename T> class LoggingEnsemble : public Ensemble<T>
+{
+public:
+  /*! Standard mspass container for holding error logs. */
+  mspass::utility::ErrorLogger elog;
+  /*! Default constructor.   Initializes all pieces with default constructor
+  and marks the ensemble dead.*/
+  LoggingEnsemble(): Ensemble<T>(), elog()
+  {
+    ensemble_is_live=false;
+  };
+
+  /* The next two constructors are used to provide a parallel qpi to
+  CoreEnsemble - there might be another way to do this in the C++ code or
+  in pybind11 wrappers but this works*/
+  /*! Reserve slots but otherwise create and empty ensemble marked dead.
+
+  This constructor is a minor variant from the default constructor that
+  calls reserve to set aside n slotes for the data.   Use this one when
+  you know the size of the ensemble you want to create.  Note after the
+  ensemble, like the default constructor, is marked initially as dead.
+  The user must call the set_live method of this ensemble after loading
+  data or downstream processors may drop the data. */
+  LoggingEnsemble(const size_t n) : Ensemble<T>(n),elog()
+  {
+    ensemble_is_live=false;
+  }
+  /*! Construct a framework for the ensemble with metadata.
+
+  This constructor loads the metadata received into the ensmeble area
+  and reserves n slots to be added.   Be warned it marks the ensemble dead.
+  Once valid data are loaded the user should call the set_live method for
+  the ensemble to prevent the data from being ignored downstream.*/
+  LoggingEnsemble(const mspass::utility::Metadata& md,const size_t n)
+    : Ensemble<T>(md,n),elog()
+  {
+    /* Might be advised to set this true, but since an object created by
+    this method has only slots but no data validate would return false.*/
+    ensemble_is_live=false;
+  }
+  /*! Construct from all pieces.
+
+  This constructor was added for the python interface.  It is a helpful
+  construct for the pickle interface.  It is unlikely to be of interest
+  in a C++ application. Calls reserve only for member vector but but does
+  not insert data - detail of the pickle implementation*/
+  LoggingEnsemble(const mspass::utility::Metadata& md,
+    const mspass::utility::ErrorLogger& elogin, const size_t ndata)
+      : Ensemble<T>(md,ndata),elog(elogin)
+  {
+  };
+  /*! Standard copy constructor.   */
+  LoggingEnsemble(const LoggingEnsemble<T>& parent)
+          : Ensemble<T>(parent),elog(parent.elog)
+  {
+    ensemble_is_live=parent.ensemble_is_live;
+  };
+  /*! Clone from a base class Ensemble.  Initializes error null and sets live. */
+  LoggingEnsemble(const Ensemble<T>& parent)
+          : Ensemble<T>(parent),elog()
+ {
+   ensemble_is_live=true;
+ };
+  /*! Markt the entire ensemble bad. */
+  void kill(){ensemble_is_live=false;};
+  /*! Getter to test if the ensemble has any valid data. */
+  bool live() const {return ensemble_is_live;};
+  /*! Complement to live method - returns true if there are no valid data members. */
+  bool dead() const {return !ensemble_is_live;};
+  /*! Force, with care, the ensemble to be marked live.
+
+  This extension of CoreEnsemble adds a boolean that is used to test if
+  an entire ensemble should be treated as dead or alive.  It first runs the
+  validate method.  If validate is false it refuses to set the state
+  live and returns false.  If validate returns true it will return true.
+   */
+  bool set_live(){
+    if(this->validate())
+    {
+      ensemble_is_live=true;
+      return true;
+    }
+    else
+      return false;
+  };
+  /*! Check to see if ensemble has any live data.
+
+  In processing once can occasionally (not rare but not common either)
+  end up with enemble full of data marked dead.  This is a convenience
+  method to check all members.  If it finds any live member it will immediately
+  return true (ok).  If after a search of the entire ensemble no live members
+  are found it will return false AND then mark the entire ensemble bad. */
+  bool validate();
+  /*! Standard assignment operator. */
+  LoggingEnsemble<T>& operator=(const LoggingEnsemble<T>& parent)
+  {
+    if(&parent != this)
+    {
+      Ensemble<T> *baseptr
+                =dynamic_cast<Ensemble<T>>(this);
+      baseptr->operator=(parent);
+      elog=parent.elog;
+      ensemble_is_live=parent.ensemble_is_live;
+    }
+    return *this;
+  };
+private:
+  bool ensemble_is_live;
+};
+
+template <typename T> bool LoggingEnsemble<T>::validate()
+{
+  for(auto dptr=this->member.begin();dptr!=this->member.end();++dptr)
+  {
+    if(dptr->live()) return true;
+  }
+  return false;
+}
+
 /*! Useful alias for Ensemble<TimeSeries> */
 typedef Ensemble<TimeSeries> TimeSeriesEnsemble;
 /*! Useful alias for Ensemble<Seismogram> */

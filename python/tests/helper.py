@@ -31,7 +31,6 @@ def get_live_seismogram():
     seis['delta'] = 0.1
     seis['calib'] = 0.1
     seis['site_id'] = bson.objectid.ObjectId()
-    seis['channel_id'] = [bson.objectid.ObjectId()]
     seis['source_id'] = bson.objectid.ObjectId()
     seis.data = dmatrix(3, ts_size)
     for i in range(3):
