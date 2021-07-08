@@ -29,7 +29,7 @@ from mspasspy.ccore.algorithms.basic import ExtractComponent
 
 def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
     """
-    Fills TimeSeries (or _CoreTimeSeries) data vector with 
+    Fills TimeSeries (or _CoreTimeSeries) data vector with
     a constant value of a specified length and start time.
     Used for testing arithmetic operators.
 
@@ -60,7 +60,7 @@ def make_constant_data_ts(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
 
 def make_constant_data_seis(d, t0=0.0, dt=0.1, nsamp=5, val=1.0):
     """
-    Fills Seismogram (or Seismogram) data vector with 
+    Fills Seismogram (or Seismogram) data vector with
     a constant value of a specified length and start time.
     Used for testing arithmetic operators.
 
@@ -310,13 +310,13 @@ def test_Metadata():
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
 
     # Test with real data
-    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000, 
-        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538, 
-        'iphase': 'P', 'loc': '', 
-        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2', 
-            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704}, 
-        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000, 
-        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090, 
+    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000,
+        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538,
+        'iphase': 'P', 'loc': '',
+        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2',
+            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704},
+        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000,
+        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090,
         'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538
         }
     md = Metadata(dic)
@@ -417,40 +417,40 @@ def test_CoreSeismogram():
     # test metadata constructor
     md['tmatrix'] = np.random.rand(3, 3)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    assert (cseis.tmatrix == md['tmatrix']).all()
     md['tmatrix'] = dmatrix(np.random.rand(3, 3))
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix']).all()
+    assert (cseis.tmatrix == md['tmatrix']).all()
     md['tmatrix'] = np.random.rand(9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(1, 9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(9, 1)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.transformation_matrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
 
     md['tmatrix'] = np.random.rand(3, 3).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.transformation_matrix,
+    assert np.isclose(cseis.tmatrix,
                       np.array(md['tmatrix']).reshape(3, 3)).all()
     md['tmatrix'] = np.random.rand(9).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.transformation_matrix,
+    assert np.isclose(cseis.tmatrix,
                       np.array(md['tmatrix']).reshape(3, 3)).all()
 
-    # test whether the setter of transformation_matrix updates metadata correctly
+    # test whether the setter of tmatrix updates metadata correctly
     tm = np.random.rand(1, 9)
-    cseis.transformation_matrix = tm
-    assert (cseis.transformation_matrix == tm.reshape(3, 3)).all()
-    assert np.isclose(cseis.transformation_matrix, np.array(
+    cseis.tmatrix = tm
+    assert (cseis.tmatrix == tm.reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(
         cseis['tmatrix']).reshape(3, 3)).all()
     tm = np.random.rand(9).tolist()
-    cseis.transformation_matrix = tm
-    assert np.isclose(cseis.transformation_matrix,
+    cseis.tmatrix = tm
+    assert np.isclose(cseis.tmatrix,
                       np.array(tm).reshape(3, 3)).all()
-    assert np.isclose(cseis.transformation_matrix, np.array(
+    assert np.isclose(cseis.tmatrix, np.array(
         cseis['tmatrix']).reshape(3, 3)).all()
 
     # test exceptions
@@ -563,7 +563,7 @@ def test_Seismogram():
 
     nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
     seis.rotate(nu)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.40824829,  0.40824829, -0.81649658],
                                  [0.57735027,  0.57735027,  0.57735027]]))).all()
@@ -575,7 +575,7 @@ def test_Seismogram():
 
     nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
     seis.rotate(SphericalCoordinate(nu))
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.40824829,  0.40824829, -0.81649658],
                                  [0.57735027,  0.57735027,  0.57735027]]))).all()
@@ -588,7 +588,7 @@ def test_Seismogram():
     sc.phi = np.pi/4
     sc.theta = 0.0
     seis.rotate(sc)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[0.70710678, -0.70710678,  0.],
                                  [0.70710678,  0.70710678,  0.],
                                  [0.,  0.,  1.]]))).all()
@@ -623,7 +623,7 @@ def test_Seismogram():
 
     seis.rotate(np.pi/4)
     seis.transform(a)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[1.41421,  0., 1],
                                  [0.,  1.41421, 1],
                                  [-0.707107, -0.707107, 0]]))).all()
@@ -641,13 +641,13 @@ def test_Seismogram():
     uvec.ux = 0.17085  # cos(-20deg)/5.5
     uvec.uy = -0.062185  # sin(-20deg)/5.5
     seis.free_surface_transformation(uvec, 5.0, 3.5)
-    assert (np.isclose(seis.transformation_matrix,
+    assert (np.isclose(seis.tmatrix,
                        np.array([[-0.171012, -0.469846,  0],
                                  [0.115793, -0.0421458, 0.445447],
                                  [-0.597975,  0.217647,  0.228152]]))).all()
 
-    seis.transformation_matrix = a
-    assert (seis.transformation_matrix == a).all()
+    seis.tmatrix = a
+    assert (seis.tmatrix == a).all()
 
 
 @pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])
@@ -673,6 +673,7 @@ def test_Ensemble(Ensemble):
         es.member.append(d)
         es.member.append(d)
         es.member.append(d)
+    es.set_live()   # new method for LoggingEnsemble needed because default is dead
     es.sync_metadata(['double', 'long'])
     assert es.member[0].is_defined('bool')
     assert es.member[0]['bool'] == True
@@ -685,7 +686,54 @@ def test_Ensemble(Ensemble):
     assert es.member[1]['long'] == 7
     es.update_metadata(Metadata({'k': 'v'}))
     assert es['k'] == 'v'
-
+    # From here on we test features not in CoreEnsemble but only in
+    # LoggingEnsemble.   Note that we use pybind11 aliasing to
+    # define TimeSeriesEnsemble == LoggingEnsemble<TimeSeries> and
+    # SeismogramEnsemble == LoggingEnsemble<Seismogram>.
+    # Should be initially marked live
+    assert es.live()
+    es.elog.log_error("test_ensemble","test complaint",ErrorSeverity.Complaint)
+    es.elog.log_error("test_ensemble","test invalid",ErrorSeverity.Invalid)
+    assert es.elog.size() == 2
+    assert es.live()
+    es.kill()
+    assert es.dead()
+    # resurrect es
+    es.set_live()
+    assert es.live()
+    # validate checks for for any live members - this tests that feature
+    assert es.validate()
+    # need this temporary copy for the next test_
+    if isinstance(es,TimeSeriesEnsemble):
+        escopy=TimeSeriesEnsemble(es)
+    else:
+        escopy=SeismogramEnsemble(es)
+    for d in escopy.member:
+        d.kill()
+    assert not escopy.validate()
+    # Reuse escopy for pickle test
+    escopy=pickle.loads(pickle.dumps(es))
+    assert escopy.is_defined('bool')
+    assert escopy['bool'] == True
+    assert escopy.is_defined('double')
+    assert escopy.is_defined('long')
+    assert escopy['double'] == 3.14
+    assert escopy['long'] == 7
+    assert escopy.live()
+    assert escopy.elog.size() == 2
+    assert escopy.member[0].is_defined('bool')
+    assert escopy.member[0]['bool'] == True
+    assert escopy.member[0].is_defined('double')
+    assert escopy.member[0].is_defined('long')
+    assert es.member[1].is_defined('double')
+    assert es.member[1].is_defined('long')
+    assert es.member[1]['double'] == 3.14
+    assert es.member[1]['long'] == 7
+    if isinstance(es, TimeSeriesEnsemble):
+        assert es.member[1].data == escopy.member[1].data
+    else:
+        assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
+    
 
 def test_operators():
     d = _CoreTimeSeries(10)

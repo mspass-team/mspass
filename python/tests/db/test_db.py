@@ -397,6 +397,29 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match="Can not find the record with _id: {} in wf_TimeSeries collection under pedantic mode.".format(non_exist_id)):
             self.db.update_metadata(pedantic_ts, mode='pedantic')
 
+        # test tmatrix attribute when update seismogram
+        test_seis = get_live_seismogram()
+        logging_helper.info(test_seis, '1', 'deepcopy')
+        non_fatal_error_cnt = self.db.update_metadata(test_seis, mode='promiscuous')
+        res = self.db['wf_Seismogram'].find_one({'_id': test_seis['_id']})
+        assert res
+        assert '_id' in test_seis
+        assert promiscuous_ts.live
+        assert non_fatal_error_cnt == 0
+        assert res['site_id'] == test_seis['site_id']
+        assert 'cardinal' in res and res['cardinal']
+        assert 'orthogonal' in res and res['orthogonal']
+        assert res['tmatrix'] == [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+        # change tmatrix
+        logging_helper.info(test_seis, '2', 'update_metadata')
+        test_seis.tmatrix = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+        non_fatal_error_cnt = self.db.update_metadata(test_seis, mode='promiscuous')
+        res = self.db['wf_Seismogram'].find_one({'_id': test_seis['_id']})
+        assert promiscuous_ts.live
+        assert non_fatal_error_cnt == 0
+        assert res
+        assert res['tmatrix'] == [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+
     def test_save_read_data(self):
         # new object
         # read data
@@ -527,7 +550,7 @@ class TestDatabase():
 
         # test read exclude parameter
         assert '_id' in promiscuous_seis2
-        assert 'channel_id' in promiscuous_seis2
+        assert 'channel_id' not in promiscuous_seis2
         assert 'source_depth' in promiscuous_seis2
         assert '_id' not in exclude_promiscuous_seis2
         assert 'channel_id' not in exclude_promiscuous_seis2
@@ -542,7 +565,6 @@ class TestDatabase():
                 assert promiscuous_seis[key] == promiscuous_seis2[key]
         assert 'test' not in promiscuous_seis2
         assert 'extra2' not in promiscuous_seis2
-        assert promiscuous_seis['channel_id'] == promiscuous_seis2['channel_id']
 
         res = self.db['site'].find_one({'_id': promiscuous_seis['site_id']})
         assert promiscuous_seis2['site_lat'] == res['lat']
@@ -1388,6 +1410,9 @@ class TestDatabase():
         assert np.isclose(seis_ensemble.member[2].data, res.data).all()
 
     def test_read_ensemble_data(self):
+        # clean wf collection
+        self.db['wf_TimeSeries'].delete_many({})
+
         ts1 = copy.deepcopy(self.test_ts)
         ts2 = copy.deepcopy(self.test_ts)
         ts3 = copy.deepcopy(self.test_ts)
@@ -1400,9 +1425,23 @@ class TestDatabase():
         ts_ensemble.member.append(ts3)
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='gridfs')
+        # test with python list
         res = self.db.read_ensemble_data([ts_ensemble.member[0]['_id'], ts_ensemble.member[1]['_id'],
                                           ts_ensemble.member[2]['_id']], ensemble_metadata={'key1':'value1', 'key2':'value2'}, 
                                           mode='cautious', normalize=['source','site','channel'])
+        assert len(res.member) == 3
+        for i in range(3):
+            assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()
+        # test ensemble_metadata
+        ts_ensemble_metadata = Metadata(res)
+        assert 'key1' in ts_ensemble_metadata and ts_ensemble_metadata['key1'] == 'value1'
+        assert 'key2' in ts_ensemble_metadata and ts_ensemble_metadata['key2'] == 'value2'
+
+        # test with cursor
+        cursor = self.db['wf_TimeSeries'].find({})
+        res = self.db.read_ensemble_data(cursor, ensemble_metadata={'key1':'value1', 'key2':'value2'}, 
+                                          mode='cautious', normalize=['source','site','channel'])
+
         assert len(res.member) == 3
         for i in range(3):
             assert np.isclose(res.member[i].data, ts_ensemble.member[i].data).all()

@@ -49,7 +49,6 @@ public:
   */
   LinearTaper(const double t0head,const double t1head,
             const double t1tail,const double t0tail);
-  /* these need to post to history using new feature*/
   int apply(mspass::seismic::TimeSeries& d);
   int apply(mspass::seismic::Seismogram& d);
 private:
