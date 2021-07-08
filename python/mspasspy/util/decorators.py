@@ -72,15 +72,19 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         res = func(data, *args, **kwargs)
         if object_history:
             logging_helper.info(data, alg_id, alg_name)
-        if inplace_return:
-            return data
-        elif not function_return_key == None:
+        if function_return_key is not None:
             if isinstance(function_return_key,str):
                 data[function_return_key]=res
             else:
                 data.elog.log_error(alg_name,
-                 "Illegal type received for function_return_key argument="+str(type(function_return_key)),
+                 "Illegal type received for function_return_key argument="+str(type(function_return_key)+"\nReturn value not saved in Metadata"),
                  ErrorSeverity.Complaint)
+            if not inplace_return:
+                data.elog.log_error(alg_name,
+                  "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                  ErrorSeverity.Complaint)
+            return data
+        elif inplace_return:
             return data
         else:
             return res
