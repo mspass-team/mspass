@@ -7,8 +7,7 @@ from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
 from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
-from dill.source import getsource
-from bson.objectid import ObjectId
+
 
 
 @decorator
