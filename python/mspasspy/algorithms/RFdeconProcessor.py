@@ -19,6 +19,7 @@ import mspasspy.ccore.algorithms.basic as alg
 import mspasspy.ccore.algorithms.deconvolution as decon
 from mspasspy.util.decorators import mspass_func_wrapper
 
+
 class RFdeconProcessor:
     """
     This class is a wrapper for the suite of receiver function deconvolution
@@ -30,41 +31,44 @@ class RFdeconProcessor:
     processor object will be passed as an argument to the RFdecon
     function that should appear as a function in a spark map call.
     """
-    def __init__(self,alg="LeastSquares",pf="RFdeconProcessor.pf"):
-        self.algorithm=alg
-        pfhandle=AntelopePf(pf)
-        if(self.algorithm=="LeastSquares"):
-            self.md=pfhandle.get_branch('LeastSquare')
-            self.processor=decon.LeastSquareDecon(self.md)
-            self.__uses_noise=False
-        elif(alg=="WaterLevel"):
-            self.md=pfhandle.get_branch('WaterLevel')
-            self.processor=decon.WaterLevelDecon(self.md)
-            self.__uses_noise=False
-        elif(alg=="MultiTaperXcor"):
-            self.md=pfhandle.get_branch('MultiTaperXcor')
-            self.processor=decon.MultiTaperXcorDecon(self.md)
-            self.__uses_noise=True
-        elif(alg=="MultiTaperSpecDiv"):
-            self.md=pfhandle.get_branch('MultiTaperSpecDiv')
-            self.processor=decon.MultiTaperSpecDivDecon(self.md)
-            self.__uses_noise=True
-        elif(alg=="GeneralizedIterative"):
-            raise RuntimeError("Generalized Iterative method not yet supported")
+
+    def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
+        self.algorithm = alg
+        pfhandle = AntelopePf(pf)
+        if(self.algorithm == "LeastSquares"):
+            self.md = pfhandle.get_branch('LeastSquare')
+            self.processor = decon.LeastSquareDecon(self.md)
+            self.__uses_noise = False
+        elif(alg == "WaterLevel"):
+            self.md = pfhandle.get_branch('WaterLevel')
+            self.processor = decon.WaterLevelDecon(self.md)
+            self.__uses_noise = False
+        elif(alg == "MultiTaperXcor"):
+            self.md = pfhandle.get_branch('MultiTaperXcor')
+            self.processor = decon.MultiTaperXcorDecon(self.md)
+            self.__uses_noise = True
+        elif(alg == "MultiTaperSpecDiv"):
+            self.md = pfhandle.get_branch('MultiTaperSpecDiv')
+            self.processor = decon.MultiTaperSpecDivDecon(self.md)
+            self.__uses_noise = True
+        elif(alg == "GeneralizedIterative"):
+            raise RuntimeError(
+                "Generalized Iterative method not yet supported")
         else:
             raise RuntimeError("Illegal value for alg="+alg)
         # although loaddata and loadwavelet methods don't always require
         # it we cache the analysis time window for efficiency
-        tws=self.md.get_double("deconvolution_data_window_start")
-        twe=self.md.get_double("deconvolution_data_window_end")
-        self.__dwin=mspass.TimeWindow(tws,twe)
+        tws = self.md.get_double("deconvolution_data_window_start")
+        twe = self.md.get_double("deconvolution_data_window_end")
+        self.__dwin = mspass.TimeWindow(tws, twe)
         if(self.__uses_noise):
-            tws=self.md.get_double("noise_window_start")
-            twe=self.md.get_double("noise_window_end")
-            self.__nwin=mspass.TimeWindow(tws,twe)
+            tws = self.md.get_double("noise_window_start")
+            twe = self.md.get_double("noise_window_end")
+            self.__nwin = mspass.TimeWindow(tws, twe)
         else:
-            self.__nwin=mspass.TimeWindow  # always initialize even if not used
-    def loaddata(self,d,dtype="Seismogram",component=0,window=False):
+            self.__nwin = mspass.TimeWindow  # always initialize even if not used
+
+    def loaddata(self, d, dtype="Seismogram", component=0, window=False):
         """
         Loads data for processing.  When window is set true
         use the internal pf definition of data time window
@@ -99,102 +103,102 @@ class RFdeconProcessor:
         :return:  Nothing (not None nothing) is returned
         """
         # First basic sanity checks
-        if(dtype=="raw_vector" and window):
+        if(dtype == "raw_vector" and window):
             raise RuntimeError("RFdeconProcessor.loaddata:  "
-             + "Illegal argument combination\nwindow cannot be true with raw_vector input")
-        if( not (dtype=="Seismogram" or dtype=="TimeSeries" or dtype=="raw_vector")):
+                               + "Illegal argument combination\nwindow cannot be true with raw_vector input")
+        if(not (dtype == "Seismogram" or dtype == "TimeSeries" or dtype == "raw_vector")):
             raise RuntimeError("RFdeconProcessor.loaddata:  "
-             +" Illegal dtype parameter="+dtype)
-        dvector=[]
+                               + " Illegal dtype parameter="+dtype)
+        dvector = []
         if(window):
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(d,component)
-                ts=WindowData(ts,self.dwin)
-                dvector=ts.data
-            elif(dtype=="TimeSeries"):
-                ts=WindowData(d,self.dwin)
-                dvector=ts.data
+            if(dtype == "Seismogram"):
+                ts = alg.ExtractComponent(d, component)
+                ts = WindowData(ts, self.dwin)
+                dvector = ts.data
+            elif(dtype == "TimeSeries"):
+                ts = WindowData(d, self.dwin)
+                dvector = ts.data
             else:
-                dvector=d
+                dvector = d
         else:
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(d,component)
-                dvector=ts.data
-            elif(dtype=="TimeSeries"):
-                dvector=ts.data
+            if(dtype == "Seismogram"):
+                ts = alg.ExtractComponent(d, component)
+                dvector = ts.data
+            elif(dtype == "TimeSeries"):
+                dvector = ts.data
             else:
-                dvector=d
+                dvector = d
         self.processor.loaddata(dvector)
 
-    def loadwavelet(self,w,dtype="Seismogram",component=2,window=False):
+    def loadwavelet(self, w, dtype="Seismogram", component=2, window=False):
         # This code is painfully similar to loaddata. To reduce errors
         # only the names have been changed to protect the innocent
-        if(dtype=="raw_vector" and window):
+        if(dtype == "raw_vector" and window):
             raise RuntimeError("RFdeconProcessor.loadwavelet:  "
-             + "Illegal argument combination\nwindow cannot be true with raw_vector input")
-        if( not (dtype=="Seismogram" or dtype=="TimeSeries" or dtype=="raw_vector")):
+                               + "Illegal argument combination\nwindow cannot be true with raw_vector input")
+        if(not (dtype == "Seismogram" or dtype == "TimeSeries" or dtype == "raw_vector")):
             raise RuntimeError("RFdeconProcessor.loadwavelet:  "
-             +" Illegal dtype parameter="+dtype)
-        wvector=[]
+                               + " Illegal dtype parameter="+dtype)
+        wvector = []
         if(window):
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(w,component)
-                ts=WindowData(ts,self.dwin)
-                wvector=ts.data
-            elif(dtype=="TimeSeries"):
-                ts=WindowData(w,self.dwin)
-                wvector=ts.data
+            if(dtype == "Seismogram"):
+                ts = alg.ExtractComponent(w, component)
+                ts = WindowData(ts, self.dwin)
+                wvector = ts.data
+            elif(dtype == "TimeSeries"):
+                ts = WindowData(w, self.dwin)
+                wvector = ts.data
             else:
-                wvector=w
+                wvector = w
         else:
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(w,component)
-                wvector=ts.data
-            elif(dtype=="TimeSeries"):
-                wvector=ts.data
+            if(dtype == "Seismogram"):
+                ts = alg.ExtractComponent(w, component)
+                wvector = ts.data
+            elif(dtype == "TimeSeries"):
+                wvector = ts.data
             else:
-                wvector=w
+                wvector = w
         self.processor.loadwavelet(wvector)
 
-    def loadnoise(self,n,dtype="Seismogram",component=2,window=False):
+    def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
         # First basic sanity checks
         # Return immediately for methods that ignore noise.
         # Note we do this silenetly assuming the function wrapper below
         # will post an error to elog for the output to handle this nonfatal error
-        if(self.algorithm=="LeastSquares" or self.algorithm=="WaterLevel"):
+        if self.algorithm == "LeastSquares" or self.algorithm == "WaterLevel":
             return
-        if(dtype=="raw_vector" and window):
+        if dtype == "raw_vector" and window:
             raise RuntimeError("RFdeconProcessor.loadnoise:  "
-             + "Illegal argument combination\nwindow cannot be true with raw_vector input")
-        if( not (dtype=="Seismogram" or dtype=="TimeSeries" or dtype=="raw_vector")):
+                               + "Illegal argument combination\nwindow cannot be true with raw_vector input")
+        if (not (dtype == "Seismogram" or dtype == "TimeSeries" or dtype == "raw_vector")):
             raise RuntimeError("RFdeconProcessor.loadnoise:  "
-             +" Illegal dtype parameter="+dtype)
-        nvector=[]
-        #IMPORTANT  these two parameters are not required by the
+                               + " Illegal dtype parameter="+dtype)
+        nvector = []
+        # IMPORTANT  these two parameters are not required by the
         # ScalarDecon C code but need to be inserted in pf for any algorithm
         # that requires noise data (i.e. multitaper) and the window
         # options is desired
-        if(window):
-            tws=self.md.get_double("noise_window_start")
-            twe=self.md.get_double("noise_window_end")
-            win=mspass.TimeWindow(tws,twe)
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(n,component)
-                ts=WindowData(ts,win)
-                nvector=ts.data
-            elif(dtype=="TimeSeries"):
-                ts=WindowData(n,win)
-                nvector=ts.data
+        if window:
+            tws = self.md.get_double("noise_window_start")
+            twe = self.md.get_double("noise_window_end")
+            win = mspass.TimeWindow(tws, twe)
+            if dtype == "Seismogram":
+                ts = alg.ExtractComponent(n, component)
+                ts = WindowData(ts, win)
+                nvector = ts.data
+            elif dtype == "TimeSeries":
+                ts = WindowData(n, win)
+                nvector = ts.data
             else:
-                nvector=n
+                nvector = n
         else:
-            if(dtype=="Seismogram"):
-                ts=alg.ExtractComponent(n,component)
-                nvector=ts.data
-            elif(dtype=="TimeSeries"):
-                nvector=ts.data
+            if dtype == "Seismogram":
+                ts = alg.ExtractComponent(n, component)
+                nvector = ts.data
+            elif dtype == "TimeSeries":
+                nvector = ts.data
             else:
-                nvector=n
+                nvector = n
         self.processor.loadnoise(nvector)
 
     def apply(self):
@@ -219,8 +223,9 @@ class RFdeconProcessor:
         centered (i.e. t0 is rounded n/2 where n is the length of the vector
                   returned).
         """
-        result=self.processor.actual_output()
+        result = self.processor.actual_output()
         return result
+
     def ideal_output(self):
         """
         The ideal output of a decon operator is the same thing we call a
@@ -234,8 +239,9 @@ class RFdeconProcessor:
         is a helpful metric to display the stability and accuracy of the
         inverse.
         """
-        result=self.processor.ideal_output()
+        result = self.processor.ideal_output()
         return result
+
     def inverse_filter(self):
         """
         This method returns the actual inverse filter that if convolved with
@@ -249,8 +255,9 @@ class RFdeconProcessor:
 
         The result is returned as  TimeSeries object.
         """
-        result=self.processor.inverse_filter()
+        result = self.processor.inverse_filter()
         return result
+
     def QCMetrics(self):
         """
         All decon algorithms compute a set of algorithm dependent quality
@@ -259,9 +266,10 @@ class RFdeconProcessor:
         algorithm dependent.  See related documentation for metrics computed
         by different algorithms.
         """
-        result=self.processor.QCMetrics()
+        result = self.processor.QCMetrics()
         return result
-    def change_parameters(self,md):
+
+    def change_parameters(self, md):
         """
         Use this method to change the internal parameter setting of the
         processor.  It can be used, for example, to switch from the damped
@@ -289,7 +297,7 @@ class RFdeconProcessor:
 
 
 @mspass_func_wrapper
-def RFdecon(d,processor,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
+def RFdecon(d, processor, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
             object_history=False, alg_name='RFdecon', alg_id=None, dryrun=False):
     """
     Use this function to compute conventional receiver functions
@@ -375,16 +383,16 @@ def RFdecon(d,processor,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
      The orientations are always the same as the input.
     """
     try:
-        if(wavelet != None):
-            processor.loadwavelet(wavelet,dtype='raw_vector')
+        if wavelet != None:
+            processor.loadwavelet(wavelet, dtype='raw_vector')
         else:
-            #processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
-            processor.loadwavelet(d,window=True)
-        if(processor.uses_noise):
-            if(noisedata!=None):
-                processor.loadnoise(noisedata,dtype='raw_vector')
+            # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)
+            processor.loadwavelet(d, window=True)
+        if processor.uses_noise:
+            if noisedata != None:
+                processor.loadnoise(noisedata, dtype='raw_vector')
             else:
-                processor.loadnoise(d,window=True,component=ncomp)
+                processor.loadnoise(d, window=True, component=ncomp)
     except MsPASSError as err:
         d.kill()
         d.elog.log_error(err)
@@ -393,37 +401,40 @@ def RFdecon(d,processor,wavelet=None,noisedata=None,wcomp=2,ncomp=2,
     # Otherwise we would call the window operator 3 times below
     # WindowData does will kill the output if the window doesn't match
     # which is reason for the test immediately after this call
-    result=WindowData(d,processor.dwin)
+    result = WindowData(d, processor.dwin)
     if result.dead():
         return result
-    npts=result.npts
+    npts = result.npts
     try:
         for k in range(3):
-            processor.loaddata(result,component=k)
-            x=processor.apply()
+            processor.loaddata(result, component=k)
+            x = processor.apply()
             # overwrite this component's data in the result Seismogram
             # Use some caution handling any size mismatch
-            nx=len(x)
-            if(nx>=npts):
+            nx = len(x)
+            if nx >= npts:
                 for i in range(npts):
-                    result.data[k,i]=x[i]
+                    result.data[k, i] = x[i]
             else:
-                #this may not be the fastest way to do this but it is simple and clean
+                # this may not be the fastest way to do this but it is simple and clean
                 # matters little since this is an error condition and should be rare
                 for i in range(npts):
-                    if(i<nx):
-                        result.data[k,i]=x[i]
+                    if i < nx:
+                        result.data[k, i] = x[i]
                     else:
-                        result.data[k,i]=0.0
+                        result.data[k, i] = 0.0
                 # This is actually an error condition so we log it
-                message='Windowing size mismatch.\nData window length = %d which is less than operator length= %d' % (nx,npts)
-                result.elog.log_error("RFdecon",message,ErrorSeverity.Complaint)
+                message = 'Windowing size mismatch.\nData window length = %d which is less than operator length= %d' % (
+                    nx, npts)
+                result.elog.log_error("RFdecon", message,
+                                      ErrorSeverity.Complaint)
     except MsPASSError as err:
         result.kill()
         result.elog.log_error(err)
     except:
         print("RFDecon:  something threw an unexpected exception - this is a bug and needs to be fixed.\nKilling result from RFdecon.")
         result.kill()
-        result.elog.log_error('RFdecon','Unexpected exception caught',ErrorSeverity.Invalid)
+        result.elog.log_error(
+            'RFdecon', 'Unexpected exception caught', ErrorSeverity.Invalid)
     finally:
         return result
