@@ -1004,7 +1004,7 @@
 <codeline lineno="513"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;Operator<sp/>does<sp/>not<sp/>contain<sp/>valid<sp/>data<sp/>for<sp/>processing&quot;</highlight><highlight class="normal">&lt;&lt;endl;</highlight></codeline>
 <codeline lineno="514"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/><ref refid="classmspass_1_1utility_1_1_ms_p_a_s_s_error" kindref="compound">MsPASSError</ref>(ss.str(),ErrorSeverity::Invalid);</highlight></codeline>
 <codeline lineno="515"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
-<codeline lineno="516"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref><sp/>dtmp(WindowData3C(d,this-&gt;processing_window));</highlight></codeline>
+<codeline lineno="516"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">CoreSeismogram</ref><sp/>dtmp(WindowData(d,this-&gt;processing_window));</highlight></codeline>
 <codeline lineno="517"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;decondata=<ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref>(dtmp,</highlight><highlight class="stringliteral">&quot;invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="518"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(FFTDeconOperator::nfft&lt;(2*this-&gt;winlength))</highlight></codeline>
 <codeline lineno="519"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
@@ -1053,7 +1053,7 @@
 <codeline lineno="562"><highlight class="normal"><sp/><sp/><sp/><sp/>this-&gt;pssignal=this-&gt;ThreeCPower(dtmp);</highlight></codeline>
 <codeline lineno="563"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal">(nload)</highlight></codeline>
 <codeline lineno="564"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
-<codeline lineno="565"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref><sp/>ntmp(WindowData3C(d,this-&gt;noise_window),</highlight><highlight class="stringliteral">&quot;Invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="565"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">Seismogram</ref><sp/>ntmp(WindowData(d,this-&gt;noise_window),</highlight><highlight class="stringliteral">&quot;Invalid&quot;</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="566"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>this-&gt;<ref refid="classmspass_1_1algorithms_1_1deconvolution_1_1_c_n_r3_c_decon_1a9d050c0940ada32cc3ddfecff9cade4a" kindref="member">loadnoise_data</ref>(ntmp);</highlight></codeline>
 <codeline lineno="567"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
 <codeline lineno="568"><highlight class="normal"><sp/><sp/><sp/><sp/>signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this-&gt;operator_dt),</highlight></codeline>

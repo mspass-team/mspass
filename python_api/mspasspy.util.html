@@ -556,8 +556,9 @@ or all of them are still alive.</p>
 
 <dl class="py function">
 <dt id="mspasspy.util.decorators.mspass_func_wrapper">
-<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
+<code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">mspass_func_wrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">function_return_key</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#mspass_func_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.mspass_func_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator wrapper to adapt a simple function to the mspass parallel processing framework.</p>
+<p>This function serves as a decorator wrapper, which is widely used in mspasspy library. It executes the target
 function on input data. Data are restricted to be mspasspy objects. It also preserves the processing history and
 error logs into the mspasspy objects. By wrapping your function using this decorator, you can save some workload.
 Runtime error won’t be raised in order to be efficient in map-reduce operations. MspassError with a severity Fatal
@@ -581,6 +582,18 @@ This is useful for pre-run checks of a large job to validate a workflow. Errors 
 but the function returns before attempting any calculations.</p></li>
 <li><p><strong>inplace_return</strong> – when func is an in-place function that doesn’t return anything, but you want to
 return the origin data (for example, in map-reduce), set inplace_return as true.</p></li>
+<li><p><strong>function_return_key</strong> – Some functions one might want to wrap with this decorator
+return something that is appropriate to save as Metadata.  If so, use this argument to
+define the key used to set that field in the data that is returned.
+This feature should normally be considered as a way to wrap an existing
+algorithm that you do not wish to alter, but which returns something useful.
+In principle that return can be almost anything, but we recommend this feature
+be limited to only simple types (i.e. int, float, etc.).  The decorator makes
+no type checks so the caller is responsible for assuring what is posted will not cause
+downstream problems.  The default for this parameter is None, which
+is taken to mean any return of the wrapped function will be ignored.  Note
+that when function_return_key is anything but None, it is assumed the
+returned object is the (usually modified) data object.</p></li>
 <li><p><strong>kwargs</strong> – extra kv arguments</p></li>
 </ul>
 </dd>

@@ -35,11 +35,11 @@
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" line="22" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/agc.cc" bodystart="22" bodyend="163" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="35" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1aa215f45ceedca3272350906f41a02d21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1a284b2feb1d76ac68476d7e3065a6b714" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
-        <definition>Seismogram mspass::algorithms::WindowData3C</definition>
+        <definition>Seismogram mspass::algorithms::WindowData</definition>
         <argsstring>(const mspass::seismic::Seismogram &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
-        <name>WindowData3C</name>
+        <name>WindowData</name>
         <param>
           <type>const <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &amp;</type>
           <declname>parent</declname>
@@ -53,7 +53,29 @@
         </briefdescription>
         <detaileddescription>
 <para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
+<para>This function will kill the return data and return a version with no sample data if the window time range does not enclose the time range of the data. In that case a message is left on elog to allow post mortem analysis of data in parallel constructs.</para>
 <para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger Seismogram object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
+<para>This function differs from the CoreSeismogram version in error handling. It follows the MsPASS model of posting errors to elog and returning a dead object for unrecoverable errors.</para>
+<para><simplesect kind="return"><para>new Seismogram object derived from parent but windowed by input time window range.</para>
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
 <parameternamelist>
@@ -85,7 +107,89 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="26" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="26" bodyend="63" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="51" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="135" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="135" bodyend="176" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="54" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1a1fac5643ae6b685a2f75ce6614fe1531" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
+        <definition>CoreSeismogram mspass::algorithms::WindowData</definition>
+        <argsstring>(const mspass::seismic::CoreSeismogram &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
+        <name>WindowData</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref> &amp;</type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Extracts a requested time window of data from a parent CoreSeismogram object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts a requested time window of data from a parent coreSeismogram object.</para>
+<para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time. Differs from the overloaded Seismogram version because it will throw an exception if given an invalid window.</para>
+<para><simplesect kind="return"><para>new CoreSeismgram object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger Seismogram object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
+<para><simplesect kind="return"><para>new CoreSeismogram object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger CoreSeismogram object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="27" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="27" bodyend="64" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="73" declcolumn="35"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a13a1140230c63d16c000bd23b400ee37" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -104,7 +208,28 @@
 <para>Extracts a requested time window of data from a parent TimeSeries object. </para>
         </briefdescription>
         <detaileddescription>
-<para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
+<para>It is common to need to extract a smaller segment of data from a larger time window of data. This is a bombproof algorithm to accomplish that low level task for TimeSeries objects.</para>
+<para>This function will kill the return data and return a version with no sample data if the window time range does not enclose the time range of the data. In that case a message is left on elog to allow post mortem analysis of data in parallel constructs.</para>
+<para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger TimeSeries object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
 <para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
 </simplesect>
 <parameterlist kind="exception"><parameteritem>
@@ -137,7 +262,88 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="79" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="79" bodyend="113" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="68" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="192" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="192" bodyend="234" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="93" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="algorithms_8h_1ac6dcc4234af86fe3a7f7ca584b52b011" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref></type>
+        <definition>CoreTimeSeries mspass::algorithms::WindowData</definition>
+        <argsstring>(const mspass::seismic::CoreTimeSeries &amp;parent, const mspass::algorithms::TimeWindow &amp;tw)</argsstring>
+        <name>WindowData</name>
+        <param>
+          <type>const <ref refid="classmspass_1_1seismic_1_1_core_time_series" kindref="compound">mspass::seismic::CoreTimeSeries</ref> &amp;</type>
+          <declname>parent</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classmspass_1_1algorithms_1_1_time_window" kindref="compound">mspass::algorithms::TimeWindow</ref> &amp;</type>
+          <declname>tw</declname>
+        </param>
+        <briefdescription>
+<para>Extracts a requested time window of data from a parent CoreTimeSeries object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicTimeSeries object for handling time.</para>
+<para><simplesect kind="return"><para>new CoreTimeSeries object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger CoreTimeSeries object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+It is common to need to extract a smaller segment of data from a larger time window of data. This function accomplishes this in a nifty method that takes advantage of the methods contained in the BasicCoreTimeSeries object for handling time.</para>
+<para><simplesect kind="return"><para>new Seismgram object derived from parent but windowed by input time window range.</para>
+</simplesect>
+<parameterlist kind="exception"><parameteritem>
+<parameternamelist>
+<parametername>MsPASSError</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>object if the requested time window is not inside data range</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>parent</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>is the larger CoreTimeSeries object to be windowed </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>tw</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>defines the data range to be extracted from parent. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" line="80" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/slice_and_dice.cc" bodystart="80" bodyend="114" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="111" declcolumn="35"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1af8a67b73e9e7380165e52ac6d084de74" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
@@ -199,7 +405,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="92" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="92" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="136" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="136" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a19d44e8cfc241d0d36787df6decc7832" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref></type>
@@ -251,7 +457,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="115" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="190" column="12" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="190" bodyend="257" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="159" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aeec9c9f728fd909f3c438b78124a22fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>std::shared_ptr&lt; <ref refid="namespacemspass_1_1seismic_1accd4b8b7754c4bec01071aad61edf3cc" kindref="member">mspass::seismic::ThreeComponentEnsemble</ref> &gt;</type>
@@ -313,7 +519,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="131" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="131" declcolumn="17"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="175" column="17" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="175" declcolumn="17"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a70e2a2142a48a9c0b0a95df605624356" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt;</type>
@@ -365,7 +571,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="258" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="258" bodyend="278" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="153" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" line="258" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/seismogram_helpers.cc" bodystart="258" bodyend="278" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="197" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a34f711f7891ca198eb7cbef44bbd6a18" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_core_seismogram" kindref="compound">mspass::seismic::CoreSeismogram</ref></type>
@@ -405,7 +611,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="170" declcolumn="33"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" line="12" column="16" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/sparse_convolve.cc" bodystart="12" bodyend="53" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="214" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1a4ca98cd4433001b2c71ba46c221f6048" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref></type>
@@ -482,7 +688,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="235" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="235" declcolumn="29"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="279" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="279" declcolumn="29"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aaf4c3abc82571d4db7955c34f18201e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
@@ -522,7 +728,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="586" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="275" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="586" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="319" declcolumn="27"/>
       </memberdef>
       <memberdef kind="function" id="algorithms_8h_1aaf01620b65615245bf4d06581f6badc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -553,7 +759,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="589" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="589" bodyend="594" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="301" declcolumn="6"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="589" column="6" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="589" bodyend="594" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="345" declcolumn="6"/>
       </memberdef>
       <memberdef kind="function" id="bundle_8cc_1af7ec3c6143ab2b7f3a31655943070506" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int</type>

@@ -233,90 +233,113 @@
 <h1>mspasspy.algorithms<a class="headerlink" href="#mspasspy-algorithms" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-mspasspy.algorithms.RFdeconProcessor">
 <span id="rfdeconprocessor"></span><h2>RFdeconProcessor<a class="headerlink" href="#module-mspasspy.algorithms.RFdeconProcessor" title="Permalink to this headline">¶</a></h2>
-<p>This file contains a class definition for a wrapper for 
+<p>This file contains a class definition for a wrapper for
 the suite of scalar deconvolution methods supported by mspass.
-It demonstrates the concept of a processing object created 
+It demonstrates the concept of a processing object created
 by wrapping C code.</p>
 <p>Created on Fri Jul 31 06:24:10 2020</p>
 <p>&#64;author: Gary Pavlis</p>
 <dl class="py function">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdecon">
-<code class="sig-prename descclassname">mspasspy.algorithms.RFdeconProcessor.</code><code class="sig-name descname">RFdecon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">processor</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">wavelet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noisedata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wcomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">ncomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">save_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">algid</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this function to compute conventional receiver functions 
-from a single three component seismogram.  The type of 
-processor is defined by the processor argument that is expected 
-to be an instance of the wrapper class RFdeconProcessor. In 
-mspass the processor class should be created and stored as a 
-global variable and passed to this function within a 
-spark map operator.  That allows the processing to proceed in 
-parallel without the overhead of creating the processor 
+<code class="sig-prename descclassname">mspasspy.algorithms.RFdeconProcessor.</code><code class="sig-name descname">RFdecon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">processor</span></em>, <em class="sig-param"><span class="n">wavelet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noisedata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wcomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">ncomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'RFdecon'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this function to compute conventional receiver functions
+from a single three component seismogram.  The type of
+processor is defined by the processor argument that is expected
+to be an instance of the wrapper class RFdeconProcessor. In
+mspass the processor class should be created and stored as a
+global variable and passed to this function within a
+spark map operator.  That allows the processing to proceed in
+parallel without the overhead of creating the processor
 definition for each seismogram.</p>
-<p>Default assumes d contains all data sections required to do 
+<p>Default assumes d contains all data sections required to do
 the deconvolution with the wavelet in component 2 (3 for matlab
-and FORTRAN people).  By default the data and noise 
-(if required by the algorithm) sections will be extracted from 
-the (assumed larger) data section using time windows defined 
-internally in the processor pf definition.   For variations (e.g. 
-adding tapering to one or more of the time series inputs) 
-use the d, wavelet, and (if required) noise arguments to load 
-each component separately.  Note d is dogmatically required 
+and FORTRAN people).  By default the data and noise
+(if required by the algorithm) sections will be extracted from
+the (assumed larger) data section using time windows defined
+internally in the processor pf definition.   For variations (e.g.
+adding tapering to one or more of the time series inputs)
+use the d, wavelet, and (if required) noise arguments to load
+each component separately.  Note d is dogmatically required
 to be three component data while optional wavelet and noisedata
-series are passed as plain numpy vectors (i.e. without the 
+series are passed as plain numpy vectors (i.e. without the
 decoration of a TimeSeries).</p>
-<p>To make use of the extended outputs from RFdeconProcessor 
-algorithms (e.g. actual output of the computed operator) 
-call those methods after this function returns successfully 
-with a three-component seismogram output.  That is possible 
-because the processor object caches the most recent wavelet 
-and inverse used for the deconvolution.   An exception is 
-that all algorithms call their QCmetrics method of processor 
-and push them to the headers of the deconvolved output.  
+<p>To make use of the extended outputs from RFdeconProcessor
+algorithms (e.g. actual output of the computed operator)
+call those methods after this function returns successfully
+with a three-component seismogram output.  That is possible
+because the processor object caches the most recent wavelet
+and inverse used for the deconvolution.   An exception is
+that all algorithms call their QCmetrics method of processor
+and push them to the headers of the deconvolved output.
 QCmetric attributes are algorithm dependent.</p>
-<p>The ProcessingHistory feature can optionally be enabled by 
-setting the save_history argument to True.   When enable one should 
+<p>The ProcessingHistory feature can optionally be enabled by
+setting the save_history argument to True.   When enable one should
 normally set a unique id for the algid argument.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>d</strong> – Seismogram input data.  See notes above about</p>
+</dd>
+</dl>
+<p>time span of these data.
+:param processor:  RFdeconProcessor object defining algorithm</p>
+<blockquote>
+<div><p>to be applied (see related documentation for details).</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>processor</strong> – RFdeconProcessor object defining algorithm
-to be applied (see related documentation for details).</p></li>
-<li><p><strong>d</strong> – Seismogram input data.  See notes above about 
-time span of these data.</p></li>
-<li><p><strong>wavelet</strong> – vector of doubles (numpy array or the 
+<li><p><strong>wavelet</strong> – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
-the wavelet to use to compute deconvolution operator.  
-Default is None which assumes processor was set up to use 
+the wavelet to use to compute deconvolution operator.
+Default is None which assumes processor was set up to use
 a component of d as the wavelet estimate.</p></li>
-<li><p><strong>noisedata</strong> – vector of doubles (numpy array or the 
+<li><p><strong>noisedata</strong> – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
 noise data to use for computing regularization.  Not all RF
-estimation algorithms use noise estimators so this parameter 
-is optional.   It can also be extracted from d depending on 
+estimation algorithms use noise estimators so this parameter
+is optional.   It can also be extracted from d depending on
 parameter file options.</p></li>
-<li><p><strong>wcomp</strong> – When defined from Seismogram d the wavelet 
-estimate in conventional RFs is one of the components that 
-are most P wave dominated. That is always one of three 
-things:  Z, L of LQT, or the L component from the output of 
-Kennett’s free surface transformation operator.  The 
-default is 2, which for ccore.Seismogram is always one of 
-the above.   This parameter would be changed only if the 
+<li><p><strong>wcomp</strong> – <p>When defined from Seismogram d the wavelet
+estimate in conventional RFs is one of the components that
+are most P wave dominated. That is always one of three
+things:  Z, L of LQT, or the L component from the output of
+Kennett’s free surface transformation operator.  The
+default is 2, which for ccore.Seismogram is always one of
+the above.   This parameter would be changed only if the
 data has undergone some novel transformation not yet invented
-and the best wavelet estimate was on in 2 (3 with FORTRAN 
-and matlab numbering).  
-:param ncomp: component number to use to compute noise.  This is used 
-only if the algorithm in processor requires a noise estimate. 
+and the best wavelet estimate was on in 2 (3 with FORTRAN
+and matlab numbering).
+:param ncomp: component number to use to compute noise.  This is used
+only if the algorithm in processor requires a noise estimate.
 Normally it should be the same as wcomp and is by default (2).
-:param save_history:  When true the ProcessingHistory mechanism 
-is enabled.
-:param algid: Define the algorithm id for the ProcessingHistory chain.
-This parameter is ignored unless save_history is true.   Default is 
-the string “0” but it should normally be set to some unique id 
-defined for that instance of this algorithm.  The algorithm is 
-always set to RFdecon.</p></li>
+:param object_history: boolean to enable or disable saving object</p>
+<blockquote>
+<div><p>level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">param alg_name</dt>
+<dd class="field-odd"><p>When history is enabled this is the algorithm name
+assigned to the stamp for applying this algorithm.
+Default (“WindowData”) should normally be just used.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
+</dd>
+<dt class="field-even">param ald_id</dt>
+<dd class="field-even"><p>algorithm id to assign to history record (used only if
+object_history is set True.)
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
+</dd>
+<dt class="field-odd">param dryrun</dt>
+<dd class="field-odd"><p>When true only the arguments are checked for validity.
+When true nothing is calculated and the original data are returned.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p>
+</dd>
+</dl>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Seismogram object containing the RF estimates.  
+<dd class="field-even"><p>Seismogram object containing the RF estimates.
 The orientations are always the same as the input.</p>
 </dd>
 </dl>
@@ -326,28 +349,28 @@ The orientations are always the same as the input.</p>
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">
 <em class="property">class </em><code class="sig-prename descclassname">mspasspy.algorithms.RFdeconProcessor.</code><code class="sig-name descname">RFdeconProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alg</span><span class="o">=</span><span class="default_value">'LeastSquares'</span></em>, <em class="sig-param"><span class="n">pf</span><span class="o">=</span><span class="default_value">'RFdeconProcessor.pf'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is a wrapper for the suite of receiver function deconvolution 
-methods we call scalar methods.  That is, the operation is reducable to 
-two time series:   wavelet signal and the data (TimeSeries) signal.  
-That is in contrast to three component methods that always treat the 
-data as vector samples.   The class should be created as a global 
-processor object to be used in a spark job.  The design assumes the 
-processor object will be passed as an argument to the RFdecon 
+<p>This class is a wrapper for the suite of receiver function deconvolution
+methods we call scalar methods.  That is, the operation is reducable to
+two time series:   wavelet signal and the data (TimeSeries) signal.
+That is in contrast to three component methods that always treat the
+data as vector samples.   The class should be created as a global
+processor object to be used in a spark job.  The design assumes the
+processor object will be passed as an argument to the RFdecon
 function that should appear as a function in a spark map call.</p>
 <dl class="py method">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">
 <code class="sig-name descname">QCMetrics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.QCMetrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics" title="Permalink to this definition">¶</a></dt>
-<dd><p>All decon algorithms compute a set of algorithm dependent quality 
+<dd><p>All decon algorithms compute a set of algorithm dependent quality
 control metrics.  This method returns the metrics as a set of fixed
-name:value pairs in a mspass.Metadata object.   The details are 
-algorithm dependent.  See related documentation for metrics computed 
+name:value pairs in a mspass.Metadata object.   The details are
+algorithm dependent.  See related documentation for metrics computed
 by different algorithms.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">
 <code class="sig-name descname">actual_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.actual_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>The actual output of a decon operator is the inverse filter applied to 
+<dd><p>The actual output of a decon operator is the inverse filter applied to
 the wavelet.  By design it is an approximation of the shaping wavelet
 defined for this operator.</p>
 <dl class="field-list simple">
@@ -355,9 +378,9 @@ defined for this operator.</p>
 <dd class="field-odd"><p>Actual output of the operator as a ccore.TimeSeries object.</p>
 </dd>
 </dl>
-<p>The Metadata of the return is bare bones.  The most important factor 
-about this result is that because actual output waveforms are normally 
-a zero phase wavelet of some kind the result is time shifted to be 
+<p>The Metadata of the return is bare bones.  The most important factor
+about this result is that because actual output waveforms are normally
+a zero phase wavelet of some kind the result is time shifted to be
 centered (i.e. t0 is rounded n/2 where n is the length of the vector</p>
 <blockquote>
 <div><p>returned).</p>
@@ -380,11 +403,11 @@ centered (i.e. t0 is rounded n/2 where n is the length of the vector</p>
 <dl class="py method">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">
 <code class="sig-name descname">change_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">md</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.change_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use this method to change the internal parameter setting of the 
+<dd><p>Use this method to change the internal parameter setting of the
 processor.  It can be used, for example, to switch from the damped
-least square method to the water level method.  Note the input 
-must be a complete definition for a parameter set defining a 
-particular algorithm.  i.e. this is not an update method but 
+least square method to the water level method.  Note the input
+must be a complete definition for a parameter set defining a
+particular algorithm.  i.e. this is not an update method but
 t reinitializes the processor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -404,26 +427,26 @@ t reinitializes the processor.</p>
 <code class="sig-name descname">ideal_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.ideal_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ideal output of a decon operator is the same thing we call a
 shaping wavelet.  This method returns the ideal output=shaping wavelet
-as a TimeSeries object.   Like the actual output method the return 
-function is circular shifted so the function peaks at 0 time located 
-at n/2 samples from the start sample.  Graphic displays will then show 
-the wavelet centered and peaked at time 0.   The prediction error 
-can be computed as the difference between the actual_output and 
-ideal_output TimeSeries objects.   The norm of the prediction error 
-is a helpful metric to display the stability and accuracy of the 
+as a TimeSeries object.   Like the actual output method the return
+function is circular shifted so the function peaks at 0 time located
+at n/2 samples from the start sample.  Graphic displays will then show
+the wavelet centered and peaked at time 0.   The prediction error
+can be computed as the difference between the actual_output and
+ideal_output TimeSeries objects.   The norm of the prediction error
+is a helpful metric to display the stability and accuracy of the
 inverse.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">
 <code class="sig-name descname">inverse_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.inverse_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method returns the actual inverse filter that if convolved with 
-he original data will produce the RF estimate.  Note the filter is 
-meaningful only if the source wavelet is minimum phase.  A standard 
-theorem from time series analysis shows that the inverse of mixed 
+<dd><p>This method returns the actual inverse filter that if convolved with
+he original data will produce the RF estimate.  Note the filter is
+meaningful only if the source wavelet is minimum phase.  A standard
+theorem from time series analysis shows that the inverse of mixed
 phase wavelet is usually unstable and a maximum phase wavelet is always
-unstable.   Fourier-based methods can still compute a stable solution 
-even with a mixed phase wavelet because of the implied circular 
+unstable.   Fourier-based methods can still compute a stable solution
+even with a mixed phase wavelet because of the implied circular
 convolution.</p>
 <p>The result is returned as  TimeSeries object.</p>
 </dd></dl>
@@ -431,24 +454,24 @@ convolution.</p>
 <dl class="py method">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">
 <code class="sig-name descname">loaddata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">'Seismogram'</span></em>, <em class="sig-param"><span class="n">component</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdeconProcessor.loaddata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads data for processing.  When window is set true 
-use the internal pf definition of data time window 
-and window the data.  The dtype parameter changes the 
-behavior of this algorithm significantly depending on 
-the setting.   It can be one of the following:  
-Seismogram, TimeSeries, or raw_vector.   For the first 
-two the data to process will be extracted in a 
-pf specfied window if window is True.  If window is 
-False TimeSeries data will be passed directly and 
-Seismogram data will have the data defined by the 
-component parameter copied to the internal data 
-vector workspace.   If dtype is set to raw_vector 
-d is assumed to be a raw numpy vector of doubles or 
-an the aliased std::vector used in ccore, for example, 
-in the TimeSeries object s vector.  Setting dtype 
-to raw_vector and window True will result in this 
-method throwing a RuntimeError exception as the 
-combination is not possible since raw_vector data 
+<dd><p>Loads data for processing.  When window is set true
+use the internal pf definition of data time window
+and window the data.  The dtype parameter changes the
+behavior of this algorithm significantly depending on
+the setting.   It can be one of the following:
+Seismogram, TimeSeries, or raw_vector.   For the first
+two the data to process will be extracted in a
+pf specfied window if window is True.  If window is
+False TimeSeries data will be passed directly and
+Seismogram data will have the data defined by the
+component parameter copied to the internal data
+vector workspace.   If dtype is set to raw_vector
+d is assumed to be a raw numpy vector of doubles or
+an the aliased std::vector used in ccore, for example,
+in the TimeSeries object s vector.  Setting dtype
+to raw_vector and window True will result in this
+method throwing a RuntimeError exception as the
+combination is not possible since raw_vector data
 have no time base.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -463,10 +486,10 @@ have no time base.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>component</strong> – component of Seismogram data to 
-load as data vector.  Ignored if dtype is raw_vector 
+<li><p><strong>component</strong> – component of Seismogram data to
+load as data vector.  Ignored if dtype is raw_vector
 or TimeSeries.</p></li>
-<li><p><strong>window</strong> – boolean controlling internally 
+<li><p><strong>window</strong> – boolean controlling internally
 defined windowing.  (see details above)</p></li>
 </ul>
 </dd>
@@ -503,7 +526,7 @@ defined windowing.  (see details above)</p></li>
 <span id="signals"></span><h2>signals<a class="headerlink" href="#module-mspasspy.algorithms.signals" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.correlate">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">demean</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">'naive'</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">shift</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'correlate'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">demean</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">'naive'</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cross-correlation of two signals up to a specified maximal shift.
 :param a: first signal
 :param b: second signal
@@ -536,22 +559,22 @@ quickly. ‘auto’ Automatically chooses direct or Fourier method based on an e
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.correlate_stream_template">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate_stream_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">template_time</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_type</span><span class="o">=</span><span class="default_value">'seismogram'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate_stream_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate_stream_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate_stream_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'correlate_stream_template'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">template_time</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_type</span><span class="o">=</span><span class="default_value">'seismogram'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate_stream_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate_stream_template" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.correlate_template">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'valid'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">'full'</span></em>, <em class="sig-param"><span class="n">demean</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate_template" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlate_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">template</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'correlate_template'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'valid'</span></em>, <em class="sig-param"><span class="n">normalize</span><span class="o">=</span><span class="default_value">'full'</span></em>, <em class="sig-param"><span class="n">demean</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlate_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlate_template" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.correlation_detector">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlation_detector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">templates</span></em>, <em class="sig-param"><span class="n">heights</span></em>, <em class="sig-param"><span class="n">distance</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">template_times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template_magnitudes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">similarity_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_type</span><span class="o">=</span><span class="default_value">'seismogram'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlation_detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlation_detector" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">correlation_detector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stream</span></em>, <em class="sig-param"><span class="n">templates</span></em>, <em class="sig-param"><span class="n">heights</span></em>, <em class="sig-param"><span class="n">distance</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'correlation_detector'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">template_times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template_magnitudes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">template_names</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">similarity_func</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">details</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_type</span><span class="o">=</span><span class="default_value">'seismogram'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#correlation_detector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.correlation_detector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.detrend">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">detrend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'simple'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#detrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.detrend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">detrend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'dtrend'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'simple'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#detrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.detrend" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
 so the processing history and error logs can be preserved.</p>
 <dl class="field-list simple">
@@ -578,7 +601,7 @@ so the processing history and error logs can be preserved.</p>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.filter">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'filter'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">options</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
 history and error logs can be preserved.</p>
 <dl class="field-list simple">
@@ -606,7 +629,7 @@ history and error logs can be preserved.</p>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.interpolate">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sampling_rate</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'weighted_average_slopes'</span></em>, <em class="sig-param"><span class="n">starttime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">npts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_shift</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.interpolate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sampling_rate</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'interpolate'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">inplace_return</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'weighted_average_slopes'</span></em>, <em class="sig-param"><span class="n">starttime</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">npts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_shift</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
 so the processing history and error logs can be preserved.</p>
 <dl class="field-list simple">
@@ -643,22 +666,22 @@ by the parameters sampling_rate, starttime and npts.</p></li>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.templates_max_similarity">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">templates_max_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">st</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">streams_templates</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#templates_max_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.templates_max_similarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">templates_max_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">st</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">streams_templates</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'templates_max_similarity'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#templates_max_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.templates_max_similarity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.xcorr_3c">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_3c</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">st1</span></em>, <em class="sig-param"><span class="n">st2</span></em>, <em class="sig-param"><span class="n">shift_len</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">components</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">full_xcorr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">abs_max</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_3c"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_3c" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_3c</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">st1</span></em>, <em class="sig-param"><span class="n">st2</span></em>, <em class="sig-param"><span class="n">shift_len</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'xcor_3c'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">components</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">full_xcorr</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">abs_max</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_3c"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_3c" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.xcorr_max">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_max</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">abs_max</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_max" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_max</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'xcor_max'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">abs_max</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_max" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.signals.xcorr_pick_correction">
-<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_pick_correction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trace1</span></em>, <em class="sig-param"><span class="n">trace2</span></em>, <em class="sig-param"><span class="n">pick1</span></em>, <em class="sig-param"><span class="n">pick2</span></em>, <em class="sig-param"><span class="n">t_before</span></em>, <em class="sig-param"><span class="n">t_after</span></em>, <em class="sig-param"><span class="n">cc_maxlag</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filter_options</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_pick_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_pick_correction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.signals.</code><code class="sig-name descname">xcorr_pick_correction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trace1</span></em>, <em class="sig-param"><span class="n">trace2</span></em>, <em class="sig-param"><span class="n">pick1</span></em>, <em class="sig-param"><span class="n">pick2</span></em>, <em class="sig-param"><span class="n">t_before</span></em>, <em class="sig-param"><span class="n">t_after</span></em>, <em class="sig-param"><span class="n">cc_maxlag</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'xcorr_pick_correction'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filter_options</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/signals.html#xcorr_pick_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.signals.xcorr_pick_correction" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -717,7 +740,7 @@ come from the global history manager or be set manually.</p>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.window.WindowData">
-<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">WindowData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">twin</span></em>, <em class="sig-param"><span class="n">t0shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">WindowData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">twin</span></em>, <em class="sig-param"><span class="n">t0shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'scale'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cut data defined by a TimeWindow object.</p>
 <p>Cutting a smaller waveform segment from a larger waveform segment
 is a very common seismic data processing task.   The function is
@@ -726,9 +749,7 @@ to the MsPASS framework.</p>
 <p>Note this function uses one model for being bombproof with a map
 operation.  Any exception that makes the result invalid will cause
 an error message to be posted to the elog attribute of the input
-datum AND the function returns a None.   Callers should test for
-validity of output before trying to use the result or something else
-will almost certainly abort the job downstream.</p>
+datum AND the data will be marked dead (killed).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -741,13 +762,17 @@ A typical example would be to set t0shift to an arrival time and let
 the window define time relative to that arrival time.  Default is None
 which cause the function to assume twin is to be used directly.</p></li>
 <li><p><strong>object_history</strong> – boolean to enable or disable saving object
-level history.  Default is False.   Note if this feature is enabled
-and the input data history chain is empty the function will log an
-error to the returned data and not update the history chain.</p></li>
-<li><p><strong>instance</strong> – is instance key to pass to processing history chain.
-If None (the default) and object_history is true the processing
-history chain will not be updated and a complaint error posted to
-d.elog.</p></li>
+level history.  Default is False.  Note this functionality is
+implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>alg_name</strong> – When history is enabled this is the algorithm name
+assigned to the stamp for applying this algorithm.
+Default (“WindowData”) should normally be just used.
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>ald_id</strong> – algorithm id to assign to history record (used only if
+object_history is set True.)
+Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
+<li><p><strong>dryrun</strong> – Note this functionality is implemented via the mspass_func_wrapper decorator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -784,16 +809,14 @@ objects.</p>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.window.scale">
-<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_by_section</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_mean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">instance</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.scale" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">compute_from_window</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">window</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'peak'</span></em>, <em class="sig-param"><span class="n">level</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">scale_by_section</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_mean</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'scale'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">function_return_key</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.scale" title="Permalink to this definition">¶</a></dt>
 <dd><p>Top level function interface to data scaling methods.</p>
 <p>This function can be used to scale seismic data contained in any of
 the four seismic data objects defined in mspass:  TimeSeries, Seismogram,
 TimeSeriesEnsemble, and SeismogramEnsemble.   An extensive set of
 amplitude estimation metrics are available by selecting one of the
 allowed values for the method parameter.   Ensembles can be scaled
-at the individual seismogram level or as a whole (scale_by_section=True).
-Object level history can be enabled by setting object_history true.
-See parameter descriptions for additional features for history preservation.</p>
+at the individual seismogram level or as a whole (scale_by_section=True).</p>
 <p>Note all methods preserve the original amplitude by updating the
 Metadata parameter calib to include the scaling.  i.e. as always the
 amplitude of the data in physical units can be restored by multiplying
@@ -803,6 +826,18 @@ the data samples by calib.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>d</strong> – is input data object.  If not one of the four mspass seismic
 data types noted above the function will throw a RuntimeError exception.</p></li>
+<li><p><strong>compute_from_window</strong> – boolean used to compute amplitude and scale
+based on a windowed section of the input waveform.   By default (this
+boolan False) the amplitude for scaling is computed from the full
+waveform.  When True the window argument must contain a valid TimeWindow
+that spans a time range smaller than the data range.  In that situation
+if the window is inconsistent with the data range the return will be
+marked dead and messages will be found posted in elog.  For ensembles
+all or only  portion of the group will be killed if this happens.
+Note this parameter is also ignored when scale_by_section is true.</p></li>
+<li><p><strong>window</strong> – mspass TimeWindow object defining the time range
+over which the amplitude for scaling is to be computed.  (see the
+compute_from_window parameter description)</p></li>
 <li><p><strong>method</strong> – string defining the gain method to use.  Currently supported
 method values are:  peak, RMS (rms accepted), perc, and MAD
 (also accepts mad or Mad).  Peak uses the largest amplitude for
@@ -813,17 +848,14 @@ number of vectors not the total number of samples (3 times number of
 vectors).  perc uses a sorted percentage clip level metric as used in
 seismic unix.  mad is a variant where the value returned is the
 median absolute deviation (mad) that is actual the same as perc=1/2.
-Default is peak.</p></li>
+Default is peak.  WARNING:  if an invalid value for method is passed the
+data will be returned unaltered with a complaint message issue for
+very datum (indivually or in ensembles) run that way.</p></li>
 <li><p><strong>level</strong> – For all but perc this defines the scale to which the data
 are scaled.  For perc it is used to set the percent clip level.
-A RuntimeError exception is thrown if method is perc and level is larger
-that one. Default is 1.0</p></li>
-<li><p><strong>window</strong> – is an optional TimeWindow applied to compute amplitude
-for scaling.  When not a null (python None) a windowing algorithm will
-be applied before computing the amplitude metric and the amplitude
-computed in that window will be used for scaling.   Default is None
-meaning this option is turned off and the entire waveform segment is
-scanned for the amplitude estimation.</p></li>
+If the value passed is illegal (0 or negative for most methods while
+perc must also be positive but less or equal 1) a complain message will
+be posted to elog and the level adjusted to 1.0.</p></li>
 <li><p><strong>scale_by_section</strong> – is a boolean that controls the scaling
 behavior on ensembles only (It is silently ignored for atomic
 TimeSeries and Seismogram data).  When true a single gain factor is
@@ -834,35 +866,15 @@ each member.</p></li>
 True.   The algorithm used in that case has an option to use the mean
 log amplitude for scaling the section instead of the default median
 amplitude.</p></li>
-<li><p><strong>object_history</strong> – </p></li>
-<li><p><strong>instance</strong> – object_history and instance are intimately related
-and control how object level history is handled.  Object level history
-is disabled by default for efficiency.  If object_history is set True
-and the string passed as instance is defined (not None which is the default)
-each Seismogram or TimeSeries object will attempt to save the history
-through a new_map operation.   If the history chain is empty this will
-silently generate an error posted to error log on each object.</p></li>
-<li><p><strong>dryrun</strong> – is a boolean used for preprocessing to validate
-arguments.  When true the algorithm is not run, but the function
-only checks the argument list for invalid combinations.  This is
-useful for prerun checks of a large job to validate a workflow.
-Errors generate exceptions but the function returns before
-attemping any calculations.  Default is false</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>amplitude(s) in a python array.   Array has only one element
-for all returns except ensembles when scale_by_section is False.</p>
+<dd class="field-even"><p>Data scaled to specified level.  Note the scaling always preserves
+absolute amplitude by adjusting the value of the calib attribute of the
+return so calib*data is the same value before and after the scaling.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>For atomic objects returns the computed amplitude for the
-data received through d and sets that value as array element 0.
-For ensembles returns a pybind11 wrapped
-std::vector of amplitudes for the ensemble members when scale_by_section
-is false (member by member scaling) but only a single number in element 0
-for section scaling.   An empty return is possible without an exception
-being thrown if a single atomic data type is marked dead or if the
-ensemble received has no data.</p>
+<dd class="field-odd"><p>same as input</p>
 </dd>
 </dl>
 </dd></dl>

@@ -188,9 +188,9 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This file contains a class definition for a wrapper for </span>
+<span class="sd">This file contains a class definition for a wrapper for</span>
 <span class="sd">the suite of scalar deconvolution methods supported by mspass.</span>
-<span class="sd">It demonstrates the concept of a processing object created </span>
+<span class="sd">It demonstrates the concept of a processing object created</span>
 <span class="sd">by wrapping C code.</span>
 
 <span class="sd">Created on Fri Jul 31 06:24:10 2020</span>
@@ -199,192 +199,199 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="k">as</span> <span class="nn">mspass</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AntelopePf</span><span class="p">,</span>
+                                    <span class="n">MsPASSError</span><span class="p">,</span>
                                     <span class="n">ErrorSeverity</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
 <span class="kn">import</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="k">as</span> <span class="nn">alg</span>
 <span class="kn">import</span> <span class="nn">mspasspy.ccore.algorithms.deconvolution</span> <span class="k">as</span> <span class="nn">decon</span>
+<span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
+
+
 <div class="viewcode-block" id="RFdeconProcessor"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor">[docs]</a><span class="k">class</span> <span class="nc">RFdeconProcessor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This class is a wrapper for the suite of receiver function deconvolution </span>
-<span class="sd">    methods we call scalar methods.  That is, the operation is reducable to </span>
-<span class="sd">    two time series:   wavelet signal and the data (TimeSeries) signal.  </span>
-<span class="sd">    That is in contrast to three component methods that always treat the </span>
-<span class="sd">    data as vector samples.   The class should be created as a global </span>
-<span class="sd">    processor object to be used in a spark job.  The design assumes the </span>
-<span class="sd">    processor object will be passed as an argument to the RFdecon </span>
-<span class="sd">    function that should appear as a function in a spark map call.  </span>
+<span class="sd">    This class is a wrapper for the suite of receiver function deconvolution</span>
+<span class="sd">    methods we call scalar methods.  That is, the operation is reducable to</span>
+<span class="sd">    two time series:   wavelet signal and the data (TimeSeries) signal.</span>
+<span class="sd">    That is in contrast to three component methods that always treat the</span>
+<span class="sd">    data as vector samples.   The class should be created as a global</span>
+<span class="sd">    processor object to be used in a spark job.  The design assumes the</span>
+<span class="sd">    processor object will be passed as an argument to the RFdecon</span>
+<span class="sd">    function that should appear as a function in a spark map call.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span><span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">=</span><span class="n">alg</span>
-        <span class="n">pfhandle</span><span class="o">=</span><span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">==</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">=</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;LeastSquare&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">=</span><span class="n">decon</span><span class="o">.</span><span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="o">=</span><span class="kc">False</span>
-        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span><span class="o">==</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">=</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;WaterLevel&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">=</span><span class="n">decon</span><span class="o">.</span><span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="o">=</span><span class="kc">False</span>
-        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span><span class="o">==</span><span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">=</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperXcor&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">=</span><span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="o">=</span><span class="kc">True</span>
-        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span><span class="o">==</span><span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">=</span><span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperSpecDiv&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">=</span><span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="o">=</span><span class="kc">True</span>
-        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span><span class="o">==</span><span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Generalized Iterative method not yet supported&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s2">&quot;LeastSquares&quot;</span><span class="p">,</span> <span class="n">pf</span><span class="o">=</span><span class="s2">&quot;RFdeconProcessor.pf&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">alg</span>
+        <span class="n">pfhandle</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;LeastSquare&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;WaterLevel&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperXcor&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperSpecDiv&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Generalized Iterative method not yet supported&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Illegal value for alg=&quot;</span><span class="o">+</span><span class="n">alg</span><span class="p">)</span>
-        <span class="c1"># although loaddata and loadwavelet methods don&#39;t always require </span>
+        <span class="c1"># although loaddata and loadwavelet methods don&#39;t always require</span>
         <span class="c1"># it we cache the analysis time window for efficiency</span>
-        <span class="n">tws</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_start&quot;</span><span class="p">)</span>
-        <span class="n">twe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_end&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__dwin</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span><span class="n">twe</span><span class="p">)</span>
+        <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_start&quot;</span><span class="p">)</span>
+        <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_end&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
         <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="p">):</span>
-            <span class="n">tws</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
-            <span class="n">twe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span><span class="n">twe</span><span class="p">)</span>
+            <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
+            <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used </span>
-<div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span><span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span>
+
+<div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads data for processing.  When window is set true </span>
-<span class="sd">        use the internal pf definition of data time window </span>
-<span class="sd">        and window the data.  The dtype parameter changes the </span>
-<span class="sd">        behavior of this algorithm significantly depending on </span>
-<span class="sd">        the setting.   It can be one of the following:  </span>
-<span class="sd">        Seismogram, TimeSeries, or raw_vector.   For the first </span>
-<span class="sd">        two the data to process will be extracted in a </span>
-<span class="sd">        pf specfied window if window is True.  If window is </span>
-<span class="sd">        False TimeSeries data will be passed directly and </span>
-<span class="sd">        Seismogram data will have the data defined by the </span>
-<span class="sd">        component parameter copied to the internal data </span>
-<span class="sd">        vector workspace.   If dtype is set to raw_vector </span>
-<span class="sd">        d is assumed to be a raw numpy vector of doubles or </span>
-<span class="sd">        an the aliased std::vector used in ccore, for example, </span>
-<span class="sd">        in the TimeSeries object s vector.  Setting dtype </span>
-<span class="sd">        to raw_vector and window True will result in this </span>
-<span class="sd">        method throwing a RuntimeError exception as the </span>
-<span class="sd">        combination is not possible since raw_vector data </span>
-<span class="sd">        have no time base.   </span>
-<span class="sd">        </span>
-<span class="sd">        :param d: input data (contents expected depend upon </span>
+<span class="sd">        Loads data for processing.  When window is set true</span>
+<span class="sd">        use the internal pf definition of data time window</span>
+<span class="sd">        and window the data.  The dtype parameter changes the</span>
+<span class="sd">        behavior of this algorithm significantly depending on</span>
+<span class="sd">        the setting.   It can be one of the following:</span>
+<span class="sd">        Seismogram, TimeSeries, or raw_vector.   For the first</span>
+<span class="sd">        two the data to process will be extracted in a</span>
+<span class="sd">        pf specfied window if window is True.  If window is</span>
+<span class="sd">        False TimeSeries data will be passed directly and</span>
+<span class="sd">        Seismogram data will have the data defined by the</span>
+<span class="sd">        component parameter copied to the internal data</span>
+<span class="sd">        vector workspace.   If dtype is set to raw_vector</span>
+<span class="sd">        d is assumed to be a raw numpy vector of doubles or</span>
+<span class="sd">        an the aliased std::vector used in ccore, for example,</span>
+<span class="sd">        in the TimeSeries object s vector.  Setting dtype</span>
+<span class="sd">        to raw_vector and window True will result in this</span>
+<span class="sd">        method throwing a RuntimeError exception as the</span>
+<span class="sd">        combination is not possible since raw_vector data</span>
+<span class="sd">        have no time base.</span>
+
+<span class="sd">        :param d: input data (contents expected depend upon</span>
 <span class="sd">        value of dtype parameter).</span>
-<span class="sd">        :param dtype: string defining the form d is expected </span>
+<span class="sd">        :param dtype: string defining the form d is expected</span>
 <span class="sd">          to be (see details above)</span>
-<span class="sd">        :param component: component of Seismogram data to </span>
-<span class="sd">          load as data vector.  Ignored if dtype is raw_vector </span>
-<span class="sd">          or TimeSeries.  </span>
-<span class="sd">        :param window: boolean controlling internally </span>
+<span class="sd">        :param component: component of Seismogram data to</span>
+<span class="sd">          load as data vector.  Ignored if dtype is raw_vector</span>
+<span class="sd">          or TimeSeries.</span>
+<span class="sd">        :param window: boolean controlling internally</span>
 <span class="sd">          defined windowing.  (see details above)</span>
-<span class="sd">        </span>
+
 <span class="sd">        :return:  Nothing (not None nothing) is returned</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># First basic sanity checks</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loaddata:  &quot;</span>
-             <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
+                               <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loaddata:  &quot;</span>
-             <span class="o">+</span><span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">dvector</span><span class="o">=</span><span class="p">[]</span>
+                               <span class="o">+</span> <span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">dvector</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">d</span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">dvector</span><span class="o">=</span><span class="n">d</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">dvector</span><span class="p">)</span>        </div>
-    
-<div class="viewcode-block" id="RFdeconProcessor.loadwavelet"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">[docs]</a>    <span class="k">def</span> <span class="nf">loadwavelet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span><span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="c1"># This code is painfully similar to loaddata. To reduce errors </span>
+                <span class="n">dvector</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">dvector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RFdeconProcessor.loadwavelet"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadwavelet">[docs]</a>    <span class="k">def</span> <span class="nf">loadwavelet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># This code is painfully similar to loaddata. To reduce errors</span>
         <span class="c1"># only the names have been changed to protect the innocent</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loadwavelet:  &quot;</span>
-             <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
+                               <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loadwavelet:  &quot;</span>
-             <span class="o">+</span><span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">wvector</span><span class="o">=</span><span class="p">[]</span>
+                               <span class="o">+</span> <span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">wvector</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">w</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">w</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">wvector</span><span class="o">=</span><span class="n">w</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">wvector</span><span class="p">)</span>        </div>
-    
-<div class="viewcode-block" id="RFdeconProcessor.loadnoise"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">[docs]</a>    <span class="k">def</span> <span class="nf">loadnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span><span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="n">wvector</span> <span class="o">=</span> <span class="n">w</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">wvector</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RFdeconProcessor.loadnoise"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loadnoise">[docs]</a>    <span class="k">def</span> <span class="nf">loadnoise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># First basic sanity checks</span>
-        <span class="c1"># Return immediately for methods that ignore noise.  </span>
-        <span class="c1"># Note we do this silenetly assuming the function wrapper below </span>
+        <span class="c1"># Return immediately for methods that ignore noise.</span>
+        <span class="c1"># Note we do this silenetly assuming the function wrapper below</span>
         <span class="c1"># will post an error to elog for the output to handle this nonfatal error</span>
-        <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">==</span><span class="s2">&quot;LeastSquares&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span><span class="o">==</span><span class="s2">&quot;WaterLevel&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span> <span class="ow">and</span> <span class="n">window</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loadnoise:  &quot;</span>
-             <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
+                               <span class="o">+</span> <span class="s2">&quot;Illegal argument combination</span><span class="se">\n</span><span class="s2">window cannot be true with raw_vector input&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span> <span class="ow">or</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;raw_vector&quot;</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;RFdeconProcessor.loadnoise:  &quot;</span>
-             <span class="o">+</span><span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="n">nvector</span><span class="o">=</span><span class="p">[]</span>
-        <span class="c1">#IMPORTANT  these two parameters are not required by the </span>
+                               <span class="o">+</span> <span class="s2">&quot; Illegal dtype parameter=&quot;</span><span class="o">+</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">nvector</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># IMPORTANT  these two parameters are not required by the</span>
         <span class="c1"># ScalarDecon C code but need to be inserted in pf for any algorithm</span>
-        <span class="c1"># that requires noise data (i.e. multitaper) and the window </span>
+        <span class="c1"># that requires noise data (i.e. multitaper) and the window</span>
         <span class="c1"># options is desired</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
-            <span class="n">tws</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
-            <span class="n">twe</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
-            <span class="n">win</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span><span class="n">twe</span><span class="p">)</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="n">win</span><span class="p">)</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">WindowData</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">win</span><span class="p">)</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
+            <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
+            <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
+            <span class="n">win</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">win</span><span class="p">)</span>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">win</span><span class="p">)</span>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">n</span>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">n</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">component</span><span class="p">)</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
-            <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span><span class="o">==</span><span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
+            <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">nvector</span><span class="o">=</span><span class="n">n</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">nvector</span><span class="p">)</span> </div>
+                <span class="n">nvector</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">nvector</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="RFdeconProcessor.apply"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the RF estimate using the algorithm defined internally.</span>
-<span class="sd">    </span>
+
 <span class="sd">       :return: vector of data that are the RF estimate computed from previously loaded data.</span>
 <span class="sd">       &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">()</span>
@@ -392,224 +399,231 @@
 
 <div class="viewcode-block" id="RFdeconProcessor.actual_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.actual_output">[docs]</a>    <span class="k">def</span> <span class="nf">actual_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The actual output of a decon operator is the inverse filter applied to </span>
+<span class="sd">        The actual output of a decon operator is the inverse filter applied to</span>
 <span class="sd">        the wavelet.  By design it is an approximation of the shaping wavelet</span>
-<span class="sd">        defined for this operator.  </span>
-<span class="sd">    </span>
-<span class="sd">        :return: Actual output of the operator as a ccore.TimeSeries object.  </span>
-<span class="sd">        The Metadata of the return is bare bones.  The most important factor </span>
-<span class="sd">        about this result is that because actual output waveforms are normally </span>
-<span class="sd">        a zero phase wavelet of some kind the result is time shifted to be </span>
-<span class="sd">        centered (i.e. t0 is rounded n/2 where n is the length of the vector </span>
+<span class="sd">        defined for this operator.</span>
+
+<span class="sd">        :return: Actual output of the operator as a ccore.TimeSeries object.</span>
+<span class="sd">        The Metadata of the return is bare bones.  The most important factor</span>
+<span class="sd">        about this result is that because actual output waveforms are normally</span>
+<span class="sd">        a zero phase wavelet of some kind the result is time shifted to be</span>
+<span class="sd">        centered (i.e. t0 is rounded n/2 where n is the length of the vector</span>
 <span class="sd">                  returned).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">actual_output</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
+
 <div class="viewcode-block" id="RFdeconProcessor.ideal_output"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.ideal_output">[docs]</a>    <span class="k">def</span> <span class="nf">ideal_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The ideal output of a decon operator is the same thing we call a</span>
 <span class="sd">        shaping wavelet.  This method returns the ideal output=shaping wavelet</span>
-<span class="sd">        as a TimeSeries object.   Like the actual output method the return </span>
-<span class="sd">        function is circular shifted so the function peaks at 0 time located </span>
-<span class="sd">        at n/2 samples from the start sample.  Graphic displays will then show </span>
-<span class="sd">        the wavelet centered and peaked at time 0.   The prediction error </span>
-<span class="sd">        can be computed as the difference between the actual_output and </span>
-<span class="sd">        ideal_output TimeSeries objects.   The norm of the prediction error </span>
-<span class="sd">        is a helpful metric to display the stability and accuracy of the </span>
+<span class="sd">        as a TimeSeries object.   Like the actual output method the return</span>
+<span class="sd">        function is circular shifted so the function peaks at 0 time located</span>
+<span class="sd">        at n/2 samples from the start sample.  Graphic displays will then show</span>
+<span class="sd">        the wavelet centered and peaked at time 0.   The prediction error</span>
+<span class="sd">        can be computed as the difference between the actual_output and</span>
+<span class="sd">        ideal_output TimeSeries objects.   The norm of the prediction error</span>
+<span class="sd">        is a helpful metric to display the stability and accuracy of the</span>
 <span class="sd">        inverse.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">ideal_output</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
+
 <div class="viewcode-block" id="RFdeconProcessor.inverse_filter"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.inverse_filter">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This method returns the actual inverse filter that if convolved with </span>
-<span class="sd">        he original data will produce the RF estimate.  Note the filter is </span>
-<span class="sd">        meaningful only if the source wavelet is minimum phase.  A standard </span>
-<span class="sd">        theorem from time series analysis shows that the inverse of mixed </span>
+<span class="sd">        This method returns the actual inverse filter that if convolved with</span>
+<span class="sd">        he original data will produce the RF estimate.  Note the filter is</span>
+<span class="sd">        meaningful only if the source wavelet is minimum phase.  A standard</span>
+<span class="sd">        theorem from time series analysis shows that the inverse of mixed</span>
 <span class="sd">        phase wavelet is usually unstable and a maximum phase wavelet is always</span>
-<span class="sd">        unstable.   Fourier-based methods can still compute a stable solution </span>
-<span class="sd">        even with a mixed phase wavelet because of the implied circular </span>
-<span class="sd">        convolution.  </span>
-<span class="sd">    </span>
-<span class="sd">        The result is returned as  TimeSeries object.  </span>
+<span class="sd">        unstable.   Fourier-based methods can still compute a stable solution</span>
+<span class="sd">        even with a mixed phase wavelet because of the implied circular</span>
+<span class="sd">        convolution.</span>
+
+<span class="sd">        The result is returned as  TimeSeries object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">inverse_filter</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
+
 <div class="viewcode-block" id="RFdeconProcessor.QCMetrics"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.QCMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">QCMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        All decon algorithms compute a set of algorithm dependent quality </span>
+<span class="sd">        All decon algorithms compute a set of algorithm dependent quality</span>
 <span class="sd">        control metrics.  This method returns the metrics as a set of fixed</span>
-<span class="sd">        name:value pairs in a mspass.Metadata object.   The details are </span>
-<span class="sd">        algorithm dependent.  See related documentation for metrics computed </span>
+<span class="sd">        name:value pairs in a mspass.Metadata object.   The details are</span>
+<span class="sd">        algorithm dependent.  See related documentation for metrics computed</span>
 <span class="sd">        by different algorithms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">QCMetrics</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
-<div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">md</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RFdeconProcessor.change_parameters"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.change_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">change_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">md</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Use this method to change the internal parameter setting of the </span>
+<span class="sd">        Use this method to change the internal parameter setting of the</span>
 <span class="sd">        processor.  It can be used, for example, to switch from the damped</span>
-<span class="sd">        least square method to the water level method.  Note the input </span>
-<span class="sd">        must be a complete definition for a parameter set defining a </span>
-<span class="sd">        particular algorithm.  i.e. this is not an update method but </span>
-<span class="sd">        t reinitializes the processor. </span>
-<span class="sd">    </span>
+<span class="sd">        least square method to the water level method.  Note the input</span>
+<span class="sd">        must be a complete definition for a parameter set defining a</span>
+<span class="sd">        particular algorithm.  i.e. this is not an update method but</span>
+<span class="sd">        t reinitializes the processor.</span>
+
 <span class="sd">        :param md: is a mspass.Metadata object containing required parameters</span>
 <span class="sd">        for the alternative algorithm.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="o">.</span><span class="n">change_parameters</span><span class="p">(</span><span class="n">md</span><span class="p">)</span></div>
-        
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">uses_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dwin</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nwin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span></div>
 
-    
-        
-<div class="viewcode-block" id="RFdecon"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">[docs]</a><span class="k">def</span> <span class="nf">RFdecon</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">noisedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">wcomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">ncomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">save_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">algid</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="RFdecon"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdecon">[docs]</a><span class="nd">@mspass_func_wrapper</span>
+<span class="k">def</span> <span class="nf">RFdecon</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">processor</span><span class="p">,</span> <span class="n">wavelet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">noisedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wcomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">object_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;RFdecon&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dryrun</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Use this function to compute conventional receiver functions </span>
-<span class="sd">    from a single three component seismogram.  The type of </span>
-<span class="sd">    processor is defined by the processor argument that is expected </span>
-<span class="sd">    to be an instance of the wrapper class RFdeconProcessor. In </span>
-<span class="sd">    mspass the processor class should be created and stored as a </span>
-<span class="sd">    global variable and passed to this function within a </span>
-<span class="sd">    spark map operator.  That allows the processing to proceed in </span>
-<span class="sd">    parallel without the overhead of creating the processor </span>
-<span class="sd">    definition for each seismogram.  </span>
-<span class="sd">    </span>
-<span class="sd">    Default assumes d contains all data sections required to do </span>
+<span class="sd">    Use this function to compute conventional receiver functions</span>
+<span class="sd">    from a single three component seismogram.  The type of</span>
+<span class="sd">    processor is defined by the processor argument that is expected</span>
+<span class="sd">    to be an instance of the wrapper class RFdeconProcessor. In</span>
+<span class="sd">    mspass the processor class should be created and stored as a</span>
+<span class="sd">    global variable and passed to this function within a</span>
+<span class="sd">    spark map operator.  That allows the processing to proceed in</span>
+<span class="sd">    parallel without the overhead of creating the processor</span>
+<span class="sd">    definition for each seismogram.</span>
+
+<span class="sd">    Default assumes d contains all data sections required to do</span>
 <span class="sd">    the deconvolution with the wavelet in component 2 (3 for matlab</span>
-<span class="sd">    and FORTRAN people).  By default the data and noise </span>
-<span class="sd">    (if required by the algorithm) sections will be extracted from </span>
-<span class="sd">    the (assumed larger) data section using time windows defined </span>
-<span class="sd">    internally in the processor pf definition.   For variations (e.g. </span>
-<span class="sd">    adding tapering to one or more of the time series inputs) </span>
-<span class="sd">    use the d, wavelet, and (if required) noise arguments to load </span>
-<span class="sd">    each component separately.  Note d is dogmatically required </span>
+<span class="sd">    and FORTRAN people).  By default the data and noise</span>
+<span class="sd">    (if required by the algorithm) sections will be extracted from</span>
+<span class="sd">    the (assumed larger) data section using time windows defined</span>
+<span class="sd">    internally in the processor pf definition.   For variations (e.g.</span>
+<span class="sd">    adding tapering to one or more of the time series inputs)</span>
+<span class="sd">    use the d, wavelet, and (if required) noise arguments to load</span>
+<span class="sd">    each component separately.  Note d is dogmatically required</span>
 <span class="sd">    to be three component data while optional wavelet and noisedata</span>
-<span class="sd">    series are passed as plain numpy vectors (i.e. without the </span>
-<span class="sd">    decoration of a TimeSeries).   </span>
-<span class="sd">    </span>
-<span class="sd">    To make use of the extended outputs from RFdeconProcessor </span>
-<span class="sd">    algorithms (e.g. actual output of the computed operator) </span>
-<span class="sd">    call those methods after this function returns successfully </span>
-<span class="sd">    with a three-component seismogram output.  That is possible </span>
-<span class="sd">    because the processor object caches the most recent wavelet </span>
-<span class="sd">    and inverse used for the deconvolution.   An exception is </span>
-<span class="sd">    that all algorithms call their QCmetrics method of processor </span>
-<span class="sd">    and push them to the headers of the deconvolved output.  </span>
-<span class="sd">    QCmetric attributes are algorithm dependent. </span>
-<span class="sd">    </span>
-<span class="sd">    The ProcessingHistory feature can optionally be enabled by </span>
-<span class="sd">    setting the save_history argument to True.   When enable one should </span>
-<span class="sd">    normally set a unique id for the algid argument.  </span>
-<span class="sd">    </span>
+<span class="sd">    series are passed as plain numpy vectors (i.e. without the</span>
+<span class="sd">    decoration of a TimeSeries).</span>
+
+<span class="sd">    To make use of the extended outputs from RFdeconProcessor</span>
+<span class="sd">    algorithms (e.g. actual output of the computed operator)</span>
+<span class="sd">    call those methods after this function returns successfully</span>
+<span class="sd">    with a three-component seismogram output.  That is possible</span>
+<span class="sd">    because the processor object caches the most recent wavelet</span>
+<span class="sd">    and inverse used for the deconvolution.   An exception is</span>
+<span class="sd">    that all algorithms call their QCmetrics method of processor</span>
+<span class="sd">    and push them to the headers of the deconvolved output.</span>
+<span class="sd">    QCmetric attributes are algorithm dependent.</span>
+
+<span class="sd">    The ProcessingHistory feature can optionally be enabled by</span>
+<span class="sd">    setting the save_history argument to True.   When enable one should</span>
+<span class="sd">    normally set a unique id for the algid argument.</span>
+
+<span class="sd">    :param d:  Seismogram input data.  See notes above about</span>
+<span class="sd">    time span of these data.</span>
 <span class="sd">    :param processor:  RFdeconProcessor object defining algorithm</span>
 <span class="sd">     to be applied (see related documentation for details).</span>
-<span class="sd">    :param d:  Seismogram input data.  See notes above about </span>
-<span class="sd">     time span of these data.</span>
-<span class="sd">    :param wavelet:   vector of doubles (numpy array or the </span>
+<span class="sd">    :param wavelet:   vector of doubles (numpy array or the</span>
 <span class="sd">     std::vector container internal to TimeSeries object) defining</span>
-<span class="sd">     the wavelet to use to compute deconvolution operator.  </span>
-<span class="sd">     Default is None which assumes processor was set up to use </span>
+<span class="sd">     the wavelet to use to compute deconvolution operator.</span>
+<span class="sd">     Default is None which assumes processor was set up to use</span>
 <span class="sd">     a component of d as the wavelet estimate.</span>
-<span class="sd">    :param noisedata:  vector of doubles (numpy array or the </span>
+<span class="sd">    :param noisedata:  vector of doubles (numpy array or the</span>
 <span class="sd">     std::vector container internal to TimeSeries object) defining</span>
 <span class="sd">     noise data to use for computing regularization.  Not all RF</span>
-<span class="sd">     estimation algorithms use noise estimators so this parameter </span>
-<span class="sd">     is optional.   It can also be extracted from d depending on </span>
-<span class="sd">     parameter file options. </span>
-<span class="sd">    :param wcomp:  When defined from Seismogram d the wavelet </span>
-<span class="sd">     estimate in conventional RFs is one of the components that </span>
-<span class="sd">     are most P wave dominated. That is always one of three </span>
-<span class="sd">     things:  Z, L of LQT, or the L component from the output of </span>
-<span class="sd">     Kennett&#39;s free surface transformation operator.  The </span>
-<span class="sd">     default is 2, which for ccore.Seismogram is always one of </span>
-<span class="sd">     the above.   This parameter would be changed only if the </span>
+<span class="sd">     estimation algorithms use noise estimators so this parameter</span>
+<span class="sd">     is optional.   It can also be extracted from d depending on</span>
+<span class="sd">     parameter file options.</span>
+<span class="sd">    :param wcomp:  When defined from Seismogram d the wavelet</span>
+<span class="sd">     estimate in conventional RFs is one of the components that</span>
+<span class="sd">     are most P wave dominated. That is always one of three</span>
+<span class="sd">     things:  Z, L of LQT, or the L component from the output of</span>
+<span class="sd">     Kennett&#39;s free surface transformation operator.  The</span>
+<span class="sd">     default is 2, which for ccore.Seismogram is always one of</span>
+<span class="sd">     the above.   This parameter would be changed only if the</span>
 <span class="sd">     data has undergone some novel transformation not yet invented</span>
-<span class="sd">     and the best wavelet estimate was on in 2 (3 with FORTRAN </span>
-<span class="sd">     and matlab numbering).  </span>
-<span class="sd">     :param ncomp: component number to use to compute noise.  This is used </span>
-<span class="sd">     only if the algorithm in processor requires a noise estimate. </span>
+<span class="sd">     and the best wavelet estimate was on in 2 (3 with FORTRAN</span>
+<span class="sd">     and matlab numbering).</span>
+<span class="sd">     :param ncomp: component number to use to compute noise.  This is used</span>
+<span class="sd">     only if the algorithm in processor requires a noise estimate.</span>
 <span class="sd">     Normally it should be the same as wcomp and is by default (2).</span>
-<span class="sd">     :param save_history:  When true the ProcessingHistory mechanism </span>
-<span class="sd">     is enabled.</span>
-<span class="sd">     :param algid: Define the algorithm id for the ProcessingHistory chain.</span>
-<span class="sd">     This parameter is ignored unless save_history is true.   Default is </span>
-<span class="sd">     the string &quot;0&quot; but it should normally be set to some unique id </span>
-<span class="sd">     defined for that instance of this algorithm.  The algorithm is </span>
-<span class="sd">     always set to RFdecon.  </span>
-<span class="sd">     </span>
-<span class="sd">    :return:  Seismogram object containing the RF estimates.  </span>
-<span class="sd">     The orientations are always the same as the input.   </span>
+<span class="sd">     :param object_history: boolean to enable or disable saving object</span>
+<span class="sd">           level history.  Default is False.  Note this functionality is</span>
+<span class="sd">           implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">     :param alg_name:   When history is enabled this is the algorithm name</span>
+<span class="sd">           assigned to the stamp for applying this algorithm.</span>
+<span class="sd">           Default (&quot;WindowData&quot;) should normally be just used.</span>
+<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">     :param ald_id:  algorithm id to assign to history record (used only if</span>
+<span class="sd">           object_history is set True.)</span>
+<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+<span class="sd">     :param dryrun:  When true only the arguments are checked for validity.</span>
+<span class="sd">           When true nothing is calculated and the original data are returned.</span>
+<span class="sd">           Note this functionality is implemented via the mspass_func_wrapper decorator.</span>
+
+<span class="sd">    :return:  Seismogram object containing the RF estimates.</span>
+<span class="sd">     The orientations are always the same as the input.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">wavelet</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">wavelet</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;raw_vector&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wavelet</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">wavelet</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;raw_vector&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1">#processor.loadwavelet(d,dtype=&#39;Seismogram&#39;,window=True,component=wcomp)</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">processor</span><span class="o">.</span><span class="n">uses_noise</span><span class="p">):</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">noisedata</span><span class="o">!=</span><span class="kc">None</span><span class="p">):</span>
-                <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;raw_vector&#39;</span><span class="p">)</span>
+            <span class="c1"># processor.loadwavelet(d,dtype=&#39;Seismogram&#39;,window=True,component=wcomp)</span>
+            <span class="n">processor</span><span class="o">.</span><span class="n">loadwavelet</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">processor</span><span class="o">.</span><span class="n">uses_noise</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">noisedata</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">noisedata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;raw_vector&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">component</span><span class="o">=</span><span class="n">ncomp</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">processor</span><span class="o">.</span><span class="n">loadnoise</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">ncomp</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;WindowData&#39;</span><span class="p">,</span><span class="nb">repr</span><span class="p">(</span><span class="n">err</span><span class="p">),</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
     <span class="c1"># We window data before computing RF estimates for efficiency</span>
     <span class="c1"># Otherwise we would call the window operator 3 times below</span>
-    <span class="n">result</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">Seismogram</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">dw</span><span class="o">=</span><span class="n">alg</span><span class="o">.</span><span class="n">_WindowData3C</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">processor</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">=</span><span class="n">mspass</span><span class="o">.</span><span class="n">Seismogram</span><span class="p">(</span><span class="n">dw</span><span class="p">)</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;WindowData&#39;</span><span class="p">,</span><span class="nb">repr</span><span class="p">(</span><span class="n">err</span><span class="p">),</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">d</span>
-    <span class="n">npts</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">npts</span>
+    <span class="c1"># WindowData does will kill the output if the window doesn&#39;t match</span>
+    <span class="c1"># which is reason for the test immediately after this call</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">processor</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">npts</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="n">component</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">processor</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
+            <span class="n">processor</span><span class="o">.</span><span class="n">loaddata</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">apply</span><span class="p">()</span>
             <span class="c1"># overwrite this component&#39;s data in the result Seismogram</span>
             <span class="c1"># Use some caution handling any size mismatch</span>
-            <span class="n">nx</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-            <span class="k">if</span><span class="p">(</span><span class="n">nx</span><span class="o">&gt;=</span><span class="n">npts</span><span class="p">):</span>
+            <span class="n">nx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nx</span> <span class="o">&gt;=</span> <span class="n">npts</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
-                    <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1">#this may not be the fastest way to do this but it is simple and clean</span>
+                <span class="c1"># this may not be the fastest way to do this but it is simple and clean</span>
                 <span class="c1"># matters little since this is an error condition and should be rare</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
-                    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="n">nx</span><span class="p">):</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nx</span><span class="p">:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
                 <span class="c1"># This is actually an error condition so we log it</span>
-                <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Windowing size mismatch.</span><span class="se">\n</span><span class="s1">Data window length = </span><span class="si">%d</span><span class="s1"> which is less than operator length= </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nx</span><span class="p">,</span><span class="n">npts</span><span class="p">)</span>
-                <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;RFdecon&quot;</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Windowing size mismatch.</span><span class="se">\n</span><span class="s1">Data window length = </span><span class="si">%d</span><span class="s1"> which is less than operator length= </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                    <span class="n">nx</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s2">&quot;RFdecon&quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span>
+                                      <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="n">result</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;RFdecon&#39;</span><span class="p">,</span><span class="n">err</span><span class="o">.</span><span class="n">repr</span><span class="p">(</span><span class="n">err</span><span class="p">),</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RFDecon:  something threw an unexpected exception - this is a bug and needs to be fixed.</span><span class="se">\n</span><span class="s2">Killing result from RFdecon.&quot;</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;RFdecon&#39;</span><span class="p">,</span><span class="s1">&#39;Unexpected exception caught&#39;</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span>
+            <span class="s1">&#39;RFdecon&#39;</span><span class="p">,</span> <span class="s1">&#39;Unexpected exception caught&#39;</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">save_history</span><span class="p">):</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">new_map</span><span class="p">(</span><span class="s1">&#39;RFdecon&#39;</span><span class="p">,</span><span class="n">algid</span><span class="p">,</span><span class="n">AtomicType</span><span class="o">.</span><span class="n">Seismogram</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 </pre></div>
 
