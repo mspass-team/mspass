@@ -19,7 +19,7 @@ from mspasspy.util.converter import (Stream2Seismogram,
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def filter(data, type, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, inplace_return=True, **options):
+def filter(data, type, *args, object_history=False, alg_name='filter', alg_id=None, dryrun=False, inplace_return=True, **options):
     """
     This function filters the data of mspasspy objects. Note it is wrapped by mspass_func_wrapper, so the processing
     history and error logs can be preserved.
@@ -49,7 +49,7 @@ def filter(data, type, *args, object_history=False, alg_name=None, alg_id=None, 
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def detrend(data, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, inplace_return=True, type='simple',
+def detrend(data, *args, object_history=False, alg_name='dtrend', alg_id=None, dryrun=False, inplace_return=True, type='simple',
             **options):
     """
     This function removes a trend from the data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
@@ -79,7 +79,7 @@ def detrend(data, *args, object_history=False, alg_name=None, alg_id=None, dryru
 @seismogram_as_stream
 @timeseries_ensemble_as_stream
 @seismogram_ensemble_as_stream
-def interpolate(data, sampling_rate, *args, object_history=False, alg_name=None, alg_id=None, dryrun=False, inplace_return=True,
+def interpolate(data, sampling_rate, *args, object_history=False, alg_name='interpolate', alg_id=None, dryrun=False, inplace_return=True,
                 method='weighted_average_slopes', starttime=None, npts=None, time_shift=0.0, **kwargs):
     """
     This function interpolates data, which is a mspasspy object. Note it is wrapped by mspass_func_wrapper,
@@ -118,7 +118,7 @@ def interpolate(data, sampling_rate, *args, object_history=False, alg_name=None,
 
 @mspass_func_wrapper_multi
 @timeseries_as_trace
-def correlate(a, b, shift, object_history=False, alg_name=None, alg_id=None, dryrun=False,
+def correlate(a, b, shift, object_history=False, alg_name='correlate', alg_id=None, dryrun=False,
               demean=True, normalize='naive', method='auto'):
     """
     Cross-correlation of two signals up to a specified maximal shift.
@@ -152,7 +152,7 @@ def correlate(a, b, shift, object_history=False, alg_name=None, alg_id=None, dry
 
 @mspass_func_wrapper
 @timeseries_as_trace
-def correlate_template(data, template, object_history=False, alg_name=None, alg_id=None, dryrun=False,
+def correlate_template(data, template, object_history=False, alg_name='correlate_template', alg_id=None, dryrun=False,
                        mode='valid', normalize='full', demean=True, method='auto'):
     return obspy.signal.cross_correlation.correlate_template(data, template, mode, normalize, demean, method)
 
@@ -160,8 +160,9 @@ def correlate_template(data, template, object_history=False, alg_name=None, alg_
 @mspass_func_wrapper
 @timeseries_ensemble_as_stream
 @seismogram_as_stream
-def correlate_stream_template(stream, template, object_history=False, alg_name=None, alg_id=None, dryrun=False,
-                              template_time=None, return_type="seismogram", **kwargs):
+def correlate_stream_template(stream, template,
+        object_history=False, alg_name='correlate_stream_template', alg_id=None, dryrun=False,
+            template_time=None, return_type="seismogram", **kwargs):
     res = obspy.signal.cross_correlation.correlate_stream_template(stream, template, template_time)
     if return_type == "seismogram":
         return Stream2Seismogram(res, cardinal=True)
@@ -174,7 +175,7 @@ def correlate_stream_template(stream, template, object_history=False, alg_name=N
 @mspass_func_wrapper
 @timeseries_ensemble_as_stream
 @seismogram_as_stream
-def correlation_detector(stream, templates, heights, distance, object_history=False, alg_name=None, alg_id=None, dryrun=False,
+def correlation_detector(stream, templates, heights, distance, object_history=False, alg_name='correlation_detector', alg_id=None, dryrun=False,
                          template_times=None, template_magnitudes=None, template_names=None, similarity_func=None,
                          details=None, plot=None, return_type="seismogram", **kwargs):
     tem_list = []
@@ -196,7 +197,9 @@ def correlation_detector(stream, templates, heights, distance, object_history=Fa
 @mspass_func_wrapper
 @timeseries_ensemble_as_stream
 @seismogram_as_stream
-def templates_max_similarity(st, time, streams_templates, object_history=False, alg_name=None, alg_id=None, dryrun=False):
+def templates_max_similarity(st, time, streams_templates,
+         object_history=False, alg_name='templates_max_similarity',
+           alg_id=None, dryrun=False):
     tem_list = []
     for template in streams_templates:
         tem_list.append(template.toStream())
@@ -204,7 +207,7 @@ def templates_max_similarity(st, time, streams_templates, object_history=False, 
 
 @mspass_func_wrapper_multi
 @seismogram_as_stream
-def xcorr_3c(st1, st2, shift_len, object_history=False, alg_name=None, alg_id=None, dryrun=False,
+def xcorr_3c(st1, st2, shift_len, object_history=False, alg_name='xcor_3c', alg_id=None, dryrun=False,
              components=None, full_xcorr=False, abs_max=True):
     if components is None:
         components = ['Z', 'N', 'E']
@@ -212,14 +215,14 @@ def xcorr_3c(st1, st2, shift_len, object_history=False, alg_name=None, alg_id=No
 
 @mspass_func_wrapper
 @timeseries_as_trace
-def xcorr_max(data, object_history=False, alg_name=None, alg_id=None, dryrun=False, abs_max=True,):
+def xcorr_max(data, object_history=False, alg_name='xcor_max', alg_id=None, dryrun=False, abs_max=True,):
     return obspy.signal.cross_correlation.xcorr_max(data, abs_max)
 
 
 @mspass_func_wrapper_multi
 @timeseries_as_trace
 def xcorr_pick_correction(trace1, trace2, pick1, pick2, t_before, t_after, cc_maxlag,
-                          object_history=False, alg_name=None, alg_id=None, dryrun=False, filter=None, filter_options={},
+                          object_history=False, alg_name='xcorr_pick_correction', alg_id=None, dryrun=False, filter=None, filter_options={},
                           plot=False, filename=None):
     return obspy.signal.cross_correlation.xcorr_pick_correction(pick1, trace1, pick2, trace2, t_before, t_after,
                                                                 cc_maxlag, filter, filter_options, plot, filename)

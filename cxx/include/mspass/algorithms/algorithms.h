@@ -40,33 +40,77 @@ time window of data.  This function accomplishes this in a nifty method that
 takes advantage of the methods contained in the BasicTimeSeries object for
 handling time.
 
+This function will kill the return data and return a version with no
+sample data if the window time range does not enclose the time range of
+the data.  In that case a message is left on elog to allow post mortem
+analysis of data in parallel constructs.
+
 \return new Seismgram object derived from  parent but windowed by input
       time window range.
-
-\exception MsPASSError object if the requested time window is not inside data range
 
 \param parent is the larger Seismogram object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
-mspass::seismic::Seismogram WindowData3C(const mspass::seismic::Seismogram& parent,
+mspass::seismic::Seismogram WindowData(const mspass::seismic::Seismogram& parent,
   const mspass::algorithms::TimeWindow& tw);
+  /*! \brief Extracts a requested time window of data from a parent CoreSeismogram object.
+
+  It is common to need to extract a smaller segment of data from a larger
+  time window of data.  This function accomplishes this in a nifty method that
+  takes advantage of the methods contained in the BasicTimeSeries object for
+  handling time.   Differs from the overloaded Seismogram version because it
+  will throw an exception if given an invalid window.
+
+
+  \return new CoreSeismgram object derived from  parent but windowed by input
+        time window range.
+
+  \exception MsPASSError object if the requested time window is not inside data range
+
+  \param parent is the larger Seismogram object to be windowed
+  \param tw defines the data range to be extracted from parent.
+  */
+  mspass::seismic::CoreSeismogram WindowData(const mspass::seismic::CoreSeismogram& parent,
+    const mspass::algorithms::TimeWindow& tw);
+
 /*! \brief Extracts a requested time window of data from a parent TimeSeries object.
 
 It is common to need to extract a smaller segment of data from a larger
-time window of data.  This function accomplishes this in a nifty method that
-takes advantage of the methods contained in the BasicTimeSeries object for
-handling time.
+time window of data.  This is a bombproof algorithm to accomplish that
+low level task for TimeSeries objects.
+
+This function will kill the return data and return a version with no
+sample data if the window time range does not enclose the time range of
+the data.  In that case a message is left on elog to allow post mortem
+analysis of data in parallel constructs.
 
 \return new Seismgram object derived from  parent but windowed by input
       time window range.
-
-\exception MsPASSError object if the requested time window is not inside data range
 
 \param parent is the larger TimeSeries object to be windowed
 \param tw defines the data range to be extracted from parent.
 */
 mspass::seismic::TimeSeries WindowData(const mspass::seismic::TimeSeries& parent,
   const mspass::algorithms::TimeWindow& tw);
+  /*! \brief Extracts a requested time window of data from a parent CoreTimeSeries object.
+
+  It is common to need to extract a smaller segment of data from a larger
+  time window of data.  This function accomplishes this in a nifty method that
+  takes advantage of the methods contained in the BasicTimeSeries object for
+  handling time.
+
+  \return new CoreTimeSeries object derived from  parent but windowed by input
+        time window range.
+
+  \exception MsPASSError object if the requested time window is not inside data range
+
+  \param parent is the larger CoreTimeSeries object to be windowed
+  \param tw defines the data range to be extracted from parent.
+  */
+
+  mspass::seismic::CoreTimeSeries WindowData(const mspass::seismic::CoreTimeSeries& parent,
+    const mspass::algorithms::TimeWindow& tw);
+
 /* This set of procedures are ancessors of seismogram_helpers.   They
  * were moved to algorithms June 2020 for mspass */
 /*! \brief Return a new Seismogram in an arrival time (relative) refernce frame.

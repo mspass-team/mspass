@@ -10,6 +10,7 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::algorithms::amplitudes;
+using mspass::algorithms::TimeWindow;
 
 PYBIND11_MODULE(amplitudes, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.amplitudes";
@@ -54,31 +55,41 @@ PYBIND11_MODULE(amplitudes, m) {
     .value("ClipPerc",ScalingMethod::ClipPerc)
     .value("MAD",ScalingMethod::MAD)
   ;
-  /* We give the python names for these functions a trailing underscore as
-  a standard hit they are not to be used directly - should be hidden behing
+  /* We give the python names for these functions a leading underscore as
+  a standard hint they are not to be used directly - should be hidden behing
   python functions that simply the api and (more importantly) add an optional
   history preservation. */
-  m.def("_scale",py::overload_cast<Seismogram&,const ScalingMethod,const double>(&scale<Seismogram>),
+  m.def("_scale",py::overload_cast<Seismogram&,
+      const ScalingMethod,
+         const double,
+            const TimeWindow>(&scale<Seismogram>),
     "Scale a Seismogram object with a chosen amplitude metric",
     py::return_value_policy::copy,
-    py::arg("d"),py::arg("method"),py::arg("level") )
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
-  m.def("_scale",py::overload_cast<TimeSeries&,const ScalingMethod,const double>(&scale<TimeSeries>),
+  m.def("_scale",py::overload_cast<TimeSeries&,
+    const ScalingMethod,
+      const double,
+         const TimeWindow>(&scale<TimeSeries>),
     "Scale a TimeSeries object with a chosen amplitude metric",
     py::return_value_policy::copy,
-    py::arg("d"),py::arg("method"),py::arg("level") )
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble_members",py::overload_cast<Ensemble<Seismogram>&,
-          const ScalingMethod&, const double>(&scale_ensemble_members<Seismogram>),
+          const ScalingMethod&, 
+            const double,
+               const TimeWindow>(&scale_ensemble_members<Seismogram>),
     "Scale each member of a SeismogramEnsemble individually by selected metric",
     py::return_value_policy::copy,
-    py::arg("d"),py::arg("method"),py::arg("level") )
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble_members",py::overload_cast<Ensemble<TimeSeries>&,
-          const ScalingMethod&, const double>(&scale_ensemble_members<TimeSeries>),
+          const ScalingMethod&, 
+            const double,
+               const TimeWindow>(&scale_ensemble_members<TimeSeries>),
     "Scale each member of a TimeSeriesEnsemble individually by selected metric",
     py::return_value_policy::copy,
-    py::arg("d"),py::arg("method"),py::arg("level") )
+    py::arg("d"),py::arg("method"),py::arg("level"),py::arg("window") )
   ;
   m.def("_scale_ensemble",py::overload_cast<Ensemble<Seismogram>&,
           const ScalingMethod&, const double, const bool>(&scale_ensemble<Seismogram>),

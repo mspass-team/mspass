@@ -513,7 +513,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
         << "Operator does not contain valid data for processing"<<endl;
       throw MsPASSError(ss.str(),ErrorSeverity::Invalid);
     }
-    CoreSeismogram dtmp(WindowData3C(d,this->processing_window));
+    CoreSeismogram dtmp(WindowData(d,this->processing_window));
     this->decondata=Seismogram(dtmp,"invalid");
     if(FFTDeconOperator::nfft<(2*this->winlength))
     {
@@ -562,7 +562,7 @@ void CNR3CDecon::loaddata(Seismogram& d,const bool nload)
     this->pssignal=this->ThreeCPower(dtmp);
     if(nload)
     {
-      Seismogram ntmp(WindowData3C(d,this->noise_window),"Invalid");
+      Seismogram ntmp(WindowData(d,this->noise_window),"Invalid");
       this->loadnoise_data(ntmp);
     }
     signal_bwd=EstimateBandwidth(FFTDeconOperator::df(this->operator_dt),

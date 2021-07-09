@@ -72,7 +72,7 @@ def test_is_input_dead():
 
 
 @mspass_func_wrapper
-def dummy_func(data, *args, object_history=False, alg_id=None, dryrun=False, **kwargs):
+def dummy_func(data, *args, object_history=False, alg_id=None, dryrun=False, inplace_return=False, function_return_key=None, **kwargs):
     return "dummy"
 
 
@@ -88,12 +88,35 @@ def test_mspass_func_wrapper():
 
     assert "OK" == dummy_func(seis, dryrun=True)
 
+    # default behavior
     assert "dummy" == dummy_func(seis)
-
     assert seis.number_of_stages() == 0
+    
+    # object_history is true
     dummy_func(seis, object_history=True, alg_id='0')
     assert seis.number_of_stages() == 1
+    assert len(seis.get_nodes()) == 1
+    assert seis.current_nodedata().algorithm == 'dummy_func'
+    assert seis.current_nodedata().algid == '0'
 
+    # inplace return
+    data = dummy_func(seis, inplace_return=True)
+    assert isinstance(data, Seismogram)
+
+    # valid function_return_key
+    data = dummy_func(seis, inplace_return=True, function_return_key='test_key')
+    assert isinstance(data, Seismogram)
+    assert 'test_key' in data and data['test_key'] == 'dummy'
+
+    # invalid function_return_key and not inplace_return
+    data = dummy_func(seis, inplace_return=False, function_return_key=dict())
+    assert isinstance(data, Seismogram)
+    errs = seis.elog.get_error_log()
+    assert len(errs) == 2
+    assert errs[-1].algorithm == 'dummy_func'
+    assert errs[-1].message == 'Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct'
+    assert errs[-2].algorithm == 'dummy_func'
+    assert errs[-2].message == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
 
 @timeseries_as_trace
 def dummy_func_timeseries_as_trace(d, any=None):
