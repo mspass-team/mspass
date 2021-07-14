@@ -471,6 +471,50 @@ class Database(pymongo.database.Database):
         or impossible.  Hence, we recommend a data tag always be used for
         most saves.
 
+	The mode parameter needs to be understood by all users of this 
+	function.  All modes enforce a schema constraint for "readonly"
+	attributes.   An immutable (readonly) attribute by definition 
+	should not be changed during processing.   During a save 
+	all attributes with a key defined as readonly are tested 
+	with a method in the Metadata container that keeps track of 
+	any Metadata changes.  If a readonly attribute is found to 
+	have been changed it will be renamed with the prefix
+	"READONLYERROR_", saved, and an error posted (e.g. if you try 
+	to alter site_lat (a readonly attribute) in a workflow when 
+	you save the waveform you will find an entry with the key 
+	READONERROR_site_lat.)   In the default 'promiscuous' mode 
+	all other attributes are blindly saved to the database as 
+	name value pairs with no safeties.  In 'cautious' mode we 
+	add a type check.  If the actual type of an attribute does not 
+	match what the schema expect, this method will try to fix the 
+	type error before saving the data.  If the conversion is 
+	successful it will be saved with a complaint error posted 
+	to elog.  If it fails, the attribute will not be saved, an 
+	additional error message will be posted, and the save 
+	algorithm continues.  In 'pedantic' mode, in contrast, all 
+	type errors are considered to invalidate the data.  
+	Similar error messages to that in 'cautious' mode are posted 
+	but any type errors will cause the datum passed as arg 0 
+	to be killed In the default 'promiscuous' mode 
+	all other attributes are blindly saved to the database as 
+	name value pairs with no safeties.  In 'cautious' mode we 
+	add a type check.  If the actual type of an attribute does not 
+	match what the schema expect, this method will try to fix the 
+	type error before saving the data.  If the conversion is 
+	successful it will be saved with a complaint error posted 
+	to elog.  If it fails, the attribute will not be saved, an 
+	additional error message will be posted, and the save 
+	algorithm continues.  In 'pedantic' mode, in contrast, all 
+	type errors are considered to invalidate the data.  
+	Similar error messages to that in 'cautious' mode are posted 
+	but any type errors will cause the datum passed as arg 0 
+	to be killed.  The lesson is saves can leave entries that 
+	may need to be examined in elog and when really bad will 
+	cause the datum to be marked dead after the save.  
+
+	This method can throw an exception but only for errors in 
+	usage (i.e. arguments defined incorrectly)
+
         :param mspass_object: the object you want to save.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param mode: This parameter defines how attributes defined with
@@ -1701,6 +1745,18 @@ class Database(pymongo.database.Database):
         promiscuous mode there are no safeties and the any values
         that are defined in Metadata as having been changed will be
         posted as an update to the parent wf document to the data object.
+
+	A feature of the schema that is considered an unbreakable rule is
+	that any attribute marked "readonly" in the schema cannot by 
+	definition be updated with this method.  It utilizes the same 
+	method for handling this as the save_data method.  That is, 
+	for all "mode" parameters if an key is defined in the schema as 
+	readonly and it is listed as having been modified, it will 
+	be save with a new key creating by adding the prefix 
+	"READONLYERROR_" .  e.g. if we had a site_sta read as 
+	'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
+	to save the data you will find an entry in the document 
+	of {'READONLYERROR_site_sta' : 'XYZ'}
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
