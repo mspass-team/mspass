@@ -395,9 +395,6 @@ class Database(pymongo.database.Database):
                 md[k] = b'\x00'
             else:
                 md[k] = None
-        # This is needed or readonly attributes will always get flagged on
-        # a subsequent save
-        md.clear_modified()
         if object_type is TimeSeries:
             # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
@@ -675,6 +672,16 @@ class Database(pymongo.database.Database):
             for k in exclude_keys:
                 if k in copied_metadata:
                     copied_metadata.erase(k)
+            # the special mongodb key _id is currently set readonly in 
+            # the mspass schema.  It would be cleard in the following loop
+            # but it is better to not depend on that external constraint. 
+            # The reason is the insert_one used below for wf collections 
+            # will silently update an existing record if the _id key 
+            # is present in the update record.  We want this method 
+            # to always save the current copy with a new id and so 
+            # we make sure we clear it
+            if '_id' in copied_metadata:
+                copied_metadata.erase('_id')
             # Now remove any readonly data
             for k in copied_metadata.keys():
                 if save_schema.is_defined(k):
@@ -722,7 +729,7 @@ class Database(pymongo.database.Database):
                                      insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
                                  except Exception as err:
                                      mspass_object.kill()
-                                     message = 'cautious mdoe error:  key=' + k
+                                     message = 'cautious mode error:  key=' + k
                                      if save_schema.is_required(k):
                                         message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
                                      else:
@@ -758,12 +765,16 @@ class Database(pymongo.database.Database):
                 #elif storage_mode == "url":
                 #    pass
                 #col.update_one(filter_, {'$set': update_dict})
-
+                
+            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
             if mspass_object.is_empty():
                 history_object_id = None
+                # Use this trick in update_metadata too. None is needed to 
+                # avoid a TypeError exception if the name is not defined. 
+                # could do this with a conditional as an alternative
+                insertion_dict.pop(history_obj_id_name,None)
             else:
                 # optional history save - only done if history container is not empty
-                history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
                 history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                 insertion_dict[history_obj_id_name] = history_object_id
 
@@ -774,6 +785,10 @@ class Database(pymongo.database.Database):
                 # this case or a the old tag will be saved with this datum
                 if 'data_tag' in insertion_dict:
                     insertion_dict.erase('data_tag')
+            # We don't want an elog_id in the insertion at this point.  
+            # A option to consider is if we need an updata after _save_elog 
+            # section below to post elog_id back.
+            insertion_dict.pop('elog_id',None)
             # finally ready to insert the wf doc - keep the id as we'll need
             # it for tagging any elog entries
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
