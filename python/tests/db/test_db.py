@@ -1106,7 +1106,7 @@ class TestDatabase():
         ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
-        $assert save_res_code == 0
+        #assert save_res_code == 0
         assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
 
