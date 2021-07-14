@@ -733,6 +733,11 @@ class Database(pymongo.database.Database):
             # finally ready to insert the wf doc - keep the id as we'll need
             # it for tagging any elog entries
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
+            # Put wfid into the object's meta as the new definition of 
+            # the parent of this waveform
+            # TODO - I think we need to reset the history container here 
+            # and mark this new save as an ORIGIN leaving till later
+            mspass_object['_id']=wfid
 
             # Empty error logs are skipped.  When nonzero tag them with tid
             # just returned
