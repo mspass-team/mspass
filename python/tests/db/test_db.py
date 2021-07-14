@@ -844,9 +844,11 @@ class TestDatabase():
         ts2['starttime'] = '123'
 
         save_res_code = self.db.save_data(ts1, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(ts2, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         
         fixed_cnt = self.db.clean_collection('wf_TimeSeries')
         assert fixed_cnt == {'npts':1, 'delta':1}
@@ -871,7 +873,8 @@ class TestDatabase():
         ts.erase('npts')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         assert ts.live
         
         # test nonexist document
@@ -897,7 +900,8 @@ class TestDatabase():
         ts['starttime_shift'] = 1.0
         ts.erase('site_id')
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         fixes_cnt = self.db.clean(ts['_id'], verbose=True, required_xref_list=['site_id'], delete_missing_xref=True)
         assert len(fixes_cnt) == 0
         assert not self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
@@ -913,7 +917,8 @@ class TestDatabase():
         ts['npts'] = "123"
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         fixes_cnt = self.db.clean(ts['_id'], verbose=True)
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
@@ -961,7 +966,8 @@ class TestDatabase():
         logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' in res
@@ -978,7 +984,8 @@ class TestDatabase():
         logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res
         assert 'extra1' in res
@@ -1016,7 +1023,8 @@ class TestDatabase():
         # mismatch type
         ts['delta'] = '123'
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert not 'npts' in res
         assert res['delta'] == '123'
@@ -1041,9 +1049,11 @@ class TestDatabase():
         logging_helper.info(bad_wf_ts, '1', 'deepcopy')
 
         save_res_code = self.db.save_data(bad_xref_key_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(bad_wf_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2','site_id'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
 
         bad_xref_key_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_xref_key_ts['_id']})
         bad_wf_doc = self.db['wf_TimeSeries'].find_one({'_id': bad_wf_ts['_id']})
@@ -1077,7 +1087,8 @@ class TestDatabase():
         ts.erase('npts')
 
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         self.db['wf_TimeSeries'].update_one({'_id': ts['_id']}, {'$set': {'t0':1.0}})
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert 'starttime' not in res
@@ -1095,7 +1106,8 @@ class TestDatabase():
         ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2', 'starttime'])
-        assert save_res_code == 0
+        $assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
 
         assert self.db._check_mismatch_key(res, 'wf_TimeSeries', 'npts')
@@ -1110,7 +1122,8 @@ class TestDatabase():
         logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert 'delta' in res and 'sampling_rate' in res and 'starttime' in res
         counts = self.db._delete_attributes('wf_TimeSeries', ['delta', 'sampling_rate', 'starttime'])
@@ -1125,7 +1138,8 @@ class TestDatabase():
         logging_helper.info(ts, '1', 'deepcopy')
         ts['starttime_shift'] = 1.0
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert 'delta' in res and 'sampling_rate' in res and 'starttime' in res
         delta_val = res['delta']
@@ -1147,7 +1161,8 @@ class TestDatabase():
         ts['delta'] = '123'
         ts['sampling_rate'] = '123'
         save_res_code = self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         assert res['npts'] == 'xyz' and res['delta'] == '123' and res['sampling_rate'] == '123'
         counts = self.db._fix_attribute_types('wf_TimeSeries')
@@ -1175,13 +1190,17 @@ class TestDatabase():
         bad_channel_id_ts['channel_id'] = ObjectId()
 
         save_res_code = self.db.save_data(missing_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(bad_site_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(bad_source_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(bad_channel_id_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
 
         # undefined collection name
         with pytest.raises(MsPASSError, match='check_links:  collection xxx is not defined in database schema'):
@@ -1227,9 +1246,11 @@ class TestDatabase():
         bad_type_docs_ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(bad_type_docs_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(undefined_key_docs_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
 
         # test empty matched documents
         query_dict = {'_id': ObjectId()}
@@ -1253,9 +1274,11 @@ class TestDatabase():
         wrong_types_ts['npts'] = 'xyz'
 
         save_res_code = self.db.save_data(wrong_types_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
         save_res_code = self.db.save_data(undef_ts, mode='promiscuous', storage_mode='gridfs', exclude_keys=['extra2'])
-        assert save_res_code == 0
+        #assert save_res_code == 0
+        assert save_res_code[0]
 
         # test empty matched documents
         query_dict = {'_id': ObjectId()}
