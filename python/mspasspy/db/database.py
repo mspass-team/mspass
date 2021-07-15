@@ -708,7 +708,7 @@ class Database(pymongo.database.Database):
                 # Note many errors can be posted - one for each problem key-value pair
                 for k in copied_metadata:
                     if save_schema.is_defined(k):
-                        if not isinstance(copied_metadata[k], save_schema.type(k)):
+                        if isinstance(copied_metadata[k], save_schema.type(k)):
                             insertion_dict[k]=copied_metadata[k]
                         else:
                             if mode == 'pedantic':
@@ -733,7 +733,7 @@ class Database(pymongo.database.Database):
                                      if save_schema.is_required(k):
                                         message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
                                      else:
-                                        message += ' Value has type='+str(type(copied_metadata[k])+' which cannot be converted to required type='+str(save_schema.type(k)))
+                                        message += ' Value has type='+str(type(copied_metadata[k])+' which cannot be converted to type='+str(save_schema.type(k)))
                                      message += '\nPython error exception message caught:\n'
                                      message += str(err)
                                      mspass_object.elog.log_error('Database.save',
@@ -794,8 +794,6 @@ class Database(pymongo.database.Database):
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
             # Put wfid into the object's meta as the new definition of 
             # the parent of this waveform
-            # TODO - I think we need to reset the history container here 
-            # and mark this new save as an ORIGIN leaving till later
             mspass_object['_id']=wfid
 
             # Empty error logs are skipped.  When nonzero tag them with tid
@@ -1740,7 +1738,7 @@ class Database(pymongo.database.Database):
         return tuple([wrong_types,undef])
 
     def update_metadata(self, mspass_object, collection=None, mode='cautious',
-                exclude_keys=None, alg_name='Database.update_metadata'):
+                exclude_keys=None, force_keys=None, alg_name='Database.update_metadata'):
         """
         Use this method if you want to save the output of a processing algorithm
         whose output is only posted to metadata.   That can be something as
@@ -1777,6 +1775,12 @@ class Database(pymongo.database.Database):
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
+        :param force_keys: a list of metadata attributes you want to force 
+         to be updated.   Normally this method will only update attributes 
+         that have been marked as changed since creation of the parent data 
+         object.  If data with these keys is found in the mspass_object they 
+         will be added to the update record.
+        :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
         :param mode: This parameter defines how attributes defines how
           strongly to enforce schema constraints. As described above
@@ -1828,7 +1832,9 @@ class Database(pymongo.database.Database):
         # attributes that were changed after creation of the
         # object to which they are attached.
         changed_key_list=mspass_object.modified()
-
+        if force_keys:
+            for k in force_keys:
+                changed_key_list.add(k)
         copied_metadata = Metadata(mspass_object)
 
         # clear all the aliases
@@ -1848,7 +1854,7 @@ class Database(pymongo.database.Database):
                     if k in changed_key_list:
                         newkey='READONLYERROR_'+k
                         copied_metadata.change_key(k,newkey)
-                        mspass_object.elog.log_error('Database.save_data',
+                        mspass_object.elog.log_error('Database.update_metadata',
                                 'readonly attribute with key='+k+' was improperly modified.  Saved changed value with key='+newkey,
                                 ErrorSeverity.Complaint)
                     else:
@@ -1872,7 +1878,7 @@ class Database(pymongo.database.Database):
             for k in copied_metadata:
                 if k in changed_key_list:
                     if save_schema.is_defined(k):
-                        if not isinstance(copied_metadata[k], save_schema.type(k)):
+                        if isinstance(copied_metadata[k], save_schema.type(k)):
                             insertion_dict[k]=copied_metadata[k]
                         else:
                             if mode == 'pedantic':
