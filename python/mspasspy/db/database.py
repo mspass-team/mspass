@@ -468,49 +468,36 @@ class Database(pymongo.database.Database):
         or impossible.  Hence, we recommend a data tag always be used for
         most saves.
 
-	The mode parameter needs to be understood by all users of this 
-	function.  All modes enforce a schema constraint for "readonly"
-	attributes.   An immutable (readonly) attribute by definition 
-	should not be changed during processing.   During a save 
-	all attributes with a key defined as readonly are tested 
-	with a method in the Metadata container that keeps track of 
-	any Metadata changes.  If a readonly attribute is found to 
-	have been changed it will be renamed with the prefix
-	"READONLYERROR_", saved, and an error posted (e.g. if you try 
-	to alter site_lat (a readonly attribute) in a workflow when 
-	you save the waveform you will find an entry with the key 
-	READONERROR_site_lat.)   In the default 'promiscuous' mode 
-	all other attributes are blindly saved to the database as 
-	name value pairs with no safeties.  In 'cautious' mode we 
-	add a type check.  If the actual type of an attribute does not 
-	match what the schema expect, this method will try to fix the 
-	type error before saving the data.  If the conversion is 
-	successful it will be saved with a complaint error posted 
-	to elog.  If it fails, the attribute will not be saved, an 
-	additional error message will be posted, and the save 
-	algorithm continues.  In 'pedantic' mode, in contrast, all 
-	type errors are considered to invalidate the data.  
-	Similar error messages to that in 'cautious' mode are posted 
-	but any type errors will cause the datum passed as arg 0 
-	to be killed In the default 'promiscuous' mode 
-	all other attributes are blindly saved to the database as 
-	name value pairs with no safeties.  In 'cautious' mode we 
-	add a type check.  If the actual type of an attribute does not 
-	match what the schema expect, this method will try to fix the 
-	type error before saving the data.  If the conversion is 
-	successful it will be saved with a complaint error posted 
-	to elog.  If it fails, the attribute will not be saved, an 
-	additional error message will be posted, and the save 
-	algorithm continues.  In 'pedantic' mode, in contrast, all 
-	type errors are considered to invalidate the data.  
-	Similar error messages to that in 'cautious' mode are posted 
-	but any type errors will cause the datum passed as arg 0 
-	to be killed.  The lesson is saves can leave entries that 
-	may need to be examined in elog and when really bad will 
-	cause the datum to be marked dead after the save.  
+        The mode parameter needs to be understood by all users of this 
+        function.  All modes enforce a schema constraint for "readonly"
+        attributes.   An immutable (readonly) attribute by definition 
+        should not be changed during processing.   During a save 
+        all attributes with a key defined as readonly are tested 
+        with a method in the Metadata container that keeps track of 
+        any Metadata changes.  If a readonly attribute is found to 
+        have been changed it will be renamed with the prefix
+        "READONLYERROR_", saved, and an error posted (e.g. if you try 
+        to alter site_lat (a readonly attribute) in a workflow when 
+        you save the waveform you will find an entry with the key 
+        READONERROR_site_lat.)   In the default 'promiscuous' mode 
+        all other attributes are blindly saved to the database as 
+        name value pairs with no safeties.  In 'cautious' mode we 
+        add a type check.  If the actual type of an attribute does not 
+        match what the schema expect, this method will try to fix the 
+        type error before saving the data.  If the conversion is 
+        successful it will be saved with a complaint error posted 
+        to elog.  If it fails, the attribute will not be saved, an 
+        additional error message will be posted, and the save 
+        algorithm continues.  In 'pedantic' mode, in contrast, all 
+        type errors are considered to invalidate the data.  
+        Similar error messages to that in 'cautious' mode are posted 
+        but any type errors will cause the datum passed as arg 0 
+        to be killed. The lesson is saves can leave entries that 
+        may need to be examined in elog and when really bad will 
+        cause the datum to be marked dead after the save.  
 
-	This method can throw an exception but only for errors in 
-	usage (i.e. arguments defined incorrectly)
+        This method can throw an exception but only for errors in 
+        usage (i.e. arguments defined incorrectly)
 
         :param mspass_object: the object you want to save.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -642,15 +629,19 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
+
+        # should define wf_collection here because if the mspass_object is dead
+        if collection:
+            wf_collection_name=collection
+        else:
+            # This returns a string that is the collection name for this atomic data type
+            # A weird construct
+            wf_collection_name=save_schema.collection('_id')
+        wf_collection=self[wf_collection_name]
+         
         if mspass_object.live:
             if exclude_keys is None:
                 exclude_keys = []
-            if collection:
-                wf_collection_name=collection
-            else:
-                # This returns a string that is the collection name for this atomic data type
-                # A weird construct
-                wf_collection_name=save_schema.collection('_id')
 
             # FIXME starttime will be automatically created in this function
             self._sync_metadata_before_update(mspass_object)
@@ -667,6 +658,11 @@ class Database(pymongo.database.Database):
             # and modified method - i.e. keys returned by modified may be
             # aliases
             save_schema.clear_aliases(copied_metadata)
+
+            # remove any values with only spaces
+            for k in copied_metadata:
+                if not str(copied_metadata[k]).strip():
+                    copied_metadata.erase(k)
 
             # remove any defined items in exclude list
             for k in exclude_keys:
@@ -714,11 +710,8 @@ class Database(pymongo.database.Database):
                             if mode == 'pedantic':
                                 mspass_object.kill()
                                 message ='pedantic mode error:  key='+k
-                                if not save_schema.is_defined(k):
-                                    message += ' not defined in schema.'
-                                else:
-                                    value=copied_metadata[k]
-                                    message += ' type of stored value='+str(type(value))+' does not match schema expectation='+str(save_schema.type(k))
+                                value=copied_metadata[k]
+                                message += ' type of stored value='+str(type(value))+' does not match schema expectation='+str(save_schema.type(k))
                                 mspass_object.elog.log_error('Database.save_data',
                                     'message',ErrorSeverity.Invalid)
                             else:
@@ -728,21 +721,23 @@ class Database(pymongo.database.Database):
                                      # This is because the return of type() is the class reference.
                                      insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
                                  except Exception as err:
-                                     mspass_object.kill()
-                                     message = 'cautious mode error:  key=' + k
+                                     #  cannot convert required keys -> kill the object
                                      if save_schema.is_required(k):
+                                        mspass_object.kill()
+                                        message = 'cautious mode error:  key=' + k
                                         message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
+                                        message += '\nPython error exception message caught:\n'
+                                        message += str(err)
+                                        mspass_object.elog.log_error('Database.save',
+                                           message, ErrorSeverity.Invalid)
+                                    # cannot convert normal keys -> erase the key
+                                    # TODO should we post a Complaint entry to the elog?
                                      else:
-                                        message += ' Value has type='+str(type(copied_metadata[k])+' which cannot be converted to type='+str(save_schema.type(k)))
-                                     message += '\nPython error exception message caught:\n'
-                                     message += str(err)
-                                     mspass_object.elog.log_error('Database.save',
-                                           message,ErrorSeverity.Invalid)
+                                        copied_metadata.erase(k)
 
         # Note we jump here immediately if mspass_object was marked dead
         # on entry.  Data can, however, be killed in metadata section
         # above so we need repeat the test for live
-        wf_collection=self.db[wf_collection_name]
         if mspass_object.live:
             insertion_dict['storage_mode']=storage_mode
 
@@ -764,7 +759,6 @@ class Database(pymongo.database.Database):
                 #TODO will support url mode later
                 #elif storage_mode == "url":
                 #    pass
-                #col.update_one(filter_, {'$set': update_dict})
                 
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
             if mspass_object.is_empty():
@@ -778,6 +772,10 @@ class Database(pymongo.database.Database):
                 history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                 insertion_dict[history_obj_id_name] = history_object_id
 
+            # we still need to save the elog here because there might be Complaint elog above
+            # and we want to associate the elog_id with wf document
+
+
             if data_tag:
                 insertion_dict['data_tag']=data_tag
             else:
@@ -786,25 +784,45 @@ class Database(pymongo.database.Database):
                 if 'data_tag' in insertion_dict:
                     insertion_dict.erase('data_tag')
             # We don't want an elog_id in the insertion at this point.  
-            # A option to consider is if we need an updata after _save_elog 
+            # A option to consider is if we need an update after _save_elog 
             # section below to post elog_id back.
-            insertion_dict.pop('elog_id',None)
+
+
+            # test will fail here because there might be some Complaint elog post to the wf above
+            # we need to save the elog and get the elog_id
+            # then associate with the wf document so that we could insert in the wf_collection
+            
+            # insertion_dict.pop('elog_id',None)
+            if mspass_object.elog.size() > 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                elog_id = self._save_elog(mspass_object, elog_id=None)  # elog ids will be updated in the wf col when saving metadata
+                insertion_dict[elog_id_name] = elog_id
+
+
             # finally ready to insert the wf doc - keep the id as we'll need
             # it for tagging any elog entries
             wfid = wf_collection.insert_one(insertion_dict).inserted_id
             # Put wfid into the object's meta as the new definition of 
             # the parent of this waveform
-            mspass_object['_id']=wfid
+            mspass_object['_id'] = wfid
 
             # Empty error logs are skipped.  When nonzero tag them with tid
             # just returned
             if mspass_object.elog.size() > 0:
-                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                # elog_id_name = self.database_schema.default_name('elog') + '_id'
                 # _save_elog uses a  null id as a signal to add a new record
                 # When we land here the record must be new since it is
                 # associated with a new wf document.  elog_id=None is default
                 # but set it explicitly for clarity
-                elog_id = self._save_elog(mspass_object, elog_id=None)
+
+                # This is comment out becuase we need to save it before inserting into the wf_collection
+                # elog_id = self._save_elog(mspass_object, elog_id=None)
+                
+                # cross reference for elog entry, assoicate the wfid to the elog entry
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection_name + '_id'
+                filter_ = {'_id': insertion_dict[elog_id_name]}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
             else:
                 elog_id = None
             # When history is enable we need to do an update to put the
@@ -817,7 +835,7 @@ class Database(pymongo.database.Database):
                 filter_ = {'_id': history_object_id}
                 update_dict={wf_id_name : wfid}
                 history_object_col.update_one(filter_, {'$set': update_dict})
-            return [wfid,history_object_id,elog_id]
+            return mspass_object
 
         else:
             # We land here when the input is dead or was killed during a
@@ -832,7 +850,7 @@ class Database(pymongo.database.Database):
                 dead_wf_id=mspass_object['_id']
             else:
                 dead_wf_id=None
-            return [dead_wf_id,None,elog_id]
+            return mspass_object
 
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
@@ -1759,17 +1777,17 @@ class Database(pymongo.database.Database):
         that are defined in Metadata as having been changed will be
         posted as an update to the parent wf document to the data object.
 
-	A feature of the schema that is considered an unbreakable rule is
-	that any attribute marked "readonly" in the schema cannot by 
-	definition be updated with this method.  It utilizes the same 
-	method for handling this as the save_data method.  That is, 
-	for all "mode" parameters if an key is defined in the schema as 
-	readonly and it is listed as having been modified, it will 
-	be save with a new key creating by adding the prefix 
-	"READONLYERROR_" .  e.g. if we had a site_sta read as 
-	'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
-	to save the data you will find an entry in the document 
-	of {'READONLYERROR_site_sta' : 'XYZ'}
+        A feature of the schema that is considered an unbreakable rule is
+        that any attribute marked "readonly" in the schema cannot by 
+        definition be updated with this method.  It utilizes the same 
+        method for handling this as the save_data method.  That is, 
+        for all "mode" parameters if an key is defined in the schema as 
+        readonly and it is listed as having been modified, it will 
+        be save with a new key creating by adding the prefix 
+        "READONLYERROR_" .  e.g. if we had a site_sta read as 
+        'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
+        to save the data you will find an entry in the document 
+        of {'READONLYERROR_site_sta' : 'XYZ'}
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -1803,9 +1821,9 @@ class Database(pymongo.database.Database):
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError(alg_name+":  only TimeSeries and Seismogram are supported\nReceived data of type="+str(type(mspass_object)))
-        # Return a -1 immediately if the data is marked dead - signal it did nothing
+        # Return a None immediately if the data is marked dead - signal it did nothing
         if mspass_object.dead():
-            return -1
+            return None
         if exclude_keys is None:
             exclude_keys = []
         if mode not in ['promiscuous', 'cautious', 'pedantic']:
@@ -1824,7 +1842,7 @@ class Database(pymongo.database.Database):
             # This returns a string that is the collection name for this atomic data type
             # A weird construct
             wf_collection_name=save_schema.collection('_id')
-        wf_collection=self.db[wf_collection_name]
+        wf_collection=self[wf_collection_name]
         # FIXME starttime will be automatically created in this function
         self._sync_metadata_before_update(mspass_object)
 
@@ -1843,12 +1861,19 @@ class Database(pymongo.database.Database):
         # aliases
         save_schema.clear_aliases(copied_metadata)
 
+        # remove any values with only spaces
+        for k in copied_metadata:
+            if not str(copied_metadata[k]).strip():
+                copied_metadata.erase(k)
+
         # remove any defined items in exclude list
         for k in exclude_keys:
             if k in copied_metadata:
                 copied_metadata.erase(k)
         # Now remove any readonly data
         for k in copied_metadata.keys():
+            if k == '_id':
+                continue
             if save_schema.is_defined(k):
                 if save_schema.readonly(k):
                     if k in changed_key_list:
@@ -1883,28 +1908,25 @@ class Database(pymongo.database.Database):
                         else:
                             if mode == 'pedantic':
                                 message ='pedantic mode error:  key='+k
-                                if not save_schema.is_defined(k):
-                                    message += ' not defined in schema.'
-                                else:
-                                    value=copied_metadata[k]
-                                    message += ' type of stored value='+str(type(value))+' does not match schema expectation='+str(save_schema.type(k)+'\nAttempting to correct type mismatch')
+                                value=copied_metadata[k]
+                                message += ' type of stored value='+str(type(value))+' does not match schema expectation=' + str(save_schema.type(k)) + '\nAttempting to correct type mismatch'
                                 mspass_object.elog.log_error(alg_name,
                                     message,ErrorSeverity.Complaint)
                             # Note we land here for both pedantic and cautious but not promiscuous
                             try:
                                 # The following convert the actual value in a dict to a required type.
                                 # This is because the return of type() is the class reference.
-                                oldvalue=copied_metadata[k]
+                                old_value=copied_metadata[k]
                                 insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
-                                newvalue=copied_metadata[k]
-                                message='Had to convert type of data with key='+k+' from '+str(type(oldvalue))+' to '+str(type(newvalue))
+                                new_value=insertion_dict[k]
+                                message='Had to convert type of data with key='+k+' from '+str(type(old_value))+' to '+str(type(new_value))
                                 mspass_object.elog.log_error(alg_name,message,ErrorSeverity.Complaint)
                             except Exception as err:
                                 message = 'Cannot update data with key=' + k +'\n'
                                 if save_schema.is_required(k):
                                     message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
                                 else:
-                                    message += ' Value stored has type='+str(type(copied_metadata[k])+' which cannot be converted to required type='+str(save_schema.type(k)))+'\n'
+                                    message += ' Value stored has type=' + str(type(copied_metadata[k])) + ' which cannot be converted to type=' + str(save_schema.type(k)) + '\n'
                                 message += 'Data for this key will not be changed or set in the database'
                                 message += '\nPython error exception message caught:\n'
                                 message += str(err)
@@ -1919,14 +1941,14 @@ class Database(pymongo.database.Database):
                               'cannot update data with key='+k+' because it is not defined in the schema',
                               ErrorSeverity.Complaint)
                         else:
-                            mspass_object.elog_log_error(alg_name,
+                            mspass_object.elog.log_error(alg_name,
                               'key='+k+' is not defined in the schema.  Updating record, but this may cause downstream problems',
                               ErrorSeverity.Complaint)
                             insertion_dict[k]=copied_metadata[k]
         # ugly python indentation with this logic.  We always land here in
         # any mode when we've passed over the entire metadata dict
-        wf_collection.update_one({'_id' : wfid},insertion_dict)
-        return len(insertion_dict)
+        wf_collection.update_one({'_id' : wfid},{'$set': insertion_dict})
+        return mspass_object
 
     def read_ensemble_data(self, objectid_list, ensemble_metadata={},
       mode='promiscuous', normalize=None, load_history=False,
