@@ -3055,7 +3055,12 @@ class Database(pymongo.database.Database):
                     # del chanrec['serialized_inventory']
                     for chan in chans:
                         chanrec['chan'] = chan.code
-                        chanrec['vang'] = chan.dip
+			# the Dip attribute in a stationxml file 
+			# is like strike-dip and relative to horizontal
+			# line with positive down.  vang is the 
+			# css30 attribute that is spherical coordinate 
+			# theta angle
+                        chanrec['vang'] = chan.dip + 90.0
                         chanrec['hang'] = chan.azimuth
                         chanrec['edepth'] = chan.depth
                         st = chan.start_date
