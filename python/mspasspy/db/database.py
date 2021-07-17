@@ -759,7 +759,8 @@ class Database(pymongo.database.Database):
                 #TODO will support url mode later
                 #elif storage_mode == "url":
                 #    pass
-                
+            
+            # save history if not empty
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
             if mspass_object.is_empty():
                 history_object_id = None
@@ -771,11 +772,8 @@ class Database(pymongo.database.Database):
                 # optional history save - only done if history container is not empty
                 history_object_id = self._save_history(mspass_object, alg_name, alg_id)
                 insertion_dict[history_obj_id_name] = history_object_id
-
-            # we still need to save the elog here because there might be Complaint elog above
-            # and we want to associate the elog_id with wf document
-
-
+            
+            # add tag
             if data_tag:
                 insertion_dict['data_tag']=data_tag
             else:
