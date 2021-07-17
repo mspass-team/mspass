@@ -403,6 +403,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
     for(i=0,dptr=d.member.begin();dptr!=d.member.end();++i,++dptr)
     {
     //DEBUG
+/*
     cout<<"i="<<i<<" values: "
       << lastnet <<":"
       << laststa <<":"
@@ -413,6 +414,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
       << sta <<":"
       << chan <<":"
       << loc <<endl;
+*/
       if(dptr->dead())
       {
         /* If net, sta, and loc are defined we try to blunder on so we can
@@ -517,6 +519,12 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
                   hvec.push_back(dynamic_cast<ProcessingHistory*>(&d.member[i0+k]));
                 }
               }
+//DEBUG
+for(size_t k=0;k<3;++k) cout << work[k].get_string(SEISMICMD_sta)
+<< " " <<work[k].get_string(SEISMICMD_chan)
+<< " " <<work[k].get_double(SEISMICMD_hang)
+<< " " <<work[k].get_double(SEISMICMD_vang)
+<<endl;
               Seismogram d3c;
               try{
                 d3c=Seismogram(CoreSeismogram(work),algname);
@@ -528,6 +536,16 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
                 d3c.kill();
                 d3c.elog.log_error(err);
               }
+//DEBUG
+cout << "Transformation matrix in bundled result"<<endl;
+dmatrix tm_tmp=d3c.get_transformation_matrix();
+cout << tm_tmp <<endl;
+cout << "First 10 samples:"<<endl;
+for(size_t ii=0;ii<10;++ii)
+{
+for(size_t jj=0;jj<3;++jj) cout << d3c.u(jj,ii)<<" ";
+cout<<endl;
+}
               ens3c.member.push_back(d3c);
             }
             else
