@@ -251,6 +251,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
             && (fabs( (t0_component[0]-t0_component[1])/dt() )<1.0)
             && (fabs( (t0_component[1]-t0_component[2])/dt() )<1.0))
     {
+//DEBUG
+cout << "Using regular start time algorithm"<<endl;
         /* Older code had this.   No longer needed with logic above that
         calls set_npts.  that method creates and initialized the u dmatrix*/
         //this->u=dmatrix(3,nsamp);
@@ -272,6 +274,8 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
     }
     else
     {
+//DEBUG
+cout << "Using irregular start time algorithm"<<endl;
         /*Land here if the start time or number of samples
         is irregular.  We cut the output to latest start time to earliest end time*/
         /* WARNING - debugging may be needed for this block. SEISPP versio of this
@@ -296,6 +300,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         double delta=this->dt();
         for(int ic=0; ic<3; ++ic)
         {
+            t=this->t0();
             for(j=0; j<ts[ic].s.size(); ++j)
             {
                 i=ts[ic].sample_number(t);
@@ -307,6 +312,14 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
             }
         }
     }
+//DEBUG
+cout << "First 10 samples while in constructor:"<<endl;
+for(size_t ii=0;ii<10;++ii)
+{
+for(size_t jj=0;jj<3;++jj) cout << this->u(jj,ii)<<" ";
+cout<<endl;
+}
+
     /* Finally we need to set the transformation matrix.
      This is a direct application of conversion of routines
     in spherical coordinate procedures.  They are procedural
@@ -327,6 +340,12 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         scor.phi=hang[i];
         scor.theta=vang[i];
         nu=SphericalToUnitVector(scor);
+//DEBUG
+cout << "spherical:  "<<mspass::utility::deg(hang[i])<<" "
+<< mspass::utility::deg(vang[i])<<endl;
+cout <<"unit vector:";
+for(j=0;j<3;++j)cout << nu[j] <<" ";
+cout << endl;
         for(j=0; j<3; ++j)tmatrix[i][j]=nu[j];
         delete [] nu;
     }
