@@ -575,18 +575,7 @@ class Database(pymongo.database.Database):
         :param data_tag: a user specified "data_tag" key.  See above and
           User's manual for guidance on how the use of this option.
         :type data_tag: :class:`str`
-        :return: list of 3 ObjectIDs.  0=waveform id, 1=history collection id,
-          2 = error log (elog) collection id.   Any or all of the ids may
-          be returned as None (python null).  For a valid save of live data
-          0 will be the id for the wf collection.  It is None only if there
-          was no '_id' value set in the data object received this method.
-          The history id (list component 1) is always null unless the
-          history container is found to not be empty.  Similarly, the
-          error log id (component 2) will be None unless there were errors
-          posted to the waveform just save.  The elog entry should then have
-          a valid link back to the parent.  Note dead data will have a
-          "tombstone" entry in elog with a dump of the metadata they contained
-          linked with the error log data.
+        :return: Data object as saved (if killed it will be dead)
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -833,7 +822,6 @@ class Database(pymongo.database.Database):
                 filter_ = {'_id': history_object_id}
                 update_dict={wf_id_name : wfid}
                 history_object_col.update_one(filter_, {'$set': update_dict})
-            return mspass_object
 
         else:
             # We land here when the input is dead or was killed during a
@@ -844,11 +832,8 @@ class Database(pymongo.database.Database):
             else:
                 old_elog_id=None
             elog_id = self._save_elog(mspass_object,elog_id=old_elog_id)
-            if '_id' in mspass_object:
-                dead_wf_id=mspass_object['_id']
-            else:
-                dead_wf_id=None
-            return mspass_object
+        # Both live and dead data land here.   
+        return mspass_object
 
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
@@ -1814,8 +1799,11 @@ class Database(pymongo.database.Database):
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        :return:  integer count of the number of values altered.  -1 if the
-          input was marked dead.
+        :return: mspass_object data.  Normally this is an unaltered copy 
+          of the data passed through mspass_object.  If there are errors, 
+          however, the elog will contain new messages.  Note any such 
+          messages are volatile and will not be saved to the database 
+          until the save_data method is called. 
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError(alg_name+":  only TimeSeries and Seismogram are supported\nReceived data of type="+str(type(mspass_object)))
@@ -1841,6 +1829,18 @@ class Database(pymongo.database.Database):
             # A weird construct
             wf_collection_name=save_schema.collection('_id')
         wf_collection=self[wf_collection_name]
+        #One last check.  Make sure a document with the _id in mspass_object
+        # exists.  If it doesn't exist kill this datum and return immediately
+        # The kill may be excessively brutal but something serious went 
+        # wrong if this block is executed.  If not a kill it should 
+        # generate an exception
+        testdoc=wf_collection.find_one({'_id' : wfid})
+        if not testdoc:    # find_one returns None if find fails 
+            mspass_object.elog.log_error(alg_name,
+                "update is not possible because the id in this data object is not in associated wf collection\nThis datum will be killed",
+                ErrorSeverity.Complaint)
+            mspass_object.kill()
+            return mspass_object
         # FIXME starttime will be automatically created in this function
         self._sync_metadata_before_update(mspass_object)
 
@@ -1947,6 +1947,160 @@ class Database(pymongo.database.Database):
         # any mode when we've passed over the entire metadata dict
         wf_collection.update_one({'_id' : wfid},{'$set': insertion_dict})
         return mspass_object
+    
+    def update_data(self,mspass_object,collection=None, mode='cautious',
+                exclude_keys=None, force_keys=None, 
+                alg_id='0',alg_name='Database.update_data'):
+        """
+        Updates both metadata and sample data corresponding to an input data 
+        object.  
+        
+        Since storage of data objects in MsPASS is broken into multiple 
+        collections and storage methods, doing a full data update has some 
+        complexity.   This method handles the problem differently for the 
+        different pieces:
+            1. An update is performed on the parent wf collection document. 
+               That update makes use of the related Database method
+               called update_metadata. 
+            2. If the error log is not empty it is saved.  
+            3. If the history container has contents it is saved.
+            4. The sample data is the thorniest problem. Currently this
+               method will only do sample updates for data stored in 
+               the mongodb gridfs system.   With files containing multiple 
+               waveforms it would be necessary to append to the files and 
+               this could create a blaat problem with large data sets so 
+               we do not currently support that type of update. 
+        
+        :param mspass_object: the object you want to update.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param force_keys: a list of metadata attributes you want to force 
+         to be updated.   Normally this method will only update attributes 
+         that have been marked as changed since creation of the parent data 
+         object.  If data with these keys is found in the mspass_object they 
+         will be added to the update record.
+        :type force_keys: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
+        :param mode: This parameter defines how attributes defines how
+          strongly to enforce schema constraints. As described above
+          'promiscuous' justs updates all changed values with no schema
+          tests.  'cautious', the default, enforces type constraints and
+          tries to convert easily fixed type mismatches (e.g. int to floats
+          of vice versa).  Both 'cautious' and 'pedantic' may leave one or
+          more complaint message in the elog of mspass_object on how the
+          method did or did not fix mismatches with the schema.  Both
+          also will drop any key-value pairs where the value cannot be
+          converted to the type defined in the schema.
+        :type mode: :class:`str`
+        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+          (defaults to 'Database.update_data' and should not normally need to be changed)
+        :type alg_name: :class:`str`
+        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :return: mspass_object data.  Normally this is an unaltered copy 
+          of the data passed through mspass_object.  If there are errors, 
+          however, the elog will contain new messages.  All such messages, 
+          howevever, should be saved in the elog collection because elog 
+          is the last collection updated.
+        """
+        schema = self.metadata_schema
+        if isinstance(mspass_object, TimeSeries):
+            save_schema = schema.TimeSeries
+        else:
+            save_schema = schema.Seismogram
+        # First update metadata.  update_metadata will throw an exception 
+        # only for usage errors.   We test the elog size to check if there
+        # are other warning messages and add a summary if there were any
+        logsize0 = mspass_object.elog.size()
+        try:
+            self.update_metadata(mspass_object,collection=collection,
+                    mode=mode,exclude_keys=exclude_keys,force_keys=force_keys,
+                    alg_name=alg_name)
+        except:
+            raise
+        logsize = mspass_object.elog.size()
+        # A bit verbose, but we post this warning to make it clear the 
+        # problem originated from update_data - probably not really needed 
+        # but better to be though I think
+        if logsize > logsize0:
+            mspass_object.elog.log_error(alg_name,
+                'update_metadata posted {nerr} messages during update'.format(nerr=(logsize-logsize0)),
+                 ErrorSeverity.Complaint)
+        
+        # optional handle history - we need to update the wf record later with this value 
+        # if it is set
+        update_record=dict()
+        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+        if mspass_object.is_empty():
+            history_object_id=None 
+        else:
+           history_object_id = self._save_history(mspass_object, alg_name, alg_id)
+           update_record[history_obj_id_name]=history_object_id
+        # Now handle update of sample data.  The gridfs method used here 
+        # handles that correctly based on the gridfs id.  
+        if mspass_object.live:
+            if 'storage_mode' in mspass_object:
+                storage_mode=mspass_object['storage_mode']
+                if not storage_mode == 'gridfs':
+                    mspass_object.elog.log_error(alg_name,
+                        'found storage_mode='+storage_mode+'  Only support update to gridfs.  Changing to gridfs storage for sample data update',
+                        ErrorSeverity.Complaint)
+                    mspass_object['storage_mode']='gridfs'
+            else:
+                mspass_object.elog.log_error(alg_name,
+                    'storage_mode attribute was not set in Metadata of this object - setting as gridfs for update',
+                    ErrorSeverity.Complaint)
+                mspass_object['storage_mode']='gridfs'
+                update_record['storage_mode']='gridfs'
+            # This logic depends upon a feature of _save_data_to_gridfs.
+            # if the gridfs_id parameter is defined it does an update
+            # when it is not defined it creates a new gridfs "file". In both 
+            # cases the id needed to get the right datum is returned
+            if 'gridfs_id' in mspass_object:
+                gridfs_id = self._save_data_to_gridfs(mspass_object, mspass_object['gridfs_id'])
+            else:
+                gridfs_id = self._save_data_to_gridfs(mspass_object)
+            mspass_object['gridfs_id'] = gridfs_id
+            # There is a possible efficiency gain right here.  Not sure if 
+            # gridfs_id is altered when the sample data are updated in place.
+            # if we can be sure the returned gridfs_id is the same as the 
+            #input in that case, we would omit gridfs_id from the update 
+            # record and most data would not require the final update 
+            # transaction below
+            update_record['gridfs_id'] = gridfs_id
+            # should define wf_collection here because if the mspass_object is dead
+            if collection:
+                 wf_collection_name=collection
+            else:
+                # This returns a string that is the collection name for this atomic data type
+                # A weird construct
+                wf_collection_name=save_schema.collection('_id')
+            wf_collection=self[wf_collection_name]
+            if mspass_object.elog.size() > 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                elog_id = self._save_elog(mspass_object, elog_id=None)  # elog ids will be updated in the wf col when saving metadata
+                update_record[elog_id_name] = elog_id
+                # we have to do the xref to wf collection like this too
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection_name + '_id'
+                filter_ = {'_id': elog_id}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+            # finally we need to update the wf document if we set anything 
+            # in update_record
+            if len(update_record):
+                filter_={'_id' : mspass_object['_id']}
+                wf_collection.update_one(filter_,{'$set' : update_record})
+        else:
+            # Dead data land here
+            elog_id_name = self.database_schema.default_name('elog') + '_id'
+            if elog_id_name in mspass_object:
+                old_elog_id=mspass_object[elog_id_name]
+            else:
+                old_elog_id=None
+            elog_id = self._save_elog(mspass_object,elog_id=old_elog_id)
+               
+        return mspass_object           
 
     def read_ensemble_data(self, objectid_list, ensemble_metadata={},
       mode='promiscuous', normalize=None, load_history=False,
