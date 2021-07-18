@@ -447,6 +447,9 @@ Metadata:
       source_id:
         collection: wf_TimeSeries
         readonly: false
+      utc_convertible:
+        collection: wf_TimeSeries
+        readonly: false
       net:
         collection: site
         readonly: true
@@ -544,6 +547,9 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       tmatrix:
+        collection: wf_Seismogram
+        readonly: false
+      utc_convertible:
         collection: wf_Seismogram
         readonly: false
       net:
