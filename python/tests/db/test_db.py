@@ -284,10 +284,15 @@ class TestDatabase():
             res_ts = self.db.update_metadata(ts, mode='123')
 
         # test _id not in mspass_object
-        with pytest.raises(MsPASSError, match=re.escape("Database.update_metadata:  input data object is missing required waveform object id value (_id) - update is not possible without it")):
+        with pytest.raises(MsPASSError, match=re.escape('Database.update_metadata: input data object is missing required waveform object id value (_id) - update is not possible without it')):
             res_ts = self.db.update_metadata(ts)
+
+        # test _id which we can't find the corresponding document in database
+        ts['_id'] = ObjectId()
+        with pytest.raises(MsPASSError, match='Database.update_metadata: update is not possible because the id in this data object is not in associated wf collection'):
+            res_ts = self.db.update_metadata(ts)
+
         ts['_id'] = wfid
-        
         # test promiscuous
         ts['extra1'] = 'extra1+'
         ts['net'] = 'Asia'
@@ -394,17 +399,6 @@ class TestDatabase():
         # add 1 more log error to the elog
         assert len(ts.elog.get_error_log()) == 11
 
-        # test update TimeSeries with non exist id under promiscuous mode
-        promiscuous_ts = copy.deepcopy(self.test_ts)
-        logging_helper.info(promiscuous_ts, '1', 'deepcopy')
-        non_exist_id = ObjectId()
-        promiscuous_ts['_id'] = non_exist_id
-        res_ts = self.db.update_metadata(promiscuous_ts, mode='promiscuous')
-        assert res_ts.live
-        res = self.db['wf_TimeSeries'].find_one({'_id': promiscuous_ts['_id']})
-        # pymongo update_one default upsert is False, which means not insert if no documents match the filter
-        assert not res
-
         # test tmatrix attribute when update seismogram
         test_seis = get_live_seismogram()
         logging_helper.info(test_seis, '1', 'deepcopy')
@@ -429,6 +423,61 @@ class TestDatabase():
         assert res
         assert res['tmatrix'] == [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
 
+    def test_update_data(self):
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, '1', 'deepcopy')
+        # insert ts into the database
+        res_ts = self.db.save_data(ts, mode='cautious', storage_mode='gridfs')
+        assert ts.live
+        assert not 'storage_mode' in ts
+        # change read only attribute to create a elog entry
+        ts['net'] = 'test_net'
+        # add one more history entry into the chain
+        logging_helper.info(ts, '2', 'Database.update_data')
+        # reserve old values
+        old_gridfs_id = ts['gridfs_id']
+        old_history_object_id = ts['history_object_id']
+        old_elog_id = ts['elog_id']
+        old_elog_size = len(ts.elog.get_error_log())
+
+        # default behavior
+        res_ts = self.db.update_data(ts, mode='promiscuous')
+        assert ts.live
+        assert 'storage_mode' in ts and ts['storage_mode'] == 'gridfs'
+        assert not ts['gridfs_id'] == old_gridfs_id
+        assert not ts['history_object_id'] == old_history_object_id
+        assert not ts['elog_id'] == old_elog_id
+        # should add 3 more elog entries(one in update_metadata, two in update_data)
+        assert len(ts.elog.get_error_log()) == old_elog_size + 3
+        # check history_object collection and elog_id collection
+        wf_res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        elog_res = self.db['elog'].find_one({'_id': ts['elog_id']})
+        history_object_res = self.db['history_object'].find_one({'_id': ts['history_object_id']})
+        assert ts['gridfs_id'] == wf_res['gridfs_id']
+        assert ts['history_object_id'] == wf_res['history_object_id']
+        assert ts['elog_id'] == wf_res['elog_id']
+        assert elog_res and elog_res['wf_TimeSeries_id'] == ts['_id']
+        assert history_object_res
+        assert history_object_res['alg_id'] == '0'
+        assert history_object_res['alg_name'] == 'Database.update_data'
+
+        # incorrect storage mode
+        ts.erase('net')
+        ts['storage_mode'] = 'file'
+        logging_helper.info(ts, '2', 'Database.update_data')
+        old_elog_size = len(ts.elog.get_error_log())
+        res_ts = self.db.update_data(ts, mode='promiscuous')
+        assert ts['storage_mode'] == 'gridfs'
+        assert len(ts.elog.get_error_log()) == old_elog_size + 1
+
+        # test dead object
+        old_elog_size = len(ts.elog.get_error_log())
+        logging_helper.info(ts, '2', 'Database.update_data')
+        ts.live = False
+        res_ts = self.db.update_data(ts, mode='promiscuous')
+        assert len(ts.elog.get_error_log()) == old_elog_size
+        assert not ts.live
+
     def test_save_read_data(self):
         # new object
         # read data
@@ -451,6 +500,7 @@ class TestDatabase():
         assert promiscuous_seis.live
         # check it is the origin in the processing history after save
         wf_doc = self.db['wf_Seismogram'].find_one({'_id': promiscuous_seis['_id']})
+
         history_object_doc = self.db['history_object'].find_one({'_id': wf_doc['history_object_id']})
         assert wf_doc
         assert history_object_doc
@@ -490,16 +540,6 @@ class TestDatabase():
         assert 'source_depth' not in no_source_seis2
         assert 'source_time' not in no_source_seis2
         assert 'source_magnitude' not in no_source_seis2
-
-        # test save with non exist id under promiscuous mode
-        non_exist_id = ObjectId()
-        promiscuous_seis['_id'] = non_exist_id
-        logging_helper.info(promiscuous_seis, '3', 'save_data')
-        res_seis = self.db.save_data(promiscuous_seis, mode='promiscuous')
-        assert res_seis.live
-        assert promiscuous_seis.live
-        assert '_id' in promiscuous_seis
-        assert not promiscuous_seis['_id'] == non_exist_id
 
         # test cautious read
         cautious_seis.set_live()
@@ -656,6 +696,16 @@ class TestDatabase():
         assert ignore_changed_test_ts2['sampling_rate'] == 20.0
         assert ignore_changed_test_ts2['delta'] == 0.1
         assert ignore_changed_test_ts2['calib'] == 0.1
+
+        # test save with non exist id under promiscuous mode
+        non_exist_id = ObjectId()
+        promiscuous_seis['_id'] = non_exist_id
+        logging_helper.info(promiscuous_seis, '3', 'save_data')
+        res_seis = self.db.save_data(promiscuous_seis, mode='promiscuous')
+        assert res_seis.live
+        assert promiscuous_seis.live
+        assert '_id' in promiscuous_seis
+        assert not promiscuous_seis['_id'] == non_exist_id
 
         # test save data with different storage mode
         # gridfs

@@ -729,6 +729,7 @@ class Database(pymongo.database.Database):
         # above so we need repeat the test for live
         if mspass_object.live:
             insertion_dict['storage_mode']=storage_mode
+            gridfs_id = None
 
             if storage_mode == "file":
                 # TODO:  be sure this can't throw an exception
@@ -751,8 +752,8 @@ class Database(pymongo.database.Database):
             
             # save history if not empty
             history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+            history_object_id = None
             if mspass_object.is_empty():
-                history_object_id = None
                 # Use this trick in update_metadata too. None is needed to 
                 # avoid a TypeError exception if the name is not defined. 
                 # could do this with a conditional as an alternative
@@ -779,12 +780,12 @@ class Database(pymongo.database.Database):
             # we need to save the elog and get the elog_id
             # then associate with the wf document so that we could insert in the wf_collection
             
-            # insertion_dict.pop('elog_id',None)
+            # save elogs if the size of elog is greater than 0
+            elog_id = None
             if mspass_object.elog.size() > 0:
                 elog_id_name = self.database_schema.default_name('elog') + '_id'
                 elog_id = self._save_elog(mspass_object, elog_id=None)  # elog ids will be updated in the wf col when saving metadata
                 insertion_dict[elog_id_name] = elog_id
-
 
             # finally ready to insert the wf doc - keep the id as we'll need
             # it for tagging any elog entries
@@ -792,6 +793,16 @@ class Database(pymongo.database.Database):
             # Put wfid into the object's meta as the new definition of 
             # the parent of this waveform
             mspass_object['_id'] = wfid
+
+            # we may probably set the gridfs_id field in the mspass_object
+            if gridfs_id:
+                mspass_object['gridfs_id'] = gridfs_id
+            # we may probably set the history_object_id field in the mspass_object
+            if history_object_id:
+                mspass_object[history_obj_id_name] = history_object_id
+            # we may probably set the elog_id field in the mspass_object
+            if elog_id:
+                mspass_object[elog_id_name] = elog_id
 
             # Empty error logs are skipped.  When nonzero tag them with tid
             # just returned
@@ -810,8 +821,6 @@ class Database(pymongo.database.Database):
                 wf_id_name = wf_collection_name + '_id'
                 filter_ = {'_id': insertion_dict[elog_id_name]}
                 elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
-            else:
-                elog_id = None
             # When history is enable we need to do an update to put the
             # wf collection id as a cross-reference.    Any value stored
             # above with saave_history may be incorrect.  We use a
@@ -1821,7 +1830,7 @@ class Database(pymongo.database.Database):
         if '_id' in mspass_object:
             wfid=mspass_object['_id']
         else:
-            raise MsPASSError(alg_name + ':  input data object is missing required waveform object id value (_id) - update is not possible without it','Fatal')
+            raise MsPASSError(alg_name + ': input data object is missing required waveform object id value (_id) - update is not possible without it','Fatal')
         if collection:
             wf_collection_name=collection
         else:
@@ -1830,17 +1839,11 @@ class Database(pymongo.database.Database):
             wf_collection_name=save_schema.collection('_id')
         wf_collection=self[wf_collection_name]
         #One last check.  Make sure a document with the _id in mspass_object
-        # exists.  If it doesn't exist kill this datum and return immediately
-        # The kill may be excessively brutal but something serious went 
-        # wrong if this block is executed.  If not a kill it should 
-        # generate an exception
-        testdoc=wf_collection.find_one({'_id' : wfid})
-        if not testdoc:    # find_one returns None if find fails 
-            mspass_object.elog.log_error(alg_name,
-                "update is not possible because the id in this data object is not in associated wf collection\nThis datum will be killed",
-                ErrorSeverity.Complaint)
-            mspass_object.kill()
-            return mspass_object
+        # exists.  If it doesn't exist, throw an error would be more consistent with the logic above
+        # The kill may be excessively brutal
+        test_doc = wf_collection.find_one({'_id' : wfid})
+        if not test_doc:    # find_one returns None if find fails 
+            raise MsPASSError(alg_name + ": update is not possible because the id in this data object is not in associated wf collection", 'Fatal')
         # FIXME starttime will be automatically created in this function
         self._sync_metadata_before_update(mspass_object)
 
@@ -2032,11 +2035,11 @@ class Database(pymongo.database.Database):
         # if it is set
         update_record=dict()
         history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-        if mspass_object.is_empty():
-            history_object_id=None 
-        else:
-           history_object_id = self._save_history(mspass_object, alg_name, alg_id)
-           update_record[history_obj_id_name]=history_object_id
+        history_object_id = None 
+        if not mspass_object.is_empty():
+            history_object_id = self._save_history(mspass_object, alg_name, alg_id)
+            update_record[history_obj_id_name]=history_object_id
+           
         # Now handle update of sample data.  The gridfs method used here 
         # handles that correctly based on the gridfs id.  
         if mspass_object.live:
@@ -2077,10 +2080,20 @@ class Database(pymongo.database.Database):
                 # A weird construct
                 wf_collection_name=save_schema.collection('_id')
             wf_collection=self[wf_collection_name]
+
+            elog_id = None
             if mspass_object.elog.size() > 0:
                 elog_id_name = self.database_schema.default_name('elog') + '_id'
-                elog_id = self._save_elog(mspass_object, elog_id=None)  # elog ids will be updated in the wf col when saving metadata
+                # FIXME I think here we should check if elog_id field exists in the mspass_object
+                # and we should update the elog entry if mspass_object already had one
+                if elog_id_name in mspass_object:
+                    old_elog_id=mspass_object[elog_id_name]
+                else:
+                    old_elog_id=None
+                elog_id = self._save_elog(mspass_object, elog_id=old_elog_id)  # elog ids will be updated in the wf col when saving metadata
                 update_record[elog_id_name] = elog_id
+                
+                # update elog collection
                 # we have to do the xref to wf collection like this too
                 elog_col = self[self.database_schema.default_name('elog')]
                 wf_id_name = wf_collection_name + '_id'
@@ -2091,6 +2104,12 @@ class Database(pymongo.database.Database):
             if len(update_record):
                 filter_={'_id' : mspass_object['_id']}
                 wf_collection.update_one(filter_,{'$set' : update_record})
+                # we may probably set the elog_id field in the mspass_object
+                if elog_id:
+                    mspass_object[elog_id_name] = elog_id
+                # we may probably set the history_object_id field in the mspass_object
+                if history_object_id:
+                    mspass_object[history_obj_id_name] = history_object_id
         else:
             # Dead data land here
             elog_id_name = self.database_schema.default_name('elog') + '_id'
@@ -2099,8 +2118,8 @@ class Database(pymongo.database.Database):
             else:
                 old_elog_id=None
             elog_id = self._save_elog(mspass_object,elog_id=old_elog_id)
-               
-        return mspass_object           
+
+        return mspass_object
 
     def read_ensemble_data(self, objectid_list, ensemble_metadata={},
       mode='promiscuous', normalize=None, load_history=False,

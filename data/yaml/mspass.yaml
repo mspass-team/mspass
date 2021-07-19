@@ -435,6 +435,9 @@ Metadata:
       time_standard:
         collection: wf_TimeSeries
         readonly: false
+      utc_convertible:
+        collection: wf_TimeSeries
+        readonly: false
       calib:
         collection: wf_TimeSeries
         readonly: false
@@ -445,9 +448,6 @@ Metadata:
         collection: wf_TimeSeries
         readonly: false
       source_id:
-        collection: wf_TimeSeries
-        readonly: false
-      utc_convertible:
         collection: wf_TimeSeries
         readonly: false
       net:
@@ -537,6 +537,9 @@ Metadata:
       time_standard:
         collection: wf_Seismogram
         readonly: false
+      utc_convertible:
+        collection: wf_Seismogram
+        readonly: false
       calib:
         collection: wf_Seismogram
         readonly: false
@@ -547,9 +550,6 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       tmatrix:
-        collection: wf_Seismogram
-        readonly: false
-      utc_convertible:
         collection: wf_Seismogram
         readonly: false
       net:
