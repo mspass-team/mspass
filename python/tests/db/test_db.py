@@ -287,11 +287,6 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match=re.escape('Database.update_metadata: input data object is missing required waveform object id value (_id) - update is not possible without it')):
             res_ts = self.db.update_metadata(ts)
 
-        # test _id which we can't find the corresponding document in database
-        ts['_id'] = ObjectId()
-        with pytest.raises(MsPASSError, match='Database.update_metadata: update is not possible because the id in this data object is not in associated wf collection'):
-            res_ts = self.db.update_metadata(ts)
-
         ts['_id'] = wfid
         # test promiscuous
         ts['extra1'] = 'extra1+'
@@ -326,19 +321,21 @@ class TestDatabase():
         # test force_keys(but extra3 is not in metadata)
         assert 'extra3' not in res
 
-        # test cautious(defined key) -> fail
+        # test cautious(required key) -> fail
         old_npts = ts['npts']
         ts.put_string('npts', 'xyz')
         logging_helper.info(ts, '2', 'update_metadata')
         res_ts = self.db.update_metadata(ts, exclude_keys=['extra1', 'extra2', 'utc_convertible'])
-        assert res_ts.live
+        # object is killed
+        assert not res_ts.live
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         # attr value remains the same
         assert res['npts'] == old_npts
         # add one elog entry
         assert len(ts.elog.get_error_log()) == 4
 
-        # test cautious(defined key) -> success
+        # test cautious(required key) -> success
+        ts.live = True
         ts.put_string('npts', '123')
         logging_helper.info(ts, '2', 'update_metadata')
         res_ts = self.db.update_metadata(ts, exclude_keys=['extra1', 'extra2', 'utc_convertible'])
@@ -350,6 +347,30 @@ class TestDatabase():
         assert len(ts.elog.get_error_log()) == 5
         ts.put('npts', 255)
 
+        # test cautious(normal key) -> fail
+        old_sampling_rate = ts['sampling_rate']
+        ts.put_string('sampling_rate', 'xyz')
+        logging_helper.info(ts, '2', 'update_metadata')
+        res_ts = self.db.update_metadata(ts, exclude_keys=['extra1', 'extra2', 'utc_convertible'])
+        assert res_ts.live
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        # attr value remains the same
+        assert res['sampling_rate'] == old_sampling_rate
+        # add one elog entry
+        assert len(ts.elog.get_error_log()) == 6
+
+        # test cautious(normal key) -> success
+        ts.put_string('sampling_rate', '1.0')
+        logging_helper.info(ts, '2', 'update_metadata')
+        res_ts = self.db.update_metadata(ts, exclude_keys=['extra1', 'extra2', 'utc_convertible'])
+        assert res_ts.live
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        # attr value remains the same
+        assert res['sampling_rate'] == 1.0
+        # add one elog entry
+        assert len(ts.elog.get_error_log()) == 7
+        ts.put('sampling_rate', 1.0)
+
         # test cautious(schema undefined key)
         ts['extra3'] = '123'
         logging_helper.info(ts, '2', 'update_metadata')
@@ -359,23 +380,49 @@ class TestDatabase():
         # can add attribute to the database
         assert res['extra3'] == '123'
         # add 1 more log error to the elog
-        assert len(ts.elog.get_error_log()) == 6
+        assert len(ts.elog.get_error_log()) == 8
         ts.erase('extra3')
 
-        # test pedantic(defined key) -> fail
+        # test pedantic(required key) -> fail
+        old_npts = ts['npts']
+        ts.put_string('npts', 'xyz')
+        logging_helper.info(ts, '2', 'update_metadata')
+        res_ts = self.db.update_metadata(ts, mode='pedantic', exclude_keys=['extra1', 'extra2', 'utc_convertible'])
+        assert not res_ts.live
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        # attr value remains the same
+        assert res['npts'] == old_npts
+        # add one elog entry
+        assert len(ts.elog.get_error_log()) == 10
+
+        # test pedantic(required key) -> success
+        ts.live = True
+        ts.put_string('npts', '123')
+        logging_helper.info(ts, '2', 'update_metadata')
+        res_ts = self.db.update_metadata(ts, mode='pedantic', exclude_keys=['extra1', 'extra2', 'utc_convertible'])
+        assert res_ts.live
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        # attr value remains the same
+        assert res['npts'] == 123
+        # add one elog entry
+        assert len(ts.elog.get_error_log()) == 12
+        ts.put('npts', 255)
+
+        # test pedantic(normal key) -> fail
         old_sampling_rate = ts['sampling_rate']
         ts.put_string('sampling_rate', 'xyz')
         logging_helper.info(ts, '2', 'update_metadata')
         res_ts = self.db.update_metadata(ts, mode='pedantic', exclude_keys=['extra1', 'extra2', 'utc_convertible'])
         # this test probably should be testing if ts is dead
-        assert res_ts.live
+        assert not res_ts.live
         res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
         # attr value remains the same
         assert res['sampling_rate'] == old_sampling_rate
         # add two more log error to the elog
-        assert len(ts.elog.get_error_log()) == 8
+        assert len(ts.elog.get_error_log()) == 14
 
-        # test pedantic(defined key) -> success
+        # test pedantic(normal key) -> success
+        ts.live = True
         ts.put_string('sampling_rate', '5.0')
         logging_helper.info(ts, '2', 'update_metadata')
         res_ts = self.db.update_metadata(ts, mode='pedantic', exclude_keys=['extra1', 'extra2', 'utc_convertible'])
@@ -385,7 +432,7 @@ class TestDatabase():
         # attr value remains the same
         assert res['sampling_rate'] == 5.0
         # add two more log error to the elog
-        assert len(ts.elog.get_error_log()) == 10
+        assert len(ts.elog.get_error_log()) == 16
         ts.put('sampling_rate', 20.0)
 
         # test pedantic(schema undefined key)
@@ -397,7 +444,15 @@ class TestDatabase():
         # can add attribute to the database
         assert 'extra4' not in res
         # add 1 more log error to the elog
-        assert len(ts.elog.get_error_log()) == 11
+        assert len(ts.elog.get_error_log()) == 17
+
+        # test _id which we can't find the corresponding document in database
+        ts['_id'] = ObjectId()
+        res_ts = self.db.update_metadata(ts)
+        # should insert a document into wf collection
+        res = self.db['wf_TimeSeries'].find_one({'_id': ts['_id']})
+        assert ts.live
+        assert res
 
         # test tmatrix attribute when update seismogram
         test_seis = get_live_seismogram()

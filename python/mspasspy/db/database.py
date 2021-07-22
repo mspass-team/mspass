@@ -1838,12 +1838,13 @@ class Database(pymongo.database.Database):
             # A weird construct
             wf_collection_name=save_schema.collection('_id')
         wf_collection=self[wf_collection_name]
-        #One last check.  Make sure a document with the _id in mspass_object
-        # exists.  If it doesn't exist, throw an error would be more consistent with the logic above
-        # The kill may be excessively brutal
+        # One last check.  Make sure a document with the _id in mspass_object
+        # exists.  If it doesn't exist, post an elog about this
         test_doc = wf_collection.find_one({'_id' : wfid})
         if not test_doc:    # find_one returns None if find fails 
-            raise MsPASSError(alg_name + ": update is not possible because the id in this data object is not in associated wf collection", 'Fatal')
+            mspass_object.elog.log_error('Database.update_metadata',
+                                'Cannot find the document in the wf collection by the _id field in the object',
+                                ErrorSeverity.Complaint)
         # FIXME starttime will be automatically created in this function
         self._sync_metadata_before_update(mspass_object)
 
@@ -1921,18 +1922,28 @@ class Database(pymongo.database.Database):
                                 insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
                                 new_value=insertion_dict[k]
                                 message='Had to convert type of data with key='+k+' from '+str(type(old_value))+' to '+str(type(new_value))
-                                mspass_object.elog.log_error(alg_name,message,ErrorSeverity.Complaint)
+                                mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
                             except Exception as err:
                                 message = 'Cannot update data with key=' + k +'\n'
-                                if save_schema.is_required(k):
-                                    message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
+                                if mode == 'pedantic':
+                                    # pedantic mode
+                                    mspass_object.kill()
+                                    message += 'pedantic mode error: key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
                                 else:
-                                    message += ' Value stored has type=' + str(type(copied_metadata[k])) + ' which cannot be converted to type=' + str(save_schema.type(k)) + '\n'
+                                    # cautious mode
+                                    if save_schema.is_required(k):
+                                        mspass_object.kill()
+                                        message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
+                                    else:
+                                        message += ' Value stored has type=' + str(type(copied_metadata[k])) + ' which cannot be converted to type=' + str(save_schema.type(k)) + '\n'
                                 message += 'Data for this key will not be changed or set in the database'
                                 message += '\nPython error exception message caught:\n'
                                 message += str(err)
-                                mspass_object.elog.log_error(alg_name,
-                                           message,ErrorSeverity.Complaint)
+                                # post elog entry into the mspass_object
+                                if mode == 'pedantic' or save_schema.is_required(k):
+                                    mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
+                                else:
+                                    mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
                                 # The None arg2 cause pop to not throw
                                 # an exception if k isn't defined - a bit ambigous in the try block
                                 insertion_dict.pop(k,None)
@@ -1946,9 +1957,12 @@ class Database(pymongo.database.Database):
                               'key='+k+' is not defined in the schema.  Updating record, but this may cause downstream problems',
                               ErrorSeverity.Complaint)
                             insertion_dict[k]=copied_metadata[k]
+        
         # ugly python indentation with this logic.  We always land here in
         # any mode when we've passed over the entire metadata dict
-        wf_collection.update_one({'_id' : wfid},{'$set': insertion_dict})
+        # if it is dead, it's considered something really bad happens, we should not update the object
+        if mspass_object.live:
+            wf_collection.update_one({'_id' : wfid},{'$set': insertion_dict}, upsert=True)
         return mspass_object
     
     def update_data(self,mspass_object,collection=None, mode='cautious',
