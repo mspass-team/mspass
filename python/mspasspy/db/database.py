@@ -7,20 +7,17 @@ import copy
 import pathlib
 import pickle
 import struct
-import sys
 import urllib.request
 from array import array
 
 import dask.bag as daskbag
 import gridfs
 import pymongo
-from bson.objectid import ObjectId
 import numpy as np
 import obspy
 from obspy import Inventory
 from obspy import UTCDateTime
 
-import mspasspy.util.converter
 from mspasspy.ccore.io import _mseed_file_indexer
 
 from mspasspy.ccore.seismic import (TimeSeries,
@@ -89,7 +86,7 @@ def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_h
       manages schduling.  See online Spark documentation for details on
       this concept.
     :type spark_context: :class:`pyspark.SparkContext`
-    :param npartitions: The number of desired partitions for Dask or the number 
+    :param npartitions: The number of desired partitions for Dask or the number
       of slices for Spark. By default Dask will use 100 and Spark will determine
       it automatically based on the cluster.
     :type npartitions: :class:`int`
@@ -173,6 +170,9 @@ class Database(pymongo.database.Database):
         return ret
 
     def __setstate__(self, data):
+        # somewhat weird that this import is requiired here but it won't
+        # work without it.  Not sure how the symbol MongoClient is required
+        # here but it is - ignore if a lint like ide says MongoClient is not used
         from pymongo import MongoClient
         data['_Database__client'] = eval(data['_Database__client'])
         self.__dict__.update(data)
@@ -395,7 +395,6 @@ class Database(pymongo.database.Database):
                 md[k] = b'\x00'
             else:
                 md[k] = None
-
         if object_type is TimeSeries:
             # FIXME: This is awkward. Need to revisit when we have proper constructors.
             mspass_object = TimeSeries({k: md[k] for k in md}, np.ndarray([0], dtype=np.float64))
@@ -438,8 +437,10 @@ class Database(pymongo.database.Database):
 
         return mspass_object
 
-    def save_data(self, mspass_object, mode="promiscuous", storage_mode='gridfs', dir=None, dfile=None, format=None,
-                exclude_keys=None, collection=None, data_tag=None, alg_name='save_data', alg_id='0'):
+    def save_data(self, mspass_object, mode="promiscuous",
+            storage_mode='gridfs', dir=None, dfile=None, format=None, overwrite=False,
+                exclude_keys=None, collection=None, data_tag=None,
+                  alg_name='save_data', alg_id='0'):
         """
         Use this method to save an atomic data object (TimeSeries or Seismogram)
         to be managed with MongoDB.  The Metadata are stored as documents in
@@ -449,7 +450,8 @@ class Database(pymongo.database.Database):
         performance of file system io versus gridfs, but our working hypothesis
         is the answer of which is faster will be configuration dependent. In
         either case the goal of this function is to make a save operation as
-        simple as possible.
+        simple as possible by abstracting the complications involved in
+        the actual save.
 
         Any errors messages held in the object being saved are always
         written to documents in MongoDB is a special collection defined in
@@ -465,6 +467,37 @@ class Database(pymongo.database.Database):
         find only the windowed data in that situation could be challenging
         or impossible.  Hence, we recommend a data tag always be used for
         most saves.
+
+        The mode parameter needs to be understood by all users of this 
+        function.  All modes enforce a schema constraint for "readonly"
+        attributes.   An immutable (readonly) attribute by definition 
+        should not be changed during processing.   During a save 
+        all attributes with a key defined as readonly are tested 
+        with a method in the Metadata container that keeps track of 
+        any Metadata changes.  If a readonly attribute is found to 
+        have been changed it will be renamed with the prefix
+        "READONLYERROR_", saved, and an error posted (e.g. if you try 
+        to alter site_lat (a readonly attribute) in a workflow when 
+        you save the waveform you will find an entry with the key 
+        READONERROR_site_lat.)   In the default 'promiscuous' mode 
+        all other attributes are blindly saved to the database as 
+        name value pairs with no safeties.  In 'cautious' mode we 
+        add a type check.  If the actual type of an attribute does not 
+        match what the schema expect, this method will try to fix the 
+        type error before saving the data.  If the conversion is 
+        successful it will be saved with a complaint error posted 
+        to elog.  If it fails, the attribute will not be saved, an 
+        additional error message will be posted, and the save 
+        algorithm continues.  In 'pedantic' mode, in contrast, all 
+        type errors are considered to invalidate the data.  
+        Similar error messages to that in 'cautious' mode are posted 
+        but any type errors will cause the datum passed as arg 0 
+        to be killed. The lesson is saves can leave entries that 
+        may need to be examined in elog and when really bad will 
+        cause the datum to be marked dead after the save.  
+
+        This method can throw an exception but only for errors in 
+        usage (i.e. arguments defined incorrectly)
 
         :param mspass_object: the object you want to save.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
@@ -507,8 +540,18 @@ class Database(pymongo.database.Database):
           assumes means to store the data in its raw binary form.  The default
           should normally be used for efficiency.  Alternate formats are
           primarily a simple export mechanism.  See the User's manual for
-          more details on data export.
+          more details on data export.  Used only for "file" storage mode.
         :type format: :class:`str`
+        :param overwrite:  If true gridfs data linked to the original
+          waveform will be replaced by the sample data from this save.
+          Default is false, and should be the normal use.  This option
+          should never be used after a reduce operator as the parents
+          are not tracked and the space advantage is likely minimal for
+          the confusion it would cause.   This is most useful for light, stable
+          preprocessing with a set of map operators to regularize a data
+          set before more extensive processing.  It can only be used when
+          storage_mode is set to gridfs.
+        :type overwrite:  boolean
         :param exclude_keys: Metadata can often become contaminated with
           attributes that are no longer needed or a mismatch with the data.
           A type example is the bundle algorithm takes three TimeSeries
@@ -532,6 +575,7 @@ class Database(pymongo.database.Database):
         :param data_tag: a user specified "data_tag" key.  See above and
           User's manual for guidance on how the use of this option.
         :type data_tag: :class:`str`
+        :return: Data object as saved (if killed it will be dead)
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -575,44 +619,231 @@ class Database(pymongo.database.Database):
         else:
             save_schema = schema.Seismogram
 
-        update_res_code = -1
+        # should define wf_collection here because if the mspass_object is dead
+        if collection:
+            wf_collection_name=collection
+        else:
+            # This returns a string that is the collection name for this atomic data type
+            # A weird construct
+            wf_collection_name=save_schema.collection('_id')
+        wf_collection=self[wf_collection_name]
+         
         if mspass_object.live:
-            # 1. save metadata, with update mode
-            update_res_code = self._update_metadata(mspass_object, mode, exclude_keys, collection, True, data_tag, alg_name, alg_id, True)
+            if exclude_keys is None:
+                exclude_keys = []
 
-            if mspass_object.live:
-                # 2. save actual data in file/gridfs mode
-                wf_collection = save_schema.collection('_id') if not collection else collection
-                col = self[wf_collection]
-                object_doc = col.find_one({'_id': mspass_object['_id']})
-                filter_ = {'_id': mspass_object['_id']}
-                update_dict = {'storage_mode': storage_mode}
+            # FIXME starttime will be automatically created in this function
+            self._sync_metadata_before_update(mspass_object)
 
-                if storage_mode == "file":
-                    foff, nbytes = self._save_data_to_dfile(mspass_object, dir, dfile, format=format)
-                    update_dict['dir'] = dir
-                    update_dict['dfile'] = dfile
-                    update_dict['foff'] = foff
-                    if format:
-                        update_dict['nbytes'] = nbytes
-                        update_dict['format'] = format
-                elif storage_mode == "gridfs":
-                    old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
-                    gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
-                    update_dict['gridfs_id'] = gridfs_id
+            # This method of Metadata returns a list of all
+            # attributes that were changed after creation of the
+            # object to which they are attached.
+            changed_key_list=mspass_object.modified()
+
+            copied_metadata = Metadata(mspass_object)
+
+            # clear all the aliases
+            #TODO  check for potential bug in handling clear_aliases
+            # and modified method - i.e. keys returned by modified may be
+            # aliases
+            save_schema.clear_aliases(copied_metadata)
+
+            # remove any values with only spaces
+            for k in copied_metadata:
+                if not str(copied_metadata[k]).strip():
+                    copied_metadata.erase(k)
+
+            # remove any defined items in exclude list
+            for k in exclude_keys:
+                if k in copied_metadata:
+                    copied_metadata.erase(k)
+            # the special mongodb key _id is currently set readonly in 
+            # the mspass schema.  It would be cleard in the following loop
+            # but it is better to not depend on that external constraint. 
+            # The reason is the insert_one used below for wf collections 
+            # will silently update an existing record if the _id key 
+            # is present in the update record.  We want this method 
+            # to always save the current copy with a new id and so 
+            # we make sure we clear it
+            if '_id' in copied_metadata:
+                copied_metadata.erase('_id')
+            # Now remove any readonly data
+            for k in copied_metadata.keys():
+                if save_schema.is_defined(k):
+                    if save_schema.readonly(k):
+                        if k in changed_key_list:
+                            newkey='READONLYERROR_'+k
+                            copied_metadata.change_key(k,newkey)
+                            mspass_object.elog.log_error('Database.save_data',
+                                'readonly attribute with key='+k+' was improperly modified.  Saved changed value with key='+newkey,
+                                ErrorSeverity.Complaint)
+                        else:
+                            copied_metadata.erase(k)
+            # Done editing, now we convert copied_metadata to a python dict
+            # using this Metadata method or the long version when in cautious or pedantic mode
+            insertion_dict = dict()
+            if mode == "promiscuous":
+                # A python dictionary can use Metadata as a constructor due to
+                # the way the bindings were defined
+                insertion_dict = dict(copied_metadata)
+            else:
+                # Other modes have to test every key and type of value
+                # before continuing.  pedantic kills data with any problems
+                # Cautious tries to fix the problem first
+                # Note many errors can be posted - one for each problem key-value pair
+                for k in copied_metadata:
+                    if save_schema.is_defined(k):
+                        if isinstance(copied_metadata[k], save_schema.type(k)):
+                            insertion_dict[k]=copied_metadata[k]
+                        else:
+                            if mode == 'pedantic':
+                                mspass_object.kill()
+                                message ='pedantic mode error:  key='+k
+                                value=copied_metadata[k]
+                                message += ' type of stored value='+str(type(value))+' does not match schema expectation='+str(save_schema.type(k))
+                                mspass_object.elog.log_error('Database.save_data',
+                                    'message',ErrorSeverity.Invalid)
+                            else:
+                                # Careful if another mode is added here.  else means cautious in this logic
+                                 try:
+                                     # The following convert the actual value in a dict to a required type.
+                                     # This is because the return of type() is the class reference.
+                                     insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
+                                 except Exception as err:
+                                     #  cannot convert required keys -> kill the object
+                                     if save_schema.is_required(k):
+                                        mspass_object.kill()
+                                        message = 'cautious mode error:  key=' + k
+                                        message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k]))
+                                        message += '\nPython error exception message caught:\n'
+                                        message += str(err)
+                                        mspass_object.elog.log_error('Database.save',
+                                           message, ErrorSeverity.Invalid)
+                                    # cannot convert normal keys -> erase the key
+                                    # TODO should we post a Complaint entry to the elog?
+                                     else:
+                                        copied_metadata.erase(k)
+
+        # Note we jump here immediately if mspass_object was marked dead
+        # on entry.  Data can, however, be killed in metadata section
+        # above so we need repeat the test for live
+        if mspass_object.live:
+            insertion_dict['storage_mode']=storage_mode
+            gridfs_id = None
+
+            if storage_mode == "file":
+                # TODO:  be sure this can't throw an exception
+                foff, nbytes = self._save_data_to_dfile(mspass_object, dir, dfile, format=format)
+                insertion_dict['dir'] = dir
+                insertion_dict['dfile'] = dfile
+                insertion_dict['foff'] = foff
+                if format:
+                    insertion_dict['nbytes'] = nbytes
+                    insertion_dict['format'] = format
+            elif storage_mode == "gridfs":
+                if overwrite and 'gridfs_id' in insertion_dict:
+                    gridfs_id = self._save_data_to_gridfs(mspass_object, insertion_dict['gridfs_id'])
+                else:
+                    gridfs_id = self._save_data_to_gridfs(mspass_object)
+                insertion_dict['gridfs_id'] = gridfs_id
                 #TODO will support url mode later
                 #elif storage_mode == "url":
                 #    pass
-                col.update_one(filter_, {'$set': update_dict})
+            
+            # save history if not empty
+            history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+            history_object_id = None
+            if mspass_object.is_empty():
+                # Use this trick in update_metadata too. None is needed to 
+                # avoid a TypeError exception if the name is not defined. 
+                # could do this with a conditional as an alternative
+                insertion_dict.pop(history_obj_id_name,None)
+            else:
+                # optional history save - only done if history container is not empty
+                history_object_id = self._save_history(mspass_object, alg_name, alg_id)
+                insertion_dict[history_obj_id_name] = history_object_id
+            
+            # add tag
+            if data_tag:
+                insertion_dict['data_tag']=data_tag
+            else:
+                # We need to clear data tag if was previously defined in
+                # this case or a the old tag will be saved with this datum
+                if 'data_tag' in insertion_dict:
+                    insertion_dict.erase('data_tag')
+            # We don't want an elog_id in the insertion at this point.  
+            # A option to consider is if we need an update after _save_elog 
+            # section below to post elog_id back.
+
+
+            # test will fail here because there might be some Complaint elog post to the wf above
+            # we need to save the elog and get the elog_id
+            # then associate with the wf document so that we could insert in the wf_collection
+            
+            # save elogs if the size of elog is greater than 0
+            elog_id = None
+            if mspass_object.elog.size() > 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                elog_id = self._save_elog(mspass_object, elog_id=None)  # elog ids will be updated in the wf col when saving metadata
+                insertion_dict[elog_id_name] = elog_id
+
+            # finally ready to insert the wf doc - keep the id as we'll need
+            # it for tagging any elog entries
+            wfid = wf_collection.insert_one(insertion_dict).inserted_id
+            # Put wfid into the object's meta as the new definition of 
+            # the parent of this waveform
+            mspass_object['_id'] = wfid
+
+            # we may probably set the gridfs_id field in the mspass_object
+            if gridfs_id:
+                mspass_object['gridfs_id'] = gridfs_id
+            # we may probably set the history_object_id field in the mspass_object
+            if history_object_id:
+                mspass_object[history_obj_id_name] = history_object_id
+            # we may probably set the elog_id field in the mspass_object
+            if elog_id:
+                mspass_object[elog_id_name] = elog_id
+
+            # Empty error logs are skipped.  When nonzero tag them with tid
+            # just returned
+            if mspass_object.elog.size() > 0:
+                # elog_id_name = self.database_schema.default_name('elog') + '_id'
+                # _save_elog uses a  null id as a signal to add a new record
+                # When we land here the record must be new since it is
+                # associated with a new wf document.  elog_id=None is default
+                # but set it explicitly for clarity
+
+                # This is comment out becuase we need to save it before inserting into the wf_collection
+                # elog_id = self._save_elog(mspass_object, elog_id=None)
+                
+                # cross reference for elog entry, assoicate the wfid to the elog entry
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection_name + '_id'
+                filter_ = {'_id': insertion_dict[elog_id_name]}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+            # When history is enable we need to do an update to put the
+            # wf collection id as a cross-reference.    Any value stored
+            # above with saave_history may be incorrect.  We use a
+            # stock test with the is_empty method for know if history data is present
+            if not mspass_object.is_empty():
+                history_object_col = self[self.database_schema.default_name('history_object')]
+                wf_id_name = wf_collection_name + '_id'
+                filter_ = {'_id': history_object_id}
+                update_dict={wf_id_name : wfid}
+                history_object_col.update_one(filter_, {'$set': update_dict})
 
         else:
-            # FIXME: we could have recorded the full stack here, but need to revise the logger object
-            # to make it more powerful for Python logging.
-            mspass_object.elog.log_verbose(
-                sys._getframe().f_code.co_name, "Skipped saving dead object")
-            self._save_elog(mspass_object)
+            # We land here when the input is dead or was killed during a
+            # cautious or pedantic mode edit of the metadata.
+            elog_id_name = self.database_schema.default_name('elog') + '_id'
+            if elog_id_name in mspass_object:
+                old_elog_id=mspass_object[elog_id_name]
+            else:
+                old_elog_id=None
+            elog_id = self._save_elog(mspass_object,elog_id=old_elog_id)
+        # Both live and dead data land here.   
+        return mspass_object
 
-        return update_res_code
 
     # clean the collection fixing any type errors and removing any aliases using the schema currently defined for self
     def clean_collection(self, collection='wf', query=None,
@@ -680,7 +911,6 @@ class Database(pymongo.database.Database):
         if rename_undefined is None:
             rename_undefined = {}
 
-        print_messages = []
         fixed_cnt = {}
         # fix the queried documents in the collection
         col = self[self.database_schema.default_name(collection)]
@@ -1301,7 +1531,6 @@ class Database(pymongo.database.Database):
             else:
                 raise MsPASSError('check_links:  illegal value for normalize arg=' + xref_key + ' should be in the form of xxx_id', 'Fatal')
 
-            dbnorm=self[normalize]
             dbwf=self[wf_collection]
             n=dbwf.count_documents(wfquery)
             if n==0:
@@ -1338,7 +1567,7 @@ class Database(pymongo.database.Database):
 
         return tuple([bad_id_list,missing_id_list])
 
-    def _check_attribute_types(self, collection="wf_TimeSeries", query=None, verbose=False, error_limit=1000):
+    def _check_attribute_types(self, collection, query=None, verbose=False, error_limit=1000):
         """
         This function checks the integrity of all attributes
         found in a specfied collection.  It is designed to detect two
@@ -1518,229 +1747,393 @@ class Database(pymongo.database.Database):
                 break
         return tuple([wrong_types,undef])
 
-    def update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
-                        data_tag=None, alg_name='update_metadata', alg_id='0'):
+    def update_metadata(self, mspass_object, collection=None, mode='cautious',
+                exclude_keys=None, force_keys=None, alg_name='Database.update_metadata'):
         """
-        Use this method to update an atomic data object (TimeSeries or Seismogram)
-        to be managed with MongoDB.  The Metadata are stored as documents in
-        a MongoDB collection. It basically call the internal _update_metadata method
-        which is used by save_data as well.
+        Use this method if you want to save the output of a processing algorithm
+        whose output is only posted to metadata.   That can be something as
+        simple as a little python function that does some calculations on other
+        metadata field, or as elaborate as a bound FORTRAN or C/C++ function
+        that computes something, posts the results to Metadata, but doesn't
+        actually alter the sample data.   A type example of the later is an amplitude
+        calculation that posts the computed amplitude to some metadata key value.
+
+        This method will ONLY attempt to update Metadata attributes stored in the
+        data passed (mspass_object) that have been marked as having been
+        changed since creation of the data object.  The default mode will
+        check entries against the schema and attempt to fix any type
+        mismatches (mode=='cautious' for this algorithm).  In cautious or
+        pedantic mode this method can end up posting a lot of errors in
+        elog for data object (mspass_object) being handled.  In
+        promiscuous mode there are no safeties and the any values
+        that are defined in Metadata as having been changed will be
+        posted as an update to the parent wf document to the data object.
+
+        A feature of the schema that is considered an unbreakable rule is
+        that any attribute marked "readonly" in the schema cannot by 
+        definition be updated with this method.  It utilizes the same 
+        method for handling this as the save_data method.  That is, 
+        for all "mode" parameters if an key is defined in the schema as 
+        readonly and it is listed as having been modified, it will 
+        be save with a new key creating by adding the prefix 
+        "READONLYERROR_" .  e.g. if we had a site_sta read as 
+        'AAK' but we changed it to 'XYZ' in a workflow, when we tried 
+        to save the data you will find an entry in the document 
+        of {'READONLYERROR_site_sta' : 'XYZ'}
 
         :param mspass_object: the object you want to update.
         :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
-        :type mode: :class:`str`
         :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
         :type exclude_keys: a :class:`list` of :class:`str`
+        :param force_keys: a list of metadata attributes you want to force 
+         to be updated.   Normally this method will only update attributes 
+         that have been marked as changed since creation of the parent data 
+         object.  If data with these keys is found in the mspass_object they 
+         will be added to the update record.
+        :type force_keys: a :class:`list` of :class:`str`
         :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
-        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.
-        :param data_tag: a user specified "data_tag" key to tag the saved wf document.
-        :type data_tag: :class:`str`
+        :param mode: This parameter defines how attributes defines how
+          strongly to enforce schema constraints. As described above
+          'promiscuous' justs updates all changed values with no schema
+          tests.  'cautious', the default, enforces type constraints and
+          tries to convert easily fixed type mismatches (e.g. int to floats
+          of vice versa).  Both 'cautious' and 'pedantic' may leave one or
+          more complaint message in the elog of mspass_object on how the
+          method did or did not fix mismatches with the schema.  Both
+          also will drop any key-value pairs where the value cannot be
+          converted to the type defined in the schema.
+
+        :type mode: :class:`str`
         :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
         :type alg_name: :class:`str`
         :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
         :type alg_id: :class:`bson.objectid.ObjectId`
-        """
-        return self._update_metadata(mspass_object, mode, exclude_keys, collection, ignore_metadata_changed_test, data_tag, alg_name, alg_id, False)
-
-    def _update_metadata(self, mspass_object, mode='promiscuous', exclude_keys=None, collection=None, ignore_metadata_changed_test=False,
-                        data_tag=None, alg_name='_update_metadata', alg_id='0', is_save_data=False):
-        """
-        Stores attributes stored in the Metadata container of an object in
-        MongoDB wih optional schema enforcement.
-
-        The user should recognize that this method is a fairly low level
-        method used by internally in save_data and would rarely be of use
-        for other applications.   The main use would be to only update
-        or save the Metadata container and not create a new copy of the
-        waveform data.
-
-        :param mspass_object: the object you want to update.
-        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
-        :param mode: reading mode regarding schema checks, should be one of ['promiscuous','cautious','pedantic']
-        :type mode: :class:`str`
-        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
-        :type exclude_keys: a :class:`list` of :class:`str`
-        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
-        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.
-        :param data_tag: a user specified "data_tag" key to tag the saved wf document.
-        :type data_tag: :class:`str`
-        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
-        :type alg_name: :class:`str`
-        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
-        :type alg_id: :class:`bson.objectid.ObjectId`
-        :param is_save_data: True if it is called by save_data method, otherwise it only updates metadata
-        :type is_save_data: :class:`bool`
+        :return: mspass_object data.  Normally this is an unaltered copy 
+          of the data passed through mspass_object.  If there are errors, 
+          however, the elog will contain new messages.  Note any such 
+          messages are volatile and will not be saved to the database 
+          until the save_data method is called. 
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
-            raise TypeError("only TimeSeries and Seismogram are supported")
-
-        if mode not in ['promiscuous', 'cautious', 'pedantic']:
-            raise MsPASSError('only promiscuous, cautious and pedantic are supported, but {} is requested.'.format(mode), 'Fatal')
-
+            raise TypeError(alg_name+":  only TimeSeries and Seismogram are supported\nReceived data of type="+str(type(mspass_object)))
+        # Return a None immediately if the data is marked dead - signal it did nothing
+        if mspass_object.dead():
+            return None
         if exclude_keys is None:
             exclude_keys = []
+        if mode not in ['promiscuous', 'cautious', 'pedantic']:
+            raise MsPASSError(alg_name+': only promiscuous, cautious and pedantic are supported, but {} was requested.'.format(mode), 'Fatal')
+        if isinstance(mspass_object, TimeSeries):
+            save_schema = self.metadata_schema.TimeSeries
+        else:
+            save_schema = self.metadata_schema.Seismogram
+        if '_id' in mspass_object:
+            wfid=mspass_object['_id']
+        else:
+            raise MsPASSError(alg_name + ': input data object is missing required waveform object id value (_id) - update is not possible without it','Fatal')
+        if collection:
+            wf_collection_name=collection
+        else:
+            # This returns a string that is the collection name for this atomic data type
+            # A weird construct
+            wf_collection_name=save_schema.collection('_id')
+        wf_collection=self[wf_collection_name]
+        # One last check.  Make sure a document with the _id in mspass_object
+        # exists.  If it doesn't exist, post an elog about this
+        test_doc = wf_collection.find_one({'_id' : wfid})
+        if not test_doc:    # find_one returns None if find fails 
+            mspass_object.elog.log_error('Database.update_metadata',
+                                'Cannot find the document in the wf collection by the _id field in the object',
+                                ErrorSeverity.Complaint)
+        # FIXME starttime will be automatically created in this function
+        self._sync_metadata_before_update(mspass_object)
 
-        has_fatal_error = False
-        non_fatal_error_cnt = 0
-        if mspass_object.live:
-            schema = self.metadata_schema
-            if isinstance(mspass_object, TimeSeries):
-                update_metadata_def = schema.TimeSeries
-            else:
-                update_metadata_def = schema.Seismogram
+        # This method of Metadata returns a list of all
+        # attributes that were changed after creation of the
+        # object to which they are attached.
+        changed_key_list=mspass_object.modified()
+        if force_keys:
+            for k in force_keys:
+                changed_key_list.add(k)
+        copied_metadata = Metadata(mspass_object)
 
-            wf_collection = update_metadata_def.collection('_id') if not collection else collection
-            col = self[wf_collection]
-            object_doc = None
+        # clear all the aliases
+        #TODO  check for potential bug in handling clear_aliases
+        # and modified method - i.e. keys returned by modified may be
+        # aliases
+        save_schema.clear_aliases(copied_metadata)
 
-            new_insertion = False
-            if '_id' not in mspass_object:
-                new_insertion = True
+        # remove any values with only spaces
+        for k in copied_metadata:
+            if not str(copied_metadata[k]).strip():
+                copied_metadata.erase(k)
 
-            if not new_insertion:
-                object_doc = col.find_one({'_id': mspass_object['_id']})
-                # can't find the corresponding record in collection, then we treat it as new insertion if it is called from save_data
-                # if update metadata only, only promiscuous mode is allowed and we treat it as new insertion as well
-                if not object_doc:
-                    # eliminate _id field if it is saved
-                    if not is_save_data and (mode == "cautious" or mode == "pedantic"):
-                        raise MsPASSError('Can not find the record with _id: {} in {} collection under {} mode.'.format(mspass_object['_id'], wf_collection, mode), 'Fatal')
-                    del mspass_object['_id']
-                    new_insertion = True
-
-            # 1. create the dict of metadata to be saved in wf
-            insert_dict = {}
-
-            # FIXME starttime will be automatically created in this function
-            self._sync_metadata_before_update(mspass_object)
-
-            copied_metadata = Metadata(mspass_object)
-
-            # clear all the aliases
-            update_metadata_def.clear_aliases(copied_metadata)
-
+        # remove any defined items in exclude list
+        for k in exclude_keys:
+            if k in copied_metadata:
+                copied_metadata.erase(k)
+        # Now remove any readonly data
+        for k in copied_metadata.keys():
+            if k == '_id':
+                continue
+            if save_schema.is_defined(k):
+                if save_schema.readonly(k):
+                    if k in changed_key_list:
+                        newkey='READONLYERROR_'+k
+                        copied_metadata.change_key(k,newkey)
+                        mspass_object.elog.log_error('Database.update_metadata',
+                                'readonly attribute with key='+k+' was improperly modified.  Saved changed value with key='+newkey,
+                                ErrorSeverity.Complaint)
+                    else:
+                        copied_metadata.erase(k)
+        # Done editing, now we convert copied_metadata to a python dict
+        # using this Metadata method or the long version when in cautious or pedantic mode
+        insertion_dict = dict()
+        if mode == "promiscuous":
+            # In this case we blindly update all entries that show
+            # as modified that aren't in the exclude list
+            for k in changed_key_list:
+                if k in copied_metadata:
+                    insertion_dict[k]=copied_metadata[k]
+        else:
+            # Other modes have to test every key and type of value
+            # before continuing.  pedantic logs an error for all problems
+            # Both attempt to fix type mismatches before update.  Cautious
+            # is silent unless the type problem cannot be repaired.  In that
+            # case both will not attempt to update the offending key-value
+            # Note many errors can be posted - one for each problem key-value pair
             for k in copied_metadata:
-                if not str(copied_metadata[k]).strip():
-                    copied_metadata.erase(k)
-
-            for k in copied_metadata:
-                # not update the keys in exclude_keys parameter
-                if k in exclude_keys:
-                    continue
-
-                # only update data marked as modified
-                if not ignore_metadata_changed_test and k not in copied_metadata.modified():
-                    continue
-
-                # read-only attributes are not supposed to be updated
-                if update_metadata_def.is_defined(k) and update_metadata_def.readonly(k):
-                    # id could not be updated
-                    if k == '_id':
-                        continue
-                    # normal attribute is read only but can change the attribute to be ERROR_attribute
-                    # to prevent dropping error attribute and make original attribute intact
-                    mspass_object.elog.log_error('update_metadata',
-                            "attribute {} is read only and cannot be updated, but the attribute is saved as READONLYERROR_{}".format(k, k),
-                            ErrorSeverity.Informational)
-                    non_fatal_error_cnt += 1
-                    READONLYERROR_k = "READONLYERROR_" + k
-                    copied_metadata.change_key(k, READONLYERROR_k)
-                    k = READONLYERROR_k
-
-                # save metadata to wf with blocks for write modes ("promiscuous", "cautious", and "pedantic')
-                # promiscuous(no schema check at all)
-                if mode == "promiscuous":
-                    insert_dict[k] = copied_metadata[k]
-                    continue
-
-                # cautious/pedantic(both need schema check)
-                if update_metadata_def.is_defined(k):
-                    # cautious mode: try to fix the required attributes whose types are mismatch with the schema
-                    if mode == "cautious":
-                        # try to convert the mismatch metadata attribute
-                        if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
+                if k in changed_key_list:
+                    if save_schema.is_defined(k):
+                        if isinstance(copied_metadata[k], save_schema.type(k)):
+                            insertion_dict[k]=copied_metadata[k]
+                        else:
+                            if mode == 'pedantic':
+                                message ='pedantic mode error:  key='+k
+                                value=copied_metadata[k]
+                                message += ' type of stored value='+str(type(value))+' does not match schema expectation=' + str(save_schema.type(k)) + '\nAttempting to correct type mismatch'
+                                mspass_object.elog.log_error(alg_name,
+                                    message,ErrorSeverity.Complaint)
+                            # Note we land here for both pedantic and cautious but not promiscuous
                             try:
                                 # The following convert the actual value in a dict to a required type.
                                 # This is because the return of type() is the class reference.
-                                insert_dict[k] = update_metadata_def.type(k)(copied_metadata[k])
+                                old_value=copied_metadata[k]
+                                insertion_dict[k] = save_schema.type(k)(copied_metadata[k])
+                                new_value=insertion_dict[k]
+                                message='Had to convert type of data with key='+k+' from '+str(type(old_value))+' to '+str(type(new_value))
+                                mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
                             except Exception as err:
-                                # update is not aborted, but mark the mspass object as dead
-                                if update_metadata_def.is_required(k):
-                                    mspass_object.elog.log_error('update_metadata',
-                                        "cautious mode: Required attribute {} has type {}, forbidden by definition and unable to convert".format(k, type(copied_metadata[k])),
-                                        ErrorSeverity.Invalid)
-                                    has_fatal_error = True
+                                message = 'Cannot update data with key=' + k +'\n'
+                                if mode == 'pedantic':
+                                    # pedantic mode
                                     mspass_object.kill()
-
+                                    message += 'pedantic mode error: key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
+                                else:
+                                    # cautious mode
+                                    if save_schema.is_required(k):
+                                        mspass_object.kill()
+                                        message += ' Required key value could not be converted to required type='+str(save_schema.type(k))+' actual type='+str(type(copied_metadata[k])) + ', the object is killed'
+                                    else:
+                                        message += ' Value stored has type=' + str(type(copied_metadata[k])) + ' which cannot be converted to type=' + str(save_schema.type(k)) + '\n'
+                                message += 'Data for this key will not be changed or set in the database'
+                                message += '\nPython error exception message caught:\n'
+                                message += str(err)
+                                # post elog entry into the mspass_object
+                                if mode == 'pedantic' or save_schema.is_required(k):
+                                    mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Invalid)
+                                else:
+                                    mspass_object.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
+                                # The None arg2 cause pop to not throw
+                                # an exception if k isn't defined - a bit ambigous in the try block
+                                insertion_dict.pop(k,None)
+                    else:
+                        if mode == 'pedantic':
+                            mspass_object.elog.log_error(alg_name,
+                              'cannot update data with key='+k+' because it is not defined in the schema',
+                              ErrorSeverity.Complaint)
                         else:
-                            # otherwise, we could update this attribute in the metadata
-                            insert_dict[k] = copied_metadata[k]
-
-                    # pedantic mode: any type mismatch could end up killing the mspass object
-                    elif mode == "pedantic":
-                        if not isinstance(copied_metadata[k], update_metadata_def.type(k)):
-                            mspass_object.elog.log_error('update_metadata',
-                                "pedantic mode: attribute {} has type {}, forbidden by definition".format(k, type(copied_metadata[k])),
-                                ErrorSeverity.Invalid)
-                            has_fatal_error = True
-                            mspass_object.kill()
-                        else:
-                            # otherwise, we could update this attribute in the metadata
-                            insert_dict[k] = copied_metadata[k]
-
-            if mspass_object.live:
-                # 2. save/update history
-                if not mspass_object.is_empty():
-                    history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
-                    history_object_id = self._save_history(mspass_object, alg_name, alg_id)
-                    insert_dict.update({history_obj_id_name: history_object_id})
-
-                # 3. save/update error logs
-                if mspass_object.elog.size() != 0:
-                    elog_id_name = self.database_schema.default_name('elog') + '_id'
-                    old_elog_id = None if new_insertion or not object_doc or elog_id_name not in object_doc else object_doc[elog_id_name]
-                    elog_id = self._save_elog(mspass_object, old_elog_id)  # elog ids will be updated in the wf col when saving metadata
-                    insert_dict.update({elog_id_name: elog_id})
-
-                # add user defined data_tag
-                if data_tag:
-                    insert_dict['data_tag'] = data_tag
-                if '_id' not in copied_metadata:  # new_insertion
-                    mspass_object['_id'] = col.insert_one(insert_dict).inserted_id
-                else:
-                    filter_ = {'_id': copied_metadata['_id']}
-                    col.update_one(filter_, {'$set': insert_dict})
-
-                # 4. need to save the wf_id back to elog entry if this is an insert
-                if new_insertion and mspass_object.elog.size() != 0:
-                    elog_col = self[self.database_schema.default_name('elog')]
-                    wf_id_name = wf_collection + '_id'
-                    filter_ = {'_id': elog_id}
-                    elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
-
-                # 5. need to save the wf_id back to history_object entry if this is an insert
-                if new_insertion and not mspass_object.is_empty():
-                    history_object_col = self[self.database_schema.default_name('history_object')]
-                    wf_id_name = wf_collection + '_id'
-                    filter_ = {'_id': history_object_id}
-                    history_object_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
-            else:
-                # save the metadata in tombstone as an elog entry
-                mspass_object.elog.log_verbose(
-                sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
-                self._save_elog(mspass_object)
-
+                            mspass_object.elog.log_error(alg_name,
+                              'key='+k+' is not defined in the schema.  Updating record, but this may cause downstream problems',
+                              ErrorSeverity.Complaint)
+                            insertion_dict[k]=copied_metadata[k]
+        
+        # ugly python indentation with this logic.  We always land here in
+        # any mode when we've passed over the entire metadata dict
+        # if it is dead, it's considered something really bad happens, we should not update the object
+        if mspass_object.live:
+            wf_collection.update_one({'_id' : wfid},{'$set': insertion_dict}, upsert=True)
+        return mspass_object
+    
+    def update_data(self,mspass_object,collection=None, mode='cautious',
+                exclude_keys=None, force_keys=None, 
+                alg_id='0',alg_name='Database.update_data'):
+        """
+        Updates both metadata and sample data corresponding to an input data 
+        object.  
+        
+        Since storage of data objects in MsPASS is broken into multiple 
+        collections and storage methods, doing a full data update has some 
+        complexity.   This method handles the problem differently for the 
+        different pieces:
+            1. An update is performed on the parent wf collection document. 
+               That update makes use of the related Database method
+               called update_metadata. 
+            2. If the error log is not empty it is saved.  
+            3. If the history container has contents it is saved.
+            4. The sample data is the thorniest problem. Currently this
+               method will only do sample updates for data stored in 
+               the mongodb gridfs system.   With files containing multiple 
+               waveforms it would be necessary to append to the files and 
+               this could create a blaat problem with large data sets so 
+               we do not currently support that type of update. 
+        
+        :param mspass_object: the object you want to update.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.
+        :type exclude_keys: a :class:`list` of :class:`str`
+        :param force_keys: a list of metadata attributes you want to force 
+         to be updated.   Normally this method will only update attributes 
+         that have been marked as changed since creation of the parent data 
+         object.  If data with these keys is found in the mspass_object they 
+         will be added to the update record.
+        :type force_keys: a :class:`list` of :class:`str`
+        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.
+        :param mode: This parameter defines how attributes defines how
+          strongly to enforce schema constraints. As described above
+          'promiscuous' justs updates all changed values with no schema
+          tests.  'cautious', the default, enforces type constraints and
+          tries to convert easily fixed type mismatches (e.g. int to floats
+          of vice versa).  Both 'cautious' and 'pedantic' may leave one or
+          more complaint message in the elog of mspass_object on how the
+          method did or did not fix mismatches with the schema.  Both
+          also will drop any key-value pairs where the value cannot be
+          converted to the type defined in the schema.
+        :type mode: :class:`str`
+        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+          (defaults to 'Database.update_data' and should not normally need to be changed)
+        :type alg_name: :class:`str`
+        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :return: mspass_object data.  Normally this is an unaltered copy 
+          of the data passed through mspass_object.  If there are errors, 
+          however, the elog will contain new messages.  All such messages, 
+          howevever, should be saved in the elog collection because elog 
+          is the last collection updated.
+        """
+        schema = self.metadata_schema
+        if isinstance(mspass_object, TimeSeries):
+            save_schema = schema.TimeSeries
         else:
-            # FIXME: we could have recorded the full stack here, but need to revise the logger object
-            # to make it more powerful for Python logging.
-            mspass_object.elog.log_verbose(
-                sys._getframe().f_code.co_name, "Skipped updating the metadata of a dead object")
-            self._save_elog(mspass_object)
+            save_schema = schema.Seismogram
+        # First update metadata.  update_metadata will throw an exception 
+        # only for usage errors.   We test the elog size to check if there
+        # are other warning messages and add a summary if there were any
+        logsize0 = mspass_object.elog.size()
+        try:
+            self.update_metadata(mspass_object,collection=collection,
+                    mode=mode,exclude_keys=exclude_keys,force_keys=force_keys,
+                    alg_name=alg_name)
+        except:
+            raise
+        logsize = mspass_object.elog.size()
+        # A bit verbose, but we post this warning to make it clear the 
+        # problem originated from update_data - probably not really needed 
+        # but better to be though I think
+        if logsize > logsize0:
+            mspass_object.elog.log_error(alg_name,
+                'update_metadata posted {nerr} messages during update'.format(nerr=(logsize-logsize0)),
+                 ErrorSeverity.Complaint)
+        
+        # optional handle history - we need to update the wf record later with this value 
+        # if it is set
+        update_record=dict()
+        history_obj_id_name = self.database_schema.default_name('history_object') + '_id'
+        history_object_id = None 
+        if not mspass_object.is_empty():
+            history_object_id = self._save_history(mspass_object, alg_name, alg_id)
+            update_record[history_obj_id_name]=history_object_id
+           
+        # Now handle update of sample data.  The gridfs method used here 
+        # handles that correctly based on the gridfs id.  
+        if mspass_object.live:
+            if 'storage_mode' in mspass_object:
+                storage_mode=mspass_object['storage_mode']
+                if not storage_mode == 'gridfs':
+                    mspass_object.elog.log_error(alg_name,
+                        'found storage_mode='+storage_mode+'  Only support update to gridfs.  Changing to gridfs storage for sample data update',
+                        ErrorSeverity.Complaint)
+                    mspass_object['storage_mode']='gridfs'
+            else:
+                mspass_object.elog.log_error(alg_name,
+                    'storage_mode attribute was not set in Metadata of this object - setting as gridfs for update',
+                    ErrorSeverity.Complaint)
+                mspass_object['storage_mode']='gridfs'
+                update_record['storage_mode']='gridfs'
+            # This logic depends upon a feature of _save_data_to_gridfs.
+            # if the gridfs_id parameter is defined it does an update
+            # when it is not defined it creates a new gridfs "file". In both 
+            # cases the id needed to get the right datum is returned
+            if 'gridfs_id' in mspass_object:
+                gridfs_id = self._save_data_to_gridfs(mspass_object, mspass_object['gridfs_id'])
+            else:
+                gridfs_id = self._save_data_to_gridfs(mspass_object)
+            mspass_object['gridfs_id'] = gridfs_id
+            # There is a possible efficiency gain right here.  Not sure if 
+            # gridfs_id is altered when the sample data are updated in place.
+            # if we can be sure the returned gridfs_id is the same as the 
+            #input in that case, we would omit gridfs_id from the update 
+            # record and most data would not require the final update 
+            # transaction below
+            update_record['gridfs_id'] = gridfs_id
+            # should define wf_collection here because if the mspass_object is dead
+            if collection:
+                 wf_collection_name=collection
+            else:
+                # This returns a string that is the collection name for this atomic data type
+                # A weird construct
+                wf_collection_name=save_schema.collection('_id')
+            wf_collection=self[wf_collection_name]
 
-        if has_fatal_error:
-            return -1
-        return non_fatal_error_cnt
+            elog_id = None
+            if mspass_object.elog.size() > 0:
+                elog_id_name = self.database_schema.default_name('elog') + '_id'
+                # FIXME I think here we should check if elog_id field exists in the mspass_object
+                # and we should update the elog entry if mspass_object already had one
+                if elog_id_name in mspass_object:
+                    old_elog_id=mspass_object[elog_id_name]
+                else:
+                    old_elog_id=None
+                elog_id = self._save_elog(mspass_object, elog_id=old_elog_id)  # elog ids will be updated in the wf col when saving metadata
+                update_record[elog_id_name] = elog_id
+                
+                # update elog collection
+                # we have to do the xref to wf collection like this too
+                elog_col = self[self.database_schema.default_name('elog')]
+                wf_id_name = wf_collection_name + '_id'
+                filter_ = {'_id': elog_id}
+                elog_col.update_one(filter_, {'$set': {wf_id_name: mspass_object['_id']}})
+            # finally we need to update the wf document if we set anything 
+            # in update_record
+            if len(update_record):
+                filter_={'_id' : mspass_object['_id']}
+                wf_collection.update_one(filter_,{'$set' : update_record})
+                # we may probably set the elog_id field in the mspass_object
+                if elog_id:
+                    mspass_object[elog_id_name] = elog_id
+                # we may probably set the history_object_id field in the mspass_object
+                if history_object_id:
+                    mspass_object[history_obj_id_name] = history_object_id
+        else:
+            # Dead data land here
+            elog_id_name = self.database_schema.default_name('elog') + '_id'
+            if elog_id_name in mspass_object:
+                old_elog_id=mspass_object[elog_id_name]
+            else:
+                old_elog_id=None
+            elog_id = self._save_elog(mspass_object,elog_id=old_elog_id)
+
+        return mspass_object
 
     def read_ensemble_data(self, objectid_list, ensemble_metadata={},
       mode='promiscuous', normalize=None, load_history=False,
@@ -1877,7 +2270,7 @@ class Database(pymongo.database.Database):
             raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
     def update_ensemble_metadata(self, ensemble_object, mode='promiscuous', exclude_keys=None, exclude_objects=None,
-                                 collection=None, ignore_metadata_changed_test=False, data_tag=None, alg_name='update_ensemble_metadata', alg_id='0'):
+                                 collection=None, alg_name='update_ensemble_metadata', alg_id='0'):
         """
         Updates (or save if it's new) the mspasspy ensemble object, including saving the processing history, elogs
         and metadata attributes.
@@ -1911,10 +2304,10 @@ class Database(pymongo.database.Database):
             exclude_objects = []
 
         for i in range(len(ensemble_object.member)):
-            if i not in exclude_objects:
-                self._update_metadata(ensemble_object.member[i], mode=mode, exclude_keys=exclude_keys, collection=collection, 
-                                    ignore_metadata_changed_test=ignore_metadata_changed_test, data_tag=data_tag, alg_name=alg_name,
-                                    alg_id=alg_id, is_save_data=False)
+            # Skip data listed for exclusion and those that are marked dead
+            if i not in exclude_objects and ensemble_object.member[i].live:
+                self.update_metadata(ensemble_object.member[i], mode=mode, exclude_keys=exclude_keys, collection=collection,
+                                     alg_name=alg_name)
 
     def delete_data(self, object_id, object_type, remove_unreferenced_files=False,
        clear_history=True, clear_elog=True):
@@ -2237,7 +2630,7 @@ class Database(pymongo.database.Database):
             alg_id = current_nodedata.algid
         if not alg_name:
             alg_name = current_nodedata.algorithm
-        
+
         history_binary = pickle.dumps(proc_history)
         # todo save jobname jobid when global history module is done
         try:
@@ -2849,7 +3242,12 @@ class Database(pymongo.database.Database):
                     # del chanrec['serialized_inventory']
                     for chan in chans:
                         chanrec['chan'] = chan.code
-                        chanrec['vang'] = chan.dip
+			# the Dip attribute in a stationxml file 
+			# is like strike-dip and relative to horizontal
+			# line with positive down.  vang is the 
+			# css30 attribute that is spherical coordinate 
+			# theta angle
+                        chanrec['vang'] = chan.dip + 90.0
                         chanrec['hang'] = chan.azimuth
                         chanrec['edepth'] = chan.depth
                         st = chan.start_date
@@ -2992,7 +3390,6 @@ class Database(pymongo.database.Database):
         if (matchsize == 0):
             return None
         else:
-            stations = dbsite.find(query)
             if (matchsize > 1):
                 print("get_seed_site (WARNING):  query=", query)
                 print("Returned ", matchsize, " documents - should be exactly one")

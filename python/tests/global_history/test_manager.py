@@ -373,9 +373,9 @@ class TestManager():
             assert ts.current_nodedata().algid == str(alg_id)
             assert ts.is_volatile()
 
-        save_res_code = manager_db.save_data(spark_res[0], alg_name='filter', alg_id=str(alg_id))
+        save_res = manager_db.save_data(spark_res[0], alg_name='filter', alg_id=str(alg_id))
         # hardcode net, sta, net, loc to avoid serialization problem here, they are readonly metadata keys -> non fatal keys = 4
-        assert save_res_code == 4
+        assert save_res.live
         assert manager_db['history_object'].count_documents({'alg_name': 'filter'}) == 1
         doc = manager_db['history_object'].find_one({'alg_name': 'filter'})
         assert doc
