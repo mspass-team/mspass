@@ -194,20 +194,17 @@
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">from</span> <span class="nn">array</span> <span class="kn">import</span> <span class="n">array</span>
 
 <span class="kn">import</span> <span class="nn">dask.bag</span> <span class="k">as</span> <span class="nn">daskbag</span>
 <span class="kn">import</span> <span class="nn">gridfs</span>
 <span class="kn">import</span> <span class="nn">pymongo</span>
-<span class="kn">from</span> <span class="nn">bson.objectid</span> <span class="kn">import</span> <span class="n">ObjectId</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">obspy</span>
 <span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">Inventory</span>
 <span class="kn">from</span> <span class="nn">obspy</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
 
-<span class="kn">import</span> <span class="nn">mspasspy.util.converter</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.io</span> <span class="kn">import</span> <span class="n">_mseed_file_indexer</span>
 
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span>
@@ -276,7 +273,7 @@
 <span class="sd">      manages schduling.  See online Spark documentation for details on</span>
 <span class="sd">      this concept.</span>
 <span class="sd">    :type spark_context: :class:`pyspark.SparkContext`</span>
-<span class="sd">    :param npartitions: The number of desired partitions for Dask or the number </span>
+<span class="sd">    :param npartitions: The number of desired partitions for Dask or the number</span>
 <span class="sd">      of slices for Spark. By default Dask will use 100 and Spark will determine</span>
 <span class="sd">      it automatically based on the cluster.</span>
 <span class="sd">    :type npartitions: :class:`int`</span>
@@ -360,6 +357,9 @@
         <span class="k">return</span> <span class="n">ret</span>
 
     <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c1"># somewhat weird that this import is requiired here but it won&#39;t</span>
+        <span class="c1"># work without it.  Not sure how the symbol MongoClient is required</span>
+        <span class="c1"># here but it is - ignore if a lint like ide says MongoClient is not used</span>
         <span class="kn">from</span> <span class="nn">pymongo</span> <span class="kn">import</span> <span class="n">MongoClient</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;_Database__client&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;_Database__client&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -582,7 +582,6 @@
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-
         <span class="k">if</span> <span class="n">object_type</span> <span class="ow">is</span> <span class="n">TimeSeries</span><span class="p">:</span>
             <span class="c1"># FIXME: This is awkward. Need to revisit when we have proper constructors.</span>
             <span class="n">mspass_object</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">md</span><span class="p">},</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
@@ -625,8 +624,10 @@
 
         <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-<div class="viewcode-block" id="Database.save_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span> <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;save_data&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.save_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;promiscuous&quot;</span><span class="p">,</span>
+            <span class="n">storage_mode</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span><span class="p">,</span> <span class="nb">dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;save_data&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use this method to save an atomic data object (TimeSeries or Seismogram)</span>
 <span class="sd">        to be managed with MongoDB.  The Metadata are stored as documents in</span>
@@ -636,7 +637,8 @@
 <span class="sd">        performance of file system io versus gridfs, but our working hypothesis</span>
 <span class="sd">        is the answer of which is faster will be configuration dependent. In</span>
 <span class="sd">        either case the goal of this function is to make a save operation as</span>
-<span class="sd">        simple as possible.</span>
+<span class="sd">        simple as possible by abstracting the complications involved in</span>
+<span class="sd">        the actual save.</span>
 
 <span class="sd">        Any errors messages held in the object being saved are always</span>
 <span class="sd">        written to documents in MongoDB is a special collection defined in</span>
@@ -652,6 +654,37 @@
 <span class="sd">        find only the windowed data in that situation could be challenging</span>
 <span class="sd">        or impossible.  Hence, we recommend a data tag always be used for</span>
 <span class="sd">        most saves.</span>
+
+<span class="sd">        The mode parameter needs to be understood by all users of this </span>
+<span class="sd">        function.  All modes enforce a schema constraint for &quot;readonly&quot;</span>
+<span class="sd">        attributes.   An immutable (readonly) attribute by definition </span>
+<span class="sd">        should not be changed during processing.   During a save </span>
+<span class="sd">        all attributes with a key defined as readonly are tested </span>
+<span class="sd">        with a method in the Metadata container that keeps track of </span>
+<span class="sd">        any Metadata changes.  If a readonly attribute is found to </span>
+<span class="sd">        have been changed it will be renamed with the prefix</span>
+<span class="sd">        &quot;READONLYERROR_&quot;, saved, and an error posted (e.g. if you try </span>
+<span class="sd">        to alter site_lat (a readonly attribute) in a workflow when </span>
+<span class="sd">        you save the waveform you will find an entry with the key </span>
+<span class="sd">        READONERROR_site_lat.)   In the default &#39;promiscuous&#39; mode </span>
+<span class="sd">        all other attributes are blindly saved to the database as </span>
+<span class="sd">        name value pairs with no safeties.  In &#39;cautious&#39; mode we </span>
+<span class="sd">        add a type check.  If the actual type of an attribute does not </span>
+<span class="sd">        match what the schema expect, this method will try to fix the </span>
+<span class="sd">        type error before saving the data.  If the conversion is </span>
+<span class="sd">        successful it will be saved with a complaint error posted </span>
+<span class="sd">        to elog.  If it fails, the attribute will not be saved, an </span>
+<span class="sd">        additional error message will be posted, and the save </span>
+<span class="sd">        algorithm continues.  In &#39;pedantic&#39; mode, in contrast, all </span>
+<span class="sd">        type errors are considered to invalidate the data.  </span>
+<span class="sd">        Similar error messages to that in &#39;cautious&#39; mode are posted </span>
+<span class="sd">        but any type errors will cause the datum passed as arg 0 </span>
+<span class="sd">        to be killed. The lesson is saves can leave entries that </span>
+<span class="sd">        may need to be examined in elog and when really bad will </span>
+<span class="sd">        cause the datum to be marked dead after the save.  </span>
+
+<span class="sd">        This method can throw an exception but only for errors in </span>
+<span class="sd">        usage (i.e. arguments defined incorrectly)</span>
 
 <span class="sd">        :param mspass_object: the object you want to save.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
@@ -694,8 +727,18 @@
 <span class="sd">          assumes means to store the data in its raw binary form.  The default</span>
 <span class="sd">          should normally be used for efficiency.  Alternate formats are</span>
 <span class="sd">          primarily a simple export mechanism.  See the User&#39;s manual for</span>
-<span class="sd">          more details on data export.</span>
+<span class="sd">          more details on data export.  Used only for &quot;file&quot; storage mode.</span>
 <span class="sd">        :type format: :class:`str`</span>
+<span class="sd">        :param overwrite:  If true gridfs data linked to the original</span>
+<span class="sd">          waveform will be replaced by the sample data from this save.</span>
+<span class="sd">          Default is false, and should be the normal use.  This option</span>
+<span class="sd">          should never be used after a reduce operator as the parents</span>
+<span class="sd">          are not tracked and the space advantage is likely minimal for</span>
+<span class="sd">          the confusion it would cause.   This is most useful for light, stable</span>
+<span class="sd">          preprocessing with a set of map operators to regularize a data</span>
+<span class="sd">          set before more extensive processing.  It can only be used when</span>
+<span class="sd">          storage_mode is set to gridfs.</span>
+<span class="sd">        :type overwrite:  boolean</span>
 <span class="sd">        :param exclude_keys: Metadata can often become contaminated with</span>
 <span class="sd">          attributes that are no longer needed or a mismatch with the data.</span>
 <span class="sd">          A type example is the bundle algorithm takes three TimeSeries</span>
@@ -719,6 +762,7 @@
 <span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key.  See above and</span>
 <span class="sd">          User&#39;s manual for guidance on how the use of this option.</span>
 <span class="sd">        :type data_tag: :class:`str`</span>
+<span class="sd">        :return: Data object as saved (if killed it will be dead)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
@@ -762,44 +806,231 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">save_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
 
-        <span class="n">update_res_code</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># should define wf_collection here because if the mspass_object is dead</span>
+        <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">collection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
+            <span class="c1"># A weird construct</span>
+            <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+        <span class="n">wf_collection</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
+         
         <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="c1"># 1. save metadata, with update mode</span>
-            <span class="n">update_res_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">data_tag</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">exclude_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">exclude_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="c1"># 2. save actual data in file/gridfs mode</span>
-                <span class="n">wf_collection</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span> <span class="k">else</span> <span class="n">collection</span>
-                <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
-                <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
-                <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}</span>
-                <span class="n">update_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">:</span> <span class="n">storage_mode</span><span class="p">}</span>
+            <span class="c1"># FIXME starttime will be automatically created in this function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sync_metadata_before_update</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
-                    <span class="n">foff</span><span class="p">,</span> <span class="n">nbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_dfile</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
-                    <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
-                    <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
-                    <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;foff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foff</span>
-                    <span class="k">if</span> <span class="nb">format</span><span class="p">:</span>
-                        <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;nbytes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbytes</span>
-                        <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span>
-                <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
-                    <span class="n">old_gridfs_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="s1">&#39;gridfs_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="k">else</span> <span class="n">object_doc</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span>
-                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">old_gridfs_id</span><span class="p">)</span>
-                    <span class="n">update_dict</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
+            <span class="c1"># This method of Metadata returns a list of all</span>
+            <span class="c1"># attributes that were changed after creation of the</span>
+            <span class="c1"># object to which they are attached.</span>
+            <span class="n">changed_key_list</span><span class="o">=</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">modified</span><span class="p">()</span>
+
+            <span class="n">copied_metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+
+            <span class="c1"># clear all the aliases</span>
+            <span class="c1">#TODO  check for potential bug in handling clear_aliases</span>
+            <span class="c1"># and modified method - i.e. keys returned by modified may be</span>
+            <span class="c1"># aliases</span>
+            <span class="n">save_schema</span><span class="o">.</span><span class="n">clear_aliases</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
+
+            <span class="c1"># remove any values with only spaces</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+            <span class="c1"># remove any defined items in exclude list</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                    <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># the special mongodb key _id is currently set readonly in </span>
+            <span class="c1"># the mspass schema.  It would be cleard in the following loop</span>
+            <span class="c1"># but it is better to not depend on that external constraint. </span>
+            <span class="c1"># The reason is the insert_one used below for wf collections </span>
+            <span class="c1"># will silently update an existing record if the _id key </span>
+            <span class="c1"># is present in the update record.  We want this method </span>
+            <span class="c1"># to always save the current copy with a new id and so </span>
+            <span class="c1"># we make sure we clear it</span>
+            <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+            <span class="c1"># Now remove any readonly data</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changed_key_list</span><span class="p">:</span>
+                            <span class="n">newkey</span><span class="o">=</span><span class="s1">&#39;READONLYERROR_&#39;</span><span class="o">+</span><span class="n">k</span>
+                            <span class="n">copied_metadata</span><span class="o">.</span><span class="n">change_key</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">newkey</span><span class="p">)</span>
+                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Database.save_data&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;readonly attribute with key=&#39;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; was improperly modified.  Saved changed value with key=&#39;</span><span class="o">+</span><span class="n">newkey</span><span class="p">,</span>
+                                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="c1"># Done editing, now we convert copied_metadata to a python dict</span>
+            <span class="c1"># using this Metadata method or the long version when in cautious or pedantic mode</span>
+            <span class="n">insertion_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;promiscuous&quot;</span><span class="p">:</span>
+                <span class="c1"># A python dictionary can use Metadata as a constructor due to</span>
+                <span class="c1"># the way the bindings were defined</span>
+                <span class="n">insertion_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Other modes have to test every key and type of value</span>
+                <span class="c1"># before continuing.  pedantic kills data with any problems</span>
+                <span class="c1"># Cautious tries to fix the problem first</span>
+                <span class="c1"># Note many errors can be posted - one for each problem key-value pair</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                            <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">:</span>
+                                <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                                <span class="n">message</span> <span class="o">=</span><span class="s1">&#39;pedantic mode error:  key=&#39;</span><span class="o">+</span><span class="n">k</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39; type of stored value=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; does not match schema expectation=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+                                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Database.save_data&#39;</span><span class="p">,</span>
+                                    <span class="s1">&#39;message&#39;</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="c1"># Careful if another mode is added here.  else means cautious in this logic</span>
+                                 <span class="k">try</span><span class="p">:</span>
+                                     <span class="c1"># The following convert the actual value in a dict to a required type.</span>
+                                     <span class="c1"># This is because the return of type() is the class reference.</span>
+                                     <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                                     <span class="c1">#  cannot convert required keys -&gt; kill the object</span>
+                                     <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                                        <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;cautious mode error:  key=&#39;</span> <span class="o">+</span> <span class="n">k</span>
+                                        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39; Required key value could not be converted to required type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; actual type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span>
+                                        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Python error exception message caught:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                        <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Database.save&#39;</span><span class="p">,</span>
+                                           <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                                    <span class="c1"># cannot convert normal keys -&gt; erase the key</span>
+                                    <span class="c1"># TODO should we post a Complaint entry to the elog?</span>
+                                     <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># Note we jump here immediately if mspass_object was marked dead</span>
+        <span class="c1"># on entry.  Data can, however, be killed in metadata section</span>
+        <span class="c1"># above so we need repeat the test for live</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">storage_mode</span>
+            <span class="n">gridfs_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;file&quot;</span><span class="p">:</span>
+                <span class="c1"># TODO:  be sure this can&#39;t throw an exception</span>
+                <span class="n">foff</span><span class="p">,</span> <span class="n">nbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_dfile</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">dfile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dir</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;dfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfile</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;foff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foff</span>
+                <span class="k">if</span> <span class="nb">format</span><span class="p">:</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;nbytes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbytes</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">format</span>
+            <span class="k">elif</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">&quot;gridfs&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="s1">&#39;gridfs_id&#39;</span> <span class="ow">in</span> <span class="n">insertion_dict</span><span class="p">:</span>
+                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
                 <span class="c1">#TODO will support url mode later</span>
                 <span class="c1">#elif storage_mode == &quot;url&quot;:</span>
                 <span class="c1">#    pass</span>
-                <span class="n">col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">})</span>
+            
+            <span class="c1"># save history if not empty</span>
+            <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+            <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+                <span class="c1"># Use this trick in update_metadata too. None is needed to </span>
+                <span class="c1"># avoid a TypeError exception if the name is not defined. </span>
+                <span class="c1"># could do this with a conditional as an alternative</span>
+                <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">history_obj_id_name</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># optional history save - only done if history container is not empty</span>
+                <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+            
+            <span class="c1"># add tag</span>
+            <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="s1">&#39;data_tag&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">data_tag</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We need to clear data tag if was previously defined in</span>
+                <span class="c1"># this case or a the old tag will be saved with this datum</span>
+                <span class="k">if</span> <span class="s1">&#39;data_tag&#39;</span> <span class="ow">in</span> <span class="n">insertion_dict</span><span class="p">:</span>
+                    <span class="n">insertion_dict</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s1">&#39;data_tag&#39;</span><span class="p">)</span>
+            <span class="c1"># We don&#39;t want an elog_id in the insertion at this point.  </span>
+            <span class="c1"># A option to consider is if we need an update after _save_elog </span>
+            <span class="c1"># section below to post elog_id back.</span>
+
+
+            <span class="c1"># test will fail here because there might be some Complaint elog post to the wf above</span>
+            <span class="c1"># we need to save the elog and get the elog_id</span>
+            <span class="c1"># then associate with the wf document so that we could insert in the wf_collection</span>
+            
+            <span class="c1"># save elogs if the size of elog is greater than 0</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
+                <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+
+            <span class="c1"># finally ready to insert the wf doc - keep the id as we&#39;ll need</span>
+            <span class="c1"># it for tagging any elog entries</span>
+            <span class="n">wfid</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insertion_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
+            <span class="c1"># Put wfid into the object&#39;s meta as the new definition of </span>
+            <span class="c1"># the parent of this waveform</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">wfid</span>
+
+            <span class="c1"># we may probably set the gridfs_id field in the mspass_object</span>
+            <span class="k">if</span> <span class="n">gridfs_id</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
+            <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
+            <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+            <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
+            <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+
+            <span class="c1"># Empty error logs are skipped.  When nonzero tag them with tid</span>
+            <span class="c1"># just returned</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># elog_id_name = self.database_schema.default_name(&#39;elog&#39;) + &#39;_id&#39;</span>
+                <span class="c1"># _save_elog uses a  null id as a signal to add a new record</span>
+                <span class="c1"># When we land here the record must be new since it is</span>
+                <span class="c1"># associated with a new wf document.  elog_id=None is default</span>
+                <span class="c1"># but set it explicitly for clarity</span>
+
+                <span class="c1"># This is comment out becuase we need to save it before inserting into the wf_collection</span>
+                <span class="c1"># elog_id = self._save_elog(mspass_object, elog_id=None)</span>
+                
+                <span class="c1"># cross reference for elog entry, assoicate the wfid to the elog entry</span>
+                <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)]</span>
+                <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">insertion_dict</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]}</span>
+                <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
+            <span class="c1"># When history is enable we need to do an update to put the</span>
+            <span class="c1"># wf collection id as a cross-reference.    Any value stored</span>
+            <span class="c1"># above with saave_history may be incorrect.  We use a</span>
+            <span class="c1"># stock test with the is_empty method for know if history data is present</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+                <span class="n">history_object_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)]</span>
+                <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
+                <span class="n">update_dict</span><span class="o">=</span><span class="p">{</span><span class="n">wf_id_name</span> <span class="p">:</span> <span class="n">wfid</span><span class="p">}</span>
+                <span class="n">history_object_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">update_dict</span><span class="p">})</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># FIXME: we could have recorded the full stack here, but need to revise the logger object</span>
-            <span class="c1"># to make it more powerful for Python logging.</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="s2">&quot;Skipped saving dead object&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+            <span class="c1"># We land here when the input is dead or was killed during a</span>
+            <span class="c1"># cautious or pedantic mode edit of the metadata.</span>
+            <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+            <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                <span class="n">old_elog_id</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">old_elog_id</span><span class="o">=</span><span class="kc">None</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span><span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">)</span>
+        <span class="c1"># Both live and dead data land here.   </span>
+        <span class="k">return</span> <span class="n">mspass_object</span></div>
 
-        <span class="k">return</span> <span class="n">update_res_code</span></div>
 
     <span class="c1"># clean the collection fixing any type errors and removing any aliases using the schema currently defined for self</span>
 <div class="viewcode-block" id="Database.clean_collection"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.clean_collection">[docs]</a>    <span class="k">def</span> <span class="nf">clean_collection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;wf&#39;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -867,7 +1098,6 @@
         <span class="k">if</span> <span class="n">rename_undefined</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">rename_undefined</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="n">print_messages</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">fixed_cnt</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># fix the queried documents in the collection</span>
         <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="n">collection</span><span class="p">)]</span>
@@ -1488,7 +1718,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;check_links:  illegal value for normalize arg=&#39;</span> <span class="o">+</span> <span class="n">xref_key</span> <span class="o">+</span> <span class="s1">&#39; should be in the form of xxx_id&#39;</span><span class="p">,</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
 
-            <span class="n">dbnorm</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">normalize</span><span class="p">]</span>
             <span class="n">dbwf</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
             <span class="n">n</span><span class="o">=</span><span class="n">dbwf</span><span class="o">.</span><span class="n">count_documents</span><span class="p">(</span><span class="n">wfquery</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">n</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -1525,7 +1754,7 @@
 
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">bad_id_list</span><span class="p">,</span><span class="n">missing_id_list</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">_check_attribute_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="s2">&quot;wf_TimeSeries&quot;</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check_attribute_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function checks the integrity of all attributes</span>
 <span class="sd">        found in a specfied collection.  It is designed to detect two</span>
@@ -1705,229 +1934,393 @@
                 <span class="k">break</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">wrong_types</span><span class="p">,</span><span class="n">undef</span><span class="p">])</span>
 
-<div class="viewcode-block" id="Database.update_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">update_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_metadata_changed_test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;update_metadata&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Database.update_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">update_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cautious&#39;</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;Database.update_metadata&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Use this method to update an atomic data object (TimeSeries or Seismogram)</span>
-<span class="sd">        to be managed with MongoDB.  The Metadata are stored as documents in</span>
-<span class="sd">        a MongoDB collection. It basically call the internal _update_metadata method</span>
-<span class="sd">        which is used by save_data as well.</span>
+<span class="sd">        Use this method if you want to save the output of a processing algorithm</span>
+<span class="sd">        whose output is only posted to metadata.   That can be something as</span>
+<span class="sd">        simple as a little python function that does some calculations on other</span>
+<span class="sd">        metadata field, or as elaborate as a bound FORTRAN or C/C++ function</span>
+<span class="sd">        that computes something, posts the results to Metadata, but doesn&#39;t</span>
+<span class="sd">        actually alter the sample data.   A type example of the later is an amplitude</span>
+<span class="sd">        calculation that posts the computed amplitude to some metadata key value.</span>
+
+<span class="sd">        This method will ONLY attempt to update Metadata attributes stored in the</span>
+<span class="sd">        data passed (mspass_object) that have been marked as having been</span>
+<span class="sd">        changed since creation of the data object.  The default mode will</span>
+<span class="sd">        check entries against the schema and attempt to fix any type</span>
+<span class="sd">        mismatches (mode==&#39;cautious&#39; for this algorithm).  In cautious or</span>
+<span class="sd">        pedantic mode this method can end up posting a lot of errors in</span>
+<span class="sd">        elog for data object (mspass_object) being handled.  In</span>
+<span class="sd">        promiscuous mode there are no safeties and the any values</span>
+<span class="sd">        that are defined in Metadata as having been changed will be</span>
+<span class="sd">        posted as an update to the parent wf document to the data object.</span>
+
+<span class="sd">        A feature of the schema that is considered an unbreakable rule is</span>
+<span class="sd">        that any attribute marked &quot;readonly&quot; in the schema cannot by </span>
+<span class="sd">        definition be updated with this method.  It utilizes the same </span>
+<span class="sd">        method for handling this as the save_data method.  That is, </span>
+<span class="sd">        for all &quot;mode&quot; parameters if an key is defined in the schema as </span>
+<span class="sd">        readonly and it is listed as having been modified, it will </span>
+<span class="sd">        be save with a new key creating by adding the prefix </span>
+<span class="sd">        &quot;READONLYERROR_&quot; .  e.g. if we had a site_sta read as </span>
+<span class="sd">        &#39;AAK&#39; but we changed it to &#39;XYZ&#39; in a workflow, when we tried </span>
+<span class="sd">        to save the data you will find an entry in the document </span>
+<span class="sd">        of {&#39;READONLYERROR_site_sta&#39; : &#39;XYZ&#39;}</span>
 
 <span class="sd">        :param mspass_object: the object you want to update.</span>
 <span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">        :param mode: reading mode regarding schema checks, should be one of [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;]</span>
-<span class="sd">        :type mode: :class:`str`</span>
 <span class="sd">        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.</span>
 <span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param force_keys: a list of metadata attributes you want to force </span>
+<span class="sd">         to be updated.   Normally this method will only update attributes </span>
+<span class="sd">         that have been marked as changed since creation of the parent data </span>
+<span class="sd">         object.  If data with these keys is found in the mspass_object they </span>
+<span class="sd">         will be added to the update record.</span>
+<span class="sd">        :type force_keys: a :class:`list` of :class:`str`</span>
 <span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
-<span class="sd">        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.</span>
-<span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to tag the saved wf document.</span>
-<span class="sd">        :type data_tag: :class:`str`</span>
+<span class="sd">        :param mode: This parameter defines how attributes defines how</span>
+<span class="sd">          strongly to enforce schema constraints. As described above</span>
+<span class="sd">          &#39;promiscuous&#39; justs updates all changed values with no schema</span>
+<span class="sd">          tests.  &#39;cautious&#39;, the default, enforces type constraints and</span>
+<span class="sd">          tries to convert easily fixed type mismatches (e.g. int to floats</span>
+<span class="sd">          of vice versa).  Both &#39;cautious&#39; and &#39;pedantic&#39; may leave one or</span>
+<span class="sd">          more complaint message in the elog of mspass_object on how the</span>
+<span class="sd">          method did or did not fix mismatches with the schema.  Both</span>
+<span class="sd">          also will drop any key-value pairs where the value cannot be</span>
+<span class="sd">          converted to the type defined in the schema.</span>
+
+<span class="sd">        :type mode: :class:`str`</span>
 <span class="sd">        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
 <span class="sd">        :type alg_name: :class:`str`</span>
 <span class="sd">        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
 <span class="sd">        :type alg_id: :class:`bson.objectid.ObjectId`</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="p">,</span> <span class="n">ignore_metadata_changed_test</span><span class="p">,</span> <span class="n">data_tag</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_update_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_metadata_changed_test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;_update_metadata&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">is_save_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Stores attributes stored in the Metadata container of an object in</span>
-<span class="sd">        MongoDB wih optional schema enforcement.</span>
-
-<span class="sd">        The user should recognize that this method is a fairly low level</span>
-<span class="sd">        method used by internally in save_data and would rarely be of use</span>
-<span class="sd">        for other applications.   The main use would be to only update</span>
-<span class="sd">        or save the Metadata container and not create a new copy of the</span>
-<span class="sd">        waveform data.</span>
-
-<span class="sd">        :param mspass_object: the object you want to update.</span>
-<span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
-<span class="sd">        :param mode: reading mode regarding schema checks, should be one of [&#39;promiscuous&#39;,&#39;cautious&#39;,&#39;pedantic&#39;]</span>
-<span class="sd">        :type mode: :class:`str`</span>
-<span class="sd">        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.</span>
-<span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
-<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
-<span class="sd">        :param ignore_metadata_changed_test: if specify as ``True``, we do not check the whether attributes we want to update are in the Metadata.modified() set. Default to be ``False``.</span>
-<span class="sd">        :param data_tag: a user specified &quot;data_tag&quot; key to tag the saved wf document.</span>
-<span class="sd">        :type data_tag: :class:`str`</span>
-<span class="sd">        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
-<span class="sd">        :type alg_name: :class:`str`</span>
-<span class="sd">        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
-<span class="sd">        :type alg_id: :class:`bson.objectid.ObjectId`</span>
-<span class="sd">        :param is_save_data: True if it is called by save_data method, otherwise it only updates metadata</span>
-<span class="sd">        :type is_save_data: :class:`bool`</span>
+<span class="sd">        :return: mspass_object data.  Normally this is an unaltered copy </span>
+<span class="sd">          of the data passed through mspass_object.  If there are errors, </span>
+<span class="sd">          however, the elog will contain new messages.  Note any such </span>
+<span class="sd">          messages are volatile and will not be saved to the database </span>
+<span class="sd">          until the save_data method is called. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeries</span><span class="p">,</span> <span class="n">Seismogram</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only TimeSeries and Seismogram are supported&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="s1">&#39;cautious&#39;</span><span class="p">,</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;only promiscuous, cautious and pedantic are supported, but </span><span class="si">{}</span><span class="s1"> is requested.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
-
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">alg_name</span><span class="o">+</span><span class="s2">&quot;:  only TimeSeries and Seismogram are supported</span><span class="se">\n</span><span class="s2">Received data of type=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)))</span>
+        <span class="c1"># Return a None immediately if the data is marked dead - signal it did nothing</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">exclude_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">exclude_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="s1">&#39;cautious&#39;</span><span class="p">,</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg_name</span><span class="o">+</span><span class="s1">&#39;: only promiscuous, cautious and pedantic are supported, but </span><span class="si">{}</span><span class="s1"> was requested.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mode</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">TimeSeries</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span><span class="o">.</span><span class="n">Seismogram</span>
+        <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+            <span class="n">wfid</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg_name</span> <span class="o">+</span> <span class="s1">&#39;: input data object is missing required waveform object id value (_id) - update is not possible without it&#39;</span><span class="p">,</span><span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
+            <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">collection</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
+            <span class="c1"># A weird construct</span>
+            <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+        <span class="n">wf_collection</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
+        <span class="c1"># One last check.  Make sure a document with the _id in mspass_object</span>
+        <span class="c1"># exists.  If it doesn&#39;t exist, post an elog about this</span>
+        <span class="n">test_doc</span> <span class="o">=</span> <span class="n">wf_collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span> <span class="p">:</span> <span class="n">wfid</span><span class="p">})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_doc</span><span class="p">:</span>    <span class="c1"># find_one returns None if find fails </span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Database.update_metadata&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;Cannot find the document in the wf collection by the _id field in the object&#39;</span><span class="p">,</span>
+                                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+        <span class="c1"># FIXME starttime will be automatically created in this function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_metadata_before_update</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
 
-        <span class="n">has_fatal_error</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">non_fatal_error_cnt</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-            <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
-                <span class="n">update_metadata_def</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">update_metadata_def</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+        <span class="c1"># This method of Metadata returns a list of all</span>
+        <span class="c1"># attributes that were changed after creation of the</span>
+        <span class="c1"># object to which they are attached.</span>
+        <span class="n">changed_key_list</span><span class="o">=</span><span class="n">mspass_object</span><span class="o">.</span><span class="n">modified</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">force_keys</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">force_keys</span><span class="p">:</span>
+                <span class="n">changed_key_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="n">copied_metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
 
-            <span class="n">wf_collection</span> <span class="o">=</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">collection</span> <span class="k">else</span> <span class="n">collection</span>
-            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">wf_collection</span><span class="p">]</span>
-            <span class="n">object_doc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># clear all the aliases</span>
+        <span class="c1">#TODO  check for potential bug in handling clear_aliases</span>
+        <span class="c1"># and modified method - i.e. keys returned by modified may be</span>
+        <span class="c1"># aliases</span>
+        <span class="n">save_schema</span><span class="o">.</span><span class="n">clear_aliases</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
 
-            <span class="n">new_insertion</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
-                <span class="n">new_insertion</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># remove any values with only spaces</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_insertion</span><span class="p">:</span>
-                <span class="n">object_doc</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">find_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]})</span>
-                <span class="c1"># can&#39;t find the corresponding record in collection, then we treat it as new insertion if it is called from save_data</span>
-                <span class="c1"># if update metadata only, only promiscuous mode is allowed and we treat it as new insertion as well</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">object_doc</span><span class="p">:</span>
-                    <span class="c1"># eliminate _id field if it is saved</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_save_data</span> <span class="ow">and</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cautious&quot;</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pedantic&quot;</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s1">&#39;Can not find the record with _id: </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1"> collection under </span><span class="si">{}</span><span class="s1"> mode.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">],</span> <span class="n">wf_collection</span><span class="p">,</span> <span class="n">mode</span><span class="p">),</span> <span class="s1">&#39;Fatal&#39;</span><span class="p">)</span>
-                    <span class="k">del</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span>
-                    <span class="n">new_insertion</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="c1"># 1. create the dict of metadata to be saved in wf</span>
-            <span class="n">insert_dict</span> <span class="o">=</span> <span class="p">{}</span>
-
-            <span class="c1"># FIXME starttime will be automatically created in this function</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sync_metadata_before_update</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
-
-            <span class="n">copied_metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
-
-            <span class="c1"># clear all the aliases</span>
-            <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">clear_aliases</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">)</span>
-
+        <span class="c1"># remove any defined items in exclude list</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="c1"># Now remove any readonly data</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changed_key_list</span><span class="p">:</span>
+                        <span class="n">newkey</span><span class="o">=</span><span class="s1">&#39;READONLYERROR_&#39;</span><span class="o">+</span><span class="n">k</span>
+                        <span class="n">copied_metadata</span><span class="o">.</span><span class="n">change_key</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">newkey</span><span class="p">)</span>
+                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;Database.update_metadata&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;readonly attribute with key=&#39;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; was improperly modified.  Saved changed value with key=&#39;</span><span class="o">+</span><span class="n">newkey</span><span class="p">,</span>
+                                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="c1"># Done editing, now we convert copied_metadata to a python dict</span>
+        <span class="c1"># using this Metadata method or the long version when in cautious or pedantic mode</span>
+        <span class="n">insertion_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;promiscuous&quot;</span><span class="p">:</span>
+            <span class="c1"># In this case we blindly update all entries that show</span>
+            <span class="c1"># as modified that aren&#39;t in the exclude list</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changed_key_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
+                    <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Other modes have to test every key and type of value</span>
+            <span class="c1"># before continuing.  pedantic logs an error for all problems</span>
+            <span class="c1"># Both attempt to fix type mismatches before update.  Cautious</span>
+            <span class="c1"># is silent unless the type problem cannot be repaired.  In that</span>
+            <span class="c1"># case both will not attempt to update the offending key-value</span>
+            <span class="c1"># Note many errors can be posted - one for each problem key-value pair</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                    <span class="n">copied_metadata</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>
-                <span class="c1"># not update the keys in exclude_keys parameter</span>
-                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">exclude_keys</span><span class="p">:</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># only update data marked as modified</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore_metadata_changed_test</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="o">.</span><span class="n">modified</span><span class="p">():</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># read-only attributes are not supposed to be updated</span>
-                <span class="k">if</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="ow">and</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">readonly</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-                    <span class="c1"># id could not be updated</span>
-                    <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;_id&#39;</span><span class="p">:</span>
-                        <span class="k">continue</span>
-                    <span class="c1"># normal attribute is read only but can change the attribute to be ERROR_attribute</span>
-                    <span class="c1"># to prevent dropping error attribute and make original attribute intact</span>
-                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;update_metadata&#39;</span><span class="p">,</span>
-                            <span class="s2">&quot;attribute </span><span class="si">{}</span><span class="s2"> is read only and cannot be updated, but the attribute is saved as READONLYERROR_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span>
-                            <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Informational</span><span class="p">)</span>
-                    <span class="n">non_fatal_error_cnt</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">READONLYERROR_k</span> <span class="o">=</span> <span class="s2">&quot;READONLYERROR_&quot;</span> <span class="o">+</span> <span class="n">k</span>
-                    <span class="n">copied_metadata</span><span class="o">.</span><span class="n">change_key</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">READONLYERROR_k</span><span class="p">)</span>
-                    <span class="n">k</span> <span class="o">=</span> <span class="n">READONLYERROR_k</span>
-
-                <span class="c1"># save metadata to wf with blocks for write modes (&quot;promiscuous&quot;, &quot;cautious&quot;, and &quot;pedantic&#39;)</span>
-                <span class="c1"># promiscuous(no schema check at all)</span>
-                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;promiscuous&quot;</span><span class="p">:</span>
-                    <span class="n">insert_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-                    <span class="k">continue</span>
-
-                <span class="c1"># cautious/pedantic(both need schema check)</span>
-                <span class="k">if</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-                    <span class="c1"># cautious mode: try to fix the required attributes whose types are mismatch with the schema</span>
-                    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;cautious&quot;</span><span class="p">:</span>
-                        <span class="c1"># try to convert the mismatch metadata attribute</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">changed_key_list</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_defined</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
+                            <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">:</span>
+                                <span class="n">message</span> <span class="o">=</span><span class="s1">&#39;pedantic mode error:  key=&#39;</span><span class="o">+</span><span class="n">k</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39; type of stored value=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; does not match schema expectation=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Attempting to correct type mismatch&#39;</span>
+                                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                                    <span class="n">message</span><span class="p">,</span><span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                            <span class="c1"># Note we land here for both pedantic and cautious but not promiscuous</span>
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="c1"># The following convert the actual value in a dict to a required type.</span>
                                 <span class="c1"># This is because the return of type() is the class reference.</span>
-                                <span class="n">insert_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                                <span class="n">old_value</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+                                <span class="n">new_value</span><span class="o">=</span><span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s1">&#39;Had to convert type of data with key=&#39;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; from &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">old_value</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; to &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">new_value</span><span class="p">))</span>
+                                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
-                                <span class="c1"># update is not aborted, but mark the mspass object as dead</span>
-                                <span class="k">if</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-                                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;update_metadata&#39;</span><span class="p">,</span>
-                                        <span class="s2">&quot;cautious mode: Required attribute </span><span class="si">{}</span><span class="s2"> has type </span><span class="si">{}</span><span class="s2">, forbidden by definition and unable to convert&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])),</span>
-                                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-                                    <span class="n">has_fatal_error</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Cannot update data with key=&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">:</span>
+                                    <span class="c1"># pedantic mode</span>
                                     <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-
+                                    <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;pedantic mode error: key value could not be converted to required type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; actual type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;, the object is killed&#39;</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="c1"># cautious mode</span>
+                                    <span class="k">if</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                                        <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                                        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39; Required key value could not be converted to required type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; actual type=&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39;, the object is killed&#39;</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39; Value stored has type=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span> <span class="o">+</span> <span class="s1">&#39; which cannot be converted to type=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_schema</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;Data for this key will not be changed or set in the database&#39;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Python error exception message caught:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                                <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                                <span class="c1"># post elog entry into the mspass_object</span>
+                                <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pedantic&#39;</span> <span class="ow">or</span> <span class="n">save_schema</span><span class="o">.</span><span class="n">is_required</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+                                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                                <span class="c1"># The None arg2 cause pop to not throw</span>
+                                <span class="c1"># an exception if k isn&#39;t defined - a bit ambigous in the try block</span>
+                                <span class="n">insertion_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pedantic&#39;</span><span class="p">:</span>
+                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                              <span class="s1">&#39;cannot update data with key=&#39;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; because it is not defined in the schema&#39;</span><span class="p">,</span>
+                              <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># otherwise, we could update this attribute in the metadata</span>
-                            <span class="n">insert_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-
-                    <span class="c1"># pedantic mode: any type mismatch could end up killing the mspass object</span>
-                    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;pedantic&quot;</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">update_metadata_def</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">k</span><span class="p">)):</span>
-                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;update_metadata&#39;</span><span class="p">,</span>
-                                <span class="s2">&quot;pedantic mode: attribute </span><span class="si">{}</span><span class="s2"> has type </span><span class="si">{}</span><span class="s2">, forbidden by definition&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">])),</span>
-                                <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
-                            <span class="n">has_fatal_error</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="c1"># otherwise, we could update this attribute in the metadata</span>
-                            <span class="n">insert_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-
-            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="c1"># 2. save/update history</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
-                    <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
-                    <span class="n">insert_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">history_obj_id_name</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">})</span>
-
-                <span class="c1"># 3. save/update error logs</span>
-                <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
-                    <span class="n">old_elog_id</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">new_insertion</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">object_doc</span> <span class="ow">or</span> <span class="n">elog_id_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">object_doc</span> <span class="k">else</span> <span class="n">object_doc</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
-                    <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">old_elog_id</span><span class="p">)</span>  <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
-                    <span class="n">insert_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">elog_id_name</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">})</span>
-
-                <span class="c1"># add user defined data_tag</span>
-                <span class="k">if</span> <span class="n">data_tag</span><span class="p">:</span>
-                    <span class="n">insert_dict</span><span class="p">[</span><span class="s1">&#39;data_tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_tag</span>
-                <span class="k">if</span> <span class="s1">&#39;_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">copied_metadata</span><span class="p">:</span>  <span class="c1"># new_insertion</span>
-                    <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">insert_one</span><span class="p">(</span><span class="n">insert_dict</span><span class="p">)</span><span class="o">.</span><span class="n">inserted_id</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">copied_metadata</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}</span>
-                    <span class="n">col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">insert_dict</span><span class="p">})</span>
-
-                <span class="c1"># 4. need to save the wf_id back to elog entry if this is an insert</span>
-                <span class="k">if</span> <span class="n">new_insertion</span> <span class="ow">and</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)]</span>
-                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
-                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">}</span>
-                    <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
-
-                <span class="c1"># 5. need to save the wf_id back to history_object entry if this is an insert</span>
-                <span class="k">if</span> <span class="n">new_insertion</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-                    <span class="n">history_object_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)]</span>
-                    <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
-                    <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">history_object_id</span><span class="p">}</span>
-                    <span class="n">history_object_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># save the metadata in tombstone as an elog entry</span>
-                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="s2">&quot;Skipped updating the metadata of a dead object&quot;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
-
+                            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                              <span class="s1">&#39;key=&#39;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s1">&#39; is not defined in the schema.  Updating record, but this may cause downstream problems&#39;</span><span class="p">,</span>
+                              <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                            <span class="n">insertion_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">copied_metadata</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        
+        <span class="c1"># ugly python indentation with this logic.  We always land here in</span>
+        <span class="c1"># any mode when we&#39;ve passed over the entire metadata dict</span>
+        <span class="c1"># if it is dead, it&#39;s considered something really bad happens, we should not update the object</span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="n">wf_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">({</span><span class="s1">&#39;_id&#39;</span> <span class="p">:</span> <span class="n">wfid</span><span class="p">},{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="n">insertion_dict</span><span class="p">},</span> <span class="n">upsert</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mspass_object</span></div>
+    
+<div class="viewcode-block" id="Database.update_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_data">[docs]</a>    <span class="k">def</span> <span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">mspass_object</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cautious&#39;</span><span class="p">,</span>
+                <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;Database.update_data&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates both metadata and sample data corresponding to an input data </span>
+<span class="sd">        object.  </span>
+<span class="sd">        </span>
+<span class="sd">        Since storage of data objects in MsPASS is broken into multiple </span>
+<span class="sd">        collections and storage methods, doing a full data update has some </span>
+<span class="sd">        complexity.   This method handles the problem differently for the </span>
+<span class="sd">        different pieces:</span>
+<span class="sd">            1. An update is performed on the parent wf collection document. </span>
+<span class="sd">               That update makes use of the related Database method</span>
+<span class="sd">               called update_metadata. </span>
+<span class="sd">            2. If the error log is not empty it is saved.  </span>
+<span class="sd">            3. If the history container has contents it is saved.</span>
+<span class="sd">            4. The sample data is the thorniest problem. Currently this</span>
+<span class="sd">               method will only do sample updates for data stored in </span>
+<span class="sd">               the mongodb gridfs system.   With files containing multiple </span>
+<span class="sd">               waveforms it would be necessary to append to the files and </span>
+<span class="sd">               this could create a blaat problem with large data sets so </span>
+<span class="sd">               we do not currently support that type of update. </span>
+<span class="sd">        </span>
+<span class="sd">        :param mspass_object: the object you want to update.</span>
+<span class="sd">        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`</span>
+<span class="sd">        :param exclude_keys: a list of metadata attributes you want to exclude from being updated.</span>
+<span class="sd">        :type exclude_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param force_keys: a list of metadata attributes you want to force </span>
+<span class="sd">         to be updated.   Normally this method will only update attributes </span>
+<span class="sd">         that have been marked as changed since creation of the parent data </span>
+<span class="sd">         object.  If data with these keys is found in the mspass_object they </span>
+<span class="sd">         will be added to the update record.</span>
+<span class="sd">        :type force_keys: a :class:`list` of :class:`str`</span>
+<span class="sd">        :param collection: the collection name you want to use. If not specified, use the defined collection in the metadata schema.</span>
+<span class="sd">        :param mode: This parameter defines how attributes defines how</span>
+<span class="sd">          strongly to enforce schema constraints. As described above</span>
+<span class="sd">          &#39;promiscuous&#39; justs updates all changed values with no schema</span>
+<span class="sd">          tests.  &#39;cautious&#39;, the default, enforces type constraints and</span>
+<span class="sd">          tries to convert easily fixed type mismatches (e.g. int to floats</span>
+<span class="sd">          of vice versa).  Both &#39;cautious&#39; and &#39;pedantic&#39; may leave one or</span>
+<span class="sd">          more complaint message in the elog of mspass_object on how the</span>
+<span class="sd">          method did or did not fix mismatches with the schema.  Both</span>
+<span class="sd">          also will drop any key-value pairs where the value cannot be</span>
+<span class="sd">          converted to the type defined in the schema.</span>
+<span class="sd">        :type mode: :class:`str`</span>
+<span class="sd">        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.</span>
+<span class="sd">          (defaults to &#39;Database.update_data&#39; and should not normally need to be changed)</span>
+<span class="sd">        :type alg_name: :class:`str`</span>
+<span class="sd">        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.</span>
+<span class="sd">        :type alg_id: :class:`bson.objectid.ObjectId`</span>
+<span class="sd">        :return: mspass_object data.  Normally this is an unaltered copy </span>
+<span class="sd">          of the data passed through mspass_object.  If there are errors, </span>
+<span class="sd">          however, the elog will contain new messages.  All such messages, </span>
+<span class="sd">          howevever, should be saved in the elog collection because elog </span>
+<span class="sd">          is the last collection updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata_schema</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">TimeSeries</span><span class="p">):</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TimeSeries</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># FIXME: we could have recorded the full stack here, but need to revise the logger object</span>
-            <span class="c1"># to make it more powerful for Python logging.</span>
-            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_verbose</span><span class="p">(</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="s2">&quot;Skipped updating the metadata of a dead object&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+            <span class="n">save_schema</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">Seismogram</span>
+        <span class="c1"># First update metadata.  update_metadata will throw an exception </span>
+        <span class="c1"># only for usage errors.   We test the elog size to check if there</span>
+        <span class="c1"># are other warning messages and add a summary if there were any</span>
+        <span class="n">logsize0</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span><span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                    <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span><span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span><span class="n">force_keys</span><span class="o">=</span><span class="n">force_keys</span><span class="p">,</span>
+                    <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="n">logsize</span> <span class="o">=</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="c1"># A bit verbose, but we post this warning to make it clear the </span>
+        <span class="c1"># problem originated from update_data - probably not really needed </span>
+        <span class="c1"># but better to be though I think</span>
+        <span class="k">if</span> <span class="n">logsize</span> <span class="o">&gt;</span> <span class="n">logsize0</span><span class="p">:</span>
+            <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                <span class="s1">&#39;update_metadata posted </span><span class="si">{nerr}</span><span class="s1"> messages during update&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nerr</span><span class="o">=</span><span class="p">(</span><span class="n">logsize</span><span class="o">-</span><span class="n">logsize0</span><span class="p">)),</span>
+                 <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+        
+        <span class="c1"># optional handle history - we need to update the wf record later with this value </span>
+        <span class="c1"># if it is set</span>
+        <span class="n">update_record</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
+        <span class="n">history_obj_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;history_object&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+        <span class="n">history_object_id</span> <span class="o">=</span> <span class="kc">None</span> 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="n">history_object_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_history</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">alg_id</span><span class="p">)</span>
+            <span class="n">update_record</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span><span class="o">=</span><span class="n">history_object_id</span>
+           
+        <span class="c1"># Now handle update of sample data.  The gridfs method used here </span>
+        <span class="c1"># handles that correctly based on the gridfs id.  </span>
+        <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;storage_mode&#39;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                <span class="n">storage_mode</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s1">&#39;gridfs&#39;</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                        <span class="s1">&#39;found storage_mode=&#39;</span><span class="o">+</span><span class="n">storage_mode</span><span class="o">+</span><span class="s1">&#39;  Only support update to gridfs.  Changing to gridfs storage for sample data update&#39;</span><span class="p">,</span>
+                        <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span>
+                    <span class="s1">&#39;storage_mode attribute was not set in Metadata of this object - setting as gridfs for update&#39;</span><span class="p">,</span>
+                    <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Complaint</span><span class="p">)</span>
+                <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span>
+                <span class="n">update_record</span><span class="p">[</span><span class="s1">&#39;storage_mode&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;gridfs&#39;</span>
+            <span class="c1"># This logic depends upon a feature of _save_data_to_gridfs.</span>
+            <span class="c1"># if the gridfs_id parameter is defined it does an update</span>
+            <span class="c1"># when it is not defined it creates a new gridfs &quot;file&quot;. In both </span>
+            <span class="c1"># cases the id needed to get the right datum is returned</span>
+            <span class="k">if</span> <span class="s1">&#39;gridfs_id&#39;</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gridfs_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_data_to_gridfs</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">)</span>
+            <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
+            <span class="c1"># There is a possible efficiency gain right here.  Not sure if </span>
+            <span class="c1"># gridfs_id is altered when the sample data are updated in place.</span>
+            <span class="c1"># if we can be sure the returned gridfs_id is the same as the </span>
+            <span class="c1">#input in that case, we would omit gridfs_id from the update </span>
+            <span class="c1"># record and most data would not require the final update </span>
+            <span class="c1"># transaction below</span>
+            <span class="n">update_record</span><span class="p">[</span><span class="s1">&#39;gridfs_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridfs_id</span>
+            <span class="c1"># should define wf_collection here because if the mspass_object is dead</span>
+            <span class="k">if</span> <span class="n">collection</span><span class="p">:</span>
+                 <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">collection</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This returns a string that is the collection name for this atomic data type</span>
+                <span class="c1"># A weird construct</span>
+                <span class="n">wf_collection_name</span><span class="o">=</span><span class="n">save_schema</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="s1">&#39;_id&#39;</span><span class="p">)</span>
+            <span class="n">wf_collection</span><span class="o">=</span><span class="bp">self</span><span class="p">[</span><span class="n">wf_collection_name</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">has_fatal_error</span><span class="p">:</span>
-            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">return</span> <span class="n">non_fatal_error_cnt</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">mspass_object</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="c1"># FIXME I think here we should check if elog_id field exists in the mspass_object</span>
+                <span class="c1"># and we should update the elog entry if mspass_object already had one</span>
+                <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                    <span class="n">old_elog_id</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">old_elog_id</span><span class="o">=</span><span class="kc">None</span>
+                <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span> <span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">)</span>  <span class="c1"># elog ids will be updated in the wf col when saving metadata</span>
+                <span class="n">update_record</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+                
+                <span class="c1"># update elog collection</span>
+                <span class="c1"># we have to do the xref to wf collection like this too</span>
+                <span class="n">elog_col</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)]</span>
+                <span class="n">wf_id_name</span> <span class="o">=</span> <span class="n">wf_collection_name</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+                <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_id&#39;</span><span class="p">:</span> <span class="n">elog_id</span><span class="p">}</span>
+                <span class="n">elog_col</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;$set&#39;</span><span class="p">:</span> <span class="p">{</span><span class="n">wf_id_name</span><span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}})</span>
+            <span class="c1"># finally we need to update the wf document if we set anything </span>
+            <span class="c1"># in update_record</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">update_record</span><span class="p">):</span>
+                <span class="n">filter_</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;_id&#39;</span> <span class="p">:</span> <span class="n">mspass_object</span><span class="p">[</span><span class="s1">&#39;_id&#39;</span><span class="p">]}</span>
+                <span class="n">wf_collection</span><span class="o">.</span><span class="n">update_one</span><span class="p">(</span><span class="n">filter_</span><span class="p">,{</span><span class="s1">&#39;$set&#39;</span> <span class="p">:</span> <span class="n">update_record</span><span class="p">})</span>
+                <span class="c1"># we may probably set the elog_id field in the mspass_object</span>
+                <span class="k">if</span> <span class="n">elog_id</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">elog_id</span>
+                <span class="c1"># we may probably set the history_object_id field in the mspass_object</span>
+                <span class="k">if</span> <span class="n">history_object_id</span><span class="p">:</span>
+                    <span class="n">mspass_object</span><span class="p">[</span><span class="n">history_obj_id_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">history_object_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Dead data land here</span>
+            <span class="n">elog_id_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_schema</span><span class="o">.</span><span class="n">default_name</span><span class="p">(</span><span class="s1">&#39;elog&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_id&#39;</span>
+            <span class="k">if</span> <span class="n">elog_id_name</span> <span class="ow">in</span> <span class="n">mspass_object</span><span class="p">:</span>
+                <span class="n">old_elog_id</span><span class="o">=</span><span class="n">mspass_object</span><span class="p">[</span><span class="n">elog_id_name</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">old_elog_id</span><span class="o">=</span><span class="kc">None</span>
+            <span class="n">elog_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_elog</span><span class="p">(</span><span class="n">mspass_object</span><span class="p">,</span><span class="n">elog_id</span><span class="o">=</span><span class="n">old_elog_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mspass_object</span></div>
 
 <div class="viewcode-block" id="Database.read_ensemble_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.read_ensemble_data">[docs]</a>    <span class="k">def</span> <span class="nf">read_ensemble_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objectid_list</span><span class="p">,</span> <span class="n">ensemble_metadata</span><span class="o">=</span><span class="p">{},</span>
       <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">load_history</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -2064,7 +2457,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unknown storage mode: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Database.update_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.update_ensemble_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">update_ensemble_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ensemble_object</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;promiscuous&#39;</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude_objects</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                 <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_metadata_changed_test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;update_ensemble_metadata&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+                                 <span class="n">collection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="s1">&#39;update_ensemble_metadata&#39;</span><span class="p">,</span> <span class="n">alg_id</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Updates (or save if it&#39;s new) the mspasspy ensemble object, including saving the processing history, elogs</span>
 <span class="sd">        and metadata attributes.</span>
@@ -2098,10 +2491,10 @@
             <span class="n">exclude_objects</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_objects</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_update_metadata</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span> 
-                                    <span class="n">ignore_metadata_changed_test</span><span class="o">=</span><span class="n">ignore_metadata_changed_test</span><span class="p">,</span> <span class="n">data_tag</span><span class="o">=</span><span class="n">data_tag</span><span class="p">,</span> <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">,</span>
-                                    <span class="n">alg_id</span><span class="o">=</span><span class="n">alg_id</span><span class="p">,</span> <span class="n">is_save_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+            <span class="c1"># Skip data listed for exclusion and those that are marked dead</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude_objects</span> <span class="ow">and</span> <span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_metadata</span><span class="p">(</span><span class="n">ensemble_object</span><span class="o">.</span><span class="n">member</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">exclude_keys</span><span class="o">=</span><span class="n">exclude_keys</span><span class="p">,</span> <span class="n">collection</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+                                     <span class="n">alg_name</span><span class="o">=</span><span class="n">alg_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Database.delete_data"><a class="viewcode-back" href="../../../python_api/mspasspy.db.html#mspasspy.db.database.Database.delete_data">[docs]</a>    <span class="k">def</span> <span class="nf">delete_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">object_id</span><span class="p">,</span> <span class="n">object_type</span><span class="p">,</span> <span class="n">remove_unreferenced_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
        <span class="n">clear_history</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">clear_elog</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -2424,7 +2817,7 @@
             <span class="n">alg_id</span> <span class="o">=</span> <span class="n">current_nodedata</span><span class="o">.</span><span class="n">algid</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">alg_name</span><span class="p">:</span>
             <span class="n">alg_name</span> <span class="o">=</span> <span class="n">current_nodedata</span><span class="o">.</span><span class="n">algorithm</span>
-        
+
         <span class="n">history_binary</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">proc_history</span><span class="p">)</span>
         <span class="c1"># todo save jobname jobid when global history module is done</span>
         <span class="k">try</span><span class="p">:</span>
@@ -3036,7 +3429,12 @@
                     <span class="c1"># del chanrec[&#39;serialized_inventory&#39;]</span>
                     <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">chans</span><span class="p">:</span>
                         <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;chan&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">code</span>
-                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;vang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">dip</span>
+			<span class="c1"># the Dip attribute in a stationxml file </span>
+			<span class="c1"># is like strike-dip and relative to horizontal</span>
+			<span class="c1"># line with positive down.  vang is the </span>
+			<span class="c1"># css30 attribute that is spherical coordinate </span>
+			<span class="c1"># theta angle</span>
+                        <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;vang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">dip</span> <span class="o">+</span> <span class="mf">90.0</span>
                         <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;hang&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">azimuth</span>
                         <span class="n">chanrec</span><span class="p">[</span><span class="s1">&#39;edepth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">depth</span>
                         <span class="n">st</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">start_date</span>
@@ -3179,7 +3577,6 @@
         <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">stations</span> <span class="o">=</span> <span class="n">dbsite</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">matchsize</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get_seed_site (WARNING):  query=&quot;</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Returned &quot;</span><span class="p">,</span> <span class="n">matchsize</span><span class="p">,</span> <span class="s2">&quot; documents - should be exactly one&quot;</span><span class="p">)</span>
