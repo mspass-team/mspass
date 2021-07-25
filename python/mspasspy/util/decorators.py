@@ -70,10 +70,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         return "OK"
 
     if is_input_dead(data):
-        if inplace_return:
-            return data
-        else:
-            return
+        return data if inplace_return else None
 
     try:
         res = func(data, *args, **kwargs)
