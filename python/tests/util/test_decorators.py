@@ -118,6 +118,14 @@ def test_mspass_func_wrapper():
     assert errs[-2].algorithm == 'dummy_func'
     assert errs[-2].message == "Illegal type received for function_return_key argument=<class 'dict'>\nReturn value not saved in Metadata"
 
+    # dead object will return immediately
+    seis.kill()
+    data = dummy_func(seis)
+    assert data is None
+    data = dummy_func(seis, inplace_return=True)
+    assert not data.live
+
+
 @timeseries_as_trace
 def dummy_func_timeseries_as_trace(d, any=None):
     d.data = np.array([0, 1, 2])
@@ -315,6 +323,12 @@ def test_mspass_func_wrapper_multi():
     assert seis1.number_of_stages() == 2
     for i in range(3):
         assert seis_e.member[i].number_of_stages() == 1
+        
+    # dead object will return immediately
+    seis1.kill()
+    seis2.kill()
+    data = dummy_func(seis1, seis2)
+    assert data is None
 
 @mspass_reduce_func_wrapper
 def dummy_reduce_func(data1, data2, *args, object_history=False, alg_id=None, dryrun=False, **kwargs):

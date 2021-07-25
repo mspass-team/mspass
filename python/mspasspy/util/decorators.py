@@ -65,8 +65,15 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
     if object_history and alg_id is None:
         raise ValueError(
             alg_name + ": object_history was true but alg_id not defined")
+
     if dryrun:
         return "OK"
+
+    if is_input_dead(data):
+        if inplace_return:
+            return data
+        else:
+            return
 
     try:
         res = func(data, *args, **kwargs)
@@ -147,8 +154,12 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
     if object_history and alg_id is None:
         raise ValueError(
             alg_name + ": object_history was true but alg_id not defined")
+
     if dryrun:
         return "OK"
+        
+    if is_input_dead(data1, data2):
+        return
 
     try:
         res = func(data1, data2, *args, **kwargs)
