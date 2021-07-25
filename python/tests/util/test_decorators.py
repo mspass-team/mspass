@@ -121,7 +121,7 @@ def test_mspass_func_wrapper():
     # dead object will return immediately
     seis.kill()
     data = dummy_func(seis)
-    assert data is None
+    assert not data.live
     data = dummy_func(seis, inplace_return=True)
     assert not data.live
 
@@ -327,7 +327,7 @@ def test_mspass_func_wrapper_multi():
     # dead object will return immediately
     seis1.kill()
     seis2.kill()
-    data = dummy_func(seis1, seis2)
+    data = dummy_func_multi(seis1, seis2)
     assert data is None
 
 @mspass_reduce_func_wrapper
