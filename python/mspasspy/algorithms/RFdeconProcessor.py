@@ -15,7 +15,7 @@ from mspasspy.ccore.utility import (AntelopePf,
                                     MsPASSError,
                                     ErrorSeverity)
 from mspasspy.algorithms.window import WindowData
-import mspasspy.ccore.algorithms.basic as alg
+import mspasspy.ccore.algorithms.basic as alg_basic
 import mspasspy.ccore.algorithms.deconvolution as decon
 from mspasspy.util.decorators import mspass_func_wrapper
 
@@ -60,13 +60,13 @@ class RFdeconProcessor:
         # it we cache the analysis time window for efficiency
         tws = self.md.get_double("deconvolution_data_window_start")
         twe = self.md.get_double("deconvolution_data_window_end")
-        self.__dwin = mspass.TimeWindow(tws, twe)
+        self.__dwin = alg_basic.TimeWindow(tws, twe)
         if(self.__uses_noise):
             tws = self.md.get_double("noise_window_start")
             twe = self.md.get_double("noise_window_end")
-            self.__nwin = mspass.TimeWindow(tws, twe)
+            self.__nwin = alg_basic.TimeWindow(tws, twe)
         else:
-            self.__nwin = mspass.TimeWindow  # always initialize even if not used
+            self.__nwin = alg_basic.TimeWindow  # always initialize even if not used
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):
         """
@@ -112,7 +112,7 @@ class RFdeconProcessor:
         dvector = []
         if(window):
             if(dtype == "Seismogram"):
-                ts = alg.ExtractComponent(d, component)
+                ts = alg_basic.ExtractComponent(d, component)
                 ts = WindowData(ts, self.dwin)
                 dvector = ts.data
             elif(dtype == "TimeSeries"):
@@ -122,7 +122,7 @@ class RFdeconProcessor:
                 dvector = d
         else:
             if(dtype == "Seismogram"):
-                ts = alg.ExtractComponent(d, component)
+                ts = alg_basic.ExtractComponent(d, component)
                 dvector = ts.data
             elif(dtype == "TimeSeries"):
                 dvector = ts.data
@@ -142,7 +142,7 @@ class RFdeconProcessor:
         wvector = []
         if(window):
             if(dtype == "Seismogram"):
-                ts = alg.ExtractComponent(w, component)
+                ts = alg_basic.ExtractComponent(w, component)
                 ts = WindowData(ts, self.dwin)
                 wvector = ts.data
             elif(dtype == "TimeSeries"):
@@ -152,7 +152,7 @@ class RFdeconProcessor:
                 wvector = w
         else:
             if(dtype == "Seismogram"):
-                ts = alg.ExtractComponent(w, component)
+                ts = alg_basic.ExtractComponent(w, component)
                 wvector = ts.data
             elif(dtype == "TimeSeries"):
                 wvector = ts.data
@@ -181,9 +181,9 @@ class RFdeconProcessor:
         if window:
             tws = self.md.get_double("noise_window_start")
             twe = self.md.get_double("noise_window_end")
-            win = mspass.TimeWindow(tws, twe)
+            win = alg_basic.TimeWindow(tws, twe)
             if dtype == "Seismogram":
-                ts = alg.ExtractComponent(n, component)
+                ts = alg_basic.ExtractComponent(n, component)
                 ts = WindowData(ts, win)
                 nvector = ts.data
             elif dtype == "TimeSeries":
@@ -193,7 +193,7 @@ class RFdeconProcessor:
                 nvector = n
         else:
             if dtype == "Seismogram":
-                ts = alg.ExtractComponent(n, component)
+                ts = alg_basic.ExtractComponent(n, component)
                 nvector = ts.data
             elif dtype == "TimeSeries":
                 nvector = ts.data
