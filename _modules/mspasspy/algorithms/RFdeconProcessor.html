@@ -202,8 +202,8 @@
                                     <span class="n">MsPASSError</span><span class="p">,</span>
                                     <span class="n">ErrorSeverity</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.algorithms.window</span> <span class="kn">import</span> <span class="n">WindowData</span>
-<span class="kn">import</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="k">as</span> <span class="nn">alg</span>
-<span class="kn">import</span> <span class="nn">mspasspy.ccore.algorithms.deconvolution</span> <span class="k">as</span> <span class="nn">decon</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.basic</span> <span class="kn">import</span> <span class="n">TimeWindow</span><span class="p">,</span> <span class="n">ExtractComponent</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.algorithms.deconvolution</span> <span class="kn">import</span> <span class="n">LeastSquareDecon</span><span class="p">,</span> <span class="n">WaterLevelDecon</span><span class="p">,</span> <span class="n">MultiTaperXcorDecon</span><span class="p">,</span> <span class="n">MultiTaperSpecDivDecon</span>
 <span class="kn">from</span> <span class="nn">mspasspy.util.decorators</span> <span class="kn">import</span> <span class="n">mspass_func_wrapper</span>
 
 
@@ -224,19 +224,19 @@
         <span class="n">pfhandle</span> <span class="o">=</span> <span class="n">AntelopePf</span><span class="p">(</span><span class="n">pf</span><span class="p">)</span>
         <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">==</span> <span class="s2">&quot;LeastSquares&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;LeastSquare&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">LeastSquareDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;WaterLevel&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;WaterLevel&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">WaterLevelDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperXcor&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperXcor&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperXcorDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;MultiTaperSpecDiv&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">md</span> <span class="o">=</span> <span class="n">pfhandle</span><span class="o">.</span><span class="n">get_branch</span><span class="p">(</span><span class="s1">&#39;MultiTaperSpecDiv&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">decon</span><span class="o">.</span><span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">MultiTaperSpecDivDecon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span><span class="p">(</span><span class="n">alg</span> <span class="o">==</span> <span class="s2">&quot;GeneralizedIterative&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -247,13 +247,13 @@
         <span class="c1"># it we cache the analysis time window for efficiency</span>
         <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_start&quot;</span><span class="p">)</span>
         <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;deconvolution_data_window_end&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__dwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dwin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
         <span class="k">if</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__uses_noise</span><span class="p">):</span>
             <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
             <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nwin</span> <span class="o">=</span> <span class="n">TimeWindow</span>  <span class="c1"># always initialize even if not used</span>
 
 <div class="viewcode-block" id="RFdeconProcessor.loaddata"><a class="viewcode-back" href="../../../python_api/mspasspy.algorithms.html#mspasspy.algorithms.RFdeconProcessor.RFdeconProcessor.loaddata">[docs]</a>    <span class="k">def</span> <span class="nf">loaddata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;Seismogram&quot;</span><span class="p">,</span> <span class="n">component</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -299,7 +299,7 @@
         <span class="n">dvector</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
@@ -309,7 +309,7 @@
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">d</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
@@ -329,7 +329,7 @@
         <span class="n">wvector</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
@@ -339,7 +339,7 @@
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">w</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
@@ -368,9 +368,9 @@
         <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
             <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
             <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
-            <span class="n">win</span> <span class="o">=</span> <span class="n">mspass</span><span class="o">.</span><span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
+            <span class="n">win</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">win</span><span class="p">)</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
@@ -380,7 +380,7 @@
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">n</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">alg</span><span class="o">.</span><span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
