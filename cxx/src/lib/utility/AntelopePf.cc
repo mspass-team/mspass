@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include "mspass/utility/MsPASSError.h"
+#include "mspass/utility/utility.h"
 #include "mspass/utility/AntelopePf.h"
 namespace mspass::utility {
 using namespace std;
@@ -344,6 +345,15 @@ AntelopePf::AntelopePf(string pfbase)
         else
         {
             pffiles=split_pfpath(pfbase,s);
+        }
+        const std::string mspass_home_envname("MSPASS_HOME");
+        char *base;
+        /* Note man page for getenv says explicitly the return of getenv should not
+                be touched - i.e. don't free it*/
+        base=getenv(mspass_home_envname.c_str());
+        if(base!=NULL)
+        {
+            pffiles.push_back(data_directory()+"/pf/"+pfbase);
         }
         list<string>::iterator pfptr;
         int nread;
