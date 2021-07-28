@@ -118,9 +118,9 @@ Database:
           reference: elog
           constraint: xref_key
         data_tag:
-           type: string
-           concept:  Used as a tag for data at a particular stage of processing. Used in save_data.
-           constraint: normal
+          type: string
+          concept: Used as a tag for data at a particular stage of processing. Used in save_data.
+          constraint: optional
 
 
   wf_Seismogram:
