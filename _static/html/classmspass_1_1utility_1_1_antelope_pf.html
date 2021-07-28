@@ -353,11 +353,11 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Standard copy constructor. </p>
-<div class="fragment"><div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    : <a class="code" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a>(parent)</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;{</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    pftbls=parent.pftbls;</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    pfbranches=parent.pfbranches;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    : <a class="code" href="classmspass_1_1utility_1_1_metadata.html#a4a87cd6a6f8fc5cdbee65cb85958cb2c">Metadata</a>(parent)</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;{</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    pftbls=parent.pftbls;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    pfbranches=parent.pfbranches;</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -377,13 +377,13 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Return a list of keys for branches (Arrs) in the pf file. </p>
-<div class="fragment"><div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;{</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    map&lt;string,AntelopePf&gt;::const_iterator iptr;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    list&lt;string&gt; result;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    <span class="keywordflow">for</span>(iptr=pfbranches.begin(); iptr!=pfbranches.end(); ++iptr)</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        result.push_back((*iptr).first);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;{</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    map&lt;string,AntelopePf&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    list&lt;string&gt; result;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keywordflow">for</span>(iptr=pfbranches.begin(); iptr!=pfbranches.end(); ++iptr)</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        result.push_back((*iptr).first);</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -408,19 +408,19 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
  For now this method returns an object containin the boost::any values. Any Arr and Tbl entries are pushed directly to the output <a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> using boost::any and the two keys defined as const strings at the top of this file (pftbl_key and pfarr_key). <br  />
 </p>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> sans any Arr and Tbl entries. </dd></dl>
-<div class="fragment"><div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;{</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="keywordflow">try</span> {</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;        <a class="code" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> result(<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a>&amp;<span class="keyword">&gt;</span>(*<span class="keyword">this</span>));</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        boost::any aTbl=this-&gt;pftbls;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        <span class="comment">//boost::any&lt;map&lt;string,list&lt;string&gt;&gt; aTbl(this-&gt;pftbl);</span></div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        boost::any aArr=this-&gt;pfbranches;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;        result.put&lt;boost::any&gt;(pftbl_key,aTbl);</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;        result.put&lt;boost::any&gt;(pfarr_key,aArr);</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;        <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;    } <span class="keywordflow">catch</span>(...) {</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;        <span class="keywordflow">throw</span>;</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    };</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;{</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    <span class="keywordflow">try</span> {</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;        <a class="code" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a> result(<span class="keyword">dynamic_cast&lt;</span><a class="code" href="classmspass_1_1utility_1_1_metadata.html">Metadata</a>&amp;<span class="keyword">&gt;</span>(*<span class="keyword">this</span>));</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;        boost::any aTbl=this-&gt;pftbls;</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;        <span class="comment">//boost::any&lt;map&lt;string,list&lt;string&gt;&gt; aTbl(this-&gt;pftbl);</span></div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;        boost::any aArr=this-&gt;pfbranches;</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;        result.put&lt;boost::any&gt;(pftbl_key,aTbl);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;        result.put&lt;boost::any&gt;(pfarr_key,aArr);</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;        <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    } <span class="keywordflow">catch</span>(...) {</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;        <span class="keywordflow">throw</span>;</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    };</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -455,13 +455,13 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;{</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    map&lt;string,AntelopePf&gt;::const_iterator iptr;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    iptr=pfbranches.find(key);</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="keywordflow">if</span>(iptr==pfbranches.end()) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_antelope_pf_error.html">AntelopePfError</a>(</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;            <span class="stringliteral">&quot;get_branch failed trying to find data for key=&quot;</span>+key);</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <span class="keywordflow">return</span> iptr-&gt;second;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;{</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    map&lt;string,AntelopePf&gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    iptr=pfbranches.find(key);</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">if</span>(iptr==pfbranches.end()) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_antelope_pf_error.html">AntelopePfError</a>(</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;            <span class="stringliteral">&quot;get_branch failed trying to find data for key=&quot;</span>+key);</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    <span class="keywordflow">return</span> iptr-&gt;second;</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -495,13 +495,13 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
   </table>
   </dd>
 </dl>
-<div class="fragment"><div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;{</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    map&lt;string,list&lt;string&gt; &gt;::const_iterator iptr;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    iptr=pftbls.find(key);</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    <span class="keywordflow">if</span>(iptr==pftbls.end()) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_antelope_pf_error.html">AntelopePfError</a>(</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            <span class="stringliteral">&quot;get_tbl failed trying to find data for key=&quot;</span>+key);</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keywordflow">return</span>(iptr-&gt;second);</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;{</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    map&lt;string,list&lt;string&gt; &gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    iptr=pftbls.find(key);</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    <span class="keywordflow">if</span>(iptr==pftbls.end()) <span class="keywordflow">throw</span> <a class="code" href="classmspass_1_1utility_1_1_antelope_pf_error.html">AntelopePfError</a>(</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;            <span class="stringliteral">&quot;get_tbl failed trying to find data for key=&quot;</span>+key);</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    <span class="keywordflow">return</span>(iptr-&gt;second);</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -521,16 +521,16 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Standard assignment operator, </p>
-<div class="fragment"><div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;{</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;parent)</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    {</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;        <span class="comment">/* This uses a trick to use operator = of the parent object */</span></div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(parent);</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;        pftbls=parent.pftbls;</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        pfbranches=parent.pfbranches;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    }</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;{</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    <span class="keywordflow">if</span>(<span class="keyword">this</span>!=&amp;parent)</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    {</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;        <span class="comment">/* This uses a trick to use operator = of the parent object */</span></div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;        this-&gt;<a class="code" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">Metadata::operator=</a>(parent);</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;        pftbls=parent.pftbls;</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;        pfbranches=parent.pfbranches;</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    }</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keywordflow">return</span>(*<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;}</div>
 </div><!-- fragment -->
 <p class="reference">References <a class="el" href="classmspass_1_1utility_1_1_metadata.html#aadbae283dfdb87a82832519a9955fdfa">mspass::utility::Metadata::operator=()</a>.</p>
 
@@ -578,13 +578,13 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>Return a list of keys for Tbls in the pf. </p>
-<div class="fragment"><div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;{</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;    map&lt;string,list&lt;string&gt; &gt;::const_iterator iptr;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    list&lt;string&gt; result;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <span class="keywordflow">for</span>(iptr=pftbls.begin(); iptr!=pftbls.end(); ++iptr)</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        result.push_back((*iptr).first);</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <span class="keywordflow">return</span>(result);</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;}</div>
+<div class="fragment"><div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;{</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    map&lt;string,list&lt;string&gt; &gt;::const_iterator iptr;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    list&lt;string&gt; result;</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    <span class="keywordflow">for</span>(iptr=pftbls.begin(); iptr!=pftbls.end(); ++iptr)</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        result.push_back((*iptr).first);</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="keywordflow">return</span>(result);</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;}</div>
 </div><!-- fragment -->
 </div>
 </div>
