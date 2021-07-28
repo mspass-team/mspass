@@ -292,14 +292,7 @@ PYBIND11_MODULE(seismic, m) {
     .def_property("tmatrix",
       [](const CoreSeismogram &self){
         dmatrix tm = self.get_transformation_matrix();
-        auto v = static_cast<Publicdmatrix&>(tm).ary;
-        std::vector<double>* c = new std::vector<double>(std::move(v));
-        auto capsule = py::capsule(c, [](void *x) { delete reinterpret_cast<std::vector<double>*>(x); });
-        std::vector<ssize_t> size(2,3);
-        std::vector<ssize_t> stride(2);
-        stride[0] = sizeof(double);
-        stride[1] = sizeof(double) * 3;
-        return py::array(py::dtype(py::format_descriptor<double>::format()), size, stride, c->data(), capsule);
+        return pybind11::module::import("numpy").attr("array")(tm);
       },
       [](CoreSeismogram &self, py::object tm) {
         self.set_transformation_matrix(tm);
