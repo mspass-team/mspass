@@ -10,8 +10,11 @@ Created on Fri Jul 31 06:24:10 2020
 
 @author: Gary Pavlis
 """
-import mspasspy.ccore.seismic as mspass
+import numpy as np
+
+from mspasspy.ccore.seismic import DoubleVector
 from mspasspy.ccore.utility import (AntelopePf,
+                                    Metadata,
                                     MsPASSError,
                                     ErrorSeverity)
 from mspasspy.algorithms.window import WindowData
@@ -37,36 +40,23 @@ class RFdeconProcessor:
         pfhandle = AntelopePf(pf)
         if(self.algorithm == "LeastSquares"):
             self.md = pfhandle.get_branch('LeastSquare')
-            self.processor = LeastSquareDecon(self.md)
             self.__uses_noise = False
         elif(alg == "WaterLevel"):
             self.md = pfhandle.get_branch('WaterLevel')
-            self.processor = WaterLevelDecon(self.md)
             self.__uses_noise = False
         elif(alg == "MultiTaperXcor"):
             self.md = pfhandle.get_branch('MultiTaperXcor')
-            self.processor = MultiTaperXcorDecon(self.md)
             self.__uses_noise = True
         elif(alg == "MultiTaperSpecDiv"):
             self.md = pfhandle.get_branch('MultiTaperSpecDiv')
-            self.processor = MultiTaperSpecDivDecon(self.md)
             self.__uses_noise = True
         elif(alg == "GeneralizedIterative"):
             raise RuntimeError(
                 "Generalized Iterative method not yet supported")
         else:
             raise RuntimeError("Illegal value for alg="+alg)
-        # although loaddata and loadwavelet methods don't always require
-        # it we cache the analysis time window for efficiency
-        tws = self.md.get_double("deconvolution_data_window_start")
-        twe = self.md.get_double("deconvolution_data_window_end")
-        self.__dwin = TimeWindow(tws, twe)
-        if(self.__uses_noise):
-            tws = self.md.get_double("noise_window_start")
-            twe = self.md.get_double("noise_window_end")
-            self.__nwin = TimeWindow(tws, twe)
-        else:
-            self.__nwin = TimeWindow  # always initialize even if not used
+        # below is needed because AntelopePf cannot be serialized.
+        self.md = Metadata(self.md)
 
     def loaddata(self, d, dtype="Seismogram", component=0, window=False):
         """
@@ -128,7 +118,8 @@ class RFdeconProcessor:
                 dvector = ts.data
             else:
                 dvector = d
-        self.processor.loaddata(dvector)
+        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
+        self.dvector = np.array(dvector)
 
     def loadwavelet(self, w, dtype="Seismogram", component=2, window=False):
         # This code is painfully similar to loaddata. To reduce errors
@@ -158,7 +149,8 @@ class RFdeconProcessor:
                 wvector = ts.data
             else:
                 wvector = w
-        self.processor.loadwavelet(wvector)
+        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
+        self.wvector = np.array(wvector)
 
     def loadnoise(self, n, dtype="Seismogram", component=2, window=False):
         # First basic sanity checks
@@ -199,16 +191,31 @@ class RFdeconProcessor:
                 nvector = ts.data
             else:
                 nvector = n
-        self.processor.loadnoise(nvector)
+        # Have to explicitly convert to ndarray because DoubleVector cannot be serialized.
+        self.nvector = np.array(nvector)
 
     def apply(self):
         """
         Compute the RF estimate using the algorithm defined internally.
 
-       :return: vector of data that are the RF estimate computed from previously loaded data.
-       """
-        self.processor.process()
-        return self.processor.getresult()
+        :return: vector of data that are the RF estimate computed from previously loaded data.
+        """
+        if self.algorithm == "LeastSquares":
+            processor = LeastSquareDecon(self.md)
+        elif self.algorithm == "WaterLevel":
+            processor = WaterLevelDecon(self.md)
+        elif self.algorithm == "MultiTaperXcor":
+            processor = MultiTaperXcorDecon(self.md)
+        elif self.algorithm == "MultiTaperSpecDiv":
+            processor = MultiTaperSpecDivDecon(self.md)
+        if self.dvector:
+            processor.loaddata(DoubleVector(self.dvector))
+        if self.wvector:
+            processor.loadwavelet(DoubleVector(self.wvector))
+        if self.__uses_noise and self.nvector:
+            processor.loadnoise(DoubleVector(self.nvector))
+        processor.process()
+        return processor.getresult()
 
     def actual_output(self):
         """
@@ -223,8 +230,21 @@ class RFdeconProcessor:
         centered (i.e. t0 is rounded n/2 where n is the length of the vector
                   returned).
         """
-        result = self.processor.actual_output()
-        return result
+        if self.algorithm == "LeastSquares":
+            processor = LeastSquareDecon(self.md)
+        elif self.algorithm == "WaterLevel":
+            processor = WaterLevelDecon(self.md)
+        elif self.algorithm == "MultiTaperXcor":
+            processor = MultiTaperXcorDecon(self.md)
+        elif self.algorithm == "MultiTaperSpecDiv":
+            processor = MultiTaperSpecDivDecon(self.md)
+        if self.dvector:
+            processor.loaddata(DoubleVector(self.dvector))
+        if self.wvector:
+            processor.loadwavelet(DoubleVector(self.wvector))
+        if self.__uses_noise and self.nvector:
+            processor.loadnoise(DoubleVector(self.nvector))
+        return processor.actual_output()
 
     def ideal_output(self):
         """
@@ -239,8 +259,21 @@ class RFdeconProcessor:
         is a helpful metric to display the stability and accuracy of the
         inverse.
         """
-        result = self.processor.ideal_output()
-        return result
+        if self.algorithm == "LeastSquares":
+            processor = LeastSquareDecon(self.md)
+        elif self.algorithm == "WaterLevel":
+            processor = WaterLevelDecon(self.md)
+        elif self.algorithm == "MultiTaperXcor":
+            processor = MultiTaperXcorDecon(self.md)
+        elif self.algorithm == "MultiTaperSpecDiv":
+            processor = MultiTaperSpecDivDecon(self.md)
+        if self.dvector:
+            processor.loaddata(DoubleVector(self.dvector))
+        if self.wvector:
+            processor.loadwavelet(DoubleVector(self.wvector))
+        if self.__uses_noise and self.nvector:
+            processor.loadnoise(DoubleVector(self.nvector))
+        return processor.ideal_output()
 
     def inverse_filter(self):
         """
@@ -255,8 +288,21 @@ class RFdeconProcessor:
 
         The result is returned as  TimeSeries object.
         """
-        result = self.processor.inverse_filter()
-        return result
+        if self.algorithm == "LeastSquares":
+            processor = LeastSquareDecon(self.md)
+        elif self.algorithm == "WaterLevel":
+            processor = WaterLevelDecon(self.md)
+        elif self.algorithm == "MultiTaperXcor":
+            processor = MultiTaperXcorDecon(self.md)
+        elif self.algorithm == "MultiTaperSpecDiv":
+            processor = MultiTaperSpecDivDecon(self.md)
+        if self.dvector:
+            processor.loaddata(DoubleVector(self.dvector))
+        if self.wvector:
+            processor.loadwavelet(DoubleVector(self.wvector))
+        if self.__uses_noise and self.nvector:
+            processor.loadnoise(DoubleVector(self.nvector))
+        return processor.inverse_filter()
 
     def QCMetrics(self):
         """
@@ -266,8 +312,21 @@ class RFdeconProcessor:
         algorithm dependent.  See related documentation for metrics computed
         by different algorithms.
         """
-        result = self.processor.QCMetrics()
-        return result
+        if self.algorithm == "LeastSquares":
+            processor = LeastSquareDecon(self.md)
+        elif self.algorithm == "WaterLevel":
+            processor = WaterLevelDecon(self.md)
+        elif self.algorithm == "MultiTaperXcor":
+            processor = MultiTaperXcorDecon(self.md)
+        elif self.algorithm == "MultiTaperSpecDiv":
+            processor = MultiTaperSpecDivDecon(self.md)
+        if self.dvector:
+            processor.loaddata(DoubleVector(self.dvector))
+        if self.wvector:
+            processor.loadwavelet(DoubleVector(self.wvector))
+        if self.__uses_noise and self.nvector:
+            processor.loadnoise(DoubleVector(self.nvector))
+        return processor.QCMetrics()
 
     def change_parameters(self, md):
         """
@@ -281,7 +340,7 @@ class RFdeconProcessor:
         :param md: is a mspass.Metadata object containing required parameters
         for the alternative algorithm.
         """
-        self.processor.change_parameters(md)
+        self.md = Metadata(md)
 
     @property
     def uses_noise(self):
@@ -289,11 +348,18 @@ class RFdeconProcessor:
 
     @property
     def dwin(self):
-        return self.__dwin
+        tws = self.md.get_double("deconvolution_data_window_start")
+        twe = self.md.get_double("deconvolution_data_window_end")
+        return TimeWindow(tws, twe)
 
     @property
     def nwin(self):
-        return self.__nwin
+        if(self.__uses_noise):
+            tws = self.md.get_double("noise_window_start")
+            twe = self.md.get_double("noise_window_end")
+            return TimeWindow(tws, twe)
+        else:
+            return TimeWindow  # always initialize even if not used
 
 
 @mspass_func_wrapper
