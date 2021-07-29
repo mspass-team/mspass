@@ -1,4 +1,5 @@
 from mspasspy.util.decorators import mspass_func_wrapper
+from mspasspy.ccore.algorithms.basic import LinearTaper, CosineTaper, VectorTaper
 
 @mspass_func_wrapper
 def ator(data, tshift, *args,
@@ -175,3 +176,100 @@ def transform(data, matrix, *args,
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     """
     data.transform(matrix)
+
+@mspass_func_wrapper
+def linear_taper(data, t0head, t1head, t1tail, t0tail, *args,
+        object_history=False, alg_name=None, alg_id=None, dryrun=False,
+        inplace_return=True, function_return_key=None, **kwargs):
+    """
+    Taper front and/or end of a data object with a linear taper.
+
+    Linear tapers are defined here as a time spanning a ramp running from 0 to 1.
+    Data will be zeroed on each end of a 0 mark and a linear weight applied between
+    0 points and 1 points.  Postive ramp slope on left and negative slope ramp on
+    right. Setting t0 == t1 will disable the taper on the specified end (e.g., t0head == t1head).
+
+    :param data: data object to be processed.
+    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
+    :param t0head: t0 of the head taper
+    :type t0head: :class:`float`
+    :param t1head: t1 of the head taper
+    :type t1head: :class:`float`
+    :param t1tail: t1 of the tail taper
+    :type t1tail: :class:`float`
+    :param t0tail: t0 of the tail taper
+    :type t0tail: :class:`float`
+    :param object_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    """
+    taper = LinearTaper(t0head, t1head, t1tail, t0tail)
+    taper.apply(data)
+
+@mspass_func_wrapper
+def cosine_taper(data, t0head, t1head, t1tail, t0tail, *args,
+        object_history=False, alg_name=None, alg_id=None, dryrun=False,
+        inplace_return=True, function_return_key=None, **kwargs):
+    """
+    Taper front and/or end of a data object with a half cosine function.
+
+    A cosine taper is a common, simple approach to taper data.  When applied at the
+    front it defnes a half cycle of a cosine curve +1.0 in range -pi to 0.  On
+    the right it defines the same function for the range 0 to pi.  The period
+    of the left and right operator can be different.  Turn off left or right by
+    giving illegal start and end points and the operator will silently be
+    only one sided.
+
+    :param data: data object to be processed.
+    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
+    :param t0head: t0 of the head taper
+    :type t0head: :class:`float`
+    :param t1head: t1 of the head taper
+    :type t1head: :class:`float`
+    :param t1tail: t1 of the tail taper
+    :type t1tail: :class:`float`
+    :param t0tail: t0 of the tail taper
+    :type t0tail: :class:`float`
+    :param object_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    """
+    taper = CosineTaper(t0head, t1head, t1tail, t0tail)
+    taper.apply(data)
+    
+@mspass_func_wrapper
+def vector_taper(data, taper_array, *args,
+        object_history=False, alg_name=None, alg_id=None, dryrun=False,
+        inplace_return=True, function_return_key=None, **kwargs):
+    """
+    Apply a general taper defined by a vector to the data object.
+
+    This method provides a simple way to build a taper from a set of uniformly
+    spaced points. The apply methods will dogmatically only accept input
+    data of the same length as the taper defined in the operator. 
+
+    :param data: data object to be processed.
+    :type data: either :class:`~mspasspy.ccore.seismic.TimeSeries` or :class:`~mspasspy.ccore.seismic.Seismogram`
+    :param taper_array: the array that defines the taper
+    :type taper_array: :class:`numpy.array`
+    :param object_history: True to preserve the processing history. For details, refer to
+     :class:`~mspasspy.util.decorators.mspass_func_wrapper`.
+    :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+    :type alg_name: :class:`str`
+    :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+    :type alg_id: :class:`bson.objectid.ObjectId`
+    :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
+    :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    """
+    taper = VectorTaper(taper_array)
+    taper.apply(data)
