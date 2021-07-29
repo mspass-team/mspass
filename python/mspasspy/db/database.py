@@ -618,6 +618,41 @@ class Database(pymongo.database.Database):
             save_schema = schema.TimeSeries
         else:
             save_schema = schema.Seismogram
+<<<<<<< HEAD
+=======
+        # This function is needed to make sure the metadata define the time
+        # standard consistently
+        self._sync_time_metadata(mspass_object)
+        # 1. save metadata
+        self.update_metadata(mspass_object, update_all, exclude, collection)
+
+        # 2. save data
+        wf_collection = save_schema.collection('_id') if not collection else collection
+        col = self[wf_collection]
+        object_doc = col.find_one({'_id': mspass_object['_id']})
+        filter_ = {'_id': mspass_object['_id']}
+        update_dict = {'storage_mode': storage_mode}
+
+        if storage_mode == "file":
+            foff = self._save_data_to_dfile(mspass_object, dir, dfile)
+            update_dict['dir'] = dir
+            update_dict['dfile'] = dfile
+            update_dict['foff'] = foff
+        elif storage_mode == "gridfs":
+            old_gridfs_id = None if 'gridfs_id' not in object_doc else object_doc['gridfs_id']
+            gridfs_id = self._save_data_to_gridfs(mspass_object, old_gridfs_id)
+            update_dict['gridfs_id'] = gridfs_id
+        #TODO will support url mode later
+        #elif storage_mode == "url":
+        #    pass
+
+        col.update_one(filter_, {'$set': update_dict})
+
+    def update_metadata(self, mspass_object, update_all=False, exclude=None, collection=None):
+        """
+        Update (or save if it's a new object) the mspasspy object, including saving the processing history, elogs
+        and metadata attributes.
+>>>>>>> c4788d0d4d7a4a92c1920266ceb56b06d17fbd58
 
         # should define wf_collection here because if the mspass_object is dead
         if collection:
@@ -3629,7 +3664,13 @@ class Database(pymongo.database.Database):
         x = dbsource.find_one({'source_id': source_id})
         return x
 
+<<<<<<< HEAD
     #  Methods for handling miniseed data
+=======
+    # TODO: the following is not used when data is read from the database. We need
+    #       link these metadata keys with the actual member variables just like the
+    #       npts or t0 in TimeSeries.
+>>>>>>> c4788d0d4d7a4a92c1920266ceb56b06d17fbd58
     @staticmethod
     def _convert_mseed_index(index_record):
         """

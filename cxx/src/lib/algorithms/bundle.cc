@@ -162,9 +162,15 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
         chans_this_group.push_back("DEADCHANNEL");
         continue;
       }
+<<<<<<< HEAD
       net=d[i].get_string(SEISMICMD_net);
       sta=d[i].get_string(SEISMICMD_sta);
       chan=d[i].get_string(SEISMICMD_chan);
+=======
+      net=d[i].get_string("net");
+      sta=d[i].get_string("sta");
+      chan=d[i].get_string("chan");
+>>>>>>> c4788d0d4d7a4a92c1920266ceb56b06d17fbd58
       sta2.assign(chan,0,2);
       loc=d[i].get_string(SEISMICMD_loc);
       chans_this_group.push_back(chan);
@@ -407,8 +413,13 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
         /* If net, sta, and loc are defined we try to blunder on so we can
         retain elog entries in data received as dead.  Necessary or the
         user won't be able to track the reason something was dropped easily*/
+<<<<<<< HEAD
         if( dptr->is_defined(SEISMICMD_net) && dptr->is_defined(SEISMICMD_sta)
            && dptr->is_defined(SEISMICMD_loc) )
+=======
+        if( dptr->is_defined("net") && dptr->is_defined("sta")
+           && dptr->is_defined("loc") )
+>>>>>>> c4788d0d4d7a4a92c1920266ceb56b06d17fbd58
         {
           has_dead_channel=true;
         }
@@ -479,6 +490,7 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
           recover something */
           size_t nlive;
           if(has_dead_channel)
+<<<<<<< HEAD
           {
             nlive=0;
             for(auto ii=i0;ii<=iend;++ii)
@@ -486,6 +498,15 @@ LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
           }
           else
           {
+=======
+          {
+            nlive=0;
+            for(auto ii=i0;ii<=iend;++ii)
+              if(d.member[ii].live())++nlive;
+          }
+          else
+          {
+>>>>>>> c4788d0d4d7a4a92c1920266ceb56b06d17fbd58
             nlive=iend-i0+1;
           }
           //if((iend-i0)>=2)  //Use iend to handle end condition instead of i

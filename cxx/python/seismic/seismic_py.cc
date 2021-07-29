@@ -148,7 +148,25 @@ PYBIND11_MODULE(seismic, m) {
     )", scope);
 
   /* We need one of these for each std::vector container to make them function correctly*/
-  py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  py::bind_vector<std::vector<double>> (m, "DoubleVector")
+    .def("__add__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__add__")(b));
+    })
+    .def("__sub__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__sub__")(b));
+    })
+    .def("__mul__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__mul__")(b));
+    })
+    .def("__truediv__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__truediv__")(b));
+    })
+  ;
+  
   /* We define the following as global such that it can be used in the algorithms.basic module.
      The usage is documented here:
      https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
@@ -165,6 +183,18 @@ PYBIND11_MODULE(seismic, m) {
     .def("baz",&SlownessVector::baz,"Return the so called back azimuth defined by a slowness vector")
     .def_readwrite("ux",&SlownessVector::ux,"Slowness component in the x (Easting) direction")
     .def_readwrite("uy",&SlownessVector::uy,"Slowness component in the y (Northing) direction")
+    .def(py::pickle(
+      [](const SlownessVector &self) {
+          return py::make_tuple(self.ux, self.uy, self.azimuth());
+      },
+      [](py::tuple t) {
+        double xbuf = t[0].cast<double>();
+        double ybuf = t[1].cast<double>();
+        double abuf = t[2].cast<double>();
+        SlownessVector sv(xbuf, ybuf, abuf);
+        return sv;
+      }
+     ))
   ;
 
   py::enum_<TimeReferenceType>(m,"TimeReferenceType")
