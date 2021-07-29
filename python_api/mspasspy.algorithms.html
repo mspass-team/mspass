@@ -738,7 +738,7 @@ come from the global history manager or be set manually.</p>
 
 <dl class="py function">
 <dt id="mspasspy.algorithms.window.WindowData">
-<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">WindowData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">twin</span></em>, <em class="sig-param"><span class="n">t0shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'scale'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.window.</code><code class="sig-name descname">WindowData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">win_start</span></em>, <em class="sig-param"><span class="n">win_end</span></em>, <em class="sig-param"><span class="n">t0shift</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'scale'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/window.html#WindowData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.window.WindowData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cut data defined by a TimeWindow object.</p>
 <p>Cutting a smaller waveform segment from a larger waveform segment
 is a very common seismic data processing task.   The function is
@@ -751,9 +751,10 @@ datum AND the data will be marked dead (killed).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> – is the input data.  d must be either a TimeSeries or Seismogram
+<li><p><strong>d</strong> – is the input data.  d must be either a <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.TimeSeries" title="mspasspy.ccore.seismic.TimeSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.TimeSeries</span></code></a> or <a class="reference internal" href="mspasspy.ccore.html#mspasspy.ccore.seismic.Seismogram" title="mspasspy.ccore.seismic.Seismogram"><code class="xref py py-class docutils literal notranslate"><span class="pre">mspasspy.ccore.seismic.Seismogram</span></code></a>
 object or the function will log an error to d and return a None.</p></li>
-<li><p><strong>twin</strong> – is a TimeWindow defining window to be cut</p></li>
+<li><p><strong>twin_start</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the start of timeWindow to be cut</p></li>
+<li><p><strong>twin_end</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – defines the end of timeWindow to be cut</p></li>
 <li><p><strong>t0shift</strong> – is an optional time shift to apply to the time window.
 This parameter is convenient to avoid conversions to relative time.
 A typical example would be to set t0shift to an arrival time and let
