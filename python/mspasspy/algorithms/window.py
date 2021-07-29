@@ -238,7 +238,7 @@ def scale(d, compute_from_window=False, window=None,
 
 
 @mspass_func_wrapper
-def WindowData(d, twin, t0shift=None,
+def WindowData(d, win_start, win_end, t0shift=None,
                object_history=False, alg_name='scale', alg_id=None, dryrun=False):
     """
     Cut data defined by a TimeWindow object.
@@ -253,9 +253,12 @@ def WindowData(d, twin, t0shift=None,
     an error message to be posted to the elog attribute of the input
     datum AND the data will be marked dead (killed).
 
-    :param d: is the input data.  d must be either a TimeSeries or Seismogram
+    :param d: is the input data.  d must be either a :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
       object or the function will log an error to d and return a None.
-    :param twin: is a TimeWindow defining window to be cut
+    :param twin_start: defines the start of timeWindow to be cut
+    :type twin_start: :class:`float`
+    :param twin_end: defines the end of timeWindow to be cut
+    :type twin_end: :class:`float`
     :param t0shift: is an optional time shift to apply to the time window.
       This parameter is convenient to avoid conversions to relative time.
       A typical example would be to set t0shift to an arrival time and let
@@ -282,16 +285,16 @@ def WindowData(d, twin, t0shift=None,
     """
     if d.dead():
         return d
-    twcut = TimeWindow(twin)
-    if t0shift != None:
+    twcut = TimeWindow(win_start, win_end)
+    if t0shift:
         twcut.shift(t0shift)
     try:
         # This handler duplicates an error test in the WindowData C code but
         # it will be more efficient to handle it here.
-        if twin.start < d.t0 or twin.end > d.endtime():
+        if win_start < d.t0 or win_end > d.endtime():
             detailline = 'Window range: {wst},{wet}  Data range:  {dst},{det}'.format(
-                wst=twin.start,
-                wet=twin.end,
+                wst=win_start,
+                wet=win_end,
                 dst=d.t0,
                 det=d.endtime()
             )
