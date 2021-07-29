@@ -290,10 +290,10 @@
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">dvector</span> <span class="o">=</span> <span class="n">d</span>
@@ -321,10 +321,10 @@
         <span class="k">if</span><span class="p">(</span><span class="n">window</span><span class="p">):</span>
             <span class="k">if</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">):</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span><span class="p">(</span><span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">):</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">wvector</span> <span class="o">=</span> <span class="n">w</span>
@@ -360,13 +360,12 @@
         <span class="k">if</span> <span class="n">window</span><span class="p">:</span>
             <span class="n">tws</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_start&quot;</span><span class="p">)</span>
             <span class="n">twe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="o">.</span><span class="n">get_double</span><span class="p">(</span><span class="s2">&quot;noise_window_end&quot;</span><span class="p">)</span>
-            <span class="n">win</span> <span class="o">=</span> <span class="n">TimeWindow</span><span class="p">(</span><span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;Seismogram&quot;</span><span class="p">:</span>
                 <span class="n">ts</span> <span class="o">=</span> <span class="n">ExtractComponent</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">win</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="s2">&quot;TimeSeries&quot;</span><span class="p">:</span>
-                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">win</span><span class="p">)</span>
+                <span class="n">ts</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tws</span><span class="p">,</span> <span class="n">twe</span><span class="p">)</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">data</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">nvector</span> <span class="o">=</span> <span class="n">n</span>
@@ -654,7 +653,7 @@
     <span class="c1"># Otherwise we would call the window operator 3 times below</span>
     <span class="c1"># WindowData does will kill the output if the window doesn&#39;t match</span>
     <span class="c1"># which is reason for the test immediately after this call</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">processor</span><span class="o">.</span><span class="n">dwin</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">WindowData</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">processor</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">processor</span><span class="o">.</span><span class="n">dwin</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">dead</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">result</span>
     <span class="n">npts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">npts</span>
