@@ -598,6 +598,12 @@ def test_Seismogram():
     assert all(np.isclose(seis.data[:, 3], [0, 0, 1]))
     seis.rotate_to_standard()
 
+    # test for serialization of SphericalCoordinate
+    sc_copy = pickle.loads(pickle.dumps(sc))
+    assert sc_copy.radius == sc.radius
+    assert sc_copy.theta == sc.theta
+    assert sc_copy.phi == sc.phi
+
     a = np.zeros((3, 3))
     a[0][0] = 1.0
     a[0][1] = 1.0
@@ -648,6 +654,13 @@ def test_Seismogram():
 
     seis.tmatrix = a
     assert (seis.tmatrix == a).all()
+
+    
+    # test for serialization of SlownessVector
+    uvec_copy = pickle.loads(pickle.dumps(uvec))
+    assert uvec_copy.ux == uvec.ux
+    assert uvec_copy.uy == uvec.uy
+    assert uvec_copy.azimuth() == uvec.azimuth()
 
 
 @pytest.fixture(params=[TimeSeriesEnsemble, SeismogramEnsemble])

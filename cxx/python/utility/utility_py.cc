@@ -211,6 +211,18 @@ PYBIND11_MODULE(utility, m) {
     .def_readwrite("radius", &SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &SphericalCoordinate::theta,"zonal angle of spherical coordinates")
     .def_readwrite("phi", &SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
+    .def(py::pickle(
+      [](const SphericalCoordinate &self) {
+          return py::make_tuple(self.radius, self.theta, self.phi);
+      },
+      [](py::tuple t) {
+        double rbuf = t[0].cast<double>();
+        double tbuf = t[1].cast<double>();
+        double pbuf = t[2].cast<double>();
+        SphericalCoordinate xsc = {rbuf, tbuf, pbuf};
+        return xsc;
+      }
+     ))
   ;
 
   py::class_<BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")

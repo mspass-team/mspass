@@ -183,6 +183,18 @@ PYBIND11_MODULE(seismic, m) {
     .def("baz",&SlownessVector::baz,"Return the so called back azimuth defined by a slowness vector")
     .def_readwrite("ux",&SlownessVector::ux,"Slowness component in the x (Easting) direction")
     .def_readwrite("uy",&SlownessVector::uy,"Slowness component in the y (Northing) direction")
+    .def(py::pickle(
+      [](const SlownessVector &self) {
+          return py::make_tuple(self.ux, self.uy, self.azimuth());
+      },
+      [](py::tuple t) {
+        double xbuf = t[0].cast<double>();
+        double ybuf = t[1].cast<double>();
+        double abuf = t[2].cast<double>();
+        SlownessVector sv(xbuf, ybuf, abuf);
+        return sv;
+      }
+     ))
   ;
 
   py::enum_<TimeReferenceType>(m,"TimeReferenceType")
