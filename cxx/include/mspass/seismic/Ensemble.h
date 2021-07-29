@@ -232,9 +232,12 @@ public:
   {
     if(&parent != this)
     {
-      Ensemble<T> *baseptr
-                =dynamic_cast<Ensemble<T>>(this);
-      baseptr->operator=(parent);
+      this->mspass::utility::Metadata::operator=(parent);
+      this->member.reserve(parent.member.size());
+      for(auto dptr=parent.member.begin();dptr!=parent.member.end();++dptr)
+      {
+        this->member.push_back(*dptr);
+      }
       elog=parent.elog;
       ensemble_is_live=parent.ensemble_is_live;
     }
