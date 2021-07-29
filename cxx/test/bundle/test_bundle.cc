@@ -46,7 +46,7 @@ TimeSeries make_testdatum(const string net, const string sta,const string chan,
   }
   return d;
 }
-void print_input_pattern(const Ensemble<TimeSeries>& e)
+void print_input_pattern(const LoggingEnsemble<TimeSeries>& e)
 {
   string sta,chan,loc,net;
   cout <<"net sta chan loc npts fill_value"<<endl;
@@ -91,7 +91,7 @@ void print_input_pattern(const Ensemble<TimeSeries>& e)
     cout << d->s[0]<< endl;
   }
 }
-void print_output(const Ensemble<Seismogram>& e)
+void print_output(const LoggingEnsemble<Seismogram>& e)
 {
   string sta,chan,loc,net;
   cout <<"net sta chan loc npts fill_values"<<endl;
@@ -146,7 +146,7 @@ void print_output(const Ensemble<Seismogram>& e)
     cout <<endl;
   }
 }
-bool compare_stas(const Ensemble<Seismogram>& d,const vector<string>& pattern)
+bool compare_stas(const LoggingEnsemble<Seismogram>& d,const vector<string>& pattern)
 {
   size_t i(0);
   for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr,++i)
@@ -157,7 +157,7 @@ bool compare_stas(const Ensemble<Seismogram>& d,const vector<string>& pattern)
   return true;
 }
 /* used in exception handler tests */
-int count_live(const Ensemble<Seismogram>& d)
+int count_live(const LoggingEnsemble<Seismogram>& d)
 {
   int count=0;
   for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr)
@@ -166,7 +166,7 @@ int count_live(const Ensemble<Seismogram>& d)
   }
   return count;
 }
-void print_ensemble_errors(const Ensemble<Seismogram>& d)
+void print_ensemble_errors(const LoggingEnsemble<Seismogram>& d)
 {
   int count=0;
   for(auto dptr=d.member.begin();dptr!=d.member.end();++dptr,++count)
@@ -186,8 +186,8 @@ void print_ensemble_errors(const Ensemble<Seismogram>& d)
 int main(int argc, char **argv)
 {
   cout << "Starting test_bundle program"<<endl;
-  Ensemble<TimeSeries> ens0, ens1, ens2, ens3, ens4;
-  Ensemble<Seismogram> ens3c;  // always holds output of bundle
+  LoggingEnsemble<TimeSeries> ens0, ens1, ens2, ens3, ens4;
+  LoggingEnsemble<Seismogram> ens3c;  // always holds output of bundle
   /* We will fill ens0 with a pattern we will mostly reuse.  Data are
   intentionally in the wrong order to test sorting */
   vector<string> sta;
