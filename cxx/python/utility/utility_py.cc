@@ -202,8 +202,11 @@ PYBIND11_MODULE(utility, m) {
        https://github.com/pybind/pybind11/issues/1042 */
     .def_property_readonly("unit_vector", [](const SphericalCoordinate& self) {
       double* v = SphericalToUnitVector(self);
-      auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
-      return py::array(3, v, capsule);
+      // auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
+      // return py::array(3, v, capsule);
+      vector<double> unit_vector(v, v + 3);
+      delete[] v;
+      return pybind11::module::import("numpy").attr("array")(unit_vector);
     },"Return the unit vector equivalent to direction defined in sphereical coordinates")
     .def_readwrite("radius", &SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &SphericalCoordinate::theta,"zonal angle of spherical coordinates")
