@@ -103,10 +103,10 @@ class RFdeconProcessor:
         if(window):
             if(dtype == "Seismogram"):
                 ts = ExtractComponent(d, component)
-                ts = WindowData(ts, self.dwin)
+                ts = WindowData(ts, self.dwin.start, self.dwin.end)
                 dvector = ts.data
             elif(dtype == "TimeSeries"):
-                ts = WindowData(d, self.dwin)
+                ts = WindowData(d, self.dwin.start, self.dwin.end)
                 dvector = ts.data
             else:
                 dvector = d
@@ -134,10 +134,10 @@ class RFdeconProcessor:
         if(window):
             if(dtype == "Seismogram"):
                 ts = ExtractComponent(w, component)
-                ts = WindowData(ts, self.dwin)
+                ts = WindowData(ts, self.dwin.start, self.dwin.end)
                 wvector = ts.data
             elif(dtype == "TimeSeries"):
-                ts = WindowData(w, self.dwin)
+                ts = WindowData(w, self.dwin.start, self.dwin.end)
                 wvector = ts.data
             else:
                 wvector = w
@@ -173,13 +173,12 @@ class RFdeconProcessor:
         if window:
             tws = self.md.get_double("noise_window_start")
             twe = self.md.get_double("noise_window_end")
-            win = TimeWindow(tws, twe)
             if dtype == "Seismogram":
                 ts = ExtractComponent(n, component)
-                ts = WindowData(ts, win)
+                ts = WindowData(ts, tws, twe)
                 nvector = ts.data
             elif dtype == "TimeSeries":
-                ts = WindowData(n, win)
+                ts = WindowData(n, tws, twe)
                 nvector = ts.data
             else:
                 nvector = n
@@ -467,7 +466,7 @@ def RFdecon(d, processor, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
     # Otherwise we would call the window operator 3 times below
     # WindowData does will kill the output if the window doesn't match
     # which is reason for the test immediately after this call
-    result = WindowData(d, processor.dwin)
+    result = WindowData(d, processor.dwin.start, processor.dwin.end)
     if result.dead():
         return result
     npts = result.npts
