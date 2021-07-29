@@ -207,15 +207,14 @@ def test_windowdata():
         for i in range(npts):
             t3c.data[k, i] = 100*(k+1)+float(i)
 
-    win = TimeWindow(2, 3)
-    d = WindowData(ts, win)
+    d = WindowData(ts, 2, 3)
     print('t y')
     for j in range(d.npts):
         print(d.time(j), d.data[j])
     assert len(d.data) == 101
     assert d.t0 == 2.0
     assert d.endtime() == 3.0
-    d = WindowData(t3c, win)
+    d = WindowData(t3c, 2, 3)
     print('t x0 x1 x2')
     for j in range(d.npts):
         print(d.time(j), d.data[0, j], d.data[1, j], d.data[2, j])
@@ -224,12 +223,11 @@ def test_windowdata():
     assert d.endtime() == 3.0
     print('testing error handling')
     t3c.kill()
-    d = WindowData(t3c, win)
+    d = WindowData(t3c, 2, 3)
     assert d.npts == 1000 and (not d.live)
     # old test:  d=WindowData(ts,win,object_history=True)
     # larger than data range will generate an exception
-    badwin = TimeWindow(-999.0, 1000.0)
-    d = WindowData(ts, badwin)
+    d = WindowData(ts, -999.0, 1000.0)
     print('Error message posted')
     print(d.elog.get_error_log())
     assert d.elog.size() == 1
