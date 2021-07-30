@@ -287,6 +287,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span>
                 <span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Invalid</span><span class="p">)</span>
+        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
+        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
     <span class="k">except</span> <span class="n">MsPASSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span> <span class="o">==</span> <span class="n">ErrorSeverity</span><span class="o">.</span><span class="n">Fatal</span><span class="p">:</span>
             <span class="k">raise</span>
@@ -294,7 +297,10 @@
             <span class="n">data</span><span class="o">.</span><span class="n">elog</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging_helper</span><span class="o">.</span><span class="n">ensemble_error</span><span class="p">(</span>
-                <span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span></div>
+                <span class="n">data</span><span class="p">,</span> <span class="n">alg_name</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="n">ex</span><span class="o">.</span><span class="n">severity</span><span class="p">)</span>
+        <span class="c1"># some unexpected error happen, if inplace_return is true, we may want to return the original data</span>
+        <span class="k">if</span> <span class="n">inplace_return</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="mspass_func_wrapper_multi"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.util.decorators.mspass_func_wrapper_multi">[docs]</a><span class="nd">@decorator</span>
