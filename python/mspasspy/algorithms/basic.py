@@ -149,6 +149,8 @@ def free_surface_transformation(data, uvec, vp0, vs0, *args,
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
     """
+    print('func args: ', args)
+    print('func kwargs: ', kwargs)
     data.free_surface_transformation(uvec, vp0, vs0)
 
 @mspass_func_wrapper

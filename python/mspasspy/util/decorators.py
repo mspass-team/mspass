@@ -54,6 +54,10 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
+    print('decorator args: ', args)
+    print('decorator kwargs: ', kwargs)
+    print('inplace_return: ', inplace_return)
+    print('data type: ', type(data))
     if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
         raise TypeError(
             "mspass_func_wrapper only accepts mspass object as data input")
@@ -91,6 +95,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
                                     ErrorSeverity.Complaint)
             return data
         elif inplace_return:
+            print('reach here!')
             return data
         else:
             return res
