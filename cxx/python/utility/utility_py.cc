@@ -202,12 +202,27 @@ PYBIND11_MODULE(utility, m) {
        https://github.com/pybind/pybind11/issues/1042 */
     .def_property_readonly("unit_vector", [](const SphericalCoordinate& self) {
       double* v = SphericalToUnitVector(self);
-      auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
-      return py::array(3, v, capsule);
+      // auto capsule = py::capsule(v, [](void *v) { delete[] reinterpret_cast<double*>(v); });
+      // return py::array(3, v, capsule);
+      vector<double> unit_vector(v, v + 3);
+      delete[] v;
+      return pybind11::module::import("numpy").attr("array")(unit_vector);
     },"Return the unit vector equivalent to direction defined in sphereical coordinates")
     .def_readwrite("radius", &SphericalCoordinate::radius,"R of spherical coordinates")
     .def_readwrite("theta", &SphericalCoordinate::theta,"zonal angle of spherical coordinates")
     .def_readwrite("phi", &SphericalCoordinate::phi,"azimuthal angle of spherical coordinates")
+    .def(py::pickle(
+      [](const SphericalCoordinate &self) {
+          return py::make_tuple(self.radius, self.theta, self.phi);
+      },
+      [](py::tuple t) {
+        double rbuf = t[0].cast<double>();
+        double tbuf = t[1].cast<double>();
+        double pbuf = t[2].cast<double>();
+        SphericalCoordinate xsc = {rbuf, tbuf, pbuf};
+        return xsc;
+      }
+     ))
   ;
 
   py::class_<BasicMetadata,PyBasicMetadata>(m,"BasicMetadata")

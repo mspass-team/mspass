@@ -402,17 +402,6 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
     size_t i;
     for(i=0,dptr=d.member.begin();dptr!=d.member.end();++i,++dptr)
     {
-    //DEBUG
-    cout<<"i="<<i<<" values: "
-      << lastnet <<":"
-      << laststa <<":"
-      << lastchan <<":"
-      << lastloc <<endl
-      << "Current= "
-      << net <<":"
-      << sta <<":"
-      << chan <<":"
-      << loc <<endl;
       if(dptr->dead())
       {
         /* If net, sta, and loc are defined we try to blunder on so we can

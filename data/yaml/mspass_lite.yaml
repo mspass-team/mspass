@@ -2,7 +2,7 @@ Database:
   wf_TimeSeries:
     default: wf
     data_type: TimeSeries
-    schema: 
+    schema:
       chan:
         type: string
         concept: channel name (e.g. HHZ, BHE, etc.) - normally a SEED channel code
@@ -99,9 +99,12 @@ Database:
           reference: history_object
           constraint: xref_key
         elog_id:
-          type: list
           reference: elog
           constraint: xref_key
+        data_tag:
+          type: string
+          concept: Used as a tag for data at a particular stage of processing. Used in save_data.
+          constraint: optional
 
   wf_Seismogram:
     data_type: Seismogram
@@ -110,6 +113,14 @@ Database:
       tmatrix:
         type: list
         concept: Three-component data's transformation matrix
+        constraint: required
+      cardinal:
+        type: bool
+        concept: When true the data stored are orthogonal and in cardinal (ENZ) geographic directions.
+        constraint: required
+      orthogonal:
+        type: bool
+        concept: When true the transformation matrix is orthogonal (inverse can then be constructed from transpose instead of inversion). 
         constraint: required
 
   history_global:
@@ -165,8 +176,8 @@ Database:
         reference: wf_TimeSeries
         constraint: xref_key
       alg_id:
-        type: string
         concept: ObjectId used to define a unique algorithm(alg_name + parameters)
+        reference: history_global
         constraint: xref_key
       alg_name:
         type: string
@@ -216,6 +227,9 @@ Metadata:
       time_standard:
         collection: wf_TimeSeries
         readonly: false
+      utc_convertible:
+        collection: wf_TimeSeries
+        readonly: false
       calib:
         collection: wf_TimeSeries
         readonly: false
@@ -250,6 +264,9 @@ Metadata:
         collection: wf_Seismogram
         readonly: false
       time_standard:
+        collection: wf_Seismogram
+        readonly: false
+      utc_convertible:
         collection: wf_Seismogram
         readonly: false
       calib:

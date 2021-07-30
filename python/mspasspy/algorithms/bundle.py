@@ -56,6 +56,13 @@ def bundle_seed_data(ensemble):
     bundle are subject to the same truncation or discard rules described
     in the related function Bundle3C.
 
+    Note there is not guarantee the Seismogram objects returned 
+    will be in standard coordinates.  In fact, they will never be 
+    with standard channel names because of the internal sorting. 
+    It would normally be highly recommended the user call the 
+    rotate_to_standard method on each Seismogram before any use. 
+
+
     :param ensemble: is the input ensemble of TimeSeries to be processed.
     :return:   ensemble of Seismogram objects made by bundling input data
     :rtype:  SeismogramEnsemble

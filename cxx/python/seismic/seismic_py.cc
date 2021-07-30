@@ -9,12 +9,10 @@
 
 #include <mspass/seismic/keywords.h>
 #include <mspass/seismic/SlownessVector.h>
-#include <mspass/seismic/TimeWindow.h>
 #include <mspass/seismic/TimeSeries.h>
 #include <mspass/seismic/Seismogram.h>
 #include <mspass/seismic/Ensemble.h>
 #include <mspass/seismic/PowerSpectrum.h>
-#include <mspass/seismic/Taper.h>
 
 #include "python/utility/Publicdmatrix_py.h"
 #include "python/utility/boost_any_converter_py.h"
@@ -95,38 +93,16 @@ public:
   }
 };
 
-/* Trampoline class for BasicTaper - used for family of taper classes*/
-class PyBasicTaper : public BasicTaper
-{
-public:
-  int apply(TimeSeries& d)
-  {
-    PYBIND11_OVERLOAD_PURE(
-      int,
-      BasicTaper,
-      TimeSeries&,
-      d);
-  }
-  int apply(Seismogram& d)
-  {
-    PYBIND11_OVERLOAD_PURE(
-      int,
-      BasicTaper,
-      Seismogram&,
-      d);
-  }
-};
-
 PYBIND11_MODULE(seismic, m) {
   m.attr("__name__") = "mspasspy.ccore.seismic";
   m.doc() = "A submodule for seismic namespace of ccore";
 
   /* Define the keywords here*/
   py::object scope = py::module_::import("__main__").attr("__dict__");
-  /* The following hack on __name__ is needed to avoid contaminating 
+  /* The following hack on __name__ is needed to avoid contaminating
      user's namespace of __main__. This way _KeywordDict is defined
      under mspasspy.ccore.seismic instead of __main__. */
-  /* TODO: Note that we could also disable editing by overriding 
+  /* TODO: Note that we could also disable editing by overriding
      methods such as __setattr__ and __setitem__, but it is not
      essential for now. */
   py::exec(R"(
@@ -172,7 +148,25 @@ PYBIND11_MODULE(seismic, m) {
     )", scope);
 
   /* We need one of these for each std::vector container to make them function correctly*/
-  py::bind_vector<std::vector<double>>(m, "DoubleVector");
+  py::bind_vector<std::vector<double>> (m, "DoubleVector")
+    .def("__add__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__add__")(b));
+    })
+    .def("__sub__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__sub__")(b));
+    })
+    .def("__mul__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__mul__")(b));
+    })
+    .def("__truediv__", [](const std::vector<double> &a, py::object b) {
+      return py::module_::import("mspasspy.ccore.seismic").attr("DoubleVector")(
+        py::array(a.size(), a.data(), py::none()).attr("__truediv__")(b));
+    })
+  ;
+  
   /* We define the following as global such that it can be used in the algorithms.basic module.
      The usage is documented here:
      https://pybind11.readthedocs.io/en/stable/advanced/cast/stl.html#binding-stl-containers
@@ -189,16 +183,18 @@ PYBIND11_MODULE(seismic, m) {
     .def("baz",&SlownessVector::baz,"Return the so called back azimuth defined by a slowness vector")
     .def_readwrite("ux",&SlownessVector::ux,"Slowness component in the x (Easting) direction")
     .def_readwrite("uy",&SlownessVector::uy,"Slowness component in the y (Northing) direction")
-  ;
-
-  py::class_<TimeWindow>(m,"TimeWindow","Simple description of a time window")
-    .def(py::init<>(),"Default constructor")
-    .def(py::init<const double, const double>(),"Construct from start and end time")
-    .def(py::init<const TimeWindow&>(),"Copy constuctor")
-    .def("shift",&TimeWindow::shift,"Shift the reference time by a specified number of seconds")
-    .def("length",&TimeWindow::length,"Return the size of the window in seconds")
-    .def_readwrite("start",&TimeWindow::start,"Start time of the window")
-    .def_readwrite("end",&TimeWindow::end,"End time of the window")
+    .def(py::pickle(
+      [](const SlownessVector &self) {
+          return py::make_tuple(self.ux, self.uy, self.azimuth());
+      },
+      [](py::tuple t) {
+        double xbuf = t[0].cast<double>();
+        double ybuf = t[1].cast<double>();
+        double abuf = t[2].cast<double>();
+        SlownessVector sv(xbuf, ybuf, abuf);
+        return sv;
+      }
+     ))
   ;
 
   py::enum_<TimeReferenceType>(m,"TimeReferenceType")
@@ -320,18 +316,13 @@ PYBIND11_MODULE(seismic, m) {
         throw py::value_error("transform expects a 3x3 matrix");
       self.transform(static_cast<double(*)[3]>(info.ptr));
     },"Applies an arbitrary transformation matrix to the data")
+    .def("cardinal",&CoreSeismogram::cardinal,"Returns true if components are cardinal")
+    .def("orthogonal",&CoreSeismogram::orthogonal,"Returns true if components are orthogonal")
     .def("free_surface_transformation",&CoreSeismogram::free_surface_transformation,"Apply free surface transformation operator to data")
-    .def_property("transformation_matrix",
+    .def_property("tmatrix",
       [](const CoreSeismogram &self){
         dmatrix tm = self.get_transformation_matrix();
-        auto v = static_cast<Publicdmatrix&>(tm).ary;
-        std::vector<double>* c = new std::vector<double>(std::move(v));
-        auto capsule = py::capsule(c, [](void *x) { delete reinterpret_cast<std::vector<double>*>(x); });
-        std::vector<ssize_t> size(2,3);
-        std::vector<ssize_t> stride(2);
-        stride[0] = sizeof(double);
-        stride[1] = sizeof(double) * 3;
-        return py::array(py::dtype(py::format_descriptor<double>::format()), size, stride, c->data(), capsule);
+        return pybind11::module::import("numpy").attr("array")(tm);
       },
       [](CoreSeismogram &self, py::object tm) {
         self.set_transformation_matrix(tm);
@@ -464,13 +455,8 @@ PYBIND11_MODULE(seismic, m) {
         to go back and forth from obspy trace objects. */
         bts.set_tref(TimeReferenceType::UTC);
         ProcessingHistory emptyph;
-        double *dptr;
-        vector<double> sbuf;
-        sbuf.reserve(npts);   // A standard efficiency trick for std::vector
-        /* Initialize dptr here for clarity instead of putting it inside the
-        initialization block of the for loop - clearer to me anyway */
-        dptr=(double*)(info.ptr);
-        for(size_t i=0;i<npts;++i,++dptr) sbuf.push_back(*dptr);
+        vector<double> sbuf(npts);
+        memcpy(&sbuf[0], info.ptr, npts*sizeof(double));
         auto v = new TimeSeries(bts,md,emptyph,sbuf);
         return v;
       }))
@@ -529,7 +515,7 @@ PYBIND11_MODULE(seismic, m) {
      Note also the objects are stored in and std::vector container with the name member.  It appears
      the index operator is supported out of the box with pybind11 wrapprs so constructs like member[i]
      will be handled. */
-  py::class_<Ensemble<TimeSeries>,Metadata>(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+  py::class_<Ensemble<TimeSeries>,Metadata>(m,"CoreTimeSeriesEnsemble","Gather of scalar time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
@@ -580,7 +566,7 @@ PYBIND11_MODULE(seismic, m) {
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
   ;
-  py::class_<Ensemble<Seismogram>,Metadata>(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+  py::class_<Ensemble<Seismogram>,Metadata>(m,"CoreSeismogramEnsemble","Gather of vector(3c) time series objects")
     .def(py::init<>())
     .def(py::init<const size_t >())
     .def(py::init<const Metadata&, const size_t>())
@@ -627,6 +613,146 @@ PYBIND11_MODULE(seismic, m) {
     .def("__setitem__",py::overload_cast<const std::string,const std::string>(&BasicMetadata::put))
     .def("__setitem__",py::overload_cast<const std::string,const py::object>(&Metadata::put_object))
   ;
+  py::class_<LoggingEnsemble<Seismogram>, Ensemble<Seismogram> >(m,"SeismogramEnsemble","Gather of vector(3c) time series objects")
+    .def(py::init<>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
+    .def(py::init<const Ensemble<Seismogram>&>())
+    .def(py::init<const LoggingEnsemble<Seismogram>&>())
+    .def("kill",&LoggingEnsemble<Seismogram>::kill,"Mark the entire ensemble dead")
+    .def("live",&LoggingEnsemble<Seismogram>::live,"Return true if the ensemble is marked live")
+    .def("dead",&LoggingEnsemble<Seismogram>::dead,"Return true if the entire ensemble is marked dead")
+    .def("validate",&LoggingEnsemble<Seismogram>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def("set_live",&LoggingEnsemble<Seismogram>::set_live,"Mark ensemble live but use a validate test first")
+    .def_readwrite("elog",&LoggingEnsemble<Seismogram>::elog,"Error log attached to the ensemble - not the same as member error logs")
+    .def(py::pickle(
+      [](const LoggingEnsemble<Seismogram> &self) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf;
+          sbuf=serialize_metadata_py(self);
+          stringstream sselog;
+          boost::archive::text_oarchive arelog(sselog);
+          arelog << self.elog;
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object dumps = pickle.attr("dumps");
+          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
+          bool is_live=self.live();
+          pybind11::gil_scoped_release release;
+          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+        }catch(...){pybind11::gil_scoped_release release;throw;};
+      },
+      [](py::tuple t) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf=t[0];
+          Metadata md=restore_serialized_metadata_py(sbuf);
+          ErrorLogger elog;
+          stringstream sselog(t[1].cast<std::string>());
+          boost::archive::text_iarchive arelog(sselog);;
+          arelog>>elog;
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object loads = pickle.attr("loads");
+          /* This algorithm is a horrible memory pig because it has to
+          hold both a copy of the monster list of strings of pickled
+          data members and the reconstituted C++ data objects (ensemble
+          members).  Need to see if we can find a way to handle that
+          in a more memory efficient way. 
+          wangyinz: The new implementation below should be better. */
+          py::list dlist = loads(t[3]);
+          LoggingEnsemble<Seismogram> result(md, elog, 0);
+          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("SeismogramVector")(dlist);
+          result.member = member_py.cast<vector<Seismogram>>();
+          bool is_live = t[2].cast<bool>();
+          if(is_live)
+            result.set_live();
+          else
+            /* this kill is not really necessary with the current implmentation
+            The constructor we use here set ensmeble dead by default.  For
+            a tiny cost we make this more robust by forcing a kill here */
+            result.kill();
+          pybind11::gil_scoped_release release;
+          return result;
+        }catch(...){
+          pybind11::gil_scoped_release release;
+          throw;
+        };
+      } )
+    )
+  ;
+  py::class_<LoggingEnsemble<TimeSeries>, Ensemble<TimeSeries> >(m,"TimeSeriesEnsemble","Gather of scalar time series objects")
+    .def(py::init<>())
+    .def(py::init<const size_t >())
+    .def(py::init<const Metadata&, const size_t>())
+    .def(py::init<const Ensemble<TimeSeries>&>())
+    .def(py::init<const LoggingEnsemble<TimeSeries>&>())
+    .def("kill",&LoggingEnsemble<TimeSeries>::kill,"Mark the entire ensemble dead")
+    .def("live",&LoggingEnsemble<TimeSeries>::live,"Return true if the ensemble is marked live")
+    .def("dead",&LoggingEnsemble<TimeSeries>::dead,"Return true if the entire ensemble is marked dead")
+    .def("validate",&LoggingEnsemble<TimeSeries>::validate,"Test to see if the ensemble has any live members - return true of it does")
+    .def("set_live",&LoggingEnsemble<TimeSeries>::set_live,"Mark ensemble live but use a validate test first")
+    .def_readwrite("elog",&LoggingEnsemble<TimeSeries>::elog,"Error log attached to the ensemble - not the same as member error logs")
+    /* This is exactly parallel to the version for a SeismogramEnsemble.
+    Only changed Seismogram to TimeSeries everywhere in this section.
+    It might be preferable for maintenance to create a template version of
+    the key code in Ensemble.h to reduce the redundant code.   Making the
+    pickle bindings a template would really be adventure land but would
+    be the ideal solution. */
+    .def(py::pickle(
+      [](const LoggingEnsemble<TimeSeries> &self) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf;
+          sbuf=serialize_metadata_py(self);
+          stringstream sselog;
+          boost::archive::text_oarchive arelog(sselog);
+          arelog << self.elog;
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object dumps = pickle.attr("dumps");
+          pybind11::object dbuf = dumps(py::list(pybind11::cast(self.member)));
+          bool is_live = self.live();
+          pybind11::gil_scoped_release release;
+          return py::make_tuple(sbuf, sselog.str(), is_live, dbuf);
+        }catch(...){pybind11::gil_scoped_release release;throw;};
+      },
+      [](py::tuple t) {
+        pybind11::gil_scoped_acquire acquire;
+        try{
+          pybind11::object sbuf=t[0];
+          Metadata md=restore_serialized_metadata_py(sbuf);
+          ErrorLogger elog;
+          stringstream sselog(t[1].cast<std::string>());
+          boost::archive::text_iarchive arelog(sselog);;
+          arelog>>elog;
+          pybind11::module pickle = pybind11::module::import("pickle");
+          pybind11::object loads = pickle.attr("loads");
+          /* This algorithm is a horrible memory pig because it has to
+          hold both a copy of the monster list of strings of pickled
+          data members and the reconstituted C++ data objects (ensemble
+          members).  Need to see if we can find a way to handle that
+          in a more memory efficient way. 
+          wangyinz: The new implementation below should be better. */
+          py::list dlist = loads(t[3]);
+          LoggingEnsemble<TimeSeries> result(md, elog, 0);
+          pybind11::object member_py = pybind11::module_::import("mspasspy.ccore.seismic").attr("TimeSeriesVector")(dlist);
+          result.member = member_py.cast<vector<TimeSeries>>();
+          bool is_live = t[2].cast<bool>();
+          if(is_live)
+            result.set_live();
+          else
+            /* this kill is not really necessary with the current implmentation
+            The constructor we use here set ensmeble dead by default.  For
+            a tiny cost we make this more robust by forcing a kill here */
+            result.kill();
+          pybind11::gil_scoped_release release;
+          return result;
+        }catch(...){
+          pybind11::gil_scoped_release release;
+          throw;
+        };
+      } )
+    )
+  ;
 
   /* This following would be the normal way to expose this class to python, but it generates and
   error for reasons described in this issues page of pybind11:
@@ -655,39 +781,6 @@ PYBIND11_MODULE(seismic, m) {
       .def_readonly("spectrum",&PowerSpectrum::spectrum,
           "Vector containing estimated power spectrum; equally spaced ordered in increasing frequency")
       .def_readwrite("elog",&PowerSpectrum::elog,"Handle to ErrorLogger")
-    ;
-    py::class_<BasicTaper,PyBasicTaper>(m,"BasicTaper",
-                     "Base class for family of taper algorithms")
-      .def(py::init<>())
-      /* note sure virtual classes need a definition here */
-      /*
-      .def("apply",py::overload_cast<TimeSeries&>(&BasicTaper::apply),
-         "TimeSeries overload of base class")
-      .def("apply",py::overload_cast<Seismogram&>(&BasicTaper::apply))
-      */
-    ;
-    py::class_<LinearTaper,BasicTaper>(m,"LinearTaper",
-       "Define a ramp taper function")
-      .def(py::init<>())
-      .def(py::init<const double, const double, const double, const double>())
-      .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),"Apply taper to a scalar TimeSeries object")
-      .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),"Apply taper to a Seismogram (3C) object")
-    ;
-    py::class_<CosineTaper,BasicTaper>(m,"CosineTaper",
-       "Define a taper using a half period cosine function")
-      .def(py::init<>())
-      .def(py::init<const double, const double, const double, const double>())
-      .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),"Apply taper to a scalar TimeSeries object")
-      .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),"Apply taper to a Seismogram (3C) object")
-    ;
-    py::class_<VectorTaper,BasicTaper>(m,"VectorTaper",
-       "Define generic taper function with a parallel vector of weights")
-      .def(py::init<>())
-      .def(py::init<const std::vector<double>>())
-      .def("apply",py::overload_cast<TimeSeries&>(&VectorTaper::apply),
-        "Apply taper to a scalar TimeSeries object")
-      .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
-         "Apply taper to a Seismogram (3C) object")
     ;
 }
 

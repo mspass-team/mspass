@@ -1,7 +1,10 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <mspass/algorithms/algorithms.h>
 #include <mspass/algorithms/Butterworth.h>
+#include <mspass/algorithms/Taper.h>
+#include <mspass/algorithms/TimeWindow.h>
 #include <mspass/utility/Metadata.h>
 
 namespace mspass {
@@ -11,6 +14,28 @@ namespace py=pybind11;
 using namespace std;
 using namespace mspass::seismic;
 using namespace mspass::algorithms;
+
+/* Trampoline class for BasicTaper - used for family of taper classes*/
+class PyBasicTaper : public BasicTaper
+{
+public:
+  int apply(TimeSeries &d)
+  {
+    PYBIND11_OVERLOAD_PURE(
+        int,
+        BasicTaper,
+        TimeSeries &,
+        d);
+  }
+  int apply(Seismogram &d)
+  {
+    PYBIND11_OVERLOAD_PURE(
+        int,
+        BasicTaper,
+        Seismogram &,
+        d);
+  }
+};
 
 PYBIND11_MODULE(basic, m) {
   m.attr("__name__") = "mspasspy.ccore.algorithms.basic";
@@ -96,14 +121,15 @@ PYBIND11_MODULE(basic, m) {
     py::arg("d"),
     py::arg("twin") )
   ;
-
-  m.def("_WindowData",&WindowData,"Reduce data to window inside original",
+  m.def("_WindowData",py::overload_cast<const TimeSeries&,const TimeWindow&>(&WindowData),
+          "Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
   ;
 
-  m.def("_WindowData3C",&WindowData3C,"Reduce data to window inside original",
+  m.def("_WindowData3C",py::overload_cast<const Seismogram&,const TimeWindow&>(&WindowData),
+              "Reduce data to window inside original",
     py::return_value_policy::copy,
     py::arg("d"),
     py::arg("twin") )
@@ -153,6 +179,58 @@ PYBIND11_MODULE(basic, m) {
       :param d: is the ensemble to be sorted.
     )mspass_doc",
     py::arg("d") )
+  ;
+  py::class_<TimeWindow>(m,"TimeWindow","Simple description of a time window")
+    .def(py::init<>(),"Default constructor")
+    .def(py::init<const double, const double>(),"Construct from start and end time")
+    .def(py::init<const TimeWindow&>(),"Copy constuctor")
+    .def("shift",&TimeWindow::shift,"Shift the reference time by a specified number of seconds")
+    .def("length",&TimeWindow::length,"Return the size of the window in seconds")
+    .def_readwrite("start",&TimeWindow::start,"Start time of the window")
+    .def_readwrite("end",&TimeWindow::end,"End time of the window")
+  ;
+  py::class_<BasicTaper,PyBasicTaper>(m,"BasicTaper",
+                    "Base class for family of taper algorithms")
+    .def(py::init<>())
+    /* note sure virtual classes need a definition here */
+    /*
+    .def("apply",py::overload_cast<TimeSeries&>(&BasicTaper::apply),
+        "TimeSeries overload of base class")
+    .def("apply",py::overload_cast<Seismogram&>(&BasicTaper::apply))
+    */
+  ;
+  py::class_<LinearTaper,BasicTaper>(m,"LinearTaper",
+      "Define a ramp taper function")
+    .def(py::init<>())
+    .def(py::init<const double, const double, const double, const double>())
+    .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),"Apply taper to a scalar TimeSeries object")
+    .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),"Apply taper to a Seismogram (3C) object")
+  ;
+  py::class_<CosineTaper,BasicTaper>(m,"CosineTaper",
+      "Define a taper using a half period cosine function")
+    .def(py::init<>())
+    .def(py::init<const double, const double, const double, const double>())
+    .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),"Apply taper to a scalar TimeSeries object")
+    .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),"Apply taper to a Seismogram (3C) object")
+  ;
+  py::class_<VectorTaper,BasicTaper>(m,"VectorTaper",
+      "Define generic taper function with a parallel vector of weights")
+    .def(py::init<>())
+    .def(py::init<const std::vector<double>>())
+    .def("apply",py::overload_cast<TimeSeries&>(&VectorTaper::apply),
+      "Apply taper to a scalar TimeSeries object")
+    .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
+        "Apply taper to a Seismogram (3C) object")
+  ;
+  py::class_<TopMute>(m,"_TopMute",
+    "Defines a top mute operator (one sided taper")
+    .def(py::init<>())
+    .def(py::init<const double, const double, const std::string>())
+    .def(py::init<const TopMute&>())
+    .def("apply",py::overload_cast<TimeSeries&>(&TopMute::apply),
+      "Apply to a TimeSeries object")
+    .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),
+      "Apply to a Seismogram object")
   ;
 }
 

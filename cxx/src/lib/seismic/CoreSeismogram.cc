@@ -296,6 +296,7 @@ CoreSeismogram::CoreSeismogram(const vector<CoreTimeSeries>& ts,
         double delta=this->dt();
         for(int ic=0; ic<3; ++ic)
         {
+            t=this->t0();
             for(j=0; j<ts[ic].s.size(); ++j)
             {
                 i=ts[ic].sample_number(t);

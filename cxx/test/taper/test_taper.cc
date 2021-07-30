@@ -1,8 +1,9 @@
 #include <iostream>
 #include "mspass/utility/ErrorLogger.h"
 #include "mspass/utility/dmatrix.h"
-#include "mspass/seismic/Taper.h"
+#include "mspass/algorithms/Taper.h"
 using namespace std;
+using namespace mspass::algorithms;
 using namespace mspass::utility;
 using namespace mspass::seismic;
 /* We use this print the results as a matrix on completion.*/
