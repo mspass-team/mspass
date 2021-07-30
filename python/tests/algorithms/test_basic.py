@@ -51,7 +51,7 @@ def test_rotate():
     seis2 = rotate(seis, sc)
     assert all(np.isclose(seis2.data[:, 3], [0, -0.707107, 0.707107]))
     seis3 = rotate_to_standard(seis2)
-    assert all(seis3.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis3.data[:, 3], [0, 0, 1]))
 
 def test_transform():
     seis = Seismogram()
