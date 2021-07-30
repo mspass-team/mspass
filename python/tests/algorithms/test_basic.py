@@ -51,7 +51,7 @@ def test_rotate():
     seis2 = rotate(seis, sc)
     assert all(np.isclose(seis2.data[:, 3], [0, -0.707107, 0.707107]))
     seis3 = rotate_to_standard(seis2)
-    assert all(seis3.data[:, 3] == [0, 0, 1])
+    assert all(np.isclose(seis3.data[:, 3], [0, 0, 1]))
 
 def test_transform():
     seis = Seismogram()
@@ -104,6 +104,10 @@ def test_transform():
                        np.array([[-0.171012, -0.469846,  0],
                                  [0.115793, -0.0421458, 0.445447],
                                  [-0.597975,  0.217647,  0.228152]]))).all()
+
+    # test with invalid uvec, but inplace return
+    seis4 = free_surface_transformation(seis2, SlownessVector(1.0, 1.0, 0.0), 5.0, 3.5)
+    assert seis4
 
 def test_taper():
     ts = get_live_timeseries()
