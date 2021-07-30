@@ -100,6 +100,9 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         else:
             logging_helper.ensemble_error(
                 data, alg_name, err, ErrorSeverity.Invalid)
+        # some unexpected error happen, if inplace_return is true, we may want to return the original data
+        if inplace_return:
+            return data
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
@@ -108,6 +111,9 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         else:
             logging_helper.ensemble_error(
                 data, alg_name, ex.message, ex.severity)
+        # some unexpected error happen, if inplace_return is true, we may want to return the original data
+        if inplace_return:
+            return data
 
 
 @decorator

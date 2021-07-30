@@ -105,6 +105,10 @@ def test_transform():
                                  [0.115793, -0.0421458, 0.445447],
                                  [-0.597975,  0.217647,  0.228152]]))).all()
 
+    # test with invalid uvec, but inplace return
+    seis4 = free_surface_transformation(seis2, SlownessVector(1.0, 1.0, 0.0), 5.0, 3.5)
+    assert seis4
+
 def test_taper():
     ts = get_live_timeseries()
     ts.t0 = 0
