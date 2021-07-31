@@ -387,13 +387,13 @@ Seismogram BundleSEEDGroup(const std::vector<TimeSeries>& d,
 }
 /* Warning this function will alter the order of the ensemble.  A const
 version could be written but it would need to copy d before calling the sort*/
-Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
+LoggingEnsemble<Seismogram> bundle_seed_data(LoggingEnsemble<TimeSeries>& d)
 {
   string algname("bundle_seed_data");
   try{
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());
     /* this constructor clones the ensemble metadata */
-    Ensemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
+    LoggingEnsemble<Seismogram> ens3c(dynamic_cast<Metadata&>(d),d.member.size()/3);
     vector<TimeSeries>::iterator dptr;
     string laststa,lastloc,lastchan,lastnet;
     string net(""),sta,chan,loc("");
@@ -575,7 +575,7 @@ Ensemble<Seismogram> bundle_seed_data(Ensemble<TimeSeries>& d)
 }
 /* This one liner is a useful as a processing function and is thus
 exposed to python.  */
-void seed_ensemble_sort(Ensemble<TimeSeries>& d)
+void seed_ensemble_sort(LoggingEnsemble<TimeSeries>& d)
 {
   try{
     std::sort(d.member.begin(),d.member.end(),greater_seedorder());

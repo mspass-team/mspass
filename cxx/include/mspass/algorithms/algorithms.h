@@ -316,8 +316,8 @@ does not have sta or chan defined (as noted above null net or loc are
 handled.)
 
 */
-mspass::seismic::Ensemble<mspass::seismic::Seismogram> bundle_seed_data
-    (mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d);
+mspass::seismic::LoggingEnsemble<mspass::seismic::Seismogram> bundle_seed_data
+    (mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d);
 /*! \brief Sort a TimeSeriesEnsemble with a natural order with seed name codes.
 
 The seed standard tags every single miniseed record with four string keys
@@ -342,6 +342,6 @@ Note this algorithm alters the ensemble it receives in place.
 
 \param d is the ensemble to be sorted.
 */
-void seed_ensemble_sort(mspass::seismic::Ensemble<mspass::seismic::TimeSeries>& d);
+void seed_ensemble_sort(mspass::seismic::LoggingEnsemble<mspass::seismic::TimeSeries>& d);
 }//End mspass::algorithms namespace encapsulation
 #endif
