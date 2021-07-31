@@ -690,13 +690,13 @@ It is common to need to extract a smaller segment of data from a larger time win
         </inbodydescription>
         <location file="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" line="279" column="29" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="279" declcolumn="29"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1aaf4c3abc82571d4db7955c34f18201e8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
-        <definition>Ensemble&lt; Seismogram &gt; mspass::algorithms::bundle_seed_data</definition>
-        <argsstring>(mspass::seismic::Ensemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
+      <memberdef kind="function" id="algorithms_8h_1aae4dea09147e0259fc6acf53dd5a88f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_seismogram" kindref="compound">mspass::seismic::Seismogram</ref> &gt;</type>
+        <definition>LoggingEnsemble&lt; Seismogram &gt; mspass::algorithms::bundle_seed_data</definition>
+        <argsstring>(mspass::seismic::LoggingEnsemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
         <name>bundle_seed_data</name>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
@@ -728,15 +728,15 @@ It is common to need to extract a smaller segment of data from a larger time win
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="10" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="575" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="319" declcolumn="27"/>
+        <location file="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" line="390" column="17" bodyfile="/home/runner/work/mspass/mspass/cxx/src/lib/algorithms/bundle.cc" bodystart="390" bodyend="575" declfile="/home/runner/work/mspass/mspass/cxx/include/mspass/algorithms/algorithms.h" declline="319" declcolumn="34"/>
       </memberdef>
-      <memberdef kind="function" id="algorithms_8h_1aaf01620b65615245bf4d06581f6badc3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="algorithms_8h_1a307e1b2136eb6f253ef95b980c433db4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
         <definition>void mspass::algorithms::seed_ensemble_sort</definition>
-        <argsstring>(mspass::seismic::Ensemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
+        <argsstring>(mspass::seismic::LoggingEnsemble&lt; mspass::seismic::TimeSeries &gt; &amp;d)</argsstring>
         <name>seed_ensemble_sort</name>
         <param>
-          <type><ref refid="classmspass_1_1seismic_1_1_ensemble" kindref="compound">mspass::seismic::Ensemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
+          <type><ref refid="classmspass_1_1seismic_1_1_logging_ensemble" kindref="compound">mspass::seismic::LoggingEnsemble</ref>&lt; <ref refid="classmspass_1_1seismic_1_1_time_series" kindref="compound">mspass::seismic::TimeSeries</ref> &gt; &amp;</type>
           <declname>d</declname>
         </param>
         <briefdescription>
