@@ -39,6 +39,9 @@ cd $WORK_DIR
 
 # database should be deployed as 'scratch' or 'tmp' mode
 DB_PATH='scratch'
+# control the interval between mongo instance and mongo shell execution
+SLEEP_TIME=15
 
 SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
+SINGULARITYENV_MSPASS_SLEEP_TIME=$SLEEP_TIME \
 SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM

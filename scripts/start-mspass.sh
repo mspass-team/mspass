@@ -57,7 +57,7 @@ if [ $# -eq 0 ]; then
       # copy log
       scp -r /tmp/logs/mongo_log ${MSPASS_LOG_DIR}
     fi
-    sleep 30
+    sleep ${MSPASS_SLEEP_TIME}
   }
 
   function clean_up_multiple_nodes {
@@ -85,7 +85,7 @@ if [ $# -eq 0 ]; then
         scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
       done
     fi
-    sleep 30
+    sleep sleep ${MSPASS_SLEEP_TIME}
   }
 
   function start_db_scratch {
