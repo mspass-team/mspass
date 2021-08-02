@@ -4,9 +4,9 @@
 if grep docker /proc/1/cgroup -qa; then
   MSPASS_WORKDIR=/home
 elif [[ -z ${MSPASS_WORK_DIR} ]]; then
-  MSPASS_WORKDIR=$MSPASS_WORK_DIR
-else
   MSPASS_WORKDIR=`pwd`
+else
+  MSPASS_WORKDIR=$MSPASS_WORK_DIR
 fi
 
 MSPASS_DB_DIR=${MSPASS_WORKDIR}/db
