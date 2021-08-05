@@ -329,9 +329,18 @@ list<string> split_pfpath(string pfbase, char *s)
 AntelopePf::AntelopePf(string pfbase)
 {
     try {
+        list<string> pffiles;
+        const std::string mspass_home_envname("MSPASS_HOME");
+        char *base;
+        /* Note man page for getenv says explicitly the return of getenv should not
+                be touched - i.e. don't free it*/
+        base=getenv(mspass_home_envname.c_str());
+        if(base!=NULL)
+        {
+            pffiles.push_back(data_directory()+"/pf/"+pfbase);
+        }
         const string envname("PFPATH");
         char *s=getenv(envname.c_str());
-        list<string> pffiles;
         if(s==NULL)
         {
             pffiles.push_back(pfbase);
@@ -345,15 +354,6 @@ AntelopePf::AntelopePf(string pfbase)
         else
         {
             pffiles=split_pfpath(pfbase,s);
-        }
-        const std::string mspass_home_envname("MSPASS_HOME");
-        char *base;
-        /* Note man page for getenv says explicitly the return of getenv should not
-                be touched - i.e. don't free it*/
-        base=getenv(mspass_home_envname.c_str());
-        if(base!=NULL)
-        {
-            pffiles.push_back(data_directory()+"/pf/"+pfbase);
         }
         list<string>::iterator pfptr;
         int nread;
