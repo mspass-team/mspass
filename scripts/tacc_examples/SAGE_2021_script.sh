@@ -10,7 +10,7 @@
 # working directory
 WORK_DIR=$SCRATCH/SAGE_2021
 # directory where contains docker image
-MSPASS_CONTAINER=$WORK2/mspass/mspass_latest.sif
+MSPASS_CONTAINER=$WORK/mspass/mspass_latest.sif
 
 # command that start the container
 SING_COM="singularity run $MSPASS_CONTAINER"

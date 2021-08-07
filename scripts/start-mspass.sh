@@ -85,7 +85,7 @@ if [ $# -eq 0 ]; then
         scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
       done
     fi
-    sleep sleep ${MSPASS_SLEEP_TIME}
+    sleep ${MSPASS_SLEEP_TIME}
   }
 
   function start_db_scratch {
