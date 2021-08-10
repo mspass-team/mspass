@@ -57,7 +57,7 @@ if [ $# -eq 0 ]; then
       # copy log
       scp -r /tmp/logs/mongo_log ${MSPASS_LOG_DIR}
     fi
-    sleep 30
+    sleep ${MSPASS_SLEEP_TIME}
   }
 
   function clean_up_multiple_nodes {
@@ -85,7 +85,7 @@ if [ $# -eq 0 ]; then
         scp -r -o StrictHostKeyChecking=no ${i} ${MSPASS_LOG_DIR}
       done
     fi
-    sleep 30
+    sleep ${MSPASS_SLEEP_TIME}
   }
 
   function start_db_scratch {
@@ -103,6 +103,11 @@ if [ $# -eq 0 ]; then
     else
       mkdir -p /tmp/db/data
     fi
+    # copy dfiles to /tmp
+    if [[ -d $MSPASS_SCRATCH_DATA_DIR ]]; then
+      cp -r $MSPASS_SCRATCH_DATA_DIR /tmp
+    fi
+    # start mongodb on /tmp
     mongod --port $MONGODB_PORT --dbpath /tmp/db/data --logpath /tmp/logs/mongo_log --bind_ip_all &
   }
 
@@ -265,6 +270,10 @@ if [ $# -eq 0 ]; then
   elif [ "$MSPASS_ROLE" = "worker" ]; then
     [[ -d $MSPASS_WORKER_DIR ]] || mkdir -p $MSPASS_WORKER_DIR
     eval $MSPASS_WORKER_CMD
+    # copy dfiles to /tmp
+    if [[ -d $MSPASS_SCRATCH_DATA_DIR ]]; then
+      cp -r $MSPASS_SCRATCH_DATA_DIR /tmp
+    fi
     tail -f /dev/null
   elif [ "$MSPASS_ROLE" = "frontend" ]; then
     start_mspass_frontend
