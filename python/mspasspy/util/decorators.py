@@ -83,7 +83,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
                 data.elog.log_error(alg_name,
                                     "Illegal type received for function_return_key argument=" +
                                     str(type(function_return_key)) +
-                                        "\nReturn value not saved in Metadata",
+                                    "\nReturn value not saved in Metadata",
                                     ErrorSeverity.Complaint)
             if not inplace_return:
                 data.elog.log_error(alg_name,
@@ -160,7 +160,7 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
 
     if dryrun:
         return "OK"
-        
+
     if is_input_dead(data1, data2):
         return
 

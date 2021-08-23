@@ -26,6 +26,9 @@ def ator(data, tshift, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     data.ator(tshift)
 
@@ -53,6 +56,9 @@ def rtoa(data, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     data.rtoa()
 
@@ -86,7 +92,9 @@ def rotate(data, rotate_param, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
-
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     data.rotate(rotate_param)
 
@@ -114,6 +122,9 @@ def rotate_to_standard(data, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     :exception: :class:`~mspasspy.ccore.utility.MsPASSError` thrown if the an inversion of the 
         transformation matrix is required and that matrix is singular.  This can happen if the 
         transformation matrix is incorrectly defined or the actual data are coplanar.
@@ -148,6 +159,9 @@ def free_surface_transformation(data, uvec, vp0, vs0, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     data.free_surface_transformation(uvec, vp0, vs0)
 
@@ -174,6 +188,9 @@ def transform(data, matrix, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     data.transform(matrix)
 
@@ -207,6 +224,9 @@ def linear_taper(data, t0head, t1head, t1tail, t0tail, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     taper = LinearTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
@@ -243,6 +263,9 @@ def cosine_taper(data, t0head, t1head, t1tail, t0tail, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     taper = CosineTaper(t0head, t1head, t1tail, t0tail)
     taper.apply(data)
@@ -270,6 +293,9 @@ def vector_taper(data, taper_array, *args,
     :type alg_id: :class:`bson.objectid.ObjectId`
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_func_wrapper.
     :param inplace_return: True to return data in mspass_func_wrapper. This is necessary to be used in mapreduce.
+    :param function_return_key:  Some functions one might want to wrap with this decorator
+     return something that is appropriate to save as Metadata.  If so, use this argument to
+     define the key used to set that field in the data that is returned.
     """
     taper = VectorTaper(taper_array)
     taper.apply(data)

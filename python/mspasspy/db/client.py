@@ -1,6 +1,7 @@
 import pymongo
 from mspasspy.db.database import Database
 
+
 class DBClient(pymongo.MongoClient):
     """
     A client-side top-level handle into MongoDB.
@@ -14,6 +15,7 @@ class DBClient(pymongo.MongoClient):
     In most cases there is functionally little difference from
     creating a MongoClient or the MsPASS DBClient (this class).
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__default_database_name = self._MongoClient__default_database_name
@@ -29,7 +31,7 @@ class DBClient(pymongo.MongoClient):
         return Database(self, name)
 
     def get_default_database(self, default=None, codec_options=None,
-        read_preference=None, write_concern=None, read_concern=None):
+                             read_preference=None, write_concern=None, read_concern=None):
         if self.__default_database_name is None and default is None:
             raise pymongo.errors.ConfigurationError(
                 'No default database name defined or provided.')
@@ -42,7 +44,8 @@ class DBClient(pymongo.MongoClient):
                      write_concern=None, read_concern=None):
         if name is None:
             if self.__default_database_name is None:
-                raise pymongo.errors.ConfigurationError('No default database defined')
+                raise pymongo.errors.ConfigurationError(
+                    'No default database defined')
             name = self.__default_database_name
 
         return Database(

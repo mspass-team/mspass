@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from obspy import (read,
-                UTCDateTime)
+                   UTCDateTime)
 import pandas as pd
 import numpy as np
 from mspasspy.ccore.utility import (Metadata,
@@ -13,6 +13,7 @@ from mspasspy.ccore.utility import (Metadata,
 from mspasspy.ccore.seismic import TimeSeriesEnsemble
 #from mspasspy.io.converter import Trace2TimeSeries
 from mspasspy.util.converter import Trace2TimeSeries
+
 
 def obspy_mseed_file_indexer(file):
     """
@@ -26,28 +27,28 @@ def obspy_mseed_file_indexer(file):
     table.  One required argument is the file name containing the miniseed data.
     """
     try:
-        pr=Path(file)
-        fullpath=pr.absolute()
-        [dirself,dfileself]=os.path.split(fullpath)
-        dseis=read(file,format='mseed')
-        net=[]
-        sta=[]
-        chan=[]
-        loc=[]
-        stime=[]
-        etime=[]
-        samprate=[]
-        delta=[]
-        npts=[]
-        calib=[]
-        dfile=[]
-        dir=[]
-        mover=[]
-        tref=[]
-        format=[]
-        mover_self='obspy_read'
-        tref_self='UTC'
-        format_self='miniseed'
+        pr = Path(file)
+        fullpath = pr.absolute()
+        [dirself, dfileself] = os.path.split(fullpath)
+        dseis = read(file, format='mseed')
+        net = []
+        sta = []
+        chan = []
+        loc = []
+        stime = []
+        etime = []
+        samprate = []
+        delta = []
+        npts = []
+        calib = []
+        dfile = []
+        dir = []
+        mover = []
+        tref = []
+        format = []
+        mover_self = 'obspy_read'
+        tref_self = 'UTC'
+        format_self = 'miniseed'
         # Note obspy uses a more verbose name for net:sta:chan:loc
         # We change to mspass definition below that uses css3.0 names
         for x in dseis:
@@ -55,9 +56,9 @@ def obspy_mseed_file_indexer(file):
             sta.append(x.stats['station'])
             chan.append(x.stats['channel'])
             loc.append(x.stats['location'])
-            sutc=x.stats['starttime']
+            sutc = x.stats['starttime']
             stime.append(sutc.timestamp)
-            eutc=x.stats['endtime']
+            eutc = x.stats['endtime']
             etime.append(eutc.timestamp)
             samprate.append(x.stats['sampling_rate'])
             delta.append(x.stats['delta'])
@@ -72,27 +73,29 @@ def obspy_mseed_file_indexer(file):
         # there may be a better way to do this than using this
         # intermediary dict object, but this should not be a hugely
         # compute or memory entensive operation even for large files
-        ddict={'net':net,
-               'sta':sta,
-               'chan':chan,
-               'loc':loc,
-               'starttime':stime,
-               'endtime':etime,
-               'samprate':samprate,
-               'delta':delta,
-               'npts':npts,
-               'calib':calib,
-               'dfile':dfile,
-               'dir':dir,
-               'treftype':tref,
-               'format':format,
-               'mover':mover
-               }
+        ddict = {'net': net,
+                 'sta': sta,
+                 'chan': chan,
+                 'loc': loc,
+                 'starttime': stime,
+                 'endtime': etime,
+                 'samprate': samprate,
+                 'delta': delta,
+                 'npts': npts,
+                 'calib': calib,
+                 'dfile': dfile,
+                 'dir': dir,
+                 'treftype': tref,
+                 'format': format,
+                 'mover': mover
+                 }
         return pd.DataFrame(ddict)
     except FileNotFoundError as err:
         print('mseed_file_indexer:  invalid file named received')
         print(err)
-def dbsave_raw_index(db,pdframe,collection='import_miniseed_ensemble'):
+
+
+def dbsave_raw_index(db, pdframe, collection='import_miniseed_ensemble'):
     """
     Database save to db for a panda data frame pdframe.
     This crude version collection name is frozen as import_miniseed_ensemble.  db is
@@ -104,12 +107,14 @@ def dbsave_raw_index(db,pdframe,collection='import_miniseed_ensemble'):
     :param collection:  collection to which the data in pdframe is to be
       saved.  Default is 'import_miniseed_ensemble'
     """
-    col=db[collection]
+    col = db[collection]
     # records is a keyword that makes rows of the dataframe docs for mongo
-    dtmp=pdframe.to_dict('records')
+    dtmp = pdframe.to_dict('records')
     col.insert_many(dtmp)
-def dbsave_seed_ensemble_file(db,file,gather_type="event",
-                keys=None):
+
+
+def dbsave_seed_ensemble_file(db, file, gather_type="event",
+                              keys=None):
     """
     Indexer for SEED files that are already assembled in a
     "gather" meaning the data have some relation through one or more
@@ -178,72 +183,76 @@ def dbsave_seed_ensemble_file(db,file,gather_type="event",
     """
 
     try:
-        his=ProcessingHistory()  # used only to create uuids
-        dbh=db['import_miniseed_ensemble']
-        pr=Path(file)
-        fullpath=pr.absolute()
-        [dirself,dfileself]=os.path.split(fullpath)
-        dseis=read(file,format='mseed')
+        his = ProcessingHistory()  # used only to create uuids
+        dbh = db['import_miniseed_ensemble']
+        pr = Path(file)
+        fullpath = pr.absolute()
+        [dirself, dfileself] = os.path.split(fullpath)
+        dseis = read(file, format='mseed')
         # This holds the ensemble metatdata
-        ensemblemd={'dir':dirself}
-        ensemblemd['dfile']=dfileself
-        ensemblemd['format']='mseed'
+        ensemblemd = {'dir': dirself}
+        ensemblemd['dfile'] = dfileself
+        ensemblemd['format'] = 'mseed'
         # this is a placeholder not really necessary for seed data \
         # as seed data by definition yield TimeSeries type data although
         # not necessarily seismic data (e.g. MT data are distributed as mseed
-        ensemblemd['member_type']='TimeSeries'
-        ensemblemd['mover']='obspy_seed_ensemble_reader'
-        members=[]   # this list will contain one dict for each dseis Trace
+        ensemblemd['member_type'] = 'TimeSeries'
+        ensemblemd['mover'] = 'obspy_seed_ensemble_reader'
+        members = []   # this list will contain one dict for each dseis Trace
         # we want to put time range of the data into enemblemd - we use these for that
-        stimes=[]
-        etimes=[]
+        stimes = []
+        etimes = []
         for d in dseis:
-            mddict={}
-            mddict['net']=d.stats['network']
-            mddict['sta']=d.stats['station']
-            mddict['chan']=d.stats['channel']
-            mddict['loc']=d.stats['location']
-            st=d.stats['starttime']
-            et=d.stats['endtime']
-            mddict['starttime']=st.timestamp
-            mddict['endtime']=et.timestamp
+            mddict = {}
+            mddict['net'] = d.stats['network']
+            mddict['sta'] = d.stats['station']
+            mddict['chan'] = d.stats['channel']
+            mddict['loc'] = d.stats['location']
+            st = d.stats['starttime']
+            et = d.stats['endtime']
+            mddict['starttime'] = st.timestamp
+            mddict['endtime'] = et.timestamp
             stimes.append(st.timestamp)
             etimes.append(et.timestamp)
-            mddict['sampling_rate']=d.stats['sampling_rate']
-            mddict['delta']=d.stats['delta']
-            mddict['npts']=d.stats['npts']
-            mddict['calib']=d.stats['calib']
+            mddict['sampling_rate'] = d.stats['sampling_rate']
+            mddict['delta'] = d.stats['delta']
+            mddict['npts'] = d.stats['npts']
+            mddict['calib'] = d.stats['calib']
             # this key name could change
-            mddict['seed_file_id']=his.newid()
+            mddict['seed_file_id'] = his.newid()
             members.append(mddict)
         ensemblemd['members'] = members
-        tmin=np.median(stimes)
-        tmax=np.median(etimes)
-        ensemblemd['starttime']=tmin
-        ensemblemd['endtime']=tmax
-        result=dbh.insert_one(ensemblemd)
+        tmin = np.median(stimes)
+        tmax = np.median(etimes)
+        ensemblemd['starttime'] = tmin
+        ensemblemd['endtime'] = tmax
+        result = dbh.insert_one(ensemblemd)
         return result.inserted_id
     except:
         print('something threw an exception - this needs detailed handlers')
-def _load_md(rec,keys):
+
+
+def _load_md(rec, keys):
     """
     Helper for load ensemble.   Extracts metadata defined by keys list and
     posts to a Metadata container that is returned.
     """
     # do this stupid for now without error handlers
-    md=Metadata()
+    md = Metadata()
     for k in keys:
-        x=rec[k]
-        md.put(k,x)
+        x = rec[k]
+        md.put(k, x)
     return md
+
+
 def load_one_ensemble(doc,
-                  create_history=False,
-                  jobname='Default job',
-                  jobid='99999',
-                  algid='99999',
-                  ensemble_mdkeys=[],  # default is to load nothing for ensemble
-		  apply_calib=False,
-                  verbose=False):
+                      create_history=False,
+                      jobname='Default job',
+                      jobid='99999',
+                      algid='99999',
+                      ensemble_mdkeys=[],  # default is to load nothing for ensemble
+                      apply_calib=False,
+                      verbose=False):
     """
     This function can be used to load a full ensemble indexed in the
     collection import_miniseed_ensemble.  It uses a large memory model
@@ -265,55 +274,59 @@ def load_one_ensemble(doc,
     :param verbose:  write informational messages while processing
     """
     try:
-        ensemblemd=Metadata()
+        ensemblemd = Metadata()
         if create_history:
-            his=ProcessingHistory(jobname,jobid)
-        form=doc['format']
-        mover=doc['mover']
-        if form!='mseed':
-                raise MsPASSError("Cannot handle this ensemble - ensemble format="+form+"\nCan only be mseed for this reader")
-        if mover!='obspy_seed_ensemble_reader':
-                raise MsPASSError("Cannot handle this ensemble - ensemble mover parameter="+mover+" which is not supported")
-        dir=doc['dir']
-        dfile=doc['dfile']
-        fname=dir+"/"+dfile
+            his = ProcessingHistory(jobname, jobid)
+        form = doc['format']
+        mover = doc['mover']
+        if form != 'mseed':
+            raise MsPASSError("Cannot handle this ensemble - ensemble format=" +
+                              form+"\nCan only be mseed for this reader")
+        if mover != 'obspy_seed_ensemble_reader':
+            raise MsPASSError(
+                "Cannot handle this ensemble - ensemble mover parameter="+mover+" which is not supported")
+        dir = doc['dir']
+        dfile = doc['dfile']
+        fname = dir+"/"+dfile
         # Note this algorithm actually should work with any format
         # supported by obspy's read function - should generalize it for release
-        dseis=read(fname,format='mseed',apply_calib=apply_calib)
-        if len(ensemble_mdkeys)>0:
-            ensemblemd=_load_md(doc,ensemble_mdkeys)
+        dseis = read(fname, format='mseed', apply_calib=apply_calib)
+        if len(ensemble_mdkeys) > 0:
+            ensemblemd = _load_md(doc, ensemble_mdkeys)
         else:
             # default is to load everything != members
-            members_key='members'
+            members_key = 'members'
             for k in doc:
-                if k!=members_key:
-                    x=doc[k]
-                    ensemblemd[k]=x
+                if k != members_key:
+                    x = doc[k]
+                    ensemblemd[k] = x
         # There is a Stream2TimeSeriesEnsemble function
         # but we don't use it here because we need some functionality
         # not found in that simple function
-        nseis=len(dseis)
-        result=TimeSeriesEnsemble(ensemblemd,nseis)
+        nseis = len(dseis)
+        result = TimeSeriesEnsemble(ensemblemd, nseis)
         # Secondary files get handled almost the same except for
         # a warning.   The warning message (hopefully) explains the
         # problem but our documentation must warn about his if this
         # prototype algorithm becomes the release version
-        count=0
+        count = 0
         for d in dseis:
             #print('debug - working on data object number',count)
-            count+=1
-            dts=Trace2TimeSeries(d)
+            count += 1
+            dts = Trace2TimeSeries(d)
             if create_history:
-                dts.load_history(his)  # This should just define jobname and jobid
-                seedid=d['seed_file_id']
-                dts.set_as_origin('load_ensemble',algid,seedid,
-                          AtomicType.TIMESERIES,True)
+                # This should just define jobname and jobid
+                dts.load_history(his)
+                seedid = d['seed_file_id']
+                dts.set_as_origin('load_ensemble', algid, seedid,
+                                  AtomicType.TIMESERIES, True)
             result.member.append(dts)
         return result
     except:
         print('something threw an exception - needs more complete error handlers')
 
-def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
+
+def link_source_collection(db, dt=10.0, prefer_evid=False, verbose=False):
     """
     This prototype function uses a not at all generic method to link data
     indexed in a import_miniseed_ensemble collection to source data assumed stored
@@ -340,76 +353,81 @@ def link_source_collection(db,dt=10.0,prefer_evid=False,verbose=False):
       evid set when there are multiple matches.
     :param verbose:  when true output will be more verbose.
     """
-    dbwf=db['import_miniseed_ensemble']
-    dbsource=db['source']
+    dbwf = db['import_miniseed_ensemble']
+    dbsource = db['source']
     try:
-        ensrec=dbwf.find({})
+        ensrec = dbwf.find({})
         for ens in ensrec:
             #print('debug - at top of ensemble loop')
-            t=ens['starttime']
-            tlow=t-dt
-            thigh=t+dt
-            query={'time':{'$gte':tlow,'$lte':thigh}}
-            matchid=ens['_id']
-            ens_match_arg={'_id' : matchid}
+            t = ens['starttime']
+            tlow = t-dt
+            thigh = t+dt
+            query = {'time': {'$gte': tlow, '$lte': thigh}}
+            matchid = ens['_id']
+            ens_match_arg = {'_id': matchid}
             #print('debug - query:',query)
             #print('range between ',UTCDateTime(tlow),'->',UTCDateTime(thigh))
-            n=dbsource.count_documents(query)
+            n = dbsource.count_documents(query)
             #print('debug - found ',n,' documents')
-            if n==0:
+            if n == 0:
                 if verbose:
                     print('link_source_collection:  no match in source for time=',
-                        UTCDateTime(t))
+                          UTCDateTime(t))
                     print("This enemble cannot be processed")
-            elif n==1:
-                srcrec=dbsource.find_one(query)
+            elif n == 1:
+                srcrec = dbsource.find_one(query)
                 #print('debug - query returned:',srcrec)
-                #only in this situation will we update the document
-                source_id=srcrec['source_id']
+                # only in this situation will we update the document
+                source_id = srcrec['source_id']
                 #print('debug - matchid and source_id=',matchid,source_id)
                 if prefer_evid:
                     if 'evid' in srcrec:
-                        evid=srcrec['evid']
-                        update_record={'$set':{'source_id' :source_id,'evid':evid}}
+                        evid = srcrec['evid']
+                        update_record = {
+                            '$set': {'source_id': source_id, 'evid': evid}}
                         if verbose:
-                            print('Found evid=',evid,' for ensembled with start time=',UTCDateTime(t))
+                            print(
+                                'Found evid=', evid, ' for ensembled with start time=', UTCDateTime(t))
                     else:
                         print('link_source_collection(WARNING): unique match for source at time=',
                               UTCDateTime(t), ' does not have evid set but function was called with prefer_evid true')
-                        update_record={'$set':{'source_id' :source_id}}
+                        update_record = {'$set': {'source_id': source_id}}
                 else:
-                    update_record={'$set':{'source_id' :source_id}}
-                dbwf.update_one(ens_match_arg,update_record)
+                    update_record = {'$set': {'source_id': source_id}}
+                dbwf.update_one(ens_match_arg, update_record)
             else:
-                cursor=dbsource.find(query)
-                evid=-1   # Negative used as a test for search failure
+                cursor = dbsource.find(query)
+                evid = -1   # Negative used as a test for search failure
                 for srcrec in cursor:
                     # this will be set to last record if evid search fails but
                     # will match evid field if there is a match because of the break
                     # note this logic sets source_id to the last record found
                     # when prefer_evid is false.  That is inefficient but
                     # we don't expect long match lists
-                    source_id=srcrec['source_id']
+                    source_id = srcrec['source_id']
                     if prefer_evid and ('evid' in srcrec):
-                        evid=srcrec['evid']
-                        matchid=ens['_id']
+                        evid = srcrec['evid']
+                        matchid = ens['_id']
                         break
-                if evid>0:
-                    update_record={'$set':{'source_id' :source_id,'evid':evid}}
+                if evid > 0:
+                    update_record = {
+                        '$set': {'source_id': source_id, 'evid': evid}}
                     if verbose:
-                            print('Found evid=',evid,' for ensembled with start time=',UTCDateTime(t))
+                        print('Found evid=', evid,
+                              ' for ensembled with start time=', UTCDateTime(t))
                 else:
-                    update_record={'$set':{'source_id' :source_id}}
+                    update_record = {'$set': {'source_id': source_id}}
                     if verbose:
-                        print('Found ',n,' matches in source collection for ensemble start time=',
+                        print('Found ', n, ' matches in source collection for ensemble start time=',
                               UTCDateTime(t))
-                        print('Linking to document with source_id=',source_id)
-                dbwf.update_one(ens_match_arg,update_record)
+                        print('Linking to document with source_id=', source_id)
+                dbwf.update_one(ens_match_arg, update_record)
     except Exception as err:
         raise MsPASSError('Something threw an unexpected exception',
-            ErrorSeverity.Invalid) from err
+                          ErrorSeverity.Invalid) from err
 
-def load_source_data_by_id(db,mspass_object):
+
+def load_source_data_by_id(db, mspass_object):
     """
     Prototype function to load source data to any MsPASS data object
     based on the normalization key.  That keys is frozen in this version
@@ -425,43 +443,45 @@ def load_source_data_by_id(db,mspass_object):
     metadata area.  If it is an atomic object it gets posted to the atomic object's
     metadata area.
     """
-    dbsource=db.source
+    dbsource = db.source
     try:
         if not 'source_id' in mspass_object:
             raise MsPASSError('load_source_data_by_id',
                               'required attribute source_id not in ensemble metadata',
                               ErrorSeverity.Invalid)
-        source_id=mspass_object['source_id']
+        source_id = mspass_object['source_id']
         # The way we currently do this source_id eithe rmaches one documentn in
         # source or none.  Hence, we can jus use a find_one query
-        srcrec=dbsource.find_one({'_id' : source_id})
+        srcrec = dbsource.find_one({'_id': source_id})
         # note find_one returns a None if there is no match.  Point this out
         # because if we used find we would use test size of return and use
         # next to get the data. Find_one return is easier but depends upon
         # the uniqueness assumption
-        if srcrec==None:
+        if srcrec == None:
             raise MsPASSError("load_source_data",
-                "no match found in source collection for source_id="+source_id,
-                ErrorSeverity.Invalid)
+                              "no match found in source collection for source_id="+source_id,
+                              ErrorSeverity.Invalid)
         else:
-            mspass_object['source_lat']=srcrec['lat']
-            mspass_object['source_lon']=srcrec['lon']
-            mspass_object['source_depth']=srcrec['depth']
-            mspass_object['source_time']=srcrec['time']
+            mspass_object['source_lat'] = srcrec['lat']
+            mspass_object['source_lon'] = srcrec['lon']
+            mspass_object['source_depth'] = srcrec['depth']
+            mspass_object['source_time'] = srcrec['time']
         return mspass_object
     except:
         print("something threw an unexpected exception")
+
+
 def load_hypocenter_data_by_time(db=None,
-                                ens=None,
-                                dbtime_key='time',
-                                mdtime_key='time_P',
-                                event_id_key='evid',
-                                phase='P',
-                                model='iasp91',
-                                dt=10.0,
-                                t0_definition='origin_time',
-                                t0_offset=0.0,
-                                kill_null=True):
+                                 ens=None,
+                                 dbtime_key='time',
+                                 mdtime_key='time_P',
+                                 event_id_key='evid',
+                                 phase='P',
+                                 model='iasp91',
+                                 dt=10.0,
+                                 t0_definition='origin_time',
+                                 t0_offset=0.0,
+                                 kill_null=True):
     """
     Loads hypocenter data (space time coordinates) into an ensemble using
     an arrival time matching algorithm.  This is a generalization of earlier
@@ -515,24 +535,24 @@ def load_hypocenter_data_by_time(db=None,
     at least some members marked dead.  The function returns the number of
     members set.  The caller should test and complain if there are no matches.
     """
-    base_error_message='load_hypocenter_data_by_time:  '
-    if db==None:
+    base_error_message = 'load_hypocenter_data_by_time:  '
+    if db == None:
         raise MsPASSError(base_error_message+'Missing required argument db=MongoDB Database handle',
-                    ErrorSeverity.Fatal)
-    elif ens==None:
+                          ErrorSeverity.Fatal)
+    elif ens == None:
         raise MsPASSError(base_error_message+'Missing required argument ens=mspass Ensemble data',
-                    ErrorSeverity.Fatal)
+                          ErrorSeverity.Fatal)
     # First we need to query the arrival table to find all arrivals within
     # the time range of this ensemble
     try:
-        dbarrival=db.arrival
-        stime=ens['startttime']
-        etime=ens['endtime']
-        query={{dbtime_key:{'$gte':stime,'$lte':etime}}}
-        narr=dbarrival.count_documents(query)
+        dbarrival = db.arrival
+        stime = ens['startttime']
+        etime = ens['endtime']
+        query = {{dbtime_key: {'$gte': stime, '$lte': etime}}}
+        narr = dbarrival.count_documents(query)
         if narr == 0:
-            print(base_error_message,'No arrivals found in data time range:')
-            print(UTCDateTime(stime),' to ',UTCDateTime(etime))
+            print(base_error_message, 'No arrivals found in data time range:')
+            print(UTCDateTime(stime), ' to ', UTCDateTime(etime))
             if kill_null:
                 for d in ens.member:
                     d.kill()
@@ -541,18 +561,18 @@ def load_hypocenter_data_by_time(db=None,
             # This else block isn't essential, but makes the logic clearer
             # first scan the data for unique events.  For now use an evid
             # test.  This could be generalized to coordinates
-            arrivals=dbarrival.find(query)
-            evids=dict()
+            arrivals = dbarrival.find(query)
+            evids = dict()
             for doc in arrivals:
-                evnow=doc[event_id_key]
-                lat=doc['source.lat']
-                lon=doc['source.lon']
-                depth=doc['source.depth']
-                otime=doc['source.time']
-                evids[evnow]=[lat,lon,depth,otime]
-            if len(evids)>1:
+                evnow = doc[event_id_key]
+                lat = doc['source.lat']
+                lon = doc['source.lon']
+                depth = doc['source.depth']
+                otime = doc['source.time']
+                evids[evnow] = [lat, lon, depth, otime]
+            if len(evids) > 1:
                 # land if picks from multiple events are inside the data window
-                #INCOMPLETE - will probably drop this function
+                # INCOMPLETE - will probably drop this function
                 for k in evids.keys():
                     print(k)
             # Above block always sets lat,lon,depth, and otime to the
@@ -564,108 +584,119 @@ def load_hypocenter_data_by_time(db=None,
         print(err)
         raise err
 
-def load_site_data(db,ens):
+
+def load_site_data(db, ens):
     """
     Loads site data into ens.  Similar to load_source_data but uses a diffrent
     match:  net,sta, time matching startdate->enddate.   Mark members dead and
     post an elog message if the site coordinates are not found.
     """
-    dbsite=db.site
+    dbsite = db.site
     try:
 
         for d in ens.member:
             if d.dead():
                 continue
-            t0=d['starttime']
-            net=d['net']
-            sta=d['sta']
-            query={
-                'net' : {'$eq' : net},
-                'sta' : {'$eq' : sta},
-                'starttime' : {'$lt' : t0},
-                'endtime' : {'$gt' : t0}
-                }
-            n=dbsite.count_documents(query)
-            if n==0:
+            t0 = d['starttime']
+            net = d['net']
+            sta = d['sta']
+            query = {
+                'net': {'$eq': net},
+                'sta': {'$eq': sta},
+                'starttime': {'$lt': t0},
+                'endtime': {'$gt': t0}
+            }
+            n = dbsite.count_documents(query)
+            if n == 0:
                 d.kill()
                 d.elog.log_error('load_site_data',
-                 'no match found in site collection for net='+net+' sta='+sta+' for this event',
-                 ErrorSeverity.Invalid)
+                                 'no match found in site collection for net='+net+' sta='+sta+' for this event',
+                                 ErrorSeverity.Invalid)
             else:
-                siterec=dbsite.find_one(query)
-                d['site_lat']=siterec['lat']
-                d['site_lon']=siterec['lon']
-                d['site_elev']=siterec['elev']
-                d['site_id']=siterec['site_id']
-                if n>1:
-                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
-                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complaint)
+                siterec = dbsite.find_one(query)
+                d['site_lat'] = siterec['lat']
+                d['site_lon'] = siterec['lon']
+                d['site_elev'] = siterec['elev']
+                d['site_id'] = siterec['site_id']
+                if n > 1:
+                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(
+                        n=n, net=net, sta=sta, t0=t0)
+                    d.elog.log_error('load_site_data', message,
+                                     ErrorSeverity.Complaint)
         return ens
     except Exception as err:
         raise MsPASSError('Something threw an unexpected exception',
-            ErrorSeverity.Invalid) from err
-def load_channel_data(db,ens):
+                          ErrorSeverity.Invalid) from err
+
+
+def load_channel_data(db, ens):
     """
     Loads channel data into ens.  Similar to load_source_data but uses a diffrent
     match:  net,sta,loc,time matching startdate->enddate.   Mark members dead and
     post an elog message if required metadata are not found.
     """
-    dbchannel=db.channel
+    dbchannel = db.channel
     try:
         for d in ens.member:
             if d.dead():
                 continue
-            t0=d['starttime']
+            t0 = d['starttime']
             # this is a sanity check to avoid throwing exceptions
-            if( d.is_defined('net')
-              and d.is_defined('sta')
-              and d.is_defined('loc')
-              and d.is_defined('chan')):
-                net=d['net']
-                sta=d['sta']
-                chan=d['chan']
-                loc=d['loc']
-                query={
-                        'net' : {'$eq' : net},
-                        'sta' : {'$eq' : sta},
-                        'chan' : {'$eq' : chan},
-                        'loc' : {'$eq' : loc},
-                        'starttime' : {'$lt' : t0},
-                        'endtime' : {'$gt' : t0}
+            if(d.is_defined('net')
+                and d.is_defined('sta')
+                and d.is_defined('loc')
+                    and d.is_defined('chan')):
+                net = d['net']
+                sta = d['sta']
+                chan = d['chan']
+                loc = d['loc']
+                query = {
+                    'net': {'$eq': net},
+                    'sta': {'$eq': sta},
+                    'chan': {'$eq': chan},
+                    'loc': {'$eq': loc},
+                    'starttime': {'$lt': t0},
+                    'endtime': {'$gt': t0}
                 }
-                n=dbchannel.count_documents(query)
-                if n==0:
+                n = dbchannel.count_documents(query)
+                if n == 0:
                     d.kill()
                     d.elog.log_error('load_channel_data',
-                        'no match found in channel collection for net='+net+' sta='+sta+" chan="+chan+" loc="+loc+' for this event',
-                            ErrorSeverity.Invalid)
+                                     'no match found in channel collection for net='+net +
+                                     ' sta='+sta+" chan="+chan+" loc="+loc+' for this event',
+                                     ErrorSeverity.Invalid)
                     continue
-                if n==1:
-                    chanrec=dbchannel.find_one(query)
+                if n == 1:
+                    chanrec = dbchannel.find_one(query)
                 else:
-                # In this case we just complain - and keep use the first record
-                # that is what find_one returns.  We use the count to make
-                # the eror message cleaer
-                    chanrec=dbchannel.find_one(query)
-                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(n=n,net=net,sta=sta,t0=t0)
-                    d.elog.log_error('load_site_data',message,ErrorSeverity.Complaint)
-                d['site_lat']=chanrec['lat']
-                d['site_lon']=chanrec['lon']
-                d['site_elev']=chanrec['elev']
-                d['vang']=chanrec['vang']
-                d['hang']=chanrec['hang']
-                d['site_id']=chanrec['_id']
+                    # In this case we just complain - and keep use the first record
+                    # that is what find_one returns.  We use the count to make
+                    # the eror message cleaer
+                    chanrec = dbchannel.find_one(query)
+                    message = "Multiple ({n}) matches found for net={net} and sta={sta} with reference time {t0}".format(
+                        n=n, net=net, sta=sta, t0=t0)
+                    d.elog.log_error('load_site_data', message,
+                                     ErrorSeverity.Complaint)
+                d['site_lat'] = chanrec['lat']
+                d['site_lon'] = chanrec['lon']
+                d['site_elev'] = chanrec['elev']
+                d['vang'] = chanrec['vang']
+                d['hang'] = chanrec['hang']
+                d['site_id'] = chanrec['_id']
 
         return ens
     except Exception as err:
         raise MsPASSError('Something threw an unexpected exception',
-            ErrorSeverity.Invalid) from err
+                          ErrorSeverity.Invalid) from err
 
-def load_arrivals_by_id(db,tsens,
-        phase='P',
-        required_key_map={'phase':'phase','time':'arrival_time'},
-        optional_key_map={'iphase':'iphase','deltim':'deltim'},
-        verbose=False):
+
+def load_arrivals_by_id(db, tsens,
+                        phase='P',
+                        required_key_map={'phase': 'phase',
+                                          'time': 'arrival_time'},
+                        optional_key_map={
+                            'iphase': 'iphase', 'deltim': 'deltim'},
+                        verbose=False):
     """
     Special prototype function to load arrival times in arrival collection
     to TimeSeries data in a TimeSeriesEnsemble. Match is a fixed query
@@ -695,82 +726,92 @@ def load_arrivals_by_id(db,tsens,
 
     :return: count of number of live members in the ensemble at completion
     """
-    dbarrival=db.arrival
-    algorithm='load_arrivals_by_id'
+    dbarrival = db.arrival
+    algorithm = 'load_arrivals_by_id'
     if 'source_id' in tsens:
-        source_id=tsens['source_id']
+        source_id = tsens['source_id']
         for d in tsens.member:
             if d.dead():
                 continue
             if ('net' in d) and ('sta' in d):
-                net=d['net']
-                sta=d['sta']
-                query={
-                        'source_id' : source_id,
-                        'net' : net,
-                        'sta' : sta,
-                        'phase' : phase
+                net = d['net']
+                sta = d['sta']
+                query = {
+                    'source_id': source_id,
+                    'net': net,
+                    'sta': sta,
+                    'phase': phase
                 }
-                n=dbarrival.count_documents(query)
+                n = dbarrival.count_documents(query)
                 #print('debug  query=',query,' yield n=',n)
-                if n==0:
+                if n == 0:
                     d.elog.log_error(algorithm,
-                      "No matching arrival for source_id="+source_id+" and net:sta ="+net+':'+sta,
-                      ErrorSeverity.Invalid)
+                                     "No matching arrival for source_id="+source_id+" and net:sta ="+net+':'+sta,
+                                     ErrorSeverity.Invalid)
                     if verbose:
-                        print("No matching arrival for source_id="+source_id+" and net:sta ="+net+':'+sta)
+                        print("No matching arrival for source_id=" +
+                              source_id+" and net:sta ="+net+':'+sta)
                     d.kill()
                 else:
-                    cursor=dbarrival.find(query)
-                    if n==1:
-                        rec=cursor.next()
-                    elif n>1:
+                    cursor = dbarrival.find(query)
+                    if n == 1:
+                        rec = cursor.next()
+                    elif n > 1:
                         d.elog.log_error(algorithm,
-                          "Multiple documents match source_id="+source_id+" and net:sta ="+net+':'+sta+"  Using first found",
-                          ErrorSeverity.Complaint)
+                                         "Multiple documents match source_id="+source_id +
+                                         " and net:sta ="+net+':'+sta+"  Using first found",
+                                         ErrorSeverity.Complaint)
                         if verbose:
-                            print('debug:  multiple docs match - printing full documents of all matches.  Will use first')
+                            print(
+                                'debug:  multiple docs match - printing full documents of all matches.  Will use first')
                             for rec in cursor:
                                 print(rec)
                             cursor.rewind()
-                        rec=cursor.next()
+                        rec = cursor.next()
                     for k in required_key_map:
                         if k in rec:
-                            x=rec[k]
-                            dkey=required_key_map[k]
-                            d[dkey]=x
+                            x = rec[k]
+                            dkey = required_key_map[k]
+                            d[dkey] = x
                         else:
                             d.elog.log_error(algorithm,
-                                "Required attribute with key="+k+" not found in matching arrival document - data killed",
-                               ErrorSeverity.Invalid)
+                                             "Required attribute with key="+k +
+                                             " not found in matching arrival document - data killed",
+                                             ErrorSeverity.Invalid)
                             d.kill()
                             if verbose:
-                                print("Required attribute with key="+k+" not found in matching arrival document - data killed")
+                                print("Required attribute with key="+k +
+                                      " not found in matching arrival document - data killed")
                     for k in optional_key_map:
                         if k in rec:
-                            x=rec[k]
-                            dkey=optional_key_map[k]
-                            d[dkey]=x
+                            x = rec[k]
+                            dkey = optional_key_map[k]
+                            d[dkey] = x
                         else:
                             d.elog.log_error(algorithm,
-                                "Optional attribute with key="+k+" was not found in matching arrival document and cannot be loaded",
-                                ErrorSeverity.Complaint)
+                                             "Optional attribute with key="+k +
+                                             " was not found in matching arrival document and cannot be loaded",
+                                             ErrorSeverity.Complaint)
                             if verbose:
-                                print("Optional attribute with key="+k+" was not found in matching arrival document and cannot be loaded")
+                                print("Optional attribute with key="+k +
+                                      " was not found in matching arrival document and cannot be loaded")
 
     else:
-        message="Enemble metadata does not contain required source_id attribute - killing all data in this ensemble"
+        message = "Enemble metadata does not contain required source_id attribute - killing all data in this ensemble"
         if verbose:
             print(message)
         for d in tsens.member:
-            d.elog.log_error('load_arrivals_by_id',message,ErrorSeverity.Invalid)
+            d.elog.log_error('load_arrivals_by_id',
+                             message, ErrorSeverity.Invalid)
             d.kill()
-    nlive=0
+    nlive = 0
     for d in tsens.member:
         if d.live:
-            nlive+=1
+            nlive += 1
     return nlive
-def erase_seed_metadata(d,keys=['mseed','_format']):
+
+
+def erase_seed_metadata(d, keys=['mseed', '_format']):
     """
     Erase a set of debris obspy's reader adds to stats array that get copied to data.  We
     don't need that debris once data are converted to MsPASS data objects and stored in

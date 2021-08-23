@@ -207,11 +207,11 @@ class RFdeconProcessor:
             processor = MultiTaperXcorDecon(self.md)
         elif self.algorithm == "MultiTaperSpecDiv":
             processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self,'dvector'):
+        if hasattr(self, 'dvector'):
             processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self,'wvector'):
+        if hasattr(self, 'wvector'):
             processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self,'nvector'):
+        if self.__uses_noise and hasattr(self, 'nvector'):
             processor.loadnoise(DoubleVector(self.nvector))
         processor.process()
         return processor.getresult()
@@ -237,11 +237,11 @@ class RFdeconProcessor:
             processor = MultiTaperXcorDecon(self.md)
         elif self.algorithm == "MultiTaperSpecDiv":
             processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self,'dvector'):
+        if hasattr(self, 'dvector'):
             processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self,'wvector'):
+        if hasattr(self, 'wvector'):
             processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self,'nvector'):
+        if self.__uses_noise and hasattr(self, 'nvector'):
             processor.loadnoise(DoubleVector(self.nvector))
         return processor.actual_output()
 
@@ -266,11 +266,11 @@ class RFdeconProcessor:
             processor = MultiTaperXcorDecon(self.md)
         elif self.algorithm == "MultiTaperSpecDiv":
             processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self,'dvector'):
+        if hasattr(self, 'dvector'):
             processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self,'wvector'):
+        if hasattr(self, 'wvector'):
             processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self,'nvector'):
+        if self.__uses_noise and hasattr(self, 'nvector'):
             processor.loadnoise(DoubleVector(self.nvector))
         return processor.ideal_output()
 
@@ -295,11 +295,11 @@ class RFdeconProcessor:
             processor = MultiTaperXcorDecon(self.md)
         elif self.algorithm == "MultiTaperSpecDiv":
             processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self,'dvector'):
+        if hasattr(self, 'dvector'):
             processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self,'wvector'):
+        if hasattr(self, 'wvector'):
             processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self,'nvector'):
+        if self.__uses_noise and hasattr(self, 'nvector'):
             processor.loadnoise(DoubleVector(self.nvector))
         return processor.inverse_filter()
 
@@ -319,11 +319,11 @@ class RFdeconProcessor:
             processor = MultiTaperXcorDecon(self.md)
         elif self.algorithm == "MultiTaperSpecDiv":
             processor = MultiTaperSpecDivDecon(self.md)
-        if hasattr(self,'dvector'):
+        if hasattr(self, 'dvector'):
             processor.loaddata(DoubleVector(self.dvector))
-        if hasattr(self,'wvector'):
+        if hasattr(self, 'wvector'):
             processor.loadwavelet(DoubleVector(self.wvector))
-        if self.__uses_noise and hasattr(self,'nvector'):
+        if self.__uses_noise and hasattr(self, 'nvector'):
             processor.loadnoise(DoubleVector(self.nvector))
         return processor.QCMetrics()
 
