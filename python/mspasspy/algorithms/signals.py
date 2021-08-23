@@ -14,6 +14,7 @@ from mspasspy.util.decorators import (mspass_func_wrapper,
 from mspasspy.util.converter import (Stream2Seismogram,
                                      Stream2TimeSeriesEnsemble)
 
+
 @mspass_func_wrapper
 @timeseries_as_trace
 @seismogram_as_stream
@@ -113,7 +114,8 @@ def interpolate(data, sampling_rate, *args, object_history=False, alg_name='inte
     :param kwargs: extra kv arguments
     :return: None.
     """
-    data.interpolate(sampling_rate, method, starttime, npts, time_shift, *args, **kwargs)
+    data.interpolate(sampling_rate, method, starttime,
+                     npts, time_shift, *args, **kwargs)
 
 
 @mspass_func_wrapper_multi
@@ -161,15 +163,17 @@ def correlate_template(data, template, object_history=False, alg_name='correlate
 @timeseries_ensemble_as_stream
 @seismogram_as_stream
 def correlate_stream_template(stream, template,
-        object_history=False, alg_name='correlate_stream_template', alg_id=None, dryrun=False,
-            template_time=None, return_type="seismogram", **kwargs):
-    res = obspy.signal.cross_correlation.correlate_stream_template(stream, template, template_time)
+                              object_history=False, alg_name='correlate_stream_template', alg_id=None, dryrun=False,
+                              template_time=None, return_type="seismogram", **kwargs):
+    res = obspy.signal.cross_correlation.correlate_stream_template(
+        stream, template, template_time)
     if return_type == "seismogram":
         return Stream2Seismogram(res, cardinal=True)
     elif return_type == "timeseries_ensemble":
         return Stream2TimeSeriesEnsemble(res)
     else:
-        raise TypeError("Only seismogram and timeseries_ensemble types are supported")
+        raise TypeError(
+            "Only seismogram and timeseries_ensemble types are supported")
 
 
 @mspass_func_wrapper
@@ -182,15 +186,17 @@ def correlation_detector(stream, templates, heights, distance, object_history=Fa
     for template in templates:
         tem_list.append(template.toStream())
     detections, sims = obspy.signal.cross_correlation.correlation_detector(stream, tem_list, heights, distance,
-        template_times, template_magnitudes, template_names, similarity_func, details, plot, **kwargs)
+                                                                           template_times, template_magnitudes, template_names, similarity_func, details, plot, **kwargs)
     converted_detections = []
     for detection in detections:
         if return_type == "seismogram":
-            converted_detections.append(Stream2Seismogram(detection, cardinal=True))
+            converted_detections.append(
+                Stream2Seismogram(detection, cardinal=True))
         elif return_type == "timeseries_ensemble":
             converted_detections.append(Stream2TimeSeriesEnsemble(detection))
         else:
-            raise TypeError("Only seismogram and timeseries_ensemble types are supported")
+            raise TypeError(
+                "Only seismogram and timeseries_ensemble types are supported")
     return converted_detections, sims
 
 
@@ -198,12 +204,13 @@ def correlation_detector(stream, templates, heights, distance, object_history=Fa
 @timeseries_ensemble_as_stream
 @seismogram_as_stream
 def templates_max_similarity(st, time, streams_templates,
-         object_history=False, alg_name='templates_max_similarity',
-           alg_id=None, dryrun=False):
+                             object_history=False, alg_name='templates_max_similarity',
+                             alg_id=None, dryrun=False):
     tem_list = []
     for template in streams_templates:
         tem_list.append(template.toStream())
     return obspy.signal.cross_correlation.templates_max_similarity(st, time, tem_list)
+
 
 @mspass_func_wrapper_multi
 @seismogram_as_stream
@@ -212,6 +219,7 @@ def xcorr_3c(st1, st2, shift_len, object_history=False, alg_name='xcor_3c', alg_
     if components is None:
         components = ['Z', 'N', 'E']
     return obspy.signal.cross_correlation.xcorr_3c(st1, st2, shift_len, components, full_xcorr, abs_max)
+
 
 @mspass_func_wrapper
 @timeseries_as_trace

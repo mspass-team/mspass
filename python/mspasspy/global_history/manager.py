@@ -12,6 +12,7 @@ from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
 
+
 def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                      alg_name=None, parameters=None, **kwargs):
     """
@@ -46,7 +47,8 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+        kwargs_str = ",".join(f"{key}={value}" for key,
+                              value in parameters_dict.items())
 
         if args_str:
             parameters = args_str + "," + kwargs_str
@@ -69,14 +71,14 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     # save the global history
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
-    
+
     # read_data method
     if alg_name.rfind('read_data') != -1 and alg_name.rfind('read_data') + 9 == len(alg_name):
         if global_history:
             return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
         else:
             return self.map(lambda wf: func(wf, *args, **kwargs))
-    
+
     # save_data method
     if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
@@ -88,8 +90,9 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     # save the object history
     if object_history:
         return self.map(lambda wf: func(wf, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
-    
+
     return self.map(lambda wf: func(wf, *args, object_history=object_history, **kwargs))
+
 
 def mspass_dask_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                     alg_name=None, parameters=None, **kwargs):
@@ -125,7 +128,8 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+        kwargs_str = ",".join(f"{key}={value}" for key,
+                              value in parameters_dict.items())
 
         if args_str:
             parameters = args_str + "," + kwargs_str
@@ -153,7 +157,7 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
             return self.map(lambda wf: func(wf, *args, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
         else:
             return self.map(lambda wf: func(wf, *args, **kwargs))
-    
+
     # save_data method
     if alg_name.rfind('save_data') != -1 and alg_name.rfind('save_data') + 9 == len(alg_name):
         # (return_code, mspass_object) is return for save_data, otherwise the original mspass_object is unchanged
@@ -167,6 +171,7 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
         return self.map(func, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs)
 
     return self.map(func, *args, object_history=object_history, **kwargs)
+
 
 def mspass_spark_reduce(self, func, *args, global_history=None, object_history=False, alg_id=None,
                         alg_name=None, parameters=None, **kwargs):
@@ -202,13 +207,14 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+        kwargs_str = ",".join(f"{key}={value}" for key,
+                              value in parameters_dict.items())
 
         if args_str:
             parameters = args_str + "," + kwargs_str
         else:
             parameters = kwargs_str
-    
+
     if not alg_name:
         # if not exists, use the name of the func
         alg_name = func.__name__
@@ -224,15 +230,16 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     # save the global history
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
-    
+
     # save the object history
     if object_history:
         return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
-    
+
     return self.reduce(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
 
+
 def mspass_dask_fold(self, func, *args, global_history=None, object_history=False, alg_id=None,
-                       alg_name=None, parameters=None, **kwargs):
+                     alg_name=None, parameters=None, **kwargs):
     """
      This decorator method add more functionaliy on the standard dask fold method and be a part of member functions
      in the dask bag library. Instead of performing the normal fold function, if user provides global history manager,
@@ -265,7 +272,8 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key, value in parameters_dict.items())
+        kwargs_str = ",".join(f"{key}={value}" for key,
+                              value in parameters_dict.items())
 
         if args_str:
             parameters = args_str + "," + kwargs_str
@@ -287,11 +295,11 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     # save the global history
     if global_history:
         global_history.logging(alg_id, alg_name, parameters)
-    
+
     # save the object history
     if object_history:
         return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, alg_name=alg_name, alg_id=str(alg_id), **kwargs))
-    
+
     return self.fold(lambda a, b: func(a, b, *args, object_history=object_history, **kwargs))
 
 
@@ -303,6 +311,7 @@ class GlobalHistoryManager:
     a Global History Manager by his own. Instead, user should get the Global History Manager
     through mspass client's methods.
     """
+
     def __init__(self, database_instance, job_name, collection=None):
         self.job_name = job_name
         # generate an bson UUID for this job, should be unique on the application level
@@ -324,7 +333,7 @@ class GlobalHistoryManager:
         pyspark.RDD.mspass_map = mspass_spark_map
         daskbag.Bag.mspass_map = mspass_dask_map
 
-        #modify pyspark/dask reduce to our defined reduce
+        # modify pyspark/dask reduce to our defined reduce
         pyspark.RDD.mspass_reduce = mspass_spark_reduce
         daskbag.Bag.mspass_reduce = mspass_dask_fold
 
@@ -365,8 +374,9 @@ class GlobalHistoryManager:
         # no alg_name and parameters combination in the database
         if not self.history_db[self.collection].count_documents({'alg_name': alg_name, 'parameters': parameters}):
             return None
-        
-        doc = self.history_db[self.collection].find_one({'alg_name': alg_name, 'parameters': parameters})
+
+        doc = self.history_db[self.collection].find_one(
+            {'alg_name': alg_name, 'parameters': parameters})
         return doc['alg_id']
 
     def get_alg_list(self, job_name, job_id=None):
@@ -400,9 +410,11 @@ class GlobalHistoryManager:
         """
         doc = self.history_db[self.collection].find_one({'alg_id': alg_id})
         if not doc:
-            raise MsPASSError('No such history record with alg_id = ' + alg_id, 'Fatal')
-        
+            raise MsPASSError(
+                'No such history record with alg_id = ' + alg_id, 'Fatal')
+
         update_dict = {}
         update_dict['alg_name'] = alg_name
         update_dict['parameters'] = parameters
-        self.history_db[self.collection].update_many({'alg_id': alg_id}, {'$set': update_dict})
+        self.history_db[self.collection].update_many(
+            {'alg_id': alg_id}, {'$set': update_dict})

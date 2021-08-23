@@ -25,25 +25,25 @@ def info(data, alg_id, alg_name, target=None):
                 data.elog.log_error(alg_name, empty_err_message, ErrorSeverity.Complaint)
             else:
                 data.new_map(alg_name, alg_id,
-                             AtomicType.TIMESERIES if isinstance(data,
-                                                                        TimeSeries) else AtomicType.SEISMOGRAM,
+                             AtomicType.TIMESERIES if isinstance(data, TimeSeries) else AtomicType.SEISMOGRAM,
                              ProcessingStatus.VOLATILE)
 
     elif isinstance(data, (TimeSeriesEnsemble, SeismogramEnsemble)):
         if (target is not None) and (len(data.member) <= target):
-            raise IndexError("logging_helper.info: target index is out of bound")
+            raise IndexError(
+                "logging_helper.info: target index is out of bound")
         for i in range(len(data.member)) if target is None else [target]:
             if data.member[i].live:  # guarantee group member is not dead
                 if data.member[i].is_empty():
                     data.member[i].elog.log_error(alg_name, empty_err_message, ErrorSeverity.Complaint)
                 else:
                     data.member[i].new_map(alg_name, alg_id,
-                                           AtomicType.TIMESERIES \
-                                               if isinstance(data.member[i],
-                                                             TimeSeries) else AtomicType.SEISMOGRAM,
+                                           AtomicType.TIMESERIES
+                                           if isinstance(data.member[i], TimeSeries) else AtomicType.SEISMOGRAM,
                                            ProcessingStatus.VOLATILE)
     else:
-        print('Coding error - logging.info was passed an unexpected data type of', type(data))
+        print(
+            'Coding error - logging.info was passed an unexpected data type of', type(data))
         print('Not treated as fatal but a bug fix is needed')
 
 
@@ -90,26 +90,29 @@ def reduce(data1, data2, alg_id, alg_name):
     """
     if isinstance(data1, (TimeSeries, Seismogram)):
         if type(data1) != type(data2):
-            raise TypeError("logging_helper.reduce: data2 has a different type as data1")
+            raise TypeError(
+                "logging_helper.reduce: data2 has a different type as data1")
         if data1.live:
             data1.accumulate(alg_name,
                              alg_id,
-                             AtomicType.TIMESERIES if isinstance(data1,TimeSeries)
-                                else AtomicType.SEISMOGRAM,
+                             AtomicType.TIMESERIES if isinstance(data1, TimeSeries)
+                             else AtomicType.SEISMOGRAM,
                              data2)
 
     elif isinstance(data1, (TimeSeriesEnsemble, SeismogramEnsemble)):
         if type(data1) != type(data2):
-            raise TypeError("logging_helper.reduce: data2 has a different type as data1")
+            raise TypeError(
+                "logging_helper.reduce: data2 has a different type as data1")
         if len(data1.member) != len(data2.member):
-            raise IndexError("logging_helper.reduce: data1 and data2 have different sizes of member")
+            raise IndexError(
+                "logging_helper.reduce: data1 and data2 have different sizes of member")
         for i in range(len(data1.member)):
             if data1.member[i].live:  # guarantee group member is not dead
                 data1.member[i].accumulate(alg_name,
-                                 alg_id,
-                                 AtomicType.TIMESERIES if isinstance(data1.member[i], TimeSeries)
-                                    else AtomicType.SEISMOGRAM,
-                                 data2.member[i])
+                                           alg_id,
+                                           AtomicType.TIMESERIES if isinstance(data1.member[i], TimeSeries)
+                                           else AtomicType.SEISMOGRAM,
+                                           data2.member[i])
     else:
         print('Coding error - logging.reduce was passed an unexpected data type of', type(data1))
         print('Not treated as fatal but a bug fix is needed')

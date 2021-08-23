@@ -19,7 +19,7 @@ def stack(data1, data2, object_history=False, alg_id=None, alg_name=None, dryrun
     :param dryrun: True for dry-run, which return "OK". Used in the mspass_reduce_func_wrapper.
     :return: data1 (modified).
     """
-    if isinstance(data1, (TimeSeries,Seismogram)):
+    if isinstance(data1, (TimeSeries, Seismogram)):
         data1 += data2
     elif isinstance(data1, (TimeSeriesEnsemble, SeismogramEnsemble)):
         if len(data1.member) != len(data2.member):

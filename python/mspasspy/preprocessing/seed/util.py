@@ -1,7 +1,8 @@
 from obspy import UTCDateTime
 from mspasspy.ccore.utility import MsPASSError
 
-def channel_report(db,net=None,sta=None,chan=None,loc=None,time=None):
+
+def channel_report(db, net=None, sta=None, chan=None, loc=None, time=None):
     """
     Prints a nicely formatted table of information about channel documents
     matching a set of seed codes.
@@ -28,46 +29,47 @@ def channel_report(db,net=None,sta=None,chan=None,loc=None,time=None):
       a unix epoch time or a UTCDateTime.
 
     """
-    if net==None and sta==None and chan==None and loc==None:
+    if net == None and sta == None and chan == None and loc == None:
         raise MsPASSError("channel_report usage error:  must specify at least one of sta, net, or loc",
                           "Fatal")
-    query=dict()
+    query = dict()
     if net != None:
-        query['net']=net
+        query['net'] = net
     if sta != None:
-        query['sta']=sta
+        query['sta'] = sta
     if chan != None:
-        query['chan']=chan
+        query['chan'] = chan
     if loc != None:
-        query['loc']=loc
+        query['loc'] = loc
     if time != None:
-        if isinstance(time,UTCDateTime):
-            t_to_use=time.timestamp
+        if isinstance(time, UTCDateTime):
+            t_to_use = time.timestamp
         else:
-            t_to_use=time
-        query['starttime']={'$lte':t_to_use}
-        query['endtime']={'$gte':t_to_use}
-    dbchan=db.channel
-    n=dbchan.count_documents(query)
-    if n==0:
+            t_to_use = time
+        query['starttime'] = {'$lte': t_to_use}
+        query['endtime'] = {'$gte': t_to_use}
+    dbchan = db.channel
+    n = dbchan.count_documents(query)
+    if n == 0:
         print("site collection has no documents matching the following query")
         print(query)
         return
     print('{:>4}'.format('net'),
-              '{:>8}'.format('sta'),
-              '{:>6}'.format('chan'),
-              '{:=^6}'.format('loc'),
-              'latitude longitude starttime endtime')
-    curs=dbchan.find(query)
+          '{:>8}'.format('sta'),
+          '{:>6}'.format('chan'),
+          '{:=^6}'.format('loc'),
+          'latitude longitude starttime endtime')
+    curs = dbchan.find(query)
     for doc in curs:
         print('{:>4}'.format(doc['net']),
               '{:>8}'.format(doc['sta']),
               '{:>6}'.format(doc['chan']),
               '{:=^6}'.format(doc['loc']),
-              doc['lat'],doc['lon'],doc['elev'],
-              UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))
+              doc['lat'], doc['lon'], doc['elev'],
+              UTCDateTime(doc['starttime']), UTCDateTime(doc['endtime']))
 
-def site_report(db,net=None,sta=None,loc=None,time=None):
+
+def site_report(db, net=None, sta=None, loc=None, time=None):
     """
     Prints a nicely formatted table of information about site documents
     matching a set of seed codes.
@@ -100,37 +102,37 @@ def site_report(db,net=None,sta=None,loc=None,time=None):
 
     """
 
-    if net==None and sta==None and loc==None:
+    if net == None and sta == None and loc == None:
         raise MsPASSError("site_report usage error:  must specify at least one of sta, net, or loc",
                           "Fatal")
-    query=dict()
+    query = dict()
     if net != None:
-        query['net']=net
+        query['net'] = net
     if sta != None:
-        query['sta']=sta
+        query['sta'] = sta
     if loc != None:
-        query['loc']=loc
+        query['loc'] = loc
     if time != None:
-        if isinstance(time,UTCDateTime):
-            t_to_use=time.timestamp
+        if isinstance(time, UTCDateTime):
+            t_to_use = time.timestamp
         else:
-            t_to_use=time
-        query['starttime']={'$lte':t_to_use}
-        query['endtime']={'$gte':t_to_use}
-    dbsite=db.site
-    n=dbsite.count_documents(query)
-    if n==0:
+            t_to_use = time
+        query['starttime'] = {'$lte': t_to_use}
+        query['endtime'] = {'$gte': t_to_use}
+    dbsite = db.site
+    n = dbsite.count_documents(query)
+    if n == 0:
         print("site collection has no documents matching the following query")
         print(query)
         return
     print('{:>4}'.format('net'),
-              '{:>8}'.format('sta'),
-              '{:=^6}'.format('loc'),
-              'latitude longitude starttime endtime')
-    curs=dbsite.find(query)
+          '{:>8}'.format('sta'),
+          '{:=^6}'.format('loc'),
+          'latitude longitude starttime endtime')
+    curs = dbsite.find(query)
     for doc in curs:
         print('{:>4}'.format(doc['net']),
               '{:>8}'.format(doc['sta']),
               '{:=^6}'.format(doc['loc']),
-              doc['lat'],doc['lon'],doc['elev'],
-              UTCDateTime(doc['starttime']),UTCDateTime(doc['endtime']))
+              doc['lat'], doc['lon'], doc['elev'],
+              UTCDateTime(doc['starttime']), UTCDateTime(doc['endtime']))
