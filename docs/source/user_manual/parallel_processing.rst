@@ -82,17 +82,17 @@ data is easily defined by a variant of the following code section:
   from mspasspy.db.client import DBClient
   from mspasspy.db.database import (Database,
                        read_distributed_data)
-  dbclient = DBClient()
-  dbname = 'exampledb'   # This sets the database name - this is an example
-  dbhandle = Database(dbclient,dbname)
+  dbclient=DBClient()
+  dbname='exampledb'   # This sets the database name - this is an example
+  dbhandle=Database(dbclient,dbname)
   query={}
   # code here can optionally produce a valid string defining query
   # as a valid MongoDB argument of for find method.  Default is no query
-  cursor  =dbhandle.wf_TimeSeries.find(query)
+  cursor=dbhandle.wf_TimeSeries.find(query)
   # Example uses no normalization - most read use normalize (list) argument
-  mybag = read_distributed_data(dbhandle,cursor)
+  mybag=read_distributed_data(dbhandle,cursor)
   # For spark this modification is needed - context needs to be defined earlier
-  #myrdd = read_distributed_data(dbhandle,cursor,format='spark',spark_context=context)
+  #myrdd=read_distributed_data(dbhandle,cursor,format='spark',spark_context=context)
 
 The final result of this example script is a dask bag (RDD for the commented
 out variant), which here is
@@ -155,16 +155,16 @@ the application of a simple filter in dask is:
   cursor=dbhandle.wf_TimeSeries.find({})
   d_in=read_distributed_data(dbhandle,cursor)
   d_out=d_in.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
-  d_out.compute()
+  d_compute=d_out.compute()
 
 This example applies the obpsy default bandpass filter to all data
 stored in the wf_TimeSeries collection for the database to which dbhandle
 points.  The *read_distributed_data* line loads that data as a Dask bag
 we here call *d_in*.  The map operator applies the algorithm defined by
 the symbol *signals_filter* to each object in *d_in* and stores the
-output in the (new) bag *d_out*.    The last line is way you tell dask to
-"go" (i.e. proceed with the calculations).  The idea and reasons for the
-concept of of "lazy" or "delayed"
+output in the created (new) bag *d_out*.    The last line is way you tell dask to
+"go" (i.e. proceed with the calculations) and store the computed result in the *d_compute*.
+The idea and reasons for the concept of of "lazy" or "delayed"
 operation is discussed at length in various sources on dask (and Spark).
 We refer the reader to (LIST OF A FEW KEY URLS) for more on this general topic.
 
@@ -179,16 +179,14 @@ example is the translation of the above to Spark:
   # Assume dbhandle is set as a Database class as above and context is
   # Spark context object also created earlier
   cursor=dbhandle.wf_TimeSeries.find({})
-  d_in=read_distributed_data(dbhandle,cursor,spark_context=context)
-  d_out.context.parallelize()
+  d_in=read_distributed_data(dbhandle,cursor,format='spark',spark_context=context)
   d_out=d_in.map(lamda d : signals.filter(d,"bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
-  d_out.collect()
+  d_compute=d_out.collect()
 
 Notice the call to map in spark needs to be preceded by a call to the *parallelize*
-method of the SparkContext object.   That operator is more or less a constructor
-for the container (what Spark calls and RDD) d_out.  That operation does little
-more than define d_out as an empty RDD to be used.  The following line, which
-from a programming perspective is a call to the map method of the RDD we call
+method of the SparkContext object, which is called inside *read_distributed_data*.
+That operator is more or less a constructor for the container (what Spark calls and RDD) d_out.
+The following line, which from a programming perspective is a call to the map method of the RDD we call
 d_out, uses the functional programming construct of a lambda function.
 This tutorial in `realpython.com  <https://realpython.com/python-lambda/>`_
 and `this one <https://www.w3schools.com/python/python_lambda.asp>`_ by w3schools.com
@@ -300,8 +298,114 @@ to recognize that if you write your own application in this framework the
 data object you pass to map and reduce operators must have a pickle operator
 defined.
 
+Also, another limit on scalability of this framework is before the computations, dask
+would create a task graph for task scheduling. In task scheduling we break our program
+into many medium-sized tasks or units of computation, often a function call on a non-trivial
+amount of data. We represent these tasks as nodes in a graph with edges between nodes
+if one task depends on data produced by another. We call upon a task scheduler to execute
+this graph in a way that respects these data dependencies and leverages parallelism where
+possible, multiple independent tasks can be run simultaneously. Usually, this scheduling
+overhead is relatively small if your function would execute for a few seconds. However, if
+the task is finished instantly, this overhead would be magnified and may affect your
+performance results.
+
+For more information, you can view the dask documentation
+`here<https://docs.dask.org/en/latest/scheduling.html>`_.
+
 Configuration
 ~~~~~~~~~~~~~~~~~~
-TODO:  We need something here about configuration of the system in a cluster environment.
-It does not make sense for me to write this as to this point I have limited
-experience in how to do this.
+In order to leverage the parallel processing ability in our system, we could take advantage of
+the HPC systems and cluster environment. Since we are using Stamepde2 to test our framework, here
+we would show how to configure MsPASS on Stampede2.
+
+First of all, we need to specify the sbatch options on Stampede2 to submit a job because we can't
+run things on login nodes. Instead, we should submit a job to the compute nodes and the job script here
+is used to tell the compute nodes that what is needed to be executed.
+
+The example sbatch options are as follows and they are self explanatory. For more information, you could
+refer to the Stamepde2 `User Guide<https://portal.tacc.utexas.edu/user-guides/stampede2>`_.
+
+.. code-block:: bash
+  #!/bin/bash
+  #SBATCH -J mspass          # Job name
+  #SBATCH -o mspass.o%j      # Name of stdout output file
+  #SBATCH -p normal          # Queue (partition) name
+  #SBATCH -N 2               # Total # of nodes (must be 1 for serial)
+  #SBATCH -n 2               # Total # of mpi tasks (should be 1 for serial)
+  #SBATCH -t 02:00:00        # Run time (hh:mm:ss)
+
+It basically means we request for 2 compute nodes from the normal queue and both two nodes will be alive
+up to 2 hours and the output of the job script would be viewd in the mspass.o(job_id) file.
+
+There are two ways we could deploy our system on stampede2, which are single node mode and distributed mode.
+You could refer those two job script in our /scripts/tacc_examples folder in our source code. Here we would
+introduce the common parts and elements in both scripts.
+
+In both modes, we would specify the working directory and the place we store our docker image. That's why
+these two lines are in the job scripts:
+
+.. code-block:: bash
+  # working directory
+  WORK_DIR=$SCRATCH/mspass/single_workdir
+  # directory where contains docker image
+  MSPASS_CONTAINER=$WORK2/mspass/mspass_latest.sif
+
+The paths for these two variables can be changed according to your case and where you want to store the image.
+And it doesn't matter if the directory doesn't exist, the job script would create one if needed.
+
+Then we define the SING_COM variable to simplify the workflow in our job script. On Stampede2 and most of HPC
+systems, we use Singularity to manage and run the docker images. There are many options to start a container
+using singularity, which you could refer to their documentation. And for those who are not familiar with Singularity,
+here is a good `source<https://containers-at-tacc.readthedocs.io/en/latest/singularity/01.singularity_basics.html>`_
+to get start with.
+
+.. code-block:: bash
+  # command that start the container
+  module load tacc-singularity
+  SING_COM="singularity run $MSPASS_CONTAINER"
+
+Then we create a login port based on the hostname of our primary compute node we have requested. The
+port number is created in a way that guaranteed to be unique and availale on your own machine. After the
+execution of your job script, you would get the ouput file, and you could get the url for accessing the
+notebook running on your compute node. However, from you own computer, you should use this login port to
+access it instead of 8888 which typically is the port we will be using in jupyter notebook because
+we reserve the port for transmitting all the data and bits through the reverse tunnel.
+
+.. code-block:: bash
+  NODE_HOSTNAME=`hostname -s`
+  LOGIN_PORT=`echo $NODE_HOSTNAME | perl -ne 'print (($2+1).$3.$1) if /c\d(\d\d)-(\d)(\d\d)/;'`
+
+Next, we create reverse tunnel port to login nodes and make one tunnel for each login so the user can just
+connect to stampede.tacc. The reverse ssh tunnel is a tech trick that could make your own machine connect to
+the machines in the private TACC network.
+
+.. code-block:: bash
+  for i in `seq 4`; do
+    ssh -q -f -g -N -R $LOGIN_PORT:$NODE_HOSTNAME:8888 login$i
+  done
+
+For single node mode, the last thing we need to do is to start a container using the command we defined
+before:
+
+.. code-block:: bash
+  DB_PATH='scratch'
+  SINGULARITYENV_MSPASS_DB_PATH=$DB_PATH \
+  SINGULARITYENV_MSPASS_WORK_DIR=$WORK_DIR $SING_COM
+
+Here we set the environment variables inside the container using this syntactic sugar SINGULARITYENV_XXX.
+For more information, you could view the usage`here<https://sylabs.io/guides/3.0/user-guide/appendix.html>`_.
+We define and set different variables in different containers we start because in our start-mspass.sh, we
+define different bahavior under different *MSPASS_ROLE* so that for each role, it will execute the bash
+script we define in the start-mspass.sh. Though it looks complicated and hard to extend, this is prabably
+the best way we could do under stampede2 environment. In above code snippet, we basically start the container
+in all-in-one way.
+
+There are more other ways we start a container and it depends on what we need for the deployment. You could
+find more in the distributed_node.sh job script. For example, we start a scheduler, a dbmanager and a front-end
+jupyter notebook in our primary compute node and start a spark/dask worker and a MongoDB shard replica on each
+of our worker nodes. Also you could find that the environment variables needed are different and you could find
+the corresponding usage in the start-mspass.sh script in our source code. We hide the implementation detail and
+encapsulate it inside the Dockerfile. One more thing here is we specify number of nodes in our sbatch options,
+for example 4, stampede2 would reserve 4 compute nodes for us, and we would use 1 node as our primary
+compute nodes and 3 nodes as our worker nodes. Therefore, if you need 4 worker nodes, you should sepcify 5
+as your sbatch option for nodes.
