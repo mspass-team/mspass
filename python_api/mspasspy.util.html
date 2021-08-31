@@ -395,7 +395,7 @@ python uses call by reference d may thus be altered.</p>
 object will be returned if d was marked dead</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.obspy.org/packages/autogen/obspy.core.trace.Trace.html#obspy.core.trace.Trace" title="(in ObsPy Documentation (1.2.0) v1.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trace</span></code></a></p>
+<dd class="field-odd"><p>:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>~obspy.core.trace.Trace`b</p>
 </dd>
 </dl>
 </dd></dl>
@@ -672,7 +672,7 @@ but the function returns before attempting any calculations.</p></li>
 <dl class="py function">
 <dt id="mspasspy.util.decorators.seismogram_as_stream">
 <code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">seismogram_as_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_as_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_as_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This decorator converts all the mspasspy Seismogram objects in user inputs (<a href="#id1"><span class="problematic" id="id2">*</span></a>args and <a href="#id3"><span class="problematic" id="id4">**</span></a>kargs)
+<dd><p>This decorator converts all the mspasspy Seismogram objects in user inputs (<a href="#id3"><span class="problematic" id="id4">*</span></a>args and <a href="#id5"><span class="problematic" id="id6">**</span></a>kargs)
 to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
 the stream objects will be converted back by overriding the data and metadata of the origin mspasspy objects.</p>
 <dl class="field-list simple">
@@ -697,7 +697,7 @@ the stream objects will be converted back by overriding the data and metadata of
 <dl class="py function">
 <dt id="mspasspy.util.decorators.seismogram_ensemble_as_stream">
 <code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">seismogram_ensemble_as_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#seismogram_ensemble_as_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.seismogram_ensemble_as_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (<a href="#id5"><span class="problematic" id="id6">*</span></a>args and <a href="#id7"><span class="problematic" id="id8">**</span></a>kargs)
+<dd><p>This decorator converts all the mspasspy Seismogram ensemble objects in user inputs (<a href="#id7"><span class="problematic" id="id8">*</span></a>args and <a href="#id9"><span class="problematic" id="id10">**</span></a>kargs)
 to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
 the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</p>
 <dl class="field-list simple">
@@ -722,7 +722,7 @@ the stream objects will be converted back by overriding the data and metadata of
 <dl class="py function">
 <dt id="mspasspy.util.decorators.timeseries_as_trace">
 <code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">timeseries_as_trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_as_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_as_trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>This decorator converts all the mspasspy TimeSeries objects in user inputs (<a href="#id9"><span class="problematic" id="id10">*</span></a>args and <a href="#id11"><span class="problematic" id="id12">**</span></a>kargs)
+<dd><p>This decorator converts all the mspasspy TimeSeries objects in user inputs (<a href="#id11"><span class="problematic" id="id12">*</span></a>args and <a href="#id13"><span class="problematic" id="id14">**</span></a>kargs)
 to trace objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
 the trace objects will be converted back by overriding the data and metadata of the origin mspasspy objects. This
 wrapper makes it easy to process mspasspy objects using Obspy methods.</p>
@@ -748,7 +748,7 @@ wrapper makes it easy to process mspasspy objects using Obspy methods.</p>
 <dl class="py function">
 <dt id="mspasspy.util.decorators.timeseries_ensemble_as_stream">
 <code class="sig-prename descclassname">mspasspy.util.decorators.</code><code class="sig-name descname">timeseries_ensemble_as_stream</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/decorators.html#timeseries_ensemble_as_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.decorators.timeseries_ensemble_as_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (<a href="#id13"><span class="problematic" id="id14">*</span></a>args and <a href="#id15"><span class="problematic" id="id16">**</span></a>kargs)
+<dd><p>This decorator converts all the mspasspy TimeSeries ensemble objects in user inputs (<a href="#id15"><span class="problematic" id="id16">*</span></a>args and <a href="#id17"><span class="problematic" id="id18">**</span></a>kargs)
 to stream objects (defined in Obspy), and execute the func with the converted user inputs. After the execution,
 the stream objects will be converted back by overriding the data and metadata of each member in the ensemble.</p>
 <dl class="field-list simple">

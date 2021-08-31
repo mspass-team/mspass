@@ -191,7 +191,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">obspy.core</span>
 
-<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Metadata</span><span class="p">,</span><span class="n">MsPASSError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mspasspy.ccore.utility</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Metadata</span><span class="p">,</span> <span class="n">MsPASSError</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mspasspy.ccore.seismic</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_CoreSeismogram</span><span class="p">,</span>
                                     <span class="n">Seismogram</span><span class="p">,</span>
                                     <span class="n">TimeSeries</span><span class="p">,</span>
@@ -261,7 +261,7 @@
 <span class="sd">    :type ts: :class:`~mspasspy.ccore.TimeSeries`</span>
 <span class="sd">    :return: an obspy Trace object from conversion of d.  An empty Trace</span>
 <span class="sd">        object will be returned if d was marked dead</span>
-<span class="sd">    :rtype: :class:`~obspy.core.trace.Trace`</span>
+<span class="sd">    :rtype: :class:`~obspy.core.trace.Trace`b</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dresult</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Trace</span><span class="p">()</span>
     <span class="n">dresult</span><span class="o">.</span><span class="n">dead_mspass</span> <span class="o">=</span> <span class="kc">True</span>
@@ -276,7 +276,7 @@
     <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;starttime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">t0</span><span class="p">)</span>
     <span class="c1"># It appears obspy computes endtime - this throws an AttributeError if</span>
     <span class="c1"># included. Ratained for reference to keep someone from putting this back</span>
-    <span class="c1">#dresult.stats[&#39;endtime&#39;]=obspy.core.UTCDateTime(ts.endtime())</span>
+    <span class="c1"># dresult.stats[&#39;endtime&#39;]=obspy.core.UTCDateTime(ts.endtime())</span>
     <span class="c1"># todo relative time attribute</span>
     <span class="c1"># These are required by obspy but optional in mspass.  Hence, we have</span>
     <span class="c1"># to extract them with caution.  Note defaults are identical to</span>
@@ -307,13 +307,13 @@
     <span class="c1"># and will abort the program if we just naively copy them.</span>
     <span class="c1"># The list below are the keys to exclude either because they</span>
     <span class="c1"># are computed by Trace (i.e. endtime) or are already set above</span>
-    <span class="n">do_not_copy</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">,</span><span class="s2">&quot;npts&quot;</span><span class="p">,</span><span class="s2">&quot;starttime&quot;</span><span class="p">,</span><span class="s2">&quot;endtime&quot;</span><span class="p">,</span><span class="s2">&quot;network&quot;</span><span class="p">,</span><span class="s2">&quot;station&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;channel&quot;</span><span class="p">,</span><span class="s2">&quot;location&quot;</span><span class="p">,</span><span class="s2">&quot;calib&quot;</span><span class="p">]</span>
+    <span class="n">do_not_copy</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;delta&quot;</span><span class="p">,</span> <span class="s2">&quot;npts&quot;</span><span class="p">,</span> <span class="s2">&quot;starttime&quot;</span><span class="p">,</span> <span class="s2">&quot;endtime&quot;</span><span class="p">,</span> <span class="s2">&quot;network&quot;</span><span class="p">,</span> <span class="s2">&quot;station&quot;</span><span class="p">,</span>
+                   <span class="s2">&quot;channel&quot;</span><span class="p">,</span> <span class="s2">&quot;location&quot;</span><span class="p">,</span> <span class="s2">&quot;calib&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">do_not_copy</span><span class="p">):</span>
             <span class="n">dresult</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="c1">#dresult.data = np.ndarray(ts.npts)</span>
-    <span class="c1">#for i in range(ts.npts):</span>
+    <span class="c1"># for i in range(ts.npts):</span>
         <span class="c1">#dresult.data[i] = ts.data[i]</span>
     <span class="n">dresult</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ts</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dresult</span></div>
@@ -387,7 +387,7 @@
 <span class="n">Seismogram</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">Seismogram2Stream</span>
 
 
-<div class="viewcode-block" id="Trace2TimeSeries"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Trace2TimeSeries">[docs]</a><span class="k">def</span> <span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Trace2TimeSeries"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Trace2TimeSeries">[docs]</a><span class="k">def</span> <span class="nf">Trace2TimeSeries</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">history</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an obspy Trace object to a TimeSeries object.</span>
 
@@ -419,21 +419,21 @@
     <span class="c1"># The obspy trace object stats attribute only acts like a dictionary</span>
     <span class="c1"># we can&#39;t use it directly but this trick simplifies the copy to</span>
     <span class="c1"># mesh with py::dict for pybind11 - needed in TimeSeries constructor below</span>
-    <span class="n">h</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
     <span class="c1"># These tests are excessively paranoid since starttime and endtime</span>
     <span class="c1"># are required attributes in Trace, but better save in case</span>
     <span class="c1"># someone creates one outside obspy</span>
     <span class="k">if</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
-        <span class="n">t</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span>
-        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># We have to set this to something if it isn&#39;t set or</span>
         <span class="c1"># the TimeSeries constructor may abort</span>
-        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span><span class="o">=</span><span class="mf">0.0</span>
+        <span class="n">h</span><span class="p">[</span><span class="n">Keywords</span><span class="o">.</span><span class="n">starttime</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="c1"># we don&#39;t require endtime in TimeSeries so ignore if it is not set</span>
     <span class="k">if</span> <span class="s1">&#39;endtime&#39;</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
-        <span class="n">t</span><span class="o">=</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span>
-    <span class="n">h</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">h</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span>
+    <span class="n">h</span><span class="p">[</span><span class="s1">&#39;endtime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">timestamp</span>
     <span class="c1">#</span>
     <span class="c1"># these define a map of aliases to apply when we convert to mspass</span>
     <span class="c1"># metadata from trace - we redefined these names but others could</span>
@@ -445,11 +445,11 @@
     <span class="n">mspass_aliases</span><span class="p">[</span><span class="s1">&#39;channel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Keywords</span><span class="o">.</span><span class="n">chan</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">mspass_aliases</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">h</span><span class="p">:</span>
-            <span class="n">x</span><span class="o">=</span><span class="n">h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-            <span class="n">alias_key</span><span class="o">=</span><span class="n">mspass_aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-            <span class="n">h</span><span class="p">[</span><span class="n">alias_key</span><span class="p">]</span><span class="o">=</span><span class="n">x</span>
-    <span class="n">dout</span><span class="o">=</span><span class="n">TimeSeries</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="n">trace</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">history</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="n">alias_key</span> <span class="o">=</span> <span class="n">mspass_aliases</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">h</span><span class="p">[</span><span class="n">alias_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">dout</span> <span class="o">=</span> <span class="n">TimeSeries</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">history</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dout</span><span class="o">.</span><span class="n">load_history</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
     <span class="n">dout</span><span class="o">.</span><span class="n">set_live</span><span class="p">()</span>
     <span class="c1"># The following dead_mspass attribute is used by our decorator API</span>
@@ -590,15 +590,15 @@
     <span class="c1"># ensemble&#39;s metadata.  That handling is similar to how we handle</span>
     <span class="c1"># dead on atomic data.  Note _get_ensemble_md is not a C function but</span>
     <span class="c1"># defined only in the pybind11 wrappers</span>
-    <span class="n">md</span><span class="o">=</span><span class="n">tse</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
+    <span class="n">md</span> <span class="o">=</span> <span class="n">tse</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
     <span class="c1"># Having this as const in is a maitenanc issue.  Shouldn&#39;t be a problem</span>
     <span class="c1"># provided no other file uses this key.  For now it is self contained in</span>
     <span class="c1"># this module.</span>
-    <span class="n">tse</span><span class="p">[</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">tse</span><span class="p">[</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="c1"># This pushes all conents of ensemble md to all members. That includes</span>
     <span class="c1"># the scratch list we just posted. inverse needs to clear the temp</span>
     <span class="n">tse</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
-    <span class="c1"># Remover the temporary from the ensemble metadata or the return </span>
+    <span class="c1"># Remover the temporary from the ensemble metadata or the return</span>
     <span class="c1"># will be inconsistent with the input</span>
     <span class="n">tse</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ts</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -607,6 +607,7 @@
 
 
 <span class="n">TimeSeriesEnsemble</span><span class="o">.</span><span class="n">toStream</span> <span class="o">=</span> <span class="n">TimeSeriesEnsemble2Stream</span>
+
 
 <span class="k">def</span> <span class="nf">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">ens</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -623,6 +624,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">list</span><span class="p">()</span>
 
+
 <div class="viewcode-block" id="Stream2TimeSeriesEnsemble"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.Stream2TimeSeriesEnsemble">[docs]</a><span class="k">def</span> <span class="nf">Stream2TimeSeriesEnsemble</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a stream to timeseries ensemble.</span>
@@ -637,9 +639,9 @@
 
     <span class="c1"># Handle the ensemble metadata.   The little helper we call here</span>
     <span class="c1"># get the list set with CONVERTER_ENSEMBLE_KEYS.</span>
-    <span class="n">enskeys</span><span class="o">=</span><span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">tse</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">tse</span><span class="p">,</span><span class="n">enskeys</span><span class="p">)</span>
+    <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">tse</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">tse</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
         <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
         <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">tse</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -661,10 +663,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This uses the same approach as TimeSeriesEnsemblet2Stream to handle</span>
     <span class="c1"># ensemble metadata.  See comments there for potential maintenanc issues</span>
-    <span class="n">md</span><span class="o">=</span><span class="n">sge</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
-    <span class="n">sge</span><span class="p">[</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">md</span> <span class="o">=</span> <span class="n">sge</span><span class="o">.</span><span class="n">_get_ensemble_md</span><span class="p">()</span>
+    <span class="n">sge</span><span class="p">[</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="n">sge</span><span class="o">.</span><span class="n">sync_metadata</span><span class="p">()</span>
-    <span class="c1"># as above remove this temporary from sge or it alters the </span>
+    <span class="c1"># as above remove this temporary from sge or it alters the</span>
     <span class="c1"># input - python gives us a pointer to this thing so it is mutable</span>
     <span class="n">sge</span><span class="o">.</span><span class="n">erase</span><span class="p">(</span><span class="s1">&#39;CONVERTER_ENSEMBLE_KEYS&#39;</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="p">()</span>
@@ -685,16 +687,17 @@
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">SeismogramEnsemble</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)):</span>
-        <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">(</span><span class="n">stream</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Stream2Seismogram</span><span class="p">(</span>
+            <span class="n">stream</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:</span><span class="n">i</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">3</span><span class="p">],</span> <span class="n">cardinal</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
         <span class="c1"># fixme cardinal</span>
     <span class="c1"># Handle the ensemble metadata.   The little helper we call here</span>
     <span class="c1"># get the list set with CONVERTER_ENSEMBLE_KEYS.  The</span>
     <span class="c1"># code here is identical to that for TimeSeriesEnsemble version</span>
     <span class="c1"># because the ensemble containers have parallel symbols and the atomic</span>
     <span class="c1"># members are close relatives</span>
-    <span class="n">enskeys</span><span class="o">=</span><span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="n">enskeys</span><span class="p">)</span>
+    <span class="n">enskeys</span> <span class="o">=</span> <span class="n">_converter_get_ensemble_keys</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">enskeys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">post_ensemble_metadata</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">enskeys</span><span class="p">)</span>
         <span class="c1"># By default the above leaves copies of the ensemble md in each member</span>
         <span class="c1"># Treat that a ok, but we do need to clear the temporary we posted</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
@@ -706,7 +709,8 @@
 
 <span class="n">obspy</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">Stream</span><span class="o">.</span><span class="n">toSeismogramEnsemble</span> <span class="o">=</span> <span class="n">Stream2SeismogramEnsemble</span>
 
-<span class="k">def</span> <span class="nf">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is a helper function for below.  I scans ens to assure all members</span>
 <span class="sd">    of the ensemble have the same value for the requested key. It uses</span>
@@ -721,24 +725,27 @@
 <span class="sd">      Note if a key is not defined in a live member the result will be false.</span>
 <span class="sd">      Dead data are ignored.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">):</span>
-        <span class="n">nlive</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">nlive</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">nlive</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                    <span class="n">val0</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">nlive</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">val0</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                     <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">val</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">val0</span> <span class="o">!=</span> <span class="n">val</span><span class="p">:</span>
                         <span class="k">return</span> <span class="kc">False</span>
-                    <span class="n">nlive</span><span class="o">+=</span><span class="mi">1</span>
+                    <span class="n">nlive</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="s2">&quot;_all_members_match:  input is not a mspass ensemble object&quot;</span><span class="p">,</span><span class="s2">&quot;Invalid&quot;</span><span class="p">)</span>
-<div class="viewcode-block" id="post_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.post_ensemble_metadata">[docs]</a><span class="k">def</span> <span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">keys</span><span class="o">=</span><span class="p">[],</span><span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span>
+            <span class="s2">&quot;_all_members_match:  input is not a mspass ensemble object&quot;</span><span class="p">,</span> <span class="s2">&quot;Invalid&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="post_ensemble_metadata"><a class="viewcode-back" href="../../../python_api/mspasspy.util.html#mspasspy.ccore.utility.post_ensemble_metadata">[docs]</a><span class="k">def</span> <span class="nf">post_ensemble_metadata</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[],</span> <span class="n">check_all_members</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">clean_members</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    It may be necessary to call this function after conversion from</span>
 <span class="sd">    an obspy Stream to one of the mspass Ensemble classes.  This function</span>
@@ -789,26 +796,26 @@
 <span class="sd">      if check_all_members is set True.  It will be silently ignored if</span>
 <span class="sd">      check_all_members is False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">alg</span><span class="o">=</span><span class="s1">&#39;post_ensemble_metadata&#39;</span>
+    <span class="n">alg</span> <span class="o">=</span> <span class="s1">&#39;post_ensemble_metadata&#39;</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">SeismogramEnsemble</span><span class="p">):</span>
-        <span class="n">md</span><span class="o">=</span><span class="n">Metadata</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">TimeSeriesEnsemble</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">SeismogramEnsemble</span><span class="p">):</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">live</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span>
-                          <span class="o">+</span> <span class="s1">&#39;:  no data matching requested key=&#39;</span><span class="o">+</span><span class="n">k</span>
-                          <span class="o">+</span> <span class="s1">&#39; Cannot post to ensemble&#39;</span><span class="p">,</span><span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
-                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                                          <span class="o">+</span> <span class="s1">&#39;:  no data matching requested key=&#39;</span><span class="o">+</span><span class="n">k</span>
+                                          <span class="o">+</span> <span class="s1">&#39; Cannot post to ensemble&#39;</span><span class="p">,</span> <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+                    <span class="n">md</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">check_all_members</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">_all_members_match</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
                         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span>
-                          <span class="o">+</span> <span class="s1">&#39;:  Data mismatch data members with key=&#39;</span>
-                          <span class="o">+</span> <span class="n">k</span> <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  In check_all_members mode all values associated with this key must match&#39;</span><span class="p">,</span>
-                          <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
+                                          <span class="o">+</span> <span class="s1">&#39;:  Data mismatch data members with key=&#39;</span>
+                                          <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">  In check_all_members mode all values associated with this key must match&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">clean_members</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ens</span><span class="o">.</span><span class="n">member</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
@@ -817,8 +824,8 @@
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">MsPASSError</span><span class="p">(</span><span class="n">alg</span>
-            <span class="o">+</span><span class="s1">&#39;:  Illegal data received.  This function runs only on mspass ensemble objects&#39;</span><span class="p">,</span>
-           <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div>
+                          <span class="o">+</span> <span class="s1">&#39;:  Illegal data received.  This function runs only on mspass ensemble objects&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;Invalid&#39;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
