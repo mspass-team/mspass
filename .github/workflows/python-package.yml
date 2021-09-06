@@ -64,7 +64,7 @@ jobs:
     - name: Black Code Formatter
       uses: lgeiger/black-action@v1.0.1
       with:
-        args: python/ -v
+        args: python/ --check
     - name: Build Documentation
       if: ${{ matrix.python-version == '3.8' }}
       run: |
