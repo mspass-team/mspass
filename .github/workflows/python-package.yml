@@ -49,12 +49,12 @@ jobs:
         echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
         python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
     - name: Run linters
-        uses: wearerequired/lint-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          black: true
-          flake8: true
-          auto_fix: true
+      uses: wearerequired/lint-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        black: true
+        flake8: true
+        auto_fix: true
     - name: Install
       run: python setup.py build --debug install
     - name: Test with pytest
