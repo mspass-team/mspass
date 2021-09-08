@@ -49,6 +49,7 @@ jobs:
         echo "/opt/spark-3.0.0-bin-hadoop2.7/bin" >> $GITHUB_PATH
         python -m pip install --upgrade --upgrade-strategy eager pyspark pytest-spark
     - name: Run linters
+      if: ${{ matrix.python-version == '3.8' }}
       uses: wearerequired/lint-action@v1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
