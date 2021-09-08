@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -18,10 +20,16 @@ jobs:
       - name: If needed, commit black changes to the pull request
         if: failure()
         run: |
-          black .
-          git config --global user.name 'autoblack'
-          git config --global user.email 'autoblack@users.noreply.github.com'
+          printenv | grep GITHUB
+          git config --global user.name 'autofix'
+          git config --global user.email 'autofix@users.noreply.github.com'          
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git checkout $GITHUB_HEAD_REF
-          git commit -am "fixup: Format Python code with Black"
+          git remote -v
+          git branch
+          git status
+          black .
+          git status
+          echo ready to commit
+          git commit -am "fixup! Format Python code with psf/black pull_request"
+          echo ready to push
           git push
