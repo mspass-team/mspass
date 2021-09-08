@@ -19,17 +19,4 @@ jobs:
         run: black --check .
       - name: If needed, commit black changes to the pull request
         if: failure()
-        run: |
-          printenv | grep GITHUB
-          git config --global user.name 'autofix'
-          git config --global user.email 'autofix@users.noreply.github.com'          
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git remote -v
-          git branch
-          git status
-          black .
-          git status
-          echo ready to commit
-          git commit -am "fixup! Format Python code with psf/black pull_request"
-          echo ready to push
-          git push
+        uses: EndBug/add-and-commit@v7
