@@ -1,7 +1,27 @@
-from mspasspy.ccore.utility import MsPASSError, AtomicType, ErrorSeverity, ProcessingStatus
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
-from mspasspy.ccore.algorithms.basic import TimeWindow, _TopMute, _WindowData, _WindowData3C
-from mspasspy.ccore.algorithms.amplitudes import _scale, _scale_ensemble, _scale_ensemble_members, ScalingMethod
+from mspasspy.ccore.utility import (
+    MsPASSError,
+    AtomicType,
+    ErrorSeverity,
+    ProcessingStatus,
+)
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+from mspasspy.ccore.algorithms.basic import (
+    TimeWindow,
+    _TopMute,
+    _WindowData,
+    _WindowData3C,
+)
+from mspasspy.ccore.algorithms.amplitudes import (
+    _scale,
+    _scale_ensemble,
+    _scale_ensemble_members,
+    ScalingMethod,
+)
 from mspasspy.util.decorators import mspass_func_wrapper
 
 
@@ -19,17 +39,18 @@ def ensemble_error_post(d, alg, message, severity):
     :param message: is the string posted to all members
     :param severity: is the error severity level
     """
-    if(isinstance(d, TimeSeriesEnsemble)
-       or isinstance(d, SeismogramEnsemble)):
+    if isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble):
         n = len(d.member)
-        if(n <= 0):
+        if n <= 0:
             return
         for i in range(n):
             d.member[i].elog.log_error(alg, str(message), severity)
     else:
-        print('Coding error - ensemble_error_post was passed an unexpected data type of',
-              type(d))
-        print('Not treated as fatal but a bug fix is needed')
+        print(
+            "Coding error - ensemble_error_post was passed an unexpected data type of",
+            type(d),
+        )
+        print("Not treated as fatal but a bug fix is needed")
 
 
 def _post_amplitude(d, method, amp):
@@ -38,24 +59,34 @@ def _post_amplitude(d, method, amp):
     computed amplitudes to metadata with a different key for each method
     used to compute amplitude.
     """
-    if method == 'rms' or method == 'RMS':
-        d['rms_amplitude'] = amp
-    elif method == 'perc':
-        d['perc_amplitude'] = amp
-    elif method == 'MAD' or method == 'mad':
-        d['mad_amplitude'] = amp
+    if method == "rms" or method == "RMS":
+        d["rms_amplitude"] = amp
+    elif method == "perc":
+        d["perc_amplitude"] = amp
+    elif method == "MAD" or method == "mad":
+        d["mad_amplitude"] = amp
     else:
-        d['amplitude'] = amp
+        d["amplitude"] = amp
 
 
 @mspass_func_wrapper
 # inplace_return was intentionally ommitted from thie arg list here because
 # False should always be enforced.  If the default changed that would
 # break this function.
-def scale(d, compute_from_window=False, window=None,
-          method='peak', level=1.0, scale_by_section=False, use_mean=False,
-          object_history=False, alg_name='scale', alg_id=None, dryrun=False,
-          function_return_key=None):
+def scale(
+    d,
+    compute_from_window=False,
+    window=None,
+    method="peak",
+    level=1.0,
+    scale_by_section=False,
+    use_mean=False,
+    object_history=False,
+    alg_name="scale",
+    alg_id=None,
+    dryrun=False,
+    function_return_key=None,
+):
     """
     Top level function interface to data scaling methods.
 
@@ -127,34 +158,50 @@ def scale(d, compute_from_window=False, window=None,
     # The logic here would be much cleaner if ensembles had an elog attribute
     # may happen as group discussions have proposed that change.  this should
     # change to be cleaner of elog is added to ensmeble objects
-    if method != 'peak' and method != 'RMS' and method != 'rms' and method != 'perc' and method != 'MAD' and method != 'mad':
-        message = "method parameter passed = " + method + \
-            " is not valid.  Should be peak, rms, perc, or mad\nContinuing with no change to data"
+    if (
+        method != "peak"
+        and method != "RMS"
+        and method != "rms"
+        and method != "perc"
+        and method != "MAD"
+        and method != "mad"
+    ):
+        message = (
+            "method parameter passed = "
+            + method
+            + " is not valid.  Should be peak, rms, perc, or mad\nContinuing with no change to data"
+        )
         if isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble):
             ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
         else:
             # This could cause an abort if the input is not one of the four stock data types
             # but that is ok as that is an obvious usage error and should be a fatal error
-            d.elog.log_error(alg_name, "method parameter passed = " + method + " is not valid.  "
-                             + "Should be peak, rms, perc, or mad", ErrorSeverity.Complaint)
+            d.elog.log_error(
+                alg_name,
+                "method parameter passed = "
+                + method
+                + " is not valid.  "
+                + "Should be peak, rms, perc, or mad",
+                ErrorSeverity.Complaint,
+            )
         return d
-    if method == 'perc':
+    if method == "perc":
         if level <= 0 or level > 1.0:
-            message = 'perc scaling method given illegal value={plevel}\nDefaulted to 1.0'.format(
-                plevel=level)
+            message = "perc scaling method given illegal value={plevel}\nDefaulted to 1.0".format(
+                plevel=level
+            )
             if isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble):
-                ensemble_error_post(d, alg_name, message,
-                                    ErrorSeverity.Complaint)
+                ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
             else:
                 d.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
                 level = 1.0
     else:
         if level <= 0.0:
-            message = '{meth} scaling method given illegal value={slevel}\nDefaulted to 1.0'.format(
-                meth=method, slevel=level)
+            message = "{meth} scaling method given illegal value={slevel}\nDefaulted to 1.0".format(
+                meth=method, slevel=level
+            )
             if isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble):
-                ensemble_error_post(d, alg_name, message,
-                                    ErrorSeverity.Complaint)
+                ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
             else:
                 d.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
             level = 1.0
@@ -162,10 +209,9 @@ def scale(d, compute_from_window=False, window=None,
         if isinstance(window, TimeWindow):
             ampwin = window
         else:
-            message = 'optional window parameter set but value is not a TimeWindow object\nReverting to unwindowed estimate'
+            message = "optional window parameter set but value is not a TimeWindow object\nReverting to unwindowed estimate"
             if isinstance(d, TimeSeriesEnsemble) or isinstance(d, SeismogramEnsemble):
-                ensemble_error_post(d, alg_name, message,
-                                    ErrorSeverity.Complaint)
+                ensemble_error_post(d, alg_name, message, ErrorSeverity.Complaint)
             else:
                 d.elog.log_error(alg_name, message, ErrorSeverity.Complaint)
             # this is an invalid window because start>end is used as a signal
@@ -179,11 +225,11 @@ def scale(d, compute_from_window=False, window=None,
     # obnoxiously ugly syntax. We insulate the user from this oddity
     # by using a string arg to define this enum passed to _scale
     method_to_use = ScalingMethod.Peak
-    if method == 'rms' or method == 'RMS':
+    if method == "rms" or method == "RMS":
         method_to_use = ScalingMethod.RMS
-    elif method == 'perc':
+    elif method == "perc":
         method_to_use = ScalingMethod.perc
-    elif method == 'MAD' or method == 'mad':
+    elif method == "MAD" or method == "mad":
         method_to_use = ScalingMethod.MAD
     try:
         # Note this logic depends on an oddity of the C++ api in the
@@ -202,8 +248,7 @@ def scale(d, compute_from_window=False, window=None,
                 # We post the amplitude the ensembe's metadata in this case
                 _post_amplitude(d, method_to_use, amp)
             else:
-                ampvec = _scale_ensemble_members(
-                    d, method_to_use, level, ampwin)
+                ampvec = _scale_ensemble_members(d, method_to_use, level, ampwin)
                 i = 0
                 for x in d.member:
                     if x.live:
@@ -211,7 +256,8 @@ def scale(d, compute_from_window=False, window=None,
                     i += 1
         else:
             raise MsPASSError(
-                "scale: input data is not a supported mspass seismic data type", "Fatal")
+                "scale: input data is not a supported mspass seismic data type", "Fatal"
+            )
         return d
     except MsPASSError as err:
         if isinstance(d, Seismogram) or isinstance(d, TimeSeries):
@@ -238,8 +284,16 @@ def scale(d, compute_from_window=False, window=None,
 
 
 @mspass_func_wrapper
-def WindowData(d, win_start, win_end, t0shift=None,
-               object_history=False, alg_name='scale', alg_id=None, dryrun=False):
+def WindowData(
+    d,
+    win_start,
+    win_end,
+    t0shift=None,
+    object_history=False,
+    alg_name="scale",
+    alg_id=None,
+    dryrun=False,
+):
     """
     Cut data defined by a TimeWindow object.
 
@@ -292,14 +346,14 @@ def WindowData(d, win_start, win_end, t0shift=None,
         # This handler duplicates an error test in the WindowData C code but
         # it will be more efficient to handle it here.
         if win_start < d.t0 or win_end > d.endtime():
-            detailline = 'Window range: {wst},{wet}  Data range:  {dst},{det}'.format(
-                wst=win_start,
-                wet=win_end,
-                dst=d.t0,
-                det=d.endtime()
+            detailline = "Window range: {wst},{wet}  Data range:  {dst},{det}".format(
+                wst=win_start, wet=win_end, dst=d.t0, det=d.endtime()
             )
-            d.elog.log_error("WindowData", "Data range is smaller than window range\n"+detailline,
-                             ErrorSeverity.Invalid)
+            d.elog.log_error(
+                "WindowData",
+                "Data range is smaller than window range\n" + detailline,
+                ErrorSeverity.Invalid,
+            )
             d.kill()
             return d
         if isinstance(d, TimeSeries):
@@ -310,7 +364,8 @@ def WindowData(d, win_start, win_end, t0shift=None,
             return dcut
         else:
             raise RuntimeError(
-                "WindowData:  Invalid input data type received="+str(type(d)))
+                "WindowData:  Invalid input data type received=" + str(type(d))
+            )
     except MsPASSError as err:
         d.log_error("WindowData", str(err), ErrorSeverity.Invalid)
         d.kill()
@@ -341,7 +396,7 @@ class TopMute:
     muted the function call that applies the mute would be ts.apply(d))
     """
 
-    def __init__(self, t0=0.0, t1=0.5, type='cosine'):
+    def __init__(self, t0=0.0, t1=0.5, type="cosine"):
         """
         Creates a TopMute object for application to MsPASS data objects.
 
@@ -380,29 +435,47 @@ class TopMute:
           come from the global history manager or be set manually.
         """
         if not isinstance(d, TimeSeries) and not isinstance(d, Seismogram):
-            raise MsPASSError("TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object",
-                              ErrorSeverity.Invalid)
+            raise MsPASSError(
+                "TopMute.apply:  usage error.  Input data must be a TimeSeries or Seismogram object",
+                ErrorSeverity.Invalid,
+            )
         if d.dead():
             return d
         if d.t0 > self.t0:
-            d.elog.log_error("TopMute.apply", "Data start time is later than time of mute zero zone\n"
-                             + "Datum killed as this would produce a null signal", ErrorSeverity.Invalid)
+            d.elog.log_error(
+                "TopMute.apply",
+                "Data start time is later than time of mute zero zone\n"
+                + "Datum killed as this would produce a null signal",
+                ErrorSeverity.Invalid,
+            )
             d.kill()
         else:
             self.processor.apply(d)
             if object_history:
                 if instance == None:
-                    d.elog("TopMute.apply",
-                           "Undefined instance argument - cannot save history data",
-                           ErrorSeverity.Complaint)
+                    d.elog(
+                        "TopMute.apply",
+                        "Undefined instance argument - cannot save history data",
+                        ErrorSeverity.Complaint,
+                    )
                 elif d.is_empty():
-                    d.elog("TopMute.apply",
-                           "Error log is empty.  Cannot be extended without a top level entry",
-                           ErrorSeverity.Complaint)
+                    d.elog(
+                        "TopMute.apply",
+                        "Error log is empty.  Cannot be extended without a top level entry",
+                        ErrorSeverity.Complaint,
+                    )
                 else:
                     if isinstance(d, Seismogram):
-                        d.new_map("TopMute", instance, AtomicType.SEISMOGRAM,
-                                  ProcessingStatus.VOLATILE)
+                        d.new_map(
+                            "TopMute",
+                            instance,
+                            AtomicType.SEISMOGRAM,
+                            ProcessingStatus.VOLATILE,
+                        )
                     else:
-                        d.new_map("TopMute", instance, AtomicType.TIMESERIES,
-                                  ProcessingStatus.VOLATILE)
+                        d.new_map(
+                            "TopMute",
+                            instance,
+                            AtomicType.TIMESERIES,
+                            ProcessingStatus.VOLATILE,
+                        )

@@ -1,5 +1,10 @@
 from mspasspy.util.decorators import mspass_reduce_func_wrapper
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
 
 
 @mspass_reduce_func_wrapper

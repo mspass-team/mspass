@@ -7,28 +7,47 @@ import dask.bag as db
 import numpy as np
 import mspasspy.algorithms.signals as signals
 from mspasspy.ccore.utility import dmatrix
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    DoubleVector,
+)
 from mspasspy.reduce import stack
 
 sys.path.append("python/tests")
 
-from helper import (get_live_seismogram,
-                    get_live_timeseries,
-                    get_live_timeseries_ensemble,
-                    get_live_seismogram_ensemble,
-                    get_stream,
-                    get_trace)
+from helper import (
+    get_live_seismogram,
+    get_live_timeseries,
+    get_live_timeseries_ensemble,
+    get_live_seismogram_ensemble,
+    get_stream,
+    get_trace,
+)
 
 
 def dask_map(input):
     ddb = db.from_sequence(input)
-    res = ddb.map(signals.filter, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
+    res = ddb.map(
+        signals.filter,
+        "bandpass",
+        freqmin=1,
+        freqmax=5,
+        object_history=True,
+        alg_id="0",
+    )
     return res.compute()
 
 
 def spark_map(input, sc):
     data = sc.parallelize(input)
-    res = data.map(lambda ts: signals.filter(ts, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0'))
+    res = data.map(
+        lambda ts: signals.filter(
+            ts, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id="0"
+        )
+    )
     return res.collect()
 
 
@@ -36,15 +55,17 @@ def test_map_spark_and_dask(spark_context):
     l = [get_live_timeseries() for i in range(5)]
     # add net, sta, chan, loc to avoid metadata serialization problem
     for i in range(5):
-        l[i]['chan'] = 'HHZ'
-        l[i]['loc'] = 'test_loc'
-        l[i]['net'] = 'test_net'
-        l[i]['sta'] = 'test_sta'
+        l[i]["chan"] = "HHZ"
+        l[i]["loc"] = "test_loc"
+        l[i]["net"] = "test_net"
+        l[i]["sta"] = "test_sta"
     spark_res = spark_map(l, spark_context)
     dask_res = dask_map(l)
 
     ts_cp = TimeSeries(l[0])
-    res = signals.filter(ts_cp, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id='0')
+    res = signals.filter(
+        ts_cp, "bandpass", freqmin=1, freqmax=5, object_history=True, alg_id="0"
+    )
     assert np.isclose(spark_res[0].data, ts_cp.data).all()
     assert np.isclose(dask_res[0].data, ts_cp.data).all()
 
@@ -56,7 +77,7 @@ def test_reduce_stack():
     stack(seis1, seis2)
     res = np.add(np.array(seis_cp), np.array(seis2.data))
     for i in range(3):
-        assert np.isclose(seis1.data[i], res[i]).all() # fixme
+        assert np.isclose(seis1.data[i], res[i]).all()  # fixme
 
     ts1 = get_live_timeseries()
     ts2 = get_live_timeseries()
@@ -69,16 +90,22 @@ def test_reduce_stack():
     tse1_cp = TimeSeriesEnsemble(tse1)
     stack(tse1, tse2)
     for i in range(2):
-        assert np.isclose(tse1.member[i].data, np.add(np.array(tse1_cp.member[i].data), np.array(tse2.member[i].data))).all()
+        assert np.isclose(
+            tse1.member[i].data,
+            np.add(np.array(tse1_cp.member[i].data), np.array(tse2.member[i].data)),
+        ).all()
 
     seis_e1 = get_live_seismogram_ensemble(2)
     seis_e2 = get_live_seismogram_ensemble(2)
     seis_e1_cp = SeismogramEnsemble(seis_e1)
     stack(seis_e1, seis_e2)
     for i in range(2):
-        res = np.add(np.array(seis_e1_cp.member[i].data), np.array(seis_e2.member[i].data))
+        res = np.add(
+            np.array(seis_e1_cp.member[i].data), np.array(seis_e2.member[i].data)
+        )
         for j in range(3):
-            assert np.isclose(seis_e1.member[i].data[j], res[j]).all() # fixme
+            assert np.isclose(seis_e1.member[i].data[j], res[j]).all()  # fixme
+
 
 def test_reduce_stack_exception():
     tse1 = get_live_timeseries_ensemble(2)
@@ -98,7 +125,7 @@ def test_reduce_stack_exception():
 
 def dask_reduce(input):
     ddb = db.from_sequence(input)
-    res = ddb.fold(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
+    res = ddb.fold(lambda a, b: stack(a, b, object_history=True, alg_id="3"))
     return res.compute()
 
 
@@ -106,7 +133,7 @@ def spark_reduce(input, sc):
     data = sc.parallelize(input)
     # zero = get_live_timeseries()
     # zero.data = DoubleVector(np.zeros(255))
-    res = data.reduce(lambda a, b: stack(a, b, object_history=True, alg_id='3'))
+    res = data.reduce(lambda a, b: stack(a, b, object_history=True, alg_id="3"))
     return res
 
 
@@ -115,7 +142,7 @@ def test_reduce_dask_spark(spark_context):
     res = np.zeros(255)
     for i in range(5):
         for j in range(255):
-            res[j] = (res[j] + l[i].data[j])
+            res[j] = res[j] + l[i].data[j]
     spark_res = spark_reduce(l, spark_context)
     dask_res = dask_reduce(l)
     assert np.isclose(res, dask_res.data).all()
@@ -124,7 +151,7 @@ def test_reduce_dask_spark(spark_context):
 
 
 if __name__ == "__main__":
-    #test_reduce_stack()
+    # test_reduce_stack()
     a1 = get_live_seismogram()
     a2 = get_live_seismogram()
     print(a1.data[0, 0])

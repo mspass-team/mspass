@@ -196,385 +196,452 @@ from mspasspy.ccore.utility import MsPASSError
 from mspasspy.db.database import Database
 from mspasspy.db.client import DBClient
 
+
 def print_id_keyed_dict(d):
     """
-    Prints a python dict d keyed by ObjectId in a format with 
-    beginning and end of each dump marked by an obvious human readable 
+    Prints a python dict d keyed by ObjectId in a format with
+    beginning and end of each dump marked by an obvious human readable
     mark.   Part of the reason this is necesary is json_util.dumps like
     json.dumps does not like dict keys to be anything but a simple type.
-    
+
     :param d:  python dict with id keys to be printed
     """
-    newdoc_string="=========================================================="
-    for key,value in d.items():
+    newdoc_string = "=========================================================="
+    for key, value in d.items():
         print(newdoc_string)
-        if isinstance(key,ObjectId):
-            print('ObjectId string of document=',str(key))
+        if isinstance(key, ObjectId):
+            print("ObjectId string of document=", str(key))
         else:
-            print('WARNING:  key is not object id as it shoudl be. It is->',
-                  key,' of type ',type(key))
+            print(
+                "WARNING:  key is not object id as it shoudl be. It is->",
+                key,
+                " of type ",
+                type(key),
+            )
         print(newdoc_string)
-        if type(value)==dict:
-            print(json_util.dumps(value,indent=2))
+        if type(value) == dict:
+            print(json_util.dumps(value, indent=2))
         else:
             print(value)
-    
-def print_bad_wf_docs(dbcol,idlist):
+
+
+def print_bad_wf_docs(dbcol, idlist):
     """
-    Print values from a doc defined in dbcol matching a list of ids.  
-    Print is the dump of the dict form from the aux_list subset.   
-    
+    Print values from a doc defined in dbcol matching a list of ids.
+    Print is the dump of the dict form from the aux_list subset.
+
     :param dbcol:  database collection ids with errors were pulled from
     :param idlist:  python list of ObjectIds to print
 
     """
-    n=1
+    n = 1
     for id in idlist:
-        print('////////////////Doc number ',n,' with error///////////////')
-        query={'_id' : id}
-        doc=dbcol.find_one(query)
-        print(json_util.dumps(doc,indent=2))
-        print('////////////////////////////////////////////////////////')
-                
-def run_check_links(db,wfcollection,nrmlist,elimit,verbose):
+        print("////////////////Doc number ", n, " with error///////////////")
+        query = {"_id": id}
+        doc = dbcol.find_one(query)
+        print(json_util.dumps(doc, indent=2))
+        print("////////////////////////////////////////////////////////")
+
+
+def run_check_links(db, wfcollection, nrmlist, elimit, verbose):
     """
     Run the verify function called check_links and produces a reasonable
-    summary or readable (verbose) printed output of the results.  
-    The check_links function verifies if normalization ids are 
+    summary or readable (verbose) printed output of the results.
+    The check_links function verifies if normalization ids are
     set and resolve correctly.   It treats the two problems together
-    but returns containers that link to each problem separately.  
-    This function prints a summary of the result of the function 
+    but returns containers that link to each problem separately.
+    This function prints a summary of the result of the function
     when not verbose.  When verbose a json dump of all attributes
-    in offending documetions are written to stdout - this can get 
+    in offending documetions are written to stdout - this can get
     quite huge but use the elimit arg to reduce the size.
-    
+
     :param db:  mspass Database handle
-    :param wfcollection:  waveform collection name to be scanned for 
+    :param wfcollection:  waveform collection name to be scanned for
       normalization links.
-    :param nrmlist:  is a list of collection names that are to 
+    :param nrmlist:  is a list of collection names that are to
       be tested.  Note in MsPASS we assume the cross reference is an
-      ObjectId of the document in a give collection name. e.g. for 
-      a link to site the test will search for site_id and verify 
-      a document with that id is in site.  
-    :param elimit:  number of errors allowed before the test is 
+      ObjectId of the document in a give collection name. e.g. for
+      a link to site the test will search for site_id and verify
+      a document with that id is in site.
+    :param elimit:  number of errors allowed before the test is
       terminated. For large data sets with many problems this test
-      could take a long time just to return a summary.  Keep this 
+      could take a long time just to return a summary.  Keep this
       parameter small until you find common errors to reduce effort.
-    :verbose:  when true each document with an error will have the 
+    :verbose:  when true each document with an error will have the
       entire contents (sans waveform sample data) printed. When
-      false (the default for this program) only print a summary of 
-      how many offending docs were found.  
+      false (the default for this program) only print a summary of
+      how many offending docs were found.
 
     """
 
     for nrmcol in nrmlist:
-        errs=db._check_links(xref_key=nrmcol,
-                          collection=wfcollection,
-                          error_limit=elimit)
-        broken=errs[0]
-        undef=errs[1]
+        errs = db._check_links(
+            xref_key=nrmcol, collection=wfcollection, error_limit=elimit
+        )
+        broken = errs[0]
+        undef = errs[1]
         if verbose:
-            if len(broken)==0:
-                print('check_links found no broken links with normalized key=',nrmcol)
+            if len(broken) == 0:
+                print("check_links found no broken links with normalized key=", nrmcol)
             else:
-                print('check_link found the following docs in ',wfcollection,
-                  ' with broken links to ',nrmcol)
-                print_bad_wf_docs(db[wfcollection],broken)
-            if len(undef)==0:
-                print('check_links found no undefined linking key to normalized key=',
-                  nrmcol)
+                print(
+                    "check_link found the following docs in ",
+                    wfcollection,
+                    " with broken links to ",
+                    nrmcol,
+                )
+                print_bad_wf_docs(db[wfcollection], broken)
+            if len(undef) == 0:
+                print(
+                    "check_links found no undefined linking key to normalized key=",
+                    nrmcol,
+                )
             else:
-                print('check_link found the following docs in ',wfcollection,
-                  ' with undefined link keys to ',nrmcol)
-                print_bad_wf_docs(db[wfcollection],undef)
+                print(
+                    "check_link found the following docs in ",
+                    wfcollection,
+                    " with undefined link keys to ",
+                    nrmcol,
+                )
+                print_bad_wf_docs(db[wfcollection], undef)
         else:
-            if len(broken)==0:
-                print('check_links found no broken links with normalized key=',nrmcol)
+            if len(broken) == 0:
+                print("check_links found no broken links with normalized key=", nrmcol)
             else:
-                print('normalization test on normalized key=',nrmcol,' found problems')
-                print('Found broken links in ',len(broken),
-                      'documents checked')
-                print('Note error count limit=',elimit)
-                print('If the count is the same it means all data probably contain missing cross referencing ids')
-                print('Run in verbose mode to find out more information you will need to fix the problem')
-            
-def run_check_attribute_types(db,col,elimit,verbose):
+                print(
+                    "normalization test on normalized key=", nrmcol, " found problems"
+                )
+                print("Found broken links in ", len(broken), "documents checked")
+                print("Note error count limit=", elimit)
+                print(
+                    "If the count is the same it means all data probably contain missing cross referencing ids"
+                )
+                print(
+                    "Run in verbose mode to find out more information you will need to fix the problem"
+                )
+
+
+def run_check_attribute_types(db, col, elimit, verbose):
     """
-    Run the verify function called check_attribute_types and produces 
-    a reasonable summary or readable (verbose) printed output of the results.  
+    Run the verify function called check_attribute_types and produces
+    a reasonable summary or readable (verbose) printed output of the results.
     The function checks for schema collisions of two types:  (1) type
-    mismatch of what what the schema asks and what is actually found 
-    and (2) data with keys not found in the schema definition. 
+    mismatch of what what the schema asks and what is actually found
+    and (2) data with keys not found in the schema definition.
     It treats the two problems together
-    but returns containers that link to each problem separately.  
-    This function prints a summary of the result of the function 
+    but returns containers that link to each problem separately.
+    This function prints a summary of the result of the function
     when not verbose.  When verbose a json dump of all attributes
-    in offending documetions are written to stdout - this can get 
+    in offending documetions are written to stdout - this can get
     quite huge but use the elimit arg to reduce the size.
-    
+
     :param db:  mspass Database handle
-    :param collection:  collection name to be scanned.  
-    :param elimit:  number of errors allowed before the test is 
+    :param collection:  collection name to be scanned.
+    :param elimit:  number of errors allowed before the test is
       terminated. For large data sets with many problems this test
-      could take a long time just to return a summary.  Keep this 
+      could take a long time just to return a summary.  Keep this
       parameter small until you find common errors to reduce effort.
-    :verbose:  when false (default for this program) only a summary 
-      of offending keys and counts of the number of problems found 
+    :verbose:  when false (default for this program) only a summary
+      of offending keys and counts of the number of problems found
       are printed. When true every document with offending data will
       be printed with the values (most useful for type mismatch errors)
 
     """
     # Although the function allows it this program won't support
-    # a query for now because it would get ugly with different 
-    # definitions for each collection listed.  Verbose is 
-    # also always off.  Note the solution to enter one from 
+    # a query for now because it would get ugly with different
+    # definitions for each collection listed.  Verbose is
+    # also always off.  Note the solution to enter one from
     # an input is to use json.loads
-    errs=db._check_attribute_types(col,error_limit=elimit)
-    mismatch=errs[0]
-    undef=errs[1]
-    print('check_attribute_types result for collection=',col)
-    if verbose: 
-        if len(mismatch)==0:
-            print('Collection has no type inconsistencies with schema')
+    errs = db._check_attribute_types(col, error_limit=elimit)
+    mismatch = errs[0]
+    undef = errs[1]
+    print("check_attribute_types result for collection=", col)
+    if verbose:
+        if len(mismatch) == 0:
+            print("Collection has no type inconsistencies with schema")
         else:
-            print('//////Collection=',col,' has type inconsistencies in ',
-                  len(mismatch),' documents////')
-            print('///The following have types that do not match schema////')
+            print(
+                "//////Collection=",
+                col,
+                " has type inconsistencies in ",
+                len(mismatch),
+                " documents////",
+            )
+            print("///The following have types that do not match schema////")
             print_id_keyed_dict(mismatch)
-        if len(undef)==0:
-            print('Collection has no data with keys not defined in schema')
+        if len(undef) == 0:
+            print("Collection has no data with keys not defined in schema")
         else:
-            print('//////Collection=',col,' has unrecogized keys in ',
-                  len(undef),' documents/////')
-            print('////The following are offending data with doc ids///')
+            print(
+                "//////Collection=",
+                col,
+                " has unrecogized keys in ",
+                len(undef),
+                " documents/////",
+            )
+            print("////The following are offending data with doc ids///")
             print_id_keyed_dict(undef)
     else:
-        if len(mismatch)==0:
-            print('Collection has no type inconsistencies with schema')
+        if len(mismatch) == 0:
+            print("Collection has no type inconsistencies with schema")
         else:
-            mmkeys=dict()
+            mmkeys = dict()
             for k in mismatch:
-                badkeys=mismatch[k]
+                badkeys = mismatch[k]
                 for bad in badkeys:
                     if bad in mmkeys:
-                        n=mmkeys[bad]
-                        n+=1
-                        mmkeys[bad]=n
+                        n = mmkeys[bad]
+                        n += 1
+                        mmkeys[bad] = n
                     else:
-                        mmkeys[bad]=1
-            print('Collection found ',len(mismatch),
-                  ' documents with type inconsistencies')
-            print('Offending keys and number found follow:')
-            print(json_util.dumps(mmkeys,indent=2))
-        #Same for undef with minor differences in what is printed
+                        mmkeys[bad] = 1
+            print(
+                "Collection found ",
+                len(mismatch),
+                " documents with type inconsistencies",
+            )
+            print("Offending keys and number found follow:")
+            print(json_util.dumps(mmkeys, indent=2))
+        # Same for undef with minor differences in what is printed
         # maybe should make this a function
-        if len(undef)==0:
-            print('Collection has no type inconsistencies with schema')
+        if len(undef) == 0:
+            print("Collection has no type inconsistencies with schema")
         else:
-            mmkeys=dict()
+            mmkeys = dict()
             for k in undef:
-                badkeys=undef[k]
+                badkeys = undef[k]
                 for bad in badkeys:
                     if bad in mmkeys:
-                        n=mmkeys[bad]
-                        n+=1
-                        mmkeys[bad]=n
+                        n = mmkeys[bad]
+                        n += 1
+                        mmkeys[bad] = n
                     else:
-                        mmkeys[bad]=1
-            print('Collection found ',len(undef),
-                  ' documents with keys not defined in the schema')
-            print('Offending keys and number found follow:')
-            print(json_util.dumps(mmkeys,indent=2))
+                        mmkeys[bad] = 1
+            print(
+                "Collection found ",
+                len(undef),
+                " documents with keys not defined in the schema",
+            )
+            print("Offending keys and number found follow:")
+            print(json_util.dumps(mmkeys, indent=2))
 
-                
-def run_check_required(db,col,required_list,elimit,verbose):
+
+def run_check_required(db, col, required_list, elimit, verbose):
     """
     Each standard collection in mspass has some key attributes that
-    are essential to be useful.   This test should be run to verify 
+    are essential to be useful.   This test should be run to verify
     critical data are defined before a major processing run.   This
-    function is a print wrapper for the test function check_required.  
-    The program default runs it with verbose false in which case it only 
-    prints a summary of offending keys and the number of documents 
+    function is a print wrapper for the test function check_required.
+    The program default runs it with verbose false in which case it only
+    prints a summary of offending keys and the number of documents
     found that were missing each required key.  When verbose is true
-    the contents of all offending documents will be printed in a 
-    readable layout with json_util.dumps.  
+    the contents of all offending documents will be printed in a
+    readable layout with json_util.dumps.
 
     """
-    errs=db._check_required(col,required_list,error_limit=elimit)
-    mismatch=errs[0]
-    undef=errs[1]
-    print('////Results from run_check_required on collection=',col)
+    errs = db._check_required(col, required_list, error_limit=elimit)
+    mismatch = errs[0]
+    undef = errs[1]
+    print("////Results from run_check_required on collection=", col)
     if verbose:
-        if len(mismatch)==0:
-            print('Collection has no type mismatches')
+        if len(mismatch) == 0:
+            print("Collection has no type mismatches")
         else:
-            print('/////Collection has ',len(mismatch),
-              ' documents with a type mismatch//////')
-            print('/////Mismatched data with doc ids follow/////')
+            print(
+                "/////Collection has ",
+                len(mismatch),
+                " documents with a type mismatch//////",
+            )
+            print("/////Mismatched data with doc ids follow/////")
             print_id_keyed_dict(mismatch)
-            print('//////////////////////////////////////////////////////////////')
-        if len(undef)==0:
-            print('Collection has all required data')
+            print("//////////////////////////////////////////////////////////////")
+        if len(undef) == 0:
+            print("Collection has all required data")
         else:
-            print('Collection has at least ',len(undef),
-              ' documents lacking one or more attributes')
-            print('///////ids of bad docs with missing keys listed follow')
+            print(
+                "Collection has at least ",
+                len(undef),
+                " documents lacking one or more attributes",
+            )
+            print("///////ids of bad docs with missing keys listed follow")
             print_id_keyed_dict(undef)
-            print('//////////////////////////////////////////////////////////////')
+            print("//////////////////////////////////////////////////////////////")
     else:
-        if len(mismatch)==0:
-            print('Collection has no type mismatches')
+        if len(mismatch) == 0:
+            print("Collection has no type mismatches")
         else:
-            mmkeys=dict()
+            mmkeys = dict()
             for k in mismatch:
-                badkeys=mismatch[k]
+                badkeys = mismatch[k]
                 for bad in badkeys:
                     if bad in mmkeys:
-                        n=mmkeys[bad]
-                        n+=1
-                        mmkeys[bad]=n
+                        n = mmkeys[bad]
+                        n += 1
+                        mmkeys[bad] = n
                     else:
-                        mmkeys[bad]=1
-            print('Collection found ',len(mismatch),
-                  ' documents with type inconsistencies')
-            print('Offending keys and number found follow:')
-            print(json_util.dumps(mmkeys,indent=2))
-        if len(undef)==0:
-            print('Collection has all required data')
+                        mmkeys[bad] = 1
+            print(
+                "Collection found ",
+                len(mismatch),
+                " documents with type inconsistencies",
+            )
+            print("Offending keys and number found follow:")
+            print(json_util.dumps(mmkeys, indent=2))
+        if len(undef) == 0:
+            print("Collection has all required data")
         else:
-            mmkeys=dict()
+            mmkeys = dict()
             for k in undef:
-                badkeys=undef[k]
+                badkeys = undef[k]
                 for bad in badkeys:
                     if bad in mmkeys:
-                        n=mmkeys[bad]
-                        n+=1
-                        mmkeys[bad]=n
+                        n = mmkeys[bad]
+                        n += 1
+                        mmkeys[bad] = n
                     else:
-                        mmkeys[bad]=1
-            print('Collection found ',len(undef),
-                  ' documents with required keys that were not defined')
-            print('Offending keys and number found follow:')
-            print(json_util.dumps(mmkeys,indent=2))
+                        mmkeys[bad] = 1
+            print(
+                "Collection found ",
+                len(undef),
+                " documents with required keys that were not defined",
+            )
+            print("Offending keys and number found follow:")
+            print(json_util.dumps(mmkeys, indent=2))
+
 
 def get_required(collection):
-    if collection=='site':
-        return ['lat','lon','elev'] 
-    elif collection=='channel':
-        return ['lat','lon','elev','hang','vang']
-    elif collection=='source':
-        return ['lat','lon','depth','time']
-    elif collection=='wf_TimeSeries' or collection=='wf_Seismogram':
-        return ['npts','delta','starttime']
+    if collection == "site":
+        return ["lat", "lon", "elev"]
+    elif collection == "channel":
+        return ["lat", "lon", "elev", "hang", "vang"]
+    elif collection == "source":
+        return ["lat", "lon", "depth", "time"]
+    elif collection == "wf_TimeSeries" or collection == "wf_Seismogram":
+        return ["npts", "delta", "starttime"]
     else:
-        raise MsPASSError('No data on required attributes for collection='
-                          +collection,'Fatal')
+        raise MsPASSError(
+            "No data on required attributes for collection=" + collection, "Fatal"
+        )
+
+
 def main(args=None):
-    # As a script that would be run from the shell we let 
-    # any functions below that throw exception do so and assume they 
+    # As a script that would be run from the shell we let
+    # any functions below that throw exception do so and assume they
     # will write a message that can help debug what went wrong
     if args is None:
         args = sys.argv[1:]
-    parser = argparse.ArgumentParser(prog="dbverify",
-                    usage="%(prog)s dbname [-t TEST -c [collection ...] -n [normalize ... ] -error_limit n -v]",
-                    description="MsPASS database verify program")
-    parser.add_argument('dbname',
-                       metavar='dbname',
-                       type=str,
-                       help='MongoDB database name on which to run tests')
-    parser.add_argument('-t',
-                        '--test',
-                        action='store',
-                        type=str,
-                        default='normalization',
-                        help='Select which test to run.  '
-                          + 'Current options:  normalization, required, schema_check'
-                          )
-    parser.add_argument('-c',
-                        '--collection',
-                        action='store',
-                        nargs='*',
-                        default=['wf_TimeSeries'],
-                        help='Collection(s) on which the test is to be run.  '
-                               + 'Only schema_check supports multiple collections in one run'
-                        )
-    parser.add_argument('-n',
-                       '--normalize',
-                       nargs='*',
-                       default=['site_id','channel_id','source_id'],
-                       help='List of normalization keys to test\n'
-                         + '(Used only for -test normalization option'
-                       )
-    parser.add_argument('-r',
-                        '--require',
-                        nargs='*',
-                        default=[],
-                        help='List of keys of required attributes for required test'
-                        )
-    parser.add_argument('-e',
-                        '--error_limit',
-                        action='store',
-                        type=int,
-                        default=1000,
-                        help='Set error limit - stop checking when this many errors are found\n'
-                        + 'Default is 1000'
-                        )
-    parser.add_argument('-v',
-                       '--verbose',
-                       action='store_true',
-                       help='When used print offending values.  Otherwise just return a summary'
-                       )
+    parser = argparse.ArgumentParser(
+        prog="dbverify",
+        usage="%(prog)s dbname [-t TEST -c [collection ...] -n [normalize ... ] -error_limit n -v]",
+        description="MsPASS database verify program",
+    )
+    parser.add_argument(
+        "dbname",
+        metavar="dbname",
+        type=str,
+        help="MongoDB database name on which to run tests",
+    )
+    parser.add_argument(
+        "-t",
+        "--test",
+        action="store",
+        type=str,
+        default="normalization",
+        help="Select which test to run.  "
+        + "Current options:  normalization, required, schema_check",
+    )
+    parser.add_argument(
+        "-c",
+        "--collection",
+        action="store",
+        nargs="*",
+        default=["wf_TimeSeries"],
+        help="Collection(s) on which the test is to be run.  "
+        + "Only schema_check supports multiple collections in one run",
+    )
+    parser.add_argument(
+        "-n",
+        "--normalize",
+        nargs="*",
+        default=["site_id", "channel_id", "source_id"],
+        help="List of normalization keys to test\n"
+        + "(Used only for -test normalization option",
+    )
+    parser.add_argument(
+        "-r",
+        "--require",
+        nargs="*",
+        default=[],
+        help="List of keys of required attributes for required test",
+    )
+    parser.add_argument(
+        "-e",
+        "--error_limit",
+        action="store",
+        type=int,
+        default=1000,
+        help="Set error limit - stop checking when this many errors are found\n"
+        + "Default is 1000",
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="When used print offending values.  Otherwise just return a summary",
+    )
 
     args = parser.parse_args(args)
-    test_to_run=args.test
-    dbname=args.dbname
-    dbclient=DBClient()
-    db=Database(dbclient,dbname)
-    col_to_test=args.collection
-    normalize=args.normalize
-    reqlist=args.require
-    verbose=args.verbose
-    elimit=args.error_limit
+    test_to_run = args.test
+    dbname = args.dbname
+    dbclient = DBClient()
+    db = Database(dbclient, dbname)
+    col_to_test = args.collection
+    normalize = args.normalize
+    reqlist = args.require
+    verbose = args.verbose
+    elimit = args.error_limit
 
-    # If python had a switch case it would be used here.  this 
-    # is the list of known tests.  the program can only run one 
+    # If python had a switch case it would be used here.  this
+    # is the list of known tests.  the program can only run one
     # test per execution.  Intentional to make output more readable
-    if test_to_run=='normalization':
-        if len(col_to_test)>1:
-            print('WARNING:  normalization test can only be run on one collection at a time')
-            print('Parsed a list with the following contents:  ',col_to_test)
-            print('Running test on the first item in that list')
-        col=col_to_test[0]
-        if not isinstance(col,str):
-            print('Invalid value parsed for -c option=',col)
+    if test_to_run == "normalization":
+        if len(col_to_test) > 1:
+            print(
+                "WARNING:  normalization test can only be run on one collection at a time"
+            )
+            print("Parsed a list with the following contents:  ", col_to_test)
+            print("Running test on the first item in that list")
+        col = col_to_test[0]
+        if not isinstance(col, str):
+            print("Invalid value parsed for -c option=", col)
             exit(-1)
-        run_check_links(db,col,normalize,elimit,verbose)
-    elif test_to_run=='required':
-        if len(col_to_test)>1:
-            print('WARNING:  required test can only be run on one collection at a time')
-            print('Parsed a list with the following contents:  ',col_to_test)
-            print('Running test on the first item in that list')
-        col=col_to_test[0]
-        if not isinstance(col,str):
-            print('Invalid value parsed for -c option=',col_to_test)
+        run_check_links(db, col, normalize, elimit, verbose)
+    elif test_to_run == "required":
+        if len(col_to_test) > 1:
+            print("WARNING:  required test can only be run on one collection at a time")
+            print("Parsed a list with the following contents:  ", col_to_test)
+            print("Running test on the first item in that list")
+        col = col_to_test[0]
+        if not isinstance(col, str):
+            print("Invalid value parsed for -c option=", col_to_test)
             exit(-1)
-        if len(reqlist)==0:
-            # Depends on default being an empty list. For default 
+        if len(reqlist) == 0:
+            # Depends on default being an empty list. For default
             # case run this small function.
             # This is currently a funtion above with const list values
-            # returned for each known collection.  It may eventually 
+            # returned for each known collection.  It may eventually
             # be replaced a function using the schema
-            required_list=get_required(col)
+            required_list = get_required(col)
         else:
-            required_list=reqlist
-        run_check_required(db,col,required_list,elimit,verbose)
-    elif test_to_run=='schema_check':
+            required_list = reqlist
+        run_check_required(db, col, required_list, elimit, verbose)
+    elif test_to_run == "schema_check":
         for col in col_to_test:
-            run_check_attribute_types(db,col,elimit,verbose)
+            run_check_attribute_types(db, col, elimit, verbose)
     else:
-        print('Unrecognized value for --test value parsed=',test_to_run)
-        print('Must be one of:  normalization, required, or schema_check')
-    
+        print("Unrecognized value for --test value parsed=", test_to_run)
+        print("Must be one of:  normalization, required, or schema_check")
+
 
 if __name__ == "__main__":
     main()

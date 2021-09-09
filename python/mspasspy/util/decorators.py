@@ -1,17 +1,32 @@
 from decorator import decorator
 
-from mspasspy.util.converter import (Stream2Seismogram,
-                                     Trace2TimeSeries)
+from mspasspy.util.converter import Stream2Seismogram, Trace2TimeSeries
 
 from mspasspy.ccore.utility import MsPASSError, ErrorSeverity
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+)
+
 # from mspasspy.global_history.manager import GlobalHistoryManager
 from mspasspy.util import logging_helper
 
 
 @decorator
-def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False,
-                        inplace_return=False, function_return_key=None, **kwargs):
+def mspass_func_wrapper(
+    func,
+    data,
+    *args,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    dryrun=False,
+    inplace_return=False,
+    function_return_key=None,
+    **kwargs
+):
     """
     Decorator wrapper to adapt a simple function to the mspass parallel processing framework.
 
@@ -54,17 +69,17 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
     :param kwargs: extra kv arguments
     :return: origin data or the output of func
     """
-    if not isinstance(data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
-        raise TypeError(
-            "mspass_func_wrapper only accepts mspass object as data input")
+    if not isinstance(
+        data, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+    ):
+        raise TypeError("mspass_func_wrapper only accepts mspass object as data input")
 
     # if not defined
     if not alg_name:
         alg_name = func.__name__
 
     if object_history and alg_id is None:
-        raise ValueError(
-            alg_name + ": object_history was true but alg_id not defined")
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
 
     if dryrun:
         return "OK"
@@ -80,15 +95,19 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
             if isinstance(function_return_key, str):
                 data[function_return_key] = res
             else:
-                data.elog.log_error(alg_name,
-                                    "Illegal type received for function_return_key argument=" +
-                                    str(type(function_return_key)) +
-                                    "\nReturn value not saved in Metadata",
-                                    ErrorSeverity.Complaint)
+                data.elog.log_error(
+                    alg_name,
+                    "Illegal type received for function_return_key argument="
+                    + str(type(function_return_key))
+                    + "\nReturn value not saved in Metadata",
+                    ErrorSeverity.Complaint,
+                )
             if not inplace_return:
-                data.elog.log_error(alg_name,
-                                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
-                                    ErrorSeverity.Complaint)
+                data.elog.log_error(
+                    alg_name,
+                    "Inconsistent arguments; inplace_return was set False and function_return_key was not None.\nAssuming inplace_return == True is correct",
+                    ErrorSeverity.Complaint,
+                )
             return data
         elif inplace_return:
             return data
@@ -98,8 +117,7 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(
-                data, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data, alg_name, err, ErrorSeverity.Invalid)
         # some unexpected error happen, if inplace_return is true, we may want to return the original data
         if inplace_return:
             return data
@@ -109,15 +127,24 @@ def mspass_func_wrapper(func, data, *args, object_history=False, alg_id=None, al
         if isinstance(data, (Seismogram, TimeSeries)):
             data.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(
-                data, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data, alg_name, ex.message, ex.severity)
         # some unexpected error happen, if inplace_return is true, we may want to return the original data
         if inplace_return:
             return data
 
 
 @decorator
-def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
+def mspass_func_wrapper_multi(
+    func,
+    data1,
+    data2,
+    *args,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    dryrun=False,
+    **kwargs
+):
     """
     This wrapper serves the same functionality as mspass_func_wrapper, but there are a few differences. The first is
     this wrapper accepts two mspasspy data objects as input data. The second is that inplace_return is not implemented
@@ -143,20 +170,25 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
     :param kwargs: extra kv arguments
     :return: the output of func
     """
-    if not isinstance(data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
+    if not isinstance(
+        data1, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+    ):
         raise TypeError(
-            "mspass_func_wrapper_multi only accepts mspass object as data input")
+            "mspass_func_wrapper_multi only accepts mspass object as data input"
+        )
 
-    if not isinstance(data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)):
+    if not isinstance(
+        data2, (Seismogram, TimeSeries, SeismogramEnsemble, TimeSeriesEnsemble)
+    ):
         raise TypeError(
-            "mspass_func_wrapper_multi only accepts mspass object as data input")
+            "mspass_func_wrapper_multi only accepts mspass object as data input"
+        )
 
     if not alg_name:
         alg_name = func.__name__
 
     if object_history and alg_id is None:
-        raise ValueError(
-            alg_name + ": object_history was true but alg_id not defined")
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
 
     if dryrun:
         return "OK"
@@ -174,26 +206,22 @@ def mspass_func_wrapper_multi(func, data1, data2, *args, object_history=False, a
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(
-                data1, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, alg_name, err, ErrorSeverity.Invalid)
         if isinstance(data2, (Seismogram, TimeSeries)):
             data2.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(
-                data2, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
         if ex.severity == ErrorSeverity.Fatal:
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(
-                data1, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
         if isinstance(data2, (Seismogram, TimeSeries)):
             data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(
-                data2, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
 
 
 def is_input_dead(*args, **kwargs):
@@ -259,7 +287,7 @@ def timeseries_ensemble_copy_helper(es1, es2):
     # also, the following does not address uninitiated history issues in the extended elements
     # same problem applies to the seismogram_ensemble_copy_helper
     if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member):])
+        es1.member.extend(es2.member[len(es1.member) :])
 
 
 @decorator
@@ -319,7 +347,7 @@ def seismogram_ensemble_copy_helper(es1, es2):
     for i in range(len(es1.member)):
         seismogram_copy_helper(es1.member[i], es2.member[i])
     if len(es2.member) > len(es1.member):
-        es1.member.extend(es2.member[len(es1.member):])
+        es1.member.extend(es2.member[len(es1.member) :])
 
 
 @decorator
@@ -463,7 +491,17 @@ def seismogram_ensemble_as_stream(func, *args, **kwargs):
 
 
 @decorator
-def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, alg_id=None, alg_name=None, dryrun=False, **kwargs):
+def mspass_reduce_func_wrapper(
+    func,
+    data1,
+    data2,
+    *args,
+    object_history=False,
+    alg_id=None,
+    alg_name=None,
+    dryrun=False,
+    **kwargs
+):
     """
     This decorator is designed to wrap functions so that they can be used as reduce operator. It takes two inputs, data1
     and data2, both of them are mspasspy objects. The processing history and error logs will recorded in both data1
@@ -492,16 +530,16 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
     if not alg_name:
         alg_name = func.__name__
 
-    if isinstance(data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)):
+    if isinstance(
+        data1, (TimeSeries, Seismogram, TimeSeriesEnsemble, SeismogramEnsemble)
+    ):
         if type(data1) != type(data2):
             raise TypeError("data2 has a different type as data1")
     else:
-        raise TypeError(
-            "only mspass objects are supported in reduce wrapped methods")
+        raise TypeError("only mspass objects are supported in reduce wrapped methods")
 
     if object_history and alg_id is None:
-        raise ValueError(
-            alg_name + ": object_history was true but alg_id not defined")
+        raise ValueError(alg_name + ": object_history was true but alg_id not defined")
 
     if dryrun:
         return "OK"
@@ -516,22 +554,20 @@ def mspass_reduce_func_wrapper(func, data1, data2, *args, object_history=False, 
             data1.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
             data2.elog.log_error(alg_name, str(err), ErrorSeverity.Invalid)
         else:
-            logging_helper.ensemble_error(
-                data1, alg_name, err, ErrorSeverity.Invalid)
-            logging_helper.ensemble_error(
-                data2, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data1, alg_name, err, ErrorSeverity.Invalid)
+            logging_helper.ensemble_error(data2, alg_name, err, ErrorSeverity.Invalid)
     except MsPASSError as ex:
-        if ex.severity != ErrorSeverity.Informational and \
-                ex.severity != ErrorSeverity.Debug:
+        if (
+            ex.severity != ErrorSeverity.Informational
+            and ex.severity != ErrorSeverity.Debug
+        ):
             raise
         if isinstance(data1, (Seismogram, TimeSeries)):
             data1.elog.log_error(alg_name, ex.message, ex.severity)
             data2.elog.log_error(alg_name, ex.message, ex.severity)
         else:
-            logging_helper.ensemble_error(
-                data1, alg_name, ex.message, ex.severity)
-            logging_helper.ensemble_error(
-                data2, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data1, alg_name, ex.message, ex.severity)
+            logging_helper.ensemble_error(data2, alg_name, ex.message, ex.severity)
 
 
 # @decorator
