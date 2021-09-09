@@ -8,8 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.MsPASS_Black }}
-          ref: ${{ github.head_ref }}
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+          fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
         with:
@@ -18,5 +18,13 @@ jobs:
         run: pip install black
       - name: Run black linter
         run: black .
-      - name: If needed, commit black changes to the pull request
-        uses: EndBug/add-and-commit@v7
+      - name: Commit files
+        run: |
+          git config --local user.email "autofix[bot]@users.noreply.github.com"
+          git config --local user.name "autofix[bot]"
+          git commit -m "autofix: format python code using psf/black" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
