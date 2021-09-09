@@ -7,11 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: reviewdog/action-black@v2
         with:
-          github_token: ${{ secrets.github_token }}
-          # Change reviewdog reporter if you need [github-pr-check, github-check].
-          reporter: github-pr-review
-          # Change reporter level if you need.
-          # GitHub Status Check won't become failure with a warning.
-          level: warning
+          ref: ${{ github.head_ref }}
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Black
+        run: pip install black
+      - name: Run black linter
+        run: black --check .
+      - name: If needed, commit black changes to the pull request
+        if: failure()
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: blackfmt
