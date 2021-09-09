@@ -8,6 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          token: ${{ secrets.MsPASS_Black }}
           ref: ${{ github.head_ref }}
       - name: Set up Python 3.8
         uses: actions/setup-python@v2
