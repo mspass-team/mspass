@@ -18,7 +18,6 @@ jobs:
       - name: Run black linter
         run: black .
       - name: If needed, commit black changes to the pull request
-        if: failure()
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: blackfmt
