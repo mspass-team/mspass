@@ -71,13 +71,11 @@ def bundle_seed_data(ensemble):
     Caller should be enclosed in a handler if run on a large data set. 
     """
     if not isinstance(ensemble,TimeSeriesEnsemble):
-        raise MsPASSError("bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble",
-                          ErrorSeverity.Invalid) 
+        raise MsPASSError("bundle_seed_data:  illegal input - must be a TimeSeriesEnsemble",ErrorSeverity.Invalid) 
     try:
-        d3c = _bundle_seed_data(ensemble)
+        d3c=_bundle_seed_data(ensemble)
     except Exception as err:
-        raise MsPASSError('_bundle_seed_data threw an exception - see more messages below',
-                          ErrorSeverity.Invalid) from err
+        raise MsPASSError('_bundle_seed_data threw an exception - see more messages below',ErrorSeverity.Invalid) from err
     return d3c
 
 def BundleSEEDGroup(d, i0=0, iend=2):
