@@ -1,35 +1,16 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Data Object Design Concepts &mdash; MsPASS 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>Data Object Design Concepts &mdash; MsPASS 0.0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -37,10 +18,7 @@
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Time Standard Constraints" href="time_standard_constraints.html" />
@@ -53,29 +31,13 @@
   
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> MsPASS
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -83,25 +45,14 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
 </ul>
-<p class="caption"><span class="caption-text">User Manual</span></p>
+<p><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Data Object Design Concepts</a><ul>
@@ -133,82 +84,39 @@
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<p><span class="caption-text">Reference Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
-            
-          
     <a href= "../genindex.html">Index</a>
   
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Data Object Design Concepts</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/data_object_design_concepts.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   
 <style>
 /* CSS overrides for sphinx_rtd_theme */
@@ -233,10 +141,10 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="data-object-design-concepts">
-<span id="id1"></span><h1>Data Object Design Concepts<a class="headerlink" href="#data-object-design-concepts" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="data-object-design-concepts">
+<span id="id1"></span><h1>Data Object Design Concepts<a class="headerlink" href="#data-object-design-concepts" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <div class="line-block">
 <div class="line">The core data objects in MsPASS were designed to encapsulate the most
 atomic objects in seismology waveform processing:  scalar (i.e. single
@@ -277,9 +185,9 @@ data should either be written in C/C++ with their own wrappers or
 exploit numpy/scipy numerical routines.   The later is possible
 because the wrappers make the data arrays look like numpy arrays.</div>
 </div>
-</div>
-<div class="section" id="history">
-<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline"></a></h2>
 <div class="line-block">
 <div class="line">It might be helpful for the user to recognize that the core data
 objects in MsPASS are the second generation of a set of data objects
@@ -353,11 +261,11 @@ three sensors at a common point in space.   Hence, we carefully
 separate <code class="code docutils literal notranslate"><span class="pre">TimeSeries</span></code> and <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> (our name for Three-Component
 data).  We further distinguish <code class="code docutils literal notranslate"><span class="pre">Ensembles</span></code> of each atomic type.</p></li>
 </ol>
-</div>
-<div class="section" id="core-concepts">
-<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="overview-inheritance-relationships">
-<h3>Overview - Inheritance Relationships<a class="headerlink" href="#overview-inheritance-relationships" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="core-concepts">
+<h2>Core Concepts<a class="headerlink" href="#core-concepts" title="Permalink to this headline"></a></h2>
+<section id="overview-inheritance-relationships">
+<h3>Overview - Inheritance Relationships<a class="headerlink" href="#overview-inheritance-relationships" title="Permalink to this headline"></a></h3>
 <div class="line-block">
 <div class="line">The reader needs to first see the big picture of how TimeSeries and
 Seismogram objects are defined to understand the core concepts
@@ -405,9 +313,9 @@ but not always have python bindings.</div>
 <div class="line">The remainder of this section discusses the individual components in
 the class hierarchy.</div>
 </div>
-</div>
-<div class="section" id="basictimeseries-base-class-of-common-data-characteristics">
-<h3>BasicTimeSeries - Base class of common data characteristics<a class="headerlink" href="#basictimeseries-base-class-of-common-data-characteristics" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="basictimeseries-base-class-of-common-data-characteristics">
+<h3>BasicTimeSeries - Base class of common data characteristics<a class="headerlink" href="#basictimeseries-base-class-of-common-data-characteristics" title="Permalink to this headline"></a></h3>
 <p>This base class object can be best viewed as an answer to this
 questions:  What is a time series?   Our design answers this question by
 saying all time series data have the following elements:</p>
@@ -454,9 +362,9 @@ dead along without changing or removing it from the workflow.
 Failure to test for the live condition can cause mysterious aborts when
 an algorithm attempts to process invalid data.</div>
 </div>
-</div>
-<div class="section" id="handling-time">
-<h3>Handling Time<a class="headerlink" href="#handling-time" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="handling-time">
+<h3>Handling Time<a class="headerlink" href="#handling-time" title="Permalink to this headline"></a></h3>
 <div class="line-block">
 <div class="line">MsPASS uses a generalization to handle time that is the same as a
 novel method used in the original SEISPP library.   The concept can be
@@ -518,9 +426,9 @@ constrained.</div>
 <div class="line-block">
 <div class="line">For an expanded discussion on this topic go here (need a link to time_standard_constraints.rst).</div>
 </div>
-</div>
-<div class="section" id="metadata-concepts">
-<h3>Metadata Concepts<a class="headerlink" href="#metadata-concepts" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="metadata-concepts">
+<h3>Metadata Concepts<a class="headerlink" href="#metadata-concepts" title="Permalink to this headline"></a></h3>
 <div class="line-block">
 <div class="line">All data objects used by the MsPASS C++ library inherit a Metadata
 object.  A <code class="code docutils literal notranslate"><span class="pre">Metadata</span></code> object is best thought of through either of two
@@ -663,9 +571,9 @@ can be constructed directly from a python dict.   That is used, for example,
 in MongoDB database readers because a MongoDB “document” is returned as a
 python dict in MongoDB’s python API.</div>
 </div>
-</div>
-<div class="section" id="managing-metadata-type-with-mspasspy-db-schema">
-<h3>Managing Metadata type with mspasspy.db.Schema<a class="headerlink" href="#managing-metadata-type-with-mspasspy-db-schema" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="managing-metadata-type-with-mspasspy-db-schema">
+<h3>Managing Metadata type with mspasspy.db.Schema<a class="headerlink" href="#managing-metadata-type-with-mspasspy-db-schema" title="Permalink to this headline"></a></h3>
 <div class="line-block">
 <div class="line">Most type enforcement is imposed by data readers and writers where
 the <code class="code docutils literal notranslate"><span class="pre">Schema</span></code> class is automatically loaded with the <code class="code docutils literal notranslate"><span class="pre">Database</span></code> class
@@ -722,9 +630,9 @@ handle aliases are readily apparent from the documentation page linked
 above as they all contain the keyword <code class="code docutils literal notranslate"><span class="pre">alias</span></code>.  We leave the exercise
 of understanding how to use this feature to planned tutorials.</div>
 </div>
-</div>
-<div class="section" id="scalar-versus-3c-data">
-<h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="scalar-versus-3c-data">
+<h3>Scalar versus 3C data<a class="headerlink" href="#scalar-versus-3c-data" title="Permalink to this headline"></a></h3>
 <div class="line-block">
 <div class="line">MsPASS currently supports two different data objects:   TimeSeries objects are
 used to store single channel data while Seismogram objects are used to store
@@ -887,11 +795,11 @@ block could also be written:</p>
   <span class="n">somefunction</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="processinghistory-and-error-logging">
-<h3>ProcessingHistory and Error Logging<a class="headerlink" href="#processinghistory-and-error-logging" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="core-versus-top-level-data-objects">
-<h4>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="processinghistory-and-error-logging">
+<h3>ProcessingHistory and Error Logging<a class="headerlink" href="#processinghistory-and-error-logging" title="Permalink to this headline"></a></h3>
+<section id="core-versus-top-level-data-objects">
+<h4>Core versus Top-level Data Objects<a class="headerlink" href="#core-versus-top-level-data-objects" title="Permalink to this headline"></a></h4>
 <div class="line-block">
 <div class="line">The class hierarchy diagrams above illustrate the relationship of what
 we call CoreTimeSeries and CoreSeismogram objects to those we
@@ -949,9 +857,9 @@ symbol <code class="code docutils literal notranslate"><span class="pre">elog</s
 (e.g. If <em>d</em> is a <code class="code docutils literal notranslate"><span class="pre">Seismogram</span></code> object, <em>d.elog</em>, would refer to
 the error logger component of <em>d</em>.)’’</p></li>
 </ol>
-</div>
-<div class="section" id="object-level-history-design-concepts">
-<h4>Object Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="object-level-history-design-concepts">
+<h4>Object Level History Design Concepts<a class="headerlink" href="#object-level-history-design-concepts" title="Permalink to this headline"></a></h4>
 <p>As summarized above the concept we wanted to capture in the history mechanism
 was a means to preserve the chain of processing events that were applied to
 get a piece of data in a current state.  Our design assumes the
@@ -1039,9 +947,9 @@ and how it can be used to automate the process).   We expect to eventually
 produce a document on adapting algorithms to MsPASS that will cover this
 subject. <strong>Needs a link to a related document on ProcessingHistory API</strong></div>
 </div>
-</div>
-<div class="section" id="error-logging-concepts">
-<h4>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Permalink to this headline">¶</a></h4>
+</section>
+<section id="error-logging-concepts">
+<h4>Error Logging Concepts<a class="headerlink" href="#error-logging-concepts" title="Permalink to this headline"></a></h4>
 <div class="line-block">
 <div class="line">When processing large volumes of data, errors are inevitable and
 handling them cleanly is an essential part of any processing
@@ -1108,49 +1016,37 @@ linked back to the data with which they are associated through the
 ObjectID of the data in the wf collection.  Details of that association
 are given in other sections of this manual.</div>
 </div>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="time_standard_constraints.html" class="btn btn-neutral float-right" title="Time Standard Constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="time_standard_constraints.html" class="btn btn-neutral float-right" title="Time Standard Constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2021, Ian Wang.
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

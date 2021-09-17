@@ -1,35 +1,16 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>CRUD Operations in MsPASS &mdash; MsPASS 0.0.1 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>CRUD Operations in MsPASS &mdash; MsPASS 0.0.1 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -37,10 +18,7 @@
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Handling Errors" href="handling_errors.html" />
@@ -53,29 +31,13 @@
   
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> MsPASS
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -83,25 +45,14 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <p><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/run_mspass_with_docker.html">Run MsPASS with Docker</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/deploy_mspass_with_docker_compose.html">Deploy MsPASS with Docker Compose</a></li>
 </ul>
-<p class="caption"><span class="caption-text">User Manual</span></p>
+<p><span class="caption-text">User Manual</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_object_design_concepts.html">Data Object Design Concepts</a></li>
@@ -128,82 +79,39 @@
 <li class="toctree-l1"><a class="reference internal" href="processing_history_concepts.html">Processing History Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="adapting_algorithms.html">Adapting an Existing Algorithm to MsPASS</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference Manual</span></p>
+<p><span class="caption-text">Reference Manual</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../python_api/index.html">Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../cxx_api/index.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mspass_schema/mspass_schema.html">MsPASS Schema</a></li>
 </ul>
 
-            
-          
     <a href= "../genindex.html">Index</a>
   
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">MsPASS</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>CRUD Operations in MsPASS</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/mspass-team/mspass/blob/master/docs/source/user_manual/CRUD_operations.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   
 <style>
 /* CSS overrides for sphinx_rtd_theme */
@@ -228,10 +136,10 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="crud-operations-in-mspass">
-<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="crud-operations-in-mspass">
+<span id="crud-operations"></span><h1>CRUD Operations in MsPASS<a class="headerlink" href="#crud-operations-in-mspass" title="Permalink to this headline"></a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline"></a></h2>
 <p>The acronymn CRUD is often used as a mnemonic in books and online tutorials
 teaching database concepts.  CRUD stands for Create-Read-Update-Delete.
 It is usful because it summarizes the four main things any database system
@@ -268,9 +176,9 @@ alternative construct:</p>
 <p>If your workflow requires reading both TimeSeries and Seismogram
 data, you should create two handles with one using the wf_TimeSeries
 and the other using the wf_Seismogram schema.</p>
-</div>
-<div class="section" id="create">
-<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="create">
+<h2>Create<a class="headerlink" href="#create" title="Permalink to this headline"></a></h2>
 <p>We tag all methods of the Database class that do “Create” operations with
 the synonymous word “save”.   Here we list all save methods with a brief
 description of each method.  We refer to the docstring pages for detailed
@@ -389,9 +297,9 @@ in the StationXML data as translated by obspy.   In the read section
 below we describe how to retrieve response data from <code class="code docutils literal notranslate"><span class="pre">channel</span></code>.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="read">
-<h2>Read<a class="headerlink" href="#read" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="read">
+<h2>Read<a class="headerlink" href="#read" title="Permalink to this headline"></a></h2>
 <p>The Read operation is the inverse of save (create).  The core readers were
 designed to simplify the process of reading the core data types of MsPASS:  TimeSeries
 and Seismogram.  There are also convenience functions for reading ensembles.
@@ -432,10 +340,12 @@ objects can conceptually be thought of as a single entity the individual
 parts are handled differently because they define different concepts
 and are subject to different read, write, and storage rules.
 <a class="reference internal" href="#crud-operations-figure1"><span class="std std-numref">Fig. 1</span></a> illustrates this fragmentation:</p>
-<div class="figure align-center" id="id1">
+<figure class="align-center" id="id1">
 <span id="crud-operations-figure1"></span><a class="reference internal image-reference" href="../_images/CRUD_operations_figure1.png"><img alt="../_images/CRUD_operations_figure1.png" src="../_images/CRUD_operations_figure1.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">A schematic diagram of how different parts of a data object is handled.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">A schematic diagram of how different parts of a data object is handled.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>The key point of this figure is that the waveform data is treated differently
 from the Metadata and two auxiliary items we call ProcessingHistory and the
 error log (elog).  Waveform data is currently stored either internally in
@@ -536,9 +446,9 @@ If you are using DASK instead of SPARK you would add the optional
 argument <code class="code docutils literal notranslate"><span class="pre">format='dask'</span></code>.</p>
 </li>
 </ol>
-</div>
-<div class="section" id="update">
-<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="update">
+<h2>Update<a class="headerlink" href="#update" title="Permalink to this headline"></a></h2>
 <p>Because of the way we stored seismic data in MsPASS (see figure above)
 the concept of an update makes sense only for Metadata.
 The update concept makes no sense for ProcessingHistory and error log data.
@@ -572,9 +482,9 @@ cause the related data to be marked dead.</p></li>
 are treated on writes or updates depends on the setting of the <code class="code docutils literal notranslate"><span class="pre">mode</span></code> argument
 common to all update and write methods described in more detail in a section
 below.</p>
-</div>
-<div class="section" id="delete">
-<h2>Delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="delete">
+<h2>Delete<a class="headerlink" href="#delete" title="Permalink to this headline"></a></h2>
 <p>A delete operation is much more complicated in MsPASS than what you would
 find as a type example in any textbook an database theory.  In a
 relational environment delete normally means removing a single tuple.
@@ -671,11 +581,11 @@ entry for that file is removed from the internal set container.
 This algorithm allows for interwoven calls to the <code class="code docutils literal notranslate"><span class="pre">delete</span></code> method and
 the <code class="code docutils literal notranslate"><span class="pre">deleted_unreferenced_files</span></code> method.  That allows for multiple cleanup
 stages during a workflow to help manage memory.</p>
-</div>
-<div class="section" id="key-io-concepts">
-<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="mspass-chemistry">
-<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="key-io-concepts">
+<h2>Key IO Concepts<a class="headerlink" href="#key-io-concepts" title="Permalink to this headline"></a></h2>
+<section id="mspass-chemistry">
+<h3>MsPASS Chemistry<a class="headerlink" href="#mspass-chemistry" title="Permalink to this headline"></a></h3>
 <p>In this section we expand on some concepts the user needs to understand
 in interacting with the io system in MsPASS.  If we repeat things it means
 they are important, not that we were careless in writing this document.</p>
@@ -768,9 +678,9 @@ as absolutely immutable in a workflow.  If a writer detects a linking
 id was altered the datum with which it is associated will be marked
 bad (dead) and the waveform data will not be saved.</p></li>
 </ol>
-</div>
-<div class="section" id="save-concepts">
-<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="save-concepts">
+<h3>Save Concepts<a class="headerlink" href="#save-concepts" title="Permalink to this headline"></a></h3>
 <p>Waveform save methods begin with this axiom:  a save operation should
 never abort for anything but a system error.   That means the definition of
 success is not black and white.  There are a range of known and probably
@@ -843,9 +753,9 @@ then initialized with a reference to the saved entry and the data
 redefined as what we call an “ORIGIN”.  The clear process is done because of
 a concern that history data could, in some instances, potentially cause
 a memory bloat with iterative processing.</p>
-</div>
-<div class="section" id="read-concepts">
-<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="read-concepts">
+<h3>Read concepts<a class="headerlink" href="#read-concepts" title="Permalink to this headline"></a></h3>
 <p>Reads have to construct a valid data object and are subject to different
 constraints.  We believe it is most instructive to describe these in the order
 they are handled during construction.</p>
@@ -882,9 +792,9 @@ link back to the data just read.</p></li>
 <code class="code docutils literal notranslate"><span class="pre">mode=</span></code> argument common to all.  The current options are: <code class="code docutils literal notranslate"><span class="pre">promiscuous</span></code>,
 <code class="code docutils literal notranslate"><span class="pre">cautious</span></code>, and <code class="code docutils literal notranslate"><span class="pre">pedantic</span></code>.   Detailed descriptions of what each mean are
 given above and in the sphynx documentation generated from docstrings.</p>
-</div>
-<div class="section" id="update-concepts">
-<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="update-concepts">
+<h3>Update Concepts<a class="headerlink" href="#update-concepts" title="Permalink to this headline"></a></h3>
 <p>As noted above an update is an operation that can be made only to
 Metadata.  In MsPASS Metadata map directly into MongoDB’s document concept
 of name-value pairs, while the waveform data are stored in some version of
@@ -942,48 +852,36 @@ will have the associated tag in the database changed to the string
 specified in the call to <code class="code docutils literal notranslate"><span class="pre">update_metadata</span></code>.  The default is to
 do nothing to any existing tag (i.e. the tag is not updated).</p></li>
 </ol>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="handling_errors.html" class="btn btn-neutral float-right" title="Handling Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="database_concepts.html" class="btn btn-neutral float-left" title="Database Concepts" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="handling_errors.html" class="btn btn-neutral float-right" title="Handling Errors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2021, Ian Wang.
+    <p>&#169; Copyright 2020-2021, Ian Wang.</p>
+  </div>
 
-    </p>
-  </div> 
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
