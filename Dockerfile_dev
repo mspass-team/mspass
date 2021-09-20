@@ -78,7 +78,7 @@ ENV MSPASS_HOME /mspass
 # Add setup.py to install python components
 ADD setup.py /mspass/setup.py
 ADD python /mspass/python
-RUN pip3 install --global-option --debug /mspass -v
+RUN pip3 install --global-option build --global-option --debug /mspass -v
 
 # Install Jupyter notebook
 RUN pip3 --no-cache-dir install jedi==0.17.2 notebook==6.2.0
