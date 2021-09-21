@@ -95,7 +95,7 @@ jobs:
             mspass/mspass:dev
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,dest=/tmp/.buildx-cache-new1
+          cache-from: type=local,src=/tmp/.buildx-cache-new1
           cache-to: type=local,dest=/tmp/.buildx-cache-new2
 
       # Temp fix
