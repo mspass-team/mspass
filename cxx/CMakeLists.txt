@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.4)
 
 project (mspass Fortran C CXX)
 
-#set (default_build_type "Release")
-set (default_build_type "Debug")
+set (default_build_type "Release")
+#set (default_build_type "Debug")
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message (STATUS "Setting build type to '${default_build_type}' as none was specified.")
   set (CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
