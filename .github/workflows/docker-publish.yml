@@ -40,7 +40,9 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache
+          path: |
+            /tmp/.buildx-cache
+            /tmp/.buildx-cache-new1
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
@@ -82,7 +84,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new1
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       # Build and push dev image
       - name: Build and push dev image
@@ -104,4 +106,5 @@ jobs:
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache /tmp/.buildx-cache-new1
-          mv /tmp/.buildx-cache-new2 /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new2 /tmp/.buildx-cache-new1
