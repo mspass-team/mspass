@@ -280,7 +280,7 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
 
         parameters_dict['object_history'] = object_history
         if alg_name:
-            parameters_dict['alg_name'] = alg_name
+            parameters_dict["alg_name"] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
         parameters = ",".join(f"{key}={value}" for key,
