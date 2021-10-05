@@ -27,7 +27,7 @@ def capture_params(*args, **kwargs):
     #   Iterate over non-keyworded args and store them in dict, each one is assigned a key "arg_1" "arg_2" ...
     i = 0
     for value in args:
-        key = "arg_{index:d}".format(index = i)
+        key = "arg_{index:d}".format(index=i)
         parameters_dict[key] = value
         i += 1
     #   Iterate over keyworded args and store them in dict
