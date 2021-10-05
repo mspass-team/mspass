@@ -14,7 +14,7 @@ from dill.source import getsource
 import mspasspy.algorithms.signals as signals
 
 
-def capture_paras(*args, **kwargs):
+def capture_params(*args, **kwargs):
     """
      A helper function to capture a function's parameters, return a dict that stores parameters and arguments.
      Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files 
@@ -75,7 +75,7 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     """
     if not parameters:
         # extract parameters
-        parameters_dict = capture_paras(*args, **kwargs)
+        parameters_dict = capture_params(*args, **kwargs)
 
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -147,7 +147,7 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     """
     if not parameters:
         # extract parameters
-        parameters_dict = capture_paras(*args, **kwargs)
+        parameters_dict = capture_params(*args, **kwargs)
 
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -217,7 +217,7 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     """
     if not parameters:
         # extract parameters
-        parameters_dict = capture_paras(*args, **kwargs)
+        parameters_dict = capture_params(*args, **kwargs)
 
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -273,7 +273,7 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     """
     if not parameters:
         # extract parameters
-        parameters_dict = capture_paras(*args, **kwargs)
+        parameters_dict = capture_params(*args, **kwargs)
 
         parameters_dict['object_history'] = object_history
         if alg_name:
