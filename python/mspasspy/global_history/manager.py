@@ -6,12 +6,51 @@ import collections
 import dask.bag as daskbag
 
 from bson.objectid import ObjectId
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import (MsPASSError, AntelopePf)
+from mspasspy.util.converter import AntelopePf2dict 
 from datetime import datetime
 from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
 
+
+def capture_paras(*args, **kwargs):
+    """
+     A helper function to capture a function's parameters, return a dict that stores parameters and arguments.
+     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files 
+     and yaml files.
+    :param args: Non-keyworded arguments
+    :param kwargs: Keyworded arguments
+    :return: An OrderedDict of parameters and arguments.
+    """
+    parameters_dict = collections.OrderedDict()
+    #   Iterate over non-keyworded args and store them in dict, each one is assigned a key "arg_1" "arg_2" ...
+    i = 0
+    for value in args:
+        key = "arg_{index:d}".format(index = i)
+        parameters_dict[key] = value
+        i += 1
+    #   Iterate over keyworded args and store them in dict
+    for key, value in kwargs.items():
+        parameters_dict[key] = value    
+
+    #   Iterate over the dict again and check filepath arguments
+    for key, value in parameters_dict.items():
+        if((isinstance(value, os.PathLike) or isinstance(value, str) or isinstance(value, bytes)) \
+            and os.path.isfile(value)):
+            file_path = str(value)
+            if(file_path.endswith('.pf')):
+                pf = AntelopePf(value)
+                parameters_dict[key] = AntelopePf2dict(pf)
+            elif(file_path.endswith('.yaml')):
+                with open(file_path, "r") as yaml_file:
+                    parameters_dict[key] = (yaml.safe_load(yaml_file))
+            #   Current only support pf and yaml
+            else:
+                raise MsPASSError(
+                'Cannot handle file: ' + file_path + 'Fatal')
+
+    return parameters_dict
 
 def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                      alg_name=None, parameters=None, **kwargs):
