@@ -82,6 +82,7 @@ def AntelopePf2dict(pf):
 
 AntelopePf.todict = AntelopePf2dict
 
+
 def TimeSeries2Trace(ts):
     """
     Converts a TimeSeries object to an obspy Trace object.
