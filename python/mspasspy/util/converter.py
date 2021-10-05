@@ -4,7 +4,7 @@ Functions for converting to and from MsPASS data types.
 import numpy as np
 import obspy.core
 
-from mspasspy.ccore.utility import (Metadata, MsPASSError)
+from mspasspy.ccore.utility import (Metadata, AntelopePf, MsPASSError)
 from mspasspy.ccore.seismic import (_CoreSeismogram,
                                     Seismogram,
                                     TimeSeries,
@@ -50,6 +50,35 @@ def Metadata2dict(md):
 
 Metadata.todict = Metadata2dict
 
+def AntelopePf2dict(pf):
+    """
+    Converts a AntelopePf object to a Python dict.
+    This converts a AntelopePf object to a Python dict by recursively
+    decoding the tbls.
+    :param pf: AntelopePf object to convert.
+    :type md: :class:`~mspasspy.ccore.AntelopePf`
+    :return: Python dict equivalent to md.
+    :rtype: dict
+    """
+
+    keys = pf.keys()
+    tbl_keys = pf.tbl_keys()
+    arr_keys = pf.arr_keys()
+
+    data = {}
+    for key in keys:
+        val = pf.get(key)
+        data[key] = val
+    for key in tbl_keys:
+        val = pf.get_tbl(key)
+        data[key] = val
+    for key in arr_keys:
+        pf_branch = pf.get_branch(key)
+        branch_dict = AntelopePf2dict(pf_branch)
+        data[key] = branch_dict
+    return data
+
+AntelopePf.todict = AntelopePf2dict
 
 def TimeSeries2Trace(ts):
     """

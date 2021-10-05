@@ -6,12 +6,34 @@ import collections
 import dask.bag as daskbag
 
 from bson.objectid import ObjectId
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import (MsPASSError, AntelopePf)
+from mspasspy.util.converter import AntelopePf2dict 
 from datetime import datetime
 from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
 
+
+def check_and_parse_file(arg):
+    """
+     A helper function to check and parse the file content of an argument.
+     If the arg is not a filepath or is not supported, return the original arg back. If the arg is a supported 
+     filepath it will be parsed into python object, and then turned into a dict. 
+     Now we support pf files and yaml files.
+    :param args: an argument to check
+    :return: An dict of file content, or the original arg.
+    """
+    if((isinstance(arg, os.PathLike) or isinstance(arg, str) or isinstance(arg, bytes)) and os.path.isfile(arg)):
+        file_path = str(arg)
+        if(file_path.endswith('.pf')):
+            pf = AntelopePf(file_path)
+            pf_value = AntelopePf2dict(pf)
+            return pf_value
+        elif(file_path.endswith('.yaml')):
+            with open(file_path, "r") as yaml_file:
+                yaml_value = (yaml.safe_load(yaml_file))
+            return yaml_value
+    return arg
 
 def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                      alg_name=None, parameters=None, **kwargs):
@@ -35,12 +57,25 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     :return: a spark `RDD` format of objects.
     """
     if not parameters:
+        #   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict
+        parsed_args_list = list()
+        for i in range(len(args)):
+            val = args[i]
+            new_val = check_and_parse_file(val)
+            parsed_args_list.append(new_val)
+
+        parsed_kwargs_dict = collections.OrderedDict()
+        for key in kwargs.keys():
+            val = kwargs[key]
+            new_val = check_and_parse_file(val)
+            parsed_kwargs_dict[key] = new_val
+
         # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        args_str = ",".join(f"{value}" for value in parsed_args_list)
 
         # extract dict parameters
         parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
+        for key, value in parsed_kwargs_dict.items():
             parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -116,12 +151,25 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     :return: a dask `bag` format of objects.
     """
     if not parameters:
+        #   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict
+        parsed_args_list = list()
+        for i in range(len(args)):
+            val = args[i]
+            new_val = check_and_parse_file(val)
+            parsed_args_list.append(new_val)
+
+        parsed_kwargs_dict = collections.OrderedDict()
+        for key in kwargs.keys():
+            val = kwargs[key]
+            new_val = check_and_parse_file(val)
+            parsed_kwargs_dict[key] = new_val
+
         # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        args_str = ",".join(f"{value}" for value in parsed_args_list)
 
         # extract dict parameters
         parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
+        for key, value in parsed_kwargs_dict.items():
             parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -195,12 +243,25 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     :return: a spark `RDD` format of objects.
     """
     if not parameters:
+        #   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict
+        parsed_args_list = list()
+        for i in range(len(args)):
+            val = args[i]
+            new_val = check_and_parse_file(val)
+            parsed_args_list.append(new_val)
+
+        parsed_kwargs_dict = collections.OrderedDict()
+        for key in kwargs.keys():
+            val = kwargs[key]
+            new_val = check_and_parse_file(val)
+            parsed_kwargs_dict[key] = new_val
+
         # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        args_str = ",".join(f"{value}" for value in parsed_args_list)
 
         # extract dict parameters
         parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
+        for key, value in parsed_kwargs_dict.items():
             parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
@@ -260,12 +321,25 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     :return: a dask `bag` format of objects.
     """
     if not parameters:
+        #   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict
+        parsed_args_list = list()
+        for i in range(len(args)):
+            val = args[i]
+            new_val = check_and_parse_file(val)
+            parsed_args_list.append(new_val)
+
+        parsed_kwargs_dict = collections.OrderedDict()
+        for key in kwargs.keys():
+            val = kwargs[key]
+            new_val = check_and_parse_file(val)
+            parsed_kwargs_dict[key] = new_val
+
         # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        args_str = ",".join(f"{value}" for value in parsed_args_list)
 
         # extract dict parameters
         parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
+        for key, value in parsed_kwargs_dict.items():
             parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
