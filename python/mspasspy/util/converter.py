@@ -79,6 +79,7 @@ def AntelopePf2dict(pf):
         data[key] = branch_dict
     return data
 
+
 AntelopePf.todict = AntelopePf2dict
 
 def TimeSeries2Trace(ts):
