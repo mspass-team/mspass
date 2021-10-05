@@ -6,8 +6,8 @@ import collections
 import dask.bag as daskbag
 
 from bson.objectid import ObjectId
-from mspasspy.ccore.utility import (MsPASSError, AntelopePf)
-from mspasspy.util.converter import AntelopePf2dict 
+from mspasspy.ccore.utility import MsPASSError, AntelopePf
+from mspasspy.util.converter import AntelopePf2dict
 from datetime import datetime
 from dill.source import getsource
 
