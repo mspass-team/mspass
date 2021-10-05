@@ -36,8 +36,11 @@ def capture_params(*args, **kwargs):
 
     #   Iterate over the dict again and check filepath arguments
     for key, value in parameters_dict.items():
-        if((isinstance(value, os.PathLike) or isinstance(value, str) or isinstance(value, bytes)) \
-            and os.path.isfile(value)):
+        if (
+            isinstance(value, os.PathLike)
+            or isinstance(value, str)
+            or isinstance(value, bytes)
+        ) and os.path.isfile(value):
             file_path = str(value)
             if(file_path.endswith('.pf')):
                 pf = AntelopePf(value)
