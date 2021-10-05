@@ -74,25 +74,16 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     :return: a spark `RDD` format of objects.
     """
     if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        # extract parameters
+        parameters_dict = capture_paras(*args, **kwargs)
 
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
+        parameters = ",".join(f"{key}={value}" for key,
                               value in parameters_dict.items())
-
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
 
     if not alg_name:
         # if not exists, use the name of the func
@@ -155,25 +146,16 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     :return: a dask `bag` format of objects.
     """
     if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        # extract parameters
+        parameters_dict = capture_paras(*args, **kwargs)
 
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
+        parameters = ",".join(f"{key}={value}" for key,
                               value in parameters_dict.items())
-
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
 
     if not alg_name:
         alg_name = func.__name__
@@ -234,25 +216,16 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     :return: a spark `RDD` format of objects.
     """
     if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        # extract parameters
+        parameters_dict = capture_paras(*args, **kwargs)
 
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
+        parameters = ",".join(f"{key}={value}" for key,
                               value in parameters_dict.items())
-
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
 
     if not alg_name:
         # if not exists, use the name of the func
@@ -299,25 +272,16 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     :return: a dask `bag` format of objects.
     """
     if not parameters:
-        # extract list parameters
-        args_str = ",".join(f"{value}" for value in args)
+        # extract parameters
+        parameters_dict = capture_paras(*args, **kwargs)
 
-        # extract dict parameters
-        parameters_dict = collections.OrderedDict()
-        for key, value in kwargs.items():
-            parameters_dict[key] = value
         parameters_dict['object_history'] = object_history
         if alg_name:
             parameters_dict['alg_name'] = alg_name
         if alg_id:
             parameters_dict['alg_id'] = alg_id
-        kwargs_str = ",".join(f"{key}={value}" for key,
+        parameters = ",".join(f"{key}={value}" for key,
                               value in parameters_dict.items())
-
-        if args_str:
-            parameters = args_str + "," + kwargs_str
-        else:
-            parameters = kwargs_str
 
     if not alg_name:
         # if not exists, use the name of the func
