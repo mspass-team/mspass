@@ -32,7 +32,7 @@ def capture_params(*args, **kwargs):
         i += 1
     #   Iterate over keyworded args and store them in dict
     for key, value in kwargs.items():
-        parameters_dict[key] = value    
+        parameters_dict[key] = value
 
     #   Iterate over the dict again and check filepath arguments
     for key, value in parameters_dict.items():
