@@ -17,7 +17,7 @@ import mspasspy.algorithms.signals as signals
 def capture_params(*args, **kwargs):
     """
      A helper function to capture a function's parameters, return a dict that stores parameters and arguments.
-     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files 
+     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files
      and yaml files.
     :param args: Non-keyworded arguments
     :param kwargs: Keyworded arguments
