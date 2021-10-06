@@ -362,14 +362,15 @@ class RFdeconProcessor:
 
 
 @mspass_func_wrapper
-def RFdecon(d, processor, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
+def RFdecon(d, alg="LeastSquares", pf="RFdeconProcessor.pf", wavelet=None, noisedata=None, wcomp=2, ncomp=2,
             object_history=False, alg_name='RFdecon', alg_id=None, dryrun=False):
     """
     Use this function to compute conventional receiver functions
     from a single three component seismogram.  The type of
     processor is defined by the processor argument that is expected
-    to be an instance of the wrapper class RFdeconProcessor. In
-    mspass the processor class should be created and stored as a
+    to be an instance of the wrapper class RFdeconProcessor. 
+    TODO: Refactor this function and update the notation here.
+    In mspass the processor class should be created and stored as a
     global variable and passed to this function within a
     spark map operator.  That allows the processing to proceed in
     parallel without the overhead of creating the processor
@@ -404,8 +405,10 @@ def RFdecon(d, processor, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
 
     :param d:  Seismogram input data.  See notes above about
     time span of these data.
-    :param processor:  RFdeconProcessor object defining algorithm
-     to be applied (see related documentation for details).
+    :param alg: The algorithm to be applied, used for initializing 
+     a RFdeconProcessor object
+    :param pf: The pf file to be parsed, used for inititalizing a 
+     RFdeconProcessor
     :param wavelet:   vector of doubles (numpy array or the
      std::vector container internal to TimeSeries object) defining
      the wavelet to use to compute deconvolution operator.
@@ -447,6 +450,9 @@ def RFdecon(d, processor, wavelet=None, noisedata=None, wcomp=2, ncomp=2,
     :return:  Seismogram object containing the RF estimates.
      The orientations are always the same as the input.
     """
+
+    processor = RFdeconProcessor(alg, pf)
+
     try:
         if wavelet != None:
             processor.loadwavelet(wavelet, dtype='raw_vector')
