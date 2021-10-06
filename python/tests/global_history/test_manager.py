@@ -103,7 +103,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == 'arg_0=bandpass,freqmin=1,freqmax=5,object_history=True'
         spark_alg_id = res['alg_id']
 
         # test mspass_map for dask
@@ -115,7 +115,7 @@ class TestManager():
         assert docs[0]['job_id'] == docs[1]['job_id'] == self.manager.job_id
         assert docs[0]['job_name'] == docs[1]['job_name'] == self.manager.job_name
         assert docs[0]['alg_name'] == docs[1]['alg_name'] == 'filter'
-        assert docs[0]['parameters'] == docs[1]['parameters'] == "bandpass,freqmin=1,freqmax=5,object_history=True"
+        assert docs[0]['parameters'] == docs[1]['parameters'] == "arg_0=bandpass,freqmin=1,freqmax=5,object_history=True"
         assert not docs[0]['time'] == docs[1]['time']
 
         # same alg + parameters combination -> same alg_id
@@ -140,7 +140,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == 'arg_0=bandpass,freqmin=1,freqmax=5,object_history=True'
         new_spark_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_spark_alg_id}) == 1
 
@@ -161,7 +161,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter_2'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == 'arg_0=bandpass,freqmin=1,freqmax=5,object_history=True'
         new_dask_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_dask_alg_id}) == 1
 
