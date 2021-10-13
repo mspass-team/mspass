@@ -17,6 +17,7 @@ from mspasspy.ccore.utility import (AntelopePf,
                                     Metadata,
                                     MsPASSError,
                                     ErrorSeverity)
+from mspasspy.util.converter import Metadata2dict
 from mspasspy.algorithms.window import WindowData
 from mspasspy.ccore.algorithms.basic import TimeWindow, ExtractComponent
 from mspasspy.ccore.algorithms.deconvolution import LeastSquareDecon, WaterLevelDecon, MultiTaperXcorDecon, MultiTaperSpecDivDecon
@@ -35,8 +36,27 @@ class RFdeconProcessor:
     function that should appear as a function in a spark map call.
     """
 
+    def __repr__(self) -> str:
+        repr_str = "{type}(alg='{alg}', pf='{pf}')".format(
+            type = str(self.__class__),
+            alg = self.algorithm,
+            pf = self.pf
+        )
+        return repr_str
+
+    def __str__(self) -> str:
+        md_str = str(Metadata2dict(self.md))
+        processor_str = "{type}(alg='{alg}', pf='{pf}', md={md})".format(
+            type = str(self.__class__),
+            alg = self.algorithm,
+            pf = self.pf,
+            md = md_str
+        )
+        return processor_str
+
     def __init__(self, alg="LeastSquares", pf="RFdeconProcessor.pf"):
         self.algorithm = alg
+        self.pf = pf
         pfhandle = AntelopePf(pf)
         if(self.algorithm == "LeastSquares"):
             self.md = pfhandle.get_branch('LeastSquare')
@@ -366,15 +386,9 @@ def RFdecon(d, alg="LeastSquares", pf="RFdeconProcessor.pf", wavelet=None, noise
             object_history=False, alg_name='RFdecon', alg_id=None, dryrun=False):
     """
     Use this function to compute conventional receiver functions
-    from a single three component seismogram.  The type of
-    processor is defined by the processor argument that is expected
-    to be an instance of the wrapper class RFdeconProcessor. 
-    TODO: Refactor this function and update the notation here.
-    In mspass the processor class should be created and stored as a
-    global variable and passed to this function within a
-    spark map operator.  That allows the processing to proceed in
-    parallel without the overhead of creating the processor
-    definition for each seismogram.
+    from a single three component seismogram. In this function, 
+    an instance of wrapper class RFdeconProcessor will be built and
+    initialized with alg and pf.
 
     Default assumes d contains all data sections required to do
     the deconvolution with the wavelet in component 2 (3 for matlab
