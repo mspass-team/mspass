@@ -13,7 +13,7 @@ from datetime import datetime
 from dill.source import getsource
 
 import mspasspy.algorithms.signals as signals
-from ParameterGTree import (ParameterGTree, parameter_to_GTree)
+from mspasspy.global_history.ParameterGTree import (ParameterGTree, parameter_to_GTree)
 
 def mspass_spark_map(self, func, *args, global_history=None, object_history=False, alg_id=None,
                      alg_name=None, parameters=None, **kwargs):
@@ -39,7 +39,13 @@ def mspass_spark_map(self, func, *args, global_history=None, object_history=Fals
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        parameterGTree = parameter_to_GTree(args, kwargs)
+        new_kwargs = kwargs.copy()
+        new_kwargs['object_history'] = object_history
+        if alg_name:
+            new_kwargs['alg_name'] = alg_name
+        if alg_id:
+            new_kwargs['alg_id'] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
     
     parameters_json = json.dumps(parameterGTree.asdict())
 
@@ -105,8 +111,14 @@ def mspass_dask_map(self, func, *args, global_history=None, object_history=False
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        parameterGTree = parameter_to_GTree(args, kwargs)
-    
+        new_kwargs = kwargs.copy()
+        new_kwargs['object_history'] = object_history
+        if alg_name:
+            new_kwargs['alg_name'] = alg_name
+        if alg_id:
+            new_kwargs['alg_id'] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+        
     parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
@@ -170,8 +182,14 @@ def mspass_spark_reduce(self, func, *args, global_history=None, object_history=F
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        parameterGTree = parameter_to_GTree(args, kwargs)
-    
+        new_kwargs = kwargs.copy()
+        new_kwargs['object_history'] = object_history
+        if alg_name:
+            new_kwargs['alg_name'] = alg_name
+        if alg_id:
+            new_kwargs['alg_id'] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+
     parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:
@@ -220,8 +238,14 @@ def mspass_dask_fold(self, func, *args, global_history=None, object_history=Fals
     if parameters:
         parameterGTree = parameter_to_GTree(parameters_str=parameters)
     else:
-        parameterGTree = parameter_to_GTree(args, kwargs)
-    
+        new_kwargs = kwargs.copy()
+        new_kwargs['object_history'] = object_history
+        if alg_name:
+            new_kwargs['alg_name'] = alg_name
+        if alg_id:
+            new_kwargs['alg_id'] = alg_id
+        parameterGTree = parameter_to_GTree(*args, **new_kwargs)
+
     parameters_json = json.dumps(parameterGTree.asdict())
 
     if not alg_name:

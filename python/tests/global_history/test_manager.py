@@ -103,7 +103,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == '{"arg_0": "bandpass", "freqmin": "1", "freqmax": "5", "object_history": "True"}'
         spark_alg_id = res['alg_id']
 
         # test mspass_map for dask
@@ -115,7 +115,7 @@ class TestManager():
         assert docs[0]['job_id'] == docs[1]['job_id'] == self.manager.job_id
         assert docs[0]['job_name'] == docs[1]['job_name'] == self.manager.job_name
         assert docs[0]['alg_name'] == docs[1]['alg_name'] == 'filter'
-        assert docs[0]['parameters'] == docs[1]['parameters'] == "bandpass,freqmin=1,freqmax=5,object_history=True"
+        assert docs[0]['parameters'] == docs[1]['parameters'] == '{"arg_0": "bandpass", "freqmin": "1", "freqmax": "5", "object_history": "True"}'
         assert not docs[0]['time'] == docs[1]['time']
 
         # same alg + parameters combination -> same alg_id
@@ -140,7 +140,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == '{"arg_0": "bandpass", "freqmin": "1", "freqmax": "5", "object_history": "True"}'
         new_spark_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_spark_alg_id}) == 1
 
@@ -161,7 +161,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_filter_2'
-        assert res['parameters'] == 'bandpass,freqmin=1,freqmax=5,object_history=True'
+        assert res['parameters'] == '{"arg_0": "bandpass", "freqmin": "1", "freqmax": "5", "object_history": "True"}'
         new_dask_alg_id = res['alg_id']
         assert manager_db['history_global'].count_documents({'alg_id': new_dask_alg_id}) == 1
 
@@ -209,7 +209,7 @@ class TestManager():
         assert res[0]['job_id'] == res[1]['job_id'] == self.manager.job_id
         assert res[0]['job_name'] == res[1]['job_name'] == self.manager.job_name
         assert res[0]['alg_name'] == res[1]['alg_name'] == 'save_data'
-        assert res[0]['parameters'] == res[1]['parameters'] == 'object_history=False'
+        assert res[0]['parameters'] == res[1]['parameters'] == '{"object_history": "False"}'
         assert res[0]['alg_id'] == res[1]['alg_id']
         # check object history after save_data
         manager_db['history_object'].count_documents({}) == 5
@@ -239,7 +239,7 @@ class TestManager():
         assert res[0]['job_id'] == res[1]['job_id'] == self.manager.job_id
         assert res[0]['job_name'] == res[1]['job_name'] == self.manager.job_name
         assert res[0]['alg_name'] == res[1]['alg_name'] == 'read_data'
-        assert res[0]['parameters'] == res[1]['parameters'] == 'object_history=False'
+        assert res[0]['parameters'] == res[1]['parameters'] == '{"object_history": "False"}'
         assert res[0]['alg_id'] == res[1]['alg_id']
 
     def test_mspass_reduce(self, spark_context):
@@ -255,7 +255,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'stack'
-        assert res['parameters'] == 'object_history=True,alg_id=2'
+        assert res['parameters'] == '{"object_history": "True", "alg_id": "2"}'
         spark_alg_id = res['alg_id']
 
         # test mspass_reduce for dask
@@ -272,7 +272,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'stack'
-        assert res['parameters'] == 'object_history=True,alg_id=3'
+        assert res['parameters'] == '{"object_history": "True", "alg_id": "3"}'
         # different alg -> different alg_id
         assert not res['alg_id'] == spark_alg_id
         dask_alg_id = res['alg_id']
@@ -297,7 +297,7 @@ class TestManager():
         spark_res = spark_reduce(l, self.manager, spark_context, alg_name=spark_alg_name, parameters=spark_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 4
         assert manager_db['history_global'].count_documents({'alg_name': 'stack'}) == 4
-        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'}) == 2
+        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'}) == 2
 
         # SPARK test user provided alg_name and parameter(new)
         spark_alg_name = 'new_stack'
@@ -309,7 +309,7 @@ class TestManager():
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_stack'
-        assert res['parameters'] == 'object_history=True,alg_id=2'
+        assert res['parameters'] == '{"object_history": "True", "alg_id": "2"}'
 
         # DASK test user provided alg_name and parameter(exist)
         dask_alg_name = 'stack'
@@ -317,36 +317,36 @@ class TestManager():
         dask_res = dask_map(l, self.manager, alg_name=dask_alg_name, parameters=dask_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 6
         assert manager_db['history_global'].count_documents({'alg_name': 'stack'}) == 5
-        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'}) == 3
+        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'}) == 3
 
         # DASK test user provided alg_name and parameter(new)
         dask_alg_name = 'new_stack'
         dask_alg_parameters = 'object_history=True,alg_id=3'
         dask_res = dask_map(l, self.manager, alg_name=dask_alg_name, parameters=dask_alg_parameters)
         assert manager_db['history_global'].count_documents({'job_name': self.manager.job_name}) == 7
-        assert manager_db['history_global'].count_documents({'alg_name': 'new_stack', 'parameters':'object_history=True,alg_id=3'}) == 1
-        res = manager_db['history_global'].find_one({'alg_name': 'new_stack', 'parameters':'object_history=True,alg_id=3'})
+        assert manager_db['history_global'].count_documents({'alg_name': 'new_stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'}) == 1
+        res = manager_db['history_global'].find_one({'alg_name': 'new_stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'})
         assert res['job_id'] == self.manager.job_id
         assert res['job_name'] == self.manager.job_name
         assert res['alg_name'] == 'new_stack'
-        assert res['parameters'] == 'object_history=True,alg_id=3'
+        assert res['parameters'] == '{"object_history": "True", "alg_id": "3"}'
 
     def test_get_alg_id(self):
         manager_db = Database(self.client, 'test_manager')
         assert not self.manager.get_alg_id('aaa','bbb')
-        res = manager_db['history_global'].find_one({'alg_name': 'new_stack', 'parameters':'object_history=True,alg_id=3'})
-        assert self.manager.get_alg_id('new_stack', 'object_history=True,alg_id=3') == res['alg_id']
+        res = manager_db['history_global'].find_one({'alg_name': 'new_stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'})
+        assert self.manager.get_alg_id('new_stack', '{"object_history": "True", "alg_id": "3"}') == res['alg_id']
 
     def test_get_alg_list(self):
         assert len(self.manager.get_alg_list(self.manager.job_name, job_id=self.manager.job_id)) == 7
 
     def test_set_alg_name_and_parameters(self):
         manager_db = Database(self.client, 'test_manager')
-        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'}) == 3
-        res = manager_db['history_global'].find_one({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'})
+        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'}) == 3
+        res = manager_db['history_global'].find_one({'alg_name': 'stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'})
         alg_id = res['alg_id']
         self.manager.set_alg_name_and_parameters(alg_id, 'test_alg_name', 'test_parameters')
-        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'object_history=True,alg_id=3'}) == 0
+        assert manager_db['history_global'].count_documents({'alg_name': 'stack', 'parameters':'{"object_history": "True", "alg_id": "3"}'}) == 0
         assert manager_db['history_global'].count_documents({'alg_name': 'test_alg_name', 'parameters':'test_parameters'}) == 3
         res = manager_db['history_global'].find_one({'alg_name': 'test_alg_name', 'parameters':'test_parameters'})
         assert res['alg_id'] == alg_id
