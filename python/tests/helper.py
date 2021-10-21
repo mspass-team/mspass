@@ -16,7 +16,7 @@ ts_size = 255
 sampling_rate = 20.0
 
 
-def get_live_seismogram():
+def get_live_seismogram(ts_size=255, sampling_rate=20.0):
     seis = Seismogram()
     seis.set_live()
     seis.set_as_origin('test', '0', '0',
