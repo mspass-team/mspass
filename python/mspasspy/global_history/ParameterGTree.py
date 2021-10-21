@@ -1,5 +1,108 @@
+import os
+import yaml
 import collections
-from mspasspy.ccore.utility import MsPASSError
+from mspasspy.ccore.utility import (MsPASSError, AntelopePf)
+from mspasspy.util.converter import AntelopePf2dict 
+
+def str_to_parameters_dict(parameter_str):
+    """
+     Parse the parameter string defined by user into an ordered dict.
+     The input str should be in the format like "a, b, c=d, e=f, ..."
+    :param parameter_str: a parameter string defined by user
+    :return: An OrderedDict of parameters and arguments.
+    """
+    parameters_dict = collections.OrderedDict()
+
+    pairs = parameter_str.replace(' ', '').split(',')
+    unkeyword_index = 0
+    for pair in pairs:
+        k_v = pair.split('=')
+        #   unkeyworded para
+        if(len(k_v) == 1):
+            key = "arg_{arg_index:d}".format(arg_index = unkeyword_index)
+            value = k_v[0]
+            unkeyword_index += 1
+        if(len(k_v) == 2):
+            key = k_v[0]
+            value = k_v[1]
+        if(len(k_v) > 2):
+            raise MsPASSError(
+                'Wrong parameter string format: ' + parameter_str + ' Fatal')
+        parameters_dict[key] = value
+    
+    return parameters_dict
+
+def params_to_parameters_dict(*args, **kwargs):
+    """
+     Capture a function's parameters, return a dict that stores parameters and arguments.
+     Filepath arguments will be parsed into python object, and then turned into a dict. Now we support pf files
+     and yaml files.
+    :param args: Non-keyworded arguments
+    :param kwargs: Keyworded arguments
+    :return: An OrderedDict of parameters and arguments.
+    """
+    parameters_dict = collections.OrderedDict()
+    #   Iterate over non-keyworded args and store them in dict, each one is assigned a key "arg_1" "arg_2" ...
+    i = 0
+    for value in args:
+        key = "arg_{index:d}".format(index=i)
+        parameters_dict[key] = str(value)
+        i += 1
+    #   Iterate over keyworded args and store them in dict
+    for key, value in kwargs.items():
+        parameters_dict[key] = str(value)
+
+    return parameters_dict
+
+def parse_filepath_in_parameters(parameters_dict):
+    """
+     Parse the filepath parameters in a function's parameters dict, 
+     Filepath arguments will be parsed into python object, and then turned into a dict. 
+     Currently we support pf files and yaml files.
+    :param parameters_dict: parameter dict of a function 
+    :return: An OrderedDict of parameters and arguments.
+    """
+
+    def check_and_parse_file(arg):
+        if((isinstance(arg, os.PathLike) or isinstance(arg, str) or isinstance(arg, bytes)) and os.path.isfile(arg)):
+            file_path = str(arg)
+            if(file_path.endswith('.pf')):
+                pf = AntelopePf(file_path)
+                pf_value = AntelopePf2dict(pf)
+                return pf_value
+            elif(file_path.endswith('.yaml')):
+                with open(file_path, "r") as yaml_file:
+                    yaml_value = (yaml.safe_load(yaml_file))
+                return yaml_value
+            #   Currently only support pf and yaml
+            else:
+                raise MsPASSError("Cannot handle file: " + file_path + "Fatal")
+        return arg
+
+    for key, value in parameters_dict.items():
+        parameters_dict[key] = check_and_parse_file(value)
+
+    return parameters_dict
+
+def parameter_to_GTree(*args, parameters_str = None, **kwargs):
+    """
+     A helper function to parse parameters and build a GTree accordingly. This function would
+     be used in GlobalHistoryManager to help record the parameters.
+    :param args: Non-keyworded arguments
+    :param kwargs: Keyworded arguments
+    :param parameter_str: a parameter string defined by user
+    :return: An OrderedDict of parameters and arguments.
+    """
+    if parameters_str:
+        #   preprocess parameters and parse files, store in parsed_args_list and parsed_kwargs_dict
+        parameters_dict = str_to_parameters_dict(parameters_str)
+    else:
+        parameters_dict = params_to_parameters_dict(*args, **kwargs)
+    parameters_dict = parse_filepath_in_parameters(parameters_dict)
+    gTree = ParameterGTree(parameters_dict)
+    return gTree
+
+
 
 class ParameterGTree:
     """
@@ -22,18 +125,42 @@ class ParameterGTree:
         to a python dict.  Branches are defined by subdocuments.
         """
         self.children = collections.OrderedDict()
-        #self.parent = None
-        #self.leaf_keys = None
-        #self.branch_keys = None
-        self.control = dict(doc)
+        self.control = doc
+
+        if(self.control != None):
+            for key, val in self.control.items():
+                if(isinstance(val, dict) or isinstance(val, collections.OrderedDict)):
+                    branch = ParameterGTree(val)
+                    self.children[key] = branch
+                else:
+                    self.children[key] = val
+
+    def update_control(self):
+        '''
+        Update the control doc according to the children in this level.
+        As the hierarchy data may change in deeper level, so we need to check 
+        every sub tree. It is implemented by recursively updating the control
+        doc of a tree.
+        '''
+        new_control = self.children.copy()
+
+        branch_keys = self.get_branch_keys()
+        for key in branch_keys:
+            branch = self.children[key]
+            new_control[key] = branch.asdict()
         
-        for key, val in self.control.items():
-            if(isinstance(val, dict)):
-                branch = ParameterGTree(val)
-                self.children[key] = branch
-            else:
-                self.children[key] = val
-    
+        self.control = new_control
+
+    def asdict(self):
+        '''
+        Return the dictionary representation of the ParameterGTree instance.
+        This function will first update the internal dictionary control doc.
+        Its return can be a build-in dict or a collections.OrderedDict,
+        according to the input when building this GTree.
+        '''
+        self.update_control()
+        return self.control
+
     def get_leaf_keys(self):
         """
         Return the keys for all key-value pairs that are leaves at the current
@@ -41,14 +168,10 @@ class ParameterGTree:
         to extract leaves at the current level. Return is a dict of key-value
         pairs that we are calling the leaves of the tree.
         """
-        #if(self.leaf_keys != None):
-        #    return self.leaf_keys
-        
         leaf_keys = list()
         for key, value in self.children.items():
             if not isinstance(value, ParameterGTree):
-                leaf_keys.insert(value)
-        #self.leaf_keys = leaf_keys
+                leaf_keys.append(key)
 
         return leaf_keys
 
@@ -58,15 +181,10 @@ class ParameterGTree:
         string like leaves.  Branches can be extracted with prune or we can
         walk the tree with a set of methods defined below.
         """
-
-        #if(self.branch_keys != None):
-        #    return self.leaf_keys
-        
         branch_keys = list()
         for key, value in self.children.items():
             if isinstance(value, ParameterGTree):
-                branch_keys.insert(value)
-        #self.branch_keys = branch_keys
+                branch_keys.append(key)
         
         return branch_keys
 
@@ -106,7 +224,6 @@ class ParameterGTree:
         Remove a branch defined by key from self.  Return a copy of the
         branch pruned in the process (like get_branch but self is altered)
         """
-
         branch = self.get_branch(key)
         self.children.popitem(key)
         return branch
@@ -136,32 +253,20 @@ class ParameterGTree:
         1.  ['phases','name']
         2.  ['phases','travel_time_calculator','taup','model_name']
         """
-
         key_list = key
         if(isinstance(key, str)):
             key_list = key.split(seperator)
-        
+
         if(len(key_list) == 0):
             raise MsPASSError("The key is empty, please check again.")
-
-        if(len(key_list) == 1):
-            val = self.get_leaf(key_list[0])
-            return val
-        else:
-            higher_branch = self.get_branch(key_list[0])
-            return higher_branch.get(key_list[1:])
-
-        '''
-        Non-Recursive Version:
 
         root = self
         for i in range(len(key_list) - 1):
             root = root.get_branch(key_list[i])
 
         return root.get_leaf(key_list[-1])
-        
-        '''
-    def put(self,key,separator='.'):
+
+    def put(self,key,value,separator='.'):
         """
         putter with same behavior for compound keys defined for get method.
         A put should create a new branch it implies if that branch is not
@@ -170,23 +275,33 @@ class ParameterGTree:
         key_list = key
         if(isinstance(key, str)):
             key_list = key.split(separator)
+
+        if(len(key_list) == 0):
+            raise MsPASSError("The key is empty, please check again.")
         
-        if(len(key_list) == 1):
-            val = self.get_leaf(key_list[0])
-            return val
-        else:
-            branch = self.get_branch(key_list[0])
-            return self.get(key_list[1:])
+        root = self
+        for i in range(len(key_list) - 1):
+            branch_level = key_list[i]
+            if(branch_level in root.get_leaf_keys()):
+                raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in level " 
+                + branch_level + ". Please check your input key again.")
+            if(branch_level not in root.get_branch_keys()):
+                root.sprout(branch_level)
+            root = root.get_branch(branch_level)
+
+        leaf_key = key_list[-1]
+        if(leaf_key in root.get_branch_keys()):
+            raise MsPASSError("[Error] Invalid compound Key, there is a branch with the same name in " 
+            + leaf_key + ". Please check your input key again.")
+        root.children[leaf_key] = value
 
 
     def sprout(self,key,seperator='.'):
         """
         Add an empty branch with tag key. Compound keys are as described in
         get method above.
-        In this method, the key path is assumed to exist.
-        Return the root of the new branch.
+        Similar to the putter method, but create a branch in the end.
         """
-
         key_list = key
         if(isinstance(key, str)):
             key_list = key.split(seperator)
@@ -194,19 +309,18 @@ class ParameterGTree:
         if(len(key_list) == 0):
             raise MsPASSError("The key is empty, please check again.")
 
-        #   First check the branch in the next layer, if not exits, create it
-        created = False
-        higher_branch_str = key_list[0]
-        if(higher_branch_str not in self.children):    
-            new_branch = ParameterGTree()
-            self.children[higher_branch_str] = new_branch
-            created = True
+        root = self
+        for i in range(len(key_list) - 1):
+            branch_level = key_list[i]
+            if(branch_level in root.get_leaf_keys()):
+                raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in level " 
+                + branch_level + ". Please check your input key again.")
+            if(branch_level not in root.get_branch_keys()):
+                root.children[branch_level] = ParameterGTree()
+            root = root.get_branch(branch_level)
 
-        higher_branch = self.children[higher_branch_str]
-        if(len(key_list) == 1):
-            if(created):
-                return higher_branch
-            else:
-                raise MsPASSError("Warning, the key already exists. Please check again.")
-        else:
-            return higher_branch.sprout(key_list[1:])
+        branch_key = key_list[-1]
+        if(branch_key in root.get_leaf_keys()):
+            raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in " 
+            + branch_key + ". Please check your input key again.")
+        root.children[branch_key] = ParameterGTree()
