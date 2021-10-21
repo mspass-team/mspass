@@ -1,8 +1,9 @@
 import os
 import yaml
 import collections
-from mspasspy.ccore.utility import (MsPASSError, AntelopePf)
-from mspasspy.util.converter import AntelopePf2dict 
+from mspasspy.ccore.utility import MsPASSError, AntelopePf
+from mspasspy.util.converter import AntelopePf2dict
+
 
 def str_to_parameters_dict(parameter_str):
     """
@@ -13,24 +14,26 @@ def str_to_parameters_dict(parameter_str):
     """
     parameters_dict = collections.OrderedDict()
 
-    pairs = parameter_str.replace(' ', '').split(',')
+    pairs = parameter_str.replace(" ", "").split(",")
     unkeyword_index = 0
     for pair in pairs:
-        k_v = pair.split('=')
+        k_v = pair.split("=")
         #   unkeyworded para
-        if(len(k_v) == 1):
-            key = "arg_{arg_index:d}".format(arg_index = unkeyword_index)
+        if len(k_v) == 1:
+            key = "arg_{arg_index:d}".format(arg_index=unkeyword_index)
             value = k_v[0]
             unkeyword_index += 1
-        if(len(k_v) == 2):
+        if len(k_v) == 2:
             key = k_v[0]
             value = k_v[1]
-        if(len(k_v) > 2):
+        if len(k_v) > 2:
             raise MsPASSError(
-                'Wrong parameter string format: ' + parameter_str + ' Fatal')
+                "Wrong parameter string format: " + parameter_str + " Fatal"
+            )
         parameters_dict[key] = value
-    
+
     return parameters_dict
+
 
 def params_to_parameters_dict(*args, **kwargs):
     """
@@ -54,25 +57,30 @@ def params_to_parameters_dict(*args, **kwargs):
 
     return parameters_dict
 
+
 def parse_filepath_in_parameters(parameters_dict):
     """
-     Parse the filepath parameters in a function's parameters dict, 
-     Filepath arguments will be parsed into python object, and then turned into a dict. 
+     Parse the filepath parameters in a function's parameters dict,
+     Filepath arguments will be parsed into python object, and then turned into a dict.
      Currently we support pf files and yaml files.
-    :param parameters_dict: parameter dict of a function 
+    :param parameters_dict: parameter dict of a function
     :return: An OrderedDict of parameters and arguments.
     """
 
     def check_and_parse_file(arg):
-        if((isinstance(arg, os.PathLike) or isinstance(arg, str) or isinstance(arg, bytes)) and os.path.isfile(arg)):
+        if (
+            isinstance(arg, os.PathLike)
+            or isinstance(arg, str)
+            or isinstance(arg, bytes)
+        ) and os.path.isfile(arg):
             file_path = str(arg)
-            if(file_path.endswith('.pf')):
+            if file_path.endswith(".pf"):
                 pf = AntelopePf(file_path)
                 pf_value = AntelopePf2dict(pf)
                 return pf_value
-            elif(file_path.endswith('.yaml')):
+            elif file_path.endswith(".yaml"):
                 with open(file_path, "r") as yaml_file:
-                    yaml_value = (yaml.safe_load(yaml_file))
+                    yaml_value = yaml.safe_load(yaml_file)
                 return yaml_value
             #   Currently only support pf and yaml
             else:
@@ -84,7 +92,8 @@ def parse_filepath_in_parameters(parameters_dict):
 
     return parameters_dict
 
-def parameter_to_GTree(*args, parameters_str = None, **kwargs):
+
+def parameter_to_GTree(*args, parameters_str=None, **kwargs):
     """
      A helper function to parse parameters and build a GTree accordingly. This function would
      be used in GlobalHistoryManager to help record the parameters.
@@ -103,7 +112,6 @@ def parameter_to_GTree(*args, parameters_str = None, **kwargs):
     return gTree
 
 
-
 class ParameterGTree:
     """
     Base class for family of objects used to hold an abstraction of a
@@ -119,7 +127,7 @@ class ParameterGTree:
     the tree structure to describe more complicated data control structures.
     """
 
-    def __init__(self, doc = None):
+    def __init__(self, doc=None):
         """
         Construct from a MongoDB document, which with pymongo is equivalenced
         to a python dict.  Branches are defined by subdocuments.
@@ -127,37 +135,37 @@ class ParameterGTree:
         self.children = collections.OrderedDict()
         self.control = doc
 
-        if(self.control != None):
+        if self.control != None:
             for key, val in self.control.items():
-                if(isinstance(val, dict) or isinstance(val, collections.OrderedDict)):
+                if isinstance(val, dict) or isinstance(val, collections.OrderedDict):
                     branch = ParameterGTree(val)
                     self.children[key] = branch
                 else:
                     self.children[key] = val
 
     def update_control(self):
-        '''
+        """
         Update the control doc according to the children in this level.
-        As the hierarchy data may change in deeper level, so we need to check 
+        As the hierarchy data may change in deeper level, so we need to check
         every sub tree. It is implemented by recursively updating the control
         doc of a tree.
-        '''
+        """
         new_control = self.children.copy()
 
         branch_keys = self.get_branch_keys()
         for key in branch_keys:
             branch = self.children[key]
             new_control[key] = branch.asdict()
-        
+
         self.control = new_control
 
     def asdict(self):
-        '''
+        """
         Return the dictionary representation of the ParameterGTree instance.
         This function will first update the internal dictionary control doc.
         Its return can be a build-in dict or a collections.OrderedDict,
         according to the input when building this GTree.
-        '''
+        """
         self.update_control()
         return self.control
 
@@ -185,41 +193,45 @@ class ParameterGTree:
         for key, value in self.children.items():
             if isinstance(value, ParameterGTree):
                 branch_keys.append(key)
-        
+
         return branch_keys
 
-    def get_branch(self,key):
+    def get_branch(self, key):
         """
         Extract the contents of a named branch.  Returns a copy of the tree
         with the associated key from the branch name upward.  The tree
         returned will have the root of the tree set as current.
         """
-        if(key not in self.children):
+        if key not in self.children:
             raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
-        
+
         branch = self.children[key]
         if not isinstance(branch, ParameterGTree):
-            raise MsPASSError("[Error] The Value paired with this key is not a branch, Please check again.")
-        
+            raise MsPASSError(
+                "[Error] The Value paired with this key is not a branch, Please check again."
+            )
+
         return branch
 
-    def get_leaf(self,key):
+    def get_leaf(self, key):
         """
         Returns a copy of the key-value pair defined by key.
         This function only search for the key in this layer, and won't return
         value stored in higher levels.
         To search in the entire tree, use "get".
         """
-        if(key not in self.children):
+        if key not in self.children:
             raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
-        
+
         leaf = self.children[key]
         if isinstance(leaf, ParameterGTree):
-            raise MsPASSError("[Error] The Value paired with this key is not a leaf, Please check again.")
-        
+            raise MsPASSError(
+                "[Error] The Value paired with this key is not a leaf, Please check again."
+            )
+
         return leaf
 
-    def prune(self,key):
+    def prune(self, key):
         """
         Remove a branch defined by key from self.  Return a copy of the
         branch pruned in the process (like get_branch but self is altered)
@@ -228,7 +240,7 @@ class ParameterGTree:
         self.children.popitem(key)
         return branch
 
-    def get(self,key,seperator='.'):
+    def get(self, key, seperator="."):
         """
         Fetch a value defined by key.  For leaves at the root node the
         key can be a simple string.  For a leaf attached at a higher level node
@@ -254,10 +266,10 @@ class ParameterGTree:
         2.  ['phases','travel_time_calculator','taup','model_name']
         """
         key_list = key
-        if(isinstance(key, str)):
+        if isinstance(key, str):
             key_list = key.split(seperator)
 
-        if(len(key_list) == 0):
+        if len(key_list) == 0:
             raise MsPASSError("The key is empty, please check again.")
 
         root = self
@@ -266,61 +278,72 @@ class ParameterGTree:
 
         return root.get_leaf(key_list[-1])
 
-    def put(self,key,value,separator='.'):
+    def put(self, key, value, separator="."):
         """
         putter with same behavior for compound keys defined for get method.
         A put should create a new branch it implies if that branch is not
         already present.
         """
         key_list = key
-        if(isinstance(key, str)):
+        if isinstance(key, str):
             key_list = key.split(separator)
 
-        if(len(key_list) == 0):
+        if len(key_list) == 0:
             raise MsPASSError("The key is empty, please check again.")
-        
+
         root = self
         for i in range(len(key_list) - 1):
             branch_level = key_list[i]
-            if(branch_level in root.get_leaf_keys()):
-                raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in level " 
-                + branch_level + ". Please check your input key again.")
-            if(branch_level not in root.get_branch_keys()):
+            if branch_level in root.get_leaf_keys():
+                raise MsPASSError(
+                    "[Error] Invalid compound Key, there is a leaf with the same name in level "
+                    + branch_level
+                    + ". Please check your input key again."
+                )
+            if branch_level not in root.get_branch_keys():
                 root.sprout(branch_level)
             root = root.get_branch(branch_level)
 
         leaf_key = key_list[-1]
-        if(leaf_key in root.get_branch_keys()):
-            raise MsPASSError("[Error] Invalid compound Key, there is a branch with the same name in " 
-            + leaf_key + ". Please check your input key again.")
+        if leaf_key in root.get_branch_keys():
+            raise MsPASSError(
+                "[Error] Invalid compound Key, there is a branch with the same name in "
+                + leaf_key
+                + ". Please check your input key again."
+            )
         root.children[leaf_key] = value
 
-
-    def sprout(self,key,seperator='.'):
+    def sprout(self, key, seperator="."):
         """
         Add an empty branch with tag key. Compound keys are as described in
         get method above.
         Similar to the putter method, but create a branch in the end.
         """
         key_list = key
-        if(isinstance(key, str)):
+        if isinstance(key, str):
             key_list = key.split(seperator)
-        
-        if(len(key_list) == 0):
+
+        if len(key_list) == 0:
             raise MsPASSError("The key is empty, please check again.")
 
         root = self
         for i in range(len(key_list) - 1):
             branch_level = key_list[i]
-            if(branch_level in root.get_leaf_keys()):
-                raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in level " 
-                + branch_level + ". Please check your input key again.")
-            if(branch_level not in root.get_branch_keys()):
+            if branch_level in root.get_leaf_keys():
+                raise MsPASSError(
+                    "[Error] Invalid compound Key, there is a leaf with the same name in level "
+                    + branch_level
+                    + ". Please check your input key again."
+                )
+            if branch_level not in root.get_branch_keys():
                 root.children[branch_level] = ParameterGTree()
             root = root.get_branch(branch_level)
 
         branch_key = key_list[-1]
-        if(branch_key in root.get_leaf_keys()):
-            raise MsPASSError("[Error] Invalid compound Key, there is a leaf with the same name in " 
-            + branch_key + ". Please check your input key again.")
+        if branch_key in root.get_leaf_keys():
+            raise MsPASSError(
+                "[Error] Invalid compound Key, there is a leaf with the same name in "
+                + branch_key
+                + ". Please check your input key again."
+            )
         root.children[branch_key] = ParameterGTree()
