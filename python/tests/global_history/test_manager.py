@@ -623,7 +623,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 1
+            == 8
         )
         res = manager_db["history_global"].find_one({"alg_name": "RFdecon"})
         assert res["job_id"] == self.manager.job_id
@@ -648,7 +648,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 2
+            == 9
         )
         assert (
             manager_db["history_global"].count_documents({"alg_id": spark_alg_id}) == 2
@@ -675,7 +675,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 3
+            == 10
         )
         assert (
             manager_db["history_global"].count_documents({"alg_id": spark_alg_id}) == 3
@@ -700,7 +700,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 4
+            == 11
         )
         assert (
             manager_db["history_global"].count_documents({"alg_id": spark_alg_id}) == 4
@@ -725,7 +725,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 5
+            == 12
         )
         assert (
             manager_db["history_global"].count_documents({"alg_name": "RFdecon_2"}) == 1
@@ -760,7 +760,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 6
+            == 13
         )
         assert (
             manager_db["history_global"].count_documents({"alg_id": spark_alg_id}) == 5
@@ -785,7 +785,7 @@ class TestManager:
             manager_db["history_global"].count_documents(
                 {"job_name": self.manager.job_name}
             )
-            == 7
+            == 14
         )
         assert (
             manager_db["history_global"].count_documents({"alg_name": "RFdecon_3"}) == 1
@@ -824,7 +824,7 @@ class TestManager:
                     self.manager.job_name, job_id=self.manager.job_id
                 )
             )
-            == 7
+            == 14
         )
 
     def test_set_alg_name_and_parameters(self):
