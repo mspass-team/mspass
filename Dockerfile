@@ -1,7 +1,7 @@
 #Image: mspass/mspass
 #Version: 0.0.1
 
-FROM mongo:4.2.0
+FROM mongo:4.4.0
 
 LABEL maintainer="Ian Wang <yinzhi.wang.cug@gmail.com>"
 
@@ -47,6 +47,7 @@ RUN unzip /usr/local/spark/python/lib/pyspark.zip \
 
 # Install Python dependencies through pip
 ADD requirements.txt requirements.txt
+RUN pip3 --no-cache-dir install --upgrade pip
 RUN pip3 --no-cache-dir install numpy \
     && pip3 --no-cache-dir install -r requirements.txt \
     && rm -f requirements.txt
