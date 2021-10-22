@@ -117,13 +117,32 @@ CoreSeismogram::CoreSeismogram(const Metadata& md,
         this->nsamp = this->get_long(SEISMICMD_npts);
         /* Assume the data t0 is UTC. */
         this->set_tref(TimeReferenceType::UTC);
-        /* tmatrix should be put in as a python object of ndarray or list */
-        this->set_transformation_matrix(boost::any_cast<py::object>(this->get_any("tmatrix")));
-        components_are_cardinal=this->tmatrix_is_cardinal();
-        if(components_are_cardinal)
-          components_are_orthogonal=true;
+        /* This section is done specially to handle interaction with MongoDB.
+        We store tmatrix there as a python object so we use a get_any to fetch
+        it.   Oct 22, 2021 added a bug fix to handle tmatrix not defined.
+        We will take a null (undefined) tmatrix stored in the database to
+        imply the data are cardinal and orthogonal (i.e. stardard geographic
+        coordinates in e,n,z order.)*/
+        if(this->is_defined("tmatrix"))
+        {
+          this->set_transformation_matrix
+                    (boost::any_cast<py::object>(this->get_any("tmatrix")));
+          components_are_cardinal=this->tmatrix_is_cardinal();
+          if(components_are_cardinal)
+            components_are_orthogonal=true;
+          else
+            components_are_orthogonal=false;  //May be wrong but cost is tiny
+        }
         else
-          components_are_orthogonal=false;  //May be wrong but cost is tiny
+        {
+          /* this might not be needed but best be explicit*/
+          for(auto i=0;i<3;++i)
+            for(auto j=0;j<3;++j) this->tmatrix[i][j] = 0.0;
+          for(auto i=0;i<3;++i) this->tmatrix[i][i] = 1.0;
+          components_are_orthogonal = true;
+          components_are_cardinal = true;
+        }
+
         u=dmatrix(3,nsamp);
         if(load_data)
         {
