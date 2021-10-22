@@ -120,9 +120,17 @@ Initializes data and sets aside memory for
  the constuctor does a raw fread of ns*3 doubles into the internal
  array used in the dmatrix implementation.
 
- \param md is the Metadata used for the construction.  It MUST contain
- all of the following or it will fail:  delta, starttime,npts,U11,U21,
- U31,U21,U22,U23,U31,U32,U33,dir,dfile, and foff.
+ A second element of the Metadata that is special for MsPASS is the
+ handling of the transformation matrix by this constructor.   In MsPASS
+ the transformation matrix is stored as a python object in MongoDB.
+ This constructor aims to fetch that entity with the key 'tmatrix'.
+ To be more robust and simpler to use with data not loaded from mongodb
+ we default tmatrix to assume the data are in standard coordinates.  That is,
+ if the key tmatrix is not defined in Metadata passed as arg0, the
+ constructor assumes it should set the transformation matrix to an identity.
+ Use set_transformation_matrix if that assumption is wrong for your data.
+
+ \param md is the Metadata used for the construction.
 
  \param load_data if true (default) a file name is constructed from
  dir+"/"+dfile, the file is openned, fseek is called to foff,
