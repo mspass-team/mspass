@@ -467,8 +467,7 @@ def test_CoreSeismogram():
     # tmatrix not defined is taken to default to tmatrix being an identity
     # matrix.  We test that condition here
     cseis = _CoreSeismogram(md, False)
-    eye = np.eye(3)
-    assert np.isclose(cseis.tmatrix,eye)
+    assert np.isclose(cseis.tmatrix, np.eye(3)).all()
     md['tmatrix'] = {4: 2}
     with pytest.raises(MsPASSError, match="type is not recognized"):
         _CoreSeismogram(md, False)
