@@ -464,8 +464,11 @@ def test_CoreSeismogram():
     with pytest.raises(MsPASSError, match="not recognized"):
         _CoreSeismogram(md, False)
     md.erase('tmatrix')
-    with pytest.raises(MsPASSError, match="Error trying to extract"):
-        _CoreSeismogram(md, False)
+    # tmatrix not defined is taken to default to tmatrix being an identity
+    # matrix.  We test that condition here
+    cseis = _CoreSeismogram(md, False)
+    eye = np.eye(3)
+    assert np.isclose(cseis.tmatrix,eye)
     md['tmatrix'] = {4: 2}
     with pytest.raises(MsPASSError, match="type is not recognized"):
         _CoreSeismogram(md, False)
@@ -655,7 +658,7 @@ def test_Seismogram():
     seis.tmatrix = a
     assert (seis.tmatrix == a).all()
 
-    
+
     # test for serialization of SlownessVector
     uvec_copy = pickle.loads(pickle.dumps(uvec))
     assert uvec_copy.ux == uvec.ux
@@ -746,7 +749,7 @@ def test_Ensemble(Ensemble):
         assert es.member[1].data == escopy.member[1].data
     else:
         assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
-    
+
 
 def test_operators():
     d = _CoreTimeSeries(10)
