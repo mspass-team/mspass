@@ -5,24 +5,28 @@ import pickle
 import numpy as np
 import pytest
 
-from mspasspy.ccore.seismic import (_CoreSeismogram,
-                                    _CoreTimeSeries,
-                                    Seismogram,
-                                    SeismogramEnsemble,
-                                    SlownessVector,
-                                    TimeSeries,
-                                    TimeSeriesEnsemble,
-                                    TimeReferenceType)
-from mspasspy.ccore.utility import (AtomicType,
-                                    dmatrix,
-                                    ErrorLogger,
-                                    ErrorSeverity,
-                                    LogData,
-                                    Metadata,
-                                    MetadataDefinitions,
-                                    MsPASSError,
-                                    ProcessingHistory,
-                                    SphericalCoordinate)
+from mspasspy.ccore.seismic import (
+    _CoreSeismogram,
+    _CoreTimeSeries,
+    Seismogram,
+    SeismogramEnsemble,
+    SlownessVector,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    TimeReferenceType,
+)
+from mspasspy.ccore.utility import (
+    AtomicType,
+    dmatrix,
+    ErrorLogger,
+    ErrorSeverity,
+    LogData,
+    Metadata,
+    MetadataDefinitions,
+    MsPASSError,
+    ProcessingHistory,
+    SphericalCoordinate,
+)
 
 from mspasspy.ccore.algorithms.basic import ExtractComponent
 
@@ -101,14 +105,14 @@ def test_dmatrix():
     dm = dmatrix(9, 4)
     assert dm.rows() == 9
     assert dm.columns() == 4
-    assert dm.size == 4*9
+    assert dm.size == 4 * 9
     assert len(dm) == 9
     assert dm.shape == (9, 4)
 
-    md = [array.array('l', (0 for _ in range(5))) for _ in range(3)]
+    md = [array.array("l", (0 for _ in range(5))) for _ in range(3)]
     for i in range(3):
         for j in range(5):
-            md[i][j] = i*5+j
+            md[i][j] = i * 5 + j
     dm = dmatrix(md)
     assert np.equal(dm, md).all()
 
@@ -118,10 +122,10 @@ def test_dmatrix():
     dm_c.zero()
     assert not dm_c[:].any()
 
-    md = np.zeros((7, 4), dtype=np.double, order='F')
+    md = np.zeros((7, 4), dtype=np.double, order="F")
     for i in range(7):
         for j in range(4):
-            md[i][j] = i*4+j
+            md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == md).all()
     assert (dm.transpose() == md.transpose()).all()
@@ -129,14 +133,14 @@ def test_dmatrix():
     assert (2.17 * dm == 2.17 * md).all()
     assert (dm * dm.transpose() == np.matmul(md, md.transpose())).all()
 
-    with pytest.raises(MsPASSError, match='size mismatch'):
+    with pytest.raises(MsPASSError, match="size mismatch"):
         dm * dm
 
     dm_c = dmatrix(dm)
     dm += dm_c
-    assert (dm == md+md).all()
+    assert (dm == md + md).all()
     dm += md
-    assert (dm == md+md+md).all()
+    assert (dm == md + md + md).all()
     assert type(dm) == dmatrix
     dm -= dm_c
     dm -= dm_c
@@ -146,31 +150,31 @@ def test_dmatrix():
 
     dm_c = dmatrix(dm)
 
-    md = np.zeros((7, 4), dtype=np.single, order='C')
+    md = np.zeros((7, 4), dtype=np.single, order="C")
     for i in range(7):
         for j in range(4):
-            md[i][j] = i*4+j
+            md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.int, order='F')
+    md = np.zeros((7, 4), dtype=np.int, order="F")
     for i in range(7):
         for j in range(4):
-            md[i][j] = i*4+j
+            md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == md).all()
 
-    md = np.zeros((7, 4), dtype=np.unicode_, order='C')
+    md = np.zeros((7, 4), dtype=np.unicode_, order="C")
     for i in range(7):
         for j in range(4):
-            md[i][j] = i*4+j
+            md[i][j] = i * 4 + j
     dm = dmatrix(md)
     assert (dm == np.float_(md)).all()
 
-    md = np.zeros((53, 37), dtype=np.double, order='C')
+    md = np.zeros((53, 37), dtype=np.double, order="C")
     for i in range(53):
         for j in range(37):
-            md[i][j] = i*37+j
+            md[i][j] = i * 37 + j
     dm = dmatrix(md)
 
     assert dm[17, 23] == md[17, 23]
@@ -188,20 +192,20 @@ def test_dmatrix():
     assert (dm[19, :5:] == md[19, :5:]).all()
     assert (dm[::-7, ::-11] == md[::-7, ::-11]).all()
 
-    with pytest.raises(IndexError, match='out of bounds for axis 1'):
+    with pytest.raises(IndexError, match="out of bounds for axis 1"):
         dummy = dm[3, 50]
-    with pytest.raises(IndexError, match='out of bounds for axis 0'):
+    with pytest.raises(IndexError, match="out of bounds for axis 0"):
         dummy = dm[80]
 
-    with pytest.raises(IndexError, match='out of bounds for axis 1'):
+    with pytest.raises(IndexError, match="out of bounds for axis 1"):
         dm[3, 50] = 1.0
-    with pytest.raises(IndexError, match='out of bounds for axis 0'):
+    with pytest.raises(IndexError, match="out of bounds for axis 0"):
         dm[60, 50] = 1
 
     dm[7, 17] = 3.14
     assert dm[7, 17] == 3.14
 
-    dm[7, 17] = '6.28'
+    dm[7, 17] = "6.28"
     assert dm[7, 17] == 6.28
 
     dm[7] = 10
@@ -222,16 +226,23 @@ def test_dmatrix():
 
 def test_ErrorLogger():
     errlog = ErrorLogger()
-    assert errlog.log_error('1', '2', ErrorSeverity(3)) == 1
-    assert errlog[0].algorithm == '1'
-    assert errlog[0].message == '2'
+    assert errlog.log_error("1", "2", ErrorSeverity(3)) == 1
+    assert errlog[0].algorithm == "1"
+    assert errlog[0].message == "2"
     assert errlog[0].badness == ErrorSeverity.Complaint
     assert errlog[0].job_id == errlog.get_job_id()
 
 
 def test_LogData():
-    ld = LogData({"job_id": 0, "p_id": 1, "algorithm": "alg",
-                  "message": "msg", "badness": ErrorSeverity(2)})
+    ld = LogData(
+        {
+            "job_id": 0,
+            "p_id": 1,
+            "algorithm": "alg",
+            "message": "msg",
+            "badness": ErrorSeverity(2),
+        }
+    )
     assert ld.job_id == 0
     assert ld.p_id == 1
     assert ld.algorithm == "alg"
@@ -242,24 +253,24 @@ def test_LogData():
 
 def test_Metadata():
     md = Metadata()
-    assert repr(md) == 'Metadata({})'
+    assert repr(md) == "Metadata({})"
     dic = {1: 1}
-    md.put('dict', dic)
-    val = md.get('dict')
+    md.put("dict", dic)
+    val = md.get("dict")
     val[2] = 2
     del val
     dic[3] = 3
     del dic
-    md['dict'][4] = 4
-    assert md['dict'] == {1: 1, 2: 2, 3: 3, 4: 4}
+    md["dict"][4] = 4
+    assert md["dict"] == {1: 1, 2: 2, 3: 3, 4: 4}
 
-    md = Metadata({'array': np.array([3, 4])})
-    md['dict'] = {1: 1, 2: 2}
-    md['str\'i"ng'] = 'str\'i"ng'
+    md = Metadata({"array": np.array([3, 4])})
+    md["dict"] = {1: 1, 2: 2}
+    md["str'i\"ng"] = "str'i\"ng"
     md["str'ing"] = "str'ing"
-    md['double'] = 3.14
-    md['bool'] = True
-    md['int'] = 7
+    md["double"] = 3.14
+    md["bool"] = True
+    md["int"] = 7
     md["string"] = "str\0ing"
     md["string"] = "str\ning"
     md["str\ting"] = "str\ting"
@@ -267,7 +278,7 @@ def test_Metadata():
     md["str\\0ing"] = "str\\0ing"
     md_copy = pickle.loads(pickle.dumps(md))
     for i in md:
-        if i == 'array':
+        if i == "array":
             assert (md[i] == md_copy[i]).all()
         else:
             assert md[i] == md_copy[i]
@@ -275,19 +286,22 @@ def test_Metadata():
     assert not md_copy2.modified()
     assert md.modified() == md_copy.modified()
 
-    md = Metadata({
-        "<class 'numpy.ndarray'>": np.array([3, 4]),
-        "<class 'dict'>": {1: 1, 2: 2},
-        'string': 'string',
-        'double': 3.14,
-        'bool': True,
-        'long': 7,
-        "<class 'bytes'>": b'\xba\xd0\xba\xd0',
-        "<class 'NoneType'>": None})
+    md = Metadata(
+        {
+            "<class 'numpy.ndarray'>": np.array([3, 4]),
+            "<class 'dict'>": {1: 1, 2: 2},
+            "string": "string",
+            "double": 3.14,
+            "bool": True,
+            "long": 7,
+            "<class 'bytes'>": b"\xba\xd0\xba\xd0",
+            "<class 'NoneType'>": None,
+        }
+    )
     for i in md:
         assert md.type(i) == i
 
-    md[b'\xba\xd0'] = b'\xba\xd0'
+    md[b"\xba\xd0"] = b"\xba\xd0"
     md_copy = pickle.loads(pickle.dumps(md))
     for i in md:
         if i == "<class 'numpy.ndarray'>":
@@ -301,7 +315,7 @@ def test_Metadata():
     assert not "<class 'numpy.ndarray'>" in md_copy
     assert md.keys() == md_copy.keys()
 
-    with pytest.raises(TypeError, match='Metadata'):
+    with pytest.raises(TypeError, match="Metadata"):
         reversed(md)
 
     md = Metadata({1: 1, 3: 3})
@@ -310,25 +324,44 @@ def test_Metadata():
     assert md.__repr__() == "Metadata({'1': 1, '2': 2, '3': 30})"
 
     # Test with real data
-    dic =  {'_format': 'MSEED', 'arrival.time': 1356901212.242550, 'calib': 1.000000,
-        'chan': 'BHZ', 'delta': 0.025000, 'deltim': -1.000000, 'endtime': 1356904168.544538,
-        'iphase': 'P', 'loc': '',
-        'mseed': {'dataquality': 'D', 'number_of_records': 36, 'encoding': 'STEIM2',
-            'byteorder': '>', 'record_length': 4096, 'filesize': 726344704},
-        'net': 'CI', 'npts': 144000, 'phase': 'P', 'sampling_rate': 40.000000,
-        'site.elev': 0.258000, 'site.lat': 35.126900, 'site.lon': -118.830090,
-        'site_id': '5fb6a67b37f8eef2f0658e9a', 'sta': 'ARV', 'starttime': 1356900568.569538
-        }
+    dic = {
+        "_format": "MSEED",
+        "arrival.time": 1356901212.242550,
+        "calib": 1.000000,
+        "chan": "BHZ",
+        "delta": 0.025000,
+        "deltim": -1.000000,
+        "endtime": 1356904168.544538,
+        "iphase": "P",
+        "loc": "",
+        "mseed": {
+            "dataquality": "D",
+            "number_of_records": 36,
+            "encoding": "STEIM2",
+            "byteorder": ">",
+            "record_length": 4096,
+            "filesize": 726344704,
+        },
+        "net": "CI",
+        "npts": 144000,
+        "phase": "P",
+        "sampling_rate": 40.000000,
+        "site.elev": 0.258000,
+        "site.lat": 35.126900,
+        "site.lon": -118.830090,
+        "site_id": "5fb6a67b37f8eef2f0658e9a",
+        "sta": "ARV",
+        "starttime": 1356900568.569538,
+    }
     md = Metadata(dic)
-    md['mod'] = 'mod'
+    md["mod"] = "mod"
     md_copy = pickle.loads(pickle.dumps(md))
     for i in md:
         assert md[i] == md_copy[i]
     assert md.modified() == md_copy.modified()
 
 
-@pytest.fixture(params=[Seismogram, SeismogramEnsemble,
-                        TimeSeries, TimeSeriesEnsemble])
+@pytest.fixture(params=[Seismogram, SeismogramEnsemble, TimeSeries, TimeSeriesEnsemble])
 def MetadataBase(request):
     return request.param
 
@@ -337,40 +370,47 @@ def test_MetadataBase(MetadataBase):
     md = MetadataBase()
     assert MetadataBase.__name__ + "({" in repr(md)
     dic = {1: 1}
-    md.put('dict', dic)
-    val = md.get('dict')
+    md.put("dict", dic)
+    val = md.get("dict")
     val[2] = 2
     del val
     dic[3] = 3
     del dic
-    md['dict'][4] = 4
-    assert md['dict'] == {1: 1, 2: 2, 3: 3, 4: 4}
+    md["dict"][4] = 4
+    assert md["dict"] == {1: 1, 2: 2, 3: 3, 4: 4}
 
     md = MetadataBase()
     md["<class 'numpy.ndarray'>"] = np.array([3, 4])
     md["<class 'dict'>"] = {1: 1, 2: 2}
-    md['string'] = 'str\'i"ng'
+    md["string"] = "str'i\"ng"
     md["str'ing"] = "str'ing"
-    md['double'] = 3.14
-    md['bool'] = True
-    md['long'] = 7
+    md["double"] = 3.14
+    md["bool"] = True
+    md["long"] = 7
     md["str\ning"] = "str\0ing"
     md["str\ning"] = "str\ning"
     md["str\ting"] = "str\ting"
     md["str\0ing"] = "str\0ing"
     md["str\\0ing"] = "str\\0ing"
-    md["<class 'bytes'>"] = b'\xba\xd0\xba\xd0'
+    md["<class 'bytes'>"] = b"\xba\xd0\xba\xd0"
     md["<class 'NoneType'>"] = None
-    md[b'\xba\xd0'] = b'\xba\xd0'
+    md[b"\xba\xd0"] = b"\xba\xd0"
     md_copy = MetadataBase(md)
     for i in md:
-        if i == 'array' or i == "<class 'numpy.ndarray'>":
+        if i == "array" or i == "<class 'numpy.ndarray'>":
             assert (md[i] == md_copy[i]).all()
         else:
             assert md[i] == md_copy[i]
-    del md["str'ing"], md["str\ning"], md["str\ting"], md["str\0ing"], md["str\\0ing"], md["b'\\xba\\xd0'"]
+    del (
+        md["str'ing"],
+        md["str\ning"],
+        md["str\ting"],
+        md["str\0ing"],
+        md["str\\0ing"],
+        md["b'\\xba\\xd0'"],
+    )
     for i in md:
-        if i != 'delta' and i != 'npts' and i != 'starttime':
+        if i != "delta" and i != "npts" and i != "starttime":
             assert md.type(i) == i
 
     md_copy = MetadataBase(md)
@@ -397,7 +437,7 @@ def test_TimeSeries():
     ts.data.append(4.0)
     ts.sync_npts()
     assert ts.npts == 104
-    assert ts.npts == ts['npts']
+    assert ts.npts == ts["npts"]
     ts += ts
     for i in range(4):
         ts.data[i] = i * 0.5
@@ -411,80 +451,79 @@ def test_TimeSeries():
 
 def test_CoreSeismogram():
     md = Metadata()
-    md['delta'] = 0.01
-    md['starttime'] = 0.0
-    md['npts'] = 100
+    md["delta"] = 0.01
+    md["starttime"] = 0.0
+    md["npts"] = 100
     # test metadata constructor
-    md['tmatrix'] = np.random.rand(3, 3)
+    md["tmatrix"] = np.random.rand(3, 3)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.tmatrix == md['tmatrix']).all()
-    md['tmatrix'] = dmatrix(np.random.rand(3, 3))
+    assert (cseis.tmatrix == md["tmatrix"]).all()
+    md["tmatrix"] = dmatrix(np.random.rand(3, 3))
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.tmatrix == md['tmatrix']).all()
-    md['tmatrix'] = np.random.rand(9)
+    assert (cseis.tmatrix == md["tmatrix"]).all()
+    md["tmatrix"] = np.random.rand(9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
-    md['tmatrix'] = np.random.rand(1, 9)
+    assert (cseis.tmatrix == md["tmatrix"].reshape(3, 3)).all()
+    md["tmatrix"] = np.random.rand(1, 9)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
-    md['tmatrix'] = np.random.rand(9, 1)
+    assert (cseis.tmatrix == md["tmatrix"].reshape(3, 3)).all()
+    md["tmatrix"] = np.random.rand(9, 1)
     cseis = _CoreSeismogram(md, False)
-    assert (cseis.tmatrix == md['tmatrix'].reshape(3, 3)).all()
+    assert (cseis.tmatrix == md["tmatrix"].reshape(3, 3)).all()
 
-    md['tmatrix'] = np.random.rand(3, 3).tolist()
+    md["tmatrix"] = np.random.rand(3, 3).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.tmatrix,
-                      np.array(md['tmatrix']).reshape(3, 3)).all()
-    md['tmatrix'] = np.random.rand(9).tolist()
+    assert np.isclose(cseis.tmatrix, np.array(md["tmatrix"]).reshape(3, 3)).all()
+    md["tmatrix"] = np.random.rand(9).tolist()
     cseis = _CoreSeismogram(md, False)
-    assert np.isclose(cseis.tmatrix,
-                      np.array(md['tmatrix']).reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(md["tmatrix"]).reshape(3, 3)).all()
 
     # test whether the setter of tmatrix updates metadata correctly
     tm = np.random.rand(1, 9)
     cseis.tmatrix = tm
     assert (cseis.tmatrix == tm.reshape(3, 3)).all()
-    assert np.isclose(cseis.tmatrix, np.array(
-        cseis['tmatrix']).reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(cseis["tmatrix"]).reshape(3, 3)).all()
     tm = np.random.rand(9).tolist()
     cseis.tmatrix = tm
-    assert np.isclose(cseis.tmatrix,
-                      np.array(tm).reshape(3, 3)).all()
-    assert np.isclose(cseis.tmatrix, np.array(
-        cseis['tmatrix']).reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(tm).reshape(3, 3)).all()
+    assert np.isclose(cseis.tmatrix, np.array(cseis["tmatrix"]).reshape(3, 3)).all()
 
     # test exceptions
-    md['tmatrix'] = np.random.rand(4, 2)
+    md["tmatrix"] = np.random.rand(4, 2)
     with pytest.raises(MsPASSError, match="should be a 3x3 matrix"):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = dmatrix(np.random.rand(2, 4))
+    md["tmatrix"] = dmatrix(np.random.rand(2, 4))
     with pytest.raises(MsPASSError, match="should be a 3x3 matrix"):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = 42
+    md["tmatrix"] = 42
     with pytest.raises(MsPASSError, match="not recognized"):
         _CoreSeismogram(md, False)
-    md.erase('tmatrix')
-    with pytest.raises(MsPASSError, match="Error trying to extract"):
-        _CoreSeismogram(md, False)
-    md['tmatrix'] = {4: 2}
+    md.erase("tmatrix")
+    # tmatrix not defined is taken to default to tmatrix being an identity
+    # matrix.  We test that condition here
+    cseis = _CoreSeismogram(md, False)
+    assert np.isclose(cseis.tmatrix, np.eye(3)).all()
+    md["tmatrix"] = {4: 2}
     with pytest.raises(MsPASSError, match="type is not recognized"):
         _CoreSeismogram(md, False)
 
-    md['tmatrix'] = np.random.rand(9).tolist()
-    md['tmatrix'][3] = 'str'
+    md["tmatrix"] = np.random.rand(9).tolist()
+    md["tmatrix"][3] = "str"
     with pytest.raises(MsPASSError, match="should be float"):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = np.random.rand(3, 4).tolist()
+    md["tmatrix"] = np.random.rand(3, 4).tolist()
     with pytest.raises(MsPASSError, match="should be a 3x3 list of list"):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = [1, 2, 3]
+    md["tmatrix"] = [1, 2, 3]
     with pytest.raises(MsPASSError, match="should be a 3x3 list of list"):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = np.random.rand(2, 2).tolist()
-    with pytest.raises(MsPASSError, match="should be a list of 9 floats or a 3x3 list of list"):
+    md["tmatrix"] = np.random.rand(2, 2).tolist()
+    with pytest.raises(
+        MsPASSError, match="should be a list of 9 floats or a 3x3 list of list"
+    ):
         _CoreSeismogram(md, False)
-    md['tmatrix'] = np.random.rand(3, 3).tolist()
-    md['tmatrix'][1][1] = 'str'
+    md["tmatrix"] = np.random.rand(3, 3).tolist()
+    md["tmatrix"][1][1] = "str"
     with pytest.raises(MsPASSError, match="should be float"):
         _CoreSeismogram(md, False)
 
@@ -503,7 +542,7 @@ def test_Seismogram():
     assert seis.npts != 6
     seis.sync_npts()
     assert seis.npts == 6
-    assert seis.npts == seis['npts']
+    assert seis.npts == seis["npts"]
 
     seis.npts = 4
     assert seis.data.columns() == 4
@@ -548,12 +587,12 @@ def test_Seismogram():
 
     sc = SphericalCoordinate()
     sc.phi = 0.0
-    sc.theta = np.pi/4
+    sc.theta = np.pi / 4
     seis.rotate(sc)
     assert all(np.isclose(seis.data[:, 3], [0, -0.707107, 0.707107]))
     seis.rotate_to_standard()
     assert all(seis.data[:, 3] == [0, 0, 1])
-    sc.phi = -np.pi/4
+    sc.phi = -np.pi / 4
     seis.data[:, 3] = sc.unit_vector
     seis.rotate(sc)
     assert all(seis.data[:, 3] == [0, 0, 1])
@@ -561,37 +600,61 @@ def test_Seismogram():
     assert all(np.isclose(seis.data[:, 3], [0.5, -0.5, 0.707107]))
     seis.data[:, 3] = [0, 0, 1]
 
-    nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
+    nu = [np.sqrt(3.0) / 3.0, np.sqrt(3.0) / 3.0, np.sqrt(3.0) / 3.0]
     seis.rotate(nu)
-    assert (np.isclose(seis.tmatrix,
-                       np.array([[0.70710678, -0.70710678,  0.],
-                                 [0.40824829,  0.40824829, -0.81649658],
-                                 [0.57735027,  0.57735027,  0.57735027]]))).all()
+    assert (
+        np.isclose(
+            seis.tmatrix,
+            np.array(
+                [
+                    [0.70710678, -0.70710678, 0.0],
+                    [0.40824829, 0.40824829, -0.81649658],
+                    [0.57735027, 0.57735027, 0.57735027],
+                ]
+            ),
+        )
+    ).all()
     assert all(np.isclose(seis.data[:, 0], [0.707107, 0.408248, 0.57735]))
     assert all(np.isclose(seis.data[:, 1], [0, 0, 1.73205]))
     seis.rotate_to_standard()
     assert all(np.isclose(seis.data[:, 0], [1, 0, 0]))
     assert all(np.isclose(seis.data[:, 1], [1, 1, 1]))
 
-    nu = [np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0, np.sqrt(3.0)/3.0]
+    nu = [np.sqrt(3.0) / 3.0, np.sqrt(3.0) / 3.0, np.sqrt(3.0) / 3.0]
     seis.rotate(SphericalCoordinate(nu))
-    assert (np.isclose(seis.tmatrix,
-                       np.array([[0.70710678, -0.70710678,  0.],
-                                 [0.40824829,  0.40824829, -0.81649658],
-                                 [0.57735027,  0.57735027,  0.57735027]]))).all()
+    assert (
+        np.isclose(
+            seis.tmatrix,
+            np.array(
+                [
+                    [0.70710678, -0.70710678, 0.0],
+                    [0.40824829, 0.40824829, -0.81649658],
+                    [0.57735027, 0.57735027, 0.57735027],
+                ]
+            ),
+        )
+    ).all()
     assert all(np.isclose(seis.data[:, 0], [0.707107, 0.408248, 0.57735]))
     assert all(np.isclose(seis.data[:, 1], [0, 0, 1.73205]))
     seis.rotate_to_standard()
     assert all(np.isclose(seis.data[:, 0], [1, 0, 0]))
     assert all(np.isclose(seis.data[:, 1], [1, 1, 1]))
 
-    sc.phi = np.pi/4
+    sc.phi = np.pi / 4
     sc.theta = 0.0
     seis.rotate(sc)
-    assert (np.isclose(seis.tmatrix,
-                       np.array([[0.70710678, -0.70710678,  0.],
-                                 [0.70710678,  0.70710678,  0.],
-                                 [0.,  0.,  1.]]))).all()
+    assert (
+        np.isclose(
+            seis.tmatrix,
+            np.array(
+                [
+                    [0.70710678, -0.70710678, 0.0],
+                    [0.70710678, 0.70710678, 0.0],
+                    [0.0, 0.0, 1.0],
+                ]
+            ),
+        )
+    ).all()
     assert all(np.isclose(seis.data[:, 0], [0.707107, 0.707107, 0]))
     assert all(np.isclose(seis.data[:, 1], [0, 1.41421, 1]))
     assert all(np.isclose(seis.data[:, 2], [0, 1.41421, 0]))
@@ -615,10 +678,10 @@ def test_Seismogram():
     a[2][1] = -1.0
     a[2][2] = 0.0
     seis.transform(a)
-    assert all(np.isclose(seis.data[:, 0], [1, -1,  0]))
-    assert all(np.isclose(seis.data[:, 1], [3,  1, -1]))
-    assert all(np.isclose(seis.data[:, 2], [2,  0, -1]))
-    assert all(np.isclose(seis.data[:, 3], [1,  1,  0]))
+    assert all(np.isclose(seis.data[:, 0], [1, -1, 0]))
+    assert all(np.isclose(seis.data[:, 1], [3, 1, -1]))
+    assert all(np.isclose(seis.data[:, 2], [2, 0, -1]))
+    assert all(np.isclose(seis.data[:, 3], [1, 1, 0]))
     seis_copy = pickle.loads(pickle.dumps(seis))
     seis_copy.rotate_to_standard()
     assert all(np.isclose(seis_copy.data[:, 0], [1, 0, 0]))
@@ -627,12 +690,14 @@ def test_Seismogram():
     assert all(np.isclose(seis_copy.data[:, 3], [0, 0, 1]))
     seis.rotate_to_standard()
 
-    seis.rotate(np.pi/4)
+    seis.rotate(np.pi / 4)
     seis.transform(a)
-    assert (np.isclose(seis.tmatrix,
-                       np.array([[1.41421,  0., 1],
-                                 [0.,  1.41421, 1],
-                                 [-0.707107, -0.707107, 0]]))).all()
+    assert (
+        np.isclose(
+            seis.tmatrix,
+            np.array([[1.41421, 0.0, 1], [0.0, 1.41421, 1], [-0.707107, -0.707107, 0]]),
+        )
+    ).all()
     assert all(np.isclose(seis.data[:, 0], [1.41421, 0, -0.707107]))
     assert all(np.isclose(seis.data[:, 1], [2.41421, 2.41421, -1.41421]))
     assert all(np.isclose(seis.data[:, 2], [1.41421, 1.41421, -1.41421]))
@@ -647,15 +712,22 @@ def test_Seismogram():
     uvec.ux = 0.17085  # cos(-20deg)/5.5
     uvec.uy = -0.062185  # sin(-20deg)/5.5
     seis.free_surface_transformation(uvec, 5.0, 3.5)
-    assert (np.isclose(seis.tmatrix,
-                       np.array([[-0.171012, -0.469846,  0],
-                                 [0.115793, -0.0421458, 0.445447],
-                                 [-0.597975,  0.217647,  0.228152]]))).all()
+    assert (
+        np.isclose(
+            seis.tmatrix,
+            np.array(
+                [
+                    [-0.171012, -0.469846, 0],
+                    [0.115793, -0.0421458, 0.445447],
+                    [-0.597975, 0.217647, 0.228152],
+                ]
+            ),
+        )
+    ).all()
 
     seis.tmatrix = a
     assert (seis.tmatrix == a).all()
 
-    
     # test for serialization of SlownessVector
     uvec_copy = pickle.loads(pickle.dumps(uvec))
     assert uvec_copy.ux == uvec.ux
@@ -670,9 +742,9 @@ def Ensemble(request):
 
 def test_Ensemble(Ensemble):
     md = Metadata()
-    md['double'] = 3.14
-    md['bool'] = True
-    md['long'] = 7
+    md["double"] = 3.14
+    md["bool"] = True
+    md["long"] = 7
     es = Ensemble(md, 3)
     if isinstance(es, TimeSeriesEnsemble):
         d = TimeSeries(10)
@@ -686,27 +758,27 @@ def test_Ensemble(Ensemble):
         es.member.append(d)
         es.member.append(d)
         es.member.append(d)
-    es.set_live()   # new method for LoggingEnsemble needed because default is dead
-    es.sync_metadata(['double', 'long'])
-    assert es.member[0].is_defined('bool')
-    assert es.member[0]['bool'] == True
-    assert not es.member[0].is_defined('double')
-    assert not es.member[0].is_defined('long')
+    es.set_live()  # new method for LoggingEnsemble needed because default is dead
+    es.sync_metadata(["double", "long"])
+    assert es.member[0].is_defined("bool")
+    assert es.member[0]["bool"] == True
+    assert not es.member[0].is_defined("double")
+    assert not es.member[0].is_defined("long")
     es.sync_metadata()
-    assert es.member[1].is_defined('double')
-    assert es.member[1].is_defined('long')
-    assert es.member[1]['double'] == 3.14
-    assert es.member[1]['long'] == 7
-    es.update_metadata(Metadata({'k': 'v'}))
-    assert es['k'] == 'v'
+    assert es.member[1].is_defined("double")
+    assert es.member[1].is_defined("long")
+    assert es.member[1]["double"] == 3.14
+    assert es.member[1]["long"] == 7
+    es.update_metadata(Metadata({"k": "v"}))
+    assert es["k"] == "v"
     # From here on we test features not in CoreEnsemble but only in
     # LoggingEnsemble.   Note that we use pybind11 aliasing to
     # define TimeSeriesEnsemble == LoggingEnsemble<TimeSeries> and
     # SeismogramEnsemble == LoggingEnsemble<Seismogram>.
     # Should be initially marked live
     assert es.live()
-    es.elog.log_error("test_ensemble","test complaint",ErrorSeverity.Complaint)
-    es.elog.log_error("test_ensemble","test invalid",ErrorSeverity.Invalid)
+    es.elog.log_error("test_ensemble", "test complaint", ErrorSeverity.Complaint)
+    es.elog.log_error("test_ensemble", "test invalid", ErrorSeverity.Invalid)
     assert es.elog.size() == 2
     assert es.live()
     es.kill()
@@ -717,36 +789,36 @@ def test_Ensemble(Ensemble):
     # validate checks for for any live members - this tests that feature
     assert es.validate()
     # need this temporary copy for the next test_
-    if isinstance(es,TimeSeriesEnsemble):
-        escopy=TimeSeriesEnsemble(es)
+    if isinstance(es, TimeSeriesEnsemble):
+        escopy = TimeSeriesEnsemble(es)
     else:
-        escopy=SeismogramEnsemble(es)
+        escopy = SeismogramEnsemble(es)
     for d in escopy.member:
         d.kill()
     assert not escopy.validate()
     # Reuse escopy for pickle test
-    escopy=pickle.loads(pickle.dumps(es))
-    assert escopy.is_defined('bool')
-    assert escopy['bool'] == True
-    assert escopy.is_defined('double')
-    assert escopy.is_defined('long')
-    assert escopy['double'] == 3.14
-    assert escopy['long'] == 7
+    escopy = pickle.loads(pickle.dumps(es))
+    assert escopy.is_defined("bool")
+    assert escopy["bool"] == True
+    assert escopy.is_defined("double")
+    assert escopy.is_defined("long")
+    assert escopy["double"] == 3.14
+    assert escopy["long"] == 7
     assert escopy.live()
     assert escopy.elog.size() == 2
-    assert escopy.member[0].is_defined('bool')
-    assert escopy.member[0]['bool'] == True
-    assert escopy.member[0].is_defined('double')
-    assert escopy.member[0].is_defined('long')
-    assert es.member[1].is_defined('double')
-    assert es.member[1].is_defined('long')
-    assert es.member[1]['double'] == 3.14
-    assert es.member[1]['long'] == 7
+    assert escopy.member[0].is_defined("bool")
+    assert escopy.member[0]["bool"] == True
+    assert escopy.member[0].is_defined("double")
+    assert escopy.member[0].is_defined("long")
+    assert es.member[1].is_defined("double")
+    assert es.member[1].is_defined("long")
+    assert es.member[1]["double"] == 3.14
+    assert es.member[1]["long"] == 7
     if isinstance(es, TimeSeriesEnsemble):
         assert es.member[1].data == escopy.member[1].data
     else:
         assert (es.member[1].data[:] == escopy.member[1].data[:]).all()
-    
+
 
 def test_operators():
     d = _CoreTimeSeries(10)
@@ -758,12 +830,11 @@ def test_operators():
     d1 += d2
     assert np.allclose(d1.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d1 = _CoreTimeSeries(dsave)
-    d = d1+d2
+    d = d1 + d2
     assert np.allclose(d.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d1 = _CoreTimeSeries(dsave)
     d1 *= 2.5
-    assert np.allclose(
-        d1.data, [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5])
+    assert np.allclose(d1.data, [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5])
     d3 = TimeSeries(10)
     d4 = TimeSeries(6)
     d3 = make_constant_data_ts(d3, nsamp=10)
@@ -773,13 +844,12 @@ def test_operators():
     d3 += d4
     assert np.allclose(d3.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d = d3+d4
+    d = d3 + d4
     assert np.allclose(d.data, [3, 3, 3, 3, 1, 1, 1, 1, 1, 1])
     d1 = _CoreTimeSeries(dsave)
     d3 = TimeSeries(dsave)
     d3 *= 2.5
-    assert np.allclose(
-        d3.data, [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5])
+    assert np.allclose(d3.data, [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5])
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
         d3 = TimeSeries(dsave)
@@ -789,23 +859,23 @@ def test_operators():
     # visually d4 moves through d3 as the t0 value advance. Assert
     # tests end member: skewed left, inside, and skewed right
     d3 = TimeSeries(dsave)
-    d4.t0 = -0.7   # no overlap test
+    d4.t0 = -0.7  # no overlap test
     d3 += d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = -0.3   # overlap left
+    d4.t0 = -0.3  # overlap left
     d3 += d4
     assert np.allclose(d3.data, [3, 3, 3, 1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = 0.3   # d4 inside d3 test
+    d4.t0 = 0.3  # d4 inside d3 test
     d3 += d4
     assert np.allclose(d3.data, [1, 1, 1, 3, 3, 3, 3, 3, 3, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = 0.7   # partial overlap right
+    d4.t0 = 0.7  # partial overlap right
     d3 += d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, 3, 3, 3])
     d3 = TimeSeries(dsave)
-    d4.t0 = 1.0   # no overlap test right
+    d4.t0 = 1.0  # no overlap test right
     d3 += d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     # Repeat the same test for Seismogram objects
@@ -820,40 +890,80 @@ def test_operators():
     d2 = make_constant_data_seis(d, t0=-0.2, nsamp=6, val=2.0)
     dsave = _CoreSeismogram(d1)
     d1 += d2
-    assert np.allclose(d1.data, np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                          [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                          [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.]]))
+    assert np.allclose(
+        d1.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d1 = _CoreSeismogram(dsave)
-    d = d1+d2
-    assert np.allclose(d.data, np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                         [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                         [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.]]))
+    d = d1 + d2
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d1 = _CoreSeismogram(dsave)
     d1 *= 2.5
-    assert np.allclose(d1.data, np.array([[2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
-                                          [2.5, 2.5, 2.5, 2.5, 2.5,
-                                              2.5, 2.5, 2.5, 2.5, 2.5],
-                                          [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5]]))
+    assert np.allclose(
+        d1.data,
+        np.array(
+            [
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+            ]
+        ),
+    )
     d3 = Seismogram(10)
     d4 = Seismogram(6)
     d3 = make_constant_data_seis(d3, nsamp=10)
     d4 = make_constant_data_seis(d4, t0=-0.2, nsamp=6, val=2.0)
     dsave = Seismogram(d3)
     d3 += d4
-    assert np.allclose(d3.data, np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                          [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                          [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.]]))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d = d3+d4
-    assert np.allclose(d.data, np.array([[3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                         [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.],
-                                         [3., 3., 3., 3., 1., 1., 1., 1., 1., 1.]]))
+    d = d3 + d4
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [3.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
     d3 *= 2.5
-    assert np.allclose(d1.data, np.array([[2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
-                                          [2.5, 2.5, 2.5, 2.5, 2.5,
-                                              2.5, 2.5, 2.5, 2.5, 2.5],
-                                          [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5]]))
+    assert np.allclose(
+        d1.data,
+        np.array(
+            [
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+                [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5],
+            ]
+        ),
+    )
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
         d3 = Seismogram(dsave)
@@ -864,46 +974,71 @@ def test_operators():
     # visually d4 moves through d3 as the t0 value advance. Assert
     # tests end member: skewed left, inside, and skewed right
     d3 = Seismogram(dsave)
-    d4.t0 = -0.7   # no overlap test
+    d4.t0 = -0.7  # no overlap test
     d3 += d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
 
     d3 = Seismogram(dsave)
-    d4.t0 = -0.3   # overlap left
+    d4.t0 = -0.3  # overlap left
     d3 += d4
-    assert np.allclose(d3.data, np.array([
-        [3, 3, 3, 1, 1, 1, 1, 1, 1, 1],
-        [3, 3, 3, 1, 1, 1, 1, 1, 1, 1],
-        [3, 3, 3, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [3, 3, 3, 1, 1, 1, 1, 1, 1, 1],
+                [3, 3, 3, 1, 1, 1, 1, 1, 1, 1],
+                [3, 3, 3, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 0.3   # d4 inside d3 test
+    d4.t0 = 0.3  # d4 inside d3 test
     d3 += d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 3, 3, 3, 3, 3, 3, 1],
-        [1, 1, 1, 3, 3, 3, 3, 3, 3, 1],
-        [1, 1, 1, 3, 3, 3, 3, 3, 3, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 3, 3, 3, 3, 3, 3, 1],
+                [1, 1, 1, 3, 3, 3, 3, 3, 3, 1],
+                [1, 1, 1, 3, 3, 3, 3, 3, 3, 1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 0.7   # partial overlap right
+    d4.t0 = 0.7  # partial overlap right
     d3 += d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, 3, 3, 3],
-        [1, 1, 1, 1, 1, 1, 1, 3, 3, 3],
-        [1, 1, 1, 1, 1, 1, 1, 3, 3, 3]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 3, 3, 3],
+                [1, 1, 1, 1, 1, 1, 1, 3, 3, 3],
+                [1, 1, 1, 1, 1, 1, 1, 3, 3, 3],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 1.0   # no overlap test right
+    d4.t0 = 1.0  # no overlap test right
     d3 += d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
 
     # Repeat exactly for - test but different numeric results
     # just omit *= tests
@@ -916,7 +1051,7 @@ def test_operators():
     d1 -= d2
     assert np.allclose(d1.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     d1 = _CoreTimeSeries(dsave)
-    d = d1-d2
+    d = d1 - d2
     assert np.allclose(d.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(10)
     d4 = TimeSeries(6)
@@ -927,7 +1062,7 @@ def test_operators():
     d3 -= d4
     assert np.allclose(d3.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d = d3-d4
+    d = d3 - d4
     assert np.allclose(d.data, [-1, -1, -1, -1, 1, 1, 1, 1, 1, 1])
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
@@ -938,23 +1073,23 @@ def test_operators():
     # visually d4 moves through d3 as the t0 value advance. Assert
     # tests end member: skewed left, inside, and skewed right
     d3 = TimeSeries(dsave)
-    d4.t0 = -0.7   # no overlap test
+    d4.t0 = -0.7  # no overlap test
     d3 -= d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = -0.3   # overlap left
+    d4.t0 = -0.3  # overlap left
     d3 -= d4
     assert np.allclose(d3.data, [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = 0.3   # d4 inside d3 test
+    d4.t0 = 0.3  # d4 inside d3 test
     d3 -= d4
     assert np.allclose(d3.data, [1, 1, 1, -1, -1, -1, -1, -1, -1, 1])
     d3 = TimeSeries(dsave)
-    d4.t0 = 0.7   # partial overlap right
+    d4.t0 = 0.7  # partial overlap right
     d3 -= d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, -1, -1, -1])
     d3 = TimeSeries(dsave)
-    d4.t0 = 1.0   # no overlap test right
+    d4.t0 = 1.0  # no overlap test right
     d3 -= d4
     assert np.allclose(d3.data, [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
@@ -969,16 +1104,28 @@ def test_operators():
     d2 = make_constant_data_seis(d, t0=-0.2, nsamp=6, val=2.0)
     dsave = _CoreSeismogram(d1)
     d1 -= d2
-    assert np.allclose(d1.data, np.array([[-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
-                                          [-1., -1., -1., -1., 1.,
-                                              1., 1., 1., 1., 1.],
-                                          [-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.]]))
+    assert np.allclose(
+        d1.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d1 = _CoreSeismogram(dsave)
-    d = d1-d2
-    assert np.allclose(d.data, np.array([[-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
-                                         [-1., -1., -1., -1., 1.,
-                                             1., 1., 1., 1., 1.],
-                                         [-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.]]))
+    d = d1 - d2
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
 
     d3 = Seismogram(10)
     d4 = Seismogram(6)
@@ -986,16 +1133,28 @@ def test_operators():
     d4 = make_constant_data_seis(d4, t0=-0.2, nsamp=6, val=2.0)
     dsave = Seismogram(d3)
     d3 -= d4
-    assert np.allclose(d3.data, np.array([[-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
-                                          [-1., -1., -1., -1., 1.,
-                                              1., 1., 1., 1., 1.],
-                                          [-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.]]))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d = d3-d4
-    assert np.allclose(d.data, np.array([[-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.],
-                                         [-1., -1., -1., -1., 1.,
-                                             1., 1., 1., 1., 1.],
-                                         [-1., -1., -1., -1., 1., 1., 1., 1., 1., 1.]]))
+    d = d3 - d4
+    assert np.allclose(
+        d.data,
+        np.array(
+            [
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                [-1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        ),
+    )
 
     x = np.linspace(-0.7, 1.2, 20)
     for t in x:
@@ -1007,45 +1166,70 @@ def test_operators():
     # visually d4 moves through d3 as the t0 value advance. Assert
     # tests end member: skewed left, inside, and skewed right
     d3 = Seismogram(dsave)
-    d4.t0 = -0.7   # no overlap test
+    d4.t0 = -0.7  # no overlap test
     d3 -= d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = -0.3   # overlap left
+    d4.t0 = -0.3  # overlap left
     d3 -= d4
-    assert np.allclose(d3.data, np.array([
-        [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1],
-        [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1],
-        [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1],
+                [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1],
+                [-1, -1, -1, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 0.3   # d4 inside d3 test
+    d4.t0 = 0.3  # d4 inside d3 test
     d3 -= d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, -1, -1, -1, -1, -1, -1, 1],
-        [1, 1, 1, -1, -1, -1, -1, -1, -1, 1],
-        [1, 1, 1, -1, -1, -1, -1, -1, -1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, -1, -1, -1, -1, -1, -1, 1],
+                [1, 1, 1, -1, -1, -1, -1, -1, -1, 1],
+                [1, 1, 1, -1, -1, -1, -1, -1, -1, 1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 0.7   # partial overlap right
+    d4.t0 = 0.7  # partial overlap right
     d3 -= d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, -1, -1, -1],
-        [1, 1, 1, 1, 1, 1, 1, -1, -1, -1],
-        [1, 1, 1, 1, 1, 1, 1, -1, -1, -1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, -1, -1, -1],
+                [1, 1, 1, 1, 1, 1, 1, -1, -1, -1],
+                [1, 1, 1, 1, 1, 1, 1, -1, -1, -1],
+            ]
+        ),
+    )
     d3 = Seismogram(dsave)
-    d4.t0 = 1.0   # no overlap test right
+    d4.t0 = 1.0  # no overlap test right
     d3 -= d4
-    assert np.allclose(d3.data, np.array([
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
-    ))
+    assert np.allclose(
+        d3.data,
+        np.array(
+            [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ]
+        ),
+    )
 
 
 def test_ExtractComponent():
@@ -1060,9 +1244,7 @@ def test_ExtractComponent():
         assert (ts[i].data == seis.data[i]).all()
 
 
-@pytest.fixture(params=[ProcessingHistory,
-                        Seismogram,
-                        TimeSeries])
+@pytest.fixture(params=[ProcessingHistory, Seismogram, TimeSeries])
 def ProcessingHistoryBase(request):
     return request.param
 
@@ -1071,7 +1253,7 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph = ProcessingHistoryBase()
     ph.set_jobname("testjob")
     ph.set_jobid("999")
-    assert ph.elog.log_error('1', '2', ErrorSeverity(3)) == 1
+    assert ph.elog.log_error("1", "2", ErrorSeverity(3)) == 1
     assert ph.elog[0].badness == ErrorSeverity.Complaint
 
     ph2 = ProcessingHistoryBase(ph)
@@ -1092,11 +1274,11 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph_list = []
     for i in range(4):
         ph_list.append(ProcessingHistoryBase())
-        ph_list[i].set_as_raw("fakedataset", "0",
-                              "fakeid_"+str(i), AtomicType.SEISMOGRAM)
+        ph_list[i].set_as_raw(
+            "fakedataset", "0", "fakeid_" + str(i), AtomicType.SEISMOGRAM
+        )
         ph_list[i].new_map("onetoone", "0", AtomicType.SEISMOGRAM)
-    phred.new_ensemble_process(
-        "testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
+    phred.new_ensemble_process("testreduce", "0", AtomicType.SEISMOGRAM, ph_list)
     dic = phred.get_nodes()
     rec = 0
     for i in dic.keys():
@@ -1108,19 +1290,13 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
     ph_list2 = copy.deepcopy(ph_list)
     ph_list3 = copy.deepcopy(ph_list)
     # a stack in order
-    ph_list2[0].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[1])
-    ph_list2[0].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[2])
-    ph_list2[0].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[3])
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[1])
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[2])
+    ph_list2[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list2[3])
     # a stack out of order
-    ph_list3[0].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[2])
-    ph_list3[3].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[1])
-    ph_list3[0].accumulate(
-        "stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[3])
+    ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[2])
+    ph_list3[3].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[1])
+    ph_list3[0].accumulate("stack", "stack1", AtomicType.SEISMOGRAM, ph_list3[3])
     assert len(ph_list2[0].get_nodes()) == 5
     assert len(ph_list3[0].get_nodes()) == 5
     nodes2 = {}
@@ -1146,27 +1322,27 @@ def test_ProcessingHistoryBase(ProcessingHistoryBase):
 
 def test_MsPASSError():
     try:
-        x = MetadataDefinitions('foo')
+        x = MetadataDefinitions("foo")
     except MsPASSError as err:
-        assert err.message == 'bad file'
+        assert err.message == "bad file"
         assert err.severity == ErrorSeverity.Invalid
     try:
-        raise MsPASSError('test error1', ErrorSeverity.Informational)
+        raise MsPASSError("test error1", ErrorSeverity.Informational)
     except MsPASSError as err:
-        assert err.message == 'test error1'
+        assert err.message == "test error1"
         assert err.severity == ErrorSeverity.Informational
     try:
-        raise MsPASSError('test error2', "Suspect")
+        raise MsPASSError("test error2", "Suspect")
     except MsPASSError as err:
-        assert err.message == 'test error2'
+        assert err.message == "test error2"
         assert err.severity == ErrorSeverity.Suspect
     try:
-        raise MsPASSError('test error3', 123)
+        raise MsPASSError("test error3", 123)
     except MsPASSError as err:
-        assert err.message == 'test error3'
+        assert err.message == "test error3"
         assert err.severity == ErrorSeverity.Fatal
     try:
         raise MsPASSError("test error4")
     except MsPASSError as err:
-        assert err.message == 'test error4'
+        assert err.message == "test error4"
         assert err.severity == ErrorSeverity.Fatal
