@@ -18,6 +18,7 @@ import numpy as np
 import obspy
 from obspy import Inventory
 from obspy import UTCDateTime
+import boto3, botocore
 
 from mspasspy.ccore.io import _mseed_file_indexer
 
@@ -40,19 +41,9 @@ from mspasspy.ccore.utility import (
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util.converter import Textfile2Dataframe
 
-
-def read_distributed_data(
-    db,
-    cursor,
-    mode="promiscuous",
-    normalize=None,
-    load_history=False,
-    exclude_keys=None,
-    format="dask",
-    npartitions=None,
-    spark_context=None,
-    data_tag=None,
-):
+def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
+                          format='dask', npartitions=None, spark_context=None, data_tag=None, aws_access_key_id=None,
+                          aws_secret_access_key=None):
     """
     This function should be used to read an entire dataset that is to be handled
     by subsequent parallel operations.  The function can be thought of as
@@ -122,18 +113,14 @@ def read_distributed_data(
     collection = cursor.collection.name
     if format == "spark":
         list_ = spark_context.parallelize(cursor, numSlices=npartitions)
-        return list_.map(
-            lambda cur: db.read_data(
-                cur, mode, normalize, load_history, exclude_keys, collection, data_tag
-            )
-        )
-    elif format == "dask":
+        return list_.map(lambda cur: db.read_data(cur, mode=mode, normalize=normalize,
+            load_history=load_history, exclude_keys=exclude_keys, collection=collection,
+            data_tag=data_tag, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key))
+    elif format == 'dask':
         list_ = daskbag.from_sequence(cursor, npartitions=npartitions)
-        return list_.map(
-            lambda cur: db.read_data(
-                cur, mode, normalize, load_history, exclude_keys, collection, data_tag
-            )
-        )
+        return list_.map(lambda cur: db.read_data(cur, mode=mode, normalize=normalize,
+            load_history=load_history, exclude_keys=exclude_keys, collection=collection,
+            data_tag=data_tag, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key))
     else:
         raise TypeError("Only spark and dask are supported")
 
@@ -244,6 +231,8 @@ class Database(pymongo.database.Database):
         merge_method=0,
         merge_fill_value=None,
         merge_interpolation_samples=0,
+        aws_access_key_id=None,
+        aws_secret_access_key=None
     ):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
@@ -549,10 +538,9 @@ class Database(pymongo.database.Database):
                 self._read_data_from_gridfs(mspass_object, object_doc["gridfs_id"])
             elif storage_mode == "url":
                 self._read_data_from_url(
-                    mspass_object,
-                    object_doc["url"],
-                    format=None if "format" not in object_doc else object_doc["format"],
-                )
+                    mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
+            elif storage_mode == "s3":
+                self._read_data_from_s3(mspass_object, aws_access_key_id, aws_secret_access_key)
             else:
                 raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
@@ -3550,6 +3538,71 @@ class Database(pymongo.database.Database):
         else:
             raise TypeError("only TimeSeries and Seismogram are supported")
 
+    def _read_data_from_s3(self, mspass_object, aws_access_key_id=None, aws_secret_access_key=None):
+        """
+        Read data stored in s3 and load it into a mspasspy object.
+
+        :param mspass_object: the target object.
+        :type mspass_object: either :class:`mspasspy.ccore.seismic.TimeSeries` or :class:`mspasspy.ccore.seismic.Seismogram`
+        """
+        s3_client = boto3.client('s3', aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key)
+        BUCKET_NAME = 'scedc-pds'
+        year = mspass_object['year']
+        day_of_year = mspass_object['day_of_year']
+        network = ''
+        station = ''
+        channel = ''
+        location = ''
+        if 'net' in mspass_object:
+            network = mspass_object['net']
+        if 'sta' in mspass_object:
+            station = mspass_object['sta']
+        if 'chan' in mspass_object:
+            channel = mspass_object['chan']
+        if 'loc' in mspass_object:
+            location = mspass_object['loc']
+        KEY = 'continuous_waveforms/' + year + '/' + year + '_' + day_of_year + '/'
+        if len(network) < 2:
+            network += '_' * (2 - len(network))
+        if len(station) < 5:
+            station += '_' * (5 - len(station))
+        if len(channel) < 3:
+            channel += '_' * (3 - len(channel))
+        if len(location) < 2:
+            location += '_' * (2 - len(location))
+        
+        mseed_file = network + station + channel + location + '_' + year + day_of_year + '.ms'
+        KEY += mseed_file
+
+        try:
+            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            st = obspy.read(io.BytesIO(obj['Body'].read()), format=mspass_object['format'])
+            st.merge()
+            if isinstance(mspass_object, TimeSeries):
+                # st is a "stream" but it only has one member here because we are
+                # reading single net,sta,chan,loc grouping defined by the index
+                # We only want the Trace object not the stream to convert
+                tr = st[0]
+                # Now we convert this to a TimeSeries and load other Metadata
+                # Note the exclusion copy and the test verifying net,sta,chan,
+                # loc, and startime all match
+                mspass_object.npts = len(tr.data)
+                mspass_object.data = DoubleVector(tr.data)
+            elif isinstance(mspass_object, Seismogram):
+                sm = st.toSeismogram(cardinal=True)
+                mspass_object.npts = sm.data.columns()
+                mspass_object.data = sm.data
+
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                # the object does not exist
+                print('Could not find the object by the KEY: {} from the BUCKET: {} in s3').format(KEY, BUCKET_NAME)
+            else:
+                raise
+
+        except Exception as e:
+            raise MsPASSError("Error while read data from s3.", "Fatal") from e
+
     @staticmethod
     def _read_data_from_url(mspass_object, url, format=None):
         """
@@ -4752,3 +4805,81 @@ class Database(pymongo.database.Database):
             one_to_one=one_to_one,
             parallel=parallel,
         )
+    def index_mseed_s3_continuous(self, s3_client, year, day_of_year, network='', station='',
+        channel='', location='', collection='wf_miniseed'):
+        """
+        This is the first stage import function for handling the import of
+        miniseed data. However, instead of scanning a data file defined by a directory
+        (dir arg) and dfile (file name) argument, it reads the miniseed content from AWS s3.
+        It builds and index it writes to mongodb in the collection defined by the collection
+        argument (wf_miniseed by default). The index is bare bones
+        miniseed tags (net, sta, chan, and loc) with a starttime tag.
+
+        :param s3_client:  s3 Client object given by user, which contains credentials
+        :param year:  year for the query mseed file(4 digit).
+        :param day_of_year:  day of year for the query of mseed file(3 digit [001-366])
+        :param network:  network code
+        :param station:  station code
+        :param channel:  channel code
+        :param location:  location code
+        :param collection:  is the mongodb collection name to write the
+            index data to.  The default is 'wf_miniseed'.  It should be rare
+            to use anything but the default.
+        :exception: This function will do nothing if the obejct does not exist. For other
+            exceptions, it would raise a MsPASSError.
+        """
+        
+        dbh = self[collection]
+        BUCKET_NAME = 'scedc-pds'
+        year = str(year)
+        day_of_year = str(day_of_year)
+        if len(day_of_year) < 3:
+            day_of_year = '0' * (3 - len(day_of_year)) + day_of_year
+        KEY = 'continuous_waveforms/' + year + '/' + year + '_' + day_of_year + '/'
+        if len(network) < 2:
+            network += '_' * (2 - len(network))
+        if len(station) < 5:
+            station += '_' * (5 - len(station))
+        if len(channel) < 3:
+            channel += '_' * (3 - len(channel))
+        if len(location) < 2:
+            location += '_' * (2 - len(location))
+        
+        mseed_file = network + station + channel + location + '_' + year + day_of_year + '.ms'
+        KEY += mseed_file
+
+        try:
+            obj = s3_client.get_object(Bucket=BUCKET_NAME, Key=KEY)
+            mseed_content = obj['Body'].read()
+            stringio_obj = io.BytesIO(mseed_content)
+            st = obspy.read(stringio_obj)
+            # there could be more than 1 trace object in the stream, merge the traces
+            st.merge()
+            for i in range(len(st)):
+                stats = st[i].stats
+                doc = dict()
+                doc['year'] = year
+                doc['day_of_year'] = day_of_year
+                doc['sta'] = stats['station']
+                doc['net'] = stats['network']
+                doc['chan'] = stats['channel']
+                if 'location' in stats and stats['location']:
+                    doc['loc'] = stats['location']
+                doc['sampling_rate'] = stats['sampling_rate']
+                doc['delta'] = 1.0 / stats['sampling_rate']
+                doc['starttime'] = stats['starttime'].timestamp
+                if 'npts' in stats and stats['npts']:
+                    doc['npts'] = stats['npts']
+                doc['storage_mode'] = 's3'
+                doc['format'] = 'mseed'
+                dbh.insert_one(doc)
+
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                # the object does not exist
+                print('Could not find the object by the KEY: {} from the BUCKET: {} in s3').format(KEY, BUCKET_NAME)
+            else:
+                print('An ClientError occur when tyring to get the object by the KEY(' + KEY + ')' + ' with error: ', e)
+
+        except Exception as e:
+            raise MsPASSError("Error while index mseed file from s3.", "Fatal") from e
