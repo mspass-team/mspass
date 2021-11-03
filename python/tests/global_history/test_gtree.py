@@ -10,7 +10,7 @@ from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
 
 
-def build_helper() -> ParameterGTree:
+def build_helper():
     #   A helper function to build a GTree instance for test.
     pfPath = "./data/pf/RFdeconProcessor.pf"
     pf = AntelopePf(pfPath)
@@ -23,11 +23,11 @@ def build_helper() -> ParameterGTree:
     return gTree
 
 
-def leaf_helper() -> tuple[str, str]:
+def leaf_helper():
     return ("alg", "LeastSquares")
 
 
-def branch_helper() -> tuple[str, collections.OrderedDict]:
+def branch_helper():
     pfPath = "./data/pf/RFdeconProcessor.pf"
     pf = AntelopePf(pfPath)
     pf_dict = collections.OrderedDict(AntelopePf2dict(pf))
