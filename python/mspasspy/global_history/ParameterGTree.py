@@ -121,7 +121,7 @@ class ParameterGTree(collections.OrderedDict):
     structure.  In the documentation here the tree should be pictures as
     upright in the biological tree analog. i.e. up mean higher levels in
     the tree and down means dropping to lower levels in the tree.
-    
+
     This class is inherited from collections.OrderedDict, so users can get
     access to the data using common index operation, for example:
     gTree['phases']['travel_time_calculator']['taup']['model_name']
@@ -163,24 +163,30 @@ class ParameterGTree(collections.OrderedDict):
 
             if key in self.get_leaf_keys():
                 raise MsPASSError(
-                    "[Warning] There already exists a leaf in this GTree with key '{leaf_key}', Please check again.".format(leaf_key = key)
+                    "[Warning] There already exists a leaf in this GTree with key '{leaf_key}', Please check again.".format(
+                        leaf_key=key
+                    )
                 )
             collections.OrderedDict.__setitem__(self, key, branch)
-        
+
         else:
             if key in self.get_branch_keys():
                 raise MsPASSError(
-                    "[Warning] There already exists a branch in this GTree with key '{branch_key}', Please check again.".format(branch_key = key)
+                    "[Warning] There already exists a branch in this GTree with key '{branch_key}', Please check again.".format(
+                        branch_key=key
+                    )
                 )
             collections.OrderedDict.__setitem__(self, key, value)
 
     def __getitem__(self, key):
         if key not in self:
             raise MsPASSError(
-                    "[Warning] The key provided ({branch_key}) is not in this GTree, Please check again.".format(branch_key = key)
-                )        
+                "[Warning] The key provided ({branch_key}) is not in this GTree, Please check again.".format(
+                    branch_key=key
+                )
+            )
         return collections.OrderedDict.__getitem__(self, key)
-        
+
     def update_control(self):
         """
         Update the control doc according to the children in this level.
@@ -330,7 +336,7 @@ class ParameterGTree(collections.OrderedDict):
         Same as the setter function, users can also use index to put new
         data in GTree here. Please note that when put data using indexes,
         new branches won't be created automatically, and users should add the
-        intermediate branches themselves. 
+        intermediate branches themselves.
         """
         key_list = key
         if isinstance(key, str):
