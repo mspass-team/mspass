@@ -43,6 +43,7 @@ from mspasspy.ccore.utility import MsPASSError, AntelopePf
 from mspasspy.util.converter import AntelopePf2dict
 import json
 from mspasspy.global_history.ParameterGTree import ParameterGTree, parameter_to_GTree
+import collections
 
 
 def spark_map(input, manager, sc, alg_name=None, parameters=None):
@@ -598,10 +599,10 @@ class TestManager:
             d[i].t0 = -5
 
         # parameters string
-        pfPath = "./data/pf/RFdeconProcessor.pf"
+        pfPath = "python/mspasspy/data/pf/RFdeconProcessor.pf"
         pf = AntelopePf(pfPath)
         pf_dict = AntelopePf2dict(pf)
-        parameter_dict = {}
+        parameter_dict = collections.OrderedDict()
         parameter_dict["alg"] = "LeastSquares"
         parameter_dict["pf"] = pf_dict
         parameter_dict["object_history"] = "True"

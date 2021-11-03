@@ -1,8 +1,10 @@
 """
 Functions for converting to and from MsPASS data types.
 """
+from typing import Collection
 import numpy as np
 import obspy.core
+import collections
 
 from mspasspy.ccore.utility import Metadata, AntelopePf, MsPASSError
 from mspasspy.ccore.seismic import (
@@ -69,7 +71,7 @@ def AntelopePf2dict(pf):
     tbl_keys = pf.tbl_keys()
     arr_keys = pf.arr_keys()
 
-    data = {}
+    data = collections.OrderedDict()
     for key in keys:
         val = pf.get(key)
         data[key] = val

@@ -490,7 +490,7 @@ def RFdecon(
     processor = RFdeconProcessor(alg, pf)
 
     try:
-        if wavelet != None:
+        if wavelet is not None:
             processor.loadwavelet(wavelet, dtype="raw_vector")
         else:
             # processor.loadwavelet(d,dtype='Seismogram',window=True,component=wcomp)

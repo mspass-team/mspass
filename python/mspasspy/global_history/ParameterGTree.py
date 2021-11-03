@@ -76,6 +76,7 @@ def parse_filepath_in_parameters(parameters_dict):
             file_path = str(arg)
             if file_path.endswith(".pf"):
                 pf = AntelopePf(file_path)
+                #   Convert PF into an OrderedDict to coordinate with the GTree
                 pf_value = AntelopePf2dict(pf)
                 return pf_value
             elif file_path.endswith(".yaml"):
@@ -112,7 +113,7 @@ def parameter_to_GTree(*args, parameters_str=None, **kwargs):
     return gTree
 
 
-class ParameterGTree:
+class ParameterGTree(collections.OrderedDict):
     """
     Base class for family of objects used to hold an abstraction of a
     set of control parameters for a data processing function.   The
@@ -120,6 +121,12 @@ class ParameterGTree:
     structure.  In the documentation here the tree should be pictures as
     upright in the biological tree analog. i.e. up mean higher levels in
     the tree and down means dropping to lower levels in the tree.
+    
+    This class is inherited from collections.OrderedDict, so users can get
+    access to the data using common index operation, for example:
+    gTree['phases']['travel_time_calculator']['taup']['model_name']
+    In addition, user can operate adding, deleting, updating, creating in
+    the same way as the operations on OrderedDict.
 
     Each node of the g-tree may have leaves and/or a set
     of branches.   Most simple algorithms need only one node with leaves
@@ -132,17 +139,48 @@ class ParameterGTree:
         Construct from a MongoDB document, which with pymongo is equivalenced
         to a python dict.  Branches are defined by subdocuments.
         """
-        self.children = collections.OrderedDict()
+        if doc is not None and not isinstance(doc, collections.OrderedDict):
+            raise MsPASSError("[Error] Doc must be an OrderedDict.")
+
         self.control = doc
 
-        if self.control != None:
+        if self.control is not None:
             for key, val in self.control.items():
-                if isinstance(val, dict) or isinstance(val, collections.OrderedDict):
+                if isinstance(val, collections.OrderedDict):
                     branch = ParameterGTree(val)
-                    self.children[key] = branch
+                    self[key] = branch
                 else:
-                    self.children[key] = val
+                    self[key] = val
 
+    def __setitem__(self, key, value):
+        if isinstance(value, collections.OrderedDict):
+            #   First check if the input value is already a GTree.
+            #   if so, we don't need to construct it.
+            if isinstance(value, ParameterGTree):
+                branch = value
+            else:
+                branch = ParameterGTree(value)
+
+            if key in self.get_leaf_keys():
+                raise MsPASSError(
+                    "[Warning] There already exists a leaf in this GTree with key '{leaf_key}', Please check again.".format(leaf_key = key)
+                )
+            collections.OrderedDict.__setitem__(self, key, branch)
+        
+        else:
+            if key in self.get_branch_keys():
+                raise MsPASSError(
+                    "[Warning] There already exists a branch in this GTree with key '{branch_key}', Please check again.".format(branch_key = key)
+                )
+            collections.OrderedDict.__setitem__(self, key, value)
+
+    def __getitem__(self, key):
+        if key not in self:
+            raise MsPASSError(
+                    "[Warning] The key provided ({branch_key}) is not in this GTree, Please check again.".format(branch_key = key)
+                )        
+        return collections.OrderedDict.__getitem__(self, key)
+        
     def update_control(self):
         """
         Update the control doc according to the children in this level.
@@ -150,11 +188,11 @@ class ParameterGTree:
         every sub tree. It is implemented by recursively updating the control
         doc of a tree.
         """
-        new_control = self.children.copy()
+        new_control = self.copy()
 
         branch_keys = self.get_branch_keys()
         for key in branch_keys:
-            branch = self.children[key]
+            branch = self[key]
             new_control[key] = branch.asdict()
 
         self.control = new_control
@@ -165,6 +203,9 @@ class ParameterGTree:
         This function will first update the internal dictionary control doc.
         Its return can be a build-in dict or a collections.OrderedDict,
         according to the input when building this GTree.
+
+        Since ParameterGTree is inheritted from OrderedDict, an instance can be
+        directed transfered into a dict/OrderedDict without calling this function.
         """
         self.update_control()
         return self.control
@@ -177,7 +218,7 @@ class ParameterGTree:
         pairs that we are calling the leaves of the tree.
         """
         leaf_keys = list()
-        for key, value in self.children.items():
+        for key, value in self.items():
             if not isinstance(value, ParameterGTree):
                 leaf_keys.append(key)
 
@@ -190,7 +231,7 @@ class ParameterGTree:
         walk the tree with a set of methods defined below.
         """
         branch_keys = list()
-        for key, value in self.children.items():
+        for key, value in self.items():
             if isinstance(value, ParameterGTree):
                 branch_keys.append(key)
 
@@ -202,15 +243,10 @@ class ParameterGTree:
         with the associated key from the branch name upward.  The tree
         returned will have the root of the tree set as current.
         """
-        if key not in self.children:
+        if key not in self.get_branch_keys():
             raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
 
-        branch = self.children[key]
-        if not isinstance(branch, ParameterGTree):
-            raise MsPASSError(
-                "[Error] The Value paired with this key is not a branch, Please check again."
-            )
-
+        branch = self[key]
         return branch
 
     def get_leaf(self, key):
@@ -220,25 +256,25 @@ class ParameterGTree:
         value stored in higher levels.
         To search in the entire tree, use "get".
         """
-        if key not in self.children:
+        if key not in self.get_leaf_keys():
             raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
 
-        leaf = self.children[key]
-        if isinstance(leaf, ParameterGTree):
-            raise MsPASSError(
-                "[Error] The Value paired with this key is not a leaf, Please check again."
-            )
-
+        leaf = self[key]
         return leaf
 
     def prune(self, key):
         """
-        Remove a branch defined by key from self.  Return a copy of the
-        branch pruned in the process (like get_branch but self is altered)
+        Remove a branch or leaf defined by key from self. Return a copy of the
+        branch/leaf pruned in the process (like get_branch/get_leaf but self is altered)
         """
-        branch = self.get_branch(key)
-        self.children.popitem(key)
-        return branch
+        if key not in self:
+            raise MsPASSError("[Error] Wrong Key, Please check your input key again.")
+        if key in self.get_leaf_keys():
+            ret_val = self.get_leaf(key)
+        if key in self.get_branch_keys():
+            ret_val = self.get_branch(key)
+        collections.OrderedDict.popitem(self, key)
+        return ret_val
 
     def get(self, key, seperator="."):
         """
@@ -264,6 +300,13 @@ class ParameterGTree:
         would be represented as follows:
         1.  ['phases','name']
         2.  ['phases','travel_time_calculator','taup','model_name']
+
+        Users can also use the build-in index operation to access the children elements,
+        which is more natural.
+        for example:
+        1.  ['phases']['name']
+        2.  ['phases']['travel_time_calculator']['taup']['model_name']
+
         """
         key_list = key
         if isinstance(key, str):
@@ -281,8 +324,13 @@ class ParameterGTree:
     def put(self, key, value, separator="."):
         """
         putter with same behavior for compound keys defined for get method.
-        A put should create a new branch it implies if that branch is not
+        A put would create a new branch it implies if that branch is not
         already present.
+
+        Same as the setter function, users can also use index to put new
+        data in GTree here. Please note that when put data using indexes,
+        new branches won't be created automatically, and users should add the
+        intermediate branches themselves. 
         """
         key_list = key
         if isinstance(key, str):
@@ -301,7 +349,7 @@ class ParameterGTree:
                     + ". Please check your input key again."
                 )
             if branch_level not in root.get_branch_keys():
-                root.sprout(branch_level)
+                root[branch_level] = ParameterGTree()
             root = root.get_branch(branch_level)
 
         leaf_key = key_list[-1]
@@ -311,7 +359,12 @@ class ParameterGTree:
                 + leaf_key
                 + ". Please check your input key again."
             )
-        root.children[leaf_key] = value
+        root[leaf_key] = value
+
+    '''
+    This function here is not necessary, user can just use index to add new data,
+    for example:
+        root[branch_level] = ParameterGTree()
 
     def sprout(self, key, seperator="."):
         """
@@ -336,7 +389,7 @@ class ParameterGTree:
                     + ". Please check your input key again."
                 )
             if branch_level not in root.get_branch_keys():
-                root.children[branch_level] = ParameterGTree()
+                root[branch_level] = ParameterGTree()
             root = root.get_branch(branch_level)
 
         branch_key = key_list[-1]
@@ -346,4 +399,5 @@ class ParameterGTree:
                 + branch_key
                 + ". Please check your input key again."
             )
-        root.children[branch_key] = ParameterGTree()
+        root[branch_key] = ParameterGTree()
+    '''
