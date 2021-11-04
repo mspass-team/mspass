@@ -81,6 +81,13 @@ of this data object.
 **/
 	double endtime()const noexcept
         {
+          /* Have to handle 0 specially.  nsamp is size_t which is an 
+          unsigned integer.  subtracting 1 causes an underflow and
+          returns a nonsense result for the statement used for positive 
+          values.*/
+          if(nsamp==0)
+            return 0.0;
+          else
             return(mt0+mdt*static_cast<double>(nsamp-1));
         };
 /*! Return true if a time shift has been applied to the data.
