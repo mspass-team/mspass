@@ -831,6 +831,36 @@ class TestDatabase():
         with pytest.raises(MsPASSError, match='is not defined'):
             self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
 
+        # test read_data with missing attributes in the normalized records
+        # 1. test missing normal attribute
+        missing_net_site_id = ObjectId()
+        self.db['site'].insert_one({'_id': missing_net_site_id, 'sta': 'sta1', 'loc': 'loc', 'lat': 1.0, 'lon': 1.0,
+                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                                    'endtime': datetime.utcnow().timestamp()})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, '1', 'deepcopy')
+        ts['site_id'] = missing_net_site_id
+        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
+        self.db.database_schema.set_default('wf_TimeSeries', 'wf')
+        missing_normal_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        assert missing_normal_ts.live
+        assert 'net' not in missing_normal_ts
+        assert len(missing_normal_ts.elog.get_error_log()) == 0
+        # 2. test missing required attribute
+        missing_lat_site_id = ObjectId()
+        self.db['site'].insert_one({'_id': missing_lat_site_id, 'net': 'net1', 'sta': 'sta1', 'loc': 'loc', 'lon': 1.0,
+                                    'elev': 2.0, 'starttime': datetime.utcnow().timestamp(),
+                                    'endtime': datetime.utcnow().timestamp()})
+        ts = copy.deepcopy(self.test_ts)
+        logging_helper.info(ts, '1', 'deepcopy')
+        ts['site_id'] = missing_lat_site_id
+        self.db.save_data(ts, mode='promiscuous', storage_mode='gridfs')
+        missing_required_ts = self.db.read_data(ts['_id'], normalize=['site'])
+        assert missing_required_ts.live
+        assert 'site_lat' not in missing_required_ts
+        assert len(missing_required_ts.elog.get_error_log()) == 1
+        assert missing_required_ts.elog.get_error_log()[0].message == 'Attribute lat is required in collection site, but is missing in the document with id={}.'.format(str(missing_lat_site_id))
+
     def test_index_mseed_file(self):
         dir = 'python/tests/data/'
         dfile = '3channels.mseed'
