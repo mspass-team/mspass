@@ -3,6 +3,13 @@
 //#include <math.h>
 #include <vector>
 #include <memory>
+
+
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
 
@@ -24,11 +31,36 @@ public:
   void disable_head(){head=false;all=false;};
   void enable_tail(){tail=true;};
   void disable_tail(){tail=false;all=false;};
+  bool head_is_enabled()
+  {
+    if(head || all)
+    {
+      return true;
+    }
+    return false;
+  };
+  bool tail_is_enable()
+  {
+    if(tail || all)
+    {
+      return true;
+    }
+    return false;
+  }
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
   all means a single function is needed to defne the taper.  */
   bool head,tail,all;
+private:
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+      ar & head;
+      ar & tail;
+      ar & all;
+  };
 };
 /*! \brief Used to construct an operator to apply a linear taper to either end.
 
@@ -51,8 +83,22 @@ public:
             const double t1tail,const double t0tail);
   int apply(mspass::seismic::TimeSeries& d);
   int apply(mspass::seismic::Seismogram& d);
+  double get_t0head(){return t0head;};
+  double get_t1head(){return t1head;};
+  double get_t0tail(){return t0tail;};
+  double get_t1tail(){return t1tail;};
 private:
   double t0head,t1head,t1tail,t0tail;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & boost::serialization::base_object<BasicTaper>(*this);
+    ar & t0head;
+    ar & t1head;
+    ar & t1tail;
+    ar & t0tail;
+  };
 };
 /*! \brief Taper front and/or end of a time seris with a half cosine function.
 
@@ -77,8 +123,22 @@ public:
   /* these need to post to history using new feature*/
   int apply(mspass::seismic::TimeSeries& d);
   int apply(mspass::seismic::Seismogram& d);
+  double get_t0head(){return t0head;};
+  double get_t1head(){return t1head;};
+  double get_t0tail(){return t0tail;};
+  double get_t1tail(){return t1tail;};
 private:
   double t0head,t1head,t1tail,t0tail;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & boost::serialization::base_object<BasicTaper>(*this);
+    ar & t0head;
+    ar & t1head;
+    ar & t1tail;
+    ar & t0tail;
+  };
 };
 /*! General taper.
 
@@ -96,8 +156,16 @@ public:
   void enable(){
     if(taper.size()>0) all=true;
   };
+  std::vector<double> get_taper(){return taper;};
 private:
   std::vector<double> taper;
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & boost::serialization::base_object<BasicTaper>(*this);
+    ar & taper;
+  };
 };
 /*! \brief Mute operator for "top" of signals defined first smaple forward.
 
