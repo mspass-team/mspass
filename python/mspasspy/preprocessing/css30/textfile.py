@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import collections
+import dask
 from mspasspy.ccore.utility import AntelopePf, MsPASSError
 import pandas as pd
 import dask.dataframe as daskdf
-
+import dask.bag as daskbg
+import json
 
 def parse_attribute_name_tbl(pf, tag="attributes"):
     """
@@ -84,14 +86,18 @@ def textfile_to_df(
 ):
     """
     Import a text file representation of a table and store its
-    representation as a pandas/dask dataframe.
+    representation as a pandas dataframe.
+    Note that even in the parallel environment, a dask dataframe will be
+    transfered back to a pandas dataframe for the consistency.
+
     :param filename:  path to text file that is to be read to create the
       table object that is to be processed (internally we use pandas or
       dask dataframes)
     :param separator:   the delimiter used for seperating fields,
       for plaintext format file, its value should be space;
       for csv file, its value should be ','
-    :param type_dict:   pairs of attribute and its type
+    :param type_dict: pairs of each attribute and its type, usedd to validate
+      the type of each input item
     :param attribute_names: This argument must be either a list of (unique)
       string names to define the attribute name tags for each column of the
       input table.   The length of the array must match the number of
@@ -128,19 +134,18 @@ def textfile_to_df(
       None which is taken to mean no selection is to be done.
     :param null_values:  is an optional dict defining null field values.
       When used an == test is applied to each attribute with a key
-      defined in the null_vlaues python dict.  If == returns True
-      the field is not copied to the MongoDB doc saved for that tuple.
-      If your table has a lot of null fields this option can save
-      space, but readers must not require the null field.  The default
-      is None which it taken to mean there are no null fields defined.
+      defined in the null_vlaues python dict.  If == returns True, the 
+      value will be set as None in dataframe. If your table has a lot of null
+      fields this option can save space, but readers must not require the null 
+      field.  The default is None which it taken to mean there are no null 
+      fields defined.
     :param one_to_one: is an important boolean use to control if the
       output is or is not filtered by rows.  The default is True
-      which means every tuple in the input file will create a single
-      MongoDB document.  (Useful, for example, to construct an wf_miniseed
+      which means every tuple in the input file will create a single row in 
+      dataframe. (Useful, for example, to construct an wf_miniseed
       collection css3.0 attributes.)  If False the (normally reduced) set
       of attributes defined by attributes_to_use will be filtered with the
-      panda/dask dataframe drop_duplicates method before converting the
-      dataframe to documents and saving them to MongoDB.  That approach
+      panda/dask dataframe drop_duplicates method.  That approach
       is important, for example, to filter things like Antelope "site" or
       "sitechan" attributes created by a join to something like wfdisc and
       saved as a text file to be processed by this function.
@@ -181,55 +186,35 @@ def textfile_to_df(
             if field in df:
                 df[field].astype(type)
 
-    if attributes_to_use != None:
+    if attributes_to_use is not None:
         df = df[attributes_to_use]
 
     if not one_to_one:
         df = df.drop_duplicates()
 
+    #   For those null values, set them to None
+    if null_values is not None:
+        for key, val in null_values.items():
+            if key not in df:
+                continue
+            else:
+                if parallel:
+                    df = df.astype(object)
+                    df[key] = df[key].mask(df[key] == val, None)
+                else:
+                    df[key] = df[key].apply(lambda a: None if (a == val) else a)  
+
     #   Intentionally left to last as the above can reduce the size of df
     if rename_attributes is not None:
         df = df.rename(columns=rename_attributes)
 
-    #   For those null values, set them to None
-    if null_values is not None:
-        for key, val in null_values.items():
-            if key in df:
-                data_type = df.dtypes[key]
-                if parallel:
-
-                    def test_null(dds, col, null_val) -> data_type:
-                        if dds[col] == null_val:
-                            return None
-                        else:
-                            return dds[col]
-
-                    df.map_partitions(test_null, key, val, meta=data_type)
-                    # df[key] = df[key].replace(val, None)
-                    # df.compute()
-                    # df[key] = df[key].apply(func = (lambda a : None if (a == val) else a), meta=(None, data_type))
-                else:
-                    df[key] = df[key].apply(lambda a: None if (a == val) else a)
-                    # df[key] = df[key].replace(val, None)
-
     #   Add new columns to the dataframe
     if insert_column is not None:
-        if parallel:
-            for key, val in insert_column.items():
-                if key in df:
-                    raise MsPASSError(
-                        "The key: " + key + "is already in the dataframe."
-                    )
-                else:
-                    df[key] = val
-        else:
-            column_len = df.shape[1]
-            for key, val in insert_column.items():
-                df.insert(column_len, key, val)
-                column_len += 1
-
+        for key, val in insert_column.items():
+            df[key] = val
+  
     if parallel:
-        df.compute()
+        df = df.compute()
 
     return df
 
@@ -253,30 +238,28 @@ def df_to_mongo(db, collection, df, parallel, one_to_one=True):
       is important, for example, to filter things like Antelope "site" or
       "sitechan" attributes created by a join to something like wfdisc and
       saved as a text file to be processed by this function.
-    :parallel:  a boolean that determine if df is a dask dataframe
+    :df: Pandas.Dataframe object, the input to be transfered into mongodb 
+    documents
+    :parallel:  a boolean that determine if dask api will be used for operation
+    on the dataframe
     :param one_to_one: a boolean to control if the duplicate should be deleted
     :return:  integer count of number of documents added to collection
     """
-
     dbcol = db[collection]
-    n = 0
-    if parallel:
-        docs_list = list(
-            df.map_partitions(lambda x: x.dropna().to_dict(orient="records"))
-        )
-        for docs in docs_list:
-            for doc in docs:
-                dbcol.insert_one(doc)
-                n += 1
-        df.compute()
-        return n
-    else:
-        for index, row in df.iterrows():
-            doc = row.dropna().to_dict()
-            dbcol.insert_one(doc)
-            n += 1
-        return n
 
+    if not one_to_one:
+        df = df.drop_duplicates()
+    
+    if parallel:
+        df = daskdf.from_pandas(df, chunksize=1, sort=False)
+        df.apply(lambda x: dbcol.insert_one(x.dropna().to_dict()), axis=1, meta=(None, 'object')).compute()
+        return df.shape[0].compute()
+    else:
+        df = df.apply(pd.Series.dropna, axis=1)
+        doc_list = df.to_dict(orient='records')
+        if len(doc_list):
+            dbcol.insert_many(doc_list)
+        return len(doc_list)
 
 def import_table(
     db,
@@ -293,7 +276,14 @@ def import_table(
     parallel=False,
     insert_column=None,
 ):
-
+    """
+    Import and parse a textfile into set of documents, and store them
+    into a mongodb collection. This function consists of two steps:
+    1. textfile_to_df: Convert the input textfile into a Pandas dataframe
+    2. df_to_mongo: Insert the documents in that dataframe into a mongodb 
+    collection
+    The definition of the arguments can be found in these two functions.
+    """
     df = textfile_to_df(
         filename=filename,
         separator=separator,
