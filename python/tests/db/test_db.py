@@ -843,6 +843,8 @@ class TestDatabase():
         assert gaps_ts.npts == 8640000
         freq = collections.Counter(gaps_ts.data)
         assert freq[-1] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
+        assert len(gaps_ts.elog.get_error_log()) == 1
+        assert gaps_ts.elog.get_error_log()[0].message == 'There are gaps in this stream when reading file by obspy and they are merged into one Trace object by filling value in the gaps.'
 
     def test_index_mseed_file(self):
         dir = 'python/tests/data/'
