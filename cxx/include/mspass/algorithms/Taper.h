@@ -52,8 +52,8 @@ public:
   /* These virtual methods are a bit of a design flaw as they don't
   apply well to the vector taper, but we implement them there to just
   throw an exception */
-  virtual double get_t0head()=0;
-  virtual double get_t1head()=0;
+  virtual double get_t0head() const = 0;
+  virtual double get_t1head() const = 0;
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
@@ -90,10 +90,10 @@ public:
             const double t1tail,const double t0tail);
   int apply(mspass::seismic::TimeSeries& d);
   int apply(mspass::seismic::Seismogram& d);
-  double get_t0head(){return t0head;};
-  double get_t1head(){return t1head;};
-  double get_t0tail(){return t0tail;};
-  double get_t1tail(){return t1tail;};
+  double get_t0head()const {return t0head;};
+  double get_t1head()const {return t1head;};
+  double get_t0tail()const {return t0tail;};
+  double get_t1tail()const {return t1tail;};
 private:
   double t0head,t1head,t1tail,t0tail;
   friend class boost::serialization::access;
@@ -130,10 +130,10 @@ public:
   /* these need to post to history using new feature*/
   int apply(mspass::seismic::TimeSeries& d);
   int apply(mspass::seismic::Seismogram& d);
-  double get_t0head(){return t0head;};
-  double get_t1head(){return t1head;};
-  double get_t0tail(){return t0tail;};
-  double get_t1tail(){return t1tail;};
+  double get_t0head() const {return t0head;};
+  double get_t1head() const {return t1head;};
+  double get_t0tail() const {return t0tail;};
+  double get_t1tail() const {return t1tail;};
 private:
   double t0head,t1head,t1tail,t0tail;
   friend class boost::serialization::access;
@@ -164,8 +164,8 @@ public:
     if(taper.size()>0) all=true;
   };
   std::vector<double> get_taper(){return taper;};
-  double get_t0head(){std::cerr << "get_t0head not implemented for VectorTaper";return 0.0;};
-  double get_t1head(){std::cerr << "get_t1head not implemented for VectorTaper";return 0.0;};
+  double get_t0head() const {std::cerr << "get_t0head not implemented for VectorTaper";return 0.0;};
+  double get_t1head() const {std::cerr << "get_t1head not implemented for VectorTaper";return 0.0;};
 private:
   std::vector<double> taper;
   friend class boost::serialization::access;
@@ -225,10 +225,13 @@ public:
   int apply(mspass::seismic::TimeSeries& d);
   /*! Apply the operator to a Seismogram object. */
   int apply(mspass::seismic::Seismogram& d);
+  /*! Return the start of mute taper - points with time < this number are zeroed*/
   double get_t0() const
   {return taper->get_t0head();};
+  /*! Return the end time of the mute taper - points after this point are unaltered by the mute.*/
   double get_t1() const
   {return taper->get_t1head();};
+  /*! Return a string with a name describing the form of the taper - currently returns either linear or cosine*/
   std::string taper_type() const;
 private:
   /* We use a shared_ptr to the base class.  That allows inheritance to
