@@ -8,9 +8,10 @@ import obspy
 import pytest
 import sys
 import re
+import collections
 
 from  mspasspy.util.converter import TimeSeries2Trace
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
 from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory, AtomicType
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
@@ -835,10 +836,13 @@ class TestDatabase():
         dir = 'python/tests/data/'
         dfile = 'gaps.mseed'
         wf_id = self.db['wf_TimeSeries'].insert_one({'npts': 1, 'delta': 0.1, 'sampling_rate': 100.0,
-                                                    'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
-                                                    'dir': dir, 'dfile': dfile, 'format':'mseed'}).inserted_id
-        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', fill_value='latest')
-        assert False
+                                                    'starttime': 0.0, 'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
+                                                    'dir': dir, 'dfile': dfile, 'storage_mode': 'file',
+                                                    'format':'mseed', 'nbytes': 26186752}).inserted_id
+        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', fill_value=-1)
+        assert gaps_ts.npts == 8640000
+        freq = collections.Counter(gaps_ts.data)
+        assert freq[-1] == 8640000 - 1320734 - 1516264 - 1516234 - 1516057 - 1516243 - 939378
 
     def test_index_mseed_file(self):
         dir = 'python/tests/data/'

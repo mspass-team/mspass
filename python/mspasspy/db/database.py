@@ -2856,7 +2856,6 @@ class Database(pymongo.database.Database):
                         raise KeyError("npts is not defined")
                     float_array.frombytes(
                         fh.read(mspass_object.get('npts') * 8 * 3))
-                    print(len(float_array))
                     mspass_object.data = dmatrix(3, mspass_object.get('npts'))
                     for i in range(3):
                         for j in range(mspass_object.get('npts')):
