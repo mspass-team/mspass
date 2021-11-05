@@ -830,6 +830,15 @@ class TestDatabase():
         assert all(a.any() == b.any() for a, b in zip(promiscuous_seis.data, promiscuous_seis2.data))
         with pytest.raises(MsPASSError, match='is not defined'):
             self.db2.read_data(promiscuous_seis['_id'], mode='cautious', normalize=['site', 'source'], collection='wf_test2')
+        
+        # test read mseed file that contains more than one Trace object, which results in gaps
+        dir = 'python/tests/data/'
+        dfile = 'gaps.mseed'
+        wf_id = self.db['wf_TimeSeries'].insert_one({'npts': 1, 'delta': 0.1, 'sampling_rate': 100.0,
+                                                    'starttime_shift': 1.0, 'calib':0.1, 'foff': 0,
+                                                    'dir': dir, 'dfile': dfile, 'format':'mseed'}).inserted_id
+        gaps_ts = self.db.read_data(wf_id, collection='wf_TimeSeries', fill_value='latest')
+        assert False
 
     def test_index_mseed_file(self):
         dir = 'python/tests/data/'

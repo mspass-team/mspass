@@ -204,7 +204,8 @@ class Database(pymongo.database.Database):
         self.database_schema = schema
 
     def read_data(self, object_id, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
-                  collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False, retrieve_history_record=False):
+                  collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False,
+                  retrieve_history_record=False, fill_value=None):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
         objects from data managed with MondoDB through MsPASS.   It is the
@@ -269,6 +270,16 @@ class Database(pymongo.database.Database):
           for save and read operations to improve the efficiency and simplify
           read operations.   Default turns this off by setting the tag null (None).
         :type data_tag: :class:`str`
+        :param alg_name: alg_name is the name the func we are gonna save while preserving the history.
+        :type alg_name: :class:`str`
+        :param alg_id: alg_id is a unique id to record the usage of func while preserving the history.
+        :type alg_id: :class:`bson.objectid.ObjectId`
+        :param define_as_raw: a boolean control whether we would like to set_as_origin when loading processing history
+        :type define_as_raw: :class:`bool`
+        :param retrieve_history_record: a boolean control whether we would like to load processing history
+        :type retrieve_history_record: :class:`bool`
+        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.
+        :type fill_value: :class:`int`, :class:`float` or None
         :return: either :class:`mspasspy.ccore.seismic.TimeSeries`
           or :class:`mspasspy.ccore.seismic.Seismogram`
         """
@@ -419,10 +430,12 @@ class Database(pymongo.database.Database):
             if storage_mode == "file":
                 if 'format' in object_doc:
                     self._read_data_from_dfile(
-                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'], nbytes=object_doc['nbytes'], format=object_doc['format'])
+                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'],
+                        nbytes=object_doc['nbytes'], format=object_doc['format'], fill_value=fill_value)
                 else:
                     self._read_data_from_dfile(
-                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'])
+                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'],
+                        fill_value=fill_value)
             elif storage_mode == "gridfs":
                 self._read_data_from_gridfs(
                     mspass_object, object_doc['gridfs_id'])
@@ -2808,7 +2821,7 @@ class Database(pymongo.database.Database):
             return ret_elog_id
 
     @staticmethod
-    def _read_data_from_dfile(mspass_object, dir, dfile, foff, nbytes=0, format=None):
+    def _read_data_from_dfile(mspass_object, dir, dfile, foff, nbytes=0, format=None, fill_value=None):
         """
         Read the stored data from a file and loads it into a mspasspy object.
 
@@ -2822,6 +2835,8 @@ class Database(pymongo.database.Database):
         :param nbytes: number of bytes to be read from the offset. This is only used when ``format`` is given.
         :param format: the format of the file. This can be one of the `supported formats <https://docs.obspy.org/packages/autogen/obspy.core.stream.read.html#supported-formats>`__ of ObsPy writer. By default (``None``), the format will be the binary waveform.
         :type format: :class:`str`
+        :param fill_value: Fill value for gaps. Defaults to None. Traces will be converted to NumPy masked arrays if no value is given and gaps are present.
+        :type fill_value: :class:`int`, :class:`float` or None
         """
         if not isinstance(mspass_object, (TimeSeries, Seismogram)):
             raise TypeError("only TimeSeries and Seismogram are supported")
@@ -2851,9 +2866,9 @@ class Database(pymongo.database.Database):
                 flh = io.BytesIO(fh.read(nbytes))
                 st = obspy.read(flh, format=format)
                 if isinstance(mspass_object, TimeSeries):
-                    # st is a "stream" but it only has one member here because we are
-                    # reading single net,sta,chan,loc grouping defined by the index
-                    # We only want the Trace object not the stream to convert
+                    # st is a "stream" but it may contains multiple Trace objects gaps
+                    # but here we want only one TimeSeries, we merge these Trace objects and fill values for gaps
+                    st = st.merge(fill_value=fill_value)
                     tr = st[0]
                     # Now we convert this to a TimeSeries and load other Metadata
                     # Note the exclusion copy and the test verifying net,sta,chan,
