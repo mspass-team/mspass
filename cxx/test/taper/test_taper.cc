@@ -1,4 +1,7 @@
 #include <iostream>
+#include <sstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 #include "mspass/utility/ErrorLogger.h"
 #include "mspass/utility/dmatrix.h"
 #include "mspass/algorithms/Taper.h"
@@ -55,6 +58,18 @@ int main(int argc, char **argv)
   cout << "Setup finished - Starting tests of tapers"<<endl
     << "Trying a front mute linear taper"<<endl;
   LinearTaper tfront(4.0,14.0,500.0,450.0);
+  cout << "Testing serialization"<<endl;
+  ostringstream oss;
+  boost::archive::text_oarchive oa(oss);
+  oa << tfront;
+  LinearTaper tcopy;
+  istringstream iss(oss.str());
+  boost::archive::text_iarchive ia(iss);
+  ia >> tcopy;
+  assert(tfront.get_t0head() == tcopy.get_t0head());
+  assert(tfront.get_t1head() == tcopy.get_t1head());
+  assert(tfront.get_t0tail() == tcopy.get_t0tail());
+  assert(tfront.get_t1tail() == tcopy.get_t1tail());
   TimeSeries ts1(ts);
   Seismogram seis1(seis0);
   int iret;
@@ -103,6 +118,18 @@ int main(int argc, char **argv)
   cout << "Starting similar tests for cosine taper"<<endl;
 
   CosineTaper tcfront(4.0,14.0,500.0,450.0);
+  cout << "Testing serialization of Cosine taper"<<endl;
+  /* This seems necessary to clear reinitialize the ostringstream */
+  oss.str("");
+  oa << tcfront;
+  CosineTaper tccopy;
+  iss = istringstream(oss.str());
+  ia >> tccopy;
+  assert(tcfront.get_t0head() == tccopy.get_t0head());
+  assert(tcfront.get_t1head() == tccopy.get_t1head());
+  assert(tcfront.get_t0tail() == tccopy.get_t0tail());
+  assert(tcfront.get_t1tail() == tccopy.get_t1tail());
+
   ts1=ts;
   seis1=seis0;
   cout << "Trying cosine front end taper"<<endl;
@@ -159,4 +186,12 @@ int main(int argc, char **argv)
     cout << "Data from test number "<<i<<endl;
     cout << dtmp;
   }
+  /* Testing TopMute variant - this test is incomplete.  A python test is
+  needed to test pickle of ths object*/
+  TopMute mute(4.0,14.0,string("linear"));
+  TopMute cmute(4.0,14.0,string("cosine"));
+  assert(mute.get_t0() == 4.0);
+  assert(mute.get_t1() == 14.0);
+  assert(cmute.get_t0() == 4.0);
+  assert(cmute.get_t1() == 14.0);
 }

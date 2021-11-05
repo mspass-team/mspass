@@ -9,6 +9,8 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+
 
 #include "mspass/seismic/TimeSeries.h"
 #include "mspass/seismic/Seismogram.h"
@@ -46,7 +48,12 @@ public:
       return true;
     }
     return false;
-  }
+  };
+  /* These virtual methods are a bit of a design flaw as they don't
+  apply well to the vector taper, but we implement them there to just
+  throw an exception */
+  virtual double get_t0head()=0;
+  virtual double get_t1head()=0;
 protected:
   /* A taper can be head, tail, or all.  For efficiency it is required
   implementations set these three booleans.   head or tail may be true.
@@ -157,6 +164,8 @@ public:
     if(taper.size()>0) all=true;
   };
   std::vector<double> get_taper(){return taper;};
+  double get_t0head(){std::cerr << "get_t0head not implemented for VectorTaper";return 0.0;};
+  double get_t1head(){std::cerr << "get_t1head not implemented for VectorTaper";return 0.0;};
 private:
   std::vector<double> taper;
   friend class boost::serialization::access;
@@ -216,6 +225,11 @@ public:
   int apply(mspass::seismic::TimeSeries& d);
   /*! Apply the operator to a Seismogram object. */
   int apply(mspass::seismic::Seismogram& d);
+  double get_t0() const
+  {return taper->get_t0head();};
+  double get_t1() const
+  {return taper->get_t1head();};
+  std::string taper_type() const;
 private:
   /* We use a shared_ptr to the base class.  That allows inheritance to
   handle the actual form - a classic oop use of a base class. the shared_ptr
@@ -224,6 +238,20 @@ private:
   however, as not sure how this would be handled by spark or dask.   this is
   in that pickable realm.*/
   std::shared_ptr<BasicTaper> taper;
+  /* I tried this but couldn't make it work.   It compiles but dies at
+  runtime with mysterious errors for me.   Internet conversations suggest
+  shared_ptr data with polymorphic types like this is problematic.
+  For mspass the python bindings with pickle are more what is needed anyway
+  so serialization of TopMute is purely done in the pybind11 wrappers.
+  Turns out to be easy because the TopMute taper is actually define donly
+  by two paramters (t0head and t1head).
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version)
+  {
+    ar & taper;
+  };
+  */
 };
 } // End namespace
 #endif // End guard

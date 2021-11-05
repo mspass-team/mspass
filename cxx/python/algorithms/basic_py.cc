@@ -35,6 +35,22 @@ public:
         Seismogram &,
         d);
   }
+  double get_t0head()
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicTaper,
+      get_t0head
+    );
+  }
+  double get_t1head()
+  {
+    PYBIND11_OVERLOAD_PURE(
+      double,
+      BasicTaper,
+      get_t1head
+    );
+  }
 };
 
 PYBIND11_MODULE(basic, m) {
@@ -231,6 +247,23 @@ PYBIND11_MODULE(basic, m) {
       "Apply to a TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),
       "Apply to a Seismogram object")
+    .def(py::pickle(
+        [](const TopMute &self) {
+          double t0,t1;
+          t0=self.get_t0();
+          t1=self.get_t1();
+          string taper_type(self.taper_type());
+          return py::make_tuple(t0,t1,taper_type);
+        },
+        [](py::tuple t) {
+          double t0,t1;
+          std::string taper_type;
+          t0 = t[0].cast<double>();
+          t1 = t[1].cast<double>();
+          taper_type = t[2].cast<std::string>();
+          return TopMute(t0,t1,taper_type);
+        }
+       ))
   ;
 }
 
