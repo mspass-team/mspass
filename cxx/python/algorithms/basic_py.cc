@@ -1,6 +1,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include <sstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
 #include <mspass/algorithms/algorithms.h>
 #include <mspass/algorithms/Butterworth.h>
 #include <mspass/algorithms/Taper.h>
@@ -207,20 +211,52 @@ PYBIND11_MODULE(basic, m) {
   ;
   py::class_<BasicTaper,PyBasicTaper>(m,"BasicTaper",
                     "Base class for family of taper algorithms")
+      /* BasicTaper is a nearly pure abstract type.   It has some
+      nonvirtual methods but we don't need them in mspass we will not define
+      them in these binds.  The following is a residual from trying (incorrectly)
+      to define the virtual methods.
     .def(py::init<>())
-    /* note sure virtual classes need a definition here */
-    /*
     .def("apply",py::overload_cast<TimeSeries&>(&BasicTaper::apply),
         "TimeSeries overload of base class")
     .def("apply",py::overload_cast<Seismogram&>(&BasicTaper::apply))
+    .def("get_t0head",&BasicTaper::get_t0head)
+    .def("get_t1head",&BasicTaper::get_t1head)
     */
   ;
   py::class_<LinearTaper,BasicTaper>(m,"LinearTaper",
       "Define a ramp taper function")
     .def(py::init<>())
     .def(py::init<const double, const double, const double, const double>())
-    .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),"Apply taper to a scalar TimeSeries object")
-    .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),"Apply taper to a Seismogram (3C) object")
+    .def("apply",py::overload_cast<TimeSeries&>(&LinearTaper::apply),
+      "Apply taper to a scalar TimeSeries object")
+    .def("apply",py::overload_cast<Seismogram&>(&LinearTaper::apply),
+      "Apply taper to a Seismogram (3C) object")
+    .def("get_t0head",&LinearTaper::get_t0head,
+      "Return time of end of zero zone - taper sets data with time < this value 0")
+    .def("get_t1head",&LinearTaper::get_t1head,
+      "Return time of end front end taper - point after this time are not altered until end taper zone is reached")
+    .def("get_t0tail",&LinearTaper::get_t0tail,
+      "Return time of taper end - data with t > this value will be zeroed")
+    .def("get_t1tail",&LinearTaper::get_t1tail,
+      "Return start time of end taper")
+    .def(py::pickle(
+        [](const LinearTaper &self) {
+          double t0h,t1h,t1t,t0t;
+          t0h=self.get_t0head();
+          t1h=self.get_t1head();
+          t0t=self.get_t0tail();
+          t1t=self.get_t1tail();
+          return py::make_tuple(t0h,t1h,t1t,t0t);
+        },
+        [](py::tuple t) {
+          double t0h,t1h,t1t,t0t;
+          t0h = t[0].cast<double>();
+          t1h = t[1].cast<double>();
+          t1t = t[2].cast<double>();
+          t0t = t[3].cast<double>();
+          return LinearTaper(t0h,t1h,t1t,t0t);
+        }
+       ))
   ;
   py::class_<CosineTaper,BasicTaper>(m,"CosineTaper",
       "Define a taper using a half period cosine function")
@@ -228,6 +264,32 @@ PYBIND11_MODULE(basic, m) {
     .def(py::init<const double, const double, const double, const double>())
     .def("apply",py::overload_cast<TimeSeries&>(&CosineTaper::apply),"Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&CosineTaper::apply),"Apply taper to a Seismogram (3C) object")
+    .def("get_t0head",&CosineTaper::get_t0head,
+      "Return time of end of zero zone - taper sets data with time < this value 0")
+    .def("get_t1head",&CosineTaper::get_t1head,
+      "Return time of end front end taper - point after this time are not altered until end taper zone is reached")
+    .def("get_t0tail",&CosineTaper::get_t0tail,
+      "Return time of taper end - data with t > this value will be zeroed")
+    .def("get_t1tail",&CosineTaper::get_t1tail,
+      "Return start time of end taper")
+    .def(py::pickle(
+        [](const CosineTaper &self) {
+          double t0h,t1h,t1t,t0t;
+          t0h=self.get_t0head();
+          t1h=self.get_t1head();
+          t0t=self.get_t0tail();
+          t1t=self.get_t1tail();
+          return py::make_tuple(t0h,t1h,t1t,t0t);
+        },
+        [](py::tuple t) {
+          double t0h,t1h,t1t,t0t;
+          t0h = t[0].cast<double>();
+          t1h = t[1].cast<double>();
+          t1t = t[2].cast<double>();
+          t0t = t[3].cast<double>();
+          return CosineTaper(t0h,t1h,t1t,t0t);
+        }
+       ))
   ;
   py::class_<VectorTaper,BasicTaper>(m,"VectorTaper",
       "Define generic taper function with a parallel vector of weights")
@@ -237,6 +299,24 @@ PYBIND11_MODULE(basic, m) {
       "Apply taper to a scalar TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&VectorTaper::apply),
         "Apply taper to a Seismogram (3C) object")
+    .def(py::pickle(
+      [](const VectorTaper& self)
+      {
+        ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << self;
+        return py::make_tuple(oss.str());
+      },
+      [](py::tuple t)
+      {
+        string serialized_taper(t[0].cast<string>());
+        istringstream iss(serialized_taper);
+        boost::archive::text_iarchive ia(iss);
+        VectorTaper taper;
+        ia >> taper;
+        return taper;
+      }
+    ))
   ;
   py::class_<TopMute>(m,"_TopMute",
     "Defines a top mute operator (one sided taper")
@@ -247,6 +327,12 @@ PYBIND11_MODULE(basic, m) {
       "Apply to a TimeSeries object")
     .def("apply",py::overload_cast<Seismogram&>(&TopMute::apply),
       "Apply to a Seismogram object")
+    .def("get_t0",&TopMute::get_t0,
+      "Return the zero end time for marking the start of the mute")
+    .def("get_t1",&TopMute::get_t1,
+      "Return the time the mute goes to 1 - the end time of the taper")
+    .def("taper_type",&TopMute::taper_type,
+       "Return a string defining type of taper defining this mute")
     .def(py::pickle(
         [](const TopMute &self) {
           double t0,t1;
