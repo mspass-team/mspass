@@ -148,16 +148,11 @@ by wrapping C code.</p>
 <p>&#64;author: Gary Pavlis</p>
 <dl class="py function">
 <dt id="mspasspy.algorithms.RFdeconProcessor.RFdecon">
-<code class="sig-prename descclassname">mspasspy.algorithms.RFdeconProcessor.</code><code class="sig-name descname">RFdecon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">processor</span></em>, <em class="sig-param"><span class="n">wavelet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noisedata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wcomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">ncomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'RFdecon'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition"></a></dt>
+<code class="sig-prename descclassname">mspasspy.algorithms.RFdeconProcessor.</code><code class="sig-name descname">RFdecon</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">alg</span><span class="o">=</span><span class="default_value">'LeastSquares'</span></em>, <em class="sig-param"><span class="n">pf</span><span class="o">=</span><span class="default_value">'RFdeconProcessor.pf'</span></em>, <em class="sig-param"><span class="n">wavelet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">noisedata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">wcomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">ncomp</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">object_history</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">alg_name</span><span class="o">=</span><span class="default_value">'RFdecon'</span></em>, <em class="sig-param"><span class="n">alg_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dryrun</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/algorithms/RFdeconProcessor.html#RFdecon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.algorithms.RFdeconProcessor.RFdecon" title="Permalink to this definition"></a></dt>
 <dd><p>Use this function to compute conventional receiver functions
-from a single three component seismogram.  The type of
-processor is defined by the processor argument that is expected
-to be an instance of the wrapper class RFdeconProcessor. In
-mspass the processor class should be created and stored as a
-global variable and passed to this function within a
-spark map operator.  That allows the processing to proceed in
-parallel without the overhead of creating the processor
-definition for each seismogram.</p>
+from a single three component seismogram. In this function,
+an instance of wrapper class RFdeconProcessor will be built and
+initialized with alg and pf.</p>
 <p>Default assumes d contains all data sections required to do
 the deconvolution with the wavelet in component 2 (3 for matlab
 and FORTRAN people).  By default the data and noise
@@ -188,13 +183,15 @@ normally set a unique id for the algid argument.</p>
 </dd>
 </dl>
 <p>time span of these data.
-:param processor:  RFdeconProcessor object defining algorithm</p>
+:param alg: The algorithm to be applied, used for initializing</p>
 <blockquote>
-<div><p>to be applied (see related documentation for details).</p>
+<div><p>a RFdeconProcessor object</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>pf</strong> – The pf file to be parsed, used for inititalizing a
+RFdeconProcessor</p></li>
 <li><p><strong>wavelet</strong> – vector of doubles (numpy array or the
 std::vector container internal to TimeSeries object) defining
 the wavelet to use to compute deconvolution operator.

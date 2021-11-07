@@ -143,6 +143,18 @@
 <span id="converter"></span><h2>converter<a class="headerlink" href="#module-mspasspy.util.converter" title="Permalink to this headline"></a></h2>
 <p>Functions for converting to and from MsPASS data types.</p>
 <dl class="py function">
+<dt id="mspasspy.util.converter.AntelopePf2dict">
+<code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">AntelopePf2dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pf</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#AntelopePf2dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.AntelopePf2dict" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a AntelopePf object to a Python dict.
+This converts a AntelopePf object to a Python dict by recursively
+decoding the tbls.
+:param pf: AntelopePf object to convert.
+:type md: <code class="xref py py-class docutils literal notranslate"><span class="pre">AntelopePf</span></code>
+:return: Python dict equivalent to md.
+:rtype: dict</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="mspasspy.util.converter.Metadata2dict">
 <code class="sig-prename descclassname">mspasspy.util.converter.</code><code class="sig-name descname">Metadata2dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">md</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mspasspy/util/converter.html#Metadata2dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mspasspy.util.converter.Metadata2dict" title="Permalink to this definition"></a></dt>
 <dd><p>Converts a Metadata object to a Python dict.</p>
