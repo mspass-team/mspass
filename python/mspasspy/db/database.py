@@ -9,8 +9,9 @@ import pickle
 import struct
 import urllib.request
 from array import array
-
+import pandas as pd
 import dask.bag as daskbag
+import dask.dataframe as daskdf
 import gridfs
 import pymongo
 import numpy as np
@@ -33,7 +34,7 @@ from mspasspy.ccore.utility import (Metadata,
                                     dmatrix,
                                     ProcessingHistory)
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
-
+from mspasspy.util.converter import Textfile2Dataframe
 
 def read_distributed_data(db, cursor, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
                           format='dask', npartitions=None, spark_context=None, data_tag=None):
@@ -3904,3 +3905,85 @@ class Database(pymongo.database.Database):
             doc['dir'] = odir
             doc['dfile'] = dfile
             dbh.insert_one(doc)
+
+    def save_dataframe(self, collection, df, parallel, one_to_one=True):
+        """
+        Tansfer a dataframe into a set of documents, and store them
+        in a specified collection. In one_to_one mode every row in the
+        dataframe will be saved into the mongodb, otherwise duplicates
+        would be discarded.
+        The dataframe will first call dropna to eliminate None values stored
+        in it, so that after it is transfered into a document, the memory
+        usage will be reduced.
+        :param collection:  MongoDB collection name to be used to save the
+        (often subsetted) tuples of filename as documents in this collection.
+        :param one_to_one: a boolean to control if the set should be filtered by
+        rows.  The default is True which means every row in the dataframe will
+        create a single MongoDB document. If False the (normally reduced) set
+        of attributes defined by attributes_to_use will be filtered with the
+        panda/dask dataframe drop_duplicates method before converting the
+        dataframe to documents and saving them to MongoDB.  That approach
+        is important, for example, to filter things like Antelope "site" or
+        "sitechan" attributes created by a join to something like wfdisc and
+        saved as a text file to be processed by this function.
+        :df: Pandas.Dataframe object, the input to be transfered into mongodb 
+        documents
+        :parallel:  a boolean that determine if dask api will be used for operation
+        on the dataframe
+        :param one_to_one: a boolean to control if the duplicate should be deleted
+        :return:  integer count of number of documents added to collection
+        """
+        dbcol = self[collection]
+
+        if not one_to_one:
+            df = df.drop_duplicates()
+        
+        if parallel:
+            df = daskdf.from_pandas(df, chunksize=1, sort=False)
+            df.apply(lambda x: dbcol.insert_one(x.dropna().to_dict()), axis=1, meta=(None, 'object')).compute()
+            return df.shape[0].compute()
+        else:
+            df = df.apply(pd.Series.dropna, axis=1)
+            doc_list = df.to_dict(orient='records')
+            if len(doc_list):
+                dbcol.insert_many(doc_list)
+            return len(doc_list)
+
+
+    def save_textfile(
+        self,
+        filename,
+        collection="textfile",
+        type_dict=None,
+        separator = "\s+",
+        header_line=0,
+        attribute_names=None,
+        rename_attributes=None,
+        attributes_to_use=None,
+        null_values=None,
+        one_to_one=True,
+        parallel=False,
+        insert_column=None,
+    ):
+        """
+        Import and parse a textfile into set of documents, and store them
+        into a mongodb collection. This function consists of two steps:
+        1. Textfile2Dataframe: Convert the input textfile into a Pandas dataframe
+        2. save_dataframe: Insert the documents in that dataframe into a mongodb 
+        collection
+        The definition of the arguments can be found in these two functions.
+        """
+        df = Textfile2Dataframe(
+            filename=filename,
+            separator=separator,
+            type_dict=type_dict,
+            header_line=header_line,
+            attribute_names=attribute_names,
+            rename_attributes=rename_attributes,
+            attributes_to_use=attributes_to_use,
+            null_values=null_values,
+            one_to_one=one_to_one,
+            parallel=parallel,
+            insert_column=insert_column
+        )
+        return self.save_dataframe(collection, df, parallel, one_to_one)

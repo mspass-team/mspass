@@ -482,7 +482,7 @@ def TimeSeriesEnsemble2Stream(tse):
 TimeSeriesEnsemble.toStream = TimeSeriesEnsemble2Stream
 
 
-def Pf2AttrabuteNameTbl(pf, tag="attributes"):
+def Pf2AttributeNameTbl(pf, tag="attributes"):
     """
     This function will parse a pf file to extract a tbl with a specific
     key and return a data structure that defines the names and types of
