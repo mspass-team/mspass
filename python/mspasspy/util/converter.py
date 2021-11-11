@@ -598,14 +598,14 @@ def Textfile2Dataframe(
       None which is taken to mean no selection is to be done.
     :param null_values:  is an optional dict defining null field values.
       When used an == test is applied to each attribute with a key
-      defined in the null_vlaues python dict.  If == returns True, the 
+      defined in the null_vlaues python dict.  If == returns True, the
       value will be set as None in dataframe. If your table has a lot of null
-      fields this option can save space, but readers must not require the null 
-      field.  The default is None which it taken to mean there are no null 
+      fields this option can save space, but readers must not require the null
+      field.  The default is None which it taken to mean there are no null
       fields defined.
     :param one_to_one: is an important boolean use to control if the
       output is or is not filtered by rows.  The default is True
-      which means every tuple in the input file will create a single row in 
+      which means every tuple in the input file will create a single row in
       dataframe. (Useful, for example, to construct an wf_miniseed
       collection css3.0 attributes.)  If False the (normally reduced) set
       of attributes defined by attributes_to_use will be filtered with the
@@ -623,15 +623,19 @@ def Textfile2Dataframe(
     length as the number of tuples in the table.
     """
 
-    if attribute_names is not None and len(attribute_names) > 0:    #   If given attribute_names, header_line would be overriden
+    if (
+        attribute_names is not None and len(attribute_names) > 0
+    ):  #   If given attribute_names, header_line would be overriden
         header_line = None
 
-    if header_line is None or header_line < 0:  #   Header_line not given, using attribute_names
+    if (
+        header_line is None or header_line < 0
+    ):  #   Header_line not given, using attribute_names
         if parallel:
             df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
         else:
             df = pd.read_csv(filename, sep=separator, names=attribute_names)
-    else:   #   header_line is given and attribute_names is not given
+    else:  #   header_line is given and attribute_names is not given
         if parallel:
             df = daskdf.read_csv(filename, sep=separator, header=header_line)
         else:
@@ -658,7 +662,7 @@ def Textfile2Dataframe(
                 continue
             else:
                 df[key] = df[key].mask(df[key] == val, None)
-                # df[key] = df[key].apply(lambda a: None if (a == val) else a) 
+                # df[key] = df[key].apply(lambda a: None if (a == val) else a)
 
     #   Intentionally left to last as the above can reduce the size of df
     if rename_attributes is not None:
