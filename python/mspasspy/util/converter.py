@@ -584,17 +584,6 @@ def Textfile2Dataframe(
       and this argument (attribute_names) is defined all the names in
       this list will override those stored in the file at the specified
       line number.
-    :param attribute_names: This argument must be either a list of (unique)
-      string names to define the attribute name tags for each column of the
-      input table.   The length of the array must match the number of
-      columns in the input table or this function will throw a MsPASSError
-      exception.   This argument is None by default which means the
-      function will assume the line specified by the "header_line" argument as
-      column headers defining the attribute name.  If header_line is less
-      than 0 this argument will be required.  When header_line is >= 0
-      and this argument (attribute_names) is defined all the names in
-      this list will override those stored in the file at the specified
-      line number.
     :param  rename_attributes:   This is expected to be a python dict
       keyed by names matching those defined in the file or attribute_names
       array (i.e. the panda/dataframe column index names) and values defining
@@ -634,26 +623,19 @@ def Textfile2Dataframe(
     length as the number of tuples in the table.
     """
 
-    if header_line < 0:
+    if attribute_names is not None and len(attribute_names) > 0:    #   If given attribute_names, header_line would be overriden
+        header_line = None
+
+    if header_line is None or header_line < 0:  #   Header_line not given, using attribute_names
         if parallel:
             df = daskdf.read_csv(filename, sep=separator, names=attribute_names)
         else:
             df = pd.read_csv(filename, sep=separator, names=attribute_names)
-    else:
+    else:   #   header_line is given and attribute_names is not given
         if parallel:
-            if attribute_names is not None and len(attribute_names) > 0:
-                df = daskdf.read_csv(
-                    filename, sep=separator, names=attribute_names, header=header_line
-                )
-            else:
-                df = daskdf.read_csv(filename, sep=separator, header=header_line)
+            df = daskdf.read_csv(filename, sep=separator, header=header_line)
         else:
-            if attribute_names is not None and len(attribute_names) > 0:
-                df = pd.read_csv(
-                    filename, sep=separator, names=attribute_names, header=header_line
-                )
-            else:
-                df = pd.read_csv(filename, sep=separator, header=header_line)
+            df = pd.read_csv(filename, sep=separator, header=header_line)
 
     #   Convert data in each column to the type given in type_dict
     if type_dict is not None:
@@ -667,18 +649,16 @@ def Textfile2Dataframe(
     if not one_to_one:
         df = df.drop_duplicates()
 
+    df = df.astype(object)
+
     #   For those null values, set them to None
     if null_values is not None:
         for key, val in null_values.items():
             if key not in df:
                 continue
             else:
-                if parallel:
-                    #   Transfer the type of elements in df to object, to help operate on dask df
-                    df = df.astype(object)
-                    df[key] = df[key].mask(df[key] == val, None)
-                else:
-                    df[key] = df[key].apply(lambda a: None if (a == val) else a)  
+                df[key] = df[key].mask(df[key] == val, None)
+                # df[key] = df[key].apply(lambda a: None if (a == val) else a) 
 
     #   Intentionally left to last as the above can reduce the size of df
     if rename_attributes is not None:

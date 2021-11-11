@@ -3940,14 +3940,14 @@ class Database(pymongo.database.Database):
         
         if parallel:
             df = daskdf.from_pandas(df, chunksize=1, sort=False)
-            df.apply(lambda x: dbcol.insert_one(x.dropna().to_dict()), axis=1, meta=(None, 'object')).compute()
-            return df.shape[0].compute()
+            df = df.apply(lambda x: x.dropna(), axis=1).compute()
         else:
             df = df.apply(pd.Series.dropna, axis=1)
-            doc_list = df.to_dict(orient='records')
-            if len(doc_list):
-                dbcol.insert_many(doc_list)
-            return len(doc_list)
+            
+        doc_list = df.to_dict(orient='records')
+        if len(doc_list):
+            dbcol.insert_many(doc_list)
+        return len(doc_list)
 
 
     def save_textfile(

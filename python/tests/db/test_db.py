@@ -10,22 +10,11 @@ import sys
 import re
 import collections
 
-from mspasspy.util.converter import TimeSeries2Trace
-from mspasspy.ccore.seismic import (
-    Seismogram,
-    TimeSeries,
-    TimeSeriesEnsemble,
-    SeismogramEnsemble,
-    DoubleVector,
-)
-from mspasspy.ccore.utility import (
-    dmatrix,
-    ErrorSeverity,
-    Metadata,
-    MsPASSError,
-    ProcessingHistory,
-    AtomicType,
-)
+from  mspasspy.util.converter import (TimeSeries2Trace,
+                                     Pf2AttributeNameTbl,
+                                     Textfile2Dataframe)
+from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble
+from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory, AtomicType, AntelopePf
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
@@ -1733,6 +1722,46 @@ class TestDatabase():
         assert ts['channel_starttime'] == 1.0
         assert ts['channel_endtime'] == 1.0
     
+    def test_save_dataframe(self):
+        dir = 'python/tests/data/'
+        pffile = 'test_import.pf'
+        textfile = "testdb.wfprocess"
+
+        pf=AntelopePf(os.path.join(dir, pffile))
+        attributes = Pf2AttributeNameTbl(pf, tag='wfprocess')
+        df = Textfile2Dataframe(os.path.join(dir, textfile), attribute_names=attributes[0], parallel=False, one_to_one=True)
+        save_num = self.db.save_dataframe('testdataframe', df, parallel=True, one_to_one=True)
+
+        assert save_num == 652
+        assert self.db['testdataframe'].count_documents({}) == 652
+
+        query = {'pwfid' : 3103}
+        cursor = self.db.testdataframe.find(query)
+        assert cursor.count() == 1
+        
+        query = {'pwfid' : 3752}
+        cursor = self.db.testdataframe.find(query)
+        assert cursor.count() == 2
+
+    def test_save_textfile(self):
+        dir = 'python/tests/data/'
+        pffile = 'test_import.pf'
+        textfile = "testdb.wfprocess"
+
+        pf=AntelopePf(os.path.join(dir, pffile))
+        attributes = Pf2AttributeNameTbl(pf, tag='wfprocess')
+        save_num = self.db.save_textfile(os.path.join(dir, textfile), collection="testtextfile", attribute_names=attributes[0], parallel=True, one_to_one=False)
+        
+        assert save_num == 651
+        assert self.db['testtextfile'].count_documents({}) == 651
+
+        query = {'pwfid' : 3103}
+        cursor = self.db.testtextfile.find(query)
+        assert cursor.count() == 1
+        
+        query = {'pwfid' : 3752}
+        cursor = self.db.testtextfile.find(query)
+        assert cursor.count() == 1
 
 def test_read_distributed_data(spark_context):
     client = DBClient('localhost')

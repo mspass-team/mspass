@@ -8,7 +8,8 @@ from helper import (get_live_timeseries_ensemble,
                     get_live_seismogram_ensemble)
 
 from mspasspy.ccore.utility import (dmatrix,
-                                    Metadata)
+                                    Metadata,
+                                    AntelopePf)
 from mspasspy.ccore.seismic import (DoubleVector,
                                     Seismogram,
                                     TimeSeries)
@@ -17,7 +18,9 @@ from mspasspy.util.converter import (dict2Metadata,
                                      TimeSeries2Trace,
                                      Seismogram2Stream,
                                      Trace2TimeSeries,
-                                     Stream2Seismogram)
+                                     Stream2Seismogram,
+                                     Pf2AttributeNameTbl,
+                                     Textfile2Dataframe)
 
 def setup_function(function):
     ts_size = 255    
@@ -223,3 +226,52 @@ def test_SeismogramEnsemble_as_Stream():
     assert seis_e_c['foo'] == 'bar'
     assert seis_e_c['fake_lat'] == 22.4
     assert seis_e_c['fake_evid'] == 9999
+
+
+
+def test_Pf2AttributeNameTbl():
+    pf=AntelopePf('python/tests/data/test_import.pf')
+    attributes = Pf2AttributeNameTbl(pf, tag='wfprocess')
+    names = attributes[0]
+    types = attributes[1]
+    nullvals = attributes[2]
+
+    assert names == ['pwfid', 'starttime', 'endtime', 'time_standard', 'dir', 'dfile', 'foff', 'dtype', 'samprate', 'unkwown', 'algorithm', 'lddate']
+    assert len(types) == 12
+    assert len(nullvals) == 12
+    assert types == [int, float, float, str, str, str, int, str, float, int, str, float]
+    assert nullvals['pwfid'] == -1
+
+
+def test_Textfile2Dataframe():
+    pf=AntelopePf('python/tests/data/test_import.pf')
+    attributes=Pf2AttributeNameTbl(pf,tag='wfprocess')
+    names = attributes[0]
+    nullvals = attributes[2]
+
+    textfile = "python/tests/data/testdb.wfprocess"
+
+    for p in [True, False]:
+        df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p)
+        assert df.shape[0] == 652
+        assert df.shape[1] == 12
+        assert df.iloc[1].values.tolist() == [3103, 1577912954.62975, 1577913089.7297499, 'a', 'simdata',
+        'simdata_22', 97308.0, 'c3', 20.0, 2703, 'migsimulation', 1263164975.47328]
+
+        #   Test setting null values
+        df = Textfile2Dataframe(textfile, attribute_names=names, null_values=nullvals, parallel=p)
+        assert df.shape[0] == 652
+        assert df.shape[1] == 12
+        assert df.iloc[0].values.tolist() == [3102, 1577912967.53105, 1577913102.63105, 'a', 'simdata',
+        'simdata_22', None, 'c3', 20.0, 2703, 'migsimulation', 1263164975.3866]
+
+        #   Test turning off one_to_one
+        df = Textfile2Dataframe(textfile, attribute_names=names, one_to_one=False, parallel=p)
+        assert df.shape[0] == 651
+        assert df.shape[1] == 12    
+
+        #   Test add column
+        df = Textfile2Dataframe(textfile, attribute_names=names, parallel=p, insert_column={'test_col':1})
+        assert df.shape[0] == 652
+        assert df.shape[1] == 13
+        assert df.at[0, 'test_col'] == 1
