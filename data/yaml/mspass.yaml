@@ -230,6 +230,44 @@ Database:
         reference: channel
         constraint: xref_key
 
+  wf_miniseed_fdsn:
+    data_type: TimeSeries
+    schema:
+      <<: *wf_TimeSeries
+      url:
+        # the current reader doesn't support reading from a url but 
+        # if iris web services were faster it would be useful so we stub it here
+        type: string
+        concept: Url to external data file.
+        constraint: optional
+      provider:
+        type: string
+        concept: FDSN provider
+        constraint: normal
+      year:
+        type: string
+        concept: year for query
+        constraint: normal
+      day_of_year:
+        type: string
+        concept: day_of_year for query
+        constraint: normal
+      net:
+        reference: site
+        constraint: normal
+      sta:
+        reference: site
+        constraint: normal
+      loc:
+        reference: channel
+        constraint: normal
+      chan:
+        reference: channel
+        constraint: normal
+      channel_id:
+        reference: channel
+        constraint: xref_key
+
   site:
     schema:
       _id:

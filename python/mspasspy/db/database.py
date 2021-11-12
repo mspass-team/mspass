@@ -16,6 +16,7 @@ import gridfs
 import pymongo
 import numpy as np
 import obspy
+from obspy.clients.fdsn import Client
 from obspy import Inventory
 from obspy import UTCDateTime
 import boto3, botocore
@@ -541,6 +542,8 @@ class Database(pymongo.database.Database):
                     mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
             elif storage_mode == "s3":
                 self._read_data_from_s3(mspass_object, aws_access_key_id, aws_secret_access_key)
+            elif storage_mode == "fdsn":
+                self._read_data_from_fdsn(mspass_object)
             else:
                 raise TypeError("Unknown storage mode: {}".format(storage_mode))
 
@@ -3602,6 +3605,32 @@ class Database(pymongo.database.Database):
 
         except Exception as e:
             raise MsPASSError("Error while read data from s3.", "Fatal") from e
+    
+    def _read_data_from_fdsn(self, mspass_object):
+        provider = mspass_object['provider']
+        year = mspass_object['year']
+        day_of_year = mspass_object['day_of_year']
+        network = mspass_object['net']
+        station = mspass_object['sta']
+        channel = mspass_object['chan']
+        location = ""
+        if 'loc' in mspass_object:
+            location = mspass_object['loc']
+
+        client = Client(provider)
+        t = UTCDateTime(year + day_of_year, iso8601=True)
+        st = client.get_waveforms(network, station, location, channel, t, t + 60 * 60 * 24)
+        # there could be more than 1 trace object in the stream, merge the traces
+        st.merge()
+            
+        if isinstance(mspass_object, TimeSeries):
+            tr = st[0]
+            mspass_object.npts = len(tr.data)
+            mspass_object.data = DoubleVector(tr.data)
+        elif isinstance(mspass_object, Seismogram):
+            sm = st.toSeismogram(cardinal=True)
+            mspass_object.npts = sm.data.columns()
+            mspass_object.data = sm.data
 
     @staticmethod
     def _read_data_from_url(mspass_object, url, format=None):
@@ -4855,24 +4884,24 @@ class Database(pymongo.database.Database):
             st = obspy.read(stringio_obj)
             # there could be more than 1 trace object in the stream, merge the traces
             st.merge()
-            for i in range(len(st)):
-                stats = st[i].stats
-                doc = dict()
-                doc['year'] = year
-                doc['day_of_year'] = day_of_year
-                doc['sta'] = stats['station']
-                doc['net'] = stats['network']
-                doc['chan'] = stats['channel']
-                if 'location' in stats and stats['location']:
-                    doc['loc'] = stats['location']
-                doc['sampling_rate'] = stats['sampling_rate']
-                doc['delta'] = 1.0 / stats['sampling_rate']
-                doc['starttime'] = stats['starttime'].timestamp
-                if 'npts' in stats and stats['npts']:
-                    doc['npts'] = stats['npts']
-                doc['storage_mode'] = 's3'
-                doc['format'] = 'mseed'
-                dbh.insert_one(doc)
+            
+            stats = st[0].stats
+            doc = dict()
+            doc['year'] = year
+            doc['day_of_year'] = day_of_year
+            doc['sta'] = stats['station']
+            doc['net'] = stats['network']
+            doc['chan'] = stats['channel']
+            if 'location' in stats and stats['location']:
+                doc['loc'] = stats['location']
+            doc['sampling_rate'] = stats['sampling_rate']
+            doc['delta'] = 1.0 / stats['sampling_rate']
+            doc['starttime'] = stats['starttime'].timestamp
+            if 'npts' in stats and stats['npts']:
+                doc['npts'] = stats['npts']
+            doc['storage_mode'] = 's3'
+            doc['format'] = 'mseed'
+            dbh.insert_one(doc)
 
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == "404":
@@ -4883,3 +4912,36 @@ class Database(pymongo.database.Database):
 
         except Exception as e:
             raise MsPASSError("Error while index mseed file from s3.", "Fatal") from e
+
+    def index_mseed_FDSN(self, provider, year, day_of_year, network, station,
+        location, channel, collection='wf_miniseed_fdsn'):
+        dbh = self[collection]
+
+        client = Client(provider)
+        year = str(year)
+        day_of_year = str(day_of_year)
+        if len(day_of_year) < 3:
+            day_of_year = '0' * (3 - len(day_of_year)) + day_of_year
+        t = UTCDateTime(year + day_of_year, iso8601=True)
+        
+        st = client.get_waveforms(network, station, location, channel, t, t + 60 * 60 * 24)
+        # there could be more than 1 trace object in the stream, merge the traces
+        st.merge()
+            
+        stats = st[0].stats
+        doc = dict()
+        doc['provider'] = provider
+        doc['year'] = year
+        doc['day_of_year'] = day_of_year
+        doc['sta'] = station
+        doc['net'] = network
+        doc['chan'] = channel
+        doc['loc'] = location
+        doc['sampling_rate'] = stats['sampling_rate']
+        doc['delta'] = 1.0 / stats['sampling_rate']
+        doc['starttime'] = stats['starttime'].timestamp
+        if 'npts' in stats and stats['npts']:
+            doc['npts'] = stats['npts']
+        doc['storage_mode'] = 'fdsn'
+        doc['format'] = 'mseed'
+        dbh.insert_one(doc)
