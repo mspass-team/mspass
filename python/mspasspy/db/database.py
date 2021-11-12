@@ -344,11 +344,16 @@ class Database(pymongo.database.Database):
             # 1.2.2. normalized key id exists in the wf document
             # 1.2.3. k is not one of the exclude keys
             # 1.2.4. col is in the normalize list provided by user
-            if col and col != wf_collection and col+'_id' in object_doc and k not in exclude_keys and col in normalize:
+            if (
+                col
+                and col != wf_collection
+                and col + "_id" in object_doc
+                and k not in exclude_keys
+                and col in normalize
+            ):
                 # try to find the corresponding record in the normalized collection from the database
                 if col not in col_dict:
-                    col_dict[col] = self[col].find_one(
-                        {'_id': object_doc[col + '_id']})
+                    col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
                 # might unable to find the normalized document by the normalized_id in the object_doc
                 # we skip reading this attribute
                 if not col_dict[col]:
@@ -360,7 +365,11 @@ class Database(pymongo.database.Database):
                 unique_k = self.database_schema[col].unique_name(k)
                 if not unique_k in col_dict[col]:
                     if self.database_schema[col].is_required(unique_k):
-                        log_error_msg.append("Attribute {} is required in collection {}, but is missing in the document with id={}.".format(unique_k, col, object_doc[col + '_id']))
+                        log_error_msg.append(
+                            "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
+                                unique_k, col, object_doc[col + "_id"]
+                            )
+                        )
                     continue
                 md[k] = col_dict[col][unique_k]
 
@@ -458,8 +467,7 @@ class Database(pymongo.database.Database):
 
             # 4.post complaint elog entries if any
             for msg in log_error_msg:
-                mspass_object.elog.log_error(
-                    'read_data', msg, ErrorSeverity.Complaint)
+                mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Complaint)
 
         return mspass_object
 
