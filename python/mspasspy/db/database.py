@@ -203,9 +203,21 @@ class Database(pymongo.database.Database):
         """
         self.database_schema = schema
 
-    def read_data(self, object_id, mode='promiscuous', normalize=None, load_history=False, exclude_keys=None,
-                  collection='wf', data_tag=None, alg_name='read_data', alg_id='0', define_as_raw=False,
-                  retrieve_history_record=False, fill_value=None):
+    def read_data(
+        self,
+        object_id,
+        mode="promiscuous",
+        normalize=None,
+        load_history=False,
+        exclude_keys=None,
+        collection="wf",
+        data_tag=None,
+        alg_name="read_data",
+        alg_id="0",
+        define_as_raw=False,
+        retrieve_history_record=False,
+        fill_value=None,
+    ):
         """
         This is the core MsPASS reader for constructing Seismogram or TimeSeries
         objects from data managed with MondoDB through MsPASS.   It is the
@@ -428,17 +440,26 @@ class Database(pymongo.database.Database):
             # 2.load data from different modes
             storage_mode = object_doc['storage_mode']
             if storage_mode == "file":
-                if 'format' in object_doc:
+                if "format" in object_doc:
                     self._read_data_from_dfile(
-                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'],
-                        nbytes=object_doc['nbytes'], format=object_doc['format'], fill_value=fill_value)
+                        mspass_object,
+                        object_doc["dir"],
+                        object_doc["dfile"],
+                        object_doc["foff"],
+                        nbytes=object_doc["nbytes"],
+                        format=object_doc["format"],
+                        fill_value=fill_value,
+                    )
                 else:
                     self._read_data_from_dfile(
-                        mspass_object, object_doc['dir'], object_doc['dfile'], object_doc['foff'],
-                        fill_value=fill_value)
+                        mspass_object,
+                        object_doc["dir"],
+                        object_doc["dfile"],
+                        object_doc["foff"],
+                        fill_value=fill_value,
+                    )
             elif storage_mode == "gridfs":
-                self._read_data_from_gridfs(
-                    mspass_object, object_doc['gridfs_id'])
+                self._read_data_from_gridfs(mspass_object, object_doc['gridfs_id'])
             elif storage_mode == "url":
                 self._read_data_from_url(
                     mspass_object, object_doc['url'], format=None if 'format' not in object_doc else object_doc['format'])
@@ -2821,7 +2842,9 @@ class Database(pymongo.database.Database):
             return ret_elog_id
 
     @staticmethod
-    def _read_data_from_dfile(mspass_object, dir, dfile, foff, nbytes=0, format=None, fill_value=None):
+    def _read_data_from_dfile(
+        mspass_object, dir, dfile, foff, nbytes=0, format=None, fill_value=None
+    ):
         """
         Read the stored data from a file and loads it into a mspasspy object.
 
@@ -2854,8 +2877,7 @@ class Database(pymongo.database.Database):
                 elif isinstance(mspass_object, Seismogram):
                     if not mspass_object.is_defined('npts'):
                         raise KeyError("npts is not defined")
-                    float_array.frombytes(
-                        fh.read(mspass_object.get('npts') * 8 * 3))
+                    float_array.frombytes(fh.read(mspass_object.get('npts') * 8 * 3))
                     mspass_object.data = dmatrix(3, mspass_object.get('npts'))
                     for i in range(3):
                         for j in range(mspass_object.get('npts')):

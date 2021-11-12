@@ -10,9 +10,22 @@ import sys
 import re
 import collections
 
-from  mspasspy.util.converter import TimeSeries2Trace
-from mspasspy.ccore.seismic import Seismogram, TimeSeries, TimeSeriesEnsemble, SeismogramEnsemble, DoubleVector
-from mspasspy.ccore.utility import dmatrix, ErrorSeverity, Metadata, MsPASSError, ProcessingHistory, AtomicType
+from mspasspy.util.converter import TimeSeries2Trace
+from mspasspy.ccore.seismic import (
+    Seismogram,
+    TimeSeries,
+    TimeSeriesEnsemble,
+    SeismogramEnsemble,
+    DoubleVector,
+)
+from mspasspy.ccore.utility import (
+    dmatrix,
+    ErrorSeverity,
+    Metadata,
+    MsPASSError,
+    ProcessingHistory,
+    AtomicType,
+)
 
 from mspasspy.db.schema import DatabaseSchema, MetadataSchema
 from mspasspy.util import logging_helper
