@@ -554,7 +554,6 @@ def Textfile2Dataframe(
     attribute_names=None,
     rename_attributes=None,
     attributes_to_use=None,
-    null_values=None,
     one_to_one=True,
     parallel=False,
     insert_column=None,
@@ -596,13 +595,6 @@ def Textfile2Dataframe(
       attributes that are to be saved.  For relational db users this is
       effectively a "select" list of attribute names.  The default is
       None which is taken to mean no selection is to be done.
-    :param null_values:  is an optional dict defining null field values.
-      When used an == test is applied to each attribute with a key
-      defined in the null_vlaues python dict.  If == returns True, the
-      value will be set as None in dataframe. If your table has a lot of null
-      fields this option can save space, but readers must not require the null
-      field.  The default is None which it taken to mean there are no null
-      fields defined.
     :param one_to_one: is an important boolean use to control if the
       output is or is not filtered by rows.  The default is True
       which means every tuple in the input file will create a single row in
@@ -652,17 +644,6 @@ def Textfile2Dataframe(
 
     if not one_to_one:
         df = df.drop_duplicates()
-
-    df = df.astype(object)
-
-    #   For those null values, set them to None
-    if null_values is not None:
-        for key, val in null_values.items():
-            if key not in df:
-                continue
-            else:
-                df[key] = df[key].mask(df[key] == val, None)
-                # df[key] = df[key].apply(lambda a: None if (a == val) else a)
 
     #   Intentionally left to last as the above can reduce the size of df
     if rename_attributes is not None:

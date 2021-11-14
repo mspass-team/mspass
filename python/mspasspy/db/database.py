@@ -4497,7 +4497,7 @@ class Database(pymongo.database.Database):
             doc["dfile"] = dfile
             dbh.insert_one(doc)
 
-    def save_dataframe(self, collection, df, parallel, one_to_one=True):
+    def save_dataframe(self, collection, df, parallel, null_values=None, one_to_one=True):
         """
         Tansfer a dataframe into a set of documents, and store them
         in a specified collection. In one_to_one mode every row in the
@@ -4521,20 +4521,44 @@ class Database(pymongo.database.Database):
         documents
         :parallel:  a boolean that determine if dask api will be used for operation
         on the dataframe
+        :param null_values:  is an optional dict defining null field values.
+        When used an == test is applied to each attribute with a key
+        defined in the null_vlaues python dict.  If == returns True, the
+        value will be set as None in dataframe. If your table has a lot of null
+        fields this option can save space, but readers must not require the null
+        field.  The default is None which it taken to mean there are no null
+        fields defined.
         :param one_to_one: a boolean to control if the duplicate should be deleted
         :return:  integer count of number of documents added to collection
         """
         dbcol = self[collection]
 
+        if parallel:
+            df = daskdf.from_pandas(df, chunksize=1, sort=False)
+
         if not one_to_one:
             df = df.drop_duplicates()
+            
+        #   For those null values, set them to None
+        df = df.astype(object)
+        if null_values is not None:
+            for key, val in null_values.items():
+                if key not in df:
+                    continue
+                else:
+                    df[key] = df[key].mask(df[key] == val, None)
 
+        '''
         if parallel:
             df = daskdf.from_pandas(df, chunksize=1, sort=False)
             df = df.apply(lambda x: x.dropna(), axis=1).compute()
         else:
             df = df.apply(pd.Series.dropna, axis=1)
-
+        '''
+        if parallel:
+            df = df.compute()
+            
+        df = df.apply(pd.Series.dropna, axis=1)
         doc_list = df.to_dict(orient="records")
         if len(doc_list):
             dbcol.insert_many(doc_list)
@@ -4571,9 +4595,8 @@ class Database(pymongo.database.Database):
             attribute_names=attribute_names,
             rename_attributes=rename_attributes,
             attributes_to_use=attributes_to_use,
-            null_values=null_values,
             one_to_one=one_to_one,
             parallel=parallel,
             insert_column=insert_column,
         )
-        return self.save_dataframe(collection, df, parallel, one_to_one)
+        return self.save_dataframe(collection, df, parallel, null_values, one_to_one)

@@ -2363,30 +2363,34 @@ class TestDatabase:
     def test_save_dataframe(self):
         dir = "python/tests/data/"
         pffile = "test_import.pf"
-        textfile = "testdb.wfprocess"
+        textfile = "testdb.wfdisc"  
+        #   To test null value and rename feature
 
+        field_list=['sta','chan','starttime','endtime','dir','dfile','foff','datatype','nsamp','samprate','calper','chanid']
+        rename_dict={'datatype' : 'dtype','starttime' : 't0'}
         pf = AntelopePf(os.path.join(dir, pffile))
-        attributes = Pf2AttributeNameTbl(pf, tag="wfprocess")
+        attributes = Pf2AttributeNameTbl(pf, tag="wfdisc")
         df = Textfile2Dataframe(
             os.path.join(dir, textfile),
             attribute_names=attributes[0],
-            parallel=False,
+            attributes_to_use=field_list,
+            rename_attributes=rename_dict,
+            parallel=True,
             one_to_one=True,
         )
+        
         save_num = self.db.save_dataframe(
-            "testdataframe", df, parallel=True, one_to_one=True
+            "testdataframe", df, parallel=True,  one_to_one=True, null_values = attributes[2]
         )
+        assert save_num == 1953
+        assert self.db["testdataframe"].count_documents({}) == 1953
 
-        assert save_num == 652
-        assert self.db["testdataframe"].count_documents({}) == 652
-
-        query = {"pwfid": 3103}
+        query={'sta' : '112A'}
         cursor = self.db.testdataframe.find(query)
-        assert cursor.count() == 1
-
-        query = {"pwfid": 3752}
-        cursor = self.db.testdataframe.find(query)
-        assert cursor.count() == 2
+        assert cursor.count() == 3
+        for doc in cursor:
+            assert 'calper' not in doc
+            assert 'chanid' not in doc
 
     def test_save_textfile(self):
         dir = "python/tests/data/"
@@ -2399,14 +2403,14 @@ class TestDatabase:
             os.path.join(dir, textfile),
             collection="testtextfile",
             attribute_names=attributes[0],
-            parallel=True,
+            parallel=False,
             one_to_one=False,
         )
 
         assert save_num == 651
         assert self.db["testtextfile"].count_documents({}) == 651
 
-        query = {"pwfid": 3103}
+        query = {"pwfid": 3102}
         cursor = self.db.testtextfile.find(query)
         assert cursor.count() == 1
 

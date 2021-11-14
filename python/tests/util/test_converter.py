@@ -293,7 +293,6 @@ def test_Textfile2Dataframe():
     pf = AntelopePf("python/tests/data/test_import.pf")
     attributes = Pf2AttributeNameTbl(pf, tag="wfprocess")
     names = attributes[0]
-    nullvals = attributes[2]
 
     textfile = "python/tests/data/testdb.wfprocess"
 
@@ -308,7 +307,7 @@ def test_Textfile2Dataframe():
 
         #   Test setting null values
         df = Textfile2Dataframe(
-            textfile, attribute_names=names, null_values=nullvals, parallel=p
+            textfile, attribute_names=names, parallel=p
         )
         assert df.shape[0] == 652
         assert df.shape[1] == 12
@@ -316,7 +315,7 @@ def test_Textfile2Dataframe():
         assert np.isclose(df.iloc[0]["starttime"], 1577912967.53105)
         assert np.isclose(df.iloc[0]["endtime"], 1577913102.63105)
         assert df.iloc[0]["time_standard"] == "a"
-        assert df.iloc[0]["foff"] is None
+        assert df.iloc[0]["foff"] == 0
         
         #   Test turning off one_to_one
         df = Textfile2Dataframe(
