@@ -332,26 +332,49 @@ class Database(pymongo.database.Database):
                 md[k] = object_doc[k]
 
         # 1.2 read the attributes in the metadata schema
+        # col_dict is a hashmap used to store the normalized records by the normalized_id in object_doc
         col_dict = {}
+        # log_error_msg is used to record all the elog entries generated during the reading process
+        # After the mspass_object is created, we would post every elog entry with the messages in the log_error_msg.
+        log_error_msg = []
         for k in read_metadata_schema.keys():
             col = read_metadata_schema.collection(k)
+            # explanation of the 4 conditions in the following if statement
             # 1.2.1. col is not None and is a normalized collection name
             # 1.2.2. normalized key id exists in the wf document
             # 1.2.3. k is not one of the exclude keys
             # 1.2.4. col is in the normalize list provided by user
-            if col and col != wf_collection and col+'_id' in object_doc and k not in exclude_keys and col in normalize:
+            if (
+                col
+                and col != wf_collection
+                and col + "_id" in object_doc
+                and k not in exclude_keys
+                and col in normalize
+            ):
+                # try to find the corresponding record in the normalized collection from the database
                 if col not in col_dict:
-                    col_dict[col] = self[col].find_one(
-                        {'_id': object_doc[col + '_id']})
+                    col_dict[col] = self[col].find_one({'_id': object_doc[col + '_id']})
                 # might unable to find the normalized document by the normalized_id in the object_doc
-                # TODO: this is not covered by test
+                # we skip reading this attribute
                 if not col_dict[col]:
                     continue
-                md[k] = col_dict[col][self.database_schema[col].unique_name(k)]
+                # this attribute may be missing in the normalized record we retrieve above
+                # in this case, we skip reading this attribute
+                # however, if it is a required attribute for the normalized collection
+                # we should post an elog entry to the associated wf object created after.
+                unique_k = self.database_schema[col].unique_name(k)
+                if not unique_k in col_dict[col]:
+                    if self.database_schema[col].is_required(unique_k):
+                        log_error_msg.append(
+                            "Attribute {} is required in collection {}, but is missing in the document with id={}.".format(
+                                unique_k, col, object_doc[col + "_id"]
+                            )
+                        )
+                    continue
+                md[k] = col_dict[col][unique_k]
 
         # 1.3 schema check normalized data according to the read mode
         is_dead = False
-        log_error_msg = []
         fatal_keys = []
         if mode == "cautious":
             for k in md:
@@ -441,6 +464,10 @@ class Database(pymongo.database.Database):
 
             mspass_object.live = True
             mspass_object.clear_modified()
+
+            # 4.post complaint elog entries if any
+            for msg in log_error_msg:
+                mspass_object.elog.log_error('read_data', msg, ErrorSeverity.Complaint)
 
         return mspass_object
 
