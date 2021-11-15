@@ -2246,6 +2246,12 @@ class Database(pymongo.database.Database):
             if data:
                 ensemble.member.append(data)
 
+        # explicitly mark empty ensembles dead.  Otherwise assume if 
+        # we got this far we can mark it live
+        if len(ensemble.member) > 0:
+            ensemble.set_live()
+        else:
+            ensemble.kill()
         return ensemble
 
     def save_ensemble_data(self, ensemble_object, mode="promiscuous", storage_mode='gridfs', dir_list=None, dfile_list=None,
@@ -2271,6 +2277,10 @@ class Database(pymongo.database.Database):
         atomic saves will not lose their association with a unique ensemble
         indexing scheme.
 
+        A final feature of note is that an ensemble can be marked dead.
+        If the entire ensemble is set dead this function returns 
+        immediately and does nothing.
+
 
         :param ensemble_object: the ensemble you want to save.
         :type ensemble_object: either :class:`mspasspy.ccore.seismic.TimeSeriesEnsemble` or
@@ -2290,6 +2300,8 @@ class Database(pymongo.database.Database):
         :param data_tag: a user specified "data_tag" key to tag the saved wf document.
         :type data_tag: :class:`str`
         """
+        if ensemble_object.dead():
+            return
         if not dfile_list:
             dfile_list = [None for _ in range(len(ensemble_object.member))]
         if not dir_list:

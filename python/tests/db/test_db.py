@@ -1489,6 +1489,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
         dfile_list = ['test_db_output', 'test_db_output']
         dir_list = ['python/tests/data/', 'python/tests/data/']
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
@@ -1520,6 +1521,7 @@ class TestDatabase():
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
+        seis_ensemble.set_live()
         self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='file', dfile_list=dfile_list, dir_list=dir_list, exclude_objects=[1])
         self.db.database_schema.set_default('wf_Seismogram', 'wf')
         res = self.db.read_data(seis_ensemble.member[0]['_id'], mode='promiscuous', normalize=['site', 'source'])
@@ -1552,6 +1554,7 @@ class TestDatabase():
         ts_ensemble.member.append(ts1)
         ts_ensemble.member.append(ts2)
         ts_ensemble.member.append(ts3)
+        ts_ensemble.set_live()
         self.db.database_schema.set_default('wf_TimeSeries', 'wf')
         self.db.save_ensemble_data(ts_ensemble, mode="promiscuous", storage_mode='gridfs')
         # test with python list
@@ -1590,6 +1593,7 @@ class TestDatabase():
         seis_ensemble.member.append(seis1)
         seis_ensemble.member.append(seis2)
         seis_ensemble.member.append(seis3)
+        seis_ensemble.set_live()
         self.db.database_schema.set_default('wf_Seismogram', 'wf')
         self.db.save_ensemble_data(seis_ensemble, mode="promiscuous", storage_mode='gridfs')
         res = self.db.read_ensemble_data([seis_ensemble.member[0]['_id'], seis_ensemble.member[1]['_id'],
